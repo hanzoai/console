@@ -81,55 +81,56 @@ export function SidebarNotifications() {
   const currentNotification = notifications[currentNotificationIndex];
 
   return (
-    <Card className="relative max-h-60 overflow-hidden rounded-md bg-opacity-50 shadow-none group-data-[collapsible=icon]:hidden">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute right-2 top-2 h-6 w-6 p-0"
-        onClick={() => {
-          capture("notification:dismiss_notification", {
-            notification_id: currentNotification.id,
-          });
-          dismissNotification(currentNotification.id);
-        }}
-        title="Dismiss"
-      >
-        <X className="h-4 w-4" />
-      </Button>
-      <CardHeader className="p-4 pb-0">
-        <CardTitle className="text-sm">{currentNotification.title}</CardTitle>
-        <CardDescription>{currentNotification.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="p-4 pt-2">
-        {currentNotification.link &&
-          (currentNotification.linkContent ? (
-            <Link
-              href={currentNotification.link}
-              target="_blank"
-              onClick={() => {
-                capture("notification:click_link", {
-                  notification_id: currentNotification.id,
-                });
-              }}
-            >
-              {currentNotification.linkContent}
-            </Link>
-          ) : (
-            <Button variant="secondary" size="sm" asChild>
-              <Link
-                href={currentNotification.link}
-                target="_blank"
-                onClick={() => {
-                  capture("notification:click_link", {
-                    notification_id: currentNotification.id,
-                  });
-                }}
-              >
-                {currentNotification.linkTitle ?? "Learn more"} &rarr;
-              </Link>
-            </Button>
-          ))}
-      </CardContent>
-    </Card>
+    // <Card className="relative max-h-60 overflow-hidden rounded-md bg-opacity-50 shadow-none group-data-[collapsible=icon]:hidden">
+    //   <Button
+    //     variant="ghost"
+    //     size="sm"
+    //     className="absolute right-2 top-2 h-6 w-6 p-0"
+    //     onClick={() => {
+    //       capture("notification:dismiss_notification", {
+    //         notification_id: currentNotification.id,
+    //       });
+    //       dismissNotification(currentNotification.id);
+    //     }}
+    //     title="Dismiss"
+    //   >
+    //     <X className="h-4 w-4" />
+    //   </Button>
+    //   {/* <CardHeader className="p-4 pb-0">
+    //     <CardTitle className="text-sm">{currentNotification.title}</CardTitle>
+    //     <CardDescription>{currentNotification.description}</CardDescription>
+    //   </CardHeader> */}
+    //   {/* <CardContent className="p-4 pt-2">
+    //     {currentNotification.link &&
+    //       (currentNotification.linkContent ? (
+    //         <Link
+    //           href={currentNotification.link}
+    //           target="_blank"
+    //           onClick={() => {
+    //             capture("notification:click_link", {
+    //               notification_id: currentNotification.id,
+    //             });
+    //           }}
+    //         >
+    //           {currentNotification.linkContent}
+    //         </Link>
+    //       ) : (
+    //         <Button variant="secondary" size="sm" asChild>
+    //           <Link
+    //             href={currentNotification.link}
+    //             target="_blank"
+    //             onClick={() => {
+    //               capture("notification:click_link", {
+    //                 notification_id: currentNotification.id,
+    //               });
+    //             }}
+    //           >
+    //             {currentNotification.linkTitle ?? "Learn more"} &rarr;
+    //           </Link>
+    //         </Button>
+    //       ))}
+    //   </CardContent> */}
+    // </Card>
+    <></>
   );
 }

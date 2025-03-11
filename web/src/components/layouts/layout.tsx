@@ -8,7 +8,7 @@ import { Spinner } from "@/src/components/layouts/spinner";
 import { hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Toaster } from "@/src/components/ui/sonner";
 import DOMPurify from "dompurify";
-import { ThemeToggle } from "@/src/features/theming/ThemeToggle";
+// import { ThemeToggle } from "@/src/features/theming/ThemeToggle";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { useEntitlements } from "@/src/features/entitlements/hooks";
 import { useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
@@ -25,11 +25,6 @@ const signOutUser = async () => {
 
 const getUserNavigation = () => {
   return [
-    {
-      name: "Theme",
-      onClick: () => {},
-      content: <ThemeToggle />,
-    },
     {
       name: "Sign out",
       onClick: signOutUser,
