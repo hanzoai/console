@@ -16,6 +16,8 @@ import {
   getObservationCountOfProjectsSinceCreationDate,
   logger,
 } from "@langfuse/shared/src/server";
+import { Organization, PrismaClient } from "@prisma/client";
+import Stripe from "stripe";
 
 export const cloudBillingRouter = createTRPCRouter({
   createStripeCheckoutSession: protectedOrganizationProcedure
@@ -23,132 +25,167 @@ export const cloudBillingRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         stripeProductId: z.string(),
+        customerEmail: z.string().email().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      throwIfNoOrganizationAccess({
-        organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
-        session: ctx.session,
-      });
-      throwIfNoEntitlement({
-        entitlement: "cloud-billing",
-        sessionUser: ctx.session.user,
-        orgId: input.orgId,
-      });
+      console.log("Create Checkout Session Input:", input);
+      console.log("Session User:", ctx.session.user);
 
-      const org = await ctx.prisma.organization.findUnique({
-        where: {
-          id: input.orgId,
-        },
-      });
-      if (!org) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Organization not found",
+      try {
+        // Access checks
+        throwIfNoOrganizationAccess({
+          organizationId: input.orgId,
+          scope: "hanzoCloudBilling:CRUD",
+          session: ctx.session,
         });
-      }
-
-      const parsedOrg = parseDbOrg(org);
-      if (parsedOrg.cloudConfig?.plan)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message:
-            "Cannot initialize stripe checkout for orgs that have a manual/legacy plan",
-        });
-
-      if (!stripeClient)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Stripe client not initialized",
-        });
-
-      const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
-      const stripeActiveSubscriptionId =
-        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId;
-      if (stripeActiveSubscriptionId) {
-        // If the org has a customer ID, do not return checkout options, should use the billing portal instead
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Organization already has an active subscription",
-        });
-      }
-
-      if (
-        !stripeProducts.some(
-          (product) =>
-            Boolean(product.checkout) &&
-            product.stripeProductId === input.stripeProductId,
-        )
-      )
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Invalid stripe product id",
-        });
-
-      const product = await stripeClient.products.retrieve(
-        input.stripeProductId,
-      );
-      if (!product.default_price) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Product does not have a default price in Stripe",
-        });
-      }
-
-      const returnUrl = `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings`;
-      const session = await stripeClient.checkout.sessions.create({
-        customer: stripeCustomerId,
-        line_items: [
-          {
-            price: product.default_price as string,
-          },
-        ],
-        client_reference_id:
-          createStripeClientReference(input.orgId) ?? undefined,
-        allow_promotion_codes: true,
-        tax_id_collection: {
-          enabled: true,
-        },
-        automatic_tax: {
-          enabled: true,
-        },
-        consent_collection: {
-          terms_of_service: "required",
-        },
-        ...(stripeCustomerId
-          ? {
-              customer_update: {
-                name: "auto",
-                address: "auto",
-              },
-            }
-          : {}),
-        billing_address_collection: "required",
-        success_url: returnUrl,
-        cancel_url: returnUrl,
-        mode: "subscription",
-        metadata: {
+        throwIfNoEntitlement({
+          entitlement: "cloud-billing",
+          sessionUser: ctx.session.user,
           orgId: input.orgId,
-          cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? null,
-        },
-      });
-
-      if (!session.url)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create checkout session",
         });
 
-      auditLog({
-        session: ctx.session,
-        orgId: input.orgId,
-        resourceType: "stripeCheckoutSession",
-        resourceId: session.id,
-        action: "create",
-      });
+        // Find organization
+        const org = await ctx.prisma.organization.findUnique({
+          where: { id: input.orgId },
+        });
+        console.log("Organization Found:", !!org);
 
-      return session.url;
+        if (!org) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Organization not found",
+          });
+        }
+
+        // Parse organization configuration
+        const parsedOrg = parseDbOrg(org);
+        console.log("Parsed Org Cloud Config:", parsedOrg.cloudConfig);
+
+        // Stripe client check
+        if (!stripeClient) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Stripe client not initialized",
+          });
+        }
+
+        // Product validation
+        const validProducts = stripeProducts.filter(product => product.checkout);
+        console.log("Valid Products:", validProducts.map(p => p.stripeProductId));
+
+        const isValidProduct = validProducts.some(
+          product => product.stripeProductId === input.stripeProductId
+        );
+        
+        if (!isValidProduct) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid Stripe product ID",
+          });
+        }
+
+        // Retrieve Stripe product
+        const product = await stripeClient.products.retrieve(input.stripeProductId);
+        console.log("Retrieved Product:", product);
+
+        // Retrieve the default price and verify its type
+        if (!product.default_price) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Product does not have a default price",
+          });
+        }
+
+        const price = await stripeClient.prices.retrieve(product.default_price as string);
+        console.log("Price Details:", price);
+
+        // Determine the checkout mode based on price type
+        const checkoutMode = price.type === 'recurring' 
+          ? 'subscription' 
+          : 'payment';
+
+        console.log("Checkout Mode:", checkoutMode);
+
+        // Determine customer ID
+        const stripeCustomerId = 
+          parsedOrg.cloudConfig?.stripe?.customerId || 
+          await createStripeCustomerForOrg(ctx.prisma, org);
+        console.log("Stripe Customer ID:", stripeCustomerId);
+
+        // Use the custom email if provided, otherwise fall back to session email
+        const customerEmail = input.customerEmail || ctx.session.user.email;
+        console.log("Customer Email:", customerEmail);
+
+        // Create checkout session
+        const returnUrl = `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`;
+        const sessionConfig: Stripe.Checkout.SessionCreateParams = {
+          line_items: [
+            {
+              price: product.default_price as string,
+              quantity: 1,
+            },
+          ],
+          client_reference_id: createStripeClientReference(input.orgId) ?? undefined,
+          allow_promotion_codes: true,
+          success_url: returnUrl,
+          cancel_url: returnUrl,
+          mode: checkoutMode,
+          metadata: {
+            orgId: input.orgId,
+            cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? null,
+            userEmail: ctx.session.user.email || '',
+            productType: price.type,
+          },
+        };
+
+        // Conditionally add customer or customer_email
+        if (stripeCustomerId) {
+          sessionConfig.customer = stripeCustomerId;
+        } else if (customerEmail) {
+          sessionConfig.customer_email = customerEmail;
+        }
+
+        console.log("Stripe Session Config:", sessionConfig);
+
+        const session = await stripeClient.checkout.sessions.create(sessionConfig);
+        console.log("Created Stripe Session:", session);
+
+        // Audit logging
+        auditLog({
+          session: ctx.session,
+          orgId: input.orgId,
+          resourceType: "stripeCheckoutSession",
+          resourceId: session.id,
+          action: "create",
+        });
+
+        // Return the checkout URL along with a flag to indicate whether the session was created
+        return {
+          url: session.url,
+          sessionId: session.id,
+        };
+      } catch (error) {
+        console.error("Full Checkout Session Error:", error);
+        
+        // Log additional details about the error
+        if (error instanceof Error) {
+          console.error("Error Name:", error.name);
+          console.error("Error Message:", error.message);
+          console.error("Error Stack:", error.stack);
+        }
+        
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error 
+            ? `Unexpected error: ${error.message}` 
+            : "Unknown error occurred",
+        });
+      }
     }),
   changeStripeSubscriptionProduct: protectedOrganizationProcedure
     .input(
@@ -160,7 +197,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -288,7 +325,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -312,8 +349,16 @@ export const cloudBillingRouter = createTRPCRouter({
 
       const parsedOrg = parseDbOrg(org);
       let stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
+      
+      // Fetch subscriptions separately
+      const subscriptions = await ctx.prisma.stripeSubscription.findMany({
+        where: { organizationId: input.orgId }
+      });
+
       let stripeSubscriptionId =
-        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId;
+        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId ||
+        subscriptions[0]?.stripeSubscriptionId;
+
       if (!stripeCustomerId || !stripeSubscriptionId) {
         // Do not create a new customer if the org is on a plan (assigned manually)
         return null;
@@ -341,7 +386,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -437,4 +482,837 @@ export const cloudBillingRouter = createTRPCRouter({
         usageType: "observations",
       };
     }),
+
+  getSubscription: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      const org = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+      });
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      const parsedOrg = parseDbOrg(org);
+      const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
+
+      // If no Stripe customer ID, return null
+      if (!stripeCustomerId) {
+        console.warn(`No Stripe customer ID found for organization ${input.orgId}`);
+        return null;
+      }
+
+      try {
+        // Fetch subscriptions that are still relevant (active, past_due, or scheduled to cancel)
+        const subscriptionsResponse = await stripeClient.subscriptions.list({
+          limit: 1,
+          expand: ['data'],
+          customer: stripeCustomerId,
+          status: 'active',
+        });
+
+        // No subscriptions found
+        if (!subscriptionsResponse.data.length) {
+          console.info(`No subscriptions found for customer ${stripeCustomerId}`);
+          return null;
+        }
+
+        // Get the most recent subscription
+        const latestSubscription = subscriptionsResponse.data[0];
+        const firstItem = latestSubscription.items.data[0];
+        const productId = firstItem?.price?.product as string;
+
+        // Retrieve product details separately
+        const productDetails = await stripeClient.products.retrieve(productId);
+
+        return {
+          id: latestSubscription.id,
+          status: latestSubscription.status,
+          current_period_start: new Date(latestSubscription.current_period_start * 1000),
+          current_period_end: new Date(latestSubscription.current_period_end * 1000),
+          
+          plan: {
+            name: productDetails.name || 'Unknown Plan',
+            description: productDetails.description || 'No description available',
+            id: productId,
+          },
+          
+          price: {
+            amount: firstItem?.price?.unit_amount ? firstItem.price.unit_amount / 100 : null,
+            currency: firstItem?.price?.currency,
+          },
+        };
+      } catch (error) {
+        console.error(`Error retrieving subscription for organization ${input.orgId}:`, error);
+        return null;
+      }
+    }),
+
+  // New method to save subscription data
+  saveSubscriptionData: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        stripeSubscriptionId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoOrganizationAccess({
+        organizationId: input.orgId,
+        scope: "hanzoCloudBilling:CRUD",
+        session: ctx.session,
+      });
+
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      try {
+        // Retrieve the full subscription details
+        const subscription = await stripeClient.subscriptions.retrieve(
+          input.stripeSubscriptionId
+        );
+
+        // Ensure we have a single price/product
+        if (subscription.items.data.length !== 1) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Subscription must have exactly one product",
+          });
+        }
+
+        const subscriptionItem = subscription.items.data[0];
+        const productId = subscriptionItem.price.product as string;
+        const priceId = subscriptionItem.price.id;
+
+        // Find the corresponding product from our predefined list
+        const matchedProduct = stripeProducts.find(
+          product => product.stripeProductId === productId
+        );
+
+        if (!matchedProduct) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Unrecognized Stripe product",
+          });
+        }
+
+        // Update organization's cloud config with subscription details
+        const org = await ctx.prisma.organization.findUnique({
+          where: { id: input.orgId },
+        });
+
+        if (!org) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Organization not found",
+          });
+        }
+
+        // Prepare updated cloud config
+        const updatedCloudConfig = org.cloudConfig 
+          ? { 
+              ...JSON.parse(JSON.stringify(org.cloudConfig)),
+              stripe: {
+                ...(org.cloudConfig as any)?.stripe || {},
+                activeSubscriptionId: input.stripeSubscriptionId,
+                activeProductId: productId,
+                activePriceId: priceId,
+                subscriptionStatus: subscription.status,
+                currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+              },
+              plan: matchedProduct.name, // Update plan name
+            }
+          : {
+              stripe: {
+                activeSubscriptionId: input.stripeSubscriptionId,
+                activeProductId: productId,
+                activePriceId: priceId,
+                subscriptionStatus: subscription.status,
+                currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+              },
+              plan: matchedProduct.name,
+            };
+
+        // Create or update StripeSubscription record
+        await ctx.prisma.stripeSubscription.upsert({
+          where: { 
+            stripeSubscriptionId: input.stripeSubscriptionId 
+          },
+          update: {
+            status: subscription.status,
+            plan: matchedProduct.name,
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            organizationId: input.orgId,
+            metadata: subscription.metadata,
+          },
+          create: {
+            stripeSubscriptionId: input.stripeSubscriptionId,
+            stripeCustomerId: subscription.customer as string,
+            status: subscription.status,
+            plan: matchedProduct.name,
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            organizationId: input.orgId,
+            metadata: subscription.metadata,
+          },
+        });
+
+        // Update organization with new cloud config
+        await ctx.prisma.organization.update({
+          where: { id: input.orgId },
+          data: {
+            cloudConfig: updatedCloudConfig,
+          },
+        });
+
+        // Audit log the subscription save
+        auditLog({
+          session: ctx.session,
+          orgId: input.orgId,
+          resourceType: "stripeCheckoutSession",
+          resourceId: input.stripeSubscriptionId,
+          action: "create",
+        });
+
+        return {
+          success: true,
+          subscriptionId: input.stripeSubscriptionId,
+          plan: matchedProduct.name,
+        };
+      } catch (error) {
+        console.error("Error saving subscription data:", error);
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error 
+            ? `Failed to save subscription: ${error.message}` 
+            : "Unknown error occurred while saving subscription",
+        });
+      }
+    }),
+
+  // New method to save subscription data
+  saveCheckoutSessionSubscription: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        checkoutSessionId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      try {
+        // Retrieve the checkout session with expanded line items and customer
+        const session = await stripeClient.checkout.sessions.retrieve(
+          input.checkoutSessionId,
+          { expand: ['line_items', 'customer', 'subscription'] }
+        );
+
+        // Validate the session
+        if (session.client_reference_id !== input.orgId) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Checkout session does not match organization",
+          });
+        }
+
+        // Create or get Stripe customer
+        const stripeCustomer = await ctx.prisma.stripeCustomer.upsert({
+          where: { stripeCustomerId: session.customer as string },
+          update: {},
+          create: {
+            stripeCustomerId: session.customer as string,
+            organizationId: input.orgId,
+          },
+        });
+
+        let stripeSession;
+        try {
+          stripeSession = await ctx.prisma.stripeCheckoutSession.createMany({
+            data: [{
+              stripeSessionId: session.id,
+              organizationId: input.orgId,
+              customerId: stripeCustomer.id,
+              mode: session.mode,
+              status: session.status,
+              amountTotal: session.amount_total ? session.amount_total / 100 : null,
+              currency: session.currency?.toUpperCase(),
+              paymentStatus: session.payment_status,
+              metadata: session.metadata || {},
+              completedAt: session.status === 'complete' ? new Date() : null,
+            }],
+            skipDuplicates: true // Optional: skip if record already exists
+          });
+        } catch (error) {
+          // Handle potential duplicate or constraint violations
+          console.error('Failed to create checkout session:', error);
+          // Optionally, implement fallback or retry logic
+        }
+
+        // Handle different session modes
+        if (session.mode === 'payment') {
+          // Credit purchase logic
+          const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+          
+          // Update organization credits in a transaction
+          const [updatedOrg, usageRecord] = await ctx.prisma.$transaction(async (tx) => {
+            const org = await tx.organization.update({
+              where: { id: input.orgId },
+              data: {
+                cloudConfig: {
+                  update: {
+                    credits: {
+                      increment: amountPaid
+                    }
+                  }
+                }
+              },
+              select: {
+                id: true,
+                cloudConfig: true
+              }
+            });
+
+            const record = await tx.usageRecord.create({
+              data: {
+                organizationId: input.orgId,
+                usageMeterId: await findOrCreateCreditMeter(tx, input.orgId),
+                value: amountPaid,
+                metadata: {
+                  checkoutSessionId: input.checkoutSessionId,
+                  type: 'CREDIT_PURCHASE',
+                },
+              },
+            });
+
+            return [org, record];
+          });
+
+          // Update checkout session record
+          await ctx.prisma.stripeCheckoutSession.update({
+            where: { id: session.id },
+            data: {
+              completedAt: new Date(),
+            },
+          });
+
+          const credits = (updatedOrg.cloudConfig as any)?.credits || 0;
+
+          return {
+            success: true,
+            type: 'credit_purchase',
+            creditsPurchased: amountPaid,
+            totalCredits: credits,
+          };
+        }
+
+        if (session.mode === 'subscription') {
+          // Subscription purchase logic
+          if (!session.subscription || typeof session.subscription !== 'string') {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "No subscription found in checkout session",
+            });
+          }
+
+          // Retrieve full subscription details
+          const subscription = await stripeClient.subscriptions.retrieve(
+            session.subscription
+          );
+
+          // Determine product and plan details
+          const firstItem = subscription.items.data[0];
+          const productId = firstItem?.price?.product as string;
+          const product = await stripeClient.products.retrieve(productId);
+
+          // Create subscription record and update organization in a transaction
+          const [stripeSubscription] = await ctx.prisma.$transaction(async (tx) => {
+            const sub = await tx.stripeSubscription.create({
+              data: {
+                stripeSubscriptionId: subscription.id,
+                stripeCustomerId: stripeCustomer.id,
+                organizationId: input.orgId,
+                status: subscription.status,
+                plan: product.name,
+                currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+                metadata: subscription.metadata || {},
+              },
+            });
+
+            await tx.organization.update({
+              where: { id: input.orgId },
+              data: {
+                cloudConfig: {
+                  update: {
+                    currentSubscriptionId: sub.id,
+                    currentSubscriptionPlan: product.name,
+                    subscriptionStatus: subscription.status,
+                    lastSubscriptionChangeAt: new Date(),
+                  }
+                }
+              },
+            });
+
+            return [sub];
+          });
+
+          // Update checkout session with subscription
+          await ctx.prisma.stripeCheckoutSession.update({
+            where: { id: session.id },
+            data: {
+              subscriptionId: stripeSubscription.id,
+              completedAt: new Date(),
+            },
+          });
+
+          return {
+            success: true,
+            type: 'subscription',
+            subscriptionId: stripeSubscription.id,
+            plan: product.name,
+          };
+        }
+
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unhandled checkout session mode",
+        });
+      } catch (error) {
+        console.error("Error saving checkout session:", error);
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error 
+            ? `Failed to save checkout session: ${error.message}` 
+            : "Unexpected error processing checkout session",
+        });
+      }
+    }),
+
+  // New method to get subscription history
+  getSubscriptionHistory: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        limit: z.number().optional().default(10),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      const org = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+      });
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      const parsedOrg = parseDbOrg(org);
+      const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
+      
+      if (!stripeCustomerId) {
+        return { 
+          subscriptions: [],
+          hasMore: false 
+        };
+      }
+
+      try {
+        // Retrieve subscription history from Stripe
+        const subscriptionsResponse = await stripeClient.subscriptions.list({
+          customer: stripeCustomerId,
+          limit: input.limit,
+          expand: ['data.latest_invoice', 'data.items.data.price'],
+        });
+
+        // Fetch all unique product details first
+        const productIds = new Set(
+          subscriptionsResponse.data
+            .map(subscription => subscription.items.data[0]?.price?.product)
+            .filter(Boolean) as string[]
+        );
+
+        const productDetailsMap = new Map<string, string>();
+        for (const productId of productIds) {
+          try {
+            const product = await stripeClient.products.retrieve(productId);
+            productDetailsMap.set(productId, product.name || 'Unknown Plan');
+          } catch (error) {
+            console.error(`Failed to retrieve product ${productId}:`, error);
+            productDetailsMap.set(productId, 'Unknown Plan');
+          }
+        }
+        // Then use the map when transforming subscriptions
+        const subscriptionHistory = subscriptionsResponse.data.map(subscription => {
+          const firstItem = subscription.items.data[0];
+          const productId = firstItem?.price?.product as string;
+          return {
+            id: subscription.id,
+            status: subscription.status,
+            created: new Date(subscription.created * 1000),
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            plan: {
+              name: productDetailsMap.get(productId) || 'Unknown Plan',
+              amount: firstItem?.price?.unit_amount ? firstItem.price.unit_amount / 100 : 0,
+            },
+            latestInvoice: subscription.latest_invoice ? {
+              id: (subscription.latest_invoice as Stripe.Invoice).id,
+              amountDue: (subscription.latest_invoice as Stripe.Invoice).amount_due / 100,
+              status: (subscription.latest_invoice as Stripe.Invoice).status,
+              number: (subscription.latest_invoice as Stripe.Invoice).number || 'N/A',
+              pdfUrl: (subscription.latest_invoice as Stripe.Invoice).invoice_pdf || null,
+            } : null,
+          };
+        });
+
+        return {
+          subscriptions: subscriptionHistory,
+          hasMore: subscriptionsResponse.has_more,
+        };
+      } catch (error) {
+        console.error("Error retrieving subscription history:", error);
+        
+        // Fallback to local database if Stripe API fails
+        const localSubscriptions = await ctx.prisma.stripeSubscription.findMany({
+        where: {
+            organizationId: input.orgId 
+          },
+          orderBy: { createdAt: 'desc' },
+          take: input.limit,
+        });
+        return {
+          subscriptions: localSubscriptions.map(sub => ({
+            id: sub.stripeSubscriptionId,
+            status: sub.status,
+            created: sub.createdAt,
+            currentPeriodStart: sub.currentPeriodStart,
+            currentPeriodEnd: sub.currentPeriodEnd,
+            plan: { name: sub.plan || 'Unknown Plan' },
+          })),
+          hasMore: false,
+        };
+      }
+    }),
+
+  getInvoicePdfUrl: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        invoiceId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      const org = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+      });
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      const parsedOrg = parseDbOrg(org);
+      const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
+
+      if (!stripeCustomerId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No Stripe customer associated with this organization",
+        });
+      }
+
+      try {
+        // Retrieve the invoice
+        const invoice = await stripeClient.invoices.retrieve(input.invoiceId);
+
+        // Ensure the invoice belongs to the customer
+        if (invoice.customer !== stripeCustomerId) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Invoice does not belong to this organization",
+          });
+        }
+
+        // Check if invoice has a PDF
+        if (!invoice.invoice_pdf) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No PDF available for this invoice",
+          });
+        }
+
+        return {
+          pdfUrl: invoice.invoice_pdf,
+          invoiceNumber: invoice.number || 'Unknown',
+          amountDue: invoice.amount_due / 100,
+          invoiceDate: new Date(invoice.created * 1000),
+        };
+      } catch (error) {
+        console.error(`Error retrieving invoice PDF for ${input.invoiceId}:`, error);
+        
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve invoice PDF",
+        });
+      }
+    }),
+
+  cancelStripeSubscription: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        stripeProductId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      console.log("Cancel Subscription Input:", input);
+      console.log("Session User:", ctx.session.user);
+
+      throwIfNoOrganizationAccess({
+        organizationId: input.orgId,
+        scope: "hanzoCloudBilling:CRUD",
+        session: ctx.session,
+      });
+      throwIfNoEntitlement({
+        entitlement: "cloud-billing",
+        sessionUser: ctx.session.user,
+        orgId: input.orgId,
+      });
+
+      if (!stripeClient) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe client not initialized",
+        });
+      }
+
+      const org = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+      });
+
+      console.log("Organization Found:", !!org);
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      const parsedOrg = parseDbOrg(org);
+      console.log("Parsed Org Cloud Config:", parsedOrg.cloudConfig);
+
+      // Try to get the active subscription ID from cloud config
+      let stripeSubscriptionId = 
+        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId;
+
+      // If no active subscription ID, try to fetch the latest active subscription
+      if (!stripeSubscriptionId) {
+        const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
+        
+        if (!stripeCustomerId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No Stripe customer found for this organization",
+          });
+        }
+
+        // Fetch active subscriptions for this customer
+        const subscriptionsResponse = await stripeClient.subscriptions.list({
+          customer: stripeCustomerId,
+          status: 'active',
+          limit: 1,
+        });
+
+        if (subscriptionsResponse.data.length === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No active subscriptions found",
+          });
+        }
+
+        stripeSubscriptionId = subscriptionsResponse.data[0].id;
+        console.log("Found active subscription:", stripeSubscriptionId);
+      }
+
+      console.log("Stripe Subscription ID:", stripeSubscriptionId);
+
+      try {
+        // Retrieve the current subscription to validate
+        const currentSubscription = await stripeClient.subscriptions.retrieve(
+          stripeSubscriptionId
+        );
+
+        console.log("Current Subscription:", {
+          id: currentSubscription.id,
+          status: currentSubscription.status,
+          items: currentSubscription.items.data.map(item => ({
+            price: item.price.id,
+            product: item.price.product
+          }))
+        });
+
+        // Validate that the current subscription matches the product being canceled
+        const currentProductId = currentSubscription.items.data[0]?.price?.product;
+        console.log("Current Product ID:", currentProductId);
+        console.log("Input Product ID:", input.stripeProductId);
+
+        if (currentProductId !== input.stripeProductId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Subscription product does not match the requested cancellation",
+          });
+        }
+
+        // Cancel the subscription at the end of the current billing period
+        const canceledSubscription = await stripeClient.subscriptions.update(
+          stripeSubscriptionId,
+          {
+            cancel_at_period_end: true,
+          }
+        );
+
+        // Audit log the subscription cancellation
+        auditLog({
+          session: ctx.session,
+          orgId: input.orgId,
+          resourceType: "organization",
+          resourceId: stripeSubscriptionId,
+          action: "cancel",
+        });
+
+        return {
+          success: true,
+          message: "Subscription will be canceled at the end of the current billing period",
+          cancelAt: canceledSubscription.cancel_at 
+            ? new Date(canceledSubscription.cancel_at * 1000) 
+            : null,
+        };
+      } catch (error) {
+        console.error("Full Error in cancelStripeSubscription:", error);
+        
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error 
+            ? `Unexpected error: ${error.message}` 
+            : "Unknown error occurred",
+        });
+      }
+    }),
 });
+
+// Utility function to create Stripe customer if not exists
+async function createStripeCustomerForOrg(prisma: PrismaClient, org: Organization) {
+  if (!stripeClient) {
+    throw new Error("Stripe client not initialized");
+  }
+
+  const customer = await stripeClient.customers.create({
+    name: org.name || undefined,
+    metadata: {
+      orgId: org.id,
+    },
+  });
+
+  // Safely handle cloudConfig
+  const updatedCloudConfig = org.cloudConfig 
+    ? { 
+        ...org.cloudConfig as Record<string, unknown>, 
+        stripe: {
+          ...(org.cloudConfig as any)?.stripe || {},
+          customerId: customer.id,
+        } 
+      }
+    : { 
+        stripe: { 
+          customerId: customer.id 
+        } 
+      };
+
+  // Update organization with new customer ID
+  await prisma.organization.update({
+    where: { id: org.id },
+    data: {
+      cloudConfig: updatedCloudConfig,
+    },
+  });
+
+  return customer.id;
+}
+
+// Modify the findOrCreateCreditMeter function to accept a Prisma transaction
+async function findOrCreateCreditMeter(prisma: any, orgId: string) {
+  const existingMeter = await prisma.usageMeter.findFirst({
+    where: {
+      organizationId: orgId,
+      name: 'Credits',
+      type: 'AI',
+    },
+  });
+
+  if (existingMeter) return existingMeter.id;
+
+  const newMeter = await prisma.usageMeter.create({
+    data: {
+      organizationId: orgId,
+      name: 'Credits',
+      type: 'AI',
+      unit: 'USD',
+      aggregationMethod: 'LAST',
+    },
+  });
+
+  return newMeter.id;
+}

@@ -133,4 +133,67 @@ export const organizationsRouter = createTRPCRouter({
 
       return true;
     }),
+  getDetails: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const organization = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+        select: {
+          id: true,
+          name: true,
+          cloudConfig: true,
+          stripeCustomerId: true,
+          subscriptionId: true,
+          subscriptionStatus: true,
+          currentPeriodEnd: true,
+        }
+      });
+
+      if (!organization) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      // Extract credits from cloudConfig, default to 0 if not present
+      const credits = (() => {
+        try {
+          // Ensure cloudConfig exists and is an object
+          const config = organization.cloudConfig || {};
+          const creditsValue = typeof config === 'object' 
+            ? (config as Record<string, unknown>)?.credits 
+            : undefined;
+          
+          // Validate and convert credits
+          const parsedCredits = creditsValue !== undefined 
+            ? Number(creditsValue) 
+            : 0;
+          
+          // Log for debugging
+          console.log('Organization Credits Debug', {
+            orgId: organization.id,
+            rawCloudConfig: organization.cloudConfig,
+            extractedCredits: parsedCredits
+          });
+
+          return parsedCredits;
+        } catch (error) {
+          console.error('Error extracting credits', {
+            orgId: organization.id,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          return 0;
+        }
+      })();
+
+      return {
+        ...organization,
+        credits: Number(credits)
+      };
+    }),
 });

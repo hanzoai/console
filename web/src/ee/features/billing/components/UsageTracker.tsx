@@ -19,7 +19,7 @@ export const UsageTracker = () => {
   const plan = usePlan();
   const hasAccess = useHasOrganizationAccess({
     organizationId: organization?.id,
-    scope: "langfuseCloudBilling:CRUD",
+    scope: "hanzoCloudBilling:CRUD",
   });
 
   const usageQuery = api.cloudBilling.getUsage.useQuery(

@@ -28,6 +28,14 @@ const options = {
 
 const prisma = new PrismaClient();
 
+type CloudConfig = {
+  plan?: string;
+  stripe?: {
+    customerId?: string;
+    activeSubscriptionId?: string;
+  };
+};
+
 async function main() {
   const environment = parseArgs({
     options,
@@ -68,17 +76,25 @@ async function main() {
     },
   });
 
+  const cloudConfig: CloudConfig = {
+    plan: "Team",
+    ...(process.env.STRIPE_CUSTOMER_ID ? { 
+      stripe: { 
+        customerId: process.env.STRIPE_CUSTOMER_ID 
+      } 
+    } : {})
+  };
+
   await prisma.organization.upsert({
     where: { id: seedOrgId },
     update: {
       name: "Seed Org",
+      cloudConfig,
     },
     create: {
       id: seedOrgId,
       name: "Seed Org",
-      cloudConfig: {
-        plan: "Team",
-      },
+      cloudConfig,
     },
   });
 
@@ -1238,7 +1254,7 @@ function getGenerationInputOutput(): {
       {
         role: "user",
         content: [
-          { text: "What’s depicted in this image?", type: "text" },
+          { text: "What's depicted in this image?", type: "text" },
           {
             type: "image_url",
             image_url: {

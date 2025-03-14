@@ -5,7 +5,7 @@ import { logger } from "@langfuse/shared/src/server";
 export const createStripeClientReference = (orgId: string) => {
   if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
     logger.error(
-      "Returning null stripeCustomerReference, you cannot run the checkout page outside of Langfuse Cloud",
+      "Returning null stripeCustomerReference, you cannot run the checkout page outside of Hanzo Cloud",
     );
     return null;
   }

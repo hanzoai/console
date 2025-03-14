@@ -43,7 +43,12 @@ yarn-error.log*
 
 # vercel
 .vercel
-
+#aider
+.aider
+/aider-cache
+/myenv
+.aider.*
+/.aider.tags.chache.v3
 # typescript
 *.tsbuildinfo
 

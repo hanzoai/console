@@ -139,7 +139,7 @@ export const ROUTES: Route[] = [
     pathname: "/project/[projectId]/settings/billing",
     bottom: true,
     entitlements: ["cloud-billing"],
-    organizationRbacScope: "langfuseCloudBilling:CRUD",
+    organizationRbacScope: "hanzoCloudBilling:CRUD",
     show: ({ organization }) => organization?.plan === "cloud:hobby",
   },
   {
@@ -148,7 +148,7 @@ export const ROUTES: Route[] = [
     pathname: "/organization/[organizationId]/settings/billing",
     bottom: true,
     entitlements: ["cloud-billing"],
-    organizationRbacScope: "langfuseCloudBilling:CRUD",
+    organizationRbacScope: "hanzoCloudBilling:CRUD",
     show: ({ organization }) => organization?.plan === "cloud:hobby",
   },
   {

@@ -75,6 +75,24 @@ export const JobExecutionStatus = {
     CANCELLED: "CANCELLED"
 } as const;
 export type JobExecutionStatus = (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
+export const UsageMeterType = {
+    AI: "AI",
+    STORAGE: "STORAGE",
+    NETWORK: "NETWORK",
+    NETWORK_EGRESS: "NETWORK_EGRESS",
+    GPU: "GPU",
+    CPU: "CPU",
+    MEMORY: "MEMORY"
+} as const;
+export type UsageMeterType = (typeof UsageMeterType)[keyof typeof UsageMeterType];
+export const UsageAggregationMethod = {
+    SUM: "SUM",
+    AVERAGE: "AVERAGE",
+    MAX: "MAX",
+    MIN: "MIN",
+    LAST: "LAST"
+} as const;
+export type UsageAggregationMethod = (typeof UsageAggregationMethod)[keyof typeof UsageAggregationMethod];
 export type Account = {
     id: string;
     user_id: string;
@@ -427,6 +445,14 @@ export type Organization = {
     created_at: Generated<Timestamp>;
     updated_at: Generated<Timestamp>;
     cloud_config: unknown | null;
+    credits: Generated<number>;
+    stripe_customer_id: string | null;
+    subscription_id: string | null;
+    subscription_status: string | null;
+    current_period_end: Timestamp | null;
+    current_subscription_id: string | null;
+    current_subscription_plan: string | null;
+    last_subscription_change_at: Timestamp | null;
 };
 export type OrganizationMembership = {
     id: string;
@@ -518,6 +544,79 @@ export type SsoConfig = {
     auth_provider: string;
     auth_config: unknown | null;
 };
+export type StripeCheckoutSession = {
+    id: string;
+    stripeSessionId: string;
+    organizationId: string;
+    customerId: string | null;
+    mode: string;
+    status: string | null;
+    amountTotal: string | null;
+    currency: string | null;
+    paymentStatus: string | null;
+    metadata: unknown | null;
+    completedAt: Timestamp | null;
+    subscriptionId: string | null;
+    createdAt: Generated<Timestamp>;
+    stripeSubscriptionId: string | null;
+};
+export type StripeCustomer = {
+    id: string;
+    organization_id: string;
+    stripe_customer_id: string;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type StripeInvoice = {
+    id: string;
+    stripe_invoice_id: string;
+    stripe_customer_id: string;
+    organization_id: string | null;
+    amount: number;
+    currency: string;
+    status: string;
+    pdf_url: string | null;
+    due_date: Timestamp | null;
+    period_start: Timestamp;
+    period_end: Timestamp;
+    metadata: unknown | null;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type StripePaymentMethod = {
+    id: string;
+    stripe_payment_method_id: string;
+    stripe_customer_id: string;
+    organization_id: string | null;
+    type: string;
+    brand: string | null;
+    last4: string | null;
+    exp_month: number | null;
+    exp_year: number | null;
+    is_default: Generated<boolean>;
+    metadata: unknown | null;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type StripeSubscription = {
+    id: string;
+    stripe_subscription_id: string;
+    stripe_customer_id: string;
+    organization_id: string | null;
+    status: string;
+    plan: string;
+    current_period_start: Timestamp;
+    current_period_end: Timestamp;
+    cancel_at_period_end: Generated<boolean>;
+    canceled_at: Timestamp | null;
+    metadata: unknown | null;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type Subscription = {
+    id: string;
+    organization_id: string;
+};
 export type TraceMedia = {
     id: string;
     project_id: string;
@@ -535,6 +634,28 @@ export type TraceSession = {
     bookmarked: Generated<boolean>;
     public: Generated<boolean>;
     environment: Generated<string>;
+};
+export type UsageMeter = {
+    id: string;
+    organization_id: string;
+    name: string;
+    type: UsageMeterType;
+    unit: string;
+    aggregation_method: UsageAggregationMethod;
+    currentValue: Generated<number>;
+    last_reset_at: Timestamp | null;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type UsageRecord = {
+    id: string;
+    organization_id: string;
+    usage_meter_id: string;
+    value: number;
+    timestamp: Generated<Timestamp>;
+    metadata: unknown | null;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
 };
 export type User = {
     id: string;
@@ -589,9 +710,17 @@ export type DB = {
     scores: LegacyPrismaScore;
     Session: Session;
     sso_configs: SsoConfig;
+    stripe_customers: StripeCustomer;
+    stripe_invoices: StripeInvoice;
+    stripe_payment_methods: StripePaymentMethod;
+    stripe_subscriptions: StripeSubscription;
+    StripeCheckoutSession: StripeCheckoutSession;
+    subscriptions: Subscription;
     trace_media: TraceMedia;
     trace_sessions: TraceSession;
     traces: LegacyPrismaTrace;
+    usage_meters: UsageMeter;
+    usage_records: UsageRecord;
     users: User;
     verification_tokens: VerificationToken;
 };

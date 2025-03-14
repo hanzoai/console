@@ -1,10 +1,13 @@
 export const planLabels = {
   oss: "OSS",
-  "cloud:hobby": "Hobby",
+  "cloud:credits": "Credits",
   "cloud:pro": "Pro",
   "cloud:team": "Team",
+  "cloud:dev": "Dev",
+  "self-hosted:credits": "Credits (self-hosted)",
   "self-hosted:pro": "Pro (self-hosted)",
-  "self-hosted:enterprise": "Enterprise (self-hosted)",
+  "self-hosted:team": "Team (self-hosted)",
+  "self-hosted:dev": "Dev (self-hosted)",
 } as const;
 
 export type Plan = keyof typeof planLabels;
