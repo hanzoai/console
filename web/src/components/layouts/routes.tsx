@@ -140,7 +140,7 @@ export const ROUTES: Route[] = [
     bottom: true,
     entitlements: ["cloud-billing"],
     organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:hobby",
+    show: ({ organization }) => organization?.plan === "cloud:free",
   },
   {
     title: "Upgrade",
@@ -149,7 +149,7 @@ export const ROUTES: Route[] = [
     bottom: true,
     entitlements: ["cloud-billing"],
     organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:hobby",
+    show: ({ organization }) => organization?.plan === "cloud:free",
   },
   {
     title: "Settings",

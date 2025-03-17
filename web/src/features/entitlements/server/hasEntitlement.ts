@@ -5,6 +5,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
 import { type Plan } from "@langfuse/shared";
+import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
 type HasEntitlementParams = {
   entitlement: Entitlement;
@@ -15,15 +16,39 @@ type HasEntitlementParams = {
  * Check if user has access to a specific entitlement based on the session user (to be used server-side).
  */
 export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
-  if (p.sessionUser.admin) return true;
-  const org =
-    "projectId" in p
-      ? p.sessionUser.organizations.find((org) =>
-          org.projects.some((proj) => proj.id === p.projectId),
-        )
-      : p.sessionUser.organizations.find((org) => org.id === p.orgId);
-  const plan = org?.plan ?? "oss";
-  return hasEntitlementBasedOnPlan({ plan, entitlement: p.entitlement });
+  try {
+    // If user is admin, they have all entitlements
+    if (p.sessionUser.admin) return true;
+
+    // Find the relevant organization
+    const org =
+      "projectId" in p
+        ? p.sessionUser.organizations?.find((org) =>
+            org.projects?.some((proj) => proj.id === p.projectId),
+          )
+        : p.sessionUser.organizations?.find((org) => org.id === p.orgId);
+
+    // If no organization found, return false
+    if (!org) return false;
+
+    // Use getOrganizationPlanServerSide to get the plan
+    const rawPlan = org.plan;
+    
+    // Convert the plan using similar logic as getOrganizationPlanServerSide
+    let plan: Plan;
+    if (rawPlan?.toUpperCase() === "PRO") {
+      plan = "cloud:pro";
+    } else if (rawPlan?.toUpperCase() === "TEAM" || rawPlan?.toUpperCase() === "DEV") {
+      plan = "cloud:dev";
+    } else {
+      plan = "cloud:free";
+    }
+
+    return hasEntitlementBasedOnPlan({ plan, entitlement: p.entitlement });
+  } catch (error) {
+    console.error("Error in hasEntitlement:", error);
+    return false;
+  }
 };
 
 /**
@@ -36,8 +61,27 @@ export const hasEntitlementBasedOnPlan = ({
   plan: Plan | null;
   entitlement: Entitlement;
 }) => {
-  if (!plan) return false;
-  return entitlementAccess[plan].entitlements.includes(entitlement);
+  try {
+    // If no plan, return false
+    if (!plan) return false;
+
+    // Check if the plan exists in entitlementAccess
+    if (!(plan in entitlementAccess)) {
+      console.warn(`Plan ${plan} not found in entitlementAccess`);
+      return false;
+    }
+
+    // Check if entitlements exist for the plan
+    if (!entitlementAccess[plan]?.entitlements) {
+      console.warn(`No entitlements found for plan ${plan}`);
+      return false;
+    }
+
+    return entitlementAccess[plan].entitlements.includes(entitlement);
+  } catch (error) {
+    console.error("Error in hasEntitlementBasedOnPlan:", error);
+    return false;
+  }
 };
 
 export const throwIfNoEntitlement = (p: HasEntitlementParams) => {
@@ -50,3 +94,5 @@ export const throwIfNoEntitlement = (p: HasEntitlementParams) => {
     });
   }
 };
+
+

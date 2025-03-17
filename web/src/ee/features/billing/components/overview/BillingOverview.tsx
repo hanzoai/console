@@ -152,51 +152,7 @@ export const BillingOverview = () => {
           View Pricing
         </Button>
       </Card>
-
-      {/* Invoices Card */}
-      <Card className="p-6 md:col-span-3">
-        <h3 className="text-sm font-medium text-muted-foreground mb-4">
-          Subscription History
-        </h3>
-        <div className="space-y-4">
-          {subscriptionHistory?.subscriptions && subscriptionHistory.subscriptions.length > 0 ? (
-            subscriptionHistory.subscriptions.map((sub) => (
-              <div 
-                key={sub.id} 
-                className="flex justify-between items-center border-b pb-2 last:border-b-0"
-              >
-                <div>
-                  <p className="text-sm font-medium">{sub.plan.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {sub.currentPeriodStart.toLocaleDateString()} - {sub.currentPeriodEnd.toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">
-                    Plan: {sub.plan.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground capitalize">
-                    {sub.status}
-                  </p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No subscription history available.
-            </p>
-          )}
-          {subscriptionHistory?.hasMore && (
-            <Button 
-              variant="link" 
-              className="w-full mt-2"
-              onClick={() => {/* TODO: Implement full history view */}}
-            >
-              View Full History
-            </Button>
-          )}
-        </div>
-      </Card>
+    
 
       <PlanSelectionModal 
         isOpen={isPlanModalOpen}

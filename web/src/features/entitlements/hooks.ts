@@ -27,7 +27,7 @@ export const usePlan = (): Plan | undefined => {
     const org = session.data?.user?.organizations.find(
       (org) => org.id === organizationId,
     );
-    return org?.plan ?? "oss";
+    return org?.plan ?? "cloud:free";
   }
 
   // if on a project page, get the plan of the organization that the project belongs to
@@ -35,10 +35,10 @@ export const usePlan = (): Plan | undefined => {
     const org = session.data?.user?.organizations.find((org) =>
       org.projects.some((proj) => proj.id === projectId),
     );
-    return org?.plan ?? "oss";
+    return org?.plan ?? "cloud:free";
   }
 
-  return undefined;
+  return "cloud:free";
 };
 
 /**
@@ -46,8 +46,8 @@ export const usePlan = (): Plan | undefined => {
  */
 export const useEntitlements = (): Entitlement[] => {
   const plan = usePlan();
-  const availableEntitlements = entitlementAccess[plan ?? "oss"].entitlements;
-  return availableEntitlements;
+  console.log("plan=======================", plan);
+  return entitlementAccess["cloud:free"].entitlements;
 };
 
 /**
@@ -66,7 +66,7 @@ export const useHasEntitlement = (entitlement: Entitlement): boolean => {
  */
 export const useEntitlementLimits = (): EntitlementLimits => {
   const plan = usePlan();
-  return entitlementAccess[plan ?? "oss"].entitlementLimits;
+  return entitlementAccess[plan ?? "cloud:free"].entitlementLimits;
 };
 
 /**

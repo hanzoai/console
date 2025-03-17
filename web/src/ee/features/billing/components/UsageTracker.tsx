@@ -40,7 +40,7 @@ export const UsageTracker = () => {
     !usageQuery.data ||
     !hasAccess ||
     !hasEntitlement ||
-    plan !== "cloud:hobby"
+    plan !== "cloud:free"
   ) {
     return null;
   }

@@ -9,7 +9,6 @@ export const InvoiceHistory = () => {
   const router = useRouter();
   const orgId = router.query.organizationId as string | undefined;
 
-  console.log("orgId=============", orgId);
   const { data: subscriptionHistory, isLoading } = api.cloudBilling.getSubscriptionHistory.useQuery(
     { 
       orgId: orgId || '', 
@@ -82,21 +81,23 @@ export const InvoiceHistory = () => {
                 <tr className="border-b">
                   <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Invoice</th>
                   <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Plan</th>
-                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Date</th>
+                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Billing Period</th>
                   <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Amount</th>
                   <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Status</th>
                   <th className="pb-2 text-right text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {subscriptionHistory?.subscriptions.map((subscription) => (
+                {subscriptionHistory?.subscriptions?.map((subscription: any) => (
                   <tr key={subscription.id} className="border-b">
                     <td className="py-4 text-sm">
-                      {(subscription as any).latestInvoice?.number || subscription.id}
+                      {subscription.latestInvoice?.number || subscription.id}
                     </td>
                     <td className="py-4 text-sm">{subscription.plan.name}</td>
                     <td className="py-4 text-sm">
-                      {subscription.currentPeriodStart.toLocaleDateString()}
+                      {subscription.plan.billingPeriod
+                        ? `${new Date(subscription.plan.billingPeriod.start).toLocaleDateString()} - ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`
+                        : 'N/A'}
                     </td>
                     <td className="py-4 text-sm">
                       ${(subscription.plan as any).amount?.toFixed(2) ?? 'N/A'}

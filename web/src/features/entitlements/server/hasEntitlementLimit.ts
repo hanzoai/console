@@ -27,7 +27,7 @@ export const hasEntitlementLimit = (
         )
       : p.sessionUser.organizations.find((org) => org.id === p.orgId);
 
-  const plan = org?.plan ?? "oss";
+  const plan = org?.plan ?? "cloud:free";
   return hasEntitlementLimitBasedOnPlan({
     plan,
     entitlementLimit: p.entitlementLimit,
@@ -41,7 +41,7 @@ export const hasEntitlementLimitBasedOnPlan = ({
   plan: Plan | null;
   entitlementLimit: EntitlementLimit;
 }) => {
-  return entitlementAccess[plan ?? "oss"].entitlementLimits[entitlementLimit];
+  return entitlementAccess[plan ?? "cloud:free"].entitlementLimits[entitlementLimit];
 };
 
 /**

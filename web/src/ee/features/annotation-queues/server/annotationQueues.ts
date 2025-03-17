@@ -328,13 +328,13 @@ export const queueRouter = createTRPCRouter({
           scope: "annotationQueues:CUD",
         });
 
-        // gate usage on cloud:hobby
+        // gate usage on cloud:free
         const org = ctx.session.user.organizations.find((org) =>
           org.projects.some((proj) => proj.id === input.projectId),
         );
         const plan = org?.plan ?? "oss";
 
-        if (plan === "cloud:hobby") {
+        if (plan === "cloud:free") {
           if (
             (await ctx.prisma.annotationQueue.count({
               where: {

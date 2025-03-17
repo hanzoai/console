@@ -442,17 +442,8 @@ export type ObservationMedia = {
 export type Organization = {
     id: string;
     name: string;
-    created_at: Generated<Timestamp>;
-    updated_at: Generated<Timestamp>;
-    cloud_config: unknown | null;
     credits: Generated<number>;
-    stripe_customer_id: string | null;
-    subscription_id: string | null;
-    subscription_status: string | null;
-    current_period_end: Timestamp | null;
-    current_subscription_id: string | null;
-    current_subscription_plan: string | null;
-    last_subscription_change_at: Timestamp | null;
+    cloud_config: unknown | null;
 };
 export type OrganizationMembership = {
     id: string;
@@ -543,79 +534,6 @@ export type SsoConfig = {
     updated_at: Generated<Timestamp>;
     auth_provider: string;
     auth_config: unknown | null;
-};
-export type StripeCheckoutSession = {
-    id: string;
-    stripeSessionId: string;
-    organizationId: string;
-    customerId: string | null;
-    mode: string;
-    status: string | null;
-    amountTotal: string | null;
-    currency: string | null;
-    paymentStatus: string | null;
-    metadata: unknown | null;
-    completedAt: Timestamp | null;
-    subscriptionId: string | null;
-    createdAt: Generated<Timestamp>;
-    stripeSubscriptionId: string | null;
-};
-export type StripeCustomer = {
-    id: string;
-    organization_id: string;
-    stripe_customer_id: string;
-    created_at: Generated<Timestamp>;
-    updated_at: Generated<Timestamp>;
-};
-export type StripeInvoice = {
-    id: string;
-    stripe_invoice_id: string;
-    stripe_customer_id: string;
-    organization_id: string | null;
-    amount: number;
-    currency: string;
-    status: string;
-    pdf_url: string | null;
-    due_date: Timestamp | null;
-    period_start: Timestamp;
-    period_end: Timestamp;
-    metadata: unknown | null;
-    created_at: Generated<Timestamp>;
-    updated_at: Generated<Timestamp>;
-};
-export type StripePaymentMethod = {
-    id: string;
-    stripe_payment_method_id: string;
-    stripe_customer_id: string;
-    organization_id: string | null;
-    type: string;
-    brand: string | null;
-    last4: string | null;
-    exp_month: number | null;
-    exp_year: number | null;
-    is_default: Generated<boolean>;
-    metadata: unknown | null;
-    created_at: Generated<Timestamp>;
-    updated_at: Generated<Timestamp>;
-};
-export type StripeSubscription = {
-    id: string;
-    stripe_subscription_id: string;
-    stripe_customer_id: string;
-    organization_id: string | null;
-    status: string;
-    plan: string;
-    current_period_start: Timestamp;
-    current_period_end: Timestamp;
-    cancel_at_period_end: Generated<boolean>;
-    canceled_at: Timestamp | null;
-    metadata: unknown | null;
-    created_at: Generated<Timestamp>;
-    updated_at: Generated<Timestamp>;
-};
-export type Subscription = {
-    id: string;
-    organization_id: string;
 };
 export type TraceMedia = {
     id: string;
@@ -710,12 +628,6 @@ export type DB = {
     scores: LegacyPrismaScore;
     Session: Session;
     sso_configs: SsoConfig;
-    stripe_customers: StripeCustomer;
-    stripe_invoices: StripeInvoice;
-    stripe_payment_methods: StripePaymentMethod;
-    stripe_subscriptions: StripeSubscription;
-    StripeCheckoutSession: StripeCheckoutSession;
-    subscriptions: Subscription;
     trace_media: TraceMedia;
     trace_sessions: TraceSession;
     traces: LegacyPrismaTrace;
