@@ -92,7 +92,7 @@ describe("Authenticate API calls", () => {
 
       if (auth.validKey) {
         expect(auth.scope.orgId).toBe("seed-org-id");
-        expect(auth.scope.plan).toBe("cloud:hobby");
+        expect(auth.scope.plan).toBe("cloud:free");
         expect(auth.scope.rateLimitOverrides).toEqual([]);
       }
 
@@ -146,7 +146,7 @@ describe("Authenticate API calls", () => {
 
       if (auth.validKey) {
         expect(auth.scope.orgId).toBe("seed-org-id");
-        expect(auth.scope.plan).toBe("cloud:hobby");
+        expect(auth.scope.plan).toBe("cloud:free");
         expect(auth.scope.rateLimitOverrides).toEqual([
           {
             resource: "ingestion",
@@ -305,7 +305,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         ...apiKey,
         orgId: "seed-org-id",
-        plan: "cloud:hobby",
+        plan: "cloud:free",
         rateLimitOverrides: [
           {
             resource: "public-api",
@@ -431,7 +431,7 @@ describe("Authenticate API calls", () => {
         expiresAt: null,
         projectId: expect.any(String),
         orgId: "seed-org-id",
-        plan: "cloud:hobby",
+        plan: "cloud:free",
       });
     });
 
@@ -521,7 +521,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         ...apiKey,
         orgId: "seed-org-id",
-        plan: "cloud:hobby",
+        plan: "cloud:free",
         createdAt: apiKey?.createdAt.toISOString(),
       });
 

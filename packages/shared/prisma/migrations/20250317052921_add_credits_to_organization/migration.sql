@@ -12,7 +12,11 @@ CREATE TYPE "UsageMeterType" AS ENUM ('AI', 'STORAGE', 'NETWORK', 'NETWORK_EGRES
 CREATE TYPE "UsageAggregationMethod" AS ENUM ('SUM', 'AVERAGE', 'MAX', 'MIN', 'LAST');
 
 -- AlterTable
-ALTER TABLE "organizations" ADD COLUMN     "current_period_end" TIMESTAMP(3),
+ALTER TABLE "organizations" ADD COLUMN     "credits" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "current_period_end" TIMESTAMP(3),
+ADD COLUMN     "current_subscription_id" TEXT,
+ADD COLUMN     "current_subscription_plan" TEXT,
+ADD COLUMN     "last_subscription_change_at" TIMESTAMP(3),
 ADD COLUMN     "stripe_customer_id" TEXT,
 ADD COLUMN     "subscription_id" TEXT,
 ADD COLUMN     "subscription_status" TEXT;
@@ -124,6 +128,26 @@ CREATE TABLE "usage_records" (
     CONSTRAINT "usage_records_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "StripeCheckoutSession" (
+    "id" TEXT NOT NULL,
+    "stripeSessionId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "customerId" TEXT,
+    "mode" TEXT NOT NULL,
+    "status" TEXT,
+    "amountTotal" DECIMAL(65,30),
+    "currency" TEXT,
+    "paymentStatus" TEXT,
+    "metadata" JSONB,
+    "completedAt" TIMESTAMP(3),
+    "subscriptionId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "stripeSubscriptionId" TEXT,
+
+    CONSTRAINT "StripeCheckoutSession_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "stripe_customers_organization_id_key" ON "stripe_customers"("organization_id");
 
@@ -150,6 +174,9 @@ CREATE UNIQUE INDEX "organizations_stripe_customer_id_key" ON "organizations"("s
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_subscription_id_key" ON "organizations"("subscription_id");
+
+-- AddForeignKey
+ALTER TABLE "organizations" ADD CONSTRAINT "organizations_stripe_customer_id_fkey" FOREIGN KEY ("stripe_customer_id") REFERENCES "stripe_customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -183,3 +210,12 @@ ALTER TABLE "usage_records" ADD CONSTRAINT "usage_records_organization_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "usage_records" ADD CONSTRAINT "usage_records_usage_meter_id_fkey" FOREIGN KEY ("usage_meter_id") REFERENCES "usage_meters"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StripeCheckoutSession" ADD CONSTRAINT "StripeCheckoutSession_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "stripe_customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StripeCheckoutSession" ADD CONSTRAINT "StripeCheckoutSession_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StripeCheckoutSession" ADD CONSTRAINT "StripeCheckoutSession_stripeSubscriptionId_fkey" FOREIGN KEY ("stripeSubscriptionId") REFERENCES "stripe_subscriptions"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -1,10 +1,8 @@
 export const planLabels = {
-  oss: "OSS",
-  "cloud:credits": "Credits",
+  "cloud:free": "Free",
   "cloud:pro": "Pro",
   "cloud:team": "Team",
   "cloud:dev": "Dev",
-  "self-hosted:credits": "Credits (self-hosted)",
   "self-hosted:pro": "Pro (self-hosted)",
   "self-hosted:team": "Team (self-hosted)",
   "self-hosted:dev": "Dev (self-hosted)",

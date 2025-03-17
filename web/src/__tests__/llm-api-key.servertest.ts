@@ -18,22 +18,28 @@ describe("llmApiKey.all RPC", () => {
     user: {
       id: "user-1",
       name: "Demo User",
+      canCreateOrganizations: true,
       organizations: [
         {
           id: "seed-org-id",
+          name: "Test Organization",
           role: "OWNER",
-          plan: "cloud:hobby",
+          plan: "cloud:free",
           cloudConfig: undefined,
           projects: [
             {
               id: projectId,
+              name: "Test Project",
               role: "ADMIN",
+              deletedAt: null,
+              retentionDays: null,
             },
           ],
         },
       ],
       featureFlags: {
         templateFlag: true,
+        excludeClickhouseRead: false,
       },
       admin: true,
     },

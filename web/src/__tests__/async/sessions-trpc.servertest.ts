@@ -30,7 +30,7 @@ describe("traces trpc", () => {
           id: "seed-org-id",
           name: "Test Organization",
           role: "OWNER",
-          plan: "cloud:hobby",
+          plan: "cloud:free",
           cloudConfig: undefined,
           projects: [
             {

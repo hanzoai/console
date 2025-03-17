@@ -42,7 +42,7 @@ describe("RateLimitService", () => {
       resource: "public-api" as const,
       scope: {
         orgId: orgId,
-        plan: "cloud:hobby" as const,
+        plan: "cloud:free" as const,
         projectId: "test-project-id",
         accessLevel: "all" as const,
         rateLimitOverrides: [],
@@ -64,7 +64,7 @@ describe("RateLimitService", () => {
   it("should rate limit", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [],
@@ -97,7 +97,7 @@ describe("RateLimitService", () => {
   it("should increment the rate limit count", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [],
@@ -123,7 +123,7 @@ describe("RateLimitService", () => {
   it("should reset the rate limit count after the window expires", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [
@@ -173,7 +173,7 @@ describe("RateLimitService", () => {
   it("should return false when rate limit is exceeded", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [
@@ -204,7 +204,7 @@ describe("RateLimitService", () => {
   it("should apply rate limits with override for specific resource", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [
@@ -230,7 +230,7 @@ describe("RateLimitService", () => {
   it("should not apply rate limits for resource prompts", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [
@@ -249,7 +249,7 @@ describe("RateLimitService", () => {
   it("should not apply rate limits for ingestion when overridden to null in API key", async () => {
     const scope = {
       orgId: orgId,
-      plan: "cloud:hobby" as const,
+      plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [
@@ -268,7 +268,7 @@ describe("RateLimitService", () => {
   // it("should not apply rate limits when redis is not defined", async () => {
   //   const scope = {
   //     orgId: orgId,
-  //     plan: "cloud:hobby" as const,
+  //     plan: "cloud:free" as const,
   //     projectId: "test-project-id",
   //     accessLevel: "all" as const,
   //     rateLimitOverrides: [
@@ -287,7 +287,7 @@ describe("RateLimitService", () => {
   it("should not apply rate limits for OSS plan", async () => {
     const scope = {
       orgId: orgId,
-      plan: "oss" as const,
+      plan: "self-hosted:pro" as const,
       projectId: "test-project-id",
       accessLevel: "all" as const,
       rateLimitOverrides: [],

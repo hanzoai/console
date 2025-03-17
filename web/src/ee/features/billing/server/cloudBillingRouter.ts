@@ -29,8 +29,7 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      console.log("Create Checkout Session Input:", input);
-      console.log("Session User:", ctx.session.user);
+      
 
       try {
         // Access checks
@@ -49,7 +48,6 @@ export const cloudBillingRouter = createTRPCRouter({
         const org = await ctx.prisma.organization.findUnique({
           where: { id: input.orgId },
         });
-        console.log("Organization Found:", !!org);
 
         if (!org) {
           throw new TRPCError({
@@ -60,7 +58,6 @@ export const cloudBillingRouter = createTRPCRouter({
 
         // Parse organization configuration
         const parsedOrg = parseDbOrg(org);
-        console.log("Parsed Org Cloud Config:", parsedOrg.cloudConfig);
 
         // Stripe client check
         if (!stripeClient) {
@@ -72,7 +69,6 @@ export const cloudBillingRouter = createTRPCRouter({
 
         // Product validation
         const validProducts = stripeProducts.filter(product => product.checkout);
-        console.log("Valid Products:", validProducts.map(p => p.stripeProductId));
 
         const isValidProduct = validProducts.some(
           product => product.stripeProductId === input.stripeProductId
@@ -87,7 +83,6 @@ export const cloudBillingRouter = createTRPCRouter({
 
         // Retrieve Stripe product
         const product = await stripeClient.products.retrieve(input.stripeProductId);
-        console.log("Retrieved Product:", product);
 
         // Retrieve the default price and verify its type
         if (!product.default_price) {
@@ -98,24 +93,19 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         const price = await stripeClient.prices.retrieve(product.default_price as string);
-        console.log("Price Details:", price);
 
         // Determine the checkout mode based on price type
         const checkoutMode = price.type === 'recurring' 
           ? 'subscription' 
           : 'payment';
-
-        console.log("Checkout Mode:", checkoutMode);
-
+          console.log("checkoutMode==========sdfafasdf===", checkoutMode);
         // Determine customer ID
         const stripeCustomerId = 
           parsedOrg.cloudConfig?.stripe?.customerId || 
           await createStripeCustomerForOrg(ctx.prisma, org);
-        console.log("Stripe Customer ID:", stripeCustomerId);
 
         // Use the custom email if provided, otherwise fall back to session email
         const customerEmail = input.customerEmail || ctx.session.user.email;
-        console.log("Customer Email:", customerEmail);
 
         // Create checkout session
         const returnUrl = `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`;
@@ -146,10 +136,8 @@ export const cloudBillingRouter = createTRPCRouter({
           sessionConfig.customer_email = customerEmail;
         }
 
-        console.log("Stripe Session Config:", sessionConfig);
 
         const session = await stripeClient.checkout.sessions.create(sessionConfig);
-        console.log("Created Stripe Session:", session);
 
         // Audit logging
         auditLog({
@@ -166,7 +154,6 @@ export const cloudBillingRouter = createTRPCRouter({
           sessionId: session.id,
         };
       } catch (error) {
-        console.error("Full Checkout Session Error:", error);
         
         // Log additional details about the error
         if (error instanceof Error) {
@@ -351,13 +338,9 @@ export const cloudBillingRouter = createTRPCRouter({
       let stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
       
       // Fetch subscriptions separately
-      const subscriptions = await ctx.prisma.stripeSubscription.findMany({
-        where: { organizationId: input.orgId }
-      });
-
+      
       let stripeSubscriptionId =
-        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId ||
-        subscriptions[0]?.stripeSubscriptionId;
+        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId
 
       if (!stripeCustomerId || !stripeSubscriptionId) {
         // Do not create a new customer if the org is on a plan (assigned manually)
@@ -379,108 +362,127 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      throwIfNoEntitlement({
-        entitlement: "cloud-billing",
-        sessionUser: ctx.session.user,
-        orgId: input.orgId,
-      });
-      throwIfNoOrganizationAccess({
-        organizationId: input.orgId,
-        scope: "hanzoCloudBilling:CRUD",
-        session: ctx.session,
-      });
 
-      const organization = await ctx.prisma.organization.findUnique({
-        where: {
-          id: input.orgId,
-        },
-        include: {
-          projects: {
-            select: {
-              id: true,
+      try {
+        throwIfNoEntitlement({
+          entitlement: "cloud-billing",
+          sessionUser: ctx.session.user,
+          orgId: input.orgId,
+        });
+
+        throwIfNoOrganizationAccess({
+          organizationId: input.orgId,
+          scope: "hanzoCloudBilling:CRUD",
+          session: ctx.session,
+        });
+
+        const organization = await ctx.prisma.organization.findUnique({
+          where: {
+            id: input.orgId,
+          },
+          include: {
+            projects: {
+              select: {
+                id: true,
+              },
             },
           },
-        },
-      });
-      if (!organization) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Organization not found",
         });
-      }
-      const parsedOrg = parseDbOrg(organization);
 
-      // For Stripe subscriptions, we can get usage from the Stripe Metered Billing API
-      if (
-        stripeClient &&
-        parsedOrg.cloudConfig?.stripe?.customerId &&
-        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId
-      ) {
-        const subscription = await stripeClient.subscriptions.retrieve(
-          parsedOrg.cloudConfig.stripe.activeSubscriptionId,
-        );
-        if (subscription) {
-          const billingPeriod = {
-            start: new Date(subscription.current_period_start * 1000),
-            end: new Date(subscription.current_period_end * 1000),
-          };
+        if (!organization) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Organization not found",
+          });
+        }
 
-          try {
-            const stripeInvoice = await stripeClient.invoices.retrieveUpcoming({
-              subscription: parsedOrg.cloudConfig.stripe.activeSubscriptionId,
-            });
-            const upcomingInvoice = {
-              usdAmount: stripeInvoice.amount_due / 100,
-              date: new Date(stripeInvoice.period_end * 1000),
-            };
-            const usageInvoiceLines = stripeInvoice.lines.data.filter((line) =>
-              Boolean(line.plan?.meter),
-            );
-            const usage = usageInvoiceLines.reduce((acc, line) => {
-              if (line.quantity) {
-                return acc + line.quantity;
-              }
-              return acc;
-            }, 0);
-            // get meter for usage type (events or observations)
-            const meterId = usageInvoiceLines[0]?.plan?.meter;
-            const meter = meterId
-              ? await stripeClient.billing.meters.retrieve(meterId)
-              : undefined;
+        const parsedOrg = parseDbOrg(organization);
 
-            return {
-              usageCount: usage,
-              usageType: meter?.display_name.toLowerCase() ?? "events",
-              billingPeriod,
-              upcomingInvoice,
-            };
-          } catch (e) {
-            logger.error(
-              "Failed to get usage from Stripe, using usage from Clickhouse",
-              {
-                error: e,
-              },
-            );
+        if (
+          stripeClient &&
+          parsedOrg.cloudConfig?.stripe?.customerId &&
+          parsedOrg.cloudConfig?.stripe?.activeSubscriptionId
+        ) {
+          const subscription = await stripeClient.subscriptions.retrieve(
+            parsedOrg.cloudConfig.stripe.activeSubscriptionId,
+          );
+          if (subscription) {
+            const billingPeriod = subscription.current_period_start && subscription.current_period_end
+              ? {
+                  start: new Date(subscription.current_period_start * 1000),
+                  end: new Date(subscription.current_period_end * 1000),
+                }
+              : null;
+            try {
+              const stripeInvoice = await stripeClient.invoices.retrieveUpcoming({
+                subscription: parsedOrg.cloudConfig.stripe.activeSubscriptionId,
+              });
+
+              const upcomingInvoice = {
+                usdAmount: stripeInvoice.amount_due / 100,
+                date: new Date(stripeInvoice.period_end * 1000),
+              };
+
+              const usageInvoiceLines = stripeInvoice.lines.data.filter((line) =>
+                Boolean(line.plan?.meter),
+              );
+              const usage = usageInvoiceLines.reduce((acc, line) => {
+                if (line.quantity) {
+                  return acc + line.quantity;
+                }
+                return acc;
+              }, 0);
+
+              const meterId = usageInvoiceLines[0]?.plan?.meter;
+              const meter = meterId
+                ? await stripeClient.billing.meters.retrieve(meterId)
+                : undefined;
+              // console.log("Meter details:", meter);
+
+              return {
+                usageCount: usage,
+                usageType: meter?.display_name.toLowerCase() ?? "events",
+                billingPeriod,
+                upcomingInvoice,
+              };
+            } catch (e) {
+              console.error(
+                "Failed to get usage from Stripe, using usage from Clickhouse",
+                {
+                  error: e,
+                },
+              );
+            }
           }
         }
-      }
 
-      // Free plan, usage not tracked on Stripe
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      thirtyDaysAgo.setHours(0, 0, 0, 0);
-      const projectIds = organization.projects.map((p) => p.id);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+        const projectIds = organization.projects.map((p) => p.id);
+        console.log("Project IDs for usage calculation:", projectIds);
 
-      const countObservations =
-        await getObservationCountOfProjectsSinceCreationDate({
-          projectIds,
-          start: thirtyDaysAgo,
+        const countObservations =
+          await getObservationCountOfProjectsSinceCreationDate({
+            projectIds,
+            start: thirtyDaysAgo,
+          });
+        console.log("Count of observations:", countObservations);
+
+        return {
+          usageCount: countObservations,
+          usageType: "observations",
+        };
+      } catch (error) {
+        console.error("Error in getUsage function:", error);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error instanceof Error 
+            ? `Unexpected error: ${error.message}` 
+            : "Unknown error occurred",
         });
-
-      return {
-        usageCount: countObservations,
-        usageType: "observations",
-      };
+      }
     }),
 
   getSubscription: protectedOrganizationProcedure
@@ -640,7 +642,6 @@ export const cloudBillingRouter = createTRPCRouter({
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000),
               },
-              plan: matchedProduct.name, // Update plan name
             }
           : {
               stripe: {
@@ -651,33 +652,10 @@ export const cloudBillingRouter = createTRPCRouter({
                 currentPeriodStart: new Date(subscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(subscription.current_period_end * 1000),
               },
-              plan: matchedProduct.name,
             };
 
         // Create or update StripeSubscription record
-        await ctx.prisma.stripeSubscription.upsert({
-          where: { 
-            stripeSubscriptionId: input.stripeSubscriptionId 
-          },
-          update: {
-            status: subscription.status,
-            plan: matchedProduct.name,
-            currentPeriodStart: new Date(subscription.current_period_start * 1000),
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-            organizationId: input.orgId,
-            metadata: subscription.metadata,
-          },
-          create: {
-            stripeSubscriptionId: input.stripeSubscriptionId,
-            stripeCustomerId: subscription.customer as string,
-            status: subscription.status,
-            plan: matchedProduct.name,
-            currentPeriodStart: new Date(subscription.current_period_start * 1000),
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-            organizationId: input.orgId,
-            metadata: subscription.metadata,
-          },
-        });
+       
 
         // Update organization with new cloud config
         await ctx.prisma.organization.update({
@@ -736,6 +714,8 @@ export const cloudBillingRouter = createTRPCRouter({
           { expand: ['line_items', 'customer', 'subscription'] }
         );
 
+        console.log("session==========sdfafasdf===", session);
+
         // Validate the session
         if (session.client_reference_id !== input.orgId) {
           throw new TRPCError({
@@ -745,60 +725,22 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         // Create or get Stripe customer
-        const stripeCustomer = await ctx.prisma.stripeCustomer.upsert({
-          where: { stripeCustomerId: session.customer as string },
-          update: {},
-          create: {
-            stripeCustomerId: session.customer as string,
-            organizationId: input.orgId,
-          },
-        });
-
-        let stripeSession;
-        try {
-          stripeSession = await ctx.prisma.stripeCheckoutSession.createMany({
-            data: [{
-              stripeSessionId: session.id,
-              organizationId: input.orgId,
-              customerId: stripeCustomer.id,
-              mode: session.mode,
-              status: session.status,
-              amountTotal: session.amount_total ? session.amount_total / 100 : null,
-              currency: session.currency?.toUpperCase(),
-              paymentStatus: session.payment_status,
-              metadata: session.metadata || {},
-              completedAt: session.status === 'complete' ? new Date() : null,
-            }],
-            skipDuplicates: true // Optional: skip if record already exists
-          });
-        } catch (error) {
-          // Handle potential duplicate or constraint violations
-          console.error('Failed to create checkout session:', error);
-          // Optionally, implement fallback or retry logic
-        }
-
-        // Handle different session modes
+        
+              // Handle different session modes
         if (session.mode === 'payment') {
           // Credit purchase logic
           const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
+          console.log("amountPaid==========sdfafasdf===", amountPaid);
           
           // Update organization credits in a transaction
           const [updatedOrg, usageRecord] = await ctx.prisma.$transaction(async (tx) => {
             const org = await tx.organization.update({
               where: { id: input.orgId },
-              data: {
-                cloudConfig: {
-                  update: {
-                    credits: {
-                      increment: amountPaid
-                    }
-                  }
-                }
-              },
-              select: {
-                id: true,
-                cloudConfig: true
-              }
+              data: {              
+                credits: {
+                  increment: amountPaid
+                }                
+              },              
             });
 
             const record = await tx.usageRecord.create({
@@ -816,13 +758,7 @@ export const cloudBillingRouter = createTRPCRouter({
             return [org, record];
           });
 
-          // Update checkout session record
-          await ctx.prisma.stripeCheckoutSession.update({
-            where: { id: session.id },
-            data: {
-              completedAt: new Date(),
-            },
-          });
+          
 
           const credits = (updatedOrg.cloudConfig as any)?.credits || 0;
 
@@ -854,50 +790,12 @@ export const cloudBillingRouter = createTRPCRouter({
           const product = await stripeClient.products.retrieve(productId);
 
           // Create subscription record and update organization in a transaction
-          const [stripeSubscription] = await ctx.prisma.$transaction(async (tx) => {
-            const sub = await tx.stripeSubscription.create({
-              data: {
-                stripeSubscriptionId: subscription.id,
-                stripeCustomerId: stripeCustomer.id,
-                organizationId: input.orgId,
-                status: subscription.status,
-                plan: product.name,
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-                metadata: subscription.metadata || {},
-              },
-            });
-
-            await tx.organization.update({
-              where: { id: input.orgId },
-              data: {
-                cloudConfig: {
-                  update: {
-                    currentSubscriptionId: sub.id,
-                    currentSubscriptionPlan: product.name,
-                    subscriptionStatus: subscription.status,
-                    lastSubscriptionChangeAt: new Date(),
-                  }
-                }
-              },
-            });
-
-            return [sub];
-          });
+      
 
           // Update checkout session with subscription
-          await ctx.prisma.stripeCheckoutSession.update({
-            where: { id: session.id },
-            data: {
-              subscriptionId: stripeSubscription.id,
-              completedAt: new Date(),
-            },
-          });
-
           return {
             success: true,
             type: 'subscription',
-            subscriptionId: stripeSubscription.id,
             plan: product.name,
           };
         }
@@ -984,15 +882,19 @@ export const cloudBillingRouter = createTRPCRouter({
         const subscriptionHistory = subscriptionsResponse.data.map(subscription => {
           const firstItem = subscription.items.data[0];
           const productId = firstItem?.price?.product as string;
+          const billingPeriod = subscription.current_period_start && subscription.current_period_end
+            ? {
+              start: new Date(subscription.current_period_start * 1000),
+              end: new Date(subscription.current_period_end * 1000),
+             }
+            : null;
           return {
             id: subscription.id,
             status: subscription.status,
-            created: new Date(subscription.created * 1000),
-            currentPeriodStart: new Date(subscription.current_period_start * 1000),
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
             plan: {
               name: productDetailsMap.get(productId) || 'Unknown Plan',
               amount: firstItem?.price?.unit_amount ? firstItem.price.unit_amount / 100 : 0,
+              billingPeriod: billingPeriod,
             },
             latestInvoice: subscription.latest_invoice ? {
               id: (subscription.latest_invoice as Stripe.Invoice).id,
@@ -1010,26 +912,10 @@ export const cloudBillingRouter = createTRPCRouter({
         };
       } catch (error) {
         console.error("Error retrieving subscription history:", error);
-        
-        // Fallback to local database if Stripe API fails
-        const localSubscriptions = await ctx.prisma.stripeSubscription.findMany({
-        where: {
-            organizationId: input.orgId 
-          },
-          orderBy: { createdAt: 'desc' },
-          take: input.limit,
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve subscription history",
         });
-        return {
-          subscriptions: localSubscriptions.map(sub => ({
-            id: sub.stripeSubscriptionId,
-            status: sub.status,
-            created: sub.createdAt,
-            currentPeriodStart: sub.currentPeriodStart,
-            currentPeriodEnd: sub.currentPeriodEnd,
-            plan: { name: sub.plan || 'Unknown Plan' },
-          })),
-          hasMore: false,
-        };
       }
     }),
 
@@ -1113,8 +999,6 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      console.log("Cancel Subscription Input:", input);
-      console.log("Session User:", ctx.session.user);
 
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
@@ -1138,8 +1022,6 @@ export const cloudBillingRouter = createTRPCRouter({
         where: { id: input.orgId },
       });
 
-      console.log("Organization Found:", !!org);
-
       if (!org) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -1148,7 +1030,6 @@ export const cloudBillingRouter = createTRPCRouter({
       }
 
       const parsedOrg = parseDbOrg(org);
-      console.log("Parsed Org Cloud Config:", parsedOrg.cloudConfig);
 
       // Try to get the active subscription ID from cloud config
       let stripeSubscriptionId = 
@@ -1180,10 +1061,7 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         stripeSubscriptionId = subscriptionsResponse.data[0].id;
-        console.log("Found active subscription:", stripeSubscriptionId);
       }
-
-      console.log("Stripe Subscription ID:", stripeSubscriptionId);
 
       try {
         // Retrieve the current subscription to validate
@@ -1191,19 +1069,9 @@ export const cloudBillingRouter = createTRPCRouter({
           stripeSubscriptionId
         );
 
-        console.log("Current Subscription:", {
-          id: currentSubscription.id,
-          status: currentSubscription.status,
-          items: currentSubscription.items.data.map(item => ({
-            price: item.price.id,
-            product: item.price.product
-          }))
-        });
-
         // Validate that the current subscription matches the product being canceled
         const currentProductId = currentSubscription.items.data[0]?.price?.product;
-        console.log("Current Product ID:", currentProductId);
-        console.log("Input Product ID:", input.stripeProductId);
+
 
         if (currentProductId !== input.stripeProductId) {
           throw new TRPCError({
@@ -1286,6 +1154,7 @@ async function createStripeCustomerForOrg(prisma: PrismaClient, org: Organizatio
     where: { id: org.id },
     data: {
       cloudConfig: updatedCloudConfig,
+      credits: 5,
     },
   });
 

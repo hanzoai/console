@@ -38,6 +38,11 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
   }
 
   // check if the request is signed by stripe
+
+  // Read the request body once and store it in a variable
+  const rawBody = await req.text();
+  // Log the raw body if needed
+
   const sig = req.headers.get("stripe-signature");
   if (!sig) {
     logger.error("[Stripe Webhook] No signature");
@@ -46,7 +51,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
   let event: Stripe.Event;
   try {
     event = stripeClient.webhooks.constructEvent(
-      await req.text(),
+      rawBody,
       sig,
       env.STRIPE_WEBHOOK_SIGNING_SECRET,
     );
@@ -84,6 +89,15 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       });
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
+    case "payment_intent.succeeded":
+    case "checkout.session.completed":
+      // Add handling for credit purchases
+      const paymentObject = event.data.object;
+      logger.info("[Stripe Webhook] Start payment.succeeded", {
+        payload: paymentObject,
+      });
+      await handleCreditPurchase(paymentObject);
+      break;
     default:
       logger.warn(`Unhandled event type ${event.type}`);
   }
@@ -96,6 +110,7 @@ async function handleSubscriptionChanged(
   action: "created" | "deleted" | "updated",
 ) {
   const subscriptionId = subscription.id;
+  const subscriptionPlan = subscription.items.data[0].price.nickname;
 
   // get the checkout session from the subscription to retrieve the client reference for this subscription
   const checkoutSessionsResponse = await stripeClient?.checkout.sessions.list({
@@ -157,7 +172,6 @@ async function handleSubscriptionChanged(
   }
 
   // check subscription items
-  logger.info("subscription.items.data", { payload: subscription.items.data });
 
   if (!subscription.items.data || subscription.items.data.length !== 1) {
     logger.error(
@@ -192,7 +206,9 @@ async function handleSubscriptionChanged(
     );
     return;
   }
+  
 
+  console.log("subscription.items.data", subscriptionItem.plan.id);
   // update the cloud config with the product ID
   if (action === "created" || action === "updated") {
     await prisma.organization.update({
@@ -210,7 +226,10 @@ async function handleSubscriptionChanged(
               customerId: customerId,
             }),
           },
-        },
+        },        
+        
+        
+
       },
     });
   } else if (action === "deleted") {
@@ -221,14 +240,7 @@ async function handleSubscriptionChanged(
       data: {
         cloudConfig: {
           ...parsedOrg.cloudConfig,
-          stripe: {
-            ...parsedOrg.cloudConfig?.stripe,
-            ...CloudConfigSchema.shape.stripe.parse({
-              activeProductId: undefined,
-              activeSubscriptionId: undefined,
-              customerId: customerId,
-            }),
-          },
+          plan: subscriptionItem.price.nickname,
         },
       },
     });
@@ -238,4 +250,34 @@ async function handleSubscriptionChanged(
   await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
 
   return;
+}
+
+async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Checkout.Session) {
+  // Extract the amount paid and organization ID from the payment metadata
+  const amountPaid = 'amount_received' in payment 
+    ? payment.amount_received 
+    : (payment as Stripe.Checkout.Session).amount_total;
+  const orgId = payment.metadata?.orgId;
+
+  if (!orgId) {
+    logger.error("[Stripe Webhook] No organization ID in payment metadata");
+    return;
+  }
+
+  if (!amountPaid) {
+    logger.error("[Stripe Webhook] No amount paid found in payment");
+    return;
+  }
+
+  // Update the organization's credits
+  await prisma.organization.update({
+    where: {
+      id: orgId,
+    },
+    data: {
+      credits: {
+        increment: amountPaid/100
+      }
+    },
+  });
 }

@@ -212,15 +212,15 @@ const getPlanBasedRateLimitConfig = (
   resource: z.infer<typeof RateLimitResource>,
 ): z.infer<typeof RateLimitConfig> => {
   switch (plan) {
-    case "oss":
     case "self-hosted:pro":
-    case "self-hosted:enterprise":
+    case "self-hosted:team":
+    case "self-hosted:dev":
       return {
         resource,
         points: null,
         durationInSec: null,
       };
-    case "cloud:hobby":
+    case "cloud:free":
     case "cloud:pro":
       switch (resource) {
         case "ingestion":
@@ -292,6 +292,42 @@ const getPlanBasedRateLimitConfig = (
         default:
           const exhaustiveCheckTeam: never = resource;
           throw new Error(`Unhandled resource case: ${exhaustiveCheckTeam}`);
+      }
+    case "cloud:dev":
+      switch (resource) {
+        case "ingestion":
+          return {
+            resource: "ingestion",
+            points: 20000,
+            durationInSec: 60,
+          };
+        case "legacy-ingestion":
+          return {
+            resource: "prompts",
+            points: 400,
+            durationInSec: 60,
+          };
+        case "prompts":
+          return {
+            resource: "prompts",
+            points: null,
+            durationInSec: null,
+          };
+        case "public-api":
+          return {
+            resource: "public-api",
+            points: 1000,
+            durationInSec: 60,
+          };
+        case "public-api-metrics":
+          return {
+            resource: "public-api-metrics",
+            points: 10,
+            durationInSec: 60,
+          };
+        default:
+          const exhaustiveCheckDev: never = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheckDev}`);
       }
     default:
       const exhaustiveCheck: never = plan;

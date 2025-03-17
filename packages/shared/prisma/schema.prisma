@@ -96,51 +96,20 @@ model VerificationToken {
 }
 
 model Organization {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
-  cloudConfig Json?    @map("cloud_config")
-
   // Credits tracking
-  credits Float @default(0)
-
-  // Stripe-related fields
-  stripeCustomerId   String?   @unique @map("stripe_customer_id")
-  subscriptionId     String?   @unique @map("subscription_id")
-  subscriptionStatus String?   @map("subscription_status")
-  currentPeriodEnd   DateTime? @map("current_period_end")
+  credits     Float  @default(0)
+  cloudConfig Json?  @map("cloud_config")
 
   organizationMemberships OrganizationMembership[]
   projects                Project[]
   MembershipInvitation    MembershipInvitation[]
-
-  // Enhanced Stripe tracking
-  currentSubscriptionId    String?   @map("current_subscription_id")
-  currentSubscriptionPlan  String?   @map("current_subscription_plan")
-  lastSubscriptionChangeAt DateTime? @map("last_subscription_change_at")
-
-  // Existing Stripe relations
-  stripeSubscriptions   StripeSubscription[]    @relation("OrganizationStripeSubscriptions")
-  stripeInvoices        StripeInvoice[]         @relation("OrganizationStripeInvoices")
-  stripePaymentMethods  StripePaymentMethod[]   @relation("OrganizationStripePaymentMethods")
-  stripeCustomer        StripeCustomer?         @relation("OrganizationStripeCustomer", fields: [stripeCustomerId], references: [id])
   // Usage tracking
-  usageMeters           UsageMeter[]
-  usageRecords          UsageRecord[]
-  Subscription          Subscription[]
-  StripeCheckoutSession StripeCheckoutSession[]
-  StripeCustomer        StripeCustomer[]        @relation("StripeCustomerOrganization")
+  usageMeters             UsageMeter[]
+  UsageRecord             UsageRecord[]
 
   @@map("organizations")
-}
-
-model Subscription {
-  id             String       @id @default(cuid())
-  organizationId String       @map("organization_id")
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@map("subscriptions")
 }
 
 model Project {
@@ -992,84 +961,6 @@ model BillingMeterBackup {
   @@map("billing_meter_backups")
 }
 
-model StripeCustomer {
-  id               String                  @id @default(cuid())
-  organizationId   String                  @unique @map("organization_id")
-  organization     Organization            @relation("StripeCustomerOrganization", fields: [organizationId], references: [id], onDelete: Cascade)
-  stripeCustomerId String                  @unique @map("stripe_customer_id")
-  subscriptions    StripeSubscription[]
-  invoices         StripeInvoice[]
-  paymentMethods   StripePaymentMethod[]
-  createdAt        DateTime                @default(now()) @map("created_at")
-  updatedAt        DateTime                @default(now()) @updatedAt @map("updated_at")
-  checkoutSessions StripeCheckoutSession[]
-  Organization     Organization[]          @relation("OrganizationStripeCustomer")
-
-  @@map("stripe_customers")
-}
-
-model StripeSubscription {
-  id                   String                  @id @default(cuid())
-  stripeSubscriptionId String                  @unique @map("stripe_subscription_id")
-  stripeCustomerId     String                  @map("stripe_customer_id")
-  stripeCustomer       StripeCustomer          @relation(fields: [stripeCustomerId], references: [id], onDelete: Cascade)
-  organizationId       String?                 @map("organization_id")
-  organization         Organization?           @relation("OrganizationStripeSubscriptions", fields: [organizationId], references: [id], onDelete: SetNull)
-  status               String
-  plan                 String
-  currentPeriodStart   DateTime                @map("current_period_start")
-  currentPeriodEnd     DateTime                @map("current_period_end")
-  cancelAtPeriodEnd    Boolean                 @default(false) @map("cancel_at_period_end")
-  canceledAt           DateTime?               @map("canceled_at")
-  metadata             Json?
-  createdAt            DateTime                @default(now()) @map("created_at")
-  updatedAt            DateTime                @default(now()) @updatedAt @map("updated_at")
-  checkoutSessions     StripeCheckoutSession[]
-
-  @@map("stripe_subscriptions")
-}
-
-model StripeInvoice {
-  id               String         @id @default(cuid())
-  stripeInvoiceId  String         @unique @map("stripe_invoice_id")
-  stripeCustomerId String         @map("stripe_customer_id")
-  stripeCustomer   StripeCustomer @relation(fields: [stripeCustomerId], references: [id], onDelete: Cascade)
-  organizationId   String?        @map("organization_id")
-  organization     Organization?  @relation("OrganizationStripeInvoices", fields: [organizationId], references: [id], onDelete: SetNull)
-  amount           Float
-  currency         String
-  status           String
-  pdfUrl           String?        @map("pdf_url")
-  dueDate          DateTime?      @map("due_date")
-  periodStart      DateTime       @map("period_start")
-  periodEnd        DateTime       @map("period_end")
-  metadata         Json?
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @default(now()) @updatedAt @map("updated_at")
-
-  @@map("stripe_invoices")
-}
-
-model StripePaymentMethod {
-  id                    String         @id @default(cuid())
-  stripePaymentMethodId String         @unique @map("stripe_payment_method_id")
-  stripeCustomerId      String         @map("stripe_customer_id")
-  stripeCustomer        StripeCustomer @relation(fields: [stripeCustomerId], references: [id], onDelete: Cascade)
-  organizationId        String?        @map("organization_id")
-  organization          Organization?  @relation("OrganizationStripePaymentMethods", fields: [organizationId], references: [id], onDelete: SetNull)
-  type                  String
-  brand                 String?
-  last4                 String?
-  expMonth              Int?           @map("exp_month")
-  expYear               Int?           @map("exp_year")
-  isDefault             Boolean        @default(false) @map("is_default")
-  metadata              Json?
-  createdAt             DateTime       @default(now()) @map("created_at")
-  updatedAt             DateTime       @default(now()) @updatedAt @map("updated_at")
-
-  @@map("stripe_payment_methods")
-}
-
 model UsageMeter {
   id                String                 @id @default(cuid())
   organizationId    String                 @map("organization_id")
@@ -1120,25 +1011,4 @@ enum UsageAggregationMethod {
   MAX
   MIN
   LAST
-}
-
-model StripeCheckoutSession {
-  id              String    @id @default(cuid())
-  stripeSessionId String
-  organizationId  String
-  customerId      String?
-  mode            String
-  status          String?
-  amountTotal     Decimal?
-  currency        String?
-  paymentStatus   String?
-  metadata        Json?
-  completedAt     DateTime?
-  subscriptionId  String?
-  createdAt       DateTime  @default(now())
-
-  customer             StripeCustomer?     @relation(fields: [customerId], references: [id])
-  Organization         Organization        @relation(fields: [organizationId], references: [id])
-  StripeSubscription   StripeSubscription? @relation(fields: [stripeSubscriptionId], references: [id])
-  stripeSubscriptionId String?
 }

@@ -146,10 +146,8 @@ export const organizationsRouter = createTRPCRouter({
           id: true,
           name: true,
           cloudConfig: true,
-          stripeCustomerId: true,
-          subscriptionId: true,
-          subscriptionStatus: true,
-          currentPeriodEnd: true,
+          credits: true,
+          usageMeters: true,
         }
       });
 
@@ -161,35 +159,7 @@ export const organizationsRouter = createTRPCRouter({
       }
 
       // Extract credits from cloudConfig, default to 0 if not present
-      const credits = (() => {
-        try {
-          // Ensure cloudConfig exists and is an object
-          const config = organization.cloudConfig || {};
-          const creditsValue = typeof config === 'object' 
-            ? (config as Record<string, unknown>)?.credits 
-            : undefined;
-          
-          // Validate and convert credits
-          const parsedCredits = creditsValue !== undefined 
-            ? Number(creditsValue) 
-            : 0;
-          
-          // Log for debugging
-          console.log('Organization Credits Debug', {
-            orgId: organization.id,
-            rawCloudConfig: organization.cloudConfig,
-            extractedCredits: parsedCredits
-          });
-
-          return parsedCredits;
-        } catch (error) {
-          console.error('Error extracting credits', {
-            orgId: organization.id,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
-          return 0;
-        }
-      })();
+      const credits = organization.credits;
 
       return {
         ...organization,

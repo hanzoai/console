@@ -193,7 +193,7 @@ export const PaymentManagement = () => {
               <div className="flex items-center gap-3">
                 <div className="text-sm">
                   <p className="font-medium">
-                    {new Date(sub.currentPeriodStart).toLocaleDateString()}
+                    {sub.plan.billingPeriod ? new Date(sub.plan.billingPeriod).toLocaleDateString() : "N/A"}
                   </p>
                   <p className="text-muted-foreground">
                     {sub.plan.name}

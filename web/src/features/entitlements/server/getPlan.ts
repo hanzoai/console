@@ -18,13 +18,13 @@ export function getOrganizationPlanServerSide(
       // manual plan override
       if (cloudConfig.plan) {
         switch (cloudConfig.plan) {
-          case "Hobby":
-            return "cloud:hobby";
           case "Pro":
             return "cloud:pro";
           case "Team":
-          case "Enterprise":
-            return "cloud:team";
+          case "Dev":
+            return "cloud:dev";
+          default:
+            return "cloud:free";
         }
       }
       // stripe plan via product id
@@ -33,11 +33,11 @@ export function getOrganizationPlanServerSide(
           cloudConfig.stripe.activeProductId,
         );
         if (stripePlan) {
-          return stripePlan;
+          return stripePlan.toString() as Plan;
         }
       }
     }
-    return "cloud:hobby";
+    return "cloud:free";
   }
 
   const selfHostedPlan = getSelfHostedInstancePlanServerSide();
@@ -45,14 +45,14 @@ export function getOrganizationPlanServerSide(
     return selfHostedPlan;
   }
 
-  return "oss";
+  return "cloud:free";
 }
 
 export function getSelfHostedInstancePlanServerSide(): Plan | null {
   const licenseKey = env.LANGFUSE_EE_LICENSE_KEY;
   if (!licenseKey) return null;
   if (licenseKey.startsWith("langfuse_ee_")) {
-    return "self-hosted:enterprise";
+    return "self-hosted:pro";
   }
   if (licenseKey.startsWith("langfuse_pro_")) {
     return "self-hosted:pro";

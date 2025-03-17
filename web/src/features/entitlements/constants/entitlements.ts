@@ -53,12 +53,12 @@ export const entitlementAccess: Record<
     entitlementLimits: EntitlementLimits;
   }
 > = {
-  "cloud:hobby": {
+  "cloud:free": {  // Add new free plan
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
+      "annotation-queue-count": 0,
       "organization-member-count": 2,
-      "data-access-days": 30,
-      "annotation-queue-count": 1,
+      "data-access-days": 7,
       "model-based-evaluations-count-evaluators": 1,
       "prompt-management-count-prompts": false,
     },
@@ -88,13 +88,13 @@ export const entitlementAccess: Record<
       "prompt-management-count-prompts": false,
     },
   },
-  oss: {
-    entitlements: [...selfHostedAllPlansEntitlements],
+  "cloud:dev": {
+    entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
-      "annotation-queue-count": 0,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
+      "annotation-queue-count": 1,
+      "organization-member-count": 2,
+      "data-access-days": 30,
+      "model-based-evaluations-count-evaluators": 1,
       "prompt-management-count-prompts": false,
     },
   },
@@ -115,7 +115,7 @@ export const entitlementAccess: Record<
       "prompt-management-count-prompts": false,
     },
   },
-  "self-hosted:enterprise": {
+  "self-hosted:team": {
     entitlements: [
       ...selfHostedAllPlansEntitlements,
       "annotation-queues",
@@ -123,17 +123,34 @@ export const entitlementAccess: Record<
       "playground",
       "prompt-experiments",
       "rbac-project-roles",
-      "self-host-allowed-organization-creators",
-      "self-host-ui-customization",
       "integration-posthog",
       "audit-logs",
       "data-retention",
+      "self-host-ui-customization",
+      "self-host-allowed-organization-creators",
     ],
     entitlementLimits: {
       "annotation-queue-count": false,
       "organization-member-count": false,
       "data-access-days": false,
       "model-based-evaluations-count-evaluators": false,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  "self-hosted:dev": {
+    entitlements: [
+      ...selfHostedAllPlansEntitlements,
+      "annotation-queues",
+      "model-based-evaluations",
+      "playground",
+      "prompt-experiments",
+      "integration-posthog",
+    ],
+    entitlementLimits: {
+      "annotation-queue-count": 1,
+      "organization-member-count": 2,
+      "data-access-days": 30,
+      "model-based-evaluations-count-evaluators": 1,
       "prompt-management-count-prompts": false,
     },
   },
