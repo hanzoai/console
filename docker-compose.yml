@@ -1,5 +1,5 @@
 networks:
-  langfuse-network:
+  ai-platform_default:
     driver: bridge
 
 services:
@@ -52,7 +52,7 @@ services:
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}      
     networks:
-      - langfuse-network
+      - ai-platform_default
 
   langfuse-web:
     image: maui1209/ai-platform-web:latest
@@ -74,7 +74,7 @@ services:
       LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_NAME:-}
       LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-}
     networks:
-      - langfuse-network
+      - ai-platform_default
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -97,7 +97,7 @@ services:
       retries: 10
       start_period: 1s
     networks:
-      - langfuse-network
+      - ai-platform_default
 
   minio:
     image: minio/minio
@@ -133,7 +133,7 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - langfuse-network
+      - ai-platform_default
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -152,7 +152,7 @@ services:
     volumes:
       - langfuse_postgres_data:/var/lib/postgresql/data
     networks:
-      - langfuse-network
+      - ai-platform_default
 
 volumes:
   langfuse_postgres_data:
