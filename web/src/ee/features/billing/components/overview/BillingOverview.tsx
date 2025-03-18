@@ -6,7 +6,7 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { stripeProducts } from "@/src/ee/features/billing/utils/stripeProducts";
 import { useRouter } from "next/router";
 import { PlanSelectionModal } from "@/src/ee/features/billing/components/PlanSectionModal";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
   const router = useRouter();
@@ -37,15 +37,15 @@ export const BillingOverview = () => {
   );
 
   // Add query for subscription history
-  const { data: subscriptionHistory } = api.cloudBilling.getSubscriptionHistory.useQuery(
-    {
-      orgId: organization?.id ?? "",
-      limit: 5, // Fetch last 5 subscriptions
-    },
-    {
-      enabled: organization !== undefined,
-    }
-  );
+  // const { data: subscriptionHistory } = api.cloudBilling.getSubscriptionHistory.useQuery(
+  //   {
+  //     orgId: organization?.id ?? "",
+  //     limit: 5, // Fetch last 5 subscriptions
+  //   },
+  //   {
+  //     enabled: organization !== undefined,
+  //   }
+  // );
 
   const createCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation();
   

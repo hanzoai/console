@@ -5,7 +5,6 @@ import {
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
 import { type Plan } from "@langfuse/shared";
-import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
 type HasEntitlementParams = {
   entitlement: Entitlement;

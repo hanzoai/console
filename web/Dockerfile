@@ -27,6 +27,9 @@ COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=pruner /app/out/json/ .
 
+# Add this line to copy .env from root directory
+COPY ./.env ./.env
+
 RUN pnpm install --frozen-lockfile
 
 ENV DOCKER_BUILD 1
@@ -136,6 +139,7 @@ COPY --chown=nextjs:nodejs ./web/entrypoint.sh ./web/entrypoint.sh
 COPY --chown=nextjs:nodejs ./packages/shared/scripts/cleanup.sql ./packages/shared/scripts/cleanup.sql
 RUN chmod +x ./web/entrypoint.sh
 
+COPY --from=builder --chown=nextjs:nodejs /app/.env /app/.env
 USER nextjs
 
 # Default port to 3000

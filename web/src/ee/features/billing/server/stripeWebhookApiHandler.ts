@@ -110,7 +110,7 @@ async function handleSubscriptionChanged(
   action: "created" | "deleted" | "updated",
 ) {
   const subscriptionId = subscription.id;
-  const subscriptionPlan = subscription.items.data[0].price.nickname;
+  // const subscriptionPlan = subscription.items.data[0].price.nickname;
 
   // get the checkout session from the subscription to retrieve the client reference for this subscription
   const checkoutSessionsResponse = await stripeClient?.checkout.sessions.list({

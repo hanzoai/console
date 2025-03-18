@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { type Plan } from "@langfuse/shared";
+// import { type Plan } from "@langfuse/shared";
 
 export interface StripeProduct {
   id: string; // Unique identifier
@@ -30,7 +30,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
         ? "prod_RtxpuU81xgUmtC" // test
-        : "prod_QhK9qKGH25BTcS", // live
+        : "prod_RsXQA8ueb1y03D", // live
     name: "Pro",
     title: "Pro",
     description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
@@ -42,7 +42,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
         ? "prod_RtxpuU81xgUmtC" // test
-        : "prod_QhK9qKGH25BTcS", // live
+        : "prod_RsXMLhxoR4rauv", // live
     name: "Team",
     title: "Team",
     description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
@@ -54,7 +54,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
         ? "prod_RtxoClDkiPAOAs" // test
-        : "prod_QhK9qKGH25BTcS", // live
+        : "prod_RsVYLiuNEcSgQj", // live
     name: "Dev",
     title: "Dev",
     description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",

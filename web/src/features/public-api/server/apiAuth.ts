@@ -168,6 +168,16 @@ export class ApiAuthService {
             finalApiKey = convertToRedisRepresentation({
               ...slowKey,
               fastHashedSecretKey: shaKey,
+              project: {
+                ...slowKey.project,
+                organization: {
+                  id: slowKey.project.organization.id,
+                  name: slowKey.project.organization.name,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                  cloudConfig: slowKey.project.organization.cloudConfig
+                }
+              }
             });
           }
 
@@ -295,11 +305,31 @@ export class ApiAuthService {
     if (apiKeyAndOrganisation && apiKeyAndOrganisation.fastHashedSecretKey) {
       await this.addApiKeyToRedis(
         hash,
-        convertToRedisRepresentation(apiKeyAndOrganisation),
+        convertToRedisRepresentation({
+          ...apiKeyAndOrganisation,
+          project: {
+            ...apiKeyAndOrganisation.project,
+            organization: {
+              ...apiKeyAndOrganisation.project.organization,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          }
+        })
       );
     }
     return apiKeyAndOrganisation
-      ? convertToRedisRepresentation(apiKeyAndOrganisation)
+      ? convertToRedisRepresentation({
+          ...apiKeyAndOrganisation,
+          project: {
+            ...apiKeyAndOrganisation.project,
+            organization: {
+              ...apiKeyAndOrganisation.project.organization,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          }
+        })
       : null;
   }
 

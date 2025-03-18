@@ -14,7 +14,6 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   getObservationCountOfProjectsSinceCreationDate,
-  logger,
 } from "@langfuse/shared/src/server";
 import { Organization, PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
@@ -733,7 +732,7 @@ export const cloudBillingRouter = createTRPCRouter({
           console.log("amountPaid==========sdfafasdf===", amountPaid);
           
           // Update organization credits in a transaction
-          const [updatedOrg, usageRecord] = await ctx.prisma.$transaction(async (tx) => {
+          const [updatedOrg] = await ctx.prisma.$transaction(async (tx) => {
             const org = await tx.organization.update({
               where: { id: input.orgId },
               data: {              

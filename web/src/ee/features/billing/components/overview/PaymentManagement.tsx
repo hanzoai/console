@@ -21,14 +21,14 @@ export const PaymentManagement = () => {
   );
 
   // Fetch usage data
-  const { data: usage } = api.cloudBilling.getUsage.useQuery(
-    {
-      orgId: organization?.id ?? "",
-    },
-    {
-      enabled: organization !== undefined,
-    }
-  );
+  // const { data: usage } = api.cloudBilling.getUsage.useQuery(
+  //   {
+  //     orgId: organization?.id ?? "",
+  //   },
+  //   {
+  //     enabled: organization !== undefined,
+  //   }
+  // );
 
   // Fetch organization details for credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
@@ -193,7 +193,7 @@ export const PaymentManagement = () => {
               <div className="flex items-center gap-3">
                 <div className="text-sm">
                   <p className="font-medium">
-                    {sub.plan.billingPeriod ? new Date(sub.plan.billingPeriod).toLocaleDateString() : "N/A"}
+                    {sub.plan.billingPeriod ? new Date(sub.plan.billingPeriod.start).toLocaleDateString() + " - " + new Date(sub.plan.billingPeriod.end).toLocaleDateString() : "N/A"}
                   </p>
                   <p className="text-muted-foreground">
                     {sub.plan.name}
