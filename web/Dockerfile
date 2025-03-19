@@ -24,6 +24,16 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} base AS builder
 
 WORKDIR /app
 
+# Add build arguments for Stripe and other required variables
+ARG NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+ARG STRIPE_SECRET_KEY
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
+# Set them as environment variables during build
+ENV NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
 # First install the dependencies (as they change less often)
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
@@ -40,8 +50,6 @@ ENV NEXT_MANUAL_SIG_HANDLE true
 # pass public variables in build step
 ARG NEXT_PUBLIC_CRISP_WEBSITE_ID
 
-ARG NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
-ENV NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
 ARG NEXT_PUBLIC_DEMO_ORG_ID
 ENV NEXT_PUBLIC_DEMO_ORG_ID=$NEXT_PUBLIC_DEMO_ORG_ID
 ARG NEXT_PUBLIC_DEMO_PROJECT_ID

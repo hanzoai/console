@@ -6,6 +6,12 @@ export const stripeClient = (() => {
     console.warn("Stripe secret key is missing");
     return undefined;
   }
+
+  if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    console.warn("Langfuse cloud region is missing");
+    return undefined;
+  }
+
   try {
     return new Stripe(env.STRIPE_SECRET_KEY);
   } catch (error) {
