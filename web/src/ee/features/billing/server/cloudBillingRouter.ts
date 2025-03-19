@@ -1132,7 +1132,6 @@ async function createStripeCustomerForOrg(prisma: PrismaClient, org: Organizatio
       orgId: org.id,
     },
   });
-
   // Safely handle cloudConfig
   const updatedCloudConfig = org.cloudConfig 
     ? { 

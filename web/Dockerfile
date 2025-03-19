@@ -4,6 +4,8 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} node:20-alpine3.20 AS alpine
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk update && apk upgrade --no-cache libcrypto3 libssl3 libc6-compat busybox ssl_client
 
+
+
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine AS base
 RUN npm install turbo@^1.13.4 --global
 ENV PNPM_HOME="/pnpm"
@@ -101,7 +103,7 @@ WORKDIR /app
 ARG NEXT_PUBLIC_BUILD_ID
 ENV BUILD_ID=$NEXT_PUBLIC_BUILD_ID
 
-ENV NODE_ENV production
+ENV NODE_ENV prodcution
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 # Needed to re-enable validation of environment variables during runtime
