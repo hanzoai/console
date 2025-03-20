@@ -16,7 +16,16 @@ export const InvoiceHistory = () => {
     },
     {
       // Only enable the query if orgId is truthy
-      enabled: !!orgId
+      enabled: !!orgId,
+      onSuccess: (data) => {
+        console.log('InvoiceHistory - Subscription History:', {
+          subscriptions: data?.subscriptions.map(sub => ({
+            id: sub.id,
+            status: sub.status,
+            planName: sub.plan?.name
+          }))
+        });
+      }
     }
   );
 
@@ -96,18 +105,79 @@ export const InvoiceHistory = () => {
                     <td className="py-4 text-sm">{subscription.plan.name}</td>
                     <td className="py-4 text-sm">
                       {subscription.plan.billingPeriod
-                        ? `${new Date(subscription.plan.billingPeriod.start).toLocaleDateString()} - ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`
+                        ? (() => {
+                            // Check for scheduled cancellation
+                            if (subscription.cancel_at) {
+                              return `Active until ${new Date(subscription.cancel_at).toLocaleDateString()}`;
+                            }
+
+                            switch(subscription.status) {
+                              case 'canceled':
+                                return `Active until ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`;
+                              case 'trialing':
+                                return `Trial until ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`;
+                              case 'past_due':
+                              case 'unpaid':
+                                return `Overdue since ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`;
+                              case 'paused':
+                                return `Paused since ${new Date(subscription.plan.billingPeriod.start).toLocaleDateString()}`;
+                              case 'incomplete':
+                              case 'incomplete_expired':
+                                return 'Pending activation';
+                              default:
+                                return `${new Date(subscription.plan.billingPeriod.start).toLocaleDateString()} - ${new Date(subscription.plan.billingPeriod.end).toLocaleDateString()}`;
+                            }
+                          })()
                         : 'N/A'}
                     </td>
                     <td className="py-4 text-sm">
                       ${(subscription.plan as any).amount?.toFixed(2) ?? 'N/A'}
                     </td>
                     <td className="py-4">
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium 
-                        ${subscription.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'}`}>
-                        {subscription.status}
+                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${
+                        (() => {
+                          // Add special styling for scheduled cancellation
+                          if (subscription.cancel_at) {
+                            return 'bg-orange-100 text-orange-800';
+                          }
+
+                          switch(subscription.status) {
+                            case 'active':
+                              return 'bg-green-100 text-green-800';
+                            case 'trialing':
+                              return 'bg-blue-100 text-blue-800';
+                            case 'canceled':
+                              return 'bg-gray-100 text-gray-800';
+                            case 'past_due':
+                            case 'unpaid':
+                              return 'bg-yellow-100 text-yellow-800';
+                            case 'incomplete':
+                            case 'incomplete_expired':
+                              return 'bg-red-100 text-red-800';
+                            case 'paused':
+                              return 'bg-purple-100 text-purple-800';
+                            default:
+                              return 'bg-gray-100 text-gray-800';
+                          }
+                        })()
+                      }`}>
+                        {(() => {
+                          // Show "Canceling" status for scheduled cancellation
+                          if (subscription.cancel_at) {
+                            return 'Canceling';
+                          }
+
+                          switch(subscription.status) {
+                            case 'past_due':
+                              return 'Past Due';
+                            case 'incomplete_expired':
+                              return 'Failed';
+                            case 'incomplete':
+                              return 'Processing';
+                            default:
+                              return subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+                          }
+                        })()}
                       </span>
                     </td>
                     <td className="py-4 text-right">

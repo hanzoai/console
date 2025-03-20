@@ -41,7 +41,7 @@ export const stripeProducts: StripeProduct[] = [
     stripeProductId:
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
-        ? "prod_RtxpuU81xgUmtC" // test
+        ? "prod_RtxpPPb2RTz8bj" // test
         : "prod_RsXMLhxoR4rauv", // live
     name: "Team",
     title: "Team",

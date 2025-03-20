@@ -47,15 +47,35 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     currentSubscription && 
     !['canceled', 'incomplete_expired'].includes(currentSubscription.status);
 
+  // Add debug logging for available plans
+  console.log('Available Plans:', availablePlans.map(p => ({
+    title: p.title,
+    id: p.id,
+    stripeProductId: p.stripeProductId
+  })));
+  
+  console.log('Current Subscription Details:', {
+    subscription: currentSubscription,
+    isActive: isActiveSubscription
+  });
+
   const handlePlanAction = (stripeProductId: string) => {
+    console.log('Handle Plan Action:', {
+      stripeProductId,
+      currentPlanId: currentSubscription?.plan?.id,
+      isMatch: currentSubscription?.plan?.id === stripeProductId
+    });
+
     // Check if current subscription exists and is not in a terminal state
     if (isActiveSubscription && currentSubscription.plan.id === stripeProductId) {
+      console.log('Cancelling subscription for product:', stripeProductId);
       // If already subscribed to this plan, cancel the subscription
       cancelSubscription({ 
         orgId, 
         stripeProductId 
       });
     } else {
+      console.log('Creating checkout session for product:', stripeProductId);
       // If no current subscription or different plan, create a new checkout session
       createCheckoutSession({ 
         orgId, 
@@ -74,32 +94,40 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
         </DialogHeader>
         
         <div className="grid md:grid-cols-3 gap-6">
-          {availablePlans.map((product) => (
-            <div 
-              key={product.id} 
-              className="border rounded-lg p-6 flex flex-col"
-            >
-              <h3 className="text-xl font-bold mb-4">{product.title}</h3>
-              <p className="text-muted-foreground mb-4">{product.description}</p>
-              
-              <div className="mt-auto">
-                <Button 
-                  variant={
-                    currentSubscription?.plan?.id === product.stripeProductId 
-                      ? "destructive" 
-                      : "default"
-                  }
-                  className="w-full"
-                  onClick={() => handlePlanAction(product.stripeProductId)}
-                >
-                  {isActiveSubscription && currentSubscription.plan.id === product.stripeProductId 
-                    ? "Cancel Plan" 
-                    : (isActiveSubscription ? "Change to " : "Upgrade to ") + product.title
-                  }
-                </Button>
+          {availablePlans.map((product) => {
+            // Calculate button state for each plan
+            const isPlanActive = isActiveSubscription && 
+              currentSubscription.plan.id === product.stripeProductId;
+
+            console.log(`Plan ${product.title} comparison:`, {
+              productId: product.stripeProductId,
+              currentPlanId: currentSubscription?.plan?.id,
+              isPlanActive,
+              isActiveSubscription
+            });
+
+            return (
+              <div 
+                key={product.id} 
+                className="border rounded-lg p-6 flex flex-col"
+              >
+                <h3 className="text-xl font-bold mb-4">{product.title}</h3>
+                <p className="text-muted-foreground mb-4">{product.description}</p>
+                
+                <div className="mt-auto">
+                  <Button 
+                    variant={isPlanActive ? "destructive" : "default"}
+                    className="w-full"
+                    onClick={() => handlePlanAction(product.stripeProductId)}
+                  >
+                    {isPlanActive
+                      ? "Cancel Plan" 
+                      : (isActiveSubscription ? "Change to " : "Upgrade to ") + product.title}
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </DialogContent>
     </Dialog>

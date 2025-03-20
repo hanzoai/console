@@ -37,11 +37,25 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     );
   }
 
-  // check if the request is signed by stripe
-
   // Read the request body once and store it in a variable
-  const rawBody = await req.text();
-  // Log the raw body if needed
+  let rawBody: string;
+  try {
+    rawBody = await req.text();
+    if (!rawBody) {
+      logger.error("[Stripe Webhook] Empty request body");
+      return NextResponse.json(
+        { message: "Empty request body" },
+        { status: 400 },
+      );
+    }
+    logger.debug("[Stripe Webhook] Received raw body", { length: rawBody.length });
+  } catch (error) {
+    logger.error("[Stripe Webhook] Error reading request body", error);
+    return NextResponse.json(
+      { message: "Error reading request body" },
+      { status: 400 },
+    );
+  }
 
   const sig = req.headers.get("stripe-signature");
   if (!sig) {
@@ -93,6 +107,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     case "checkout.session.completed":
       // Add handling for credit purchases
       const paymentObject = event.data.object;
+      console.log("paymentObject=============", paymentObject);
       logger.info("[Stripe Webhook] Start payment.succeeded", {
         payload: paymentObject,
       });
@@ -148,6 +163,8 @@ async function handleSubscriptionChanged(
       id: orgId,
     },
   });
+
+  console.log("organization=============", organization);
   if (!organization) {
     logger.error("[Stripe Webhook] Organization not found");
     traceException("[Stripe Webhook] Organization not found");
