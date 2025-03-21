@@ -51,6 +51,8 @@ export function SetupPage() {
         ? 3
         : 2;
 
+  // Commenting out tracing check to skip this step
+  /*
   const hasAnyTrace = api.traces.hasAny.useQuery(
     { projectId: queryProjectId as string },
     {
@@ -70,6 +72,9 @@ export function SetupPage() {
       capture("onboarding:tracing_check_active", { active: hasAnyTrace });
     }
   }, [hasAnyTrace, capture]);
+  */
+  // Setting hasAnyTrace to true to skip tracing setup
+  const hasAnyTrace = true;
 
   return (
     <ContainerPage
@@ -192,7 +197,7 @@ export function SetupPage() {
               <NewProjectForm
                 orgId={organization.id}
                 onSuccess={(projectId) =>
-                  router.push(setupTracingRoute(projectId))
+                  router.push(`/project/${projectId}`)
                 }
               />
             </div>
@@ -200,7 +205,7 @@ export function SetupPage() {
         }
         {
           // 4. Setup Tracing
-          stepInt === 4 && project && organization && (
+          stepInt === 4 && project && (
             <div className="space-y-8">
               <div>
                 <Header title="API Keys" />
@@ -232,9 +237,9 @@ export function SetupPage() {
           <Button
             className="mt-4"
             onClick={() => router.push(`/project/${project.id}`)}
-            variant={hasAnyTrace ? "default" : "secondary"}
+            variant="default" // Always show as default since we're skipping tracing
           >
-            {hasAnyTrace ? "Open Dashboard" : "Skip for now"}
+            Open Dashboard
           </Button>
         )
       }
