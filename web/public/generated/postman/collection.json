@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Langfuse",
+    "name": "HanzoCloud",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "## Authentication\n\nAuthenticate with the API using [Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication), get API keys in the project settings:\n\n- username: Langfuse Public Key\n- password: Langfuse Secret Key\n\n## Exports\n\n- OpenAPI spec: https://cloud.langfuse.com/generated/api/openapi.yml\n- Postman collection: https://cloud.langfuse.com/generated/postman/collection.json"
+    "description": "## Authentication\n\nAuthenticate with the API using [Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication), get API keys in the project settings:\n\n- username: HanzoCloud Public Key\n- password: HanzoCloud Secret Key\n\n## Exports\n\n- OpenAPI spec: https://cloud.langfuse.com/generated/api/openapi.yml\n- Postman collection: https://cloud.langfuse.com/generated/postman/collection.json"
   },
   "variable": [
     {
@@ -629,7 +629,7 @@
           "_type": "endpoint",
           "name": "Batch",
           "request": {
-            "description": "Batched ingestion for Langfuse Tracing.\nIf you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the Langfuse App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
+            "description": "Batched ingestion for HanzoCloud Tracing.\nIf you want to use tracing via the API, such as to build your own HanzoCloud client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the HanzoCloud App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
             "url": {
               "raw": "{{baseUrl}}/api/public/ingestion",
               "host": [
@@ -668,7 +668,7 @@
               "status": "OK",
               "code": 200,
               "originalRequest": {
-                "description": "Batched ingestion for Langfuse Tracing.\nIf you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the Langfuse App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
+                "description": "Batched ingestion for HanzoCloud Tracing.\nIf you want to use tracing via the API, such as to build your own HanzoCloud client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the HanzoCloud App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
                 "url": {
                   "raw": "{{baseUrl}}/api/public/ingestion",
                   "host": [
@@ -710,7 +710,7 @@
               "status": "OK",
               "code": 200,
               "originalRequest": {
-                "description": "Batched ingestion for Langfuse Tracing.\nIf you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the Langfuse App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
+                "description": "Batched ingestion for HanzoCloud Tracing.\nIf you want to use tracing via the API, such as to build your own HanzoCloud client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the HanzoCloud App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
                 "url": {
                   "raw": "{{baseUrl}}/api/public/ingestion",
                   "host": [
@@ -752,7 +752,7 @@
               "status": "OK",
               "code": 200,
               "originalRequest": {
-                "description": "Batched ingestion for Langfuse Tracing.\nIf you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the Langfuse App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
+                "description": "Batched ingestion for HanzoCloud Tracing.\nIf you want to use tracing via the API, such as to build your own HanzoCloud client implementation, this is the only API route you need to implement.\n\nWithin each batch, there can be multiple events.\nEach event has a type, an id, a timestamp, metadata and a body.\nInternally, we refer to this as the \"event envelope\" as it tells us something about the event but not the trace.\nWe use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.\nThe event.body.id is the ID of the actual trace and will be used for updates and will be visible within the HanzoCloud App.\nI.e. if you want to update a trace, you'd use the same body id, but separate event IDs.\n\nNotes:\n- Introduction to data model: https://langfuse.com/docs/tracing-data-model\n- Batch sizes are limited to 3.5 MB in total. You need to adjust the number of events per batch accordingly.\n- The API does not return a 4xx status code for input errors. Instead, it responds with a 207 status code, which includes a list of the encountered errors.",
                 "url": {
                   "raw": "{{baseUrl}}/api/public/ingestion",
                   "host": [
@@ -914,7 +914,7 @@
           "_type": "endpoint",
           "name": "Daily",
           "request": {
-            "description": "Get daily metrics of the Langfuse project",
+            "description": "Get daily metrics of the HanzoCloud project",
             "url": {
               "raw": "{{baseUrl}}/api/public/metrics/daily?page=&limit=&traceName=&userId=&tags=&environment=&fromTimestamp=&toTimestamp=",
               "host": [
@@ -1089,7 +1089,7 @@
           "_type": "endpoint",
           "name": "Delete",
           "request": {
-            "description": "Delete a model. Cannot delete models managed by Langfuse. You can create your own definition with the same modelName to override the definition though.",
+            "description": "Delete a model. Cannot delete models managed by HanzoCloud. You can create your own definition with the same modelName to override the definition though.",
             "url": {
               "raw": "{{baseUrl}}/api/public/models/:id",
               "host": [

@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
 import { useRouter } from "next/router";
 import { PriceUnitSelector } from "@/src/features/models/components/PriceUnitSelector";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
@@ -53,7 +53,7 @@ const modelConfigDescriptions = {
   config:
     "Some tokenizers require additional configuration (e.g. openai tiktoken). See docs for details.",
   maintainer:
-    "Maintainer of the model. Langfuse managed models can be cloned, user managed models can be edited and deleted. To supersede a Langfuse managed model, set the custom model name to the Langfuse model name.",
+    "Maintainer of the model.  managed models can be cloned, user managed models can be edited and deleted. To supersede a  managed model, set the custom model name to the Langfuse model name.",
   lastUsed: "Start time of the latest generation using this model",
 } as const;
 
@@ -118,7 +118,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
             <Tooltip>
               <TooltipTrigger>
                 {isLangfuse ? (
-                  <LangfuseIcon size={16} />
+                  <HanzoCloudIcon size={16} />
                 ) : (
                   <UserCircle2Icon className="h-4 w-4" />
                 )}

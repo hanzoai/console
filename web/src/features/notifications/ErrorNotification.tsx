@@ -64,7 +64,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
               handleReportIssueClick();
             }}
           >
-            Report issue to Langfuse team
+            Report issue to HanzoCloud team
           </Button>
         )}
       </div>

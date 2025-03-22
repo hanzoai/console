@@ -73,7 +73,7 @@ export function LlmApiKeyList(props: { projectId: string }) {
     <div id="llm-api-keys">
       <Header title="LLM API keys" />
       <p className="mb-4 text-sm">
-        These keys are used to power the Langfuse playground and evaluations
+        These keys are used to power the HanzoCloud playground and evaluations
         feature and will incur costs based on usage with your key provider.
       </p>
       <Card className="mb-4 overflow-auto">

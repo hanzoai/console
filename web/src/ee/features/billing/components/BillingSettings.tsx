@@ -1,10 +1,9 @@
 // This is a placeholder to read the file contents.
 
-// Langfuse Cloud only
+// HanzoCloud Cloud only
 import { Button } from "@/src/components/ui/button";
 // import { api } from "@/src/utils/api";
 // import { Flex, MarkerBar, Metric, Text } from "@tremor/react";
-import Link from "next/link";
 import Header from "@/src/components/layouts/header";
 // import { useQueryOrganization } from "@/src/features/organizations/hooks";
 // import { Card } from "@/src/components/ui/card";

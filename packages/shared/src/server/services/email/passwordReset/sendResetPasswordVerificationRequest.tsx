@@ -25,7 +25,7 @@ interface ResetPasswordTemplateProps {
 }
 
 const ResetPasswordTemplate = ({ url }: ResetPasswordTemplateProps) => {
-  const previewText = "Reset your Langfuse password";
+  const previewText = "Reset your HanzoCloud password";
   return (
     <Html>
       <Head />
@@ -35,15 +35,15 @@ const ResetPasswordTemplate = ({ url }: ResetPasswordTemplateProps) => {
           <Container className="mx-auto my-10 w-[465px] rounded border border-solid border-[#eaeaea] p-5">
             <Section className="mt-8">
               <Img
-                src="https://static.langfuse.com/langfuse_logo_transactional_email.png"
+                src="https://static.hanzocloud.com/hanzocloud_logo_transactional_email.png"
                 width="40"
                 height="40"
-                alt="Langfuse"
+                alt="HanzoCloud"
                 className="mx-auto my-0"
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-xl font-normal text-black">
-              Forgot your Langfuse password?
+              Forgot your HanzoCloud password?
               <br />
               It happens to the best of us.
             </Heading>
@@ -77,7 +77,7 @@ export async function sendResetPasswordVerificationRequest(
     to: identifier,
     from: provider.from,
     subject: `Forgot your password?`,
-    text: `To reset your Langfuse password, please confirm your email:\n${url}\n\nThe link is valid for 10 minutes. If you do not want to change your password or didn't request a reset, you can ignore and delete this email.`,
+    text: `To reset your HanzoCloud password, please confirm your email:\n${url}\n\nThe link is valid for 10 minutes. If you do not want to change your password or didn't request a reset, you can ignore and delete this email.`,
     html: htmlTemplate,
   });
   const failed = result.rejected.concat(result.pending).filter(Boolean);

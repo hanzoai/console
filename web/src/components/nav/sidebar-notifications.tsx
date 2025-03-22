@@ -30,14 +30,14 @@ const notifications: SidebarNotification[] = [
   },
   {
     id: "github-star",
-    title: "Star Langfuse",
+    title: "Star HanzoCloud",
     description:
       "See the latest releases and help grow the community on GitHub",
     link: "https://github.com/langfuse/langfuse",
     linkContent: (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        alt="Langfuse Github stars"
+        alt="HanzoCloud Github stars"
         src="https://img.shields.io/github/stars/langfuse/langfuse?label=langfuse&amp;style=social"
       />
     ),

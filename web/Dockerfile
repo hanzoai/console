@@ -34,6 +34,14 @@ ENV NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
 ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
+# Add build arguments
+ARG SMTP_CONNECTION_URL
+ARG EMAIL_FROM_ADDRESS
+
+# Set them as environment variables
+ENV SMTP_CONNECTION_URL=$SMTP_CONNECTION_URL
+ENV EMAIL_FROM_ADDRESS=$EMAIL_FROM_ADDRESS
+
 # First install the dependencies (as they change less often)
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml

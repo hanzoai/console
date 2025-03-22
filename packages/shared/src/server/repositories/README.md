@@ -1,6 +1,6 @@
 ## Repository docs
 
-### Guarantees for relating data within Langfuse
+### Guarantees for relating data within HanzoCloud
 
 - Finding a Trace based on an observation [Linear](https://linear.app/langfuse/issue/LFE-2745/improve-generations-table-query-performance)
   - Traces can occur earlier than an observation.

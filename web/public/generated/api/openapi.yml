@@ -11,9 +11,9 @@ info:
     keys in the project settings:
 
 
-    - username: Langfuse Public Key
+    - username: HanzoCloud Public Key
 
-    - password: Langfuse Secret Key
+    - password: HanzoCloud Secret Key
 
 
     ## Exports
@@ -812,10 +812,10 @@ paths:
   /api/public/ingestion:
     post:
       description: >-
-        Batched ingestion for Langfuse Tracing.
+        Batched ingestion for HanzoCloud Tracing.
 
         If you want to use tracing via the API, such as to build your own
-        Langfuse client implementation, this is the only API route you need to
+        HanzoCloud client implementation, this is the only API route you need to
         implement.
 
 
@@ -831,7 +831,7 @@ paths:
         unique per request.
 
         The event.body.id is the ID of the actual trace and will be used for
-        updates and will be visible within the Langfuse App.
+        updates and will be visible within the HanzoCloud App.
 
         I.e. if you want to update a trace, you'd use the same body id, but
         separate event IDs.
@@ -922,7 +922,7 @@ paths:
                 metadata:
                   nullable: true
                   description: >-
-                    Optional. Metadata field used by the Langfuse SDKs for
+                    Optional. Metadata field used by the HanzoCloud SDKs for
                     debugging.
               required:
                 - batch
@@ -1116,7 +1116,7 @@ paths:
               $ref: '#/components/schemas/GetMediaUploadUrlRequest'
   /api/public/metrics/daily:
     get:
-      description: Get daily metrics of the Langfuse project
+      description: Get daily metrics of the HanzoCloud project
       operationId: metrics_daily
       tags:
         - Metrics
@@ -1372,7 +1372,7 @@ paths:
         - BasicAuth: []
     delete:
       description: >-
-        Delete a model. Cannot delete models managed by Langfuse. You can create
+        Delete a model. Cannot delete models managed by HanzoCloud. You can create
         your own definition with the same modelName to override the definition
         though.
       operationId: models_delete
@@ -1696,7 +1696,7 @@ paths:
                   description: >-
                     New labels for the prompt version. Labels are unique across
                     versions. The "latest" label is reserved and managed by
-                    Langfuse.
+                    HanzoCloud.
               required:
                 - newLabels
   /api/public/v2/prompts/{promptName}:
@@ -2714,7 +2714,7 @@ components:
       properties:
         id:
           type: string
-          description: The id of the created object in Langfuse
+          description: The id of the created object in HanzoCloud
       required:
         - id
     GetCommentsResponse:
@@ -2798,7 +2798,7 @@ components:
       properties:
         htmlPath:
           type: string
-          description: Path of trace in Langfuse UI
+          description: Path of trace in HanzoCloud UI
         latency:
           type: number
           format: double
@@ -2831,7 +2831,7 @@ components:
       properties:
         htmlPath:
           type: string
-          description: Path of trace in Langfuse UI
+          description: Path of trace in HanzoCloud UI
         latency:
           type: number
           format: double
@@ -3569,7 +3569,7 @@ components:
         - SECONDS
         - IMAGES
         - REQUESTS
-      description: Unit of usage in Langfuse
+      description: Unit of usage in HanzoCloud
     ObservationLevel:
       title: ObservationLevel
       type: string
@@ -3751,7 +3751,7 @@ components:
       properties:
         version:
           type: string
-          description: Langfuse server version
+          description: HanzoCloud server version
           example: 1.25.0
         status:
           type: string
@@ -4219,7 +4219,7 @@ components:
             milliseconds (required), microseconds (optimal).
         metadata:
           nullable: true
-          description: Optional. Metadata field used by the Langfuse SDKs for debugging.
+          description: Optional. Metadata field used by the HanzoCloud SDKs for debugging.
       required:
         - id
         - timestamp
@@ -4986,7 +4986,7 @@ components:
           type: string
           nullable: true
           description: >-
-            Description is shown across the Langfuse UI and can be used to e.g.
+            Description is shown across the HanzoCloud UI and can be used to e.g.
             explain the config categories in detail, why a numeric range was
             set, or provide additional context on config name or usage
       required:
@@ -5048,7 +5048,7 @@ components:
       properties:
         id:
           type: string
-          description: The id of the created object in Langfuse
+          description: The id of the created object in HanzoCloud
       required:
         - id
     GetScoresResponseTraceData:

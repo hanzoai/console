@@ -235,7 +235,7 @@ export function CreateLLMApiKeyForm({
             <FormItem>
               <FormLabel>Provider name</FormLabel>
               <FormDescription>
-                Name to identify the key within Langfuse.
+                Name to identify the key within HanzoCloud.
               </FormDescription>
               <FormControl>
                 <Input {...field} />
@@ -470,19 +470,19 @@ export function CreateLLMApiKeyForm({
                   <FormLabel>Enable default models</FormLabel>
                   <FormDescription>
                     Default models for the selected adapter will be available in
-                    Langfuse features.
+                    HanzoCloudud features.
                   </FormDescription>
                   {currentAdapter === LLMAdapter.Azure && (
                     <FormDescription className="text-dark-yellow">
                       Azure LLM adapter does not support default model names
-                      maintained by Langfuse. Instead, please add a custom model
+                      maintained by HanzoCloud. Instead, please add a custom model
                       below that is the same as your deployment name.
                     </FormDescription>
                   )}
                   {currentAdapter === LLMAdapter.Bedrock && (
                     <FormDescription className="text-dark-yellow">
                       Bedrock LLM adapter does not support default model names
-                      maintained by Langfuse. Instead, please add the Bedrock
+                      maintained by HanzoCloudud. Instead, please add the Bedrock
                       model IDs you have enabled in the AWS console.
                     </FormDescription>
                   )}

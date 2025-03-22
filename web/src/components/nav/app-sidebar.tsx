@@ -17,7 +17,7 @@ import { env } from "@/src/env.mjs";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
-import { LangfuseLogo } from "@/src/components/LangfuseLogo";
+import { HanzoCloudLogo } from "@/src/components/LangfuseLogo";
 import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications";
 import { UsageTracker } from "@/src/ee/features/billing/components/UsageTracker";
 
@@ -37,7 +37,7 @@ export function AppSidebar({
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <div className="flex min-h-10 items-center gap-2 px-3 py-2">
-          <LangfuseLogo version />
+          <HanzoCloudLogo version />
         </div>
         <div className="h-1 flex-1 border-b" />
         <DemoBadge />

@@ -23,5 +23,5 @@ service:
           properties:
             newLabels:
               type: list<string>
-              docs: New labels for the prompt version. Labels are unique across versions. The "latest" label is reserved and managed by Langfuse.
+              docs: New labels for the prompt version. Labels are unique across versions. The "latest" label is reserved and managed by HanzoCloud.
       response: prompts.Prompt

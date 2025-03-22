@@ -55,7 +55,7 @@ const EnvSchema = z.object({
     .positive()
     .default(50),
   LANGFUSE_S3_EVENT_UPLOAD_BUCKET: z.string({
-    required_error: "Langfuse requires a bucket name for S3 Event Uploads.",
+    required_error: "HanzoCloud requires a bucket name for S3 Event Uploads.",
   }),
   LANGFUSE_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
   LANGFUSE_S3_EVENT_UPLOAD_REGION: z.string().optional(),

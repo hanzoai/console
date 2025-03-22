@@ -147,7 +147,7 @@ types:
     properties:
       id:
         type: string
-        docs: The id of the created object in Langfuse
+        docs: The id of the created object in HanzoCloud
   GetScoresResponseTraceData:
     properties:
       userId:

@@ -69,7 +69,7 @@ const ReleaseApiRes = z.array(
 
 export const publicRouter = createTRPCRouter({
   checkUpdate: publicProcedure.query(async () => {
-    // Skip update check on Langfuse Cloud
+    // Skip update check on HanzoCloud Cloud
     if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) return null;
 
     let body;

@@ -46,7 +46,7 @@ types:
     properties:
       htmlPath:
         type: string
-        docs: Path of trace in Langfuse UI
+        docs: Path of trace in HanzoCloud UI
       latency:
         type: double
         docs: Latency of trace in seconds
@@ -64,7 +64,7 @@ types:
     properties:
       htmlPath:
         type: string
-        docs: Path of trace in Langfuse UI
+        docs: Path of trace in HanzoCloud UI
       latency:
         type: double
         docs: Latency of trace in seconds
@@ -409,12 +409,12 @@ types:
       tokenizerConfig:
         docs: Optional. Configuration for the selected tokenizer. Needs to be JSON. See docs for more details.
         type: optional<unknown>
-      isLangfuseManaged:
+      isHanzoCloudManaged:
         type: boolean
 
   # Utilities
   ModelUsageUnit:
-    docs: Unit of usage in Langfuse
+    docs: Unit of usage in HanzoCloud
     enum:
       - CHARACTERS
       - TOKENS

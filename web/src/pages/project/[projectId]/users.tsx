@@ -66,7 +66,7 @@ export default function UsersPage() {
         title: "Users",
         help: {
           description:
-            "Attribute data in Langfuse to a user by adding a userId to your traces. See docs to learn more.",
+            "Attribute data in HanzoCloud to a user by adding a userId to your traces. See docs to learn more.",
           href: "https://langfuse.com/docs/user-explorer",
         },
       }}
@@ -206,7 +206,7 @@ const UsersTable = () => {
       header: "User ID",
       headerTooltip: {
         description:
-          "The unique identifier for the user that was logged in Langfuse. See docs for more details on how to set this up.",
+          "The unique identifier for the user that was logged in HanzoCloud. See docs for more details on how to set this up.",
         href: "https://langfuse.com/docs/tracing-features/users",
       },
       size: 150,

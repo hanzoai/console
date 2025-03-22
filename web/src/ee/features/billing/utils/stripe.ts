@@ -8,7 +8,7 @@ export const stripeClient = (() => {
   }
 
   if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
-    console.warn("Langfuse cloud region is missing");
+    console.warn("HanzoCloud cloud region is missing");
     return undefined;
   }
 

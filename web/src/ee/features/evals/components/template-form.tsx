@@ -70,7 +70,7 @@ export const EvalTemplateForm = (props: {
             <SelectTrigger className="text-primary ring-transparent focus:ring-0 focus:ring-offset-0">
               <SelectValue
                 className="text-sm font-semibold text-primary"
-                placeholder={"Select a Langfuse managed template (optional)"}
+                placeholder={"Select a HanzoCloud managed template (optional)"}
               />
             </SelectTrigger>
             <SelectContent className="max-h-60 max-w-80">

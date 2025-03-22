@@ -73,8 +73,8 @@ export const sendMembershipInvitationEmail = async ({
 
     await mailer.sendMail({
       to,
-      from: `Langfuse <${env.EMAIL_FROM_ADDRESS}>`,
-      subject: `${inviterName} invited you to join "${orgName}" organization on Langfuse`,
+      from: `HanzoCloud <${env.EMAIL_FROM_ADDRESS}>`,
+      subject: `${inviterName} invited you to join "${orgName}" organization on HanzoCloud`,
       html: htmlTemplate,
     });
   } catch (error) {

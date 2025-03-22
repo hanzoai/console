@@ -1,4 +1,4 @@
-// This page is currently only shown to Langfuse cloud users.
+// This page is currently only shown to HanzoCloud cloud users.
 // It might be expanded to everyone in the future when it does not only ask for the referral source.
 
 import { useForm } from "react-hook-form";
@@ -15,7 +15,7 @@ import {
 } from "@/src/components/ui/form";
 import { usePostHog } from "posthog-js/react";
 import { useRouter } from "next/router";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
 import { Textarea } from "@/src/components/ui/textarea";
 
 const referralSourceSchema = z.object({
@@ -46,9 +46,9 @@ export default function ReferralSource() {
   return (
     <div className="flex flex-1 flex-col py-6 sm:min-h-full sm:justify-center sm:px-6 sm:py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <LangfuseIcon className="mx-auto" />
+        <HanzoCloudIcon className="mx-auto" />
         <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
-          Welcome to Langfuse
+          Welcome to HanzoCloud
         </h2>
       </div>
       <div className="mt-14 bg-background px-6 py-10 shadow sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-12">

@@ -29,7 +29,7 @@ const EnvSchema = z.object({
     .default("false"),
 
   LANGFUSE_S3_EVENT_UPLOAD_BUCKET: z.string({
-    required_error: "Langfuse requires a bucket name for S3 Event Uploads.",
+    required_error: "HanzoCloud requires a bucket name for S3 Event Uploads.",
   }),
   LANGFUSE_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
   LANGFUSE_S3_EVENT_UPLOAD_REGION: z.string().optional(),
@@ -179,7 +179,7 @@ const EnvSchema = z.object({
     .enum(["true", "false"])
     .default("true"),
 
-  // Core data S3 upload - Langfuse Cloud
+  // Core data S3 upload - HanzoCloud Cloud
   LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
@@ -204,7 +204,7 @@ const EnvSchema = z.object({
     .enum(["true", "false"])
     .default("false"),
 
-  // Metering data Postgres export - Langfuse Cloud
+  // Metering data Postgres export - HanzoCloudud Cloud
   LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),

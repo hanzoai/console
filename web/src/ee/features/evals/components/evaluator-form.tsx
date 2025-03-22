@@ -783,7 +783,7 @@ export const InnerEvalConfigForm = (props: {
                                 <VariableMappingDescription
                                   title="Object"
                                   description={
-                                    "Langfuse object to retrieve the data from."
+                                    "HanzoCloud object to retrieve the data from."
                                   }
                                   href={
                                     "https://langfuse.com/docs/scores/model-based-evals"
@@ -831,7 +831,7 @@ export const InnerEvalConfigForm = (props: {
                                   <VariableMappingDescription
                                     title={"Object Name"}
                                     description={
-                                      "Name of the Langfuse object to retrieve the data from."
+                                      "Name of the HanzoCloud object to retrieve the data from."
                                     }
                                     href={
                                       "https://langfuse.com/docs/scores/model-based-evals"
@@ -861,7 +861,7 @@ export const InnerEvalConfigForm = (props: {
                                 <VariableMappingDescription
                                   title={"Object Variable"}
                                   description={
-                                    "Variable on the Langfuse object to insert into the template."
+                                    "Variable on the HanzoCloud object to insert into the template."
                                   }
                                   href={
                                     "https://langfuse.com/docs/scores/model-based-evals"

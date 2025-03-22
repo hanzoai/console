@@ -42,7 +42,7 @@ export const QuickstartExamples = ({
         >
           internal documentation
         </Link>{" "}
-        for details on how to set up Langfuse in your organization.
+        for details on how to set up HanzoCloud in your organization.
       </p>
     );
   }
@@ -70,7 +70,7 @@ export const QuickstartExamples = ({
         <TabsContent value="python">
           <CodeView content="pip install langfuse" className="mb-2" />
           <CodeView
-            content={`from langfuse import Langfuse\n\nlangfuse = Langfuse(\n  secret_key="${secretKey}",\n  public_key="${publicKey}",\n  host="${host}"\n)`}
+            content={`from langfuse import HanzoCloud\n\nlangfuse = HanzoCloud(\n  secret_key="${secretKey}",\n  public_key="${publicKey}",\n  host="${host}"\n)`}
           />
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
@@ -124,8 +124,8 @@ export const QuickstartExamples = ({
         <TabsContent value="openai">
           <p className="mt-2 text-xs text-muted-foreground">
             The integration is a drop-in replacement for the OpenAI Python SDK.
-            By changing the import, Langfuse will capture all LLM calls and send
-            them to Langfuse asynchronously.
+            By changing the import, HanzoCloud will capture all LLM calls and send
+            them to HanzoCloud asynchronously.
           </p>
           <CodeView content="pip install langfuse" className="my-2" />
           <CodeView
@@ -242,7 +242,7 @@ export const QuickstartExamples = ({
             >
               native integrations
             </a>{" "}
-            (e.g. LiteLLM, Flowise, and Langflow) to integrate with Langfuse.
+            (e.g. LiteLLM, Flowise, and Langflow) to integrate with HanzoCloud.
           </p>
         </TabsContent>
       </Tabs>
@@ -301,7 +301,7 @@ const LANGCHAIN_JS_CODE = (p: {
   host: string;
 }) => `import { CallbackHandler } from "langfuse-langchain";
  
-// Initialize Langfuse callback handler
+// Initialize HanzoCloud callback handler
 const langfuseHandler = new CallbackHandler({
   publicKey: "${p.publicKey}",
   secretKey: "${p.secretKey}",

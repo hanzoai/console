@@ -34,7 +34,7 @@ export const MembershipInvitationTemplate = ({
   emailFromAddress,
   langfuseCloudRegion,
 }: MembershipInvitationTemplateProps) => {
-  const previewText = `Join ${invitedByUsername} on Langfuse`;
+  const previewText = `Join ${invitedByUsername} on HanzoCloud`;
 
   return (
     <Html>
@@ -45,10 +45,10 @@ export const MembershipInvitationTemplate = ({
           <Container className="mx-auto my-10 w-[465px] rounded border border-solid border-[#eaeaea] p-5">
             <Section className="mt-8">
               <Img
-                src="https://static.langfuse.com/langfuse_logo_transactional_email.png"
+                src="https://static.hanzocloud.com/hanzocloud_logo_transactional_email.png"
                 width="40"
                 height="40"
-                alt="Langfuse"
+                alt="HanzoCloud"
                 className="mx-auto my-0"
               />
             </Section>
@@ -67,8 +67,8 @@ export const MembershipInvitationTemplate = ({
               ) has invited you to join the <strong>{orgName}</strong>{" "}
               organization on
               {langfuseCloudRegion
-                ? ` Langfuse (${langfuseCloudRegion} data region)`
-                : " Langfuse"}
+                ? ` HanzoCloud (${langfuseCloudRegion} data region)`
+                : " HanzoCloud"}
               .
             </Text>
             <Section className="mb-4 mt-8 text-center">

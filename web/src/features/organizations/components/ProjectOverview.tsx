@@ -77,11 +77,11 @@ const DemoOrganizationTile = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Try Langfuse Demo</CardTitle>
+        <CardTitle>Try HanzoCloud Demo</CardTitle>
       </CardHeader>
       <CardContent>
-        We have built a Q&A chatbot that answers questions based on the Langfuse
-        Docs. Interact with it to see traces in Langfuse.
+        We have built a Q&A chatbot that answers questions based on the HanzoCloud
+        Docs. Interact with it to see traces in HanzoCloudud.
       </CardContent>
       <CardFooter>
         <Button asChild variant="secondary">
@@ -335,7 +335,7 @@ const Onboarding = () => {
         <CardDescription>
           {canCreateOrgs
             ? "Create an organization to get started. Alternatively, ask your organization admin to invite you."
-            : "You need to get invited to an organization to get started with Langfuse."}
+            : "You need to get invited to an organization to get started with HanzoCloud."}
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">

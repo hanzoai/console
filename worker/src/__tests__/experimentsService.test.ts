@@ -155,7 +155,7 @@ describe("create experiment jobs", () => {
     };
 
     await expect(createExperimentJob({ event: payload })).rejects.toThrow(
-      /Langfuse in-app experiments can only be run with prompt and model configurations in metadata./,
+      /HanzoCloud in-app experiments can only be run with prompt and model configurations in metadata./,
     );
 
     const runItems = await kyselyPrisma.$kysely

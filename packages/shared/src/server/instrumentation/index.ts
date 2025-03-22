@@ -174,7 +174,7 @@ const sendCloudWatchMetric = (key: string, value: number | undefined) => {
     cloudWatchClient
       .send(
         new PutMetricDataCommand({
-          Namespace: "Langfuse",
+          Namespace: "HanzoCloud",
           MetricData: [
             {
               MetricName: key,

@@ -8,14 +8,14 @@ service:
   endpoints:
     batch:
       docs: |
-        Batched ingestion for Langfuse Tracing.
-        If you want to use tracing via the API, such as to build your own Langfuse client implementation, this is the only API route you need to implement.
+        Batched ingestion for HanzoCloud Tracing.
+        If you want to use tracing via the API, such as to build your own HanzoCloud client implementation, this is the only API route you need to implement.
 
         Within each batch, there can be multiple events.
         Each event has a type, an id, a timestamp, metadata and a body.
         Internally, we refer to this as the "event envelope" as it tells us something about the event but not the trace.
         We use the event id within this envelope to deduplicate messages to avoid processing the same event twice, i.e. the event id should be unique per request.
-        The event.body.id is the ID of the actual trace and will be used for updates and will be visible within the Langfuse App.
+        The event.body.id is the ID of the actual trace and will be used for updates and will be visible within the HanzoCloud App.
         I.e. if you want to update a trace, you'd use the same body id, but separate event IDs.
 
         Notes:
@@ -33,7 +33,7 @@ service:
               docs: "Batch of tracing events to be ingested. Discriminated by attribute `type`."
             metadata:
               type: optional<unknown>
-              docs: Optional. Metadata field used by the Langfuse SDKs for debugging.
+              docs: Optional. Metadata field used by the HanzoCloud SDKs for debugging.
       response:
         type: IngestionResponse
         status-code: 207
@@ -130,7 +130,7 @@ types:
 
       sdk-log:
         type: SDKLogEvent
-        docs: Langfuse SDKs only, used for debugging purposes.
+        docs: HanzoCloud SDKs only, used for debugging purposes.
 
       # both are legacy
       observation-create:
@@ -325,7 +325,7 @@ types:
         docs: "Datetime (ISO 8601) of event creation in client. Should be as close to actual event creation in client as possible, this timestamp will be used for ordering of events in future release. Resolution: milliseconds (required), microseconds (optimal)."
       metadata:
         type: optional<unknown>
-        docs: Optional. Metadata field used by the Langfuse SDKs for debugging.
+        docs: Optional. Metadata field used by the HanzoCloud SDKs for debugging.
 
   TraceEvent:
     extends: BaseEvent

@@ -55,4 +55,4 @@ types:
         docs: Configure a maximum value for numerical scores. If not set, the maximum value defaults to +∞
       description:
         type: optional<string>
-        docs: Description is shown across the Langfuse UI and can be used to e.g. explain the config categories in detail, why a numeric range was set, or provide additional context on config name or usage
+        docs: Description is shown across the HanzoCloud UI and can be used to e.g. explain the config categories in detail, why a numeric range was set, or provide additional context on config name or usage

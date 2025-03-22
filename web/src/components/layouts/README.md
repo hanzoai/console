@@ -1,9 +1,9 @@
-# 📦 Langfuse Layout Components
+# 📦 HanzoCloud Layout Components
 
 ## 📌 Overview: Page - Standard Page Wrapper
 
 `Page` is the required wrapper for all pages in our app. It ensures a **consistent layout**, a **sticky header**, and proper **scroll behavior** across different screens.
-For any Langfuse single item pages, you should pass the itemType to the `Page` as a prop. Also, ideally the title should follow the format of `{itemName}: {itemId}`. If only either is reasonable, just pass it as the title. For tables, you should not pass the itemType, unless the table is part of a single item page.
+For any HanzoCloud single item pages, you should pass the itemType to the `Page` as a prop. Also, ideally the title should follow the format of `{itemName}: {itemId}`. If only either is reasonable, just pass it as the title. For tables, you should not pass the itemType, unless the table is part of a single item page.
 
 **⚠️ Every page must be wrapped inside `<Page>`—do not use `<main>` directly!**
 
