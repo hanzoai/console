@@ -43,12 +43,12 @@ export function FeedbackButtonWrapper({
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-row flex-wrap items-center justify-center gap-3 sm:justify-start">
-            <Link href="https://langfuse.com/ideas" target="_blank">
+            <Link href="https://hanzo.ai/ideas" target="_blank">
               <Button variant="secondary">
                 <Sparkles className="mr-2 h-4 w-4" /> Submit Feature Request
               </Button>
             </Link>
-            <Link href="https://langfuse.com/issues" target="_blank">
+            <Link href="https://hanzo.ai/issues" target="_blank">
               <Button variant="secondary">
                 <Bug className="mr-2 h-4 w-4" /> Report a Bug
               </Button>

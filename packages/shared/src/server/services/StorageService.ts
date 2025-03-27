@@ -59,7 +59,7 @@ export class StorageServiceFactory {
     region: string | undefined;
     forcePathStyle: boolean;
   }): StorageService {
-    if (env.LANGFUSE_USE_AZURE_BLOB === "true") {
+    if (env.HANZO_USE_AZURE_BLOB === "true") {
       return new AzureBlobStorageService(params);
     }
     return new S3StorageService(params);
@@ -332,7 +332,7 @@ class S3StorageService implements StorageService {
       forcePathStyle: params.forcePathStyle,
       requestHandler: {
         httpsAgent: {
-          maxSockets: env.LANGFUSE_S3_CONCURRENT_WRITES,
+          maxSockets: env.HANZO_S3_CONCURRENT_WRITES,
         },
       },
     });

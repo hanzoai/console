@@ -45,28 +45,28 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
     NEXTAUTH_COOKIE_DOMAIN: z.string().optional(),
-    LANGFUSE_TEAM_SLACK_WEBHOOK: z.string().url().optional(),
-    LANGFUSE_NEW_USER_SIGNUP_WEBHOOK: z.string().url().optional(),
+    HANZO_TEAM_SLACK_WEBHOOK: z.string().url().optional(),
+    HANZO_NEW_USER_SIGNUP_WEBHOOK: z.string().url().optional(),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: z.enum(["true", "false"]).optional(),
-    LANGFUSE_DISABLE_EXPENSIVE_POSTGRES_QUERIES: z
+    HANZO_ENABLE_EXPERIMENTAL_FEATURES: z.enum(["true", "false"]).optional(),
+    HANZO_DISABLE_EXPENSIVE_POSTGRES_QUERIES: z
       .enum(["true", "false"])
       .optional()
       .default("false"),
     SALT: z.string({
       required_error:
-        "A strong Salt is required to encrypt API keys securely. See: https://langfuse.com/docs/deployment/self-host#deploy-the-container",
+        "A strong Salt is required to encrypt API keys securely. See: https://hanzo.ai/docs/deployment/self-host#deploy-the-container",
     }),
     // Add newly signed up users to default org and/or project with role
-    LANGFUSE_DEFAULT_ORG_ID: z.string().optional(),
-    LANGFUSE_DEFAULT_ORG_ROLE: z
+    HANZO_DEFAULT_ORG_ID: z.string().optional(),
+    HANZO_DEFAULT_ORG_ROLE: z
       .enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"])
       .optional(),
-    LANGFUSE_DEFAULT_PROJECT_ID: z.string().optional(),
-    LANGFUSE_DEFAULT_PROJECT_ROLE: z
+    HANZO_DEFAULT_PROJECT_ID: z.string().optional(),
+    HANZO_DEFAULT_PROJECT_ROLE: z
       .enum(["OWNER", "ADMIN", "MEMBER", "VIEWER"])
       .optional(),
-    LANGFUSE_CSP_ENFORCE_HTTPS: z
+    HANZO_CSP_ENFORCE_HTTPS: z
       .enum(["true", "false"])
       .optional()
       .default("false"),
@@ -162,16 +162,16 @@ export const env = createEnv({
     SMTP_CONNECTION_URL: z.string().optional(),
 
     // S3 Batch Export
-    LANGFUSE_S3_BATCH_EXPORT_ENABLED: z
+    HANZO_S3_BATCH_EXPORT_ENABLED: z
       .enum(["true", "false"])
       .default("false"),
-    LANGFUSE_S3_BATCH_EXPORT_BUCKET: z.string().optional(),
-    LANGFUSE_S3_BATCH_EXPORT_PREFIX: z.string().default(""),
-    LANGFUSE_S3_BATCH_EXPORT_REGION: z.string().optional(),
-    LANGFUSE_S3_BATCH_EXPORT_ENDPOINT: z.string().optional(),
-    LANGFUSE_S3_BATCH_EXPORT_ACCESS_KEY_ID: z.string().optional(),
-    LANGFUSE_S3_BATCH_EXPORT_SECRET_ACCESS_KEY: z.string().optional(),
-    LANGFUSE_S3_BATCH_EXPORT_FORCE_PATH_STYLE: z
+    HANZO_S3_BATCH_EXPORT_BUCKET: z.string().optional(),
+    HANZO_S3_BATCH_EXPORT_PREFIX: z.string().default(""),
+    HANZO_S3_BATCH_EXPORT_REGION: z.string().optional(),
+    HANZO_S3_BATCH_EXPORT_ENDPOINT: z.string().optional(),
+    HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID: z.string().optional(),
+    HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY: z.string().optional(),
+    HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE: z
       .enum(["true", "false"])
       .default("false"),
 
@@ -194,21 +194,21 @@ export const env = createEnv({
     CLICKHOUSE_CLUSTER_ENABLED: z.enum(["true", "false"]).default("true"),
 
     // EE ui customization
-    LANGFUSE_UI_API_HOST: z.string().optional(),
-    LANGFUSE_UI_DOCUMENTATION_HREF: z.string().url().optional(),
-    LANGFUSE_UI_SUPPORT_HREF: z.string().url().optional(),
-    LANGFUSE_UI_FEEDBACK_HREF: z.string().url().optional(),
-    LANGFUSE_UI_LOGO_LIGHT_MODE_HREF: z.string().url().optional(),
-    LANGFUSE_UI_LOGO_DARK_MODE_HREF: z.string().url().optional(),
-    LANGFUSE_UI_DEFAULT_MODEL_ADAPTER: z
+    HANZO_UI_API_HOST: z.string().optional(),
+    HANZO_UI_DOCUMENTATION_HREF: z.string().url().optional(),
+    HANZO_UI_SUPPORT_HREF: z.string().url().optional(),
+    HANZO_UI_FEEDBACK_HREF: z.string().url().optional(),
+    HANZO_UI_LOGO_LIGHT_MODE_HREF: z.string().url().optional(),
+    HANZO_UI_LOGO_DARK_MODE_HREF: z.string().url().optional(),
+    HANZO_UI_DEFAULT_MODEL_ADAPTER: z
       .enum(["OpenAI", "Anthropic", "Azure"])
       .optional(),
-    LANGFUSE_UI_DEFAULT_BASE_URL_OPENAI: z.string().url().optional(),
-    LANGFUSE_UI_DEFAULT_BASE_URL_ANTHROPIC: z.string().url().optional(),
-    LANGFUSE_UI_DEFAULT_BASE_URL_AZURE: z.string().url().optional(),
+    HANZO_UI_DEFAULT_BASE_URL_OPENAI: z.string().url().optional(),
+    HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC: z.string().url().optional(),
+    HANZO_UI_DEFAULT_BASE_URL_AZURE: z.string().url().optional(),
 
     // EE License
-    LANGFUSE_EE_LICENSE_KEY: z.string().optional(),
+    HANZO_EE_LICENSE_KEY: z.string().optional(),
     ADMIN_API_KEY: z.string().optional(),
     ENCRYPTION_KEY: z
       .string()
@@ -233,30 +233,30 @@ export const env = createEnv({
     REDIS_ENABLE_AUTO_PIPELINING: z.enum(["true", "false"]).default("true"),
 
     // langfuse caching
-    LANGFUSE_CACHE_API_KEY_ENABLED: z.enum(["true", "false"]).default("false"),
-    LANGFUSE_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(120),
+    HANZO_CACHE_API_KEY_ENABLED: z.enum(["true", "false"]).default("false"),
+    HANZO_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(120),
 
     // Multimodal media upload to S3
-    LANGFUSE_S3_MEDIA_MAX_CONTENT_LENGTH: z.coerce
+    HANZO_S3_MEDIA_MAX_CONTENT_LENGTH: z.coerce
       .number()
       .positive()
       .int()
       .default(1_000_000_000),
-    LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
-    LANGFUSE_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+    HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
+    HANZO_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
       .enum(["true", "false"])
       .default("false"),
-    LANGFUSE_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS: z.coerce
+    HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS: z.coerce
       .number()
       .nonnegative()
       .default(3600),
 
-    LANGFUSE_ALLOWED_ORGANIZATION_CREATORS: z
+    HANZO_ALLOWED_ORGANIZATION_CREATORS: z
       .string()
       .optional()
       .refine((value) => {
@@ -266,27 +266,27 @@ export const env = createEnv({
         return creators.every(
           (creator) => emailSchema.safeParse(creator).success,
         );
-      }, "LANGFUSE_ALLOWED_ORGANIZATION_CREATORS must be a comma separated list of valid email addresses"),
+      }, "HANZO_ALLOWED_ORGANIZATION_CREATORS must be a comma separated list of valid email addresses"),
 
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SIGNING_SECRET: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_CSP_REPORT_URI: z.string().optional(),
-    LANGFUSE_RATE_LIMITS_ENABLED: z.enum(["true", "false"]).default("true"),
+    HANZO_RATE_LIMITS_ENABLED: z.enum(["true", "false"]).default("true"),
 
-    LANGFUSE_INIT_ORG_ID: z.string().optional(),
-    LANGFUSE_INIT_ORG_NAME: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_ID: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_NAME: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_RETENTION: z.number().int().gte(7).optional(),
-    LANGFUSE_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_SECRET_KEY: z.string().optional(),
-    LANGFUSE_INIT_USER_EMAIL: z
+    HANZO_INIT_ORG_ID: z.string().optional(),
+    HANZO_INIT_ORG_NAME: z.string().optional(),
+    HANZO_INIT_PROJECT_ID: z.string().optional(),
+    HANZO_INIT_PROJECT_NAME: z.string().optional(),
+    HANZO_INIT_PROJECT_RETENTION: z.number().int().gte(7).optional(),
+    HANZO_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
+    HANZO_INIT_PROJECT_SECRET_KEY: z.string().optional(),
+    HANZO_INIT_USER_EMAIL: z
       .union([z.string().email(), z.string().length(0)])
       .optional(),
-    LANGFUSE_INIT_USER_NAME: z.string().optional(),
-    LANGFUSE_INIT_USER_PASSWORD: z.string().optional(),
-    LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT: z
+    HANZO_INIT_USER_NAME: z.string().optional(),
+    HANZO_INIT_USER_PASSWORD: z.string().optional(),
+    HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT: z
       .number()
       .positive()
       .default(50_000),
@@ -303,7 +303,7 @@ export const env = createEnv({
     // WARNING: Also add these to web/Dockerfile
 
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_LANGFUSE_CLOUD_REGION: z
+    NEXT_PUBLIC_HANZO_CLOUD_REGION: z
       .enum(["US", "EU", "STAGING", "DEV"])
       .optional(),
     NEXT_PUBLIC_DEMO_PROJECT_ID: z.string().optional(),
@@ -332,24 +332,24 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_COOKIE_DOMAIN: process.env.NEXTAUTH_COOKIE_DOMAIN,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXT_PUBLIC_LANGFUSE_CLOUD_REGION:
-      process.env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+    NEXT_PUBLIC_HANZO_CLOUD_REGION:
+      process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
     NEXT_PUBLIC_SIGN_UP_DISABLED: process.env.NEXT_PUBLIC_SIGN_UP_DISABLED,
-    LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:
-      process.env.LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES,
-    LANGFUSE_DISABLE_EXPENSIVE_POSTGRES_QUERIES:
-      process.env.LANGFUSE_DISABLE_EXPENSIVE_POSTGRES_QUERIES,
-    LANGFUSE_TEAM_SLACK_WEBHOOK: process.env.LANGFUSE_TEAM_SLACK_WEBHOOK,
-    LANGFUSE_NEW_USER_SIGNUP_WEBHOOK:
-      process.env.LANGFUSE_NEW_USER_SIGNUP_WEBHOOK,
+    HANZO_ENABLE_EXPERIMENTAL_FEATURES:
+      process.env.HANZO_ENABLE_EXPERIMENTAL_FEATURES,
+    HANZO_DISABLE_EXPENSIVE_POSTGRES_QUERIES:
+      process.env.HANZO_DISABLE_EXPENSIVE_POSTGRES_QUERIES,
+    HANZO_TEAM_SLACK_WEBHOOK: process.env.HANZO_TEAM_SLACK_WEBHOOK,
+    HANZO_NEW_USER_SIGNUP_WEBHOOK:
+      process.env.HANZO_NEW_USER_SIGNUP_WEBHOOK,
     SALT: process.env.SALT,
-    LANGFUSE_CSP_ENFORCE_HTTPS: process.env.LANGFUSE_CSP_ENFORCE_HTTPS,
+    HANZO_CSP_ENFORCE_HTTPS: process.env.HANZO_CSP_ENFORCE_HTTPS,
     TELEMETRY_ENABLED: process.env.TELEMETRY_ENABLED,
     // Default org, project and role
-    LANGFUSE_DEFAULT_ORG_ID: process.env.LANGFUSE_DEFAULT_ORG_ID,
-    LANGFUSE_DEFAULT_ORG_ROLE: process.env.LANGFUSE_DEFAULT_ORG_ROLE,
-    LANGFUSE_DEFAULT_PROJECT_ID: process.env.LANGFUSE_DEFAULT_PROJECT_ID,
-    LANGFUSE_DEFAULT_PROJECT_ROLE: process.env.LANGFUSE_DEFAULT_PROJECT_ROLE,
+    HANZO_DEFAULT_ORG_ID: process.env.HANZO_DEFAULT_ORG_ID,
+    HANZO_DEFAULT_ORG_ROLE: process.env.HANZO_DEFAULT_ORG_ROLE,
+    HANZO_DEFAULT_PROJECT_ID: process.env.HANZO_DEFAULT_PROJECT_ID,
+    HANZO_DEFAULT_PROJECT_ROLE: process.env.HANZO_DEFAULT_PROJECT_ROLE,
     // AUTH
     AUTH_GOOGLE_CLIENT_ID: process.env.AUTH_GOOGLE_CLIENT_ID,
     AUTH_GOOGLE_CLIENT_SECRET: process.env.AUTH_GOOGLE_CLIENT_SECRET,
@@ -455,42 +455,42 @@ export const env = createEnv({
     OTEL_TRACE_SAMPLING_RATIO: process.env.OTEL_TRACE_SAMPLING_RATIO,
 
     // S3 Batch Export
-    LANGFUSE_S3_BATCH_EXPORT_ENABLED:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_ENABLED,
-    LANGFUSE_S3_BATCH_EXPORT_BUCKET:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_BUCKET,
-    LANGFUSE_S3_BATCH_EXPORT_PREFIX:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_PREFIX,
-    LANGFUSE_S3_BATCH_EXPORT_REGION:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_REGION,
-    LANGFUSE_S3_BATCH_EXPORT_ENDPOINT:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_ENDPOINT,
-    LANGFUSE_S3_BATCH_EXPORT_ACCESS_KEY_ID:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_ACCESS_KEY_ID,
-    LANGFUSE_S3_BATCH_EXPORT_SECRET_ACCESS_KEY:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_SECRET_ACCESS_KEY,
-    LANGFUSE_S3_BATCH_EXPORT_FORCE_PATH_STYLE:
-      process.env.LANGFUSE_S3_BATCH_EXPORT_FORCE_PATH_STYLE,
+    HANZO_S3_BATCH_EXPORT_ENABLED:
+      process.env.HANZO_S3_BATCH_EXPORT_ENABLED,
+    HANZO_S3_BATCH_EXPORT_BUCKET:
+      process.env.HANZO_S3_BATCH_EXPORT_BUCKET,
+    HANZO_S3_BATCH_EXPORT_PREFIX:
+      process.env.HANZO_S3_BATCH_EXPORT_PREFIX,
+    HANZO_S3_BATCH_EXPORT_REGION:
+      process.env.HANZO_S3_BATCH_EXPORT_REGION,
+    HANZO_S3_BATCH_EXPORT_ENDPOINT:
+      process.env.HANZO_S3_BATCH_EXPORT_ENDPOINT,
+    HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID:
+      process.env.HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID,
+    HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY:
+      process.env.HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY,
+    HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE:
+      process.env.HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE,
 
     // S3 media upload
-    LANGFUSE_S3_MEDIA_MAX_CONTENT_LENGTH:
-      process.env.LANGFUSE_S3_MEDIA_MAX_CONTENT_LENGTH,
-    LANGFUSE_S3_MEDIA_UPLOAD_BUCKET:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
-    LANGFUSE_S3_MEDIA_UPLOAD_PREFIX:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_PREFIX,
-    LANGFUSE_S3_MEDIA_UPLOAD_REGION:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-    LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-    LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-    LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-    LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE,
-    LANGFUSE_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS:
-      process.env.LANGFUSE_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS,
+    HANZO_S3_MEDIA_MAX_CONTENT_LENGTH:
+      process.env.HANZO_S3_MEDIA_MAX_CONTENT_LENGTH,
+    HANZO_S3_MEDIA_UPLOAD_BUCKET:
+      process.env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+    HANZO_S3_MEDIA_UPLOAD_PREFIX:
+      process.env.HANZO_S3_MEDIA_UPLOAD_PREFIX,
+    HANZO_S3_MEDIA_UPLOAD_REGION:
+      process.env.HANZO_S3_MEDIA_UPLOAD_REGION,
+    HANZO_S3_MEDIA_UPLOAD_ENDPOINT:
+      process.env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+    HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:
+      process.env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+    HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:
+      process.env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+    HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:
+      process.env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE,
+    HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS:
+      process.env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS,
     // Database exports
     DB_EXPORT_PAGE_SIZE: process.env.DB_EXPORT_PAGE_SIZE,
     // Worker
@@ -508,24 +508,24 @@ export const env = createEnv({
     CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
     CLICKHOUSE_CLUSTER_ENABLED: process.env.CLICKHOUSE_CLUSTER_ENABLED,
     // EE ui customization
-    LANGFUSE_UI_API_HOST: process.env.LANGFUSE_UI_API_HOST,
-    LANGFUSE_UI_DOCUMENTATION_HREF: process.env.LANGFUSE_UI_DOCUMENTATION_HREF,
-    LANGFUSE_UI_SUPPORT_HREF: process.env.LANGFUSE_UI_SUPPORT_HREF,
-    LANGFUSE_UI_FEEDBACK_HREF: process.env.LANGFUSE_UI_FEEDBACK_HREF,
-    LANGFUSE_UI_LOGO_LIGHT_MODE_HREF:
-      process.env.LANGFUSE_UI_LOGO_LIGHT_MODE_HREF,
-    LANGFUSE_UI_LOGO_DARK_MODE_HREF:
-      process.env.LANGFUSE_UI_LOGO_DARK_MODE_HREF,
-    LANGFUSE_UI_DEFAULT_MODEL_ADAPTER:
-      process.env.LANGFUSE_UI_DEFAULT_MODEL_ADAPTER,
-    LANGFUSE_UI_DEFAULT_BASE_URL_OPENAI:
-      process.env.LANGFUSE_UI_DEFAULT_BASE_URL_OPENAI,
-    LANGFUSE_UI_DEFAULT_BASE_URL_ANTHROPIC:
-      process.env.LANGFUSE_UI_DEFAULT_BASE_URL_ANTHROPIC,
-    LANGFUSE_UI_DEFAULT_BASE_URL_AZURE:
-      process.env.LANGFUSE_UI_DEFAULT_BASE_URL_AZURE,
+    HANZO_UI_API_HOST: process.env.HANZO_UI_API_HOST,
+    HANZO_UI_DOCUMENTATION_HREF: process.env.HANZO_UI_DOCUMENTATION_HREF,
+    HANZO_UI_SUPPORT_HREF: process.env.HANZO_UI_SUPPORT_HREF,
+    HANZO_UI_FEEDBACK_HREF: process.env.HANZO_UI_FEEDBACK_HREF,
+    HANZO_UI_LOGO_LIGHT_MODE_HREF:
+      process.env.HANZO_UI_LOGO_LIGHT_MODE_HREF,
+    HANZO_UI_LOGO_DARK_MODE_HREF:
+      process.env.HANZO_UI_LOGO_DARK_MODE_HREF,
+    HANZO_UI_DEFAULT_MODEL_ADAPTER:
+      process.env.HANZO_UI_DEFAULT_MODEL_ADAPTER,
+    HANZO_UI_DEFAULT_BASE_URL_OPENAI:
+      process.env.HANZO_UI_DEFAULT_BASE_URL_OPENAI,
+    HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC:
+      process.env.HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC,
+    HANZO_UI_DEFAULT_BASE_URL_AZURE:
+      process.env.HANZO_UI_DEFAULT_BASE_URL_AZURE,
     // EE License
-    LANGFUSE_EE_LICENSE_KEY: process.env.LANGFUSE_EE_LICENSE_KEY,
+    HANZO_EE_LICENSE_KEY: process.env.HANZO_EE_LICENSE_KEY,
     ADMIN_API_KEY: process.env.ADMIN_API_KEY,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     REDIS_HOST: process.env.REDIS_HOST,
@@ -534,33 +534,33 @@ export const env = createEnv({
     REDIS_CONNECTION_STRING: process.env.REDIS_CONNECTION_STRING,
     REDIS_ENABLE_AUTO_PIPELINING: process.env.REDIS_ENABLE_AUTO_PIPELINING,
     // langfuse caching
-    LANGFUSE_CACHE_API_KEY_ENABLED: process.env.LANGFUSE_CACHE_API_KEY_ENABLED,
-    LANGFUSE_CACHE_API_KEY_TTL_SECONDS:
-      process.env.LANGFUSE_CACHE_API_KEY_TTL_SECONDS,
-    LANGFUSE_ALLOWED_ORGANIZATION_CREATORS:
-      process.env.LANGFUSE_ALLOWED_ORGANIZATION_CREATORS,
+    HANZO_CACHE_API_KEY_ENABLED: process.env.HANZO_CACHE_API_KEY_ENABLED,
+    HANZO_CACHE_API_KEY_TTL_SECONDS:
+      process.env.HANZO_CACHE_API_KEY_TTL_SECONDS,
+    HANZO_ALLOWED_ORGANIZATION_CREATORS:
+      process.env.HANZO_ALLOWED_ORGANIZATION_CREATORS,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SIGNING_SECRET: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     SENTRY_CSP_REPORT_URI: process.env.SENTRY_CSP_REPORT_URI,
-    LANGFUSE_RATE_LIMITS_ENABLED: process.env.LANGFUSE_RATE_LIMITS_ENABLED,
+    HANZO_RATE_LIMITS_ENABLED: process.env.HANZO_RATE_LIMITS_ENABLED,
     // provisioning
-    LANGFUSE_INIT_ORG_ID: process.env.LANGFUSE_INIT_ORG_ID,
-    LANGFUSE_INIT_ORG_NAME: process.env.LANGFUSE_INIT_ORG_NAME,
-    LANGFUSE_INIT_PROJECT_ID: process.env.LANGFUSE_INIT_PROJECT_ID,
-    LANGFUSE_INIT_PROJECT_NAME: process.env.LANGFUSE_INIT_PROJECT_NAME,
-    LANGFUSE_INIT_PROJECT_RETENTION:
-      process.env.LANGFUSE_INIT_PROJECT_RETENTION,
-    LANGFUSE_INIT_PROJECT_PUBLIC_KEY:
-      process.env.LANGFUSE_INIT_PROJECT_PUBLIC_KEY,
-    LANGFUSE_INIT_PROJECT_SECRET_KEY:
-      process.env.LANGFUSE_INIT_PROJECT_SECRET_KEY,
-    LANGFUSE_INIT_USER_EMAIL: process.env.LANGFUSE_INIT_USER_EMAIL,
-    LANGFUSE_INIT_USER_NAME: process.env.LANGFUSE_INIT_USER_NAME,
-    LANGFUSE_INIT_USER_PASSWORD: process.env.LANGFUSE_INIT_USER_PASSWORD,
+    HANZO_INIT_ORG_ID: process.env.HANZO_INIT_ORG_ID,
+    HANZO_INIT_ORG_NAME: process.env.HANZO_INIT_ORG_NAME,
+    HANZO_INIT_PROJECT_ID: process.env.HANZO_INIT_PROJECT_ID,
+    HANZO_INIT_PROJECT_NAME: process.env.HANZO_INIT_PROJECT_NAME,
+    HANZO_INIT_PROJECT_RETENTION:
+      process.env.HANZO_INIT_PROJECT_RETENTION,
+    HANZO_INIT_PROJECT_PUBLIC_KEY:
+      process.env.HANZO_INIT_PROJECT_PUBLIC_KEY,
+    HANZO_INIT_PROJECT_SECRET_KEY:
+      process.env.HANZO_INIT_PROJECT_SECRET_KEY,
+    HANZO_INIT_USER_EMAIL: process.env.HANZO_INIT_USER_EMAIL,
+    HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
+    HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
-    LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT:
-      process.env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+    HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
+      process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
   },
   // Skip validation in Docker builds
   // DOCKER_BUILD is set in Dockerfile

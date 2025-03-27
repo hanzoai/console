@@ -138,7 +138,7 @@ export const cloudBillingRouter = createTRPCRouter({
           mode: checkoutMode,
           metadata: {
             orgId: input.orgId,
-            cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? null,
+            cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
             productType: price.type,
           },         
         };       

@@ -784,8 +784,8 @@ export class IngestionService {
     minProjectCreateDate: string | undefined = undefined,
   ): Promise<boolean> {
     if (
-      env.LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS &&
-      env.LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS.split(
+      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS &&
+      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS.split(
         ",",
       ).includes(projectId)
     ) {
@@ -793,7 +793,7 @@ export class IngestionService {
     }
 
     if (
-      !env.LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE &&
+      !env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE &&
       !minProjectCreateDate
     ) {
       return false;
@@ -819,7 +819,7 @@ export class IngestionService {
     }
 
     const cutoffDate = new Date(
-      env.LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE ??
+      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE ??
         minProjectCreateDate ??
         new Date(), // Fallback to today. Should never apply.
     );

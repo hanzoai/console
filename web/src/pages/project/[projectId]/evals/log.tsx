@@ -1,7 +1,7 @@
 // NOTE: We may transition this feature from our MIT licensed repository to the
 // a commercial License (ee folder) once we release a first stable version.
 // Please consider this when planning long-term use and integration of this functionality into your projects.
-// For more information see https://langfuse.com/docs/open-source
+// For more information see https://hanzo.ai/docs/open-source
 
 import { useRouter } from "next/router";
 import EvalLogTable from "@/src/ee/features/evals/components/eval-log";
@@ -33,7 +33,7 @@ export default function LogPage() {
         title: "Evaluators",
         help: {
           description: "View of all running evals.",
-          href: "https://langfuse.com/docs/scores/model-based-evals",
+          href: "https://hanzo.ai/docs/scores/model-based-evals",
         },
         tabsComponent: (
           <TabsBar value="log">

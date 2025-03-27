@@ -391,7 +391,7 @@ export function AnnotationQueueItemsTable({
         help={{
           description:
             "Add traces and/or observations to your annotation queue to have them annotated by your team across predefined dimensions.",
-          href: "https://langfuse.com/docs/scores/model-based-evals",
+          href: "https://hanzo.ai/docs/scores/model-based-evals",
         }}
         pagination={{
           totalCount: items.data?.totalItems ?? null,

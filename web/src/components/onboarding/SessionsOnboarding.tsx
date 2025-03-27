@@ -42,7 +42,7 @@ export function SessionsOnboarding() {
           To start using sessions, you need to add a `sessionId` to your traces.
           See{" "}
           <Link
-            href="https://langfuse.com/docs/tracing-features/sessions"
+            href="https://hanzo.ai/docs/tracing-features/sessions"
             className="underline"
           >
             documentation
@@ -50,7 +50,7 @@ export function SessionsOnboarding() {
           for more details.
         </span>
       }
-      videoSrc="https://static.langfuse.com/prod-assets/onboarding/sessions-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/sessions-overview-v1.mp4"
     />
   );
 }

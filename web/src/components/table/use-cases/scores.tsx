@@ -278,7 +278,7 @@ export default function ScoresTable({
       id: "userId",
       headerTooltip: {
         description: "The user ID associated with the trace.",
-        href: "https://langfuse.com/docs/tracing-features/users",
+        href: "https://hanzo.ai/docs/tracing-features/users",
       },
       enableHiding: true,
       enableSorting: true,
@@ -381,7 +381,7 @@ export default function ScoresTable({
       id: "jobConfigurationId",
       headerTooltip: {
         description: "The Job Configuration ID associated with the trace.",
-        href: "https://langfuse.com/docs/scores/model-based-evals",
+        href: "https://hanzo.ai/docs/scores/model-based-evals",
       },
       enableHiding: true,
       enableSorting: false,

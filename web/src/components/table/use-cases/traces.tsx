@@ -500,7 +500,7 @@ export default function TracesTable({
       size: 150,
       headerTooltip: {
         description: "Add `userId` to traces to track users.",
-        href: "https://langfuse.com/docs/tracing-features/users",
+        href: "https://hanzo.ai/docs/tracing-features/users",
       },
       cell: ({ row }) => {
         const value: TracesTableRow["userId"] = row.getValue("userId");
@@ -522,7 +522,7 @@ export default function TracesTable({
       size: 150,
       headerTooltip: {
         description: "Add `sessionId` to traces to track sessions.",
-        href: "https://langfuse.com/docs/tracing-features/sessions",
+        href: "https://hanzo.ai/docs/tracing-features/sessions",
       },
       cell: ({ row }) => {
         const value: TracesTableRow["sessionId"] = row.getValue("sessionId");
@@ -739,7 +739,7 @@ export default function TracesTable({
       size: 400,
       headerTooltip: {
         description: "Add metadata to traces to track additional information.",
-        href: "https://langfuse.com/docs/tracing-features/metadata",
+        href: "https://hanzo.ai/docs/tracing-features/metadata",
       },
       cell: ({ row }) => {
         const traceId: TracesTableRow["id"] = row.getValue("id");
@@ -830,7 +830,7 @@ export default function TracesTable({
       size: 100,
       headerTooltip: {
         description: "Track changes via the version tag.",
-        href: "https://langfuse.com/docs/experimentation",
+        href: "https://hanzo.ai/docs/experimentation",
       },
       enableHiding: true,
       enableSorting: true,
@@ -843,7 +843,7 @@ export default function TracesTable({
       size: 100,
       headerTooltip: {
         description: "Track changes to your application via the release tag.",
-        href: "https://langfuse.com/docs/experimentation",
+        href: "https://hanzo.ai/docs/experimentation",
       },
       enableHiding: true,
       enableSorting: true,
@@ -856,7 +856,7 @@ export default function TracesTable({
       size: 150,
       headerTooltip: {
         description: "Group traces with tags.",
-        href: "https://langfuse.com/docs/tracing-features/tags",
+        href: "https://hanzo.ai/docs/tracing-features/tags",
       },
       cell: ({ row }) => {
         const tags: TracesTableRow["tags"] = row.getValue("tags");

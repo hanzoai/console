@@ -9,9 +9,9 @@ import { type CloudConfigSchema } from "@langfuse/shared";
 export function getOrganizationPlanServerSide(
   cloudConfig?: CloudConfigSchema,
 ): Plan {
-  if (process.env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+  if (process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
     // in dev, grant team plan to all organizations
-    // if (process.env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV") {
+    // if (process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV") {
     //   return "cloud:team";
     // }
     if (cloudConfig) {
@@ -49,7 +49,7 @@ export function getOrganizationPlanServerSide(
 }
 
 export function getSelfHostedInstancePlanServerSide(): Plan | null {
-  const licenseKey = env.LANGFUSE_EE_LICENSE_KEY;
+  const licenseKey = env.HANZO_EE_LICENSE_KEY;
   if (!licenseKey) return null;
   if (licenseKey.startsWith("langfuse_ee_")) {
     return "self-hosted:pro";

@@ -18,11 +18,11 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3MediaStorageClient;
@@ -34,11 +34,11 @@ const getS3EventStorageClient = (bucketName: string): StorageService => {
   if (!s3EventStorageClient) {
     s3EventStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3EventStorageClient;
@@ -48,7 +48,7 @@ const deleteMediaItemsForTraces = async (
   projectId: string,
   traceIds: string[],
 ): Promise<void> => {
-  if (!env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+  if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     return;
   }
   // First, find all records associated with the traces to be deleted
@@ -113,7 +113,7 @@ const deleteMediaItemsForTraces = async (
   if (mediaDeleteCandidates.length > 0) {
     // Delete from Cloud Storage
     await getS3MediaStorageClient(
-      env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET ?? "", // Fallback is never used.
+      env.HANZO_S3_MEDIA_UPLOAD_BUCKET ?? "", // Fallback is never used.
     ).deleteFiles(mediaDeleteCandidates.map((f) => f.bucketPath));
 
     // Delete from postgres
@@ -161,7 +161,7 @@ export const processClickhouseTraceDelete = async (
   const eventLogStream = getEventLogByProjectIdAndTraceIds(projectId, traceIds);
   let eventLogRecords: { id: string; path: string }[] = [];
   const eventStorageClient = getS3EventStorageClient(
-    env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+    env.HANZO_S3_EVENT_UPLOAD_BUCKET,
   );
   for await (const eventLog of eventLogStream) {
     eventLogRecords.push({ id: eventLog.id, path: eventLog.bucket_path });

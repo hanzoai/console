@@ -269,7 +269,7 @@ export const OrganizationProjectOverview = () => {
         help: {
           description:
             "Organizations help you manage access to projects. Each organization can have multiple projects and team members with different roles.",
-          href: "https://langfuse.com/docs/rbac",
+          href: "https://hanzo.ai/docs/rbac",
         },
         breadcrumb: [
           {
@@ -348,13 +348,13 @@ const Onboarding = () => {
           </Button>
         )}
         <Button variant="secondary" asChild>
-          <Link href="https://langfuse.com/docs" target="_blank">
+          <Link href="https://hanzo.ai/docs" target="_blank">
             <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
             Docs
           </Link>
         </Button>
         <Button variant="secondary" asChild>
-          <Link href="https://langfuse.com/docs/ask-ai" target="_blank">
+          <Link href="https://hanzo.ai/docs/ask-ai" target="_blank">
             <MessageSquareText className="mr-2 h-4 w-4" aria-hidden="true" />
             Ask AI
           </Link>

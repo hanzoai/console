@@ -11,7 +11,7 @@ describe("should sanitize dom", () => {
   });
   it("should should not sanitize valid langfuse urls", () => {
     const validHanzoUrl =
-      "https://cloud.langfuse.com/project/abjdnksadn/traces?filter=timestamp%3Bdatetime%3B%3B%3E%3B2024-04-19T00%253A00%253A00.000Z%2Cid%3Bstring%3B%3Bcontains%3Ba%2Ctimestamp%3Bdatetime%3B%3B%3C%3B2024-04-30T22%253A00%253A00.000Z%2CinputTokens%3Bnumber%3B%3B%3E%3B1";
+      "https://cloud.hanzo.ai/project/abjdnksadn/traces?filter=timestamp%3Bdatetime%3B%3B%3E%3B2024-04-19T00%253A00%253A00.000Z%2Cid%3Bstring%3B%3Bcontains%3Ba%2Ctimestamp%3Bdatetime%3B%3B%3C%3B2024-04-30T22%253A00%253A00.000Z%2CinputTokens%3Bnumber%3B%3B%3E%3B1";
     const cleam = DOMPurify.sanitize(validHanzoUrl);
 
     expect(cleam).toBe(validHanzoUrl);

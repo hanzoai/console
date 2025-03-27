@@ -22,7 +22,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       { status: 405 },
     );
 
-  if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION || !stripeClient) {
+  if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION || !stripeClient) {
     logger.error("[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud");
     return NextResponse.json(
       { message: "Stripe webhook endpoint only available in HanzoCloud Cloud" },

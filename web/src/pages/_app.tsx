@@ -74,7 +74,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter();
 
   useEffect(() => {
-    // PostHog (cloud.langfuse.com)
+    // PostHog (cloud.hanzo.ai)
     if (env.NEXT_PUBLIC_POSTHOG_KEY && env.NEXT_PUBLIC_POSTHOG_HOST) {
       const handleRouteChange = () => {
         setProjectInPosthog();
@@ -155,7 +155,7 @@ function UserTracking() {
                 organization: org,
               })),
             ) ?? undefined,
-          LANGFUSE_CLOUD_REGION: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+          HANZO_CLOUD_REGION: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
         });
       const emailDomain = sessionUser.email?.split("@")[1];
       if (emailDomain)
@@ -254,7 +254,7 @@ if (
 }
 
 function BetterStackUptimeStatusMessage() {
-  if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) return null;
+  if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) return null;
   return (
     <script
       src="https://uptime.betterstack.com/widgets/announcement.js"

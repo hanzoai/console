@@ -22,7 +22,7 @@ export default function NewEvaluatorPage() {
         help: {
           description:
             "Select a template defining the evaluation prompt and a model as judge to evaluate incoming traces.",
-          href: "https://langfuse.com/docs/scores/model-based-evals",
+          href: "https://hanzo.ai/docs/scores/model-based-evals",
         },
       }}
     >

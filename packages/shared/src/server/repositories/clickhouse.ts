@@ -20,11 +20,11 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3StorageServiceClient;
@@ -53,7 +53,7 @@ export async function upsertClickhouse<
         }
 
         const eventId = randomUUID();
-        const bucketPath = `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getClickhouseEntityType(eventType)}/${record.id}/${eventId}.json`;
+        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getClickhouseEntityType(eventType)}/${record.id}/${eventId}.json`;
 
         // Write new file directly to ClickHouse. We don't use the ClickHouse writer here as we expect more limited traffic
         // and are not worried that much about latency.
@@ -68,7 +68,7 @@ export async function upsertClickhouse<
               entity_type: getClickhouseEntityType(eventType),
               entity_id: record.id,
               event_id: eventId,
-              bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+              bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
               bucket_path: bucketPath,
             },
           ],
@@ -76,7 +76,7 @@ export async function upsertClickhouse<
         });
 
         return getS3StorageServiceClient(
-          env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          env.HANZO_S3_EVENT_UPLOAD_BUCKET,
         ).uploadJson(bucketPath, [
           {
             id: eventId,

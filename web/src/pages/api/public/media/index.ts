@@ -39,9 +39,9 @@ export default withMiddlewares({
         field,
       } = body;
 
-      if (contentLength > env.LANGFUSE_S3_MEDIA_MAX_CONTENT_LENGTH)
+      if (contentLength > env.HANZO_S3_MEDIA_MAX_CONTENT_LENGTH)
         throw new InvalidRequestError(
-          `File size must be less than ${env.LANGFUSE_S3_MEDIA_MAX_CONTENT_LENGTH} bytes`,
+          `File size must be less than ${env.HANZO_S3_MEDIA_MAX_CONTENT_LENGTH} bytes`,
         );
 
       return await instrumentAsync(
@@ -97,13 +97,13 @@ export default withMiddlewares({
 
             span.setAttribute("mediaId", mediaId);
 
-            if (!env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET)
+            if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET)
               throw new InternalServerError(
                 "Media upload to blob storage not enabled or no bucket configured",
               );
 
             const s3Client = getMediaStorageServiceClient(
-              env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+              env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
             );
 
             const bucketPath = getBucketPath({
@@ -145,13 +145,13 @@ export default withMiddlewares({
                       ${projectId},
                       ${sha256Hash},
                       ${bucketPath},
-                      ${env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET},
+                      ${env.HANZO_S3_MEDIA_UPLOAD_BUCKET},
                       ${contentType},
                       ${contentLength}
                     )
                     ON CONFLICT ("project_id", "sha_256_hash")
                     DO UPDATE SET
-                      "bucket_name" = ${env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET},
+                      "bucket_name" = ${env.HANZO_S3_MEDIA_UPLOAD_BUCKET},
                       "bucket_path" = ${bucketPath},
                       "content_type" = ${contentType},
                       "content_length" = ${contentLength}
@@ -208,8 +208,8 @@ function getBucketPath(params: {
   const { projectId, mediaId, contentType } = params;
   const fileExtension = getFileExtensionFromContentType(contentType);
 
-  const prefix = env.LANGFUSE_S3_MEDIA_UPLOAD_PREFIX
-    ? `${env.LANGFUSE_S3_MEDIA_UPLOAD_PREFIX}`
+  const prefix = env.HANZO_S3_MEDIA_UPLOAD_PREFIX
+    ? `${env.HANZO_S3_MEDIA_UPLOAD_PREFIX}`
     : "";
 
   return `${prefix}${projectId}/${mediaId}.${fileExtension}`;

@@ -53,11 +53,11 @@ export class RateLimitService {
     resource: z.infer<typeof RateLimitResource>,
   ) {
     // if cloud config is not present, we don't apply rate limits and just return
-    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       return new RateLimitHelper(undefined);
     }
 
-    if (env.LANGFUSE_RATE_LIMITS_ENABLED === "false") {
+    if (env.HANZO_RATE_LIMITS_ENABLED === "false") {
       return new RateLimitHelper(undefined);
     }
 

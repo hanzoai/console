@@ -75,7 +75,7 @@ export const QuickstartExamples = ({
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
             <a
-              href="https://langfuse.com/docs/get-started"
+              href="https://hanzo.ai/docs/get-started"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -84,7 +84,7 @@ export const QuickstartExamples = ({
             </a>{" "}
             and{" "}
             <a
-              href="https://langfuse.com/docs/sdk/python"
+              href="https://hanzo.ai/docs/sdk/python"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -102,7 +102,7 @@ export const QuickstartExamples = ({
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
             <a
-              href="https://langfuse.com/docs/get-started"
+              href="https://hanzo.ai/docs/get-started"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -111,7 +111,7 @@ export const QuickstartExamples = ({
             </a>{" "}
             and{" "}
             <a
-              href="https://langfuse.com/docs/sdk/typescript"
+              href="https://hanzo.ai/docs/sdk/typescript"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -130,7 +130,7 @@ export const QuickstartExamples = ({
           <CodeView content="pip install langfuse" className="my-2" />
           <CodeView
             title=".env"
-            content={`LANGFUSE_SECRET_KEY=${secretKey}\nLANGFUSE_PUBLIC_KEY=${publicKey}\nLANGFUSE_HOST="${host}"`}
+            content={`HANZO_SECRET_KEY=${secretKey}\nHANZO_PUBLIC_KEY=${publicKey}\nHANZO_HOST="${host}"`}
             className="my-2"
           />
           <CodeView
@@ -140,7 +140,7 @@ export const QuickstartExamples = ({
           <p className="mt-2 text-xs text-muted-foreground">
             Use the OpenAI SDK as you would normally. See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/openai"
+              href="https://hanzo.ai/docs/integrations/openai"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -163,7 +163,7 @@ export const QuickstartExamples = ({
           <p className="mt-2 text-xs text-muted-foreground">
             See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/langchain/python"
+              href="https://hanzo.ai/docs/integrations/langchain/python"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -186,7 +186,7 @@ export const QuickstartExamples = ({
           <p className="mt-2 text-xs text-muted-foreground">
             See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/langchain/typescript"
+              href="https://hanzo.ai/docs/integrations/langchain/typescript"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -212,7 +212,7 @@ export const QuickstartExamples = ({
           <p className="mt-2 text-xs text-muted-foreground">
             See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/llama-index"
+              href="https://hanzo.ai/docs/integrations/llama-index"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -226,7 +226,7 @@ export const QuickstartExamples = ({
           <p className="mt-2 text-xs text-muted-foreground">
             Use the{" "}
             <a
-              href="https://api.reference.langfuse.com/"
+              href="https://api.reference.hanzo.ai/"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -235,7 +235,7 @@ export const QuickstartExamples = ({
             </a>{" "}
             or one of the{" "}
             <a
-              href="https://langfuse.com/docs/integrations"
+              href="https://hanzo.ai/docs/integrations"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -249,7 +249,7 @@ export const QuickstartExamples = ({
       <span className="mt-4 text-xs text-muted-foreground">
         Do you have questions or issues? Check out this{" "}
         <a
-          href="https://langfuse.com/faq/all/missing-traces"
+          href="https://hanzo.ai/faq/all/missing-traces"
           className="underline"
           target="_blank"
           rel="noopener noreferrer"
@@ -259,7 +259,7 @@ export const QuickstartExamples = ({
         for common resolutions,{" "}
         <Link
           className="underline"
-          href="https://langfuse.com/docs/ask-ai"
+          href="https://hanzo.ai/docs/ask-ai"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -268,7 +268,7 @@ export const QuickstartExamples = ({
         or{" "}
         <Link
           className="underline"
-          href="https://langfuse.com/support"
+          href="https://hanzo.ai/support"
           target="_blank"
           rel="noopener noreferrer"
         >

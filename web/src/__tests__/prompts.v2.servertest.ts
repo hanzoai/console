@@ -766,13 +766,13 @@ describe("/api/public/v2/prompts API Endpoint", () => {
         where: { id: "user-test" },
         update: {
           name: "Demo User",
-          email: "demo-test@langfuse.com",
+          email: "demo-test@hanzo.ai",
           password: "password",
         },
         create: {
           id: "user-test",
           name: "Demo User",
-          email: "demo-test@langfuse.com",
+          email: "demo-test@hanzo.ai",
           password: "password",
         },
       });
@@ -874,7 +874,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       expect(body.meta.totalItems).toBe(3);
 
       // Validate pagination backwards compatibility
-      // https://github.com/langfuse/langfuse/issues/2068
+      // https://github.com/hanzoai/cloud/issues/2068
       expect(body.pagination?.page).toBe(1);
       expect(body.pagination?.limit).toBe(10);
       expect(body.pagination?.totalPages).toBe(1);

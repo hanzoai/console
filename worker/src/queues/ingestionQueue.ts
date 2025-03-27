@@ -29,11 +29,11 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3StorageServiceClient;
@@ -43,7 +43,7 @@ export const ingestionQueueProcessorBuilder = (
   enableRedirectToSecondaryQueue: boolean,
 ): Processor => {
   const projectIdsToRedirectToSecondaryQueue =
-    env.LANGFUSE_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS?.split(",") ??
+    env.HANZO_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS?.split(",") ??
     [];
 
   return async (job: Job<TQueueJobTypes[QueueName.IngestionQueue]>) => {
@@ -80,15 +80,15 @@ export const ingestionQueueProcessorBuilder = (
         entity_type: getClickhouseEntityType(job.data.payload.data.type),
         entity_id: job.data.payload.data.eventBodyId,
         event_id: job.data.payload.data.fileKey ?? null,
-        bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
-        bucket_path: `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
+        bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+        bucket_path: `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
         created_at: new Date().getTime(),
         updated_at: new Date().getTime(),
       });
 
       // If fileKey was processed within the last minutes, i.e. has a match in redis, we skip processing.
       if (
-        env.LANGFUSE_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" &&
+        env.HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" &&
         redis &&
         job.data.payload.data.fileKey
       ) {
@@ -129,7 +129,7 @@ export const ingestionQueueProcessorBuilder = (
       }
 
       const s3Client = getS3StorageServiceClient(
-        env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+        env.HANZO_S3_EVENT_UPLOAD_BUCKET,
       );
 
       logger.info(
@@ -147,7 +147,7 @@ export const ingestionQueueProcessorBuilder = (
         job.data.payload.data.type,
       );
       const eventFiles = await s3Client.listFiles(
-        `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`,
+        `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`,
       );
 
       recordDistribution(
@@ -169,7 +169,7 @@ export const ingestionQueueProcessorBuilder = (
           .sort()
           .shift() ?? new Date();
 
-      const S3_CONCURRENT_READS = env.LANGFUSE_S3_CONCURRENT_READS;
+      const S3_CONCURRENT_READS = env.HANZO_S3_CONCURRENT_READS;
       const events: IngestionEventType[] = [];
 
       // Process files in batches
@@ -194,7 +194,7 @@ export const ingestionQueueProcessorBuilder = (
       }
 
       // Set "seen" keys in Redis to avoid reprocessing for fast updates.
-      if (env.LANGFUSE_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" && redis) {
+      if (env.HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" && redis) {
         const pipeline = redis.pipeline();
         for (const event of eventFiles) {
           const key = event.file.split("/").pop() ?? "";

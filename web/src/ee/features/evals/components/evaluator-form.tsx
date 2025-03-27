@@ -770,7 +770,7 @@ export const InnerEvalConfigForm = (props: {
                                 "Variable in the template to be replaced with the trace data."
                               }
                               href={
-                                "https://langfuse.com/docs/scores/model-based-evals"
+                                "https://hanzo.ai/docs/scores/model-based-evals"
                               }
                             />
                           </div>
@@ -786,7 +786,7 @@ export const InnerEvalConfigForm = (props: {
                                     "HanzoCloud object to retrieve the data from."
                                   }
                                   href={
-                                    "https://langfuse.com/docs/scores/model-based-evals"
+                                    "https://hanzo.ai/docs/scores/model-based-evals"
                                   }
                                 />
                                 <FormItem className="w-2/3">
@@ -834,7 +834,7 @@ export const InnerEvalConfigForm = (props: {
                                       "Name of the HanzoCloud object to retrieve the data from."
                                     }
                                     href={
-                                      "https://langfuse.com/docs/scores/model-based-evals"
+                                      "https://hanzo.ai/docs/scores/model-based-evals"
                                     }
                                   />
                                   <FormItem className="w-2/3">
@@ -864,7 +864,7 @@ export const InnerEvalConfigForm = (props: {
                                     "Variable on the HanzoCloud object to insert into the template."
                                   }
                                   href={
-                                    "https://langfuse.com/docs/scores/model-based-evals"
+                                    "https://hanzo.ai/docs/scores/model-based-evals"
                                   }
                                 />
                                 <FormItem className="w-2/3">
@@ -932,7 +932,7 @@ export const InnerEvalConfigForm = (props: {
                                       "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt."
                                     }
                                     href={
-                                      "https://langfuse.com/docs/scores/model-based-evals"
+                                      "https://hanzo.ai/docs/scores/model-based-evals"
                                     }
                                   />
                                   <FormItem className="w-2/3">

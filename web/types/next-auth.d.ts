@@ -34,7 +34,7 @@ declare module "next-auth" {
     image?: PrismaUser["image"];
     admin?: PrismaUser["admin"];
     emailVerified?: string | null; // iso datetime string, need to stringify as JWT & useSession do not support Date objects
-    canCreateOrganizations: boolean; // default true, allowlist can be set via LANGFUSE_ALLOWED_ORGANIZATION_CREATORS
+    canCreateOrganizations: boolean; // default true, allowlist can be set via HANZO_ALLOWED_ORGANIZATION_CREATORS
     organizations: {
       id: PrismaOrganization["id"];
       name: PrismaOrganization["name"];

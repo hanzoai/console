@@ -34,7 +34,7 @@ export const UserChart = ({
   const user = api.dashboard.chart.useQuery(
     {
       projectId,
-      from: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
+      from: env.NEXT_PUBLIC_HANZO_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
         ? "traces_observations"
         : "traces_observationsview",
       select: [
@@ -188,7 +188,7 @@ export const UserChart = ({
                   <NoDataOrLoading
                     isLoading={isLoading || user.isLoading}
                     description="Consumption per user is tracked by passing their ids on traces."
-                    href="https://langfuse.com/docs/tracing-features/users"
+                    href="https://hanzo.ai/docs/tracing-features/users"
                   />
                 )}
               </>

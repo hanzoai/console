@@ -47,7 +47,7 @@ export const SupportMenuDropdown = () => {
     const items: (SupportMenuItem | "separator")[] = [
       {
         title: "Ask AI",
-        pathname: "https://langfuse.com/docs/ask-ai",
+        pathname: "https://hanzo.ai/docs/ask-ai",
         icon: Sparkles,
       },
     ];
@@ -88,12 +88,12 @@ export const SupportMenuDropdown = () => {
       items.push("separator");
       items.push({
         title: "GitHub Support",
-        pathname: "https://langfuse.com/gh-support",
+        pathname: "https://hanzo.ai/gh-support",
         icon: Github,
       });
       items.push({
         title: "Discord",
-        pathname: "https://langfuse.com/discord",
+        pathname: "https://hanzo.ai/discord",
         icon: SiDiscord,
       });
     }
@@ -101,7 +101,7 @@ export const SupportMenuDropdown = () => {
     items.push("separator");
     items.push({
       title: "Docs",
-      pathname: "https://langfuse.com/docs",
+      pathname: "https://hanzo.ai/docs",
       icon: LibraryBig,
       customizableHref: "documentationHref",
     });
@@ -118,12 +118,12 @@ export const SupportMenuDropdown = () => {
         ...[
           {
             title: "Feature Request",
-            pathname: "https://langfuse.com/ideas",
+            pathname: "https://hanzo.ai/ideas",
             icon: Lightbulb,
           },
           {
             title: "Report a Bug",
-            pathname: "https://langfuse.com/issues",
+            pathname: "https://hanzo.ai/issues",
             icon: Bug,
           },
         ],

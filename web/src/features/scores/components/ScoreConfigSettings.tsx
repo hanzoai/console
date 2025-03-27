@@ -18,7 +18,7 @@ export function ScoreConfigSettings({ projectId }: { projectId: string }) {
       <p className="mb-4 text-sm">
         Score configs define which scores are available for{" "}
         <a
-          href="https://langfuse.com/docs/scores/manually"
+          href="https://hanzo.ai/docs/scores/manually"
           className="underline"
           target="_blank"
           rel="noopener noreferrer"

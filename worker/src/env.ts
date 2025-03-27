@@ -17,26 +17,26 @@ const EnvSchema = z.object({
     .max(65536, `options.port should be >= 0 and < 65536`)
     .default(3030),
 
-  LANGFUSE_S3_BATCH_EXPORT_ENABLED: z.enum(["true", "false"]).default("false"),
-  LANGFUSE_S3_BATCH_EXPORT_BUCKET: z.string().optional(),
-  LANGFUSE_S3_BATCH_EXPORT_PREFIX: z.string().default(""),
-  LANGFUSE_S3_BATCH_EXPORT_REGION: z.string().optional(),
-  LANGFUSE_S3_BATCH_EXPORT_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_BATCH_EXPORT_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_BATCH_EXPORT_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_BATCH_EXPORT_FORCE_PATH_STYLE: z
+  HANZO_S3_BATCH_EXPORT_ENABLED: z.enum(["true", "false"]).default("false"),
+  HANZO_S3_BATCH_EXPORT_BUCKET: z.string().optional(),
+  HANZO_S3_BATCH_EXPORT_PREFIX: z.string().default(""),
+  HANZO_S3_BATCH_EXPORT_REGION: z.string().optional(),
+  HANZO_S3_BATCH_EXPORT_ENDPOINT: z.string().optional(),
+  HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
 
-  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: z.string({
+  HANZO_S3_EVENT_UPLOAD_BUCKET: z.string({
     required_error: "HanzoCloud requires a bucket name for S3 Event Uploads.",
   }),
-  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
-  LANGFUSE_S3_EVENT_UPLOAD_REGION: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
+  HANZO_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
+  HANZO_S3_EVENT_UPLOAD_REGION: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
 
@@ -46,30 +46,30 @@ const EnvSchema = z.object({
     .positive()
     .default(24),
   BATCH_ACTION_EXPORT_ROW_LIMIT: z.coerce.number().positive().default(50_000),
-  LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
+  HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
     .number()
     .positive()
     .default(50_000),
   EMAIL_FROM_ADDRESS: z.string().optional(),
   SMTP_CONNECTION_URL: z.string().optional(),
-  LANGFUSE_INGESTION_QUEUE_PROCESSING_CONCURRENCY: z.coerce
+  HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(20),
-  LANGFUSE_INGESTION_SECONDARY_QUEUE_PROCESSING_CONCURRENCY: z.coerce
+  HANZO_INGESTION_SECONDARY_QUEUE_PROCESSING_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(5),
-  LANGFUSE_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS: z.string().optional(),
-  LANGFUSE_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE: z.coerce
+  HANZO_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS: z.string().optional(),
+  HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE: z.coerce
     .number()
     .positive()
     .default(10000),
-  LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: z.coerce
+  HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: z.coerce
     .number()
     .positive()
     .default(1000),
-  LANGFUSE_INGESTION_CLICKHOUSE_MAX_ATTEMPTS: z.coerce
+  HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS: z.coerce
     .number()
     .positive()
     .default(3),
@@ -92,21 +92,21 @@ const EnvSchema = z.object({
   CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
   CLICKHOUSE_DB: z.string().default("default"),
   CLICKHOUSE_PASSWORD: z.string(),
-  LANGFUSE_EVAL_CREATOR_WORKER_CONCURRENCY: z.coerce
+  HANZO_EVAL_CREATOR_WORKER_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(2),
-  LANGFUSE_TRACE_UPSERT_WORKER_CONCURRENCY: z.coerce
+  HANZO_TRACE_UPSERT_WORKER_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(25),
-  LANGFUSE_TRACE_DELETE_CONCURRENCY: z.coerce.number().positive().default(1),
-  LANGFUSE_PROJECT_DELETE_CONCURRENCY: z.coerce.number().positive().default(1),
-  LANGFUSE_EVAL_EXECUTION_WORKER_CONCURRENCY: z.coerce
+  HANZO_TRACE_DELETE_CONCURRENCY: z.coerce.number().positive().default(1),
+  HANZO_PROJECT_DELETE_CONCURRENCY: z.coerce.number().positive().default(1),
+  HANZO_EVAL_EXECUTION_WORKER_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(5),
-  LANGFUSE_EXPERIMENT_CREATOR_WORKER_CONCURRENCY: z.coerce
+  HANZO_EXPERIMENT_CREATOR_WORKER_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(5),
@@ -115,10 +115,10 @@ const EnvSchema = z.object({
   // Skip the read from ClickHouse within the Ingestion pipeline for the given
   // project ids. Applicable for projects that were created after the S3 write
   // was activated and which don't rely on historic updates.
-  LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS: z.string().default(""),
+  HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS: z.string().default(""),
   // Set a date after which S3 was active. Projects created after this date do
   // perform a ClickHouse read as part of the ingestion pipeline.
-  LANGFUSE_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE: z
+  HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE: z
     .string()
     .date()
     .optional(),
@@ -127,11 +127,11 @@ const EnvSchema = z.object({
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().default("http://localhost:4318"),
   OTEL_SERVICE_NAME: z.string().default("worker"),
 
-  LANGFUSE_ENABLE_BACKGROUND_MIGRATIONS: z
+  HANZO_ENABLE_BACKGROUND_MIGRATIONS: z
     .enum(["true", "false"])
     .default("true"),
 
-  LANGFUSE_ENABLE_REDIS_SEEN_EVENT_CACHE: z
+  HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE: z
     .enum(["true", "false"])
     .default("false"),
 
@@ -180,36 +180,36 @@ const EnvSchema = z.object({
     .default("true"),
 
   // Core data S3 upload - HanzoCloud Cloud
-  LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED: z
+  HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_BUCKET: z.string().optional(),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_PREFIX: z.string().default(""),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_REGION: z.string().optional(),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE: z
+  HANZO_S3_CORE_DATA_UPLOAD_BUCKET: z.string().optional(),
+  HANZO_S3_CORE_DATA_UPLOAD_PREFIX: z.string().default(""),
+  HANZO_S3_CORE_DATA_UPLOAD_REGION: z.string().optional(),
+  HANZO_S3_CORE_DATA_UPLOAD_ENDPOINT: z.string().optional(),
+  HANZO_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
 
   // Media upload
-  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
-  LANGFUSE_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+  HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
+  HANZO_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
 
   // Metering data Postgres export - HanzoCloudud Cloud
-  LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
+  HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
 
-  LANGFUSE_S3_CONCURRENT_READS: z.coerce
+  HANZO_S3_CONCURRENT_READS: z.coerce
     .number()
     .positive()
     .default(50),

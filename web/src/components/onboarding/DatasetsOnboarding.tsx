@@ -51,7 +51,7 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
       }}
       secondaryAction={{
         label: "Learn More",
-        href: "https://langfuse.com/docs/datasets",
+        href: "https://hanzo.ai/docs/datasets",
       }}
     />
   );

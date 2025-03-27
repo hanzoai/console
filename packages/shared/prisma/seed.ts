@@ -42,28 +42,28 @@ async function main() {
     where: { id: seedUserId1 },
     update: {
       name: "Demo User",
-      email: "demo@langfuse.com",
+      email: "demo@hanzo.ai",
       password: await hash("password", 12),
     },
     create: {
       id: seedUserId1,
       name: "Demo User",
-      email: "demo@langfuse.com",
+      email: "demo@hanzo.ai",
       password: await hash("password", 12),
-      image: "https://static.langfuse.com/langfuse-dev%2Fexample-avatar.png",
+      image: "https://static.hanzo.ai/langfuse-dev%2Fexample-avatar.png",
     },
   });
   const user2 = await prisma.user.upsert({
     where: { id: seedUserId2 },
     update: {
       name: "Demo User 2",
-      email: "member@langfuse.com",
+      email: "member@hanzo.ai",
       password: await hash("password", 12),
     },
     create: {
       id: seedUserId2,
       name: "Demo User 2",
-      email: "member@langfuse.com",
+      email: "member@hanzo.ai",
       password: await hash("password", 12),
     },
   });
@@ -636,7 +636,7 @@ function createObjects(
         i % 3
       ] as string,
       metadata: {
-        user: `user-${i}@langfuse.com`,
+        user: `user-${i}@hanzo.ai`,
         more: "1,2,3;4?6",
       },
       tags: tags as string[],
@@ -776,7 +776,7 @@ function createObjects(
         endTime: spanTsEnd,
         name: `span-${i}-${j}`,
         metadata: {
-          user: `user-${i}@langfuse.com`,
+          user: `user-${i}@hanzo.ai`,
         },
         projectId: trace.projectId,
         traceId: trace.id,
@@ -867,7 +867,7 @@ function createObjects(
                 : Math.floor(Math.random() * 1000),
           },
           metadata: {
-            user: `user-${i}@langfuse.com`,
+            user: `user-${i}@hanzo.ai`,
           },
           promptTokens,
           completionTokens,
@@ -929,7 +929,7 @@ function createObjects(
             createdAt: eventTs,
             name: `event-${i}-${j}-${k}-${l}`,
             metadata: {
-              user: `user-${i}@langfuse.com`,
+              user: `user-${i}@hanzo.ai`,
             },
             parentObservationId: span.id,
             traceId: trace.id,
@@ -1283,7 +1283,7 @@ function getGenerationInputOutput(): {
         };
 
   const output =
-    "Creating a React component can be done in two ways: as a functional component or as a class component. Let's start with a basic example of both.\n\n**Image**\n\n![Languse Example Image](https://static.langfuse.com/langfuse-dev/langfuse-example-image.jpeg)\n\n1.  **Functional Component**:\n\nA functional component is just a plain JavaScript function that accepts props as an argument, and returns a React element. Here's how you can create one:\n\n```javascript\nimport React from 'react';\nfunction Greeting(props) {\n  return <h1>Hello, {props.name}</h1>;\n}\nexport default Greeting;\n```\n\nTo use this component in another file, you can do:\n\n```javascript\nimport Greeting from './Greeting';\nfunction App() {\n  return (\n    <div>\n      <Greeting name=\"John\" />\n    </div>\n  );\n}\nexport default App;\n```\n\n2.  **Class Component**:\n\nYou can also define components as classes in React. These have some additional features compared to functional components:\n\n```javascript\nimport React, { Component } from 'react';\nclass Greeting extends Component {\n  render() {\n    return <h1>Hello, {this.props.name}</h1>;\n  }\n}\nexport default Greeting;\n```\n\nAnd here's how to use this component:\n\n```javascript\nimport Greeting from './Greeting';\nclass App extends Component {\n  render() {\n    return (\n      <div>\n        <Greeting name=\"John\" />\n      </div>\n    );\n  }\n}\nexport default App;\n```\n\nWith the advent of hooks in React, functional components can do everything that class components can do and hence, the community has been favoring functional components over class components.\n\nRemember to import React at the top of your file whenever you're creating a component, because JSX transpiles to `React.createElement` calls under the hood.";
+    "Creating a React component can be done in two ways: as a functional component or as a class component. Let's start with a basic example of both.\n\n**Image**\n\n![Languse Example Image](https://static.hanzo.ai/langfuse-dev/langfuse-example-image.jpeg)\n\n1.  **Functional Component**:\n\nA functional component is just a plain JavaScript function that accepts props as an argument, and returns a React element. Here's how you can create one:\n\n```javascript\nimport React from 'react';\nfunction Greeting(props) {\n  return <h1>Hello, {props.name}</h1>;\n}\nexport default Greeting;\n```\n\nTo use this component in another file, you can do:\n\n```javascript\nimport Greeting from './Greeting';\nfunction App() {\n  return (\n    <div>\n      <Greeting name=\"John\" />\n    </div>\n  );\n}\nexport default App;\n```\n\n2.  **Class Component**:\n\nYou can also define components as classes in React. These have some additional features compared to functional components:\n\n```javascript\nimport React, { Component } from 'react';\nclass Greeting extends Component {\n  render() {\n    return <h1>Hello, {this.props.name}</h1>;\n  }\n}\nexport default Greeting;\n```\n\nAnd here's how to use this component:\n\n```javascript\nimport Greeting from './Greeting';\nclass App extends Component {\n  render() {\n    return (\n      <div>\n        <Greeting name=\"John\" />\n      </div>\n    );\n  }\n}\nexport default App;\n```\n\nWith the advent of hooks in React, functional components can do everything that class components can do and hence, the community has been favoring functional components over class components.\n\nRemember to import React at the top of your file whenever you're creating a component, because JSX transpiles to `React.createElement` calls under the hood.";
 
   return { input, output };
 }

@@ -107,7 +107,7 @@ export const TracesBarListChart = ({
           <NoDataOrLoading
             isLoading={isLoading || traces.isLoading || totalTraces.isLoading}
             description="Traces contain details about LLM applications and can be created using the SDK."
-            href="https://langfuse.com/docs/get-started"
+            href="https://hanzo.ai/docs/get-started"
           />
         )}
         <ExpandListButton

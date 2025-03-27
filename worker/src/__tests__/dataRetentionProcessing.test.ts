@@ -26,12 +26,12 @@ describe("DataRetentionProcessingJob", () => {
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -59,7 +59,7 @@ describe("DataRetentionProcessingJob", () => {
           entity_type: "trace",
           entity_id: `${baseId}-trace`,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: fileName,
           created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).getTime(), // 3 days in the past
           updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).getTime(), // 3 days in the past
@@ -108,7 +108,7 @@ describe("DataRetentionProcessingJob", () => {
           entity_type: "trace",
           entity_id: `${baseId}-trace`,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: fileName,
           created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
           updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
@@ -155,7 +155,7 @@ describe("DataRetentionProcessingJob", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: fileName,
-        bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
         contentType: fileType,
         contentLength: 0,
       },
@@ -213,7 +213,7 @@ describe("DataRetentionProcessingJob", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), // 30 days in the past
         bucketPath: fileName,
-        bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
         contentType: fileType,
         contentLength: 0,
       },

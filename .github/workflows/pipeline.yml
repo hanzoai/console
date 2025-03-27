@@ -62,7 +62,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -114,7 +114,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -131,9 +131,9 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev.example .env
-          grep -v -e '^LANGFUSE_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_LANGFUSE_RUN_NEXT_INIT=' .env.dev.example > .env
-          echo "LANGFUSE_INGESTION_QUEUE_DELAY_MS=1" >> .env
-          echo "LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
+          grep -v -e '^HANZO_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev.example > .env
+          echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
+          echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev.yml up -d
@@ -150,15 +150,15 @@ jobs:
       - name: Start Hanzo
         run: (pnpm run start&)
         env:
-          LANGFUSE_INIT_ORG_ID: "seed-org-id"
-          LANGFUSE_INIT_ORG_NAME: "Seed Org"
-          LANGFUSE_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
-          LANGFUSE_INIT_PROJECT_NAME: "Seed Project"
-          LANGFUSE_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
-          LANGFUSE_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
-          LANGFUSE_INIT_USER_EMAIL: "demo@langfuse.com"
-          LANGFUSE_INIT_USER_NAME: "Demo User"
-          LANGFUSE_INIT_USER_PASSWORD: "password"
+          HANZO_INIT_ORG_ID: "seed-org-id"
+          HANZO_INIT_ORG_NAME: "Seed Org"
+          HANZO_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
+          HANZO_INIT_PROJECT_NAME: "Seed Project"
+          HANZO_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
+          HANZO_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
+          HANZO_INIT_USER_EMAIL: "demo@hanzo.ai"
+          HANZO_INIT_USER_NAME: "Demo User"
+          HANZO_INIT_USER_PASSWORD: "password"
       - name: run test-sync
         run: pnpm --filter=web run test-sync
       - name: run test-client
@@ -191,7 +191,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -208,9 +208,9 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev${{ matrix.blob-provider }}.example .env
-          grep -v -e '^LANGFUSE_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_LANGFUSE_RUN_NEXT_INIT=' .env.dev${{ matrix.blob-provider }}.example > .env
-          echo "LANGFUSE_INGESTION_QUEUE_DELAY_MS=1" >> .env
-          echo "LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
+          grep -v -e '^HANZO_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev${{ matrix.blob-provider }}.example > .env
+          echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
+          echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev${{ matrix.blob-provider }}.yml up -d
@@ -227,15 +227,15 @@ jobs:
       - name: Start Hanzo
         run: (pnpm run start&)
         env:
-          LANGFUSE_INIT_ORG_ID: "seed-org-id"
-          LANGFUSE_INIT_ORG_NAME: "Seed Org"
-          LANGFUSE_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
-          LANGFUSE_INIT_PROJECT_NAME: "Seed Project"
-          LANGFUSE_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
-          LANGFUSE_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
-          LANGFUSE_INIT_USER_EMAIL: "demo@langfuse.com"
-          LANGFUSE_INIT_USER_NAME: "Demo User"
-          LANGFUSE_INIT_USER_PASSWORD: "password"
+          HANZO_INIT_ORG_ID: "seed-org-id"
+          HANZO_INIT_ORG_NAME: "Seed Org"
+          HANZO_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
+          HANZO_INIT_PROJECT_NAME: "Seed Project"
+          HANZO_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
+          HANZO_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
+          HANZO_INIT_USER_EMAIL: "demo@hanzo.ai"
+          HANZO_INIT_USER_NAME: "Demo User"
+          HANZO_INIT_USER_PASSWORD: "password"
       - name: run tests
         run: pnpm --filter=web run test
 
@@ -261,7 +261,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -324,7 +324,7 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: "pnpm-lock.yaml"
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -360,7 +360,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        if: github.repository == 'langfuse/langfuse' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -384,8 +384,8 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev.example .env
-          echo "LANGFUSE_CACHE_API_KEY_ENABLED=true" >> .env
-          echo "LANGFUSE_CACHE_PROMPT_ENABLED=true" >> .env
+          echo "HANZO_CACHE_API_KEY_ENABLED=true" >> .env
+          echo "HANZO_CACHE_PROMPT_ENABLED=true" >> .env
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev.yml up -d
@@ -485,8 +485,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/langfuse/langfuse # GitHub
-            langfuse/langfuse # Docker Hub
+            ghcr.io/hanzoai/cloud # GitHub
+            hanzoai/cloud # Docker Hub
           flavor: |
             latest=false
           tags: |
@@ -513,8 +513,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/langfuse/langfuse-worker # GitHub
-            langfuse/langfuse-worker # Docker Hub
+            ghcr.io/hanzoai/cloud-worker # GitHub
+            hanzoai/cloud-worker # Docker Hub
           flavor: |
             latest=false
           tags: |

@@ -30,7 +30,7 @@ describe("useOrderByState hook", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    locationMock = new LocationMock("https://langfuse.com");
+    locationMock = new LocationMock("https://hanzo.ai");
     testRouter = new TestRouter(locationMock);
     window.location = locationMock;
 
@@ -73,7 +73,7 @@ describe("useOrderByState hook", () => {
 
   test("orderBy reads the given param from the url", () => {
     locationMock.replace(
-      "https://langfuse.com?orderBy=column-Column 3_order-DESC",
+      "https://hanzo.ai?orderBy=column-Column 3_order-DESC",
     );
 
     const result = render(

@@ -33,7 +33,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      enabled: !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION, // do not check for updates on Hanzo Cloud
+      enabled: !env.NEXT_PUBLIC_HANZO_CLOUD_REGION, // do not check for updates on Hanzo Cloud
       onError: (error) => console.error("checkUpdate error", error), // do not render default error message
     },
   );
@@ -42,12 +42,12 @@ export const VersionLabel = ({ className }: { className?: string }) => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION, // do not check for updates on Hanzo Cloud
+    enabled: !env.NEXT_PUBLIC_HANZO_CLOUD_REGION, // do not check for updates on Hanzo Cloud
     onError: (error) => console.error("checkUpdate error", error), // do not render default error message
   });
 
   const plan = usePlan();
-  const isHanzoCloud = Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION);
+  const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
   const selfHostedPlanLabel = !isHanzoCloud
     ? plan && isSelfHostedPlan(plan)
@@ -106,7 +106,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
-        ) : !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ? (
+        ) : !env.NEXT_PUBLIC_HANZO_CLOUD_REGION ? (
           <>
             <DropdownMenuLabel>This is the latest release</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -123,7 +123,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
         )}
         <DropdownMenuItem asChild>
           <Link
-            href="https://github.com/langfuse/langfuse/releases"
+            href="https://github.com/hanzoai/cloud/releases"
             target="_blank"
           >
             <Github size={16} className="mr-2" />
@@ -146,20 +146,20 @@ export const VersionLabel = ({ className }: { className?: string }) => {
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>
-          <Link href="https://langfuse.com/changelog" target="_blank">
+          <Link href="https://hanzo.ai/changelog" target="_blank">
             <Newspaper size={16} className="mr-2" />
             Changelog
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="https://langfuse.com/roadmap" target="_blank">
+          <Link href="https://hanzo.ai/roadmap" target="_blank">
             <Map size={16} className="mr-2" />
             Roadmap
           </Link>
         </DropdownMenuItem>
         {!isHanzoCloud && (
           <DropdownMenuItem asChild>
-            <Link href="https://langfuse.com/pricing-self-host" target="_blank">
+            <Link href="https://hanzo.ai/pricing-self-host" target="_blank">
               <Info size={16} className="mr-2" />
               Compare Versions
             </Link>
@@ -170,7 +170,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link
-                href="https://langfuse.com/docs/deployment/self-host#update"
+                href="https://hanzo.ai/docs/deployment/self-host#update"
                 target="_blank"
               >
                 <HardDriveDownload size={16} className="mr-2" />

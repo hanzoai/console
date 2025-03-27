@@ -25,7 +25,7 @@ export const ModelCostTable = ({
   const metrics = api.dashboard.chart.useQuery(
     {
       projectId,
-      from: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
+      from: env.NEXT_PUBLIC_HANZO_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
         ? "traces_observations"
         : "traces_observationsview",
       select: [
@@ -111,7 +111,7 @@ export const ModelCostTable = ({
         >
           <DocPopup
             description="Calculated multiplying the number of tokens with cost per token for each model."
-            href="https://langfuse.com/docs/model-usage-and-cost"
+            href="https://hanzo.ai/docs/model-usage-and-cost"
           />
         </TotalMetric>
       </DashboardTable>

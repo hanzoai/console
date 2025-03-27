@@ -6,9 +6,9 @@ import MembershipInvitationTemplate from "./MembershipInvitationEmailTemplate";
 import { logger } from "../../../logger";
 
 const langfuseUrls = {
-  US: "https://us.cloud.langfuse.com",
-  EU: "https://cloud.langfuse.com",
-  STAGING: "https://staging.langfuse.com",
+  US: "https://us.cloud.hanzo.ai",
+  EU: "https://cloud.hanzo.ai",
+  STAGING: "https://staging.hanzo.ai",
 };
 
 type SendMembershipInvitationParams = {
@@ -16,7 +16,7 @@ type SendMembershipInvitationParams = {
     Record<
       | "EMAIL_FROM_ADDRESS"
       | "SMTP_CONNECTION_URL"
-      | "NEXT_PUBLIC_LANGFUSE_CLOUD_REGION"
+      | "NEXT_PUBLIC_HANZO_CLOUD_REGION"
       | "NEXTAUTH_URL",
       string | undefined
     >
@@ -42,16 +42,16 @@ export const sendMembershipInvitationEmail = async ({
   }
 
   const getAuthURL = () =>
-    env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "US" ||
-    env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "EU" ||
-    env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
-      ? langfuseUrls[env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION]
+    env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "US" ||
+    env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "EU" ||
+    env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+      ? langfuseUrls[env.NEXT_PUBLIC_HANZO_CLOUD_REGION]
       : env.NEXTAUTH_URL;
 
   const authUrl = getAuthURL();
   if (!authUrl) {
     logger.error(
-      "Missing NEXTAUTH_URL or NEXT_PUBLIC_LANGFUSE_CLOUD_REGION environment variable."
+      "Missing NEXTAUTH_URL or NEXT_PUBLIC_HANZO_CLOUD_REGION environment variable."
     );
     return;
   }
@@ -67,7 +67,7 @@ export const sendMembershipInvitationEmail = async ({
         receiverEmail: to,
         inviteLink: authUrl,
         emailFromAddress: env.EMAIL_FROM_ADDRESS,
-        langfuseCloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+        langfuseCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
       })
     );
 

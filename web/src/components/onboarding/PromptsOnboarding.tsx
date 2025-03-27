@@ -44,7 +44,7 @@ export function PromptsOnboarding({ projectId }: { projectId: string }) {
       }}
       secondaryAction={{
         label: "Learn More",
-        href: "https://langfuse.com/docs/prompts",
+        href: "https://hanzo.ai/docs/prompts",
       }}
     />
   );

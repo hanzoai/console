@@ -62,7 +62,7 @@ export default function PosthogIntegrationSettings() {
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://langfuse.com/docs/analytics/posthog">
+            <Link href="https://hanzo.ai/docs/analytics/posthog">
               Integration Docs ↗
             </Link>
           </Button>

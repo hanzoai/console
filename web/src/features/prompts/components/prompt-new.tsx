@@ -55,7 +55,7 @@ export const NewPrompt = () => {
         help: {
           description:
             "Manage and version your prompts in HanzoCloud. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
-          href: "https://langfuse.com/docs/prompts",
+          href: "https://hanzo.ai/docs/prompts",
         },
         breadcrumb: breadcrumb,
       }}

@@ -5,7 +5,7 @@ test("Sign in, create an organization, create a project", async ({ page }) => {
 
   // Sign in
   await page.goto("/auth/sign-in");
-  await page.fill('input[name="email"]', "demo@langfuse.com");
+  await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");
   await page.click('button[data-testid="submit-email-password-sign-in-form"]');
   await page.waitForTimeout(2000);

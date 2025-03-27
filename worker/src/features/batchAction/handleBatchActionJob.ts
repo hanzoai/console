@@ -189,7 +189,7 @@ export const handleBatchActionJob = async (
         targetObject === "trace"
           ? BatchExportTableName.Traces
           : BatchExportTableName.DatasetRunItems,
-      exportLimit: env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+      exportLimit: env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     });
 
     const evalCreatorQueue = CreateEvalQueue.getInstance();

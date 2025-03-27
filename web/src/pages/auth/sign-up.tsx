@@ -76,8 +76,8 @@ export default function SignIn({
         email: values.email,
         password: values.password,
         callbackUrl:
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "DEV"
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "DEV"
             ? `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`
             : `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/`,
         turnstileToken,
@@ -110,7 +110,7 @@ export default function SignIn({
             Create new account
           </h2>
         </div>
-        {env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== undefined ? (
+        {env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined ? (
           <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">
             No credit card required.
           </div>

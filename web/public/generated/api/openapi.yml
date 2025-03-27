@@ -19,10 +19,10 @@ info:
     ## Exports
 
 
-    - OpenAPI spec: https://cloud.langfuse.com/generated/api/openapi.yml
+    - OpenAPI spec: https://cloud.hanzo.ai/generated/api/openapi.yml
 
     - Postman collection:
-    https://cloud.langfuse.com/generated/postman/collection.json
+    https://cloud.hanzo.ai/generated/postman/collection.json
 paths:
   /api/public/comments:
     post:
@@ -840,7 +840,7 @@ paths:
         Notes:
 
         - Introduction to data model:
-        https://langfuse.com/docs/tracing-data-model
+        https://hanzo.ai/docs/tracing-data-model
 
         - Batch sizes are limited to 3.5 MB in total. You need to adjust the
         number of events per batch accordingly.

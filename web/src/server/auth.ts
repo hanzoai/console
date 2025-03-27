@@ -58,7 +58,7 @@ function canCreateOrganizations(userEmail: string | null): boolean {
 
   // if no allowlist is set or no entitlement for self-host-allowed-organization-creators, allow all users to create organizations
   if (
-    !env.LANGFUSE_ALLOWED_ORGANIZATION_CREATORS ||
+    !env.HANZO_ALLOWED_ORGANIZATION_CREATORS ||
     !hasEntitlementBasedOnPlan({
       plan: instancePlan,
       entitlement: "self-host-allowed-organization-creators",
@@ -69,7 +69,7 @@ function canCreateOrganizations(userEmail: string | null): boolean {
   if (!userEmail) return false;
 
   const allowedOrgCreators =
-    env.LANGFUSE_ALLOWED_ORGANIZATION_CREATORS.toLowerCase().split(",");
+    env.HANZO_ALLOWED_ORGANIZATION_CREATORS.toLowerCase().split(",");
   return allowedOrgCreators.includes(userEmail.toLowerCase());
 }
 
@@ -485,9 +485,9 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             ...session,
             environment: {
               enableExperimentalFeatures:
-                env.LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES === "true",
+                env.HANZO_ENABLE_EXPERIMENTAL_FEATURES === "true",
               disableExpensivePostgresQueries:
-                env.LANGFUSE_DISABLE_EXPENSIVE_POSTGRES_QUERIES === "true",
+                env.HANZO_DISABLE_EXPENSIVE_POSTGRES_QUERIES === "true",
               // Enables features that are only available under an enterprise license when self-hosting HanzoCloud
               // If you edit this line, you risk executing code that is not MIT licensed (self-contained in /ee folders otherwise)
               selfHostedInstancePlan: getSelfHostedInstancePlanServerSide(),
@@ -628,7 +628,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     pages: {
       signIn: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/sign-in`,
       error: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/error`,
-      ...(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+      ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION
         ? {
             newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
           }
@@ -663,17 +663,17 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     events: {
       createUser: async ({ user }) => {
         if (
-          env.LANGFUSE_NEW_USER_SIGNUP_WEBHOOK &&
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "STAGING" &&
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "DEV"
+          env.HANZO_NEW_USER_SIGNUP_WEBHOOK &&
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "STAGING" &&
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "DEV"
         ) {
-          await fetch(env.LANGFUSE_NEW_USER_SIGNUP_WEBHOOK, {
+          await fetch(env.HANZO_NEW_USER_SIGNUP_WEBHOOK, {
             method: "POST",
             body: JSON.stringify({
               name: user.name,
               email: user.email,
-              cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+              cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
               userId: user.id,
               // referralSource: ...
             }),

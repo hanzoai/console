@@ -21,7 +21,7 @@ fi
 
 # Check if CLICKHOUSE_URL is not set
 if [ -z "$CLICKHOUSE_URL" ]; then
-    echo "Error: CLICKHOUSE_URL is not configured. Migrating from V2? Check out migration guide: https://langfuse.com/self-hosting/upgrade-guides/upgrade-v2-to-v3"
+    echo "Error: CLICKHOUSE_URL is not configured. Migrating from V2? Check out migration guide: https://hanzo.ai/self-hosting/upgrade-guides/upgrade-v2-to-v3"
     exit 1
 fi
 
@@ -31,7 +31,7 @@ if [ -z "$DIRECT_URL" ]; then
 fi
 
 # Always execute the postgres migration, except when disabled.
-if [ "$LANGFUSE_AUTO_POSTGRES_MIGRATION_DISABLED" != "true" ]; then
+if [ "$HANZO_AUTO_POSTGRES_MIGRATION_DISABLED" != "true" ]; then
     prisma db execute --url "$DIRECT_URL" --file "./packages/shared/scripts/cleanup.sql"
 
     # Apply migrations
@@ -47,7 +47,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Execute the Clickhouse migration, except when disabled.
-if [ "$LANGFUSE_AUTO_CLICKHOUSE_MIGRATION_DISABLED" != "true" ]; then
+if [ "$HANZO_AUTO_CLICKHOUSE_MIGRATION_DISABLED" != "true" ]; then
     # Apply Clickhouse migrations
     cd ./packages/shared
     sh ./clickhouse/scripts/up.sh

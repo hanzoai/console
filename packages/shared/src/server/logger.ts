@@ -39,7 +39,7 @@ const getWinstonLogger = (
   );
 
   const format =
-    env.LANGFUSE_LOG_FORMAT === "text" ? textLoggerFormat : jsonLoggerFormat;
+    env.HANZO_LOG_FORMAT === "text" ? textLoggerFormat : jsonLoggerFormat;
   return winston.createLogger({
     level: minLevel,
     format: format,
@@ -47,4 +47,4 @@ const getWinstonLogger = (
   });
 };
 
-export const logger = getWinstonLogger(env.NODE_ENV, env.LANGFUSE_LOG_LEVEL);
+export const logger = getWinstonLogger(env.NODE_ENV, env.HANZO_LOG_LEVEL);

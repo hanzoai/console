@@ -43,7 +43,7 @@ export function UsersOnboarding() {
           To start tracking users, you need to add a `userId` to your traces.
           See{" "}
           <Link
-            href="https://langfuse.com/docs/tracing-features/users"
+            href="https://hanzo.ai/docs/tracing-features/users"
             className="underline"
           >
             documentation
@@ -51,7 +51,7 @@ export function UsersOnboarding() {
           for more details.
         </span>
       }
-      videoSrc="https://static.langfuse.com/prod-assets/onboarding/users-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/users-overview-v1.mp4"
     />
   );
 }

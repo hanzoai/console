@@ -396,7 +396,7 @@ export const CreateExperimentsForm = ({
             Experiments allow to test iterations of your application or prompt
             on a dataset. Learn more about datasets and experiments{" "}
             <Link
-              href="https://langfuse.com/docs/datasets/overview"
+              href="https://hanzo.ai/docs/datasets/overview"
               target="_blank"
               className="underline"
             >
@@ -439,7 +439,7 @@ export const CreateExperimentsForm = ({
                     capture("dataset_run:view_prompt_experiment_docs")
                   }
                 >
-                  <Link href="https://langfuse.com/docs/datasets/prompt-experiments">
+                  <Link href="https://hanzo.ai/docs/datasets/prompt-experiments">
                     View Docs
                   </Link>
                 </Button>
@@ -474,7 +474,7 @@ export const CreateExperimentsForm = ({
                 }
               >
                 <Link
-                  href="https://langfuse.com/docs/datasets/get-started"
+                  href="https://hanzo.ai/docs/datasets/get-started"
                   target="_blank"
                 >
                   View Docs
@@ -515,7 +515,7 @@ export const CreateExperimentsForm = ({
         <DialogDescription>
           Create an experiment to test a prompt version on a dataset. See{" "}
           <Link
-            href="https://langfuse.com/docs/datasets/prompt-experiments"
+            href="https://hanzo.ai/docs/datasets/prompt-experiments"
             target="_blank"
             className="underline"
           >

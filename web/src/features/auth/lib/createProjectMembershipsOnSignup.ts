@@ -27,11 +27,11 @@ export async function createProjectMembershipsOnSignup(user: {
       });
     }
 
-    // self-hosted: LANGFUSE_DEFAULT_ORG_ID
-    const defaultOrg = env.LANGFUSE_DEFAULT_ORG_ID
+    // self-hosted: HANZO_DEFAULT_ORG_ID
+    const defaultOrg = env.HANZO_DEFAULT_ORG_ID
       ? ((await prisma.organization.findUnique({
           where: {
-            id: env.LANGFUSE_DEFAULT_ORG_ID,
+            id: env.HANZO_DEFAULT_ORG_ID,
           },
         })) ?? undefined)
       : undefined;
@@ -41,39 +41,39 @@ export async function createProjectMembershipsOnSignup(user: {
             data: {
               orgId: defaultOrg.id,
               userId: user.id,
-              role: env.LANGFUSE_DEFAULT_ORG_ROLE ?? "VIEWER",
+              role: env.HANZO_DEFAULT_ORG_ROLE ?? "VIEWER",
             },
           })
         : undefined;
 
-    // self-hosted: LANGFUSE_DEFAULT_PROJECT_ID
-    const defaultProject = env.LANGFUSE_DEFAULT_PROJECT_ID
+    // self-hosted: HANZO_DEFAULT_PROJECT_ID
+    const defaultProject = env.HANZO_DEFAULT_PROJECT_ID
       ? ((await prisma.project.findUnique({
           where: {
-            id: env.LANGFUSE_DEFAULT_PROJECT_ID,
+            id: env.HANZO_DEFAULT_PROJECT_ID,
           },
         })) ?? undefined)
       : undefined;
     if (defaultProject !== undefined) {
       if (defaultOrgMembership) {
-        // (1) used together with LANGFUSE_DEFAULT_ORG_ID -> create project role for the project within the org, do nothing if the project is not in the org
+        // (1) used together with HANZO_DEFAULT_ORG_ID -> create project role for the project within the org, do nothing if the project is not in the org
         if (defaultProject.orgId === defaultOrgMembership.orgId) {
           await prisma.projectMembership.create({
             data: {
               userId: user.id,
               orgMembershipId: defaultOrgMembership.id,
               projectId: defaultProject.id,
-              role: env.LANGFUSE_DEFAULT_PROJECT_ROLE ?? "VIEWER",
+              role: env.HANZO_DEFAULT_PROJECT_ROLE ?? "VIEWER",
             },
           });
         }
       } else {
-        // (2) used without LANGFUSE_DEFAULT_ORG_ID (legacy) -> create org membership for the project's org
+        // (2) used without HANZO_DEFAULT_ORG_ID (legacy) -> create org membership for the project's org
         await prisma.organizationMembership.create({
           data: {
             orgId: defaultProject.orgId,
             userId: user.id,
-            role: env.LANGFUSE_DEFAULT_PROJECT_ROLE ?? "VIEWER",
+            role: env.HANZO_DEFAULT_PROJECT_ROLE ?? "VIEWER",
           },
         });
       }

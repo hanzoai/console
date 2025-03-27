@@ -70,12 +70,12 @@ const ReleaseApiRes = z.array(
 export const publicRouter = createTRPCRouter({
   checkUpdate: publicProcedure.query(async () => {
     // Skip update check on HanzoCloud Cloud
-    if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) return null;
+    if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) return null;
 
     let body;
     try {
       const response = await fetch(
-        `https://langfuse.com/api/latest-releases?repo=langfuse/langfuse&version=${VERSION}`,
+        `https://hanzo.ai/api/latest-releases?repo=hanzoai/cloud&version=${VERSION}`,
       );
       body = await response.json();
     } catch (error) {
@@ -93,7 +93,7 @@ export const publicRouter = createTRPCRouter({
       });
     }
     const langfuseRelease = releases.data.find(
-      (release) => release.repo === "langfuse/langfuse",
+      (release) => release.repo === "hanzoai/cloud",
     );
     if (!langfuseRelease) {
       throw new TRPCError({

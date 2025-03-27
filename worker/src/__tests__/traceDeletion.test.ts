@@ -26,21 +26,21 @@ describe("trace deletion", () => {
 
   beforeAll(() => {
     eventStorageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
 
     mediaStorageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -112,7 +112,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/trace-${traceId}.txt`,
-        bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
         contentType: fileType,
         contentLength: 0,
       },
@@ -135,7 +135,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/observation-${observationId}.txt`,
-        bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
         contentType: fileType,
         contentLength: 0,
       },
@@ -198,7 +198,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/trace-${traceId1}.txt`,
-        bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
         contentType: fileType,
         contentLength: 0,
       },
@@ -299,7 +299,7 @@ describe("trace deletion", () => {
           entity_type: "trace",
           entity_id: traceId,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: `${projectId}/traces/${traceId}-trace.json`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),
@@ -310,7 +310,7 @@ describe("trace deletion", () => {
           entity_type: "observation",
           entity_id: observationId,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: `${projectId}/observation/${traceId}-observation.json`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),
@@ -321,7 +321,7 @@ describe("trace deletion", () => {
           entity_type: "score",
           entity_id: scoreId,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: `${projectId}/score/${traceId}-score.json`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),

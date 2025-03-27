@@ -33,12 +33,12 @@ const notifications: SidebarNotification[] = [
     title: "Star HanzoCloud",
     description:
       "See the latest releases and help grow the community on GitHub",
-    link: "https://github.com/langfuse/langfuse",
+    link: "https://github.com/hanzoai/cloud",
     linkContent: (
       // eslint-disable-next-line @next/next/no-img-element
       <img
         alt="HanzoCloud Github stars"
-        src="https://img.shields.io/github/stars/langfuse/langfuse?label=langfuse&amp;style=social"
+        src="https://img.shields.io/github/stars/hanzoai/cloud?label=langfuse&amp;style=social"
       />
     ),
   },

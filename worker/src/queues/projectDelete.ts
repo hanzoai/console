@@ -21,11 +21,11 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3MediaStorageClient;
@@ -37,11 +37,11 @@ const getS3EventStorageClient = (bucketName: string): StorageService => {
   if (!s3EventStorageClient) {
     s3EventStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   }
   return s3EventStorageClient;
@@ -54,7 +54,7 @@ export const projectDeleteProcessor: Processor = async (
   logger.info(`Deleting ${projectId} in org ${orgId}`);
 
   // Delete media data from S3 for project
-  if (env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+  if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
         id: true,
@@ -66,7 +66,7 @@ export const projectDeleteProcessor: Processor = async (
       },
     });
     const mediaStorageClient = getS3MediaStorageClient(
-      env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+      env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
     );
     // Delete from Cloud Storage
     await mediaStorageClient.deleteFiles(
@@ -79,7 +79,7 @@ export const projectDeleteProcessor: Processor = async (
   const eventLogStream = getEventLogByProjectId(projectId);
   let eventLogPaths: string[] = [];
   const eventStorageClient = getS3EventStorageClient(
-    env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+    env.HANZO_S3_EVENT_UPLOAD_BUCKET,
   );
   for await (const eventLog of eventLogStream) {
     eventLogPaths.push(eventLog.bucket_path);

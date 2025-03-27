@@ -36,7 +36,7 @@ export default async function handler(
       return;
     }
 
-    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       res.status(403).json({ error: "Only accessible on Hanzo cloud" });
       return;
     }

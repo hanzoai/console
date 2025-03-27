@@ -17,15 +17,15 @@ import {
 } from "@/src/components/ui/dialog";
 
 const regions =
-  env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
     ? [
         {
           name: "STAGING",
-          hostname: "staging.langfuse.com",
+          hostname: "staging.hanzo.ai",
           flag: "🇪🇺",
         },
       ]
-    : env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV"
+    : env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV"
       ? [
           {
             name: "DEV",
@@ -36,12 +36,12 @@ const regions =
       : [
           {
             name: "US",
-            hostname: "us.cloud.langfuse.com",
+            hostname: "us.cloud.hanzo.ai",
             flag: "🇺🇸",
           },
           {
             name: "EU",
-            hostname: "cloud.langfuse.com",
+            hostname: "cloud.hanzo.ai",
             flag: "🇪🇺",
           },
         ];
@@ -53,10 +53,10 @@ export function CloudRegionSwitch({
 }) {
   const capture = usePostHogClientCapture();
 
-  if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === undefined) return null;
+  if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION === undefined) return null;
 
   const currentRegion = regions.find(
-    (region) => region.name === env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+    (region) => region.name === env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
   );
 
   return (
@@ -67,7 +67,7 @@ export function CloudRegionSwitch({
             Data Region
             <DataRegionInfo />
           </span>
-          {isSignUpPage && env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "US" ? (
+          {isSignUpPage && env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "US" ? (
             <p className="text-xs text-muted-foreground">
               Demo project is only available in the EU region.
             </p>
@@ -143,12 +143,12 @@ const DataRegionInfo = () => (
         <p>
           For more information, visit{" "}
           <a
-            href="https://langfuse.com/docs/data-security-privacy"
+            href="https://hanzo.ai/docs/data-security-privacy"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary-accent underline"
           >
-            langfuse.com/security
+            hanzo.ai/security
           </a>
           .
         </p>

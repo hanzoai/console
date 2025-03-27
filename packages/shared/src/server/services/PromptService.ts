@@ -16,9 +16,9 @@ export class PromptService {
   ) {
     this.cacheEnabled =
       Boolean(redis) &&
-      (cacheEnabled || env.LANGFUSE_CACHE_PROMPT_ENABLED === "true");
+      (cacheEnabled || env.HANZO_CACHE_PROMPT_ENABLED === "true");
 
-    this.ttlSeconds = env.LANGFUSE_CACHE_PROMPT_TTL_SECONDS;
+    this.ttlSeconds = env.HANZO_CACHE_PROMPT_TTL_SECONDS;
   }
 
   public async getPrompt(params: PromptParams): Promise<Prompt | null> {

@@ -62,7 +62,7 @@ app.use("/api", api);
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
 
-if (env.LANGFUSE_ENABLE_BACKGROUND_MIGRATIONS === "true") {
+if (env.HANZO_ENABLE_BACKGROUND_MIGRATIONS === "true") {
   // Will start background migrations without blocking the queue workers
   BackgroundMigrationManager.run().catch((err) => {
     logger.error("Error running background migrations", err);
@@ -74,7 +74,7 @@ if (env.QUEUE_CONSUMER_TRACE_UPSERT_QUEUE_IS_ENABLED === "true") {
     QueueName.TraceUpsert,
     evalJobTraceCreatorQueueProcessor,
     {
-      concurrency: env.LANGFUSE_TRACE_UPSERT_WORKER_CONCURRENCY,
+      concurrency: env.HANZO_TRACE_UPSERT_WORKER_CONCURRENCY,
     },
   );
 }
@@ -84,12 +84,12 @@ if (env.QUEUE_CONSUMER_CREATE_EVAL_QUEUE_IS_ENABLED === "true") {
     QueueName.CreateEvalQueue,
     evalJobCreatorQueueProcessor,
     {
-      concurrency: env.LANGFUSE_EVAL_CREATOR_WORKER_CONCURRENCY,
+      concurrency: env.HANZO_EVAL_CREATOR_WORKER_CONCURRENCY,
     },
   );
 }
 
-if (env.LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
+if (env.HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
   // Instantiate the queue to trigger scheduled jobs
   CoreDataS3ExportQueue.getInstance();
   WorkerManager.register(
@@ -98,7 +98,7 @@ if (env.LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
   );
 }
 
-if (env.LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED === "true") {
+if (env.HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED === "true") {
   // Instantiate the queue to trigger scheduled jobs
   MeteringDataPostgresExportQueue.getInstance();
   WorkerManager.register(
@@ -116,10 +116,10 @@ if (env.LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED === "true") {
 
 if (env.QUEUE_CONSUMER_TRACE_DELETE_QUEUE_IS_ENABLED === "true") {
   WorkerManager.register(QueueName.TraceDelete, traceDeleteProcessor, {
-    concurrency: env.LANGFUSE_TRACE_DELETE_CONCURRENCY,
+    concurrency: env.HANZO_TRACE_DELETE_CONCURRENCY,
     limiter: {
       // Process at most `max` delete jobs per 15 seconds
-      max: env.LANGFUSE_TRACE_DELETE_CONCURRENCY,
+      max: env.HANZO_TRACE_DELETE_CONCURRENCY,
       duration: 15_000,
     },
   });
@@ -127,10 +127,10 @@ if (env.QUEUE_CONSUMER_TRACE_DELETE_QUEUE_IS_ENABLED === "true") {
 
 if (env.QUEUE_CONSUMER_PROJECT_DELETE_QUEUE_IS_ENABLED === "true") {
   WorkerManager.register(QueueName.ProjectDelete, projectDeleteProcessor, {
-    concurrency: env.LANGFUSE_PROJECT_DELETE_CONCURRENCY,
+    concurrency: env.HANZO_PROJECT_DELETE_CONCURRENCY,
     limiter: {
       // Process at most `max` delete jobs per 3 seconds
-      max: env.LANGFUSE_PROJECT_DELETE_CONCURRENCY,
+      max: env.HANZO_PROJECT_DELETE_CONCURRENCY,
       duration: 3_000,
     },
   });
@@ -141,7 +141,7 @@ if (env.QUEUE_CONSUMER_DATASET_RUN_ITEM_UPSERT_QUEUE_IS_ENABLED === "true") {
     QueueName.DatasetRunItemUpsert,
     evalJobDatasetCreatorQueueProcessor,
     {
-      concurrency: env.LANGFUSE_EVAL_CREATOR_WORKER_CONCURRENCY,
+      concurrency: env.HANZO_EVAL_CREATOR_WORKER_CONCURRENCY,
     },
   );
 }
@@ -151,7 +151,7 @@ if (env.QUEUE_CONSUMER_EVAL_EXECUTION_QUEUE_IS_ENABLED === "true") {
     QueueName.EvaluationExecution,
     evalJobExecutorQueueProcessor,
     {
-      concurrency: env.LANGFUSE_EVAL_EXECUTION_WORKER_CONCURRENCY,
+      concurrency: env.HANZO_EVAL_EXECUTION_WORKER_CONCURRENCY,
     },
   );
 }
@@ -186,7 +186,7 @@ if (env.QUEUE_CONSUMER_INGESTION_QUEUE_IS_ENABLED === "true") {
     QueueName.IngestionQueue,
     ingestionQueueProcessorBuilder(true), // this might redirect to secondary queue
     {
-      concurrency: env.LANGFUSE_INGESTION_QUEUE_PROCESSING_CONCURRENCY,
+      concurrency: env.HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY,
     },
   );
 }
@@ -197,7 +197,7 @@ if (env.QUEUE_CONSUMER_INGESTION_SECONDARY_QUEUE_IS_ENABLED === "true") {
     ingestionQueueProcessorBuilder(false),
     {
       concurrency:
-        env.LANGFUSE_INGESTION_SECONDARY_QUEUE_PROCESSING_CONCURRENCY,
+        env.HANZO_INGESTION_SECONDARY_QUEUE_PROCESSING_CONCURRENCY,
     },
   );
 }
@@ -225,7 +225,7 @@ if (env.QUEUE_CONSUMER_EXPERIMENT_CREATE_QUEUE_IS_ENABLED === "true") {
     QueueName.ExperimentCreate,
     experimentCreateQueueProcessor,
     {
-      concurrency: env.LANGFUSE_EXPERIMENT_CREATOR_WORKER_CONCURRENCY,
+      concurrency: env.HANZO_EXPERIMENT_CREATOR_WORKER_CONCURRENCY,
     },
   );
 }

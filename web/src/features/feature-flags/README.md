@@ -11,5 +11,5 @@ const isFeatureEnabled = useIsFeatureEnabled("feature-flag-name");
 When is a feature flag enabled?
 
 1. flag is in user.feature_flags
-2. LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES is set
+2. HANZO_ENABLE_EXPERIMENTAL_FEATURES is set
 3. user.admin is true

@@ -28,9 +28,9 @@ export class ClickhouseWriter {
   intervalId: NodeJS.Timeout | null = null;
 
   private constructor() {
-    this.batchSize = env.LANGFUSE_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE;
-    this.writeInterval = env.LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS;
-    this.maxAttempts = env.LANGFUSE_INGESTION_CLICKHOUSE_MAX_ATTEMPTS;
+    this.batchSize = env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE;
+    this.writeInterval = env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS;
+    this.maxAttempts = env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS;
 
     this.isIntervalFlushInProgress = false;
 

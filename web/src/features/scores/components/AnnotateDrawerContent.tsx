@@ -152,7 +152,7 @@ function AnnotateHeader({
       title="Annotate"
       help={{
         description: `Annotate ${observationId ? "observation" : "trace"} with scores to capture human evaluation across different dimensions.`,
-        href: "https://langfuse.com/docs/scores/manually",
+        href: "https://hanzo.ai/docs/scores/manually",
         className: "leading-relaxed",
       }}
       actionButtons={[

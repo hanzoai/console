@@ -379,9 +379,9 @@ export const getDatabaseReadStream = async ({
 export const handleBatchExportJob = async (
   batchExportJob: BatchExportJobType,
 ) => {
-  if (env.LANGFUSE_S3_BATCH_EXPORT_ENABLED !== "true") {
+  if (env.HANZO_S3_BATCH_EXPORT_ENABLED !== "true") {
     throw new Error(
-      "Batch export is not enabled. Configure environment variables to use this feature. See https://langfuse.com/self-hosting/infrastructure/blobstorage#batch-exports for more details.",
+      "Batch export is not enabled. Configure environment variables to use this feature. See https://hanzo.ai/self-hosting/infrastructure/blobstorage#batch-exports for more details.",
     );
   }
 
@@ -446,23 +446,23 @@ export const handleBatchExportJob = async (
   const fileDate = new Date().getTime();
   const fileExtension =
     exportOptions[jobDetails.format as BatchExportFileFormat].extension;
-  const fileName = `${env.LANGFUSE_S3_BATCH_EXPORT_PREFIX}${fileDate}-lf-${parsedQuery.data.tableName}-export-${projectId}.${fileExtension}`;
+  const fileName = `${env.HANZO_S3_BATCH_EXPORT_PREFIX}${fileDate}-lf-${parsedQuery.data.tableName}-export-${projectId}.${fileExtension}`;
   const expiresInSeconds =
     env.BATCH_EXPORT_DOWNLOAD_LINK_EXPIRATION_HOURS * 3600;
 
   // Stream upload results to S3
-  const bucketName = env.LANGFUSE_S3_BATCH_EXPORT_BUCKET;
+  const bucketName = env.HANZO_S3_BATCH_EXPORT_BUCKET;
   if (!bucketName) {
     throw new Error("No S3 bucket configured for exports.");
   }
 
   const { signedUrl } = await StorageServiceFactory.getInstance({
     bucketName,
-    accessKeyId: env.LANGFUSE_S3_BATCH_EXPORT_ACCESS_KEY_ID,
-    secretAccessKey: env.LANGFUSE_S3_BATCH_EXPORT_SECRET_ACCESS_KEY,
-    endpoint: env.LANGFUSE_S3_BATCH_EXPORT_ENDPOINT,
-    region: env.LANGFUSE_S3_BATCH_EXPORT_REGION,
-    forcePathStyle: env.LANGFUSE_S3_BATCH_EXPORT_FORCE_PATH_STYLE === "true",
+    accessKeyId: env.HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID,
+    secretAccessKey: env.HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY,
+    endpoint: env.HANZO_S3_BATCH_EXPORT_ENDPOINT,
+    region: env.HANZO_S3_BATCH_EXPORT_REGION,
+    forcePathStyle: env.HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE === "true",
   }).uploadFile({
     fileName,
     fileType:

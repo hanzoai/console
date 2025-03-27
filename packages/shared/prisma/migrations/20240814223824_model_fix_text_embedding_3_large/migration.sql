@@ -1,6 +1,6 @@
 
 -- Fix model name
--- https://github.com/langfuse/langfuse/issues/2688
+-- https://github.com/hanzoai/cloud/issues/2688
 
 UPDATE models
 SET model_name = 'text-embedding-3-large'

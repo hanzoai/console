@@ -66,13 +66,13 @@ const DemoBadge = () => {
   return env.NEXT_PUBLIC_DEMO_ORG_ID &&
     env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
     routerProjectId === env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
-    Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) ? (
+    Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION) ? (
     <div className="flex border-b px-3 py-2">
       <Alert className="rounded-md bg-light-yellow group-data-[collapsible=icon]:hidden">
         <AlertDescription className="overflow-hidden text-ellipsis whitespace-nowrap text-xs">
           View-only{" "}
           <Link
-            href="https://langfuse.com/docs/demo"
+            href="https://hanzo.ai/docs/demo"
             target="_blank"
             className="underline"
           >

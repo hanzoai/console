@@ -6,7 +6,7 @@ import { type LocationMock } from "@jedmao/location";
 
 type PartialRouter = Partial<Router>;
 
-export const BASE_URL = "https://langfuse.com";
+export const BASE_URL = "https://hanzo.ai";
 
 /**
  * A Router to be used for testing which provides the bare minimum needed

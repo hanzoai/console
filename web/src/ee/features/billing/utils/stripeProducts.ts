@@ -15,8 +15,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'credits-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_Ru16ryEtJtEmRh" // test
         : "prod_Ru0gok2x52s57Y", // live
     name: "Credits",
@@ -27,8 +27,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'pro-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_RtxpuU81xgUmtC" // test
         : "prod_RsXQA8ueb1y03D", // live
     name: "Pro",
@@ -39,8 +39,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'team-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_RtxpPPb2RTz8bj" // test
         : "prod_RsXMLhxoR4rauv", // live
     name: "Team",
@@ -51,8 +51,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'dev-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_RtxoClDkiPAOAs" // test
         : "prod_RsVYLiuNEcSgQj", // live
     name: "Dev",

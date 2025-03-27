@@ -54,7 +54,7 @@ export const ModelUsageChart = ({
   const queryResult = api.dashboard.chart.useQuery(
     {
       projectId,
-      from: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
+      from: env.NEXT_PUBLIC_HANZO_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
         ? "traces_observations"
         : "traces_observationsview",
       select: [

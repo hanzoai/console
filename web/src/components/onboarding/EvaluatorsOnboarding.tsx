@@ -48,9 +48,9 @@ export function EvaluatorsOnboarding({ projectId }: EvaluatorsOnboardingProps) {
       }}
       secondaryAction={{
         label: "Learn More",
-        href: "https://langfuse.com/docs/scores/model-based-evals",
+        href: "https://hanzo.ai/docs/scores/model-based-evals",
       }}
-      videoSrc="https://static.langfuse.com/prod-assets/onboarding/scores-llm-as-a-judge-overview-v1.mp4"
+      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/scores-llm-as-a-judge-overview-v1.mp4"
     />
   );
 }
