@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { api } from "@/src/utils/api";
 import { type Prisma } from "@langfuse/shared/src/db";
@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useRouter } from "next/router";
 import { PriceUnitSelector } from "@/src/features/models/components/PriceUnitSelector";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
@@ -53,7 +53,7 @@ const modelConfigDescriptions = {
   config:
     "Some tokenizers require additional configuration (e.g. openai tiktoken). See docs for details.",
   maintainer:
-    "Maintainer of the model.  managed models can be cloned, user managed models can be edited and deleted. To supersede a  managed model, set the custom model name to the Langfuse model name.",
+    "Maintainer of the model.  managed models can be cloned, user managed models can be edited and deleted. To supersede a  managed model, set the custom model name to the Hanzo model name.",
   lastUsed: "Start time of the latest generation using this model",
 } as const;
 
@@ -86,7 +86,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
     scope: "models:CUD",
   });
 
-  const columns: LangfuseColumnDef<ModelTableRow>[] = [
+  const columns: HanzoColumnDef<ModelTableRow>[] = [
     {
       accessorKey: "modelName",
       id: "modelName",
@@ -112,19 +112,19 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       },
       size: 60,
       cell: ({ row }) => {
-        const isLangfuse = row.original.maintainer === "Langfuse";
+        const isHanzo = row.original.maintainer === "Hanzo";
         return (
           <div className="flex justify-center">
             <Tooltip>
               <TooltipTrigger>
-                {isLangfuse ? (
+                {isHanzo ? (
                   <HanzoCloudIcon size={16} />
                 ) : (
                   <UserCircle2Icon className="h-4 w-4" />
                 )}
               </TooltipTrigger>
               <TooltipContent>
-                {isLangfuse ? "Langfuse maintained" : "User maintained"}
+                {isHanzo ? "Hanzo maintained" : "User maintained"}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -220,7 +220,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       header: "Actions",
       size: 120,
       cell: ({ row }) => {
-        return row.original.maintainer !== "Langfuse" ? (
+        return row.original.maintainer !== "Hanzo" ? (
           <div
             className="flex items-center gap-2"
             onClick={(e) => e.stopPropagation()}
@@ -257,7 +257,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
   const convertToTableRow = (model: GetModelResult): ModelTableRow => {
     return {
       modelId: model.id,
-      maintainer: model.projectId ? "User" : "Langfuse",
+      maintainer: model.projectId ? "User" : "Hanzo",
       modelName: model.modelName,
       matchPattern: model.matchPattern,
       prices: model.prices,

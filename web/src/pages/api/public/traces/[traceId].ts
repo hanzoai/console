@@ -7,7 +7,7 @@ import {
 } from "@/src/features/public-api/types/traces";
 import {
   filterAndValidateDbScoreList,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
 } from "@langfuse/shared";
 import { prisma } from "@langfuse/shared/src/db";
 import {
@@ -83,7 +83,7 @@ export default withMiddlewares({
       });
 
       if (!trace) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `Trace ${traceId} not found within authorized project`,
         );
       }

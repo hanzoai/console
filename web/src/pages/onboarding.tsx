@@ -15,7 +15,7 @@ import {
 } from "@/src/components/ui/form";
 import { usePostHog } from "posthog-js/react";
 import { useRouter } from "next/router";
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { Textarea } from "@/src/components/ui/textarea";
 
 const referralSourceSchema = z.object({

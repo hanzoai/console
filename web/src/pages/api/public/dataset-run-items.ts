@@ -6,7 +6,7 @@ import {
   PostDatasetRunItemsV1Response,
   transformDbDatasetRunItemToAPIDatasetRunItem,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError, InvalidRequestError } from "@langfuse/shared";
+import { HanzoNotFoundError, InvalidRequestError } from "@langfuse/shared";
 import { addDatasetRunItemsToEvalQueue } from "@/src/ee/features/evals/server/addDatasetRunItemsToEvalQueue";
 import { getObservationById } from "@langfuse/shared/src/server";
 
@@ -43,7 +43,7 @@ export default withMiddlewares({
       });
 
       if (!datasetItem) {
-        throw new LangfuseNotFoundError("Dataset item not found or not active");
+        throw new HanzoNotFoundError("Dataset item not found or not active");
       }
 
       let finalTraceId = traceId;
@@ -56,7 +56,7 @@ export default withMiddlewares({
           true,
         );
         if (observationId && !observation) {
-          throw new LangfuseNotFoundError("Observation not found");
+          throw new HanzoNotFoundError("Observation not found");
         }
         finalTraceId = observation?.traceId;
       }

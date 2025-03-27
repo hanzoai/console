@@ -7,7 +7,7 @@ import {
 import { prisma, ScoreDataType } from "../../db";
 import { Score } from "../repositories";
 
-import { InvalidRequestError, LangfuseNotFoundError } from "../../errors";
+import { InvalidRequestError, HanzoNotFoundError } from "../../errors";
 
 type ValidateAndInflateScoreParams = {
   projectId: string;
@@ -29,7 +29,7 @@ export async function validateAndInflateScore(
     });
 
     if (!config || !validateDbScoreConfigSafe(config).success)
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         "The configId you provided does not match a valid config in this project",
       );
 

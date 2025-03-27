@@ -147,7 +147,7 @@ jobs:
           pnpm --filter=shared ch:up
       - name: Build
         run: pnpm run build
-      - name: Start Langfuse
+      - name: Start Hanzo
         run: (pnpm run start&)
         env:
           LANGFUSE_INIT_ORG_ID: "seed-org-id"
@@ -224,7 +224,7 @@ jobs:
           pnpm --filter=shared ch:up
       - name: Build
         run: pnpm run build
-      - name: Start Langfuse
+      - name: Start Hanzo
         run: (pnpm run start&)
         env:
           LANGFUSE_INIT_ORG_ID: "seed-org-id"

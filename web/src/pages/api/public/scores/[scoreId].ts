@@ -6,7 +6,7 @@ import {
   GetScoreQuery,
   GetScoreResponse,
   InternalServerError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
 } from "@langfuse/shared";
 import {
   deleteScore,
@@ -24,7 +24,7 @@ export default withMiddlewares({
       const score = await getScoreById(auth.scope.projectId, query.scoreId);
 
       if (!score) {
-        throw new LangfuseNotFoundError("Score not found");
+        throw new HanzoNotFoundError("Score not found");
       }
 
       const parsedScore = GetScoreResponse.safeParse(score);

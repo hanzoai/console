@@ -2,7 +2,7 @@ import {
   createTRPCRouter,
   protectedGetTraceProcedure,
 } from "@/src/server/api/trpc";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 import { getObservationById } from "@langfuse/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -38,7 +38,7 @@ export const observationsRouter = createTRPCRouter({
           internalModel: obs?.internalModelId,
         };
       } catch (e) {
-        if (e instanceof LangfuseNotFoundError) {
+        if (e instanceof HanzoNotFoundError) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Observation not found within authorized project",

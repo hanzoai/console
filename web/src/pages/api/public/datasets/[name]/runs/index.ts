@@ -6,7 +6,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -31,7 +31,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new LangfuseNotFoundError("Dataset not found");
+        throw new HanzoNotFoundError("Dataset not found");
       }
 
       const totalItems = await prisma.datasetRuns.count({

@@ -6,7 +6,7 @@ import {
 } from "@/src/features/public-api/types/observations";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 import { getObservationViewById } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
@@ -21,7 +21,7 @@ export default withMiddlewares({
         true,
       );
       if (!clickhouseObservation) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Observation not found within authorized project",
         );
       }
@@ -69,7 +69,7 @@ export default withMiddlewares({
       };
 
       if (!observation) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Observation not found within authorized project",
         );
       }

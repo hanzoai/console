@@ -6,7 +6,7 @@ The cache for API keys is managed using Redis. The cache key looks like the foll
 
 ### Creation and updates of API keys
 
-When creating a new API key, nothing happens in the cache. The API key is only created in the database. There are no functionalities in Langfuse to update API keys.
+When creating a new API key, nothing happens in the cache. The API key is only created in the database. There are no functionalities in Hanzo to update API keys.
 
 ### Reading API keys
 

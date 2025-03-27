@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import type * as z from "zod";
 import { env } from "@/src/env.mjs";
 import { useState } from "react";
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPrivacyNotice";
 import { CloudRegionSwitch } from "@/src/features/auth/components/AuthCloudRegionSwitch";
 import {

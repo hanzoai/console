@@ -2,7 +2,7 @@ import { StarSessionToggle } from "@/src/components/star-toggle";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { TokenUsageBadge } from "@/src/components/token-usage-badge";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
@@ -205,7 +205,7 @@ export default function SessionsTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessions.isSuccess, sessions.data]);
 
-  const columns: LangfuseColumnDef<SessionTableRow>[] = [
+  const columns: HanzoColumnDef<SessionTableRow>[] = [
     {
       accessorKey: "bookmarked",
       id: "bookmarked",

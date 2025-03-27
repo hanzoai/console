@@ -1,7 +1,7 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
@@ -145,7 +145,7 @@ export default function PromptVersionTable() {
     showAggregateViewOnly: true,
   });
 
-  const columns: LangfuseColumnDef<PromptVersionTableRow>[] = [
+  const columns: HanzoColumnDef<PromptVersionTableRow>[] = [
     {
       accessorKey: "version",
       id: "version",

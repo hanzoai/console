@@ -3552,13 +3552,13 @@ components:
           description: >-
             Optional. Configuration for the selected tokenizer. Needs to be
             JSON. See docs for more details.
-        isLangfuseManaged:
+        isHanzoManaged:
           type: boolean
       required:
         - id
         - modelName
         - matchPattern
-        - isLangfuseManaged
+        - isHanzoManaged
     ModelUsageUnit:
       title: ModelUsageUnit
       type: string

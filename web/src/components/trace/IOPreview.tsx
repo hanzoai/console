@@ -11,7 +11,7 @@ import {
   type ChatMlMessageSchema,
 } from "@/src/components/schemas/ChatMlSchema";
 import { type MediaReturnType } from "@/src/features/media/validation";
-import { LangfuseMediaView } from "@/src/components/ui/LangfuseMediaView";
+import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
 import { MarkdownJsonView } from "@/src/components/ui/MarkdownJsonView";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
@@ -293,7 +293,7 @@ export const OpenAiMessageView: React.FC<{
             </div>
             <div className="flex flex-wrap gap-2 p-4 pt-1">
               {media.map((m) => (
-                <LangfuseMediaView
+                <HanzoMediaView
                   mediaAPIReturnValue={m}
                   asFileIcon={true}
                   key={m.mediaId}

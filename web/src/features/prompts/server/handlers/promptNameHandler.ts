@@ -4,7 +4,7 @@ import { getPromptByName } from "@/src/features/prompts/server/actions/getPrompt
 import { GetPromptByNameSchema } from "@/src/features/prompts/server/utils/validation";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 import { PRODUCTION_LABEL } from "@/src/features/prompts/constants";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 
@@ -41,7 +41,7 @@ const getPromptNameHandler = async (
       errorMessage += ` with label '${label ?? PRODUCTION_LABEL}'`;
     }
 
-    throw new LangfuseNotFoundError(errorMessage);
+    throw new HanzoNotFoundError(errorMessage);
   }
 
   return res.status(200).json(prompt);

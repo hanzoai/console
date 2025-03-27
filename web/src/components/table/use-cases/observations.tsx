@@ -14,7 +14,7 @@ import {
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
   type ObservationLevelType,
   type FilterState,
@@ -270,7 +270,7 @@ export default function ObservationsTable({
     );
   };
 
-  const columns: LangfuseColumnDef<ObservationsTableRow>[] = [
+  const columns: HanzoColumnDef<ObservationsTableRow>[] = [
     {
       accessorKey: "id",
       id: "id",
@@ -750,7 +750,7 @@ export default function ObservationsTable({
       id: "promptName",
       header: "Prompt",
       headerTooltip: {
-        description: "Link to prompt version in Langfuse prompt management.",
+        description: "Link to prompt version in Hanzo prompt management.",
         href: "https://langfuse.com/docs/prompts",
       },
       size: 200,

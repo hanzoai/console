@@ -6,7 +6,7 @@ import {
   upsertClickhouse,
 } from "./clickhouse";
 import { logger } from "../logger";
-import { InternalServerError, LangfuseNotFoundError } from "../../errors";
+import { InternalServerError, HanzoNotFoundError } from "../../errors";
 import { prisma } from "../../db";
 import { ObservationRecordReadType } from "./definitions";
 import { FilterState } from "../../types";
@@ -245,7 +245,7 @@ export const getObservationById = async (
   const mapped = records.map(convertObservation);
 
   if (mapped.length === 0) {
-    throw new LangfuseNotFoundError(`Observation with id ${id} not found`);
+    throw new HanzoNotFoundError(`Observation with id ${id} not found`);
   }
 
   if (mapped.length > 1) {
@@ -319,7 +319,7 @@ export const getObservationViewById = async (
   const mapped = records.map(convertObservationToView);
 
   if (mapped.length === 0) {
-    throw new LangfuseNotFoundError(`Observation with id ${id} not found`);
+    throw new HanzoNotFoundError(`Observation with id ${id} not found`);
   }
 
   if (mapped.length > 1) {

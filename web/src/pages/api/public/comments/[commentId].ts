@@ -1,7 +1,7 @@
 import { prisma } from "@langfuse/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 import {
   GetCommentV1Query,
   GetCommentV1Response,
@@ -23,7 +23,7 @@ export default withMiddlewares({
       });
 
       if (!comment) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Comment not found within authorized project",
         );
       }

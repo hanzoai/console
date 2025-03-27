@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { Prisma } from "@prisma/client";
 
 import {
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   Model,
   Price,
   PrismaClient,
@@ -815,7 +815,7 @@ export class IngestionService {
     });
 
     if (!project) {
-      throw new LangfuseNotFoundError(`Project ${projectId} not found`);
+      throw new HanzoNotFoundError(`Project ${projectId} not found`);
     }
 
     const cutoffDate = new Date(

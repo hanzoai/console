@@ -1,10 +1,10 @@
-![Langfuse GitHub Banner](https://github.com/langfuse/langfuse/assets/121163007/6035f0f3-d691-4963-b5d0-10cf506e9d42)
+![Hanzo GitHub Banner](https://github.com/langfuse/langfuse/assets/121163007/6035f0f3-d691-4963-b5d0-10cf506e9d42)
 
-# Contributing to Langfuse
+# Contributing to Hanzo
 
 First off, thanks for taking the time to contribute! ❤️
 
-The best ways to contribute to Langfuse:
+The best ways to contribute to Hanzo:
 
 - Submit and vote on [Ideas](https://github.com/orgs/langfuse/discussions/categories/ideas)
 - Create and comment on [Issues](https://github.com/langfuse/langfuse/issues)
@@ -62,7 +62,7 @@ flowchart LR
    Browser ---|Web UI & TRPC API| App
    Integrations/SDKs ---|Public HTTP API| App
    subgraph i1["Application Network"]
-      App["Langfuse Application"]
+      App["Hanzo Application"]
    end
    subgraph i2["Database Network"]
       DB["Postgres Database"]
@@ -82,7 +82,7 @@ Full database schema: [packages/shared/prisma/schema.prisma](packages/shared/pri
 
 We built a monorepo using [pnpm](https://pnpm.io/motivation) and [turbo](https://turbo.build/repo/docs) to manage the dependencies and build process. The monorepo contains the following packages:
 
-- `web`: is the main application package providing Frontend and Backend APIs for Langfuse.
+- `web`: is the main application package providing Frontend and Backend APIs for Hanzo.
 - `worker` (no production yet): contains an application for asynchronous processing of tasks. This package is not yet used in production.
 - `packages`:
   - `shared`: contains shared code between the above packages.
@@ -98,7 +98,7 @@ Requirements
 - Pnpm v.9.5.0
 - Docker to run the database locally
 
-**Note:** You can also simply run Langfuse in a **GitHub Codespace** via the provided devcontainer. To do this, click on the green "Code" button in the top right corner of the repository and select "Open with Codespaces".
+**Note:** You can also simply run Hanzo in a **GitHub Codespace** via the provided devcontainer. To do this, click on the green "Code" button in the top right corner of the repository and select "Open with Codespaces".
 
 **Steps**
 
@@ -124,7 +124,7 @@ Requirements
 
    You will be asked whether you want to reset Postgres and ClickHouse. Confirm both with 'Y' and press enter.
 
-5. Open the web app in your browser to start using Langfuse:
+5. Open the web app in your browser to start using Hanzo:
 
    - [Sign up page, http://localhost:3000](http://localhost:3000)
    - [Demo project, http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a](http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a)
@@ -224,18 +224,18 @@ The same environment is also used for preview deployments of pull requests. Limi
 - SSO is not available as dynamic domains are not supported by most SSO providers.
 - When making changes to the database, migrations to the staging database need to be applied manually by a maintainer. If you want to interactively test database changes in the staging environment, please reach out.
 
-You can use the staging environment end-to-end with the Langfuse integrations or SDKs (host: `https://staging.langfuse.com`). However, please note that the staging environment is not intended for production use and may be reset at any time.
+You can use the staging environment end-to-end with the Hanzo integrations or SDKs (host: `https://staging.langfuse.com`). However, please note that the staging environment is not intended for production use and may be reset at any time.
 
 ## Production environment
 
 When a new release is tagged on the `main` branch (excluding prereleases), it triggers a production deployment. The deployment process consists of two steps:
 
 1. The Docker image is published to GitHub Packages with the version number and `latest` tag.
-2. The deployment is carried out on Langfuse Cloud. This is done by force pushing the `main` branch to the `production` branch during every release, using the [`release.yml`](.github/workflows/release.yml) GitHub Action.
+2. The deployment is carried out on Hanzo Cloud. This is done by force pushing the `main` branch to the `production` branch during every release, using the [`release.yml`](.github/workflows/release.yml) GitHub Action.
 
 ## Theming
 
-At Langfuse, we utilize CSS variables to manage our theme settings across the platform.
+At Hanzo, we utilize CSS variables to manage our theme settings across the platform.
 
 Our approach leverages separate CSS variables for backgrounds (--background) and foregrounds (--foreground), fully adhering to the [shadcn/ui](https://ui.shadcn.com/docs/theming) color conventions. The background suffix can be omitted if the variable is used for the background color of the component. We recommend using HSL values for these colors to enhance consistency and customization. There is no need to manually handle dark mode styling with "dark:" prefixes, as next-themes automatically manages the theme switching.
 
@@ -289,8 +289,8 @@ The background color of the following component will be `hsl(var(--primary))` an
 | --dark-yellow            | Dark yellow for warning text                                       | LevelColor                       |
 | --light-green            | Light green for success status badge background                    | StatusBadge                      |
 | --dark-green             | Dark green for success status badge text and dot                   | StatusBadge                      |
-| --light-blue             | Light blue for background of Staging label                         | LangfuseLogo                     |
-| --dark-blue              | Dark blue for text and border of Staging label                     | LangfuseLogo                     |
+| --light-blue             | Light blue for background of Staging label                         | HanzoLogo                     |
+| --dark-blue              | Dark blue for text and border of Staging label                     | HanzoLogo                     |
 | --accent-light-blue      | Light blue accent for table link hover effect                      | TableLink                        |
 | --accent-dark-blue       | Dark blue accent for table link text                               | TableLink                        |
 
@@ -329,6 +329,6 @@ Until the V3 release, both the JSON record must be updated **and** a migration m
 
 ## License
 
-Langfuse is MIT licensed, except for `ee/` folder. See [LICENSE](LICENSE) and [docs](https://langfuse.com/docs/open-source) for more details.
+Hanzo is MIT licensed, except for `ee/` folder. See [LICENSE](LICENSE) and [docs](https://langfuse.com/docs/open-source) for more details.
 
-When contributing to the Langfuse codebase, you need to agree to the [Contributor License Agreement](https://cla-assistant.io/langfuse/langfuse). You only need to do this once and the CLA bot will remind you if you haven't signed it yet.
+When contributing to the Hanzo codebase, you need to agree to the [Contributor License Agreement](https://cla-assistant.io/langfuse/langfuse). You only need to do this once and the CLA bot will remind you if you haven't signed it yet.

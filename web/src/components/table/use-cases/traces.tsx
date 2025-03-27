@@ -3,7 +3,7 @@ import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import TableLink from "@/src/components/table/table-link";
 import { Badge } from "@/src/components/ui/badge";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { TagTracePopover } from "@/src/features/tag/components/TagTracePopver";
 import { TokenUsageBadge } from "@/src/components/token-usage-badge";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -408,7 +408,7 @@ export default function TracesTable({
     },
   ];
 
-  const columns: LangfuseColumnDef<TracesTableRow>[] = [
+  const columns: HanzoColumnDef<TracesTableRow>[] = [
     selectActionColumn,
     {
       accessorKey: "bookmarked",

@@ -32,7 +32,7 @@ const APIModelDefinition = z
     unit: APIModelUsageUnit,
     tokenizerId: z.string().nullable(),
     tokenizerConfig: z.any(), // Assuming Prisma.JsonValue is any type
-    isLangfuseManaged: z.boolean(),
+    isHanzoManaged: z.boolean(),
     createdAt: z.coerce.date(),
   })
   .strict();
@@ -57,7 +57,7 @@ export function prismaToApiModelDefinition({
     inputPrice: inputPrice?.toNumber() ?? null,
     outputPrice: outputPrice?.toNumber() ?? null,
     totalPrice: totalPrice?.toNumber() ?? null,
-    isLangfuseManaged: !Boolean(projectId),
+    isHanzoManaged: !Boolean(projectId),
   };
 }
 

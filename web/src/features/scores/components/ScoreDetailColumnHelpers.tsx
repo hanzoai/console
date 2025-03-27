@@ -1,5 +1,5 @@
 import { ScoresTableCell } from "@/src/components/scores-table-cell";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { type ObservationsTableRow } from "@/src/components/table/use-cases/observations";
 import { type TracesTableRow } from "@/src/components/table/use-cases/traces";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -46,7 +46,7 @@ const parseScoreColumn = <
 >(
   col: ScoreData,
   prefix?: "Trace" | "Generation",
-): LangfuseColumnDef<T> => {
+): HanzoColumnDef<T> => {
   const { key, name, source, dataType } = col;
 
   if (!!prefix) {
@@ -102,7 +102,7 @@ export const constructIndividualScoreColumns = <
   showAggregateViewOnly?: boolean;
   scoreColumnPrefix?: "Trace" | "Generation";
   cellsLoading?: boolean;
-}): LangfuseColumnDef<T>[] => {
+}): HanzoColumnDef<T>[] => {
   return scoreColumnProps.map((col) => {
     const { accessorKey, header, size, enableHiding } = parseScoreColumn<T>(
       col,

@@ -1,4 +1,4 @@
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 
 export function Spinner(props: { message: string }) {
   return (

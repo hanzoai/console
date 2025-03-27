@@ -12,7 +12,7 @@ import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
 import { ExperimentCreateEventSchema } from "@langfuse/shared/src/server";
 import {
   InvalidRequestError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   Prisma,
   extractVariables,
   datasetItemMatchesVariable,
@@ -127,7 +127,7 @@ export const createExperimentJob = async ({
 
   const datasetRun = await fetchDatasetRun(runId, projectId);
   if (!datasetRun) {
-    throw new LangfuseNotFoundError(`Dataset run ${runId} not found`);
+    throw new HanzoNotFoundError(`Dataset run ${runId} not found`);
   }
 
   const validatedRunMetadata = ExperimentMetadataSchema.safeParse(
@@ -135,7 +135,7 @@ export const createExperimentJob = async ({
   );
   if (!validatedRunMetadata.success) {
     throw new InvalidRequestError(
-      "Langfuse in-app experiments can only be run with prompt and model configurations in metadata.",
+      "Hanzo in-app experiments can only be run with prompt and model configurations in metadata.",
     );
   }
 
@@ -144,7 +144,7 @@ export const createExperimentJob = async ({
   const prompt = await fetchPrompt(prompt_id, projectId);
 
   if (!prompt) {
-    throw new LangfuseNotFoundError(`Prompt ${prompt_id} not found`);
+    throw new HanzoNotFoundError(`Prompt ${prompt_id} not found`);
   }
 
   const validatedPrompt = PromptContentSchema.safeParse(prompt.prompt);
@@ -162,7 +162,7 @@ export const createExperimentJob = async ({
     },
   });
   if (!apiKey) {
-    throw new LangfuseNotFoundError(
+    throw new HanzoNotFoundError(
       `API key for provider ${provider} not found`,
     );
   }

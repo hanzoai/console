@@ -11,7 +11,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import {
   type DatasetItem,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   Prisma,
 } from "@langfuse/shared";
 import { logger } from "@langfuse/shared/src/server";
@@ -40,7 +40,7 @@ export default withMiddlewares({
         },
       });
       if (!dataset) {
-        throw new LangfuseNotFoundError("Dataset not found");
+        throw new HanzoNotFoundError("Dataset not found");
       }
 
       const itemId = id ?? uuidv4();
@@ -87,7 +87,7 @@ export default withMiddlewares({
           logger.warn(
             `Failed to upsert dataset item. Dataset item ${itemId} in project ${auth.scope.projectId} already exists for a different dataset than ${dataset.id}`,
           );
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `The dataset item with id ${itemId} was not found in the dataset ${dataset.name}`,
           );
         }
@@ -117,7 +117,7 @@ export default withMiddlewares({
           },
         });
         if (!dataset) {
-          throw new LangfuseNotFoundError("Dataset not found");
+          throw new HanzoNotFoundError("Dataset not found");
         }
         datasetId = dataset.id;
       }

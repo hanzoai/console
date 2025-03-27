@@ -18,7 +18,7 @@ body:
   - type: textarea
     attributes:
       label: SDK and container versions
-      description: If you're experiencing an issue with an integration or SDK, please ensure you're using the latest version. If you're self-hosting Langfuse, check that you're running the most recent version. If updating isn't an option, please provide the specific versions you're currently using.
+      description: If you're experiencing an issue with an integration or SDK, please ensure you're using the latest version. If you're self-hosting Hanzo, check that you're running the most recent version. If updating isn't an option, please provide the specific versions you're currently using.
   - type: textarea
     attributes:
       label: Additional information

@@ -1,6 +1,6 @@
 # Telemetry service for Docker deployments
 
-By default, Langfuse automatically reports basic usage statistics to a centralized server (PostHog).
+By default, Hanzo automatically reports basic usage statistics to a centralized server (PostHog).
 
 This helps us to:
 

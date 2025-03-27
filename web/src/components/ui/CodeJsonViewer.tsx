@@ -10,7 +10,7 @@ import { useTheme } from "next-themes";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useMarkdownContext } from "@/src/features/theming/useMarkdownContext";
 import { type MediaReturnType } from "@/src/features/media/validation";
-import { LangfuseMediaView } from "@/src/components/ui/LangfuseMediaView";
+import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
 import { MarkdownJsonViewHeader } from "@/src/components/ui/MarkdownJsonView";
 
 const IO_TABLE_CHAR_LIMIT = 10000;
@@ -94,7 +94,7 @@ export function JSONView(props: {
           </div>
           <div className="flex flex-wrap gap-2 p-4 pt-1">
             {props.media.map((m) => (
-              <LangfuseMediaView
+              <HanzoMediaView
                 mediaAPIReturnValue={m}
                 asFileIcon={true}
                 key={m.mediaId}

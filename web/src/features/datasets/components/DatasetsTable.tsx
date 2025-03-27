@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,
@@ -63,7 +63,7 @@ export function DatasetsTable(props: { projectId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasets.isSuccess, datasets.data]);
 
-  const columns: LangfuseColumnDef<RowData>[] = [
+  const columns: HanzoColumnDef<RowData>[] = [
     {
       accessorKey: "key",
       header: "Name",

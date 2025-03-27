@@ -1,5 +1,5 @@
 export { BaseError } from "./BaseError";
-export { LangfuseNotFoundError } from "./NotFoundError";
+export { HanzoNotFoundError } from "./NotFoundError";
 export { InvalidRequestError } from "./InvalidRequestError";
 export { UnauthorizedError } from "./UnauthorizedError";
 export { ForbiddenError } from "./ForbiddenError";

@@ -13,7 +13,7 @@ import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { Archive, ListTree, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { type DatasetItem, DatasetStatus, type Prisma } from "@langfuse/shared";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useEffect, useState } from "react";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
@@ -93,7 +93,7 @@ export function DatasetItemsTable({
     onSuccess: () => utils.datasets.invalidate(),
   });
 
-  const columns: LangfuseColumnDef<RowData>[] = [
+  const columns: HanzoColumnDef<RowData>[] = [
     {
       accessorKey: "id",
       header: "Item id",

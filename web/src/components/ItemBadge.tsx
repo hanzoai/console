@@ -19,7 +19,7 @@ import { cva } from "class-variance-authority";
 import { ObservationType } from "@langfuse/shared";
 import { cn } from "@/src/utils/tailwind";
 
-export type LangfuseItemType =
+export type HanzoItemType =
   | ObservationType
   | "TRACE"
   | "SESSION"
@@ -33,7 +33,7 @@ export type LangfuseItemType =
   | "EVALUATOR"
   | "EVAL_TEMPLATE";
 
-const iconMap: Record<LangfuseItemType, React.ElementType> = {
+const iconMap: Record<HanzoItemType, React.ElementType> = {
   TRACE: ListTree,
   [ObservationType.GENERATION]: Fan,
   [ObservationType.EVENT]: CircleDot,
@@ -77,7 +77,7 @@ export function ItemBadge({
   isSmall = false,
   className,
 }: {
-  type: LangfuseItemType;
+  type: HanzoItemType;
   showLabel?: boolean;
   isSmall?: boolean;
   className?: string;

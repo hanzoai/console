@@ -18,7 +18,7 @@ import { pruneDatabase } from "./utils";
 import { sql } from "kysely";
 import {
   LLMAdapter,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   variableMappingList,
   ApiError,
 } from "@langfuse/shared";
@@ -999,7 +999,7 @@ describe("eval service tests", () => {
       };
 
       await expect(evaluate({ event: payload })).rejects.toThrowError(
-        new LangfuseNotFoundError(
+        new HanzoNotFoundError(
           "API key for provider openai and project 7a88fb47-b4e2-43b8-a06c-a5ce950dc53a not found.",
         ),
       );
@@ -1496,7 +1496,7 @@ describe("eval service tests", () => {
           variableMapping: variableMapping,
         }),
       ).rejects.toThrowError(
-        new LangfuseNotFoundError(
+        new HanzoNotFoundError(
           `Observation great-llm-name for trace ${traceId} not found. Please ensure the mapped data exists and consider extending the job delay.`,
         ),
       );

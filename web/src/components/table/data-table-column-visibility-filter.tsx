@@ -28,7 +28,7 @@ import {
   Component,
   Menu,
 } from "lucide-react";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import {
@@ -53,7 +53,7 @@ import { cn } from "@/src/utils/tailwind";
 import { isString } from "@/src/utils/types";
 
 interface DataTableColumnVisibilityFilterProps<TData, TValue> {
-  columns: LangfuseColumnDef<TData, TValue>[];
+  columns: HanzoColumnDef<TData, TValue>[];
   columnVisibility: VisibilityState;
   setColumnVisibility: Dispatch<SetStateAction<VisibilityState>>;
   columnOrder?: ColumnOrderState;
@@ -61,7 +61,7 @@ interface DataTableColumnVisibilityFilterProps<TData, TValue> {
 }
 
 const calculateColumnCounts = <TData, TValue>(
-  columns: LangfuseColumnDef<TData, TValue>[],
+  columns: HanzoColumnDef<TData, TValue>[],
   columnVisibility: VisibilityState,
 ) => {
   return columns.reduce(
@@ -94,7 +94,7 @@ function ColumnVisibilityDropdownItem<TData, TValue>({
   columnVisibility,
   isOrderable = false,
 }: {
-  column: LangfuseColumnDef<TData, TValue>;
+  column: HanzoColumnDef<TData, TValue>;
   toggleColumn: (columnId: string) => void;
   columnVisibility: VisibilityState;
   isOrderable?: boolean;
@@ -163,7 +163,7 @@ function GroupVisibilityDropdownHeader<TData, TValue>({
   groupTotalCount,
   groupVisibleCount,
 }: {
-  column: LangfuseColumnDef<TData, TValue>;
+  column: HanzoColumnDef<TData, TValue>;
   groupTotalCount: number;
   groupVisibleCount: number;
 }) {
@@ -215,7 +215,7 @@ function GroupVisibilityDropdownHeader<TData, TValue>({
 }
 
 function setAllColumns<TData, TValue>(
-  columns: LangfuseColumnDef<TData, TValue>[],
+  columns: HanzoColumnDef<TData, TValue>[],
   visible: boolean,
   groupName?: string,
 ) {

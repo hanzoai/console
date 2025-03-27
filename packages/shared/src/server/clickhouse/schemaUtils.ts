@@ -1,4 +1,4 @@
-import { LangfuseNotFoundError } from "../../errors";
+import { HanzoNotFoundError } from "../../errors";
 import { eventTypes } from "../ingestion/types";
 import { ClickhouseTableName, ClickhouseTableNames } from "./schema";
 
@@ -32,6 +32,6 @@ export const getClickhouseEntityType = (
     case eventTypes.SDK_LOG:
       return "sdk_log";
     default:
-      throw new LangfuseNotFoundError(`Unknown event type: ${eventType}`);
+      throw new HanzoNotFoundError(`Unknown event type: ${eventType}`);
   }
 };

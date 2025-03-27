@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { type RouterOutput } from "@/src/utils/types";
@@ -58,7 +58,7 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
     scope: "annotationQueues:CUD",
   });
 
-  const columns: LangfuseColumnDef<RowData>[] = [
+  const columns: HanzoColumnDef<RowData>[] = [
     {
       accessorKey: "key",
       header: "Name",

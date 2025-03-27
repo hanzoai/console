@@ -1,6 +1,6 @@
 import { logger, PromptService } from "@langfuse/shared/src/server";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 import { prisma } from "@langfuse/shared/src/db";
 import { redis } from "@langfuse/shared/src/server";
 
@@ -29,7 +29,7 @@ export const updatePrompt = async (params: UpdatePromptParams) => {
     });
 
     if (!prompt) {
-      throw new LangfuseNotFoundError(`Prompt not found: ${promptName}`);
+      throw new HanzoNotFoundError(`Prompt not found: ${promptName}`);
     }
 
     const newLabelsSet = new Set([...newLabels, ...prompt.labels]);

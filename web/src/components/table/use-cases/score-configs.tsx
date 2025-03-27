@@ -3,7 +3,7 @@ import { Card } from "@/src/components/ui/card";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { api } from "@/src/utils/api";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
 import {
@@ -100,7 +100,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
 
   const totalCount = configs.data?.totalCount ?? null;
 
-  const columns: LangfuseColumnDef<ScoreConfigTableRow>[] = [
+  const columns: HanzoColumnDef<ScoreConfigTableRow>[] = [
     {
       accessorKey: "name",
       id: "name",

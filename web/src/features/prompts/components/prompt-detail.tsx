@@ -57,10 +57,10 @@ const getPythonCode = (
   name: string,
   version: number,
   labels: string[],
-) => `from langfuse import Langfuse
+) => `from langfuse import Hanzo
 
-# Initialize Langfuse client
-langfuse = Langfuse()
+# Initialize Hanzo client
+langfuse = Hanzo()
 
 # Get production prompt 
 prompt = langfuse.get_prompt("${name}")
@@ -77,10 +77,10 @@ const getJsCode = (
   name: string,
   version: number,
   labels: string[],
-) => `import { Langfuse } from "langfuse";
+) => `import { Hanzo } from "langfuse";
 
-// Initialize the Langfuse client
-const langfuse = new Langfuse();
+// Initialize the Hanzo client
+const langfuse = new Hanzo();
 
 // Get production prompt 
 const prompt = await langfuse.getPrompt("${name}");
@@ -235,7 +235,7 @@ export const PromptDetail = () => {
         itemType: "PROMPT",
         help: {
           description:
-            "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information.",
+            "You can use this prompt within your application through the Hanzo SDKs and integrations. Refer to the documentation for more information.",
           href: "https://langfuse.com/docs/prompts",
         },
         breadcrumb: [

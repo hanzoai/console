@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
@@ -159,7 +159,7 @@ export function AnnotationQueueItemsTable({
     limit: paginationState.pageSize,
   });
 
-  const columns: LangfuseColumnDef<QueueItemRowData>[] = [
+  const columns: HanzoColumnDef<QueueItemRowData>[] = [
     {
       id: "select",
       accessorKey: "select",

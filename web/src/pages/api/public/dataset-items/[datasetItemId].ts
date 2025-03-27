@@ -8,7 +8,7 @@ import {
   DeleteDatasetItemV1Response,
   transformDbDatasetItemToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -34,7 +34,7 @@ export default withMiddlewares({
         },
       });
       if (!datasetItem) {
-        throw new LangfuseNotFoundError("Dataset item not found");
+        throw new HanzoNotFoundError("Dataset item not found");
       }
 
       const { dataset, ...datasetItemBody } = datasetItem;
@@ -63,7 +63,7 @@ export default withMiddlewares({
       });
 
       if (!datasetItem) {
-        throw new LangfuseNotFoundError("Dataset item not found");
+        throw new HanzoNotFoundError("Dataset item not found");
       }
 
       // Delete the dataset item

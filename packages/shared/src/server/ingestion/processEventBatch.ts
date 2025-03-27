@@ -5,7 +5,7 @@ import { type Model } from "../../db";
 import { env } from "../../env";
 import {
   InvalidRequestError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   UnauthorizedError,
 } from "../../errors";
 import { AuthHeaderValidVerificationResult } from "../auth/types";
@@ -335,7 +335,7 @@ export const aggregateBatchResult = (
         message: "Authentication error",
         error: error.error.message,
       });
-    } else if (error.error instanceof LangfuseNotFoundError) {
+    } else if (error.error instanceof HanzoNotFoundError) {
       returnedErrors.push({
         id: error.id,
         status: 404,

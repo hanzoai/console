@@ -7,7 +7,7 @@ import {
   traceException,
 } from "@langfuse/shared/src/server";
 import { createExperimentJob } from "../ee/experiments/experimentService";
-import { InvalidRequestError, LangfuseNotFoundError } from "@langfuse/shared";
+import { InvalidRequestError, HanzoNotFoundError } from "@langfuse/shared";
 import { kyselyPrisma } from "@langfuse/shared/src/db";
 
 export const experimentCreateQueueProcessor = async (
@@ -26,7 +26,7 @@ export const experimentCreateQueueProcessor = async (
   } catch (e) {
     if (
       e instanceof InvalidRequestError ||
-      e instanceof LangfuseNotFoundError
+      e instanceof HanzoNotFoundError
     ) {
       logger.info(
         `Failed to process experiment create job for project: ${job.data.payload.projectId}`,
@@ -46,7 +46,7 @@ export const experimentCreateQueueProcessor = async (
           !currentRun.metadata ||
           !ExperimentMetadataSchema.safeParse(currentRun.metadata).success
         ) {
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `Dataset run ${job.data.payload.runId} not found`,
           );
         }

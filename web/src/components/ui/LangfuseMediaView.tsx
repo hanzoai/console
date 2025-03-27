@@ -13,7 +13,7 @@ import {
 } from "@/src/features/media/validation";
 import { FileIcon, ImageIcon, SpeakerLoudIcon } from "@radix-ui/react-icons";
 
-export const LangfuseMediaView = ({
+export const HanzoMediaView = ({
   mediaReferenceString,
   mediaAPIReturnValue,
   asFileIcon = false,
@@ -52,7 +52,7 @@ export const LangfuseMediaView = ({
         <span title="Invalid HanzoCloud Media Tag">
           <ImageOff className="h-4 w-4" />
         </span>
-        <span className="truncate text-sm">Invalid Langfuse Media Tag</span>
+        <span className="truncate text-sm">Invalid Hanzo Media Tag</span>
       </div>
     );
 

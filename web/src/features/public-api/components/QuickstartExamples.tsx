@@ -97,7 +97,7 @@ export const QuickstartExamples = ({
         <TabsContent value="js">
           <CodeView content="npm install langfuse" className="mb-2" />
           <CodeView
-            content={`import { Langfuse } from "langfuse";\n\nconst langfuse = new Langfuse({\n  secretKey: "${secretKey}",\n  publicKey: "${publicKey}",\n  baseUrl: "${host}"\n});`}
+            content={`import { Hanzo } from "langfuse";\n\nconst langfuse = new Hanzo({\n  secretKey: "${secretKey}",\n  publicKey: "${publicKey}",\n  baseUrl: "${host}"\n});`}
           />
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}

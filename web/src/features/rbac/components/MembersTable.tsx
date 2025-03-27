@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
   Avatar,
   AvatarFallback,
@@ -118,7 +118,7 @@ export function MembersTable({
 
   const projectRolesEntitlement = useHasEntitlement("rbac-project-roles");
 
-  const columns: LangfuseColumnDef<MembersTableRow>[] = [
+  const columns: HanzoColumnDef<MembersTableRow>[] = [
     {
       accessorKey: "user",
       id: "user",

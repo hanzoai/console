@@ -14,7 +14,7 @@ import {
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { PasswordInput } from "@/src/components/ui/password-input";
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useSession } from "next-auth/react";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { api } from "@/src/utils/api";

@@ -2,7 +2,7 @@ import { DataTable } from "@/src/components/table/data-table";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { IOTableCell } from "@/src/components/ui/CodeJsonViewer";
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -194,7 +194,7 @@ export default function ScoresTable({
     },
   );
 
-  const rawColumns: LangfuseColumnDef<ScoresTableRow>[] = [
+  const rawColumns: HanzoColumnDef<ScoresTableRow>[] = [
     {
       accessorKey: "traceId",
       id: "traceId",

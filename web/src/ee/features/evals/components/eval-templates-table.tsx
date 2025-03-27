@@ -1,7 +1,7 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { type RouterOutputs, api } from "@/src/utils/api";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -67,7 +67,7 @@ export default function EvalsTemplateTable({
         return row.getValue();
       },
     }),
-  ] as LangfuseColumnDef<EvalsTemplateRow>[];
+  ] as HanzoColumnDef<EvalsTemplateRow>[];
 
   const [columnVisibility, setColumnVisibility] =
     useColumnVisibility<EvalsTemplateRow>(

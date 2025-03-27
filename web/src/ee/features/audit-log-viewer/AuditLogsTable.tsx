@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { IOTableCell } from "@/src/components/ui/CodeJsonViewer";
@@ -29,7 +29,7 @@ export function AuditLogsTable(props: { projectId: string }) {
 
   const [rowHeight, setRowHeight] = useRowHeightLocalStorage("auditLogs", "s");
 
-  const columns: LangfuseColumnDef<AuditLogRow>[] = [
+  const columns: HanzoColumnDef<AuditLogRow>[] = [
     {
       accessorKey: "createdAt",
       header: "Time",
@@ -42,7 +42,7 @@ export function AuditLogsTable(props: { projectId: string }) {
       accessorKey: "user",
       header: "User",
       headerTooltip: {
-        description: "The user within Langfuse who performed the action.",
+        description: "The user within Hanzo who performed the action.",
       },
       cell: (row) => {
         const user = row.getValue() as AuditLogRow["user"];

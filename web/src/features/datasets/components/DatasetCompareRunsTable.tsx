@@ -1,7 +1,7 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { IOTableCell } from "@/src/components/ui/CodeJsonViewer";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { getDatasetRunAggregateColumnProps } from "@/src/features/datasets/components/DatasetRunAggregateColumnHelpers";
@@ -244,7 +244,7 @@ export function DatasetCompareRunsTable(props: {
       selectedMetrics,
     });
 
-  const columns: LangfuseColumnDef<DatasetCompareRunRowData>[] = [
+  const columns: HanzoColumnDef<DatasetCompareRunRowData>[] = [
     {
       accessorKey: "id",
       header: "Item id",

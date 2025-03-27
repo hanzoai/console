@@ -10,7 +10,7 @@ import {
   type ColumnOrderState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
   DataTableRowHeightSwitch,
   type RowHeight,
@@ -42,7 +42,7 @@ interface SearchConfig {
 }
 
 interface DataTableToolbarProps<TData, TValue> {
-  columns: LangfuseColumnDef<TData, TValue>[];
+  columns: HanzoColumnDef<TData, TValue>[];
   filterColumnDefinition?: ColumnDefinition[];
   searchConfig?: SearchConfig;
   actionButtons?: React.ReactNode;

@@ -21,7 +21,7 @@ import {
   validateDbScore,
   ScoreSource,
   type Score,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   InvalidRequestError,
   InternalServerError,
 } from "@langfuse/shared";
@@ -175,7 +175,7 @@ export const scoresRouter = createTRPCRouter({
         logger.error(
           `No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`,
         );
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`,
         );
       }
@@ -266,7 +266,7 @@ export const scoresRouter = createTRPCRouter({
         logger.warn(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
       } else {
@@ -335,7 +335,7 @@ export const scoresRouter = createTRPCRouter({
         logger.warn(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
       } else {

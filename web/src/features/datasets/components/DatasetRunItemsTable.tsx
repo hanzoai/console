@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
@@ -91,7 +91,7 @@ export function DatasetRunItemsTable(
       scoreColumnKey: "scores",
     });
 
-  const columns: LangfuseColumnDef<DatasetRunItemRowData>[] = [
+  const columns: HanzoColumnDef<DatasetRunItemRowData>[] = [
     {
       accessorKey: "runAt",
       header: "Run At",

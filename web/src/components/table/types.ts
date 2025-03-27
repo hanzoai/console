@@ -20,12 +20,12 @@ type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<
 };
 
 // limits types of defined tanstack ColumnDef properties to specific subset of tanstack type union
-export type LangfuseColumnDef<
+export type HanzoColumnDef<
   TData extends RowData,
   TValue = unknown,
 > = ExtendedColumnDef<TData, TValue> & {
   // Enforce langfuse columns to be of type 'AccessorKeyColumnDefBase' with 'accessorKey' property of type string
   accessorKey: string;
-  // Enforce langfuse group columns to have children of type 'LangfuseColumnDef'
-  columns?: LangfuseColumnDef<TData, TValue>[];
+  // Enforce langfuse group columns to have children of type 'HanzoColumnDef'
+  columns?: HanzoColumnDef<TData, TValue>[];
 };

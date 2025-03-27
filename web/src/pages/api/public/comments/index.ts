@@ -9,7 +9,7 @@ import {
 import { prisma } from "@langfuse/shared/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   POST: createAuthedAPIRoute({
@@ -23,7 +23,7 @@ export default withMiddlewares({
       });
 
       if (result.errorMessage) {
-        throw new LangfuseNotFoundError(result.errorMessage);
+        throw new HanzoNotFoundError(result.errorMessage);
       }
 
       const comment = await prisma.comment.create({

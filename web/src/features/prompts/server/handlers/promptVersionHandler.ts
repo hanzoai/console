@@ -4,7 +4,7 @@ import { z } from "zod";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
 import { updatePrompt } from "@/src/features/prompts/server/actions/updatePrompts";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 const UpdatePromptBodySchema = z.object({
   newLabels: z
@@ -36,7 +36,7 @@ export const promptVersionHandler = withMiddlewares({
         return res.status(200).json(prompt);
       } catch (e) {
         logger.error(e);
-        if (e instanceof LangfuseNotFoundError) {
+        if (e instanceof HanzoNotFoundError) {
           return res.status(404).json({ message: e.message });
         }
         return res.status(500).json({ message: "Internal server error" });

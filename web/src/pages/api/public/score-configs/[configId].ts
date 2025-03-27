@@ -4,7 +4,7 @@ import {
   GetScoreConfigQuery,
   GetScoreConfigResponse,
   InternalServerError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
 } from "@langfuse/shared";
 import { prisma } from "@langfuse/shared/src/db";
 import { traceException } from "@langfuse/shared/src/server";
@@ -23,7 +23,7 @@ export default withMiddlewares({
       });
 
       if (!config) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Score config not found within authorized project",
         );
       }

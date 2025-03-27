@@ -6,7 +6,7 @@ import {
   GetDatasetV1Response,
   transformDbDatasetItemToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -39,7 +39,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new LangfuseNotFoundError("Dataset not found");
+        throw new HanzoNotFoundError("Dataset not found");
       }
 
       const { datasetItems, datasetRuns, ...params } = dataset;

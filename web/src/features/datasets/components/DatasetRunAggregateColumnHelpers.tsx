@@ -1,4 +1,4 @@
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { DatasetAggregateTableCell } from "@/src/features/datasets/components/DatasetAggregateTableCell";
 import {
@@ -27,7 +27,7 @@ export const constructDatasetRunAggregateColumns = ({
   scoreKeyToDisplayName: Map<string, string>;
   selectedMetrics: DatasetRunMetric[];
   cellsLoading?: boolean;
-}): LangfuseColumnDef<DatasetCompareRunRowData>[] => {
+}): HanzoColumnDef<DatasetCompareRunRowData>[] => {
   return runAggregateColumnProps.map((col) => {
     const { id, name, description, createdAt } = col;
 

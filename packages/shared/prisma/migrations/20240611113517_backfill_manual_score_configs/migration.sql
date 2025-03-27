@@ -17,7 +17,7 @@ SELECT
 	FALSE,
 	- 1,
 	1,
-	'Langfuse legacy annotation score.'
+	'Hanzo legacy annotation score.'
 FROM ( SELECT DISTINCT
 		project_id
 	FROM

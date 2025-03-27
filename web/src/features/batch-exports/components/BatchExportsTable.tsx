@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { type BatchExport } from "@langfuse/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
@@ -129,7 +129,7 @@ export function BatchExportsTable(props: { projectId: string }) {
         return log ?? null;
       },
     },
-  ] as LangfuseColumnDef<BatchExport>[];
+  ] as HanzoColumnDef<BatchExport>[];
 
   return (
     <>

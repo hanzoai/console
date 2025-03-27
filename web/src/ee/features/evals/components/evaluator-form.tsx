@@ -86,10 +86,10 @@ const formSchema = z.object({
   timeScope: TimeScopeSchema,
 });
 
-type LangfuseObject = (typeof langfuseObjects)[number];
+type HanzoObject = (typeof langfuseObjects)[number];
 
 const isTraceTarget = (target: string): boolean => target === "trace";
-const isTraceOrDatasetObject = (object: LangfuseObject): boolean =>
+const isTraceOrDatasetObject = (object: HanzoObject): boolean =>
   object === "trace" || object === "dataset_item";
 
 export const EvaluatorForm = (props: {
@@ -567,7 +567,7 @@ export const InnerEvalConfigForm = (props: {
                       value={field.value}
                       onValueChange={(value) => {
                         const isTrace = isTraceTarget(value);
-                        const langfuseObject: LangfuseObject = isTrace
+                        const langfuseObject: HanzoObject = isTrace
                           ? "trace"
                           : "dataset_item";
                         const newMapping = form

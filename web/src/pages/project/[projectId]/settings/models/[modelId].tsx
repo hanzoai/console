@@ -61,7 +61,7 @@ export default function ModelDetailPage() {
     );
   }
 
-  const isLangfuseModel = !Boolean(model?.projectId);
+  const isHanzoModel = !Boolean(model?.projectId);
 
   if (isLoading || !model) {
     return <div className="p-3">Loading...</div>;
@@ -85,7 +85,7 @@ export default function ModelDetailPage() {
         actionButtonsRight: (
           <div className="flex gap-2">
             {hasWriteAccess &&
-              (!isLangfuseModel ? (
+              (!isHanzoModel ? (
                 <>
                   <EditModelButton projectId={projectId} modelData={model} />
                   <DeleteModelButton
@@ -121,7 +121,7 @@ export default function ModelDetailPage() {
                 Maintained by
               </div>
               <div className="mt-1 text-sm">
-                {isLangfuseModel ? "HanzoCloud" : "User"}
+                {isHanzoModel ? "HanzoCloud" : "User"}
               </div>
             </div>
 

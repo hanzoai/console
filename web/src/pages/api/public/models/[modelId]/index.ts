@@ -8,7 +8,7 @@ import {
   GetModelV1Response,
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -36,7 +36,7 @@ export default withMiddlewares({
         },
       });
       if (!model) {
-        throw new LangfuseNotFoundError("No model with this id found.");
+        throw new HanzoNotFoundError("No model with this id found.");
       }
       return prismaToApiModelDefinition(model);
     },
@@ -53,7 +53,7 @@ export default withMiddlewares({
         },
       });
       if (!model) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "No model with this id found. Note: You cannot delete built-in models, override them with a model with the same name.",
         );
       }

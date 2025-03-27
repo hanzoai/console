@@ -49,10 +49,10 @@ export const EvalTemplateForm = (props: {
   setIsEditing?: (isEditing: boolean) => void;
   preventRedirect?: boolean;
 }) => {
-  const [langfuseTemplate, setLangfuseTemplate] = useState<string | null>(null);
+  const [langfuseTemplate, setHanzoTemplate] = useState<string | null>(null);
 
-  const updateLangfuseTemplate = (name: string) => {
-    setLangfuseTemplate(name);
+  const updateHanzoTemplate = (name: string) => {
+    setHanzoTemplate(name);
   };
 
   const currentTemplate = TEMPLATES.find(
@@ -65,7 +65,7 @@ export const EvalTemplateForm = (props: {
         <div className="col-span-1 lg:col-span-2">
           <Select
             value={langfuseTemplate ?? ""}
-            onValueChange={updateLangfuseTemplate}
+            onValueChange={updateHanzoTemplate}
           >
             <SelectTrigger className="text-primary ring-transparent focus:ring-0 focus:ring-offset-0">
               <SelectValue

@@ -1,4 +1,4 @@
-# Instrumentation at Langfuse
+# Instrumentation at Hanzo
 
 Throughout our applications we want to use as much Otel as possible. This helps us to be flexible choosing our observability backend, and we will benefit from features and packages built by the Otel community.
 

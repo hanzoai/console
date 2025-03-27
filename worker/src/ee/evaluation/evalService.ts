@@ -28,7 +28,7 @@ import {
   availableTraceEvalVariables,
   ChatMessageRole,
   ForbiddenError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   LLMApiKeySchema,
   Prisma,
   singleFilter,
@@ -426,7 +426,7 @@ export const evaluate = async ({
     logger.error(
       `Evaluating job ${event.jobExecutionId} did not find API key for provider ${template.provider} and project ${event.projectId}. Eval will fail. ${parsedKey.error}`,
     );
-    throw new LangfuseNotFoundError(
+    throw new HanzoNotFoundError(
       `API key for provider ${template.provider} and project ${event.projectId} not found.`,
     );
   }
@@ -595,7 +595,7 @@ export async function extractVariablesFromTracingData({
           logger.error(
             `Dataset item ${datasetItemId} for project ${projectId} not found. Eval will succeed without dataset item input. Please ensure the mapped data on the dataset item exists and consider extending the job delay.`,
           );
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `Dataset item ${datasetItemId} for project ${projectId} not found. Eval will succeed without dataset item input. Please ensure the mapped data on the dataset item exists and consider extending the job delay.`,
           );
         }
@@ -627,7 +627,7 @@ export async function extractVariablesFromTracingData({
           logger.error(
             `Trace ${traceId} for project ${projectId} not found. Eval will succeed without trace input. Please ensure the mapped data on the trace exists and consider extending the job delay.`,
           );
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `Trace ${traceId} for project ${projectId} not found. Eval will succeed without trace input. Please ensure the mapped data on the trace exists and consider extending the job delay.`,
           );
         }
@@ -673,7 +673,7 @@ export async function extractVariablesFromTracingData({
           logger.error(
             `Observation ${mapping.objectName} for trace ${traceId} not found. Please ensure the mapped data exists and consider extending the job delay.`,
           );
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `Observation ${mapping.objectName} for trace ${traceId} not found. Please ensure the mapped data exists and consider extending the job delay.`,
           );
         }

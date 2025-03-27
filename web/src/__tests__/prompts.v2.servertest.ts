@@ -464,7 +464,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       expect(body).toEqual({
-        error: "LangfuseNotFoundError",
+        error: "HanzoNotFoundError",
         message: "Prompt not found",
       });
     });
@@ -491,7 +491,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       // @ts-expect-error
-      expect(body.error).toBe("LangfuseNotFoundError");
+      expect(body.error).toBe("HanzoNotFoundError");
     });
 
     it("should fail if text prompt has message format", async () => {
@@ -512,7 +512,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       // @ts-expect-error
-      expect(body.error).toBe("LangfuseNotFoundError");
+      expect(body.error).toBe("HanzoNotFoundError");
     });
 
     it("should fail if previous versions have different prompt type", async () => {
@@ -570,7 +570,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(getResponse2.status).toBe(404);
       // @ts-expect-error
-      expect(getResponse2.body.error).toBe("LangfuseNotFoundError");
+      expect(getResponse2.body.error).toBe("HanzoNotFoundError");
     });
 
     it("should correctly handle overwriting labels", async () => {

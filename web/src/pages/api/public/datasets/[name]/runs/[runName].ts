@@ -9,7 +9,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { ApiError, LangfuseNotFoundError } from "@langfuse/shared";
+import { ApiError, HanzoNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -39,7 +39,7 @@ export default withMiddlewares({
       if (datasetRuns.length > 1)
         throw new ApiError("Found more than one dataset run with this name");
       if (!datasetRuns[0])
-        throw new LangfuseNotFoundError("Dataset run not found");
+        throw new HanzoNotFoundError("Dataset run not found");
 
       const { dataset, datasetRunItems, ...run } = datasetRuns[0];
 
@@ -75,7 +75,7 @@ export default withMiddlewares({
       });
 
       if (datasetRuns.length === 0) {
-        throw new LangfuseNotFoundError("Dataset run not found");
+        throw new HanzoNotFoundError("Dataset run not found");
       }
       if (datasetRuns.length > 1) {
         throw new ApiError(

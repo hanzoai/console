@@ -4,7 +4,7 @@
  */
 
 import { Button } from "@/src/components/ui/button";
-import { HanzoCloudIcon } from "@/src/components/LangfuseLogo";
+import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import Head from "next/head";
 import Link from "next/link";
 import { type GetServerSideProps } from "next";

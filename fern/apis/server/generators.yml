@@ -13,7 +13,7 @@ groups:
           location: local-file-system
           path: ../../../generated/python
         config:
-          client_class_name: FernLangfuse
+          client_class_name: FernHanzo
           improved_imports: false
           inline_request_params: false
           pydantic_config:
@@ -25,7 +25,7 @@ groups:
 #          location: local-file-system
 #          path: ../../../../langfuse-java/src/main/java/com/langfuse/client/
 #        config:
-#          client-class-name: LangfuseClient
+#          client-class-name: HanzoClient
       - name: fernapi/fern-postman
         version: 0.0.45
         output:
@@ -40,7 +40,7 @@ groups:
   #         url: pypi.buildwithfern.com
   #         package-name: finto-fern-langfuse
   #       config:
-  #         namespaceExport: Langfuse
+  #         namespaceExport: Hanzo
   #         allowCustomFetcher: true
   #     - name: fernapi/fern-typescript-node-sdk
   #       version: 0.7.1
@@ -49,5 +49,5 @@ groups:
   #         url: npm.buildwithfern.com
   #         package-name: "@finto-fern/langfuse-node"
   #       config:
-  #         namespaceExport: Langfuse
+  #         namespaceExport: Hanzo
   #         allowCustomFetcher: true
