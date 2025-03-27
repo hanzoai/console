@@ -2,8 +2,8 @@ import {
   type singleFilter,
   type timeFilter,
   type ColumnDefinition,
-} from "@langfuse/shared";
-import { Prisma, type PrismaClient } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { Prisma, type PrismaClient } from "@hanzo/shared/src/db";
 import Decimal from "decimal.js";
 import { type z } from "zod";
 import {
@@ -13,7 +13,7 @@ import {
   filterInterface,
 } from "./sqlInterface";
 import { tableDefinitions } from "./tableDefinitions";
-import { tableColumnsToSqlFilter } from "@langfuse/shared/src/server";
+import { tableColumnsToSqlFilter } from "@hanzo/shared/src/server";
 
 export type InternalDatabaseRow = {
   [key: string]: bigint | number | Decimal | string | Date;

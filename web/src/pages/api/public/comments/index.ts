@@ -6,10 +6,10 @@ import {
   PostCommentsV1Body,
   PostCommentsV1Response,
 } from "@/src/features/public-api/types/comments";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
-import { HanzoNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   POST: createAuthedAPIRoute({

@@ -2,7 +2,7 @@ import {
   ObservationLevel,
   type ObservationLevelType,
   ObservationType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type NestedObservation } from "@/src/utils/types";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import Decimal from "decimal.js";

@@ -20,13 +20,13 @@ jobs:
       - name: Build a Docker image
         run: docker compose -f docker-compose.build.yml up -d
 
-      - name: Run Snyk to check Docker image for vulnerabilities (langfuse-web)
+      - name: Run Snyk to check Docker image for vulnerabilities (hanzo-web)
         continue-on-error: true
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: langfuse-langfuse-web
+          image: hanzo-hanzo-web
           args: --file=web/Dockerfile
 
       # Workaround for https://github.com/github/codeql-action/issues/2187
@@ -42,13 +42,13 @@ jobs:
           sarif_file: snyk.sarif
           category: web
 
-      - name: Run Snyk to check Docker image for vulnerabilities (langfuse-worker)
+      - name: Run Snyk to check Docker image for vulnerabilities (hanzo-worker)
         continue-on-error: true
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: langfuse-langfuse-worker
+          image: hanzo-hanzo-worker
           args: --file=worker/Dockerfile
 
       # Workaround for https://github.com/github/codeql-action/issues/2187

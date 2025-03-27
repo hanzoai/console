@@ -1,4 +1,4 @@
-import type { ChatMessageRole, ChatMessageWithId } from "@langfuse/shared";
+import type { ChatMessageRole, ChatMessageWithId } from "@hanzo/shared";
 
 export type MessagesContext = {
   messages: ChatMessageWithId[];

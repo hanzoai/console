@@ -9,7 +9,7 @@ import { InlineFilterState } from "@/src/features/filters/components/filter-buil
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { type RouterOutputs, api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";
-import { type FilterState, singleFilter } from "@langfuse/shared";
+import { type FilterState, singleFilter } from "@hanzo/shared";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect } from "react";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";

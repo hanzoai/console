@@ -23,7 +23,7 @@ groups:
 #        version: 2.20.1
 #        output:
 #          location: local-file-system
-#          path: ../../../../langfuse-java/src/main/java/com/langfuse/client/
+#          path: ../../../../hanzo-java/src/main/java/com/hanzo/client/
 #        config:
 #          client-class-name: HanzoClient
       - name: fernapi/fern-postman
@@ -38,7 +38,7 @@ groups:
   #       output:
   #         location: pypi
   #         url: pypi.buildwithfern.com
-  #         package-name: finto-fern-langfuse
+  #         package-name: finto-fern-hanzo
   #       config:
   #         namespaceExport: Hanzo
   #         allowCustomFetcher: true
@@ -47,7 +47,7 @@ groups:
   #       output:
   #         location: npm
   #         url: npm.buildwithfern.com
-  #         package-name: "@finto-fern/langfuse-node"
+  #         package-name: "@finto-fern/hanzo-node"
   #       config:
   #         namespaceExport: Hanzo
   #         allowCustomFetcher: true

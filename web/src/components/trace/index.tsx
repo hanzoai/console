@@ -1,4 +1,4 @@
-import { type ObservationLevelType, type Trace } from "@langfuse/shared";
+import { type ObservationLevelType, type Trace } from "@hanzo/shared";
 import { ObservationTree } from "./ObservationTree";
 import { ObservationPreview } from "./ObservationPreview";
 import { TracePreview } from "./TracePreview";
@@ -14,7 +14,7 @@ import { Settings2, ChevronsUpDown, ChevronsDownUp } from "lucide-react";
 import { useCallback, useState } from "react";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { TraceTimelineView } from "@/src/components/trace/TraceTimelineView";
-import { type APIScore, ObservationLevel } from "@langfuse/shared";
+import { type APIScore, ObservationLevel } from "@hanzo/shared";
 import { useIsAuthenticatedAndProjectMember } from "@/src/features/auth/hooks";
 import { TraceGraphView } from "@/src/features/trace-graph-view/components/TraceGraphView";
 import { isLanggraphTrace } from "@/src/features/trace-graph-view/utils/isLanggraphTrace";

@@ -1,4 +1,4 @@
-import { type ScoreDataType } from "@langfuse/shared";
+import { type ScoreDataType } from "@hanzo/shared";
 
 export type HistogramBin = { binLabel: string; count: number };
 export type CategoryCounts = Record<string, number>;

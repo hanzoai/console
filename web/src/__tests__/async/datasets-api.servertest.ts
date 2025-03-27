@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   makeAPICall,
   makeZodVerifiedAPICall,
@@ -29,7 +29,7 @@ import {
   createTrace,
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () => {
   const traceId = v4();

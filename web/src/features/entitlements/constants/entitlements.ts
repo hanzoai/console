@@ -1,4 +1,4 @@
-import { type Plan } from "@langfuse/shared";
+import { type Plan } from "@hanzo/shared";
 
 // Entitlements: Binary feature access
 const entitlements = [

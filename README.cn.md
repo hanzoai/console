@@ -26,7 +26,7 @@
     <a href="https://hanzo.ai/roadmap"><strong>路线图</strong></a> ·
   </div>
   <br/>
-  <span>Hanzo 使用 <a href="https://github.com/orgs/langfuse/discussions"><strong>Github Discussions</strong></a> 作为支持和功能请求的平台。</span>
+  <span>Hanzo 使用 <a href="https://github.com/orgs/hanzoai/discussions"><strong>Github Discussions</strong></a> 作为支持和功能请求的平台。</span>
   <br/>
   <span><b>我们正在招聘。</b> <a href="https://hanzo.ai/careers"><strong>加入我们</strong></a>，从事产品工程和技术市场职位。</span>
   <br/>
@@ -39,28 +39,28 @@
   <a href="https://github.com/hanzoai/cloud/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-E11311.svg" alt="MIT License">
   </a>
-  <a href="https://www.ycombinator.com/companies/langfuse">
+  <a href="https://www.ycombinator.com/companies/hanzo">
     <img src="https://img.shields.io/badge/Y%20Combinator-W23-orange" alt="Y Combinator W23">
   </a>
-  <a href="https://hub.docker.com/u/langfuse" target="_blank">
+  <a href="https://hub.docker.com/u/hanzo" target="_blank">
     <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/hanzoai/cloud?labelColor=%20%23FDB062&logo=Docker&labelColor=%20%23528bff">
   </a>
-  <a href="https://pypi.python.org/pypi/langfuse">
-    <img src="https://img.shields.io/pypi/dm/langfuse?logo=python&logoColor=white&label=pypi%20langfuse&color=blue" alt="langfuse Python package on PyPi">
+  <a href="https://pypi.python.org/pypi/hanzo">
+    <img src="https://img.shields.io/pypi/dm/hanzo?logo=python&logoColor=white&label=pypi%20hanzo&color=blue" alt="hanzo Python package on PyPi">
   </a>
-  <a href="https://www.npmjs.com/package/langfuse">
-    <img src="https://img.shields.io/npm/dm/langfuse?logo=npm&logoColor=white&label=npm%20langfuse&color=blue" alt="langfuse npm package">
+  <a href="https://www.npmjs.com/package/hanzo">
+    <img src="https://img.shields.io/npm/dm/hanzo?logo=npm&logoColor=white&label=npm%20hanzo&color=blue" alt="hanzo npm package">
   </a>
   <br/>
   <a href="https://discord.com/invite/7NXusRtqYU" target="_blank">
     <img src="https://img.shields.io/discord/1111061815649124414?logo=discord&labelColor=%20%235462eb&logoColor=%20%23f5f5f5&color=%20%235462eb"
          alt="在 Discord 上聊天">
   </a>
-  <a href="https://twitter.com/intent/follow?screen_name=langfuse" target="_blank">
-    <img src="https://img.shields.io/twitter/follow/langfuse?logo=X&color=%20%23f5f5f5"
+  <a href="https://twitter.com/intent/follow?screen_name=hanzo" target="_blank">
+    <img src="https://img.shields.io/twitter/follow/hanzo?logo=X&color=%20%23f5f5f5"
          alt="在 X (Twitter) 上关注">
   </a>
-  <a href="https://www.linkedin.com/company/langfuse/" target="_blank">
+  <a href="https://www.linkedin.com/company/hanzo/" target="_blank">
     <img src="https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff"
          alt="在 LinkedIn 上关注">
   </a>
@@ -68,7 +68,7 @@
     <img alt="过去一个月的提交" src="https://img.shields.io/github/commit-activity/m/hanzoai/cloud?labelColor=%20%2332b583&color=%20%2312b76a">
   </a>
   <a href="https://github.com/hanzoai/cloud/" target="_blank">
-    <img alt="已关闭的问题" src="https://img.shields.io/github/issues-search?query=repo%3Alangfuse%2Flangfuse%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98">
+    <img alt="已关闭的问题" src="https://img.shields.io/github/issues-search?query=repo%3Ahanzo%2Fhanzo%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98">
   </a>
   <a href="https://github.com/hanzoai/cloud/discussions/" target="_blank">
     <img alt="讨论帖数量" src="https://img.shields.io/github/discussions/hanzoai/cloud?labelColor=%20%239b8afb&color=%20%237a5af8">
@@ -125,7 +125,7 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
   ````bash:README.md/docker-compose
   # 获取最新的 Hanzo 仓库副本
   git clone https://github.com/hanzoai/cloud.git
-  cd langfuse
+  cd hanzo
 
   # 运行 Hanzo 的 docker compose
   docker compose up
@@ -135,7 +135,7 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 
 - [虚拟机](https://hanzo.ai/self-hosting/docker-compose)：使用 Docker Compose 在单台虚拟机上部署 Hanzo。
 
-- 【计划中】：针对各云平台的部署指南，欢迎在以下讨论中投票和评论：[AWS](https://github.com/orgs/langfuse/discussions/4645)、[Google Cloud](https://github.com/langfuse/discussions/4646)、[Azure](https://github.com/orgs/langfuse/discussions/4647)。
+- 【计划中】：针对各云平台的部署指南，欢迎在以下讨论中投票和评论：[AWS](https://github.com/orgs/hanzoai/discussions/4645)、[Google Cloud](https://github.com/hanzo/discussions/4646)、[Azure](https://github.com/orgs/hanzoai/discussions/4647)。
 
 请参阅 [自托管文档](https://hanzo.ai/self-hosting) 了解更多关于架构和配置选项的信息。
 
@@ -194,12 +194,12 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 使用 [<code>@observe()</code> 装饰器](https://hanzo.ai/docs/sdk/python/decorators) 可轻松跟踪任何 Python LLM 应用。在本快速入门中，我们还使用了 Hanzo 的 [OpenAI 集成](https://hanzo.ai/docs/integrations/openai) 来自动捕获所有模型参数。
 
 > [!提示]
-> 不使用 OpenAI？请访问 [我们的文档](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-langfuse) 了解如何记录其他模型和框架。
+> 不使用 OpenAI？请访问 [我们的文档](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo) 了解如何记录其他模型和框架。
 
 安装依赖：
 
 ````bash
-pip install langfuse openai
+pip install hanzo openai
 ````
 
 配置环境变量（创建名为 **.env** 的文件）：
@@ -214,8 +214,8 @@ HANZO_HOST="https://cloud.hanzo.ai" # 🇪🇺 欧盟区域
 创建示例代码（文件名：**main.py**）：
 
 ````python:main.py
-from langfuse.decorators import observe
-from langfuse.openai import openai  # OpenAI 集成
+from hanzo.decorators import observe
+from hanzo.openai import openai  # OpenAI 集成
 
 @observe()
 def story():
@@ -257,8 +257,8 @@ _[Hanzo 中的公共示例追踪](https://cloud.hanzo.ai/project/cloramnkj0002jz
 
 支持渠道：
 
-- **在 GitHub Discussions 的 [公共问答](https://github.com/orgs/langfuse/discussions/categories/support) 中提出任何问题。** 请尽量提供详细信息（如代码片段、截图、背景信息）以帮助我们理解你的问题。
-- 在 GitHub Discussions 中 [提出功能请求](https://github.com/orgs/langfuse/discussions/categories/ideas)。
+- **在 GitHub Discussions 的 [公共问答](https://github.com/orgs/hanzoai/discussions/categories/support) 中提出任何问题。** 请尽量提供详细信息（如代码片段、截图、背景信息）以帮助我们理解你的问题。
+- 在 GitHub Discussions 中 [提出功能请求](https://github.com/orgs/hanzoai/discussions/categories/ideas)。
 - 在 GitHub Issues 中 [报告 Bug](https://github.com/hanzoai/cloud/issues)。
 - 对于时效性较强的问题，请通过应用内聊天小部件联系我们。
 
@@ -266,7 +266,7 @@ _[Hanzo 中的公共示例追踪](https://cloud.hanzo.ai/project/cloramnkj0002jz
 
 欢迎你的贡献！
 
-- 在 GitHub Discussions 中为 [想法](https://github.com/orgs/langfuse/discussions/categories/ideas)投票。
+- 在 GitHub Discussions 中为 [想法](https://github.com/orgs/hanzoai/discussions/categories/ideas)投票。
 - 提出并评论 [问题](https://github.com/hanzoai/cloud/issues)。
 - 提交 PR —— 详情请参见 [CONTRIBUTING.md](CONTRIBUTING.md)，了解如何搭建开发环境。
 

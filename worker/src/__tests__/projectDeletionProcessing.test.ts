@@ -16,8 +16,8 @@ import {
   StorageService,
   StorageServiceFactory,
   upsertTrace,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { Job } from "bullmq";
 import { projectDeleteProcessor } from "../queues/projectDelete";
 

@@ -1,4 +1,4 @@
-import { Model, parseJsonPrioritised } from "@langfuse/shared";
+import { Model, parseJsonPrioritised } from "@hanzo/shared";
 import { isChatModel, isTiktokenModel } from "./types";
 import { countTokens } from "@anthropic-ai/tokenizer";
 
@@ -14,7 +14,7 @@ import {
   instrumentSync,
   logger,
   recordIncrement,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const OpenAiTokenConfig = z.object({
   tokenizerModel: z.string().refine(isTiktokenModel, {
@@ -32,7 +32,7 @@ const OpenAiChatTokenConfig = z.object({
   tokensPerName: z.number(),
 });
 
-const tokenCountMetric = "langfuse.tokenisedTokens";
+const tokenCountMetric = "hanzo.tokenisedTokens";
 
 export function tokenCount(p: {
   model: Model;

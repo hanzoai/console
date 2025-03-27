@@ -6,17 +6,17 @@ import {
   redis,
   logger,
   getCurrentSpan,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { telemetry } from "@/src/features/telemetry";
-import { jsonSchema } from "@langfuse/shared";
+import { jsonSchema } from "@hanzo/shared";
 import { isPrismaException } from "@/src/utils/exceptions";
 import {
   MethodNotAllowedError,
   BaseError,
   UnauthorizedError,
-} from "@langfuse/shared";
-import { instrumentSync, processEventBatch } from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { instrumentSync, processEventBatch } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 
@@ -54,14 +54,14 @@ export default async function handler(
     // add context of api call to the span
     const currentSpan = getCurrentSpan();
 
-    // get x-langfuse-xxx headers and add them to the span
+    // get x-hanzo-xxx headers and add them to the span
     Object.keys(req.headers).forEach((header) => {
       if (
-        header.toLowerCase().startsWith("x-langfuse") ||
-        header.toLowerCase().startsWith("x_langfuse")
+        header.toLowerCase().startsWith("x-hanzo") ||
+        header.toLowerCase().startsWith("x_hanzo")
       ) {
         currentSpan?.setAttributes({
-          [`langfuse.header.${header.slice(11).toLowerCase().replaceAll("_", "-")}`]:
+          [`hanzo.header.${header.slice(11).toLowerCase().replaceAll("_", "-")}`]:
             req.headers[header],
         });
       }

@@ -3,10 +3,10 @@ networks:
     driver: bridge
 
 services:
-  langfuse-worker:
+  hanzo-worker:
     image: maui1209/ai-platform-worker:latest
     restart: always
-    depends_on: &langfuse-depends-on
+    depends_on: &hanzo-depends-on
       postgres:
         condition: service_healthy
       minio:
@@ -17,7 +17,7 @@ services:
         condition: service_healthy
     ports:
       - "3030:3030"
-    environment: &langfuse-worker-env
+    environment: &hanzo-worker-env
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
       SALT: "mysalt"
       ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
@@ -28,14 +28,14 @@ services:
       CLICKHOUSE_USER: "clickhouse"
       CLICKHOUSE_PASSWORD: "clickhouse"
       CLICKHOUSE_CLUSTER_ENABLED: "false"
-      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-langfuse}
+      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
       HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
       HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
       HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
       HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
-      HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-langfuse}
+      HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
       HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
       HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
       HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
@@ -54,7 +54,7 @@ services:
     networks:
       - ai-platform_default
 
-  langfuse-web:
+  hanzo-web:
     image: maui1209/ai-platform-web:latest
     build:
       context: .
@@ -65,11 +65,11 @@ services:
         NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
         STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
     restart: always
-    depends_on: *langfuse-depends-on
+    depends_on: *hanzo-depends-on
     ports:
       - "3000:3000"
     environment:
-      <<: *langfuse-worker-env
+      <<: *hanzo-worker-env
       NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
       STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
@@ -98,8 +98,8 @@ services:
       CLICKHOUSE_PASSWORD: clickhouse
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - langfuse_clickhouse_data:/var/lib/clickhouse
-      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+      - hanzo_clickhouse_data:/var/lib/clickhouse
+      - hanzo_clickhouse_logs:/var/log/clickhouse-server
     ports:
       - "8123:8123"
       - "9000:9000"
@@ -116,8 +116,8 @@ services:
     image: minio/minio
     restart: always
     entrypoint: sh
-    # create the 'langfuse' bucket before starting the service
-    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
+    # create the 'hanzo' bucket before starting the service
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
@@ -125,7 +125,7 @@ services:
       - "9090:9000"
       - "9091:9001"
     volumes:
-      - langfuse_minio_data:/data
+      - hanzo_minio_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -163,16 +163,16 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - langfuse_postgres_data:/var/lib/postgresql/data
+      - hanzo_postgres_data:/var/lib/postgresql/data
     networks:
       - ai-platform_default
 
 volumes:
-  langfuse_postgres_data:
+  hanzo_postgres_data:
     driver: local
-  langfuse_clickhouse_data:
+  hanzo_clickhouse_data:
     driver: local
-  langfuse_clickhouse_logs:
+  hanzo_clickhouse_logs:
     driver: local
-  langfuse_minio_data:
+  hanzo_minio_data:
     driver: local

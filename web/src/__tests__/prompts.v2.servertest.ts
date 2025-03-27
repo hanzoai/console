@@ -1,9 +1,9 @@
 /** @jest-environment node */
 
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
-import { type Prompt } from "@langfuse/shared";
+import { type Prompt } from "@hanzo/shared";
 import {
   PromptSchema,
   PromptType,
@@ -16,7 +16,7 @@ import { type PromptsMetaResponse } from "@/src/features/prompts/server/actions/
 import {
   createOrgProjectAndApiKey,
   getObservationById,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 const baseURI = "/api/public/v2/prompts";

@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: langfuse
+  title: hanzo
   version: ''
 paths:
   /api/public/scores:

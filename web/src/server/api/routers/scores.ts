@@ -24,7 +24,7 @@ import {
   HanzoNotFoundError,
   InvalidRequestError,
   InternalServerError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getScoresGroupedByNameSourceType,
   getScoresUiCount,
@@ -39,7 +39,7 @@ import {
   convertDateToClickhouseDateTime,
   searchExistingAnnotationScore,
   hasAnyScore,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
 const ScoreFilterOptions = z.object({

@@ -4,7 +4,7 @@ import {
   type BedrockConfig,
   type BedrockCredential,
   LLMAdapter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/src/components/ui/button";

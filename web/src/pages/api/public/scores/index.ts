@@ -8,12 +8,12 @@ import {
   legacyFilterAndValidateV1GetScoreList,
   PostScoresBody,
   PostScoresResponse,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   eventTypes,
   logger,
   processEventBatch,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   generateScoresForPublicApi,
   getScoresCountForPublicApi,

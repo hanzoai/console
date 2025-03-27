@@ -15,7 +15,7 @@ import { cn } from "@/src/utils/tailwind";
 import {
   AnnotationQueueStatus,
   type AnnotationQueueObjectType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

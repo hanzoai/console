@@ -2,7 +2,7 @@ import {
   type PromptVariable,
   type ChatMessage,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export type PlaygroundCache = {
   messages: ChatMessage[];

@@ -6,7 +6,7 @@ import {
   type ScoreSourceType,
   type FilterState,
   type ScoreDataType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,

@@ -4,10 +4,10 @@ import {
   fetchLLMCompletion,
   logger,
   type TraceParams,
-} from "@langfuse/shared/src/server";
-import { ApiError, LLMApiKeySchema, ZodModelConfig } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import { ApiError, LLMApiKeySchema, ZodModelConfig } from "@hanzo/shared";
 import { z, ZodSchema } from "zod";
-import { decrypt } from "@langfuse/shared/encryption";
+import { decrypt } from "@hanzo/shared/encryption";
 import { tokenCount } from "./tokenisation/usage";
 import Handlebars from "handlebars";
 

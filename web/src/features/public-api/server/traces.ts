@@ -7,8 +7,8 @@ import {
   type DateTimeFilter,
   convertClickhouseToDomain,
   type TraceRecordReadType,
-} from "@langfuse/shared/src/server";
-import { type OrderByState } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import { type OrderByState } from "@hanzo/shared";
 import { snakeCase } from "lodash";
 
 type QueryType = {

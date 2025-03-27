@@ -7,14 +7,14 @@ import {
   type RateLimitResource,
   type RateLimitConfig,
   type Plan,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   recordIncrement,
   type ApiAccessScope,
   logger,
   createNewRedisInstance,
   redisQueueRetryOptions,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type NextApiResponse } from "next";
 
 // Business Logic
@@ -136,7 +136,7 @@ export class RateLimitService {
     }
 
     if (res.remainingPoints < 1) {
-      recordIncrement("langfuse.rate_limit.exceeded", 1, {
+      recordIncrement("hanzo.rate_limit.exceeded", 1, {
         orgId: scope.orgId,
         plan: scope.plan,
         resource: resource,

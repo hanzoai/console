@@ -4,7 +4,7 @@ import {
   timeFilter,
   tracesTableUiColumnDefinitions,
   type ObservationOptions,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getObservationsGroupedByModel,
@@ -14,7 +14,7 @@ import {
   getScoresGroupedByName,
   getTracesGroupedByName,
   getTracesGroupedByTags,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export const filterOptionsQuery = protectedProjectProcedure
   .input(

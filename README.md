@@ -23,7 +23,7 @@
       <a href="https://hanzo.ai/roadmap"><strong>Roadmap</strong></a> ·
    </div>
    <br/>
-   <span>Hanzo uses <a href="https://github.com/orgs/langfuse/discussions"><strong>Github Discussions</strong></a>  for Support and Feature Requests.</span>
+   <span>Hanzo uses <a href="https://github.com/orgs/hanzoai/discussions"><strong>Github Discussions</strong></a>  for Support and Feature Requests.</span>
    <br/>
    <span><b>We're hiring.</b> <a href="https://hanzo.ai/careers"><strong>Join us</strong></a> in product engineering and technical go-to-market roles.</span>
    <br/>
@@ -36,25 +36,25 @@
    <a href="https://github.com/hanzoai/cloud/blob/main/LICENSE">
    <img src="https://img.shields.io/badge/License-MIT-E11311.svg" alt="MIT License">
    </a>
-   <a href="https://www.ycombinator.com/companies/langfuse"><img src="https://img.shields.io/badge/Y%20Combinator-W23-orange" alt="Y Combinator W23"></a>
-   <a href="https://hub.docker.com/u/langfuse" target="_blank">
+   <a href="https://www.ycombinator.com/companies/hanzo"><img src="https://img.shields.io/badge/Y%20Combinator-W23-orange" alt="Y Combinator W23"></a>
+   <a href="https://hub.docker.com/u/hanzo" target="_blank">
    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/hanzoai/cloud?labelColor=%20%23FDB062&logo=Docker&labelColor=%20%23528bff"></a>
-   <a href="https://pypi.python.org/pypi/langfuse"><img src="https://img.shields.io/pypi/dm/langfuse?logo=python&logoColor=white&label=pypi%20langfuse&color=blue" alt="langfuse Python package on PyPi"></a>
-   <a href="https://www.npmjs.com/package/langfuse"><img src="https://img.shields.io/npm/dm/langfuse?logo=npm&logoColor=white&label=npm%20langfuse&color=blue" alt="langfuse npm package"></a>
+   <a href="https://pypi.python.org/pypi/hanzo"><img src="https://img.shields.io/pypi/dm/hanzo?logo=python&logoColor=white&label=pypi%20hanzo&color=blue" alt="hanzo Python package on PyPi"></a>
+   <a href="https://www.npmjs.com/package/hanzo"><img src="https://img.shields.io/npm/dm/hanzo?logo=npm&logoColor=white&label=npm%20hanzo&color=blue" alt="hanzo npm package"></a>
    <br/>
    <a href="https://discord.com/invite/7NXusRtqYU" target="_blank">
    <img src="https://img.shields.io/discord/1111061815649124414?logo=discord&labelColor=%20%235462eb&logoColor=%20%23f5f5f5&color=%20%235462eb"
       alt="chat on Discord"></a>
-   <a href="https://twitter.com/intent/follow?screen_name=langfuse" target="_blank">
-   <img src="https://img.shields.io/twitter/follow/langfuse?logo=X&color=%20%23f5f5f5"
+   <a href="https://twitter.com/intent/follow?screen_name=hanzo" target="_blank">
+   <img src="https://img.shields.io/twitter/follow/hanzo?logo=X&color=%20%23f5f5f5"
       alt="follow on X(Twitter)"></a>
-   <a href="https://www.linkedin.com/company/langfuse/" target="_blank">
+   <a href="https://www.linkedin.com/company/hanzo/" target="_blank">
    <img src="https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff"
       alt="follow on LinkedIn"></a>
    <a href="https://github.com/hanzoai/cloud/graphs/commit-activity" target="_blank">
    <img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/hanzoai/cloud?labelColor=%20%2332b583&color=%20%2312b76a"></a>
    <a href="https://github.com/hanzoai/cloud/" target="_blank">
-   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Alangfuse%2Flangfuse%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
+   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Ahanzo%2Fhanzo%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
    <a href="https://github.com/hanzoai/cloud/discussions/" target="_blank">
    <img alt="Discussion posts" src="https://img.shields.io/github/discussions/hanzoai/cloud?labelColor=%20%239b8afb&color=%20%237a5af8"></a>
 </p>
@@ -110,15 +110,15 @@ Run Hanzo on your own infrastructure:
   ```bash
   # Get a copy of the latest Hanzo repository
   git clone https://github.com/hanzoai/cloud.git
-  cd langfuse
+  cd hanzo
 
-  # Run the langfuse docker compose
+  # Run the hanzo docker compose
   docker compose up
   ```
 
 - [Kubernetes (Helm)](https://hanzo.ai/self-hosting/kubernetes-helm): Run Hanzo on a Kubernetes cluster using Helm. This is the preferred production deployment.
 - [VM](https://hanzo.ai/self-hosting/docker-compose): Run Hanzo on a single Virtual Machine using Docker Compose.
-- Planned: Cloud-specific deployment guides, please upvote and comment on the following threads: [AWS](https://github.com/orgs/langfuse/discussions/4645), [Google Cloud](https://github.com/orgs/langfuse/discussions/4646), [Azure](https://github.com/orgs/langfuse/discussions/4647).
+- Planned: Cloud-specific deployment guides, please upvote and comment on the following threads: [AWS](https://github.com/orgs/hanzoai/discussions/4645), [Google Cloud](https://github.com/orgs/hanzoai/discussions/4646), [Azure](https://github.com/orgs/hanzoai/discussions/4647).
 
 See [self-hosting documentation](https://hanzo.ai/self-hosting) to learn more about the architecture and configuration options.
 
@@ -177,10 +177,10 @@ Instrument your app and start ingesting traces to Hanzo, thereby tracking LLM ca
 The [`@observe()` decorator](https://hanzo.ai/docs/sdk/python/decorators) makes it easy to trace any Python LLM application. In this quickstart we also use the Hanzo [OpenAI integration](https://hanzo.ai/docs/integrations/openai) to automatically capture all model parameters.
 
 > [!TIP]
-> Not using OpenAI? Visit [our documentation](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-langfuse) to learn how to log other models and frameworks.
+> Not using OpenAI? Visit [our documentation](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo) to learn how to log other models and frameworks.
 
 ```bash
-pip install langfuse openai
+pip install hanzo openai
 ```
 
 ```bash filename=".env"
@@ -190,9 +190,9 @@ HANZO_HOST="https://cloud.hanzo.ai" # 🇪🇺 EU region
 # HANZO_HOST="https://us.cloud.hanzo.ai" # 🇺🇸 US region
 ```
 
-```python /@observe()/ /from langfuse.openai import openai/ filename="main.py"
-from langfuse.decorators import observe
-from langfuse.openai import openai # OpenAI integration
+```python /@observe()/ /from hanzo.openai import openai/ filename="main.py"
+from hanzo.decorators import observe
+from hanzo.openai import openai # OpenAI integration
 
 @observe()
 def story():
@@ -222,7 +222,7 @@ _[Public example trace in Hanzo](https://cloud.hanzo.ai/project/cloramnkj0002jz0
 
 ## ⭐️ Star Us
 
-![star-langfuse-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
+![star-hanzo-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
 
 ## 💭 Support
 
@@ -234,8 +234,8 @@ Finding an answer to your question:
 
 Support Channels:
 
-- **Ask any question in our [public Q&A](https://github.com/orgs/langfuse/discussions/categories/support) on GitHub Discussions.** Please include as much detail as possible (e.g. code snippets, screenshots, background information) to help us understand your question.
-- [Request a feature](https://github.com/orgs/langfuse/discussions/categories/ideas) on GitHub Discussions.
+- **Ask any question in our [public Q&A](https://github.com/orgs/hanzoai/discussions/categories/support) on GitHub Discussions.** Please include as much detail as possible (e.g. code snippets, screenshots, background information) to help us understand your question.
+- [Request a feature](https://github.com/orgs/hanzoai/discussions/categories/ideas) on GitHub Discussions.
 - [Report a Bug](https://github.com/hanzoai/cloud/issues) on GitHub Issues.
 - For time-sensitive queries, ping us via the in-app chat widget.
 
@@ -243,7 +243,7 @@ Support Channels:
 
 Your contributions are welcome!
 
-- Vote on [Ideas](https://github.com/orgs/langfuse/discussions/categories/ideas) in GitHub Discussions.
+- Vote on [Ideas](https://github.com/orgs/hanzoai/discussions/categories/ideas) in GitHub Discussions.
 - Raise and comment on [Issues](https://github.com/hanzoai/cloud/issues).
 - Open a PR - see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to setup a development environment.
 

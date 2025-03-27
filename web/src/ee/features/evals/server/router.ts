@@ -17,8 +17,8 @@ import {
   Prisma,
   TimeScopeSchema,
   JobConfigState,
-} from "@langfuse/shared";
-import { decrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared";
+import { decrypt } from "@hanzo/shared/encryption";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import {
   decryptAndParseExtraHeaders,
@@ -29,11 +29,11 @@ import {
   QueueName,
   QueueJobs,
   LLMApiKeySchema,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { EvalReferencedEvaluators } from "@/src/ee/features/evals/types";
 import { EvaluatorStatus } from "../types";
-import { traceException } from "@langfuse/shared/src/server";
+import { traceException } from "@hanzo/shared/src/server";
 import { isNotNullOrUndefined } from "@/src/utils/types";
 import { v4 as uuidv4 } from "uuid";
 import { env } from "@/src/env.mjs";

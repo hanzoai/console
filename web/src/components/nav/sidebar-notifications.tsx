@@ -38,7 +38,7 @@ const notifications: SidebarNotification[] = [
       // eslint-disable-next-line @next/next/no-img-element
       <img
         alt="HanzoCloud Github stars"
-        src="https://img.shields.io/github/stars/hanzoai/cloud?label=langfuse&amp;style=social"
+        src="https://img.shields.io/github/stars/hanzoai/cloud?label=hanzo&amp;style=social"
       />
     ),
   },

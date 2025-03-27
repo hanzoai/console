@@ -4,11 +4,11 @@ import {
 } from "@/src/ee/features/billing/stripeClientReference";
 import { env } from "@/src/env.mjs";
 import { type NextRequest, NextResponse } from "next/server";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { stripeClient } from "@/src/ee/features/billing/utils/stripe";
 import type Stripe from "stripe";
-import { CloudConfigSchema, parseDbOrg } from "@langfuse/shared";
-import { traceException, redis, logger } from "@langfuse/shared/src/server";
+import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
+import { traceException, redis, logger } from "@hanzo/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 
 /*

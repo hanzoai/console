@@ -1,4 +1,4 @@
-import { BatchExportTableName } from "@langfuse/shared";
+import { BatchExportTableName } from "@hanzo/shared";
 import { expect, describe, it, vi } from "vitest";
 import { randomUUID } from "crypto";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
@@ -11,8 +11,8 @@ import {
   logger,
   QueueJobs,
   QueueName,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { Decimal } from "decimal.js";
 import waitForExpect from "wait-for-expect";
 

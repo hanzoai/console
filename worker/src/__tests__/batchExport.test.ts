@@ -8,10 +8,10 @@ import {
   createScoresCh,
   createTrace,
   createTracesCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { getDatabaseReadStream } from "../features/batchExport/handleBatchExportJob";
-import { BatchExportTableName } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+import { BatchExportTableName } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 
 describe("batch export test suite", () => {
   it("should export observations", async () => {

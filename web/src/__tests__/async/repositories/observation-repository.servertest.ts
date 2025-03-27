@@ -1,9 +1,9 @@
-import { createObservationsCh } from "@langfuse/shared/src/server";
+import { createObservationsCh } from "@hanzo/shared/src/server";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
 import {
   getObservationById,
   getObservationsViewForTrace,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import Decimal from "decimal.js";
 import { v4 } from "uuid";
 

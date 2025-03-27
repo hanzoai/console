@@ -1,10 +1,10 @@
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { z } from "zod";
 
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
 import { updatePrompt } from "@/src/features/prompts/server/actions/updatePrompts";
-import { HanzoNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 
 const UpdatePromptBodySchema = z.object({
   newLabels: z

@@ -1,5 +1,5 @@
 "use client";
-import { type OrderByState } from "@langfuse/shared";
+import { type OrderByState } from "@hanzo/shared";
 import React, { useState, useMemo } from "react";
 
 import DocPopup from "@/src/components/layouts/doc-popup";

@@ -4,8 +4,8 @@ import {
   type PrismaClient,
   type DatasetRunItems,
   optionalPaginationZod,
-} from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import { z } from "zod";
 import {
@@ -22,7 +22,7 @@ import {
   queryClickhouse,
   type ScoreRecordReadType,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import Decimal from "decimal.js";
 import { env } from "@/src/env.mjs";

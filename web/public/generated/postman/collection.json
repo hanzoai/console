@@ -147,7 +147,7 @@
                 {
                   "key": "commentId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a comment"
+                  "description": "The unique hanzo identifier of a comment"
                 }
               ]
             },
@@ -819,7 +819,7 @@
                 {
                   "key": "mediaId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a media record"
+                  "description": "The unique hanzo identifier of a media record"
                 }
               ]
             },
@@ -851,7 +851,7 @@
                 {
                   "key": "mediaId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a media record"
+                  "description": "The unique hanzo identifier of a media record"
                 }
               ]
             },
@@ -1145,7 +1145,7 @@
                 {
                   "key": "observationId",
                   "value": "",
-                  "description": "The unique langfuse identifier of an observation, can be an event, span or generation"
+                  "description": "The unique hanzo identifier of an observation, can be an event, span or generation"
                 }
               ]
             },
@@ -1568,7 +1568,7 @@
                 {
                   "key": "configId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a score config"
+                  "description": "The unique hanzo identifier of a score config"
                 }
               ]
             },
@@ -1741,7 +1741,7 @@
                 {
                   "key": "scoreId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a score"
+                  "description": "The unique hanzo identifier of a score"
                 }
               ]
             },
@@ -1773,7 +1773,7 @@
                 {
                   "key": "scoreId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a score"
+                  "description": "The unique hanzo identifier of a score"
                 }
               ]
             },
@@ -1902,7 +1902,7 @@
                 {
                   "key": "traceId",
                   "value": "",
-                  "description": "The unique langfuse identifier of a trace"
+                  "description": "The unique hanzo identifier of a trace"
                 }
               ]
             },

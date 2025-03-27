@@ -7,8 +7,8 @@ import {
   exportOptions,
   FilterCondition,
   TimeFilter,
-} from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   Score,
   DatabaseReadStream,
@@ -27,7 +27,7 @@ import {
   logger,
   getTracesByIds,
   getSessionsWithMetrics,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { BatchExportSessionsRow, BatchExportTracesRow } from "./types";
 import Decimal from "decimal.js";

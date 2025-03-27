@@ -1,8 +1,8 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { type NextApiRequest } from "next";
-import { UnauthorizedError, ForbiddenError } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
-import { redis } from "@langfuse/shared/src/server";
+import { UnauthorizedError, ForbiddenError } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { redis } from "@hanzo/shared/src/server";
 
 export async function authorizePromptRequestOrThrow(req: NextApiRequest) {
   const authCheck = await new ApiAuthService(

@@ -9,11 +9,11 @@ import {
   recordIncrement,
   ScoreRecordInsertType,
   TraceRecordInsertType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 import { env } from "../../env";
-import { logger } from "@langfuse/shared/src/server";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 export class ClickhouseWriter {
@@ -98,7 +98,7 @@ export class ClickhouseWriter {
         spanKind: SpanKind.CONSUMER,
       },
       async () => {
-        recordIncrement("langfuse.queue.clickhouse_writer.request");
+        recordIncrement("hanzo.queue.clickhouse_writer.request");
         await Promise.all([
           this.flush(TableName.Traces, fullQueue),
           this.flush(TableName.Scores, fullQueue),
@@ -123,7 +123,7 @@ export class ClickhouseWriter {
     // Log wait time
     queueItems.forEach((item) => {
       const waitTime = Date.now() - item.createdAt;
-      recordHistogram("langfuse.queue.clickhouse_writer.wait_time", waitTime, {
+      recordHistogram("hanzo.queue.clickhouse_writer.wait_time", waitTime, {
         unit: "milliseconds",
       });
     });
@@ -145,7 +145,7 @@ export class ClickhouseWriter {
 
       // Log processing time
       recordHistogram(
-        "langfuse.queue.clickhouse_writer.processing_time",
+        "hanzo.queue.clickhouse_writer.processing_time",
         Date.now() - processingStartTime,
         {
           unit: "milliseconds",
@@ -176,7 +176,7 @@ export class ClickhouseWriter {
           });
         } else {
           // TODO - Add to a dead letter queue in Redis rather than dropping
-          recordIncrement("langfuse.queue.clickhouse_writer.error");
+          recordIncrement("hanzo.queue.clickhouse_writer.error");
           logger.error(
             `Max attempts reached for ${tableName} record. Dropping record.`,
             { item: item.data },

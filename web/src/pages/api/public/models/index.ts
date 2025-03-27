@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
 import {
@@ -8,7 +8,7 @@ import {
   PostModelsV1Response,
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
-import { InvalidRequestError } from "@langfuse/shared";
+import { InvalidRequestError } from "@hanzo/shared";
 import { isValidPostgresRegex } from "@/src/features/models/server/isValidPostgresRegex";
 
 export default withMiddlewares({

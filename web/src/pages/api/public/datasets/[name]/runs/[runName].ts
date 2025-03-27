@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   GetDatasetRunV1Query,
   GetDatasetRunV1Response,
@@ -9,7 +9,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { ApiError, HanzoNotFoundError } from "@langfuse/shared";
+import { ApiError, HanzoNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({

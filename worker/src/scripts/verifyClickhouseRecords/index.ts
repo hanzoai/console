@@ -1,12 +1,12 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { parseJsonPrioritised } from "@langfuse/shared";
-import { prisma, Prisma } from "@langfuse/shared/src/db";
+import { parseJsonPrioritised } from "@hanzo/shared";
+import { prisma, Prisma } from "@hanzo/shared/src/db";
 import {
   clickhouseClient,
   clickhouseStringDateSchema,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const getErrorMessage = (params: {
   type: "observation" | "trace" | "score";

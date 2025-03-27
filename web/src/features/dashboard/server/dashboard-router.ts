@@ -30,9 +30,9 @@ import {
   getObservationsStatusTimeSeries,
   extractFromAndToTimestampsFromFilter,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type DatabaseRow } from "@/src/server/api/services/queryBuilder";
-import { dashboardColumnDefinitions } from "@langfuse/shared";
+import { dashboardColumnDefinitions } from "@hanzo/shared";
 
 export const dashboardRouter = createTRPCRouter({
   chart: protectedProjectProcedure

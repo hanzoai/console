@@ -3,7 +3,7 @@ import { stripeClient } from "@/src/ee/features/billing/utils/stripe";
 import { stripeProducts } from "@/src/ee/features/billing/utils/stripeProducts";
 import { env } from "@/src/env.mjs";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
-import { parseDbOrg } from "@langfuse/shared";
+import { parseDbOrg } from "@hanzo/shared";
 import {
   createTRPCRouter,
   protectedOrganizationProcedure,
@@ -14,7 +14,7 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   getObservationCountOfProjectsSinceCreationDate,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import Stripe from "stripe";
 
 export const cloudBillingRouter = createTRPCRouter({

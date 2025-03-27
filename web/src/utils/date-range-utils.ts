@@ -1,7 +1,7 @@
 import { type DateRange } from "react-day-picker";
 import { z } from "zod";
 import { addMinutes } from "date-fns";
-import { type DateTrunc } from "@langfuse/shared/src/server";
+import { type DateTrunc } from "@hanzo/shared/src/server";
 
 export const DEFAULT_DASHBOARD_AGGREGATION_SELECTION = "24 hours" as const;
 export const DASHBOARD_AGGREGATION_PLACEHOLDER = "Custom" as const;

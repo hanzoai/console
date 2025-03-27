@@ -23,7 +23,7 @@ import {
   StorageService,
   StorageServiceFactory,
   CreateEvalQueueEventType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   availableTraceEvalVariables,
   ChatMessageRole,
@@ -39,8 +39,8 @@ import {
   availableDatasetEvalVariables,
   variableMapping,
   JobTimeScope,
-} from "@langfuse/shared";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import { backOff } from "exponential-backoff";
 import {
   callStructuredLLM,
@@ -558,7 +558,7 @@ export async function extractVariablesFromTracingData({
         return { var: variable, value: "" };
       }
 
-      if (mapping.langfuseObject === "dataset_item") {
+      if (mapping.hanzoObject === "dataset_item") {
         if (!datasetItemId) {
           logger.error(
             `No dataset item id found for variable ${variable}. Eval will succeed without dataset item input.`,
@@ -606,7 +606,7 @@ export async function extractVariablesFromTracingData({
         };
       }
 
-      if (mapping.langfuseObject === "trace") {
+      if (mapping.hanzoObject === "trace") {
         // find the internal definitions of the column
         const safeInternalColumn = availableTraceEvalVariables
           .find((o) => o.id === "trace")
@@ -639,14 +639,14 @@ export async function extractVariablesFromTracingData({
         };
       }
 
-      if (["generation", "span", "event"].includes(mapping.langfuseObject)) {
+      if (["generation", "span", "event"].includes(mapping.hanzoObject)) {
         const safeInternalColumn = availableTraceEvalVariables
-          .find((o) => o.id === mapping.langfuseObject)
+          .find((o) => o.id === mapping.hanzoObject)
           ?.availableColumns.find((col) => col.id === mapping.selectedColumnId);
 
         if (!mapping.objectName) {
           logger.info(
-            `No object name found for variable ${variable} and object ${mapping.langfuseObject}`,
+            `No object name found for variable ${variable} and object ${mapping.hanzoObject}`,
           );
           return { var: variable, value: "" };
         }
@@ -687,7 +687,7 @@ export async function extractVariablesFromTracingData({
         };
       }
 
-      throw new Error(`Unknown object type ${mapping.langfuseObject}`);
+      throw new Error(`Unknown object type ${mapping.hanzoObject}`);
     }),
   );
 }

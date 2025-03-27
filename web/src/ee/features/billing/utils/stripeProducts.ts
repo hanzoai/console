@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-// import { type Plan } from "@langfuse/shared";
+// import { type Plan } from "@hanzo/shared";
 
 export interface StripeProduct {
   id: string; // Unique identifier

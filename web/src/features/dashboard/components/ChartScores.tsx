@@ -2,7 +2,7 @@ import { api } from "@/src/utils/api";
 
 import { BaseTimeSeriesChart } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
-import { type ScoreDataType, type FilterState } from "@langfuse/shared";
+import { type ScoreDataType, type FilterState } from "@hanzo/shared";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,

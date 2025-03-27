@@ -7,7 +7,7 @@ import {
   redis,
   ZodModelConfig,
   ExperimentCreateQueue,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   createTRPCRouter,
   protectedProjectProcedure,
@@ -19,7 +19,7 @@ import {
   extractVariables,
   datasetItemMatchesVariable,
   UnauthorizedError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 

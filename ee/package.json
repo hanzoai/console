@@ -1,5 +1,5 @@
 {
-  "name": "@langfuse/ee",
+  "name": "@hanzo/ee",
   "version": "1.0.0",
   "private": true,
   "main": "./dist/src/index.js",
@@ -24,7 +24,7 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
-    "@langfuse/shared": "workspace:*",
+    "@hanzo/shared": "workspace:*",
     "@opentelemetry/api": ">=1.0.0 <1.10.0",
     "axios": "^1.7.7",
     "https-proxy-agent": "^7.0.6",

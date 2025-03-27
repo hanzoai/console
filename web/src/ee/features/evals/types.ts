@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { JobConfigState } from "@langfuse/shared";
+import { JobConfigState } from "@hanzo/shared";
 
 export enum EvalReferencedEvaluators {
   UPDATE = "update",

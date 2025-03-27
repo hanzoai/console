@@ -836,22 +836,22 @@ export const getTracesForPostHog = async function* (
   for await (const record of records) {
     yield {
       timestamp: record.timestamp,
-      langfuse_id: record.id,
-      langfuse_trace_name: record.name,
-      langfuse_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
-      langfuse_cost_usd: record.total_cost,
-      langfuse_count_observations: record.observation_count,
-      langfuse_session_id: record.session_id,
-      langfuse_project_id: projectId,
-      langfuse_user_id: record.user_id || "langfuse_unknown_user",
-      langfuse_latency: record.latency,
-      langfuse_release: record.release,
-      langfuse_version: record.version,
-      langfuse_tags: record.tags,
-      langfuse_event_version: "1.0.0",
+      hanzo_id: record.id,
+      hanzo_trace_name: record.name,
+      hanzo_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
+      hanzo_cost_usd: record.total_cost,
+      hanzo_count_observations: record.observation_count,
+      hanzo_session_id: record.session_id,
+      hanzo_project_id: projectId,
+      hanzo_user_id: record.user_id || "hanzo_unknown_user",
+      hanzo_latency: record.latency,
+      hanzo_release: record.release,
+      hanzo_version: record.version,
+      hanzo_tags: record.tags,
+      hanzo_event_version: "1.0.0",
       $session_id: record.posthog_session_id ?? null,
       $set: {
-        langfuse_user_url: record.user_id
+        hanzo_user_url: record.user_id
           ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.user_id as string)}`
           : null,
       },

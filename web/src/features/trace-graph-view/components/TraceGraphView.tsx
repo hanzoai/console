@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
-import type { APIScore, Trace } from "@langfuse/shared";
+import type { APIScore, Trace } from "@hanzo/shared";
 import type { ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 
 import { TraceGraphCanvas } from "./TraceGraphCanvas";

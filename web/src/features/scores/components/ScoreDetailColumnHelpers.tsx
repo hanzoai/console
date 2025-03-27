@@ -9,9 +9,9 @@ import {
   type CategoricalAggregate,
   type NumericAggregate,
   type ScoreAggregate,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type PromptVersionTableRow } from "@/src/pages/project/[projectId]/prompts/[promptName]/metrics";
-import { type ScoreDataType } from "@langfuse/shared";
+import { type ScoreDataType } from "@hanzo/shared";
 import { type Row } from "@tanstack/react-table";
 import React from "react";
 import {

@@ -1,9 +1,9 @@
 import { env } from "@/src/env.mjs";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   clickhouseClient,
   createBasicAuthHeader,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type z } from "zod";
 
 export const pruneDatabase = async () => {

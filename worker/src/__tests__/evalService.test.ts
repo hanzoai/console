@@ -11,7 +11,7 @@ import {
   evaluate,
   extractVariablesFromTracingData,
 } from "../ee/evaluation/evalService";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { pruneDatabase } from "./utils";
@@ -21,8 +21,8 @@ import {
   HanzoNotFoundError,
   variableMappingList,
   ApiError,
-} from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 import { OpenAIServer } from "./network";
 import { afterEach } from "node:test";
 import {
@@ -31,7 +31,7 @@ import {
   createTracesCh,
   upsertObservation,
   upsertTrace,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { compileHandlebarString } from "../features/utilities";
 
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -1326,12 +1326,12 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "dataset_item",
+          hanzoObject: "dataset_item",
           selectedColumnId: "input",
           templateVariable: "input",
         },
         {
-          langfuseObject: "dataset_item",
+          hanzoObject: "dataset_item",
           selectedColumnId: "expected_output",
           templateVariable: "output",
         },
@@ -1374,12 +1374,12 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "trace",
+          hanzoObject: "trace",
           selectedColumnId: "input",
           templateVariable: "input",
         },
         {
-          langfuseObject: "trace",
+          hanzoObject: "trace",
           selectedColumnId: "output",
           templateVariable: "output",
         },
@@ -1436,13 +1436,13 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -1475,13 +1475,13 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -1530,13 +1530,13 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -1610,13 +1610,13 @@ describe("eval service tests", () => {
 
       const variableMapping = variableMappingList.parse([
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          langfuseObject: "generation",
+          hanzoObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",

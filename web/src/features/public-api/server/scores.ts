@@ -7,7 +7,7 @@ import {
   queryClickhouse,
   StringFilter,
   type ScoreRecordReadType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export type ScoreQueryType = {
   page: number;

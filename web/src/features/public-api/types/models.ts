@@ -4,7 +4,7 @@ import {
   type Model as PrismaModel,
   jsonSchema,
   publicApiPaginationZod,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod";
 
 /**

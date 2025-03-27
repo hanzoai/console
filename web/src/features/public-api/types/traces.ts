@@ -4,8 +4,8 @@ import {
   paginationMetaResponseZod,
   orderBy,
   publicApiPaginationZod,
-} from "@langfuse/shared";
-import { stringDateTime, TraceBody } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { stringDateTime, TraceBody } from "@hanzo/shared/src/server";
 import { z } from "zod";
 
 /**

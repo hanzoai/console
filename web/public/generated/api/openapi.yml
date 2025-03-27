@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: langfuse
+  title: hanzo
   version: ''
   description: >-
     ## Authentication
@@ -163,7 +163,7 @@ paths:
       parameters:
         - name: commentId
           in: path
-          description: The unique langfuse identifier of a comment
+          description: The unique hanzo identifier of a comment
           required: true
           schema:
             type: string
@@ -981,7 +981,7 @@ paths:
       parameters:
         - name: mediaId
           in: path
-          description: The unique langfuse identifier of a media record
+          description: The unique hanzo identifier of a media record
           required: true
           schema:
             type: string
@@ -1027,7 +1027,7 @@ paths:
       parameters:
         - name: mediaId
           in: path
-          description: The unique langfuse identifier of a media record
+          description: The unique hanzo identifier of a media record
           required: true
           schema:
             type: string
@@ -1424,7 +1424,7 @@ paths:
         - name: observationId
           in: path
           description: >-
-            The unique langfuse identifier of an observation, can be an event,
+            The unique hanzo identifier of an observation, can be an event,
             span or generation
           required: true
           schema:
@@ -2015,7 +2015,7 @@ paths:
       parameters:
         - name: configId
           in: path
-          description: The unique langfuse identifier of a score config
+          description: The unique hanzo identifier of a score config
           required: true
           schema:
             type: string
@@ -2271,7 +2271,7 @@ paths:
       parameters:
         - name: scoreId
           in: path
-          description: The unique langfuse identifier of a score
+          description: The unique hanzo identifier of a score
           required: true
           schema:
             type: string
@@ -2317,7 +2317,7 @@ paths:
       parameters:
         - name: scoreId
           in: path
-          description: The unique langfuse identifier of a score
+          description: The unique hanzo identifier of a score
           required: true
           schema:
             type: string
@@ -2498,7 +2498,7 @@ paths:
       parameters:
         - name: traceId
           in: path
-          description: The unique langfuse identifier of a trace
+          description: The unique hanzo identifier of a trace
           required: true
           schema:
             type: string
@@ -2788,7 +2788,7 @@ components:
           description: >-
             The environment from which this trace originated. Can be any
             lowercase alphanumeric string with hyphens and underscores that does
-            not start with 'langfuse'.
+            not start with 'hanzo'.
       required:
         - id
         - timestamp
@@ -2990,7 +2990,7 @@ components:
           description: >-
             The environment from which this observation originated. Can be any
             lowercase alphanumeric string with hyphens and underscores that does
-            not start with 'langfuse'.
+            not start with 'hanzo'.
       required:
         - id
         - type
@@ -3211,7 +3211,7 @@ components:
           description: >-
             The environment from which this score originated. Can be any
             lowercase alphanumeric string with hyphens and underscores that does
-            not start with 'langfuse'.
+            not start with 'hanzo'.
       required:
         - id
         - traceId
@@ -4402,7 +4402,7 @@ components:
       properties:
         mediaId:
           type: string
-          description: The unique langfuse identifier of a media record
+          description: The unique hanzo identifier of a media record
         contentType:
           type: string
           description: The MIME type of the media record
@@ -4492,7 +4492,7 @@ components:
             will be null
         mediaId:
           type: string
-          description: The unique langfuse identifier of a media record
+          description: The unique hanzo identifier of a media record
       required:
         - mediaId
     MediaContentType:
@@ -5023,7 +5023,7 @@ components:
           description: >-
             The environment of the score. Can be any lowercase alphanumeric
             string with hyphens and underscores that does not start with
-            'langfuse'.
+            'hanzo'.
         dataType:
           $ref: '#/components/schemas/ScoreDataType'
           nullable: true
@@ -5035,7 +5035,7 @@ components:
           type: string
           nullable: true
           description: >-
-            Reference a score config on a score. The unique langfuse identifier
+            Reference a score config on a score. The unique hanzo identifier
             of a score config. When passing this field, the dataType and
             stringValue fields are automatically populated.
       required:

@@ -1,7 +1,7 @@
 import { createPrompt } from "@/src/features/prompts/server/actions/createPrompt";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { isPrismaException } from "@/src/utils/exceptions";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod";
@@ -16,14 +16,14 @@ import {
   MethodNotAllowedError,
   ForbiddenError,
   type Prompt,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   PromptService,
   redis,
   recordIncrement,
   traceException,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { PRODUCTION_LABEL } from "@/src/features/prompts/constants";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { telemetry } from "@/src/features/telemetry";

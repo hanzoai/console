@@ -1,10 +1,10 @@
 import { expect, test, describe, vi, beforeEach } from "vitest";
 import { createExperimentJob } from "../ee/experiments/experimentService";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { pruneDatabase } from "./utils";
-import { LLMAdapter } from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+import { LLMAdapter } from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 import { callLLM } from "../features/utilities";
 
 vi.mock("../features/utilities", () => ({
@@ -313,7 +313,7 @@ describe("create experiment jobs", () => {
   }, 10_000);
 });
 
-describe("create experiment job calls with langfuse server side tracing", async () => {
+describe("create experiment job calls with hanzo server side tracing", async () => {
   await pruneDatabase();
   const mockEvent = {
     datasetId: "dataset-123",
@@ -406,7 +406,7 @@ describe("create experiment job calls with langfuse server side tracing", async 
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        tags: ["langfuse-prompt-experiment"],
+        tags: ["hanzo-prompt-experiment"],
         traceName: expect.stringMatching(/^dataset-run-item-/),
         traceId: expect.any(String),
         projectId: mockEvent.projectId,

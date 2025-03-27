@@ -17,7 +17,7 @@ import { CreateProjectMemberButton } from "@/src/features/rbac/components/Create
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
 import type { RouterOutput } from "@/src/utils/types";
-import { Role } from "@langfuse/shared";
+import { Role } from "@hanzo/shared";
 import { type Row } from "@tanstack/react-table";
 import { Trash } from "lucide-react";
 import { useSession } from "next-auth/react";

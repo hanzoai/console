@@ -19,7 +19,7 @@ import { type Session } from "next-auth";
 import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 
 import { getServerAuthSession } from "@/src/server/auth";
-import { prisma, Role } from "@langfuse/shared/src/db";
+import { prisma, Role } from "@hanzo/shared/src/db";
 import * as z from "zod";
 
 type CreateContextOptions = {
@@ -82,7 +82,7 @@ import {
   addUserToSpan,
   getTraceById,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 setUpSuperjson();
 

@@ -18,7 +18,7 @@ import { MoreVertical } from "lucide-react";
 import { useEffect } from "react";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type Prisma } from "@langfuse/shared";
+import { type Prisma } from "@hanzo/shared";
 import { IOTableCell } from "@/src/components/ui/CodeJsonViewer";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

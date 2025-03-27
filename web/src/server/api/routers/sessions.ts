@@ -14,8 +14,8 @@ import {
   singleFilter,
   timeFilter,
   tracesTableUiColumnDefinitions,
-} from "@langfuse/shared";
-import { Prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { Prisma } from "@hanzo/shared/src/db";
 import { TRPCError } from "@trpc/server";
 import Decimal from "decimal.js";
 import {
@@ -31,7 +31,7 @@ import {
   logger,
   getSessionsWithMetrics,
   hasAnySession,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { chunk } from "lodash";
 
 const SessionFilterOptions = z.object({

@@ -1,6 +1,6 @@
-import { type IngestionEventType } from "@langfuse/shared/src/server";
+import { type IngestionEventType } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
-import { ObservationLevel } from "@langfuse/shared";
+import { ObservationLevel } from "@hanzo/shared";
 
 const convertNanoTimestampToISO = (
   timestamp:
@@ -233,7 +233,7 @@ const extractEnvironment = (
   resourceAttributes: Record<string, unknown>,
 ): string => {
   const environmentAttributeKeys = [
-    "langfuse.environment",
+    "hanzo.environment",
     "deployment.environment.name",
     "deployment.environment",
   ];
@@ -251,7 +251,7 @@ const extractEnvironment = (
 const extractUserId = (
   attributes: Record<string, unknown>,
 ): string | undefined => {
-  const userIdKeys = ["langfuse.user.id", "user.id"];
+  const userIdKeys = ["hanzo.user.id", "user.id"];
   for (const key of userIdKeys) {
     if (attributes[key]) {
       return typeof attributes[key] === "string"
@@ -264,7 +264,7 @@ const extractUserId = (
 const extractSessionId = (
   attributes: Record<string, unknown>,
 ): string | undefined => {
-  const userIdKeys = ["langfuse.session.id", "session.id"];
+  const userIdKeys = ["hanzo.session.id", "session.id"];
   for (const key of userIdKeys) {
     if (attributes[key]) {
       return typeof attributes[key] === "string"
@@ -398,16 +398,16 @@ export const convertOtelSpanToIngestionEvent = (
             scope: scopeSpan?.scope,
           },
           version:
-            attributes?.["langfuse.version"] ??
+            attributes?.["hanzo.version"] ??
             resourceAttributes?.["service.version"] ??
             null,
-          release: attributes?.["langfuse.release"] ?? null,
+          release: attributes?.["hanzo.release"] ?? null,
           userId: extractUserId(attributes),
           sessionId: extractSessionId(attributes),
           public:
-            attributes?.["langfuse.public"] === true ||
-            attributes?.["langfuse.public"] === "true",
-          tags: attributes?.["langfuse.tags"] ?? [],
+            attributes?.["hanzo.public"] === true ||
+            attributes?.["hanzo.public"] === "true",
+          tags: attributes?.["hanzo.tags"] ?? [],
 
           environment: extractEnvironment(attributes, resourceAttributes),
 
@@ -447,14 +447,14 @@ export const convertOtelSpanToIngestionEvent = (
             : ObservationLevel.DEFAULT,
         statusMessage: span.status?.message ?? null,
         version:
-          attributes?.["langfuse.version"] ??
+          attributes?.["hanzo.version"] ??
           resourceAttributes?.["service.version"] ??
           null,
         modelParameters: extractModelParameters(attributes) as any,
         model: extractModelName(attributes),
 
-        promptName: attributes?.["langfuse.prompt.name"] ?? null,
-        promptVersion: attributes?.["langfuse.prompt.version"] ?? null,
+        promptName: attributes?.["hanzo.prompt.name"] ?? null,
+        promptVersion: attributes?.["hanzo.prompt.version"] ?? null,
 
         usageDetails: extractUsageDetails(attributes) as any,
         costDetails: extractCostDetails(attributes) as any,

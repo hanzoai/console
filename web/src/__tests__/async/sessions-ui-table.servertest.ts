@@ -1,13 +1,13 @@
 import { v4 } from "uuid";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   createObservation,
   createObservationsCh,
   createOrgProjectAndApiKey,
   createTracesCh,
   getSessionsWithMetrics,
-} from "@langfuse/shared/src/server";
-import { createTrace, getSessionsTable } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { createTrace, getSessionsTable } from "@hanzo/shared/src/server";
 
 describe("trpc.sessions", () => {
   describe("GET sessions.all", () => {

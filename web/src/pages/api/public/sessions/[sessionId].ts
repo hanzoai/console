@@ -1,12 +1,12 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   GetSessionV1Query,
   GetSessionV1Response,
 } from "@/src/features/public-api/types/sessions";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { HanzoNotFoundError } from "@langfuse/shared";
-import { getTracesBySessionId } from "@langfuse/shared/src/server";
+import { HanzoNotFoundError } from "@hanzo/shared";
+import { getTracesBySessionId } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({

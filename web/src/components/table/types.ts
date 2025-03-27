@@ -24,8 +24,8 @@ export type HanzoColumnDef<
   TData extends RowData,
   TValue = unknown,
 > = ExtendedColumnDef<TData, TValue> & {
-  // Enforce langfuse columns to be of type 'AccessorKeyColumnDefBase' with 'accessorKey' property of type string
+  // Enforce hanzo columns to be of type 'AccessorKeyColumnDefBase' with 'accessorKey' property of type string
   accessorKey: string;
-  // Enforce langfuse group columns to have children of type 'HanzoColumnDef'
+  // Enforce hanzo group columns to have children of type 'HanzoColumnDef'
   columns?: HanzoColumnDef<TData, TValue>[];
 };

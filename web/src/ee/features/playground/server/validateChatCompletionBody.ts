@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ChatMessageRole, LLMAdapter } from "@langfuse/shared";
+import { ChatMessageRole, LLMAdapter } from "@hanzo/shared";
 
 const ModelParamsSchema = z.object({
   provider: z.string(),

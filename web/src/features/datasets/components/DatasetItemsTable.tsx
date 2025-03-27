@@ -12,7 +12,7 @@ import {
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { Archive, ListTree, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { type DatasetItem, DatasetStatus, type Prisma } from "@langfuse/shared";
+import { type DatasetItem, DatasetStatus, type Prisma } from "@hanzo/shared";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useEffect, useState } from "react";

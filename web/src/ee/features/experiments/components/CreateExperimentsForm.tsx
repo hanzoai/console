@@ -63,7 +63,7 @@ import {
   type FilterCondition,
   stringOptionsFilter,
   ZodModelConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { PromptType } from "@/src/features/prompts/server/utils/validation";

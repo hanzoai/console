@@ -5,7 +5,7 @@ import {
   tracesTableCols,
   singleFilter,
   sessionsViewCols,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { scoresTableCols } from "@/src/server/api/definitions/scoresTable";
 import {
   useQueryParam,

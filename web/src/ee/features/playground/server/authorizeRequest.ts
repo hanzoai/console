@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 
 import { getAuthOptions } from "@/src/server/auth";
 import { isProjectMemberOrAdmin } from "@/src/server/utils/checkProjectMembershipOrAdmin";
-import { ApiError, ForbiddenError, UnauthorizedError } from "@langfuse/shared";
+import { ApiError, ForbiddenError, UnauthorizedError } from "@hanzo/shared";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 
 export type AuthorizeRequestResult = {

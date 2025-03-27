@@ -6,7 +6,7 @@ import {
   LLMAdapter,
   supportedModels,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type ModelParamsContext } from "@/src/components/ModelParameters";
 
 export const useModelParams = () => {

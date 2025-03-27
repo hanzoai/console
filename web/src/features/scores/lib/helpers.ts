@@ -1,5 +1,5 @@
 import { type ScoreData } from "./types";
-import { ScoreDataType } from "@langfuse/shared";
+import { ScoreDataType } from "@hanzo/shared";
 
 export const isNumericDataType = (dataType: ScoreDataType) =>
   dataType === ScoreDataType.NUMERIC;

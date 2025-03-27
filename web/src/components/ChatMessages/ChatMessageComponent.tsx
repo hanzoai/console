@@ -5,7 +5,7 @@ import {
   ChatMessageRole,
   SYSTEM_ROLES,
   type ChatMessageWithId,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { CodeMirrorEditor } from "@/src/components/editor";

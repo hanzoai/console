@@ -15,7 +15,7 @@ import {
   redis,
   ProjectDeleteQueue,
   getEnvironmentsForProject,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const projectsRouter = createTRPCRouter({

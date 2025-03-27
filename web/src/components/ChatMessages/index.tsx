@@ -2,7 +2,7 @@ import { PlusCircleIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/src/components/ui/button";
-import { ChatMessageRole, SYSTEM_ROLES } from "@langfuse/shared";
+import { ChatMessageRole, SYSTEM_ROLES } from "@hanzo/shared";
 
 import { ChatMessageComponent } from "./ChatMessageComponent";
 

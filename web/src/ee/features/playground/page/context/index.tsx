@@ -22,7 +22,7 @@ import {
   type ChatMessageWithId,
   type PromptVariable,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import type { MessagesContext } from "@/src/components/ChatMessages/types";
 import type { ModelParamsContext } from "@/src/components/ModelParameters";

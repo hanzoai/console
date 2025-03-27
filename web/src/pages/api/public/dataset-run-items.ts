@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
 import {
@@ -6,9 +6,9 @@ import {
   PostDatasetRunItemsV1Response,
   transformDbDatasetRunItemToAPIDatasetRunItem,
 } from "@/src/features/public-api/types/datasets";
-import { HanzoNotFoundError, InvalidRequestError } from "@langfuse/shared";
+import { HanzoNotFoundError, InvalidRequestError } from "@hanzo/shared";
 import { addDatasetRunItemsToEvalQueue } from "@/src/ee/features/evals/server/addDatasetRunItemsToEvalQueue";
-import { getObservationById } from "@langfuse/shared/src/server";
+import { getObservationById } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedAPIRoute({

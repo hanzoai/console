@@ -2,16 +2,16 @@ import {
   createObservation,
   createScore,
   createTrace,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   createObservationsCh,
   createScoresCh,
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
-import { GetScoreResponse, GetScoresResponse } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+import { GetScoreResponse, GetScoresResponse } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import { z } from "zod";
 

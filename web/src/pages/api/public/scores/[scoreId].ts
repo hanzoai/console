@@ -7,13 +7,13 @@ import {
   GetScoreResponse,
   InternalServerError,
   HanzoNotFoundError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   deleteScore,
   getScoreById,
   logger,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({

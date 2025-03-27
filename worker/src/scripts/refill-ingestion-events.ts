@@ -7,9 +7,9 @@ import {
   QueueJobs,
   IngestionQueue,
   eventTypes,
-} from "@langfuse/shared/src/server";
-import { logger } from "@langfuse/shared/src/server";
-import { redis } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
+import { redis } from "@hanzo/shared/src/server";
 
 const main = async () => {
   // Read and parse CSV file

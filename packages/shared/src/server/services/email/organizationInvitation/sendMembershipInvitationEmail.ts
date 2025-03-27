@@ -5,7 +5,7 @@ import { render } from "@react-email/render";
 import MembershipInvitationTemplate from "./MembershipInvitationEmailTemplate";
 import { logger } from "../../../logger";
 
-const langfuseUrls = {
+const hanzoUrls = {
   US: "https://us.cloud.hanzo.ai",
   EU: "https://cloud.hanzo.ai",
   STAGING: "https://staging.hanzo.ai",
@@ -45,7 +45,7 @@ export const sendMembershipInvitationEmail = async ({
     env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "US" ||
     env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "EU" ||
     env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-      ? langfuseUrls[env.NEXT_PUBLIC_HANZO_CLOUD_REGION]
+      ? hanzoUrls[env.NEXT_PUBLIC_HANZO_CLOUD_REGION]
       : env.NEXTAUTH_URL;
 
   const authUrl = getAuthURL();
@@ -67,7 +67,7 @@ export const sendMembershipInvitationEmail = async ({
         receiverEmail: to,
         inviteLink: authUrl,
         emailFromAddress: env.EMAIL_FROM_ADDRESS,
-        langfuseCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
+        hanzoCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
       })
     );
 

@@ -1,13 +1,13 @@
 import { VERSION } from "@/src/constants";
 import { ServerPosthog } from "@/src/features/posthog-analytics/ServerPosthog";
-import { Prisma, prisma } from "@langfuse/shared/src/db";
+import { Prisma, prisma } from "@hanzo/shared/src/db";
 import { v4 as uuidv4 } from "uuid";
 import {
   getObservationCountsByProjectInCreationInterval,
   getScoreCountsByProjectInCreationInterval,
   getTraceCountsByProjectInCreationInterval,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 
 // Interval between jobs in minutes
@@ -252,7 +252,7 @@ async function posthogTelemetry({
       distinctId: "docker:" + clientId,
       event: "telemetry",
       properties: {
-        langfuseVersion: VERSION,
+        hanzoVersion: VERSION,
         userDomains: domains,
         totalProjects: totalProjects,
         traces: countTraces,
@@ -265,12 +265,12 @@ async function posthogTelemetry({
         startTimeframe: startTimeframe?.toISOString(),
         endTimeframe: endTimeframe.toISOString(),
         eeLicenseKey: env.HANZO_EE_LICENSE_KEY,
-        langfuseCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
+        hanzoCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
         $set: {
           environment: process.env.NODE_ENV,
           userDomains: domains,
           docker: true,
-          langfuseVersion: VERSION,
+          hanzoVersion: VERSION,
         },
       },
     });

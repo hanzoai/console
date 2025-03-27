@@ -1,11 +1,11 @@
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { filterAndValidateDbScoreList } from "@langfuse/shared";
+import { filterAndValidateDbScoreList } from "@hanzo/shared";
 import { type GetAllGenerationsInput } from "../getAllQueries";
 import {
   getObservationsTableWithModelData,
   getScoresForObservations,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export async function getAllGenerations({
   input,

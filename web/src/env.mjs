@@ -232,7 +232,7 @@ export const env = createEnv({
     REDIS_CONNECTION_STRING: z.string().nullish(),
     REDIS_ENABLE_AUTO_PIPELINING: z.enum(["true", "false"]).default("true"),
 
-    // langfuse caching
+    // hanzo caching
     HANZO_CACHE_API_KEY_ENABLED: z.enum(["true", "false"]).default("false"),
     HANZO_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(120),
 
@@ -533,7 +533,7 @@ export const env = createEnv({
     REDIS_AUTH: process.env.REDIS_AUTH,
     REDIS_CONNECTION_STRING: process.env.REDIS_CONNECTION_STRING,
     REDIS_ENABLE_AUTO_PIPELINING: process.env.REDIS_ENABLE_AUTO_PIPELINING,
-    // langfuse caching
+    // hanzo caching
     HANZO_CACHE_API_KEY_ENABLED: process.env.HANZO_CACHE_API_KEY_ENABLED,
     HANZO_CACHE_API_KEY_TTL_SECONDS:
       process.env.HANZO_CACHE_API_KEY_TTL_SECONDS,

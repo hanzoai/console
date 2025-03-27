@@ -33,7 +33,7 @@ service:
       path-parameters:
         configId:
           type: string
-          docs: The unique langfuse identifier of a score config
+          docs: The unique hanzo identifier of a score config
       response: commons.ScoreConfig
 types:
   ScoreConfigs:

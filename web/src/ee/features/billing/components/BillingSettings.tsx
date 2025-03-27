@@ -9,7 +9,7 @@ import Header from "@/src/components/layouts/header";
 // import { Card } from "@/src/components/ui/card";
 // import { numberFormatter, compactNumberFormatter } from "@/src/utils/numbers";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
-// import { type Plan, planLabels } from "@langfuse/shared";
+// import { type Plan, planLabels } from "@hanzo/shared";
 import { useRouter } from "next/router";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { BillingOverview } from "./overview/BillingOverview";

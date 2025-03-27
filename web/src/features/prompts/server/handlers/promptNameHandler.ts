@@ -4,7 +4,7 @@ import { getPromptByName } from "@/src/features/prompts/server/actions/getPrompt
 import { GetPromptByNameSchema } from "@/src/features/prompts/server/utils/validation";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
-import { HanzoNotFoundError } from "@langfuse/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 import { PRODUCTION_LABEL } from "@/src/features/prompts/constants";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 

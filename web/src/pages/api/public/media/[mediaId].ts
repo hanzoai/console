@@ -13,9 +13,9 @@ import {
   ForbiddenError,
   InternalServerError,
   HanzoNotFoundError,
-} from "@langfuse/shared";
-import { Prisma, prisma } from "@langfuse/shared/src/db";
-import { recordIncrement, recordHistogram } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { Prisma, prisma } from "@hanzo/shared/src/db";
+import { recordIncrement, recordHistogram } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({
@@ -95,12 +95,12 @@ export default withMiddlewares({
           },
         });
 
-        recordIncrement("langfuse.media.upload_http_status", 1, {
+        recordIncrement("hanzo.media.upload_http_status", 1, {
           status_code: uploadHttpStatus,
         });
 
         if (uploadTimeMs) {
-          recordHistogram("langfuse.media.upload_time_ms", uploadTimeMs, {
+          recordHistogram("hanzo.media.upload_time_ms", uploadTimeMs, {
             status_code: uploadHttpStatus,
           });
         }

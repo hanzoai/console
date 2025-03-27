@@ -29,7 +29,7 @@ import {
   ModelParams,
   TraceParams,
 } from "./types";
-import { CallbackHandler } from "langfuse-langchain";
+import { CallbackHandler } from "hanzo-langchain";
 import type { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 
 type ProcessTracedEvents = () => Promise<void>;
@@ -111,7 +111,7 @@ export async function fetchLLMCompletion(
 
     processTracedEvents = async () => {
       try {
-        const events = await handler.langfuse._exportLocalEvents(
+        const events = await handler.hanzo._exportLocalEvents(
           traceParams.projectId,
         );
         await processEventBatch(

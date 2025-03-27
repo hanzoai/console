@@ -26,7 +26,7 @@
       <a href="https://hanzo.ai/roadmap"><strong>로드맵</strong></a> ·
    </div>
    <br/>
-   <span>Hanzo는 지원 및 기능 요청을 위해 <a href="https://github.com/orgs/langfuse/discussions"><strong>GitHub Discussions</strong></a>를 사용합니다.</span>
+   <span>Hanzo는 지원 및 기능 요청을 위해 <a href="https://github.com/orgs/hanzoai/discussions"><strong>GitHub Discussions</strong></a>를 사용합니다.</span>
    <br/>
    <span><b>채용 중입니다.</b> <a href="https://hanzo.ai/careers"><strong>함께 하세요</strong></a> – 제품 엔지니어링 및 기술 go-to-market 역할의 인재를 찾고 있습니다.</span>
    <br/>
@@ -39,25 +39,25 @@
    <a href="https://github.com/hanzoai/cloud/blob/main/LICENSE">
    <img src="https://img.shields.io/badge/License-MIT-E11311.svg" alt="MIT License">
    </a>
-   <a href="https://www.ycombinator.com/companies/langfuse"><img src="https://img.shields.io/badge/Y%20Combinator-W23-orange" alt="Y Combinator W23"></a>
-   <a href="https://hub.docker.com/u/langfuse" target="_blank">
+   <a href="https://www.ycombinator.com/companies/hanzo"><img src="https://img.shields.io/badge/Y%20Combinator-W23-orange" alt="Y Combinator W23"></a>
+   <a href="https://hub.docker.com/u/hanzo" target="_blank">
    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/hanzoai/cloud?labelColor=%20%23FDB062&logo=Docker&labelColor=%20%23528bff"></a>
-   <a href="https://pypi.python.org/pypi/langfuse"><img src="https://img.shields.io/pypi/dm/langfuse?logo=python&logoColor=white&label=pypi%20langfuse&color=blue" alt="langfuse Python package on PyPi"></a>
-   <a href="https://www.npmjs.com/package/langfuse"><img src="https://img.shields.io/npm/dm/langfuse?logo=npm&logoColor=white&label=npm%20langfuse&color=blue" alt="langfuse npm package"></a>
+   <a href="https://pypi.python.org/pypi/hanzo"><img src="https://img.shields.io/pypi/dm/hanzo?logo=python&logoColor=white&label=pypi%20hanzo&color=blue" alt="hanzo Python package on PyPi"></a>
+   <a href="https://www.npmjs.com/package/hanzo"><img src="https://img.shields.io/npm/dm/hanzo?logo=npm&logoColor=white&label=npm%20hanzo&color=blue" alt="hanzo npm package"></a>
    <br/>
    <a href="https://discord.com/invite/7NXusRtqYU" target="_blank">
    <img src="https://img.shields.io/discord/1111061815649124414?logo=discord&labelColor=%20%235462eb&logoColor=%20%23f5f5f5&color=%20%235462eb"
       alt="chat on Discord"></a>
-   <a href="https://twitter.com/intent/follow?screen_name=langfuse" target="_blank">
-   <img src="https://img.shields.io/twitter/follow/langfuse?logo=X&color=%20%23f5f5f5"
+   <a href="https://twitter.com/intent/follow?screen_name=hanzo" target="_blank">
+   <img src="https://img.shields.io/twitter/follow/hanzo?logo=X&color=%20%23f5f5f5"
       alt="follow on X(Twitter)"></a>
-   <a href="https://www.linkedin.com/company/langfuse/" target="_blank">
+   <a href="https://www.linkedin.com/company/hanzo/" target="_blank">
    <img src="https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff"
       alt="follow on LinkedIn"></a>
    <a href="https://github.com/hanzoai/cloud/graphs/commit-activity" target="_blank">
    <img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/hanzoai/cloud?labelColor=%20%2332b583&color=%20%2312b76a"></a>
    <a href="https://github.com/hanzoai/cloud/" target="_blank">
-   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Alangfuse%2Flangfuse%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
+   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Ahanzo%2Fhanzo%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
    <a href="https://github.com/hanzoai/cloud/discussions/" target="_blank">
    <img alt="Discussion posts" src="https://img.shields.io/github/discussions/hanzoai/cloud?labelColor=%20%239b8afb&color=%20%237a5af8"></a>
 </p>
@@ -120,15 +120,15 @@ Hanzo 팀이 관리하는 배포 방식으로, 후한 무료 플랜(취미 플�
   ```bash
   # 최신 Hanzo 저장소 클론
   git clone https://github.com/hanzoai/cloud.git
-  cd langfuse
+  cd hanzo
 
-  # langfuse docker compose 실행
+  # hanzo docker compose 실행
   docker compose up
   ```
 
 - [Kubernetes (Helm)](https://hanzo.ai/self-hosting/kubernetes-helm): Helm을 사용해 Kubernetes 클러스터에서 Hanzo를 실행합니다. 이는 권장되는 프로덕션 배포 방식입니다.
 - [VM](https://hanzo.ai/self-hosting/docker-compose): Docker Compose를 사용해 단일 가상 머신에서 Hanzo를 실행합니다.
-- 예정: 클라우드별 배포 가이드 – 아래 스레드에서 투표 및 댓글을 남겨주세요: [AWS](https://github.com/orgs/langfuse/discussions/4645), [Google Cloud](https://github.com/orgs/langfuse/discussions/4646), [Azure](https://github.com/orgs/langfuse/discussions/4647).
+- 예정: 클라우드별 배포 가이드 – 아래 스레드에서 투표 및 댓글을 남겨주세요: [AWS](https://github.com/orgs/hanzoai/discussions/4645), [Google Cloud](https://github.com/orgs/hanzoai/discussions/4646), [Azure](https://github.com/orgs/hanzoai/discussions/4647).
 
 자세한 내용은 [자체 호스팅 문서](https://hanzo.ai/self-hosting)를 참조하세요.
 
@@ -187,10 +187,10 @@ Hanzo 팀이 관리하는 배포 방식으로, 후한 무료 플랜(취미 플�
 [`@observe()` 데코레이터](https://hanzo.ai/docs/sdk/python/decorators)를 사용하면 Python LLM 애플리케이션의 추적이 매우 간편해집니다. 이 빠른 시작 예제에서는 Hanzo [OpenAI 통합](https://hanzo.ai/docs/integrations/openai)을 사용하여 모든 모델 파라미터를 자동으로 캡처합니다.
 
 > [!TIP]
-> OpenAI를 사용하지 않으시다면, 다른 모델 및 프레임워크의 로그 기록 방법은 [문서](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-langfuse)를 참조하세요.
+> OpenAI를 사용하지 않으시다면, 다른 모델 및 프레임워크의 로그 기록 방법은 [문서](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo)를 참조하세요.
 
 ```bash
-pip install langfuse openai
+pip install hanzo openai
 ```
 
 ```bash filename=".env"
@@ -201,8 +201,8 @@ HANZO_HOST="https://cloud.hanzo.ai" # 🇪🇺 EU region
 ```
 
 ```python:main.py
-from langfuse.decorators import observe
-from langfuse.openai import openai # OpenAI integration
+from hanzo.decorators import observe
+from hanzo.openai import openai # OpenAI integration
 
 @observe()
 def story():
@@ -244,8 +244,8 @@ _[Hanzo의 공개 예제 trace](https://cloud.hanzo.ai/project/cloramnkj0002jz08
 
 지원 채널:
 
-- **GitHub Discussions의 [공개 Q&A](https://github.com/orgs/langfuse/discussions/categories/support)** 에 질문을 남겨주세요. 가능한 한 많은 세부 사항(예: 코드 스니펫, 스크린샷, 배경 정보)을 포함해 질문해 주시기 바랍니다.
-- [기능 요청](https://github.com/orgs/langfuse/discussions/categories/ideas)을 남겨주세요.
+- **GitHub Discussions의 [공개 Q&A](https://github.com/orgs/hanzoai/discussions/categories/support)** 에 질문을 남겨주세요. 가능한 한 많은 세부 사항(예: 코드 스니펫, 스크린샷, 배경 정보)을 포함해 질문해 주시기 바랍니다.
+- [기능 요청](https://github.com/orgs/hanzoai/discussions/categories/ideas)을 남겨주세요.
 - [버그 신고](https://github.com/hanzoai/cloud/issues)는 GitHub Issues를 통해 해주세요.
 - 긴급한 문의는 앱 내 채팅 위젯을 통해 연락 바랍니다.
 
@@ -253,7 +253,7 @@ _[Hanzo의 공개 예제 trace](https://cloud.hanzo.ai/project/cloramnkj0002jz08
 
 여러분의 기여를 환영합니다!
 
-- GitHub Discussions의 [아이디어](https://github.com/orgs/langfuse/discussions/categories/ideas)에 투표해보세요.
+- GitHub Discussions의 [아이디어](https://github.com/orgs/hanzoai/discussions/categories/ideas)에 투표해보세요.
 - GitHub Issues에서 이슈를 제기하고 댓글을 남겨주세요.
 - PR을 제출하세요 – 개발 환경 설정 방법 등 자세한 내용은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참조하세요.
 

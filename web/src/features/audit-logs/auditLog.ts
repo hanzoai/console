@@ -1,4 +1,4 @@
-import { prisma as _prisma, type Role } from "@langfuse/shared/src/db";
+import { prisma as _prisma, type Role } from "@hanzo/shared/src/db";
 
 export type AuditableResource =
   | "annotationQueue"

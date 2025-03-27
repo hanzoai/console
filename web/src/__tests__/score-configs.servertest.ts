@@ -9,12 +9,12 @@ import {
   type ScoreConfig,
   prisma,
   type ScoreDataType,
-} from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/db";
 import {
   GetScoreConfigResponse,
   PostScoreConfigResponse,
   GetScoreConfigsResponse,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 const configOne = [
   {

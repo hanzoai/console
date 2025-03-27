@@ -16,14 +16,14 @@ import {
   type ObservationMedia,
   prisma,
   type TraceMedia,
-} from "@langfuse/shared/src/db";
-import { redis } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/db";
+import { redis } from "@hanzo/shared/src/server";
 
 describe("Media Upload API", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
   // Read the image file once and reuse it for all tests
-  const imagePathPNG = path.join(__dirname, "static/langfuse-logo.png");
+  const imagePathPNG = path.join(__dirname, "static/hanzo-logo.png");
   const fileBytesPNG = fs.readFileSync(imagePathPNG);
   const contentTypePNG = "image/png";
   const contentLengthPNG = fileBytesPNG.length;

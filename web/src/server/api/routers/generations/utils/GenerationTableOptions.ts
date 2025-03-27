@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { singleFilter } from "@langfuse/shared";
-import { orderBy } from "@langfuse/shared";
+import { singleFilter } from "@hanzo/shared";
+import { orderBy } from "@hanzo/shared";
 
 export const GenerationTableOptions = z.object({
   projectId: z.string(), // Required for protectedProjectProcedure

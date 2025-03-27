@@ -133,8 +133,8 @@ export const EnvironmentName = z
   .string()
   .max(40, "Maximum length is 40 characters")
   .regex(
-    /^(?!langfuse)[a-z0-9-_]+$/,
-    "Only alphanumeric lower case characters, hyphens, and underscores are allowed, and it must not start with 'langfuse'",
+    /^(?!hanzo)[a-z0-9-_]+$/,
+    "Only alphanumeric lower case characters, hyphens, and underscores are allowed, and it must not start with 'hanzo'",
   )
   .default("default");
 

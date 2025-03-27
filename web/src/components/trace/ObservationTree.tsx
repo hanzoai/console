@@ -6,7 +6,7 @@ import {
   ObservationLevel,
   type ObservationLevelType,
   type ObservationType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { GroupedScoreBadges } from "@/src/components/grouped-score-badge";
 import { Fragment, useMemo, useRef, useEffect } from "react";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";

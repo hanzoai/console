@@ -17,7 +17,7 @@ import {
   supportedModels as playgroundSupportedModels,
   type UIModelParams,
   ZodModelConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import { cn } from "@/src/utils/tailwind";
 

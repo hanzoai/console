@@ -42,7 +42,7 @@ const UpdateAnnotationScoreBase = CreateAnnotationScoreBase.extend({
 
 /**
  * CreateAnnotationScoreData is only used for annotation scores created via the UI.
- * For langfuse score types please refer to `web/src/features/public-api/types/scores.ts`
+ * For hanzo score types please refer to `web/src/features/public-api/types/scores.ts`
  */
 export const CreateAnnotationScoreData = z.discriminatedUnion("dataType", [
   CreateAnnotationScoreBase.merge(NumericData),
@@ -52,7 +52,7 @@ export const CreateAnnotationScoreData = z.discriminatedUnion("dataType", [
 
 /**
  * UpdateAnnotationScoreData is only used for annotation scores updated via the UI
- * For langfuse score types please refer to `web/src/features/public-api/types/scores.ts`
+ * For hanzo score types please refer to `web/src/features/public-api/types/scores.ts`
  */
 export const UpdateAnnotationScoreData = z.discriminatedUnion("dataType", [
   UpdateAnnotationScoreBase.merge(NumericData),

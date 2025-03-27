@@ -28,7 +28,7 @@ import {
   AnnotationQueueStatus,
   isPresent,
   type ValidatedScoreConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   ArrowLeft,
   ArrowRight,

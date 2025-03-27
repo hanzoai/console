@@ -6,7 +6,7 @@ import {
 } from "@/src/components/ui/hover-card";
 import { MessageCircleMore } from "lucide-react";
 
-import { type APIScore, type LastUserScore } from "@langfuse/shared";
+import { type APIScore, type LastUserScore } from "@hanzo/shared";
 
 export const GroupedScoreBadges = <T extends APIScore | LastUserScore>({
   scores,

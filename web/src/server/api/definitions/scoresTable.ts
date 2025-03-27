@@ -3,7 +3,7 @@ import {
   type ColumnDefinition,
   ScoreSource,
   ScoreDataType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const scoresTableCols: ColumnDefinition[] = [
   {

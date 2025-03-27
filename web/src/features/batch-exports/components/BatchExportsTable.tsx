@@ -1,7 +1,7 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
-import { type BatchExport } from "@langfuse/shared";
+import { type BatchExport } from "@hanzo/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { ActionButton } from "@/src/components/ActionButton";

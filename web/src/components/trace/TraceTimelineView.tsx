@@ -5,7 +5,7 @@ import {
   type Trace,
   ObservationLevel,
   type ObservationLevelType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";

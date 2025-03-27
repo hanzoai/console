@@ -32,7 +32,7 @@ import {
   UpdateAnnotationScoreData,
   type ValidatedScoreConfig,
   type ConfigCategory,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod";
 import { Input } from "@/src/components/ui/input";
 import {

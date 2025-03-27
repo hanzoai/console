@@ -1,6 +1,6 @@
 import { setupServer } from "msw/node";
 import { HttpResponse, http, passthrough } from "msw";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 const DEFAULT_RESPONSE = {
   id: "chatcmpl-9MhZ73aGSmhfAtjU9DwoL4om73hJ7",
@@ -54,7 +54,7 @@ function JsonCompletionHandler(data: object) {
 function MinioCompletionHandler() {
   return http.all("http://localhost:9090*", async (request) => {
     logger.info("minio handler");
-    if ((request.params[0] as string).startsWith("/langfuse/events/")) {
+    if ((request.params[0] as string).startsWith("/hanzo/events/")) {
       return new HttpResponse("Success");
     }
     throw new Error("Unexpected path");

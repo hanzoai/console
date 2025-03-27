@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import defaultModelPrices from "../constants/default-model-prices.json";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 const DefaultModelPriceSchema = z.object({
   id: z.string(),

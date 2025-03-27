@@ -13,7 +13,7 @@ service:
       path-parameters:
         observationId:
           type: string
-          docs: The unique langfuse identifier of an observation, can be an event, span or generation
+          docs: The unique hanzo identifier of an observation, can be an event, span or generation
       response: commons.ObservationsView
     getMany:
       docs: Get a list of observations

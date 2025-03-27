@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { isPresent, ScoreDataType, availableDataTypes } from "@langfuse/shared";
+import { isPresent, ScoreDataType, availableDataTypes } from "@hanzo/shared";
 import {
   Select,
   SelectContent,
@@ -333,7 +333,7 @@ export function CreateScoreConfigButton({ projectId }: { projectId: string }) {
                         )}
                         {fields.map((category, index) => (
                           <div
-                            key={`${category.id}-langfuseObject`}
+                            key={`${category.id}-hanzoObject`}
                             className="items-top mb-2 grid grid-cols-[1fr,3fr] gap-2 text-left sm:grid-cols-[1fr,7fr]"
                           >
                             <FormField

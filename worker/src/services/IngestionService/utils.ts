@@ -1,4 +1,4 @@
-import { JsonNested } from "@langfuse/shared";
+import { JsonNested } from "@hanzo/shared";
 import { mergeWith, merge } from "lodash";
 
 // Theoretically this returns Record<string, unknown>, but it would be hard to align the typing accordingly.

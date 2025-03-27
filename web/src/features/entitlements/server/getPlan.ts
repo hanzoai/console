@@ -1,7 +1,7 @@
 import { mapStripeProductIdToPlan } from "@/src/ee/features/billing/utils/stripeProducts";
 import { env } from "@/src/env.mjs";
-import { type Plan } from "@langfuse/shared";
-import { type CloudConfigSchema } from "@langfuse/shared";
+import { type Plan } from "@hanzo/shared";
+import { type CloudConfigSchema } from "@hanzo/shared";
 
 /**
  * Get the plan of the organization based on the cloud configuration. Used to add this plan to the organization object in JWT via NextAuth.
@@ -51,10 +51,10 @@ export function getOrganizationPlanServerSide(
 export function getSelfHostedInstancePlanServerSide(): Plan | null {
   const licenseKey = env.HANZO_EE_LICENSE_KEY;
   if (!licenseKey) return null;
-  if (licenseKey.startsWith("langfuse_ee_")) {
+  if (licenseKey.startsWith("hanzo_ee_")) {
     return "self-hosted:pro";
   }
-  if (licenseKey.startsWith("langfuse_pro_")) {
+  if (licenseKey.startsWith("hanzo_pro_")) {
     return "self-hosted:pro";
   }
   return null;

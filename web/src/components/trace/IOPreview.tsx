@@ -1,6 +1,6 @@
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { z } from "zod";
-import { type Prisma, deepParseJson } from "@langfuse/shared";
+import { type Prisma, deepParseJson } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 import { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";

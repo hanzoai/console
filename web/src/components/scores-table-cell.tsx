@@ -6,7 +6,7 @@ import {
 import {
   type CategoricalAggregate,
   type NumericAggregate,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { numberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";

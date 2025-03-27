@@ -29,7 +29,7 @@ import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan, planLabels } from "@langfuse/shared";
+import { isCloudPlan, planLabels } from "@hanzo/shared";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { type User } from "next-auth";
 

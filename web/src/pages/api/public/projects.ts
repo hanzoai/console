@@ -1,8 +1,8 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { isPrismaException } from "@/src/utils/exceptions";
-import { logger, redis } from "@langfuse/shared/src/server";
+import { logger, redis } from "@hanzo/shared/src/server";
 
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";

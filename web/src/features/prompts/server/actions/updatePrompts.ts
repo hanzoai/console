@@ -1,8 +1,8 @@
-import { logger, PromptService } from "@langfuse/shared/src/server";
+import { logger, PromptService } from "@hanzo/shared/src/server";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
-import { HanzoNotFoundError } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
-import { redis } from "@langfuse/shared/src/server";
+import { HanzoNotFoundError } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { redis } from "@hanzo/shared/src/server";
 
 export type UpdatePromptParams = {
   promptName: string;

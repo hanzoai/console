@@ -8,7 +8,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/src/components/ui/drawer";
-import { type APIScore } from "@langfuse/shared";
+import { type APIScore } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import Header from "@/src/components/layouts/header";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";

@@ -1,7 +1,7 @@
 import { RightAlignedCell } from "@/src/features/dashboard/components/RightAlignedCell";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type FilterState } from "@langfuse/shared";
+import { type FilterState } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 
 import { type DatabaseRow } from "@/src/server/api/services/queryBuilder";

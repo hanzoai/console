@@ -1,4 +1,4 @@
-import { type Role } from "@langfuse/shared/src/db";
+import { type Role } from "@hanzo/shared/src/db";
 
 const organizationScopes = [
   "projects:create",

@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const langfuseObjects = [
+export const hanzoObjects = [
   "trace",
   "span",
   "generation",
@@ -15,14 +15,14 @@ export const variableMapping = z
     // name of the observation to extract the variable from
     // not required for trace, as we only have one.
     objectName: z.string().nullish(),
-    langfuseObject: z.enum(langfuseObjects),
+    hanzoObject: z.enum(hanzoObjects),
     selectedColumnId: z.string(),
     jsonSelector: z.string().nullish(),
   })
   .refine(
-    (value) => value.langfuseObject === "trace" || value.objectName !== null,
+    (value) => value.hanzoObject === "trace" || value.objectName !== null,
     {
-      message: "objectName is required for langfuseObjects other than trace",
+      message: "objectName is required for hanzoObjects other than trace",
     },
   );
 
@@ -31,7 +31,7 @@ export const variableMappingList = z.array(variableMapping);
 export const wipVariableMapping = z.object({
   templateVariable: z.string(),
   objectName: z.string().nullish(),
-  langfuseObject: z.enum(langfuseObjects),
+  hanzoObject: z.enum(hanzoObjects),
   selectedColumnId: z.string().nullish(),
   jsonSelector: z.string().nullish(),
 });

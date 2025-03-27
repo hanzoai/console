@@ -22,7 +22,7 @@ interface MembershipInvitationTemplateProps {
   receiverEmail: string;
   inviteLink: string;
   emailFromAddress: string;
-  langfuseCloudRegion?: string;
+  hanzoCloudRegion?: string;
 }
 
 export const MembershipInvitationTemplate = ({
@@ -32,7 +32,7 @@ export const MembershipInvitationTemplate = ({
   receiverEmail,
   inviteLink,
   emailFromAddress,
-  langfuseCloudRegion,
+  hanzoCloudRegion,
 }: MembershipInvitationTemplateProps) => {
   const previewText = `Join ${invitedByUsername} on HanzoCloud`;
 
@@ -66,8 +66,8 @@ export const MembershipInvitationTemplate = ({
               </Link>
               ) has invited you to join the <strong>{orgName}</strong>{" "}
               organization on
-              {langfuseCloudRegion
-                ? ` HanzoCloud (${langfuseCloudRegion} data region)`
+              {hanzoCloudRegion
+                ? ` HanzoCloud (${hanzoCloudRegion} data region)`
                 : " HanzoCloud"}
               .
             </Text>

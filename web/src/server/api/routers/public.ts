@@ -1,7 +1,7 @@
 import { VERSION } from "@/src/constants/VERSION";
 import { env } from "@/src/env.mjs";
 import { createTRPCRouter, publicProcedure } from "@/src/server/api/trpc";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -92,23 +92,23 @@ export const publicRouter = createTRPCRouter({
         message: "Release API response is invalid",
       });
     }
-    const langfuseRelease = releases.data.find(
+    const hanzoRelease = releases.data.find(
       (release) => release.repo === "hanzoai/cloud",
     );
-    if (!langfuseRelease) {
+    if (!hanzoRelease) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Release API response is invalid",
       });
     }
 
-    const updateType = compareVersions(VERSION, langfuseRelease.latestRelease);
+    const updateType = compareVersions(VERSION, hanzoRelease.latestRelease);
 
     return {
       updateType,
       currentVersion: VERSION,
-      latestRelease: langfuseRelease.latestRelease,
-      url: langfuseRelease.url,
+      latestRelease: hanzoRelease.latestRelease,
+      url: hanzoRelease.url,
     };
   }),
 });

@@ -1,4 +1,4 @@
-import { singleFilter } from "@langfuse/shared";
+import { singleFilter } from "@hanzo/shared";
 import { z } from "zod";
 
 export const temporalUnit = z.enum([

@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import {
   StorageService,
   StorageServiceFactory,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("StorageService", () => {
   let storageService: StorageService;

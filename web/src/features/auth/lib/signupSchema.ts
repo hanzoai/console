@@ -1,4 +1,4 @@
-import { noHtmlCheck, noUrlCheck } from "@langfuse/shared";
+import { noHtmlCheck, noUrlCheck } from "@hanzo/shared";
 import * as z from "zod";
 
 export const passwordSchema = z

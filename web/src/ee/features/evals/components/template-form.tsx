@@ -14,16 +14,16 @@ import {
 } from "@/src/components/ui/form";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { extractVariables, getIsCharOrUnderscore } from "@langfuse/shared";
+import { extractVariables, getIsCharOrUnderscore } from "@hanzo/shared";
 import router from "next/router";
-import { type EvalTemplate } from "@langfuse/shared";
+import { type EvalTemplate } from "@hanzo/shared";
 import { ModelParameters } from "@/src/components/ModelParameters";
 import {
   OutputSchema,
   type UIModelParams,
   type ModelParams,
   ZodModelConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { PromptDescription } from "@/src/features/prompts/components/prompt-description";
 import {
   Select,
@@ -49,14 +49,14 @@ export const EvalTemplateForm = (props: {
   setIsEditing?: (isEditing: boolean) => void;
   preventRedirect?: boolean;
 }) => {
-  const [langfuseTemplate, setHanzoTemplate] = useState<string | null>(null);
+  const [hanzoTemplate, setHanzoTemplate] = useState<string | null>(null);
 
   const updateHanzoTemplate = (name: string) => {
     setHanzoTemplate(name);
   };
 
   const currentTemplate = TEMPLATES.find(
-    (template) => template.name === langfuseTemplate,
+    (template) => template.name === hanzoTemplate,
   );
 
   return (
@@ -64,7 +64,7 @@ export const EvalTemplateForm = (props: {
       {props.isEditing ? (
         <div className="col-span-1 lg:col-span-2">
           <Select
-            value={langfuseTemplate ?? ""}
+            value={hanzoTemplate ?? ""}
             onValueChange={updateHanzoTemplate}
           >
             <SelectTrigger className="text-primary ring-transparent focus:ring-0 focus:ring-offset-0">
@@ -87,16 +87,16 @@ export const EvalTemplateForm = (props: {
       ) : null}
       <div className="col-span-1 lg:col-span-3">
         <InnerEvalTemplateForm
-          key={langfuseTemplate ?? props.existingEvalTemplate?.id}
+          key={hanzoTemplate ?? props.existingEvalTemplate?.id}
           {...props}
           existingEvalTemplateId={props.existingEvalTemplate?.id}
           existingEvalTemplateName={props.existingEvalTemplate?.name}
           preFilledFormValues={
-            // if a langfuse template is selected, use that, else use the existing template
-            // no langfuse template is selected if there is already an existing template
-            langfuseTemplate
+            // if a hanzo template is selected, use that, else use the existing template
+            // no hanzo template is selected if there is already an existing template
+            hanzoTemplate
               ? {
-                  name: langfuseTemplate.toLocaleLowerCase() ?? "",
+                  name: hanzoTemplate.toLocaleLowerCase() ?? "",
                   prompt: currentTemplate?.prompt.trim() ?? "",
                   vars: [],
                   outputSchema: {
@@ -183,7 +183,7 @@ export type EvalTemplateFormPreFill = {
 
 export const InnerEvalTemplateForm = (props: {
   projectId: string;
-  // pre-filled values from langfuse-defined template or template from db
+  // pre-filled values from hanzo-defined template or template from db
   preFilledFormValues?: EvalTemplateFormPreFill;
   // template to be updated
   existingEvalTemplateId?: string;
@@ -197,7 +197,7 @@ export const InnerEvalTemplateForm = (props: {
   const [formError, setFormError] = useState<string | null>(null);
 
   // updates the model params based on the pre-filled data
-  // either form update or from langfuse-generated template
+  // either form update or from hanzo-generated template
   const {
     modelParams,
     setModelParams,
@@ -232,7 +232,7 @@ export const InnerEvalTemplateForm = (props: {
   }, [props.preFilledFormValues?.selectedModel, setModelParams]);
 
   // updates the form based on the pre-filled data
-  // either form update or from langfuse-generated template
+  // either form update or from hanzo-generated template
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     disabled: !props.isEditing,

@@ -10,11 +10,11 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { type Prompt, Prisma } from "@langfuse/shared/src/db";
+import { type Prompt, Prisma } from "@hanzo/shared/src/db";
 import { createPrompt, duplicatePrompt } from "../actions/createPrompt";
 import { promptsTableCols } from "@/src/server/api/definitions/promptsTable";
-import { optionalPaginationZod, paginationZod } from "@langfuse/shared";
-import { orderBy, singleFilter } from "@langfuse/shared";
+import { optionalPaginationZod, paginationZod } from "@hanzo/shared";
+import { orderBy, singleFilter } from "@hanzo/shared";
 import { LATEST_PROMPT_LABEL } from "@/src/features/prompts/constants";
 import {
   orderByToPrismaSql,
@@ -25,7 +25,7 @@ import {
   getObservationsWithPromptName,
   getObservationMetricsForPrompts,
   getAggregatedScoresForPrompts,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 
 const PromptFilterOptions = z.object({

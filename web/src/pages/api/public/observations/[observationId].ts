@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   GetObservationV1Query,
   GetObservationV1Response,
@@ -6,8 +6,8 @@ import {
 } from "@/src/features/public-api/types/observations";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { HanzoNotFoundError } from "@langfuse/shared";
-import { getObservationViewById } from "@langfuse/shared/src/server";
+import { HanzoNotFoundError } from "@hanzo/shared";
+import { getObservationViewById } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedAPIRoute({

@@ -16,7 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cva } from "class-variance-authority";
-import { ObservationType } from "@langfuse/shared";
+import { ObservationType } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 
 export type HanzoItemType =

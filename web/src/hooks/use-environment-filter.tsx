@@ -28,7 +28,7 @@ export function useEnvironmentFilter(
 ) {
   const [visibilityMap, setVisibilityMap] =
     useLocalStorage<EnvironmentVisibility>(
-      `langfuse-environment-visibility-${projectId}`,
+      `hanzo-environment-visibility-${projectId}`,
       {},
     );
 
@@ -57,7 +57,7 @@ export function useEnvironmentFilter(
     availableEnvironments.forEach((env) => {
       // If environment doesn't exist in map, set default visibility
       if (updatedMap[env] === undefined) {
-        updatedMap[env] = !env.startsWith("langfuse");
+        updatedMap[env] = !env.startsWith("hanzo");
         hasChanges = true;
       }
     });

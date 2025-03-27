@@ -94,13 +94,13 @@ export const processEventBatch = async (
 }> => {
   // add context of api call to the span
   const currentSpan = getCurrentSpan();
-  recordIncrement("langfuse.ingestion.event", input.length);
-  recordDistribution("langfuse.ingestion.event_distribution", input.length);
+  recordIncrement("hanzo.ingestion.event", input.length);
+  recordDistribution("hanzo.ingestion.event_distribution", input.length);
 
-  currentSpan?.setAttribute("langfuse.ingestion.batch_size", input.length);
-  currentSpan?.setAttribute("langfuse.project.id", authCheck.scope.projectId);
-  currentSpan?.setAttribute("langfuse.org.id", authCheck.scope.orgId);
-  currentSpan?.setAttribute("langfuse.org.plan", authCheck.scope.plan);
+  currentSpan?.setAttribute("hanzo.ingestion.batch_size", input.length);
+  currentSpan?.setAttribute("hanzo.project.id", authCheck.scope.projectId);
+  currentSpan?.setAttribute("hanzo.org.id", authCheck.scope.orgId);
+  currentSpan?.setAttribute("hanzo.org.plan", authCheck.scope.plan);
 
   /**************
    * VALIDATION *
@@ -116,7 +116,7 @@ export const processEventBatch = async (
           const parsedBody = ingestionEvent.safeParse(event);
           if (parsedBody.data?.id !== undefined) {
             span.setAttribute(
-              "langfuse.ingestion.entity.id",
+              "hanzo.ingestion.entity.id",
               parsedBody.data.id,
             );
           }
@@ -355,7 +355,7 @@ export const aggregateBatchResult = (
     traceException(errors);
     logger.error("Error processing events", {
       errors: returnedErrors,
-      "langfuse.project.id": projectId,
+      "hanzo.project.id": projectId,
     });
   }
 

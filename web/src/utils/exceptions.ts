@@ -1,4 +1,4 @@
-import { Prisma } from "@langfuse/shared/src/db";
+import { Prisma } from "@hanzo/shared/src/db";
 
 export function isPrismaException(e: unknown) {
   return (

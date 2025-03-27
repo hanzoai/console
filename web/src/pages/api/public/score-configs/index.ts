@@ -11,9 +11,9 @@ import {
   PostScoreConfigBody,
   PostScoreConfigResponse,
   validateDbScoreConfig,
-} from "@langfuse/shared";
-import { Prisma, prisma } from "@langfuse/shared/src/db";
-import { traceException } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { Prisma, prisma } from "@hanzo/shared/src/db";
+import { traceException } from "@hanzo/shared/src/server";
 
 const inflateConfigBody = (body: z.infer<typeof PostScoreConfigBody>) => {
   if (isBooleanDataType(body.dataType)) {

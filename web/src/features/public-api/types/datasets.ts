@@ -8,7 +8,7 @@ import {
   type DatasetItem as DbDatasetItems,
   type DatasetRunItems as DbDatasetRunItems,
   removeObjectKeys,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod";
 
 /**

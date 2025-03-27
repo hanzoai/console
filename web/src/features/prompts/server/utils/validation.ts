@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { jsonSchema } from "@langfuse/shared";
-import type { Prompt } from "@langfuse/shared";
+import { jsonSchema } from "@hanzo/shared";
+import type { Prompt } from "@hanzo/shared";
 import { COMMIT_MESSAGE_MAX_LENGTH } from "@/src/features/prompts/constants";
 
 export const ChatMessageSchema = z.object({

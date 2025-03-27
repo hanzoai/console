@@ -68,9 +68,9 @@ export const QuickstartExamples = ({
           </TabsList>
         </div>
         <TabsContent value="python">
-          <CodeView content="pip install langfuse" className="mb-2" />
+          <CodeView content="pip install hanzo" className="mb-2" />
           <CodeView
-            content={`from langfuse import HanzoCloud\n\nlangfuse = HanzoCloud(\n  secret_key="${secretKey}",\n  public_key="${publicKey}",\n  host="${host}"\n)`}
+            content={`from hanzo import HanzoCloud\n\nhanzo = HanzoCloud(\n  secret_key="${secretKey}",\n  public_key="${publicKey}",\n  host="${host}"\n)`}
           />
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
@@ -95,9 +95,9 @@ export const QuickstartExamples = ({
           </p>
         </TabsContent>
         <TabsContent value="js">
-          <CodeView content="npm install langfuse" className="mb-2" />
+          <CodeView content="npm install hanzo" className="mb-2" />
           <CodeView
-            content={`import { Hanzo } from "langfuse";\n\nconst langfuse = new Hanzo({\n  secretKey: "${secretKey}",\n  publicKey: "${publicKey}",\n  baseUrl: "${host}"\n});`}
+            content={`import { Hanzo } from "hanzo";\n\nconst hanzo = new Hanzo({\n  secretKey: "${secretKey}",\n  publicKey: "${publicKey}",\n  baseUrl: "${host}"\n});`}
           />
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
@@ -127,14 +127,14 @@ export const QuickstartExamples = ({
             By changing the import, HanzoCloud will capture all LLM calls and send
             them to HanzoCloud asynchronously.
           </p>
-          <CodeView content="pip install langfuse" className="my-2" />
+          <CodeView content="pip install hanzo" className="my-2" />
           <CodeView
             title=".env"
             content={`HANZO_SECRET_KEY=${secretKey}\nHANZO_PUBLIC_KEY=${publicKey}\nHANZO_HOST="${host}"`}
             className="my-2"
           />
           <CodeView
-            content={`# remove: import openai\n\nfrom langfuse.openai import openai`}
+            content={`# remove: import openai\n\nfrom hanzo.openai import openai`}
             className="my-2"
           />
           <p className="mt-2 text-xs text-muted-foreground">
@@ -155,7 +155,7 @@ export const QuickstartExamples = ({
             The integration uses the Langchain callback system to automatically
             capture detailed traces of your Langchain executions.
           </p>
-          <CodeView content="pip install langfuse" className="my-2" />
+          <CodeView content="pip install hanzo" className="my-2" />
           <CodeView
             content={LANGCHAIN_PYTHON_CODE({ publicKey, secretKey, host })}
             className="my-2"
@@ -178,7 +178,7 @@ export const QuickstartExamples = ({
             The integration uses the Langchain callback system to automatically
             capture detailed traces of your Langchain executions.
           </p>
-          <CodeView content="npm install langfuse-langchain" className="my-2" />
+          <CodeView content="npm install hanzo-langchain" className="my-2" />
           <CodeView
             content={LANGCHAIN_JS_CODE({ publicKey, secretKey, host })}
             className="my-2"
@@ -202,7 +202,7 @@ export const QuickstartExamples = ({
             capture detailed traces of your LlamaIndex executions.
           </p>
           <CodeView
-            content="pip install langfuse llama-index"
+            content="pip install hanzo llama-index"
             className="my-2"
           />
           <CodeView
@@ -283,8 +283,8 @@ const LANGCHAIN_PYTHON_CODE = (p: {
   publicKey: string;
   secretKey: string;
   host: string;
-}) => `from langfuse.callback import CallbackHandler
-langfuse_handler = CallbackHandler(
+}) => `from hanzo.callback import CallbackHandler
+hanzo_handler = CallbackHandler(
     public_key="${p.publicKey}",
     secret_key="${p.secretKey}",
     host="${p.host}"
@@ -293,16 +293,16 @@ langfuse_handler = CallbackHandler(
 # <Your Langchain code here>
  
 # Add handler to run/invoke/call/chat
-chain.invoke({"input": "<user_input>"}, config={"callbacks": [langfuse_handler]})`;
+chain.invoke({"input": "<user_input>"}, config={"callbacks": [hanzo_handler]})`;
 
 const LANGCHAIN_JS_CODE = (p: {
   publicKey: string;
   secretKey: string;
   host: string;
-}) => `import { CallbackHandler } from "langfuse-langchain";
+}) => `import { CallbackHandler } from "hanzo-langchain";
  
 // Initialize HanzoCloud callback handler
-const langfuseHandler = new CallbackHandler({
+const hanzoHandler = new CallbackHandler({
   publicKey: "${p.publicKey}",
   secretKey: "${p.secretKey}",
   baseUrl: "${p.host}"
@@ -314,7 +314,7 @@ const chain = new LLMChain(...);
 // Add handler as callback when running the Langchain agent
 await chain.invoke(
   { input: "<user_input>" },
-  { callbacks: [langfuseHandler] }
+  { callbacks: [hanzoHandler] }
 );`;
 
 const LLAMA_INDEX_CODE = (p: {
@@ -323,11 +323,11 @@ const LLAMA_INDEX_CODE = (p: {
   host: string;
 }) => `from llama_index.core import Settings
 from llama_index.core.callbacks import CallbackManager
-from langfuse.llama_index import LlamaIndexCallbackHandler
+from hanzo.llama_index import LlamaIndexCallbackHandler
  
-langfuse_callback_handler = LlamaIndexCallbackHandler(
+hanzo_callback_handler = LlamaIndexCallbackHandler(
     public_key="${p.publicKey}",
     secret_key="${p.secretKey}",
     host="${p.host}"
 )
-Settings.callback_manager = CallbackManager([langfuse_callback_handler])`;
+Settings.callback_manager = CallbackManager([hanzo_callback_handler])`;

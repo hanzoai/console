@@ -9,18 +9,18 @@ import {
   OrgEnrichedApiKey,
   logger,
   instrumentAsync,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   type PrismaClient,
   type ApiKey,
   type Prisma,
-} from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/db";
 import { isPrismaException } from "@/src/utils/exceptions";
 import { type Redis } from "ioredis";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { API_KEY_NON_EXISTENT } from "@langfuse/shared/src/server";
+import { API_KEY_NON_EXISTENT } from "@hanzo/shared/src/server";
 import { type z } from "zod";
-import { CloudConfigSchema, isPlan } from "@langfuse/shared";
+import { CloudConfigSchema, isPlan } from "@hanzo/shared";
 
 export class ApiAuthService {
   prisma: PrismaClient;
@@ -282,17 +282,17 @@ export class ApiAuthService {
     const redisApiKey = await this.fetchApiKeyFromRedis(hash);
 
     if (redisApiKey === API_KEY_NON_EXISTENT) {
-      recordIncrement("langfuse.api_key.cache_hit", 1);
+      recordIncrement("hanzo.api_key.cache_hit", 1);
       throw new Error("Invalid credentials");
     }
 
     // if we found something, return the object.
     if (redisApiKey) {
-      recordIncrement("langfuse.api_key.cache_hit", 1);
+      recordIncrement("hanzo.api_key.cache_hit", 1);
       return redisApiKey;
     }
 
-    recordIncrement("langfuse.api_key.cache_miss", 1);
+    recordIncrement("hanzo.api_key.cache_miss", 1);
 
     // if redis not available or object not found, try the database
     const apiKeyAndOrganisation = await this.prisma.apiKey.findUnique({

@@ -5,20 +5,20 @@ import {
   BaseError,
   InternalServerError,
   InvalidRequestError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { PosthogCallbackHandler } from "./analytics/posthogCallback";
 import { authorizeRequestOrThrow } from "./authorizeRequest";
 import { validateChatCompletionBody } from "./validateChatCompletionBody";
 
-import { prisma } from "@langfuse/shared/src/db";
-import { decrypt } from "@langfuse/shared/encryption";
+import { prisma } from "@hanzo/shared/src/db";
+import { decrypt } from "@hanzo/shared/encryption";
 import {
   LLMApiKeySchema,
   logger,
   fetchLLMCompletion,
   decryptAndParseExtraHeaders,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export default async function chatCompletionHandler(req: NextRequest) {
   try {

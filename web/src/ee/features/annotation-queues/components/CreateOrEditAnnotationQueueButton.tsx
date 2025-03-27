@@ -27,7 +27,7 @@ import {
   type CreateQueue,
   CreateQueueData,
   type ValidatedScoreConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { getScoreDataTypeIcon } from "@/src/features/scores/components/ScoreDetailColumnHelpers";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";

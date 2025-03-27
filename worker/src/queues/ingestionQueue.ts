@@ -14,8 +14,8 @@ import {
   StorageServiceFactory,
   TQueueJobTypes,
   traceException,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 
 import { env } from "../env";
 import { IngestionService } from "../services/IngestionService";
@@ -92,10 +92,10 @@ export const ingestionQueueProcessorBuilder = (
         redis &&
         job.data.payload.data.fileKey
       ) {
-        const key = `langfuse:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${job.data.payload.data.fileKey}`;
+        const key = `hanzo:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${job.data.payload.data.fileKey}`;
         const exists = await redis.exists(key);
         if (exists) {
-          recordIncrement("langfuse.ingestion.recently_processed_cache", 1, {
+          recordIncrement("hanzo.ingestion.recently_processed_cache", 1, {
             type: job.data.payload.data.type,
             skipped: "true",
           });
@@ -104,7 +104,7 @@ export const ingestionQueueProcessorBuilder = (
           );
           return;
         } else {
-          recordIncrement("langfuse.ingestion.recently_processed_cache", 1, {
+          recordIncrement("hanzo.ingestion.recently_processed_cache", 1, {
             type: job.data.payload.data.type,
             skipped: "false",
           });
@@ -151,17 +151,17 @@ export const ingestionQueueProcessorBuilder = (
       );
 
       recordDistribution(
-        "langfuse.ingestion.count_files_distribution",
+        "hanzo.ingestion.count_files_distribution",
         eventFiles.length,
         {
           kind: clickhouseEntityType,
         },
       );
       span?.setAttribute(
-        "langfuse.ingestion.event.count_files",
+        "hanzo.ingestion.event.count_files",
         eventFiles.length,
       );
-      span?.setAttribute("langfuse.ingestion.event.kind", clickhouseEntityType);
+      span?.setAttribute("hanzo.ingestion.event.kind", clickhouseEntityType);
 
       const firstS3WriteTime =
         eventFiles
@@ -199,7 +199,7 @@ export const ingestionQueueProcessorBuilder = (
         for (const event of eventFiles) {
           const key = event.file.split("/").pop() ?? "";
           pipeline.set(
-            `langfuse:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${key?.replace(".json", "")}`,
+            `hanzo:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${key?.replace(".json", "")}`,
             "1",
             "EX",
             60 * 5, // 5 minutes

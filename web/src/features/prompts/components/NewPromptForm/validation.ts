@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { PromptType } from "@/src/features/prompts/server/utils/validation";
-import { ChatMessageListSchema, TextPromptSchema } from "@langfuse/shared";
+import { ChatMessageListSchema, TextPromptSchema } from "@hanzo/shared";
 import { COMMIT_MESSAGE_MAX_LENGTH } from "@/src/features/prompts/constants";
 
 const NewPromptBaseSchema = z.object({

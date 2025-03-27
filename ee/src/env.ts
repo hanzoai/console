@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { removeEmptyEnvVariables } from "@langfuse/shared";
+import { removeEmptyEnvVariables } from "@hanzo/shared";
 
 const EnvSchema = z.object({
   NEXT_PUBLIC_HANZO_CLOUD_REGION: z.string().optional(),

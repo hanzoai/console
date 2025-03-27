@@ -13,7 +13,7 @@ service:
       path-parameters:
         mediaId:
           type: string
-          docs: The unique langfuse identifier of a media record
+          docs: The unique hanzo identifier of a media record
       response: GetMediaResponse
 
     patch:
@@ -23,7 +23,7 @@ service:
       path-parameters:
         mediaId:
           type: string
-          docs: The unique langfuse identifier of a media record
+          docs: The unique hanzo identifier of a media record
       request: PatchMediaBody
 
     getUploadUrl:
@@ -38,7 +38,7 @@ types:
     properties:
       mediaId:
         type: string
-        docs: The unique langfuse identifier of a media record
+        docs: The unique hanzo identifier of a media record
       contentType:
         type: string
         docs: The MIME type of the media record
@@ -96,7 +96,7 @@ types:
         docs: The presigned upload URL. If the asset is already uploaded, this will be null
       mediaId:
         type: string
-        docs: The unique langfuse identifier of a media record
+        docs: The unique hanzo identifier of a media record
 
   MediaContentType:
     enum:

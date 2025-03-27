@@ -2,8 +2,8 @@ import {
   createTRPCRouter,
   protectedGetTraceProcedure,
 } from "@/src/server/api/trpc";
-import { HanzoNotFoundError } from "@langfuse/shared";
-import { getObservationById } from "@langfuse/shared/src/server";
+import { HanzoNotFoundError } from "@hanzo/shared";
+import { getObservationById } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 

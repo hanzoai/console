@@ -1,5 +1,5 @@
 import { convertOtelSpanToIngestionEvent } from "@/src/features/otel/server";
-import { ingestionEvent } from "@langfuse/shared/src/server";
+import { ingestionEvent } from "@hanzo/shared/src/server";
 
 describe("OTel Resource Span Mapping", () => {
   describe("Vendor Spans", () => {
@@ -179,11 +179,11 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+      const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
       // Then
       // Will throw an error if the parsing fails
-      const parsedEvents = langfuseEvents.map((event) =>
+      const parsedEvents = hanzoEvents.map((event) =>
         ingestionEvent.parse(event),
       );
       expect(parsedEvents).toHaveLength(2);
@@ -295,11 +295,11 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+      const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
       // Then
       // Will throw an error if the parsing fails
-      const parsedEvents = langfuseEvents.map((event) =>
+      const parsedEvents = hanzoEvents.map((event) =>
         ingestionEvent.parse(event),
       );
       expect(parsedEvents).toHaveLength(2);
@@ -353,11 +353,11 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+      const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
       // Then
       // Expect a span and a trace to be created
-      expect(langfuseEvents).toHaveLength(2);
+      expect(hanzoEvents).toHaveLength(2);
     });
 
     it("should interpret openinference LLM calls as a generation", async () => {
@@ -380,12 +380,12 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+      const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
       // Then
       // Check that we create a generation
       expect(
-        langfuseEvents.some((event) => event.type === "generation-create"),
+        hanzoEvents.some((event) => event.type === "generation-create"),
       ).toBe(true);
     });
 
@@ -401,10 +401,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract environment on trace for langfuse.environment",
+        "should extract environment on trace for hanzo.environment",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.environment",
+          otelAttributeKey: "hanzo.environment",
           otelAttributeValue: { stringValue: "test" },
           entityAttributeKey: "environment",
           entityAttributeValue: "test",
@@ -431,20 +431,20 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract promptName on observation from langfuse.prompt.name",
+        "should extract promptName on observation from hanzo.prompt.name",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.prompt.name",
+          otelAttributeKey: "hanzo.prompt.name",
           otelAttributeValue: { stringValue: "test" },
           entityAttributeKey: "promptName",
           entityAttributeValue: "test",
         },
       ],
       [
-        "should extract public on trace from langfuse.public",
+        "should extract public on trace from hanzo.public",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.public",
+          otelAttributeKey: "hanzo.public",
           otelAttributeValue: { boolValue: true },
           entityAttributeKey: "public",
           entityAttributeValue: true,
@@ -454,7 +454,7 @@ describe("OTel Resource Span Mapping", () => {
         "should not treat truthy values as public true",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.public",
+          otelAttributeKey: "hanzo.public",
           otelAttributeValue: { stringValue: "false" },
           entityAttributeKey: "public",
           entityAttributeValue: false,
@@ -471,10 +471,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract userId on trace from langfuse.user.id",
+        "should extract userId on trace from hanzo.user.id",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.user.id",
+          otelAttributeKey: "hanzo.user.id",
           otelAttributeValue: { stringValue: "user-1" },
           entityAttributeKey: "userId",
           entityAttributeValue: "user-1",
@@ -491,10 +491,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract sessionId on trace from langfuse.session.id",
+        "should extract sessionId on trace from hanzo.session.id",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.session.id",
+          otelAttributeKey: "hanzo.session.id",
           otelAttributeValue: { stringValue: "session-1" },
           entityAttributeKey: "sessionId",
           entityAttributeValue: "session-1",
@@ -800,11 +800,11 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+        const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
         // Then
         const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? langfuseEvents[0] : langfuseEvents[1];
+          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(
           spec.entityAttributeKey // This logic allows to follow a path in the object, e.g. foo.bar.baz.
             .split(".")
@@ -825,10 +825,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract environment on trace for langfuse.environment",
+        "should extract environment on trace for hanzo.environment",
         {
           entity: "trace",
-          otelResourceAttributeKey: "langfuse.environment",
+          otelResourceAttributeKey: "hanzo.environment",
           otelResourceAttributeValue: { stringValue: "test" },
           entityAttributeKey: "environment",
           entityAttributeValue: "test",
@@ -884,11 +884,11 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+        const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
         // Then
         const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? langfuseEvents[0] : langfuseEvents[1];
+          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(entity.body[spec.entityAttributeKey]).toEqual(
           spec.entityAttributeValue,
         );
@@ -1004,11 +1004,11 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = convertOtelSpanToIngestionEvent(resourceSpan);
+        const hanzoEvents = convertOtelSpanToIngestionEvent(resourceSpan);
 
         // Then
         const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? langfuseEvents[0] : langfuseEvents[1];
+          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(entity.body[spec.entityAttributeKey]).toEqual(
           spec.entityAttributeValue,
         );

@@ -8,7 +8,7 @@ import {
   ChatMessageDefaultRoleSchema,
   type ChatMessageWithId,
   ChatMessageListSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { type NewPromptFormSchemaType } from "./validation";
 

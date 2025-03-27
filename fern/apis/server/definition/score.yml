@@ -74,7 +74,7 @@ service:
       path-parameters:
         scoreId:
           type: string
-          docs: The unique langfuse identifier of a score
+          docs: The unique hanzo identifier of a score
       response: commons.Score
     delete:
       docs: Delete a score
@@ -83,7 +83,7 @@ service:
       path-parameters:
         scoreId:
           type: string
-          docs: The unique langfuse identifier of a score
+          docs: The unique hanzo identifier of a score
 types:
   CreateScoreRequest:
     properties:
@@ -97,13 +97,13 @@ types:
       comment: optional<string>
       environment:
         type: optional<string>
-        docs: The environment of the score. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'langfuse'.
+        docs: The environment of the score. Can be any lowercase alphanumeric string with hyphens and underscores that does not start with 'hanzo'.
       dataType:
         type: optional<commons.ScoreDataType>
         docs: The data type of the score. When passing a configId this field is inferred. Otherwise, this field must be passed or will default to numeric.
       configId:
         type: optional<string>
-        docs: Reference a score config on a score. The unique langfuse identifier of a score config. When passing this field, the dataType and stringValue fields are automatically populated.
+        docs: Reference a score config on a score. The unique hanzo identifier of a score config. When passing this field, the dataType and stringValue fields are automatically populated.
     examples:
       - value:
           name: "novelty"

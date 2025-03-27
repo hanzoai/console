@@ -1,5 +1,5 @@
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
-import { AnnotationQueueObjectType, type APIScore } from "@langfuse/shared";
+import { AnnotationQueueObjectType, type APIScore } from "@hanzo/shared";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import { api } from "@/src/utils/api";

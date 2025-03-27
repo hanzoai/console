@@ -2,9 +2,9 @@ import {
   type ObservationView,
   paginationMetaResponseZod,
   publicApiPaginationZod,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
-import { stringDateTime } from "@langfuse/shared/src/server";
+import { stringDateTime } from "@hanzo/shared/src/server";
 import { z } from "zod";
 
 /**

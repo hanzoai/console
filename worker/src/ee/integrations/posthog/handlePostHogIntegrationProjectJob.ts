@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -7,9 +7,9 @@ import {
   getTracesForPostHog,
   getGenerationsForPostHog,
   getScoresForPostHog,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { v5 } from "uuid";
-import { decrypt } from "@langfuse/shared/encryption";
+import { decrypt } from "@hanzo/shared/encryption";
 import { PostHog } from "posthog-node";
 
 type PostHogExecutionConfig = {
@@ -40,12 +40,12 @@ const processPostHogTraces = async (config: PostHogExecutionConfig) => {
   for await (const trace of postHogTraces) {
     count++;
     posthog.capture({
-      distinctId: trace.langfuse_user_id as string,
-      event: "langfuse trace",
+      distinctId: trace.hanzo_user_id as string,
+      event: "hanzo trace",
       properties: trace,
       timestamp: trace.timestamp as Date,
       uuid: v5(
-        `${config.projectId}-${trace.langfuse_id}`,
+        `${config.projectId}-${trace.hanzo_id}`,
         POSTHOG_UUID_NAMESPACE,
       ),
     });
@@ -80,12 +80,12 @@ const processPostHogGenerations = async (config: PostHogExecutionConfig) => {
   for await (const generation of postHogGenerations) {
     count++;
     posthog.capture({
-      distinctId: generation.langfuse_user_id as string,
-      event: "langfuse generation",
+      distinctId: generation.hanzo_user_id as string,
+      event: "hanzo generation",
       properties: generation,
       timestamp: generation.timestamp as Date,
       uuid: v5(
-        `${config.projectId}-${generation.langfuse_id}`,
+        `${config.projectId}-${generation.hanzo_id}`,
         POSTHOG_UUID_NAMESPACE,
       ),
     });
@@ -120,12 +120,12 @@ const processPostHogScores = async (config: PostHogExecutionConfig) => {
   for await (const score of postHogScores) {
     count++;
     posthog.capture({
-      distinctId: score.langfuse_user_id as string,
-      event: "langfuse score",
+      distinctId: score.hanzo_user_id as string,
+      event: "hanzo score",
       properties: score,
       timestamp: score.timestamp as Date,
       uuid: v5(
-        `${config.projectId}-${score.langfuse_id}`,
+        `${config.projectId}-${score.hanzo_id}`,
         POSTHOG_UUID_NAMESPACE,
       ),
     });

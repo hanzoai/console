@@ -17,8 +17,8 @@ import {
   singleFilter,
   timeFilter,
   tracesTableUiColumnDefinitions,
-} from "@langfuse/shared";
-import { type ObservationView } from "@langfuse/shared";
+} from "@hanzo/shared";
+import { type ObservationView } from "@hanzo/shared";
 import {
   traceException,
   getTracesTable,
@@ -36,7 +36,7 @@ import {
   QueueJobs,
   TraceDeleteQueue,
   getTracesTableMetrics,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { randomUUID } from "crypto";
 import { createBatchActionJob } from "@/src/features/table/server/createBatchActionJob";

@@ -9,8 +9,8 @@ import {
   hasOrganizationAccess,
   throwIfNoOrganizationAccess,
 } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { type PrismaClient, Role } from "@langfuse/shared";
-import { sendMembershipInvitationEmail } from "@langfuse/shared/src/server";
+import { type PrismaClient, Role } from "@hanzo/shared";
+import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import {

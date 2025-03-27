@@ -2,7 +2,7 @@ import {
   CommentObjectType,
   CreateCommentData,
   publicApiPaginationZod,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod";
 
 /**

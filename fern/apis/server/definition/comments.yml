@@ -42,7 +42,7 @@ service:
       path-parameters:
         commentId:
           type: string
-          docs: The unique langfuse identifier of a comment
+          docs: The unique hanzo identifier of a comment
       response: commons.Comment
 types:
   CreateCommentRequest:

@@ -862,20 +862,20 @@ export const getScoresForPostHog = async function* (
   for await (const record of records) {
     yield {
       timestamp: record.timestamp,
-      langfuse_score_name: record.name,
-      langfuse_score_value: record.value,
-      langfuse_score_comment: record.comment,
-      langfuse_trace_name: record.trace_name,
-      langfuse_id: record.id,
-      langfuse_session_id: record.trace_session_id,
-      langfuse_project_id: projectId,
-      langfuse_user_id: record.trace_user_id || "langfuse_unknown_user",
-      langfuse_release: record.trace_release,
-      langfuse_tags: record.trace_tags,
-      langfuse_event_version: "1.0.0",
+      hanzo_score_name: record.name,
+      hanzo_score_value: record.value,
+      hanzo_score_comment: record.comment,
+      hanzo_trace_name: record.trace_name,
+      hanzo_id: record.id,
+      hanzo_session_id: record.trace_session_id,
+      hanzo_project_id: projectId,
+      hanzo_user_id: record.trace_user_id || "hanzo_unknown_user",
+      hanzo_release: record.trace_release,
+      hanzo_tags: record.trace_tags,
+      hanzo_event_version: "1.0.0",
       $session_id: record.posthog_session_id ?? null,
       $set: {
-        langfuse_user_url: record.user_id
+        hanzo_user_url: record.user_id
           ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.user_id as string)}`
           : null,
       },

@@ -8,7 +8,7 @@ import {
   Price,
   PrismaClient,
   Prompt,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   ClickhouseClientType,
   IngestionEntityTypes,
@@ -39,7 +39,7 @@ import {
   TraceUpsertQueue,
   QueueJobs,
   recordIncrement,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 import { tokenCount } from "../../features/tokenisation/usage";
 import { ClickhouseWriter, TableName } from "../ClickhouseWriter";
@@ -199,7 +199,7 @@ export class IngestionService {
     ]);
 
     if (clickhouseScoreRecord) {
-      recordIncrement("langfuse.ingestion.lookup.hit", 1, {
+      recordIncrement("hanzo.ingestion.lookup.hit", 1, {
         store: "clickhouse",
         object: "score",
       });
@@ -256,7 +256,7 @@ export class IngestionService {
     });
 
     if (clickhouseTraceRecord) {
-      recordIncrement("langfuse.ingestion.lookup.hit", 1, {
+      recordIncrement("hanzo.ingestion.lookup.hit", 1, {
         store: "clickhouse",
         object: "trace",
       });
@@ -371,7 +371,7 @@ export class IngestionService {
     ]);
 
     if (clickhouseObservationRecord) {
-      recordIncrement("langfuse.ingestion.lookup.hit", 1, {
+      recordIncrement("hanzo.ingestion.lookup.hit", 1, {
         store: "clickhouse",
         object: "observation",
       });
@@ -865,13 +865,13 @@ export class IngestionService {
     };
   }) {
     if (await this.shouldSkipClickHouseRead(params.projectId)) {
-      recordIncrement("langfuse.ingestion.clickhouse_read_for_update", 1, {
+      recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
         skipped: "true",
         table: params.table,
       });
       return null;
     }
-    recordIncrement("langfuse.ingestion.clickhouse_read_for_update", 1, {
+    recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
       skipped: "false",
       table: params.table,
     });

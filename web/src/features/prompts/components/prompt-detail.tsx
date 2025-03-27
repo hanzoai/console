@@ -20,7 +20,7 @@ import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNa
 import { PromptType } from "@/src/features/prompts/server/utils/validation";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
-import { extractVariables } from "@langfuse/shared";
+import { extractVariables } from "@hanzo/shared";
 import { PromptHistoryNode } from "./prompt-history";
 import { JumpToPlaygroundButton } from "@/src/ee/features/playground/page/components/JumpToPlaygroundButton";
 import { ChatMlArraySchema } from "@/src/components/schemas/ChatMlSchema";
@@ -57,40 +57,40 @@ const getPythonCode = (
   name: string,
   version: number,
   labels: string[],
-) => `from langfuse import Hanzo
+) => `from hanzo import Hanzo
 
 # Initialize Hanzo client
-langfuse = Hanzo()
+hanzo = Hanzo()
 
 # Get production prompt 
-prompt = langfuse.get_prompt("${name}")
+prompt = hanzo.get_prompt("${name}")
 
 # Get by label
 # You can use as many labels as you'd like to identify different deployment targets
-${labels.length > 0 ? labels.map((label) => `prompt = langfuse.get_prompt("${name}", label="${label}")`).join("\n") : ""}
+${labels.length > 0 ? labels.map((label) => `prompt = hanzo.get_prompt("${name}", label="${label}")`).join("\n") : ""}
 
 # Get by version number, usually not recommended as it requires code changes to deploy new prompt versions
-langfuse.get_prompt("${name}", version=${version})
+hanzo.get_prompt("${name}", version=${version})
 `;
 
 const getJsCode = (
   name: string,
   version: number,
   labels: string[],
-) => `import { Hanzo } from "langfuse";
+) => `import { Hanzo } from "hanzo";
 
 // Initialize the Hanzo client
-const langfuse = new Hanzo();
+const hanzo = new Hanzo();
 
 // Get production prompt 
-const prompt = await langfuse.getPrompt("${name}");
+const prompt = await hanzo.getPrompt("${name}");
 
 // Get by label
 // You can use as many labels as you'd like to identify different deployment targets
-${labels.length > 0 ? labels.map((label) => `const prompt = await langfuse.getPrompt("${name}", undefined, { label: "${label}" })`).join("\n") : ""}
+${labels.length > 0 ? labels.map((label) => `const prompt = await hanzo.getPrompt("${name}", undefined, { label: "${label}" })`).join("\n") : ""}
 
 // Get by version number, usually not recommended as it requires code changes to deploy new prompt versions
-langfuse.getPrompt("${name}", ${version})
+hanzo.getPrompt("${name}", ${version})
 `;
 
 export const PromptDetail = () => {

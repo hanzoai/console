@@ -13,7 +13,7 @@ service:
       path-parameters:
         traceId:
           type: string
-          docs: The unique langfuse identifier of a trace
+          docs: The unique hanzo identifier of a trace
       response: commons.TraceWithFullDetails
     list:
       docs: Get list of traces

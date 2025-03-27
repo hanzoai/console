@@ -16,7 +16,7 @@ import {
   type LLMAdapter,
   type supportedModels,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { LLMApiKeyComponent } from "./LLMApiKeyComponent";
 import { FormDescription } from "@/src/components/ui/form";

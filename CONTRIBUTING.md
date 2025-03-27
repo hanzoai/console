@@ -6,7 +6,7 @@ First off, thanks for taking the time to contribute! ❤️
 
 The best ways to contribute to Hanzo:
 
-- Submit and vote on [Ideas](https://github.com/orgs/langfuse/discussions/categories/ideas)
+- Submit and vote on [Ideas](https://github.com/orgs/hanzoai/discussions/categories/ideas)
 - Create and comment on [Issues](https://github.com/hanzoai/cloud/issues)
 - Open a PR.
 
@@ -21,7 +21,7 @@ The maintainers are available on [Discord](https://hanzo.ai/discord) in case you
 > - Star the project;
 > - Tweet about it;
 > - Refer to this project in your project's readme;
-> - Submit and vote on [Ideas](https://github.com/orgs/langfuse/discussions/categories/ideas);
+> - Submit and vote on [Ideas](https://github.com/orgs/hanzoai/discussions/categories/ideas);
 > - Create and comment on [Issues](https://github.com/hanzoai/cloud/issues);
 > - Mention the project at local meetups and tell your friends/colleagues.
 
@@ -107,7 +107,7 @@ Requirements
 
    ```bash
    git clone https://github.com/hanzoai/cloud.git
-   cd langfuse
+   cd hanzo
    ```
 
 3. Create an env file
@@ -138,7 +138,7 @@ Requirements
 
 - Available packages and their dependencies
 
-  Packages are included in the monorepo according to the `pnpm-workspace.yaml` file. Each package maintains its own dependencies defined in the `package.json`. Internal dependencies can be added as well by adding them to the package dependencies: `"@langfuse/shared": "workspace:*"`.
+  Packages are included in the monorepo according to the `pnpm-workspace.yaml` file. Each package maintains its own dependencies defined in the `package.json`. Internal dependencies can be added as well by adding them to the package dependencies: `"@hanzo/shared": "workspace:*"`.
 
 - Executing commands
 

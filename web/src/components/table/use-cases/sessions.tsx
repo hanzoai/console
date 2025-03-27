@@ -10,7 +10,7 @@ import {
   type FilterState,
   sessionsTableColsWithOptions,
   BatchExportTableName,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { api } from "@/src/utils/api";

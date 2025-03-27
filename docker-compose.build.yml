@@ -1,11 +1,11 @@
 services:
-  langfuse-web:
+  hanzo-web:
     build:
       dockerfile: ./web/Dockerfile
       context: .
       args:
         - NEXT_PUBLIC_HANZO_CLOUD_REGION=${NEXT_PUBLIC_HANZO_CLOUD_REGION}
-    depends_on: &langfuse-depends-on
+    depends_on: &hanzo-depends-on
       postgres:
         condition: service_healthy
       minio:
@@ -16,7 +16,7 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
-    environment: &langfuse-web-env
+    environment: &hanzo-web-env
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
       NEXTAUTH_SECRET: mysecret
       SALT: mysalt
@@ -38,7 +38,7 @@ services:
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
       CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
-      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-langfuse}
+      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
       HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-us-east-1}
       HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
@@ -59,17 +59,17 @@ services:
       timeout: 10s
       retries: 3
 
-  langfuse-worker:
+  hanzo-worker:
     build:
       dockerfile: ./worker/Dockerfile
       context: .
       args:
         - NEXT_PUBLIC_HANZO_CLOUD_REGION=${NEXT_PUBLIC_HANZO_CLOUD_REGION}
-    depends_on: *langfuse-depends-on
+    depends_on: *hanzo-depends-on
     ports:
       - "3030:3030"
     environment:
-      <<: *langfuse-web-env
+      <<: *hanzo-web-env
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
@@ -85,8 +85,8 @@ services:
       CLICKHOUSE_USER: clickhouse
       CLICKHOUSE_PASSWORD: clickhouse
     volumes:
-      - langfuse_clickhouse_data:/var/lib/clickhouse
-      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+      - hanzo_clickhouse_data:/var/lib/clickhouse
+      - hanzo_clickhouse_logs:/var/log/clickhouse-server
     ports:
       - "8123:8123"
       - "9000:9000"
@@ -100,8 +100,8 @@ services:
   minio:
     image: minio/minio
     entrypoint: sh
-    # create the 'langfuse' bucket before starting the service
-    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
+    # create the 'hanzo' bucket before starting the service
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
@@ -109,7 +109,7 @@ services:
       - "9090:9000"
       - "9091:9001"
     volumes:
-      - langfuse_minio_data:/data
+      - hanzo_minio_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -145,14 +145,14 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - langfuse_postgres_data:/var/lib/postgresql/data
+      - hanzo_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  langfuse_postgres_data:
+  hanzo_postgres_data:
     driver: local
-  langfuse_clickhouse_data:
+  hanzo_clickhouse_data:
     driver: local
-  langfuse_clickhouse_logs:
+  hanzo_clickhouse_logs:
     driver: local
-  langfuse_minio_data:
+  hanzo_minio_data:
     driver: local

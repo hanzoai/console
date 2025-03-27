@@ -7,10 +7,10 @@ import {
   GetPromptsMetaSchema,
 } from "@/src/features/prompts/server/utils/validation";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
-import { InvalidRequestError } from "@langfuse/shared";
+import { InvalidRequestError } from "@hanzo/shared";
 
 const getPromptsHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const authCheck = await authorizePromptRequestOrThrow(req);

@@ -4,7 +4,7 @@ import {
   type APIScore,
   type ScoreSourceType,
   type ScoreDataType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const composeAggregateScoreKey = ({
   name,

@@ -2,7 +2,7 @@ import { DataTable } from "@/src/components/table/data-table";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { api } from "@/src/utils/api";
-import { type Prisma } from "@langfuse/shared/src/db";
+import { type Prisma } from "@hanzo/shared/src/db";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { IOTableCell } from "@/src/components/ui/CodeJsonViewer";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";

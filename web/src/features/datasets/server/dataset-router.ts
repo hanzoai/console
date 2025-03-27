@@ -3,11 +3,11 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { Prisma, type Dataset } from "@langfuse/shared/src/db";
+import { Prisma, type Dataset } from "@hanzo/shared/src/db";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { DB } from "@/src/server/db";
-import { paginationZod, DatasetStatus } from "@langfuse/shared";
+import { paginationZod, DatasetStatus } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
 import {
   createDatasetRunsTable,
@@ -16,7 +16,7 @@ import {
   fetchDatasetItems,
   getRunItemsByRunIdOrItemId,
 } from "@/src/features/datasets/server/service";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { createId as createCuid } from "@paralleldrive/cuid2";
 
 const formatDatasetItemData = (data: string | null | undefined) => {

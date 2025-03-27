@@ -4,13 +4,13 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { paginationZod, singleFilter } from "@langfuse/shared";
+import { paginationZod, singleFilter } from "@hanzo/shared";
 import {
   getTotalUserCount,
   getTracesGroupedByUsers,
   getUserMetrics,
   hasAnyUser,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const UserFilterOptions = z.object({
   projectId: z.string(), // Required for protectedProjectProcedure

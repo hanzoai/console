@@ -2,7 +2,7 @@ import { type ChangeEvent } from "react";
 import { CheckCircle2, Circle, TrashIcon } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
-import { type PromptVariable } from "@langfuse/shared";
+import { type PromptVariable } from "@hanzo/shared";
 
 import { usePlaygroundContext } from "../context";
 

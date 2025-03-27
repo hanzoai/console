@@ -4,7 +4,7 @@ import {
   type IngestionEventType,
   logger,
   processEventBatch,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { z } from "zod";
 import { $root } from "@/src/pages/api/public/otel/otlp-proto/generated/root";
 import { convertOtelSpanToIngestionEvent } from "@/src/features/otel/server";

@@ -13,13 +13,13 @@ import {
   ChatMessageRole,
   supportedModels,
   GCPServiceAccountKeySchema,
-} from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 import {
   fetchLLMCompletion,
   LLMAdapter,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export function getDisplaySecretKey(secretKey: string) {
   return secretKey.endsWith('"}')

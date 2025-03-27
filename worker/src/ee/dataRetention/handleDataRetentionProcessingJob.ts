@@ -7,9 +7,9 @@ import {
   logger,
   StorageService,
   StorageServiceFactory,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../../env";
 
 let s3MediaStorageClient: StorageService;

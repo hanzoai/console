@@ -28,9 +28,9 @@ import {
   availableTraceEvalVariables,
   datasetFormFilterColsWithOptions,
   availableDatasetEvalVariables,
-  type langfuseObjects,
+  type hanzoObjects,
   TimeScopeSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import * as z from "zod";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/src/utils/api";
@@ -39,7 +39,7 @@ import {
   type EvalTemplate,
   variableMapping,
   wipVariableMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import router from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";
@@ -86,7 +86,7 @@ const formSchema = z.object({
   timeScope: TimeScopeSchema,
 });
 
-type HanzoObject = (typeof langfuseObjects)[number];
+type HanzoObject = (typeof hanzoObjects)[number];
 
 const isTraceTarget = (target: string): boolean => target === "trace";
 const isTraceOrDatasetObject = (object: HanzoObject): boolean =>
@@ -333,7 +333,7 @@ export const InnerEvalConfigForm = (props: {
             props.evalTemplate
               ? props.evalTemplate.vars.map((v) => ({
                   templateVariable: v,
-                  langfuseObject: "trace" as const,
+                  hanzoObject: "trace" as const,
                   selectedColumnId: "input",
                 }))
               : [],
@@ -401,7 +401,7 @@ export const InnerEvalConfigForm = (props: {
         "mapping",
         props.evalTemplate.vars.map((v) => ({
           templateVariable: v,
-          langfuseObject: "trace" as const,
+          hanzoObject: "trace" as const,
           selectedColumnId: "input",
         })),
       );
@@ -567,12 +567,12 @@ export const InnerEvalConfigForm = (props: {
                       value={field.value}
                       onValueChange={(value) => {
                         const isTrace = isTraceTarget(value);
-                        const langfuseObject: HanzoObject = isTrace
+                        const hanzoObject: HanzoObject = isTrace
                           ? "trace"
                           : "dataset_item";
                         const newMapping = form
                           .getValues("mapping")
-                          .map((field) => ({ ...field, langfuseObject }));
+                          .map((field) => ({ ...field, hanzoObject }));
                         form.setValue("mapping", newMapping);
                         form.setValue("delay", isTrace ? 10 : 20);
                         setAvailableVariables(
@@ -776,8 +776,8 @@ export const InnerEvalConfigForm = (props: {
                           </div>
                           <FormField
                             control={form.control}
-                            key={`${mappingField.id}-langfuseObject`}
-                            name={`mapping.${index}.langfuseObject`}
+                            key={`${mappingField.id}-hanzoObject`}
+                            name={`mapping.${index}.hanzoObject`}
                             render={({ field }) => (
                               <div className="flex items-center gap-2">
                                 <VariableMappingDescription
@@ -820,7 +820,7 @@ export const InnerEvalConfigForm = (props: {
                           />
 
                           {!isTraceOrDatasetObject(
-                            form.watch(`mapping.${index}.langfuseObject`),
+                            form.watch(`mapping.${index}.hanzoObject`),
                           ) ? (
                             <FormField
                               control={form.control}
@@ -878,7 +878,7 @@ export const InnerEvalConfigForm = (props: {
                                             (evalObject) =>
                                               evalObject.id ===
                                               form.watch(
-                                                `mapping.${index}.langfuseObject`,
+                                                `mapping.${index}.hanzoObject`,
                                               ),
                                           )?.availableColumns;
 
@@ -898,7 +898,7 @@ export const InnerEvalConfigForm = (props: {
                                             (evalObject) =>
                                               evalObject.id ===
                                               form.watch(
-                                                `mapping.${index}.langfuseObject`,
+                                                `mapping.${index}.hanzoObject`,
                                               ),
                                           )
                                           ?.availableColumns.map((column) => (

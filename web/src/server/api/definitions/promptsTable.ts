@@ -2,7 +2,7 @@ import { PromptType } from "@/src/features/prompts/server/utils/validation";
 import {
   type ColumnDefinition,
   type OptionsDefinition,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const promptsTableCols: ColumnDefinition[] = [
   {

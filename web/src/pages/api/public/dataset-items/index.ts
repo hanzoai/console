@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
 import { v4 as uuidv4 } from "uuid";
@@ -13,8 +13,8 @@ import {
   type DatasetItem,
   HanzoNotFoundError,
   Prisma,
-} from "@langfuse/shared";
-import { logger } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { logger } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedAPIRoute({

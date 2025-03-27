@@ -1,12 +1,12 @@
-import { logger } from "@langfuse/shared/src/server";
-import { redis } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
+import { redis } from "@hanzo/shared/src/server";
 
 import { ClickhouseWriter } from "../services/ClickhouseWriter";
 import { setSigtermReceived } from "../features/health";
 import { server } from "../index";
 import { freeAllTokenizers } from "../features/tokenisation/usage";
 import { WorkerManager } from "../queues/workerManager";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { BackgroundMigrationManager } from "../backgroundMigrations/backgroundMigrationManager";
 
 export const onShutdown: NodeJS.SignalsListener = async (signal) => {

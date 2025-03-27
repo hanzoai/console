@@ -1,6 +1,6 @@
 import { Job } from "bullmq";
-import { ApiError, BaseError } from "@langfuse/shared";
-import { kyselyPrisma } from "@langfuse/shared/src/db";
+import { ApiError, BaseError } from "@hanzo/shared";
+import { kyselyPrisma } from "@hanzo/shared/src/db";
 import { sql } from "kysely";
 import {
   QueueName,
@@ -9,7 +9,7 @@ import {
   traceException,
   EvalExecutionQueue,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { createEvalJobs, evaluate } from "../ee/evaluation/evalService";
 import { randomUUID } from "crypto";
 

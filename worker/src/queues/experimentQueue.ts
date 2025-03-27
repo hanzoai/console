@@ -5,10 +5,10 @@ import {
   TQueueJobTypes,
   logger,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { createExperimentJob } from "../ee/experiments/experimentService";
-import { InvalidRequestError, HanzoNotFoundError } from "@langfuse/shared";
-import { kyselyPrisma } from "@langfuse/shared/src/db";
+import { InvalidRequestError, HanzoNotFoundError } from "@hanzo/shared";
+import { kyselyPrisma } from "@hanzo/shared/src/db";
 
 export const experimentCreateQueueProcessor = async (
   job: Job<TQueueJobTypes[QueueName.ExperimentCreate]>,

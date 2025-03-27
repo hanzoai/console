@@ -4,7 +4,7 @@ import {
   type ObservationRecordReadType,
   queryClickhouse,
   convertObservationToView,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 type QueryType = {
   page: number;

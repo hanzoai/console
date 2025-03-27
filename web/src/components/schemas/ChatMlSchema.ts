@@ -21,14 +21,14 @@ export type ParsedMediaReferenceType = z.infer<
 export const MediaReferenceStringSchema = z
   .string()
   .transform((str, ctx) => {
-    // @@@langfuseMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
-    const magicStringPattern = /^@@@langfuseMedia:(.*)@@@$/;
+    // @@@hanzoMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
+    const magicStringPattern = /^@@@hanzoMedia:(.*)@@@$/;
 
     const match = str.match(magicStringPattern);
     if (!match) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Invalid langfuseMedia magic string format",
+        message: "Invalid hanzoMedia magic string format",
       });
       return z.NEVER;
     }

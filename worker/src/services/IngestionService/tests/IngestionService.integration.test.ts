@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   clickhouseClient,
   ObservationEvent,
@@ -15,12 +15,12 @@ import {
   traceRecordReadSchema,
   TraceRecordReadType,
   ingestionEvent,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { pruneDatabase } from "../../../__tests__/utils";
 
 import { ClickhouseWriter, TableName } from "../../ClickhouseWriter";
 import { IngestionService } from "../../IngestionService";
-import { ModelUsageUnit, ScoreSource } from "@langfuse/shared";
+import { ModelUsageUnit, ScoreSource } from "@hanzo/shared";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 const environment = "default";

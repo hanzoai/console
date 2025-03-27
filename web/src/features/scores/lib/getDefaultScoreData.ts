@@ -1,5 +1,5 @@
-import { ScoreSource } from "@langfuse/shared";
-import { type APIScore, type ValidatedScoreConfig } from "@langfuse/shared";
+import { ScoreSource } from "@hanzo/shared";
+import { type APIScore, type ValidatedScoreConfig } from "@hanzo/shared";
 
 export const getDefaultScoreData = ({
   scores,

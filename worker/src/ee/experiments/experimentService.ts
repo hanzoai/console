@@ -7,9 +7,9 @@ import {
   ExperimentMetadataSchema,
   PromptContentSchema,
   DatasetRunItemUpsertQueue,
-} from "@langfuse/shared/src/server";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
-import { ExperimentCreateEventSchema } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
+import { ExperimentCreateEventSchema } from "@hanzo/shared/src/server";
 import {
   InvalidRequestError,
   HanzoNotFoundError,
@@ -17,10 +17,10 @@ import {
   extractVariables,
   datasetItemMatchesVariable,
   stringifyValue,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { backOff } from "exponential-backoff";
 import { callLLM } from "../../features/utilities";
-import { QueueJobs, redis } from "@langfuse/shared/src/server";
+import { QueueJobs, redis } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import { v4 } from "uuid";
 import { compileHandlebarString } from "../../features/utilities";
@@ -266,7 +266,7 @@ export const createExperimentJob = async ({
      ********************/
 
     const traceParams = {
-      tags: ["langfuse-prompt-experiment"], // LFE-2917: filter out any trace in trace upsert queue that has this tag set
+      tags: ["hanzo-prompt-experiment"], // LFE-2917: filter out any trace in trace upsert queue that has this tag set
       traceName: `dataset-run-item-${runItem.id.slice(0, 5)}`,
       traceId: newTraceId,
       projectId: event.projectId,

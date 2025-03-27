@@ -8,14 +8,14 @@ import {
 import {
   filterAndValidateDbScoreList,
   HanzoNotFoundError,
-} from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   getObservationsViewForTrace,
   getScoresForTraces,
   getTraceById,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import Decimal from "decimal.js";
 
 export default withMiddlewares({

@@ -21,11 +21,11 @@ import {
   type ObservationOptions,
   BatchExportTableName,
   type ObservationType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 import { LevelColors } from "@/src/components/level-colors";
 import { numberFormatter, usdFormatter } from "@/src/utils/numbers";
-import { observationsTableColsWithOptions } from "@langfuse/shared";
+import { observationsTableColsWithOptions } from "@hanzo/shared";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import type Decimal from "decimal.js";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
@@ -36,7 +36,7 @@ import {
 } from "@/src/features/scores/components/ScoreDetailColumnHelpers";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import { useIndividualScoreColumns } from "@/src/features/scores/hooks/useIndividualScoreColumns";
 import TagList from "@/src/features/tag/components/TagList";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

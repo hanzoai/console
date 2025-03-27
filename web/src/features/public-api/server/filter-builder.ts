@@ -1,4 +1,4 @@
-import { filterOperators } from "@langfuse/shared";
+import { filterOperators } from "@hanzo/shared";
 import {
   FilterList,
   DateTimeFilter,
@@ -7,7 +7,7 @@ import {
   StringFilter,
   NumberFilter,
   type ClickhouseOperator,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { z } from "zod";
 
 export type ApiColumnMapping = {
