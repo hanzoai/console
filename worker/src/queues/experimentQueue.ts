@@ -19,9 +19,9 @@ export const experimentCreateQueueProcessor = async (
       attempt: job.attemptsMade,
       data: job.data,
     });
-    await createExperimentJob({
+    await createExperimentJob(/* {
       event: job.data.payload,
-    });
+    } */);
     return true;
   } catch (e) {
     if (

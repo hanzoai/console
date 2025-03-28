@@ -13,7 +13,7 @@ export const cloudUsageMeteringQueueProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.CloudUsageMeteringJob) {
     logger.info("Executing Cloud Usage Metering Job", job.data);
     try {
-      return await handleCloudUsageMeteringJob(job);
+      return await handleCloudUsageMeteringJob();
     } catch (error) {
       logger.error("Error executing Cloud Usage Metering Job", error);
       // adding another job to the queue to process again.
@@ -22,7 +22,7 @@ export const cloudUsageMeteringQueueProcessor: Processor = async (job) => {
           name: cloudUsageMeteringDbCronJobName,
         },
         data: {
-          state: CloudUsageMeteringDbCronJobStates.Queued,
+          state: CloudUsageMeteringDbCronJobStates.Starting,
           jobStartedAt: null,
         },
       });

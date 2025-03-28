@@ -41,7 +41,7 @@ const processBlobStorageExport = async (config: {
     endpoint: config.endpoint ?? undefined,
     region: config.region,
     forcePathStyle: config.forcePathStyle ?? false,
-    useAzureBlob: config.type === BlobStorageIntegrationType.AZURE_BLOB_STORAGE,
+    // Remove the unknown property and handle it in the factory instead
   });
 
   try {

@@ -32,13 +32,14 @@ describe("useOrderByState hook", () => {
     jest.resetAllMocks();
     locationMock = new LocationMock("https://hanzo.ai");
     testRouter = new TestRouter(locationMock);
+    // @ts-expect-error - LocationMock is not assignable to type 'string & Location'
     window.location = locationMock;
 
     (useRouter as jest.Mock).mockReturnValue(testRouter);
   });
 
   afterAll(() => {
-    window.location = savedLocation;
+    (window.location as any) = savedLocation;
   });
 
   test("orderBy takes the default value if no url param is given", () => {

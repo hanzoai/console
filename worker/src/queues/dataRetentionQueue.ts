@@ -7,7 +7,7 @@ export const dataRetentionProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.DataRetentionJob) {
     logger.info("Executing Data Retention Job");
     try {
-      return await handleDataRetentionSchedule(job);
+      return await handleDataRetentionSchedule();
     } catch (error) {
       logger.error("Error executing DataRetentionJob", error);
       throw error;
@@ -18,7 +18,7 @@ export const dataRetentionProcessor: Processor = async (job) => {
 export const dataRetentionProcessingProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.DataRetentionProcessingJob) {
     try {
-      return await handleDataRetentionProcessingJob(job);
+      return await handleDataRetentionProcessingJob();
     } catch (error) {
       logger.error("Error executing DataRetentionProcessingJob", error);
       throw error;

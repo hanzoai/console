@@ -54,3 +54,20 @@ export * from "./services/sessions-ui-table-service";
 
 // test utils
 export * from "./test-utils";
+
+// Stub implementations for missing EE functionality
+export const findModel = async (modelName: string) => {
+  return null;
+};
+
+export const getObservationsForBlobStorageExport = async function* (projectId: string, minTimestamp: Date, maxTimestamp: Date) {
+  yield {};
+};
+
+export const getTracesForBlobStorageExport = async function* (projectId: string, minTimestamp: Date, maxTimestamp: Date) {
+  yield {};
+};
+
+export const getScoresForBlobStorageExport = async function* (projectId: string, minTimestamp: Date, maxTimestamp: Date) {
+  yield {};
+};

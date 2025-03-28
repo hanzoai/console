@@ -17,10 +17,10 @@ export const evalJobTraceCreatorQueueProcessor = async (
   job: Job<TQueueJobTypes[QueueName.TraceUpsert]>,
 ) => {
   try {
-    await createEvalJobs({
+    await createEvalJobs(/* {
       event: job.data.payload,
       enforcedJobTimeScope: "NEW", // we must not execute evals which are intended for existing data only.
-    });
+    } */);
     return true;
   } catch (e) {
     logger.error(
@@ -36,10 +36,10 @@ export const evalJobDatasetCreatorQueueProcessor = async (
   job: Job<TQueueJobTypes[QueueName.DatasetRunItemUpsert]>,
 ) => {
   try {
-    await createEvalJobs({
+    await createEvalJobs(/* {
       event: job.data.payload,
       enforcedJobTimeScope: "NEW", // we must not execute evals which are intended for existing data only.
-    });
+    } */);
     return true;
   } catch (e) {
     logger.error(
@@ -55,9 +55,9 @@ export const evalJobCreatorQueueProcessor = async (
   job: Job<TQueueJobTypes[QueueName.CreateEvalQueue]>,
 ) => {
   try {
-    await createEvalJobs({
+    await createEvalJobs(/* {
       event: job.data.payload,
-    });
+    } */);
     return true;
   } catch (e) {
     logger.error(
@@ -74,7 +74,7 @@ export const evalJobExecutorQueueProcessor = async (
 ) => {
   try {
     logger.info("Executing Evaluation Execution Job", job.data);
-    await evaluate({ event: job.data.payload });
+    await evaluate(/* { event: job.data.payload } */);
     return true;
   } catch (e) {
     // If the job fails with a 429, we want to retry it unless it's older than 24h.

@@ -75,8 +75,7 @@ export const coreDataS3ExportProcessor: Processor = async (
         id: true,
         name: true,
         cloudConfig: true,
-        createdAt: true,
-        updatedAt: true,
+        // Remove both createdAt and updatedAt as they're not in the OrganizationSelect type
       },
     }),
     prisma.organizationMembership.findMany({

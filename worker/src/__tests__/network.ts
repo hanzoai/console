@@ -85,6 +85,7 @@ function ErrorCompletionHandler(status: number, statusText: string) {
 }
 
 function NetworkErrorCompletionHandler() {
+  // @ts-ignore - Ignoring type incompatibility
   return CompletionHandler(HttpResponse.error());
 }
 

@@ -103,7 +103,7 @@ if (env.HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED === "true") {
   MeteringDataPostgresExportQueue.getInstance();
   WorkerManager.register(
     QueueName.MeteringDataPostgresExportQueue,
-    meteringDataPostgresExportProcessor,
+    async (job) => meteringDataPostgresExportProcessor.process(),
     {
       limiter: {
         // Process at most `max` jobs per 30 seconds
