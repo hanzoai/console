@@ -77,7 +77,7 @@ const DemoOrganizationTile = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Try HanzoCloud Demo</CardTitle>
+        <CardTitle>Try Hanzo Cloud Demo</CardTitle>
       </CardHeader>
       <CardContent>
         We have built a Q&A chatbot that answers questions based on the HanzoCloud

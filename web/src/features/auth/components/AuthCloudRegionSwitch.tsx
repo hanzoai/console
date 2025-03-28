@@ -126,7 +126,7 @@ const DataRegionInfo = () => (
         <DialogTitle>Data Regions</DialogTitle>
       </DialogHeader>
       <DialogDescription className="flex flex-col gap-2">
-        <p>HanzoCloud Cloud is available in two data regions:</p>
+        <p>Hanzo Cloud is available in two data regions:</p>
         <ul className="list-disc pl-5">
           <li>US: Oregon (AWS us-west-2)</li>
           <li>EU: Ireland (AWS eu-west-1)</li>

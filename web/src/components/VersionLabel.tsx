@@ -47,7 +47,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
   });
 
   const plan = usePlan();
-  const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
+  const isHanzo Cloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
   const selfHostedPlanLabel = !isHanzoCloud
     ? plan && isSelfHostedPlan(plan)
@@ -65,12 +65,12 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       null;
 
   const showBackgroundMigrationStatus =
-    !isHanzoCloud &&
+    !isHanzo Cloud &&
     backgroundMigrationStatus.data &&
     backgroundMigrationStatus.data.status !== "FINISHED";
 
   const hasUpdate =
-    !isHanzoCloud && checkUpdate.data && checkUpdate.data.updateType;
+    !isHanzo Cloud && checkUpdate.data && checkUpdate.data.updateType;
 
   const color =
     checkUpdate.data?.updateType === "major"
@@ -130,7 +130,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Releases
           </Link>
         </DropdownMenuItem>
-        {!isHanzoCloud && (
+        {!isHanzo Cloud && (
           <DropdownMenuItem asChild>
             <Link href="/background-migrations">
               <ArrowUp10 size={16} className="mr-2" />
@@ -157,7 +157,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Roadmap
           </Link>
         </DropdownMenuItem>
-        {!isHanzoCloud && (
+        {!isHanzo Cloud && (
           <DropdownMenuItem asChild>
             <Link href="https://hanzo.ai/pricing-self-host" target="_blank">
               <Info size={16} className="mr-2" />

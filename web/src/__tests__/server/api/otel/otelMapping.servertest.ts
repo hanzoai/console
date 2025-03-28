@@ -3,7 +3,7 @@ import { ingestionEvent } from "@hanzo/shared/src/server";
 
 describe("OTel Resource Span Mapping", () => {
   describe("Vendor Spans", () => {
-    it("should convert an OpenLit OTel Span to HanzoCloud Events", () => {
+    it("should convert an OpenLit OTel Span to Hanzo Cloud Events", () => {
       // Setup
       const resourceSpan = {
         resource: {
@@ -189,7 +189,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(parsedEvents).toHaveLength(2);
     });
 
-    it("should convert a TraceLoop OTel Span to HanzoCloud Events", () => {
+    it("should convert a TraceLoop OTel Span to Hanzo Cloud Events", () => {
       // Setup
       const resourceSpan = {
         resource: {

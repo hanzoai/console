@@ -16,7 +16,7 @@ types:
     properties:
       version:
         type: string
-        docs: HanzoCloud server version
+        docs: Hanzo Cloud server version
       status: string
     examples:
       - value:

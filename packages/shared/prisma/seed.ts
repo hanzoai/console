@@ -191,11 +191,11 @@ async function main() {
     const org2 = await prisma.organization.upsert({
       where: { id: seedOrgIdOrg2 },
       update: {
-        name: "HanzoCloud Demo",
+        name: "Hanzo Cloud Demo",
       },
       create: {
         id: seedOrgIdOrg2,
-        name: "HanzoCloud Demo",
+        name: "Hanzo Cloud Demo",
       },
     });
     const project2 = await prisma.project.upsert({

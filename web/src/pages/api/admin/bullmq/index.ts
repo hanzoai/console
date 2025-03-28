@@ -5,7 +5,7 @@ import { env } from "@/src/env.mjs";
 import { prisma } from "@hanzo/shared/src/db";
 
 /* 
-This API route is used by HanzoCloud Cloud to retry failed bullmq jobs.
+This API route is used by Hanzo Cloud to retry failed bullmq jobs.
 */
 
 const BullStatus = z.enum([
@@ -53,7 +53,7 @@ export default async function handler(
     }
 
     if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
-      res.status(403).json({ error: "Only accessible on HanzoCloud cloud" });
+      res.status(403).json({ error: "Only accessible on Hanzo Cloud cloud" });
       return;
     }
 

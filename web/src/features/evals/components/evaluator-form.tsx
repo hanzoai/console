@@ -783,7 +783,7 @@ export const InnerEvalConfigForm = (props: {
                                 <VariableMappingDescription
                                   title="Object"
                                   description={
-                                    "HanzoCloud object to retrieve the data from."
+                                    "Hanzo Cloud object to retrieve the data from."
                                   }
                                   href={
                                     "https://hanzo.ai/docs/scores/model-based-evals"
@@ -831,7 +831,7 @@ export const InnerEvalConfigForm = (props: {
                                   <VariableMappingDescription
                                     title={"Object Name"}
                                     description={
-                                      "Name of the HanzoCloud object to retrieve the data from."
+                                      "Name of the Hanzo Cloud object to retrieve the data from."
                                     }
                                     href={
                                       "https://hanzo.ai/docs/scores/model-based-evals"
@@ -861,7 +861,7 @@ export const InnerEvalConfigForm = (props: {
                                 <VariableMappingDescription
                                   title={"Object Variable"}
                                   description={
-                                    "Variable on the HanzoCloud object to insert into the template."
+                                    "Variable on the Hanzo Cloud object to insert into the template."
                                   }
                                   href={
                                     "https://hanzo.ai/docs/scores/model-based-evals"

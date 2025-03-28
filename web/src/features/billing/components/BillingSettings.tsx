@@ -1,6 +1,6 @@
 // This is a placeholder to read the file contents.
 
-// HanzoCloud Cloud only
+// Hanzo Cloud only
 import { Button } from "@/src/components/ui/button";
 // import { api } from "@/src/utils/api";
 // import { Flex, MarkerBar, Metric, Text } from "@tremor/react";

@@ -414,7 +414,7 @@ export const CreateExperimentsForm = ({
                   Prompt Experiment
                 </CardTitle>
                 <CardDescription>
-                  Test single prompts and model configurations via HanzoCloud UI
+                  Test single prompts and model configurations via Hanzo Cloud UI
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -454,7 +454,7 @@ export const CreateExperimentsForm = ({
                 Custom Experiment
               </CardTitle>
               <CardDescription>
-                Run any experiment via the HanzoCloud SDKs
+                Run any experiment via the Hanzo Cloud SDKs
               </CardDescription>
             </CardHeader>
             <CardContent>

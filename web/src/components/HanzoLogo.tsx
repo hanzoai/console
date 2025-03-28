@@ -17,7 +17,7 @@ export const HanzoCloudIcon = ({
     src={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon.svg`}
     width={size}
     height={size}
-    alt="HanzoCloud Icon"
+    alt="Hanzo Cloud Icon"
     className={className}
   />
 );
@@ -32,7 +32,7 @@ const HanzoCloudLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={uiCustomization.logoLightModeHref}
-          alt="HanzoCloud Logo"
+          alt="Hanzo Cloud Logo"
           className={cn(
             "group-data-[collapsible=icon]:hidden dark:hidden",
             size === "sm" ? "max-h-4 max-w-14" : "max-h-5 max-w-16",
@@ -41,7 +41,7 @@ const HanzoCloudLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={uiCustomization.logoDarkModeHref}
-          alt="HanzoCloud Logo"
+          alt="Hanzo Cloud Logo"
           className={cn(
             "hidden group-data-[collapsible=icon]:hidden dark:block",
             size === "sm" ? "max-h-4 max-w-14" : "max-h-5 max-w-16",
@@ -87,7 +87,7 @@ export const HanzoCloudLogo = ({
         className,
       )}
     >
-      {/* HanzoCloud Logo */}
+      {/* Hanzo Cloud Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center">
           <HanzoCloudLogotypeOrCustomized size={size} />

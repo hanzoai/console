@@ -384,7 +384,7 @@ export default function PromptVersionTable() {
         itemType: "PROMPT",
         help: {
           description:
-            "You can use this prompt within your application through the HanzoCloud SDKs and integrations. Refer to the documentation for more information.",
+            "You can use this prompt within your application through the Hanzo Cloud SDKs and integrations. Refer to the documentation for more information.",
           href: "https://hanzo.ai/docs/prompts",
         },
         breadcrumb: [

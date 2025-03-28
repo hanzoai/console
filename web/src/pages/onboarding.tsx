@@ -1,4 +1,4 @@
-// This page is currently only shown to HanzoCloud cloud users.
+// This page is currently only shown to Hanzo Cloud cloud users.
 // It might be expanded to everyone in the future when it does not only ask for the referral source.
 
 import { useForm } from "react-hook-form";

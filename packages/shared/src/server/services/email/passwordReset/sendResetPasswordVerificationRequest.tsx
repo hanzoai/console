@@ -25,7 +25,7 @@ interface ResetPasswordTemplateProps {
 }
 
 const ResetPasswordTemplate = ({ url }: ResetPasswordTemplateProps) => {
-  const previewText = "Reset your HanzoCloud password";
+  const previewText = "Reset your Hanzo Cloud password";
   return (
     <Html>
       <Head />
@@ -43,7 +43,7 @@ const ResetPasswordTemplate = ({ url }: ResetPasswordTemplateProps) => {
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-xl font-normal text-black">
-              Forgot your HanzoCloud password?
+              Forgot your Hanzo Cloud password?
               <br />
               It happens to the best of us.
             </Heading>
@@ -77,7 +77,7 @@ export async function sendResetPasswordVerificationRequest(
     to: identifier,
     from: provider.from,
     subject: `Forgot your password?`,
-    text: `To reset your HanzoCloud password, please confirm your email:\n${url}\n\nThe link is valid for 10 minutes. If you do not want to change your password or didn't request a reset, you can ignore and delete this email.`,
+    text: `To reset your Hanzo Cloud password, please confirm your email:\n${url}\n\nThe link is valid for 10 minutes. If you do not want to change your password or didn't request a reset, you can ignore and delete this email.`,
     html: htmlTemplate,
   });
   const failed = result.rejected.concat(result.pending).filter(Boolean);

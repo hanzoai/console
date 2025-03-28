@@ -7,7 +7,7 @@ export async function createProjectMembershipsOnSignup(user: {
   email: string | null;
 }) {
   try {
-    // HanzoCloud Cloud: provide view-only access to the demo project, none access to the demo org
+    // Hanzo Cloud: provide view-only access to the demo project, none access to the demo org
     const demoProject =
       env.NEXT_PUBLIC_DEMO_ORG_ID && env.NEXT_PUBLIC_DEMO_PROJECT_ID
         ? ((await prisma.project.findUnique({

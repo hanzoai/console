@@ -46,7 +46,7 @@ types:
     properties:
       htmlPath:
         type: string
-        docs: Path of trace in HanzoCloud UI
+        docs: Path of trace in Hanzo Cloud UI
       latency:
         type: double
         docs: Latency of trace in seconds
@@ -64,7 +64,7 @@ types:
     properties:
       htmlPath:
         type: string
-        docs: Path of trace in HanzoCloud UI
+        docs: Path of trace in Hanzo Cloud UI
       latency:
         type: double
         docs: Latency of trace in seconds

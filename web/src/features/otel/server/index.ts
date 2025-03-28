@@ -357,7 +357,7 @@ const extractCostDetails = (
 
 /**
  * Accepts an OpenTelemetry resourceSpan from a ExportTraceServiceRequest and
- * returns a list of HanzoCloud events.
+ * returns a list of Hanzo Cloud events.
  * We use a list type here, because a root span should create a trace, i.e. we
  * may have a 1:N case.
  */

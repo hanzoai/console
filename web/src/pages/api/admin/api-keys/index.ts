@@ -6,7 +6,7 @@ import { env } from "@/src/env.mjs";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 
 /* 
-This API route is used by HanzoCloud Cloud to delete API keys for a project. It will return 403 for self-hosters.
+This API route is used by Hanzo Cloud to delete API keys for a project. It will return 403 for self-hosters.
 We will work on admin APIs in the future. See the discussion here: https://github.com/orgs/hanzoai/discussions/3243
 */
 

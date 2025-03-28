@@ -66,7 +66,7 @@ export default function UsersPage() {
         title: "Users",
         help: {
           description:
-            "Attribute data in HanzoCloud to a user by adding a userId to your traces. See docs to learn more.",
+            "Attribute data in Hanzo Cloud to a user by adding a userId to your traces. See docs to learn more.",
           href: "https://hanzo.ai/docs/user-explorer",
         },
       }}

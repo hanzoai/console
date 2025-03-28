@@ -8,7 +8,7 @@ export const stripeClient = (() => {
   }
 
   if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
-    console.warn("HanzoCloud cloud region is missing");
+    console.warn("Hanzo Cloud cloud region is missing");
     return undefined;
   }
 

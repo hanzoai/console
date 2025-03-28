@@ -73,7 +73,7 @@ export const sendMembershipInvitationEmail = async ({
 
     await mailer.sendMail({
       to,
-      from: `HanzoCloud <${env.EMAIL_FROM_ADDRESS}>`,
+      from: `Hanzo Cloud <${env.EMAIL_FROM_ADDRESS}>`,
       subject: `${inviterName} invited you to join "${orgName}" organization on HanzoCloud`,
       html: htmlTemplate,
     });

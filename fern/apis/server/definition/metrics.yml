@@ -7,7 +7,7 @@ service:
   base-path: /api/public
   endpoints:
     daily:
-      docs: Get daily metrics of the HanzoCloud project
+      docs: Get daily metrics of the Hanzo Cloud project
       method: GET
       path: /metrics/daily
       request:

@@ -29,7 +29,7 @@ export default function Datasets() {
         title: "Datasets",
         help: {
           description:
-            "Datasets in HanzoCloud are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
+            "Datasets in Hanzo Cloud are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
           href: "https://hanzo.ai/docs/datasets",
         },
       }}

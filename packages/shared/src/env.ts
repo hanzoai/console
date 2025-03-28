@@ -55,7 +55,7 @@ const EnvSchema = z.object({
     .positive()
     .default(50),
   HANZO_S3_EVENT_UPLOAD_BUCKET: z.string({
-    required_error: "HanzoCloud requires a bucket name for S3 Event Uploads.",
+    required_error: "Hanzo Cloud requires a bucket name for S3 Event Uploads.",
   }),
   HANZO_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
   HANZO_S3_EVENT_UPLOAD_REGION: z.string().optional(),

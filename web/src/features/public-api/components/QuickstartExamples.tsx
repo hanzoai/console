@@ -42,7 +42,7 @@ export const QuickstartExamples = ({
         >
           internal documentation
         </Link>{" "}
-        for details on how to set up HanzoCloud in your organization.
+        for details on how to set up Hanzo Cloud in your organization.
       </p>
     );
   }
@@ -124,8 +124,8 @@ export const QuickstartExamples = ({
         <TabsContent value="openai">
           <p className="mt-2 text-xs text-muted-foreground">
             The integration is a drop-in replacement for the OpenAI Python SDK.
-            By changing the import, HanzoCloud will capture all LLM calls and send
-            them to HanzoCloud asynchronously.
+            By changing the import, Hanzo Cloud will capture all LLM calls and send
+            them to Hanzo Cloud asynchronously.
           </p>
           <CodeView content="pip install hanzo" className="my-2" />
           <CodeView
@@ -301,7 +301,7 @@ const LANGCHAIN_JS_CODE = (p: {
   host: string;
 }) => `import { CallbackHandler } from "@hanzo/hanzo-langchain";
  
-// Initialize HanzoCloud callback handler
+// Initialize Hanzo Cloud callback handler
 const hanzoHandler = new CallbackHandler({
   publicKey: "${p.publicKey}",
   secretKey: "${p.secretKey}",

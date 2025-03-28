@@ -67,7 +67,7 @@ export const MembershipInvitationTemplate = ({
               ) has invited you to join the <strong>{orgName}</strong>{" "}
               organization on
               {hanzoCloudRegion
-                ? ` HanzoCloud (${hanzoCloudRegion} data region)`
+                ? ` Hanzo Cloud (${hanzoCloudRegion} data region)`
                 : " HanzoCloud"}
               .
             </Text>

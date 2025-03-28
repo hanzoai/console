@@ -243,7 +243,7 @@ const Integrations = (props: { projectId: string }) => {
         <PostHogLogo className="mb-4 w-40 text-foreground" />
         <p className="mb-4 text-sm text-primary">
           We have teamed up with PostHog (OSS product analytics) to make
-          HanzoCloud Events/Metrics available in your Posthog Dashboards.
+          Hanzo Cloud Events/Metrics available in your Posthog Dashboards.
         </p>
         <div className="flex items-center gap-2">
           <ActionButton
