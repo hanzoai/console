@@ -36,13 +36,24 @@ const regions =
       : [
           {
             name: "US",
-            hostname: "us.cloud.hanzo.ai",
+            hostname: "cloud.hanzo.ai",
             flag: "🇺🇸",
+            location: "MCI",
+            regionId: "us-central-1"
+          },
+          {
+            name: "CA",
+            hostname: "cloud.hanzo.ai",
+            flag: "🇨🇦",
+            location: "YVR",
+            regionId: "ca-west-1"
           },
           {
             name: "EU",
             hostname: "cloud.hanzo.ai",
             flag: "🇪🇺",
+            location: "BCN",
+            regionId: "eu-west-1"
           },
         ];
 
@@ -126,10 +137,11 @@ const DataRegionInfo = () => (
         <DialogTitle>Data Regions</DialogTitle>
       </DialogHeader>
       <DialogDescription className="flex flex-col gap-2">
-        <p>Hanzo Cloud is available in two data regions:</p>
+        <p>Hanzo Cloud is available in three data regions:</p>
         <ul className="list-disc pl-5">
-          <li>US: Oregon (AWS us-west-2)</li>
-          <li>EU: Ireland (AWS eu-west-1)</li>
+          <li>US: MCI (Hanzo Cloud region us-central-1)</li>
+          <li>CA: YVR (Hanzo Cloud region ca-west-1)</li>
+          <li>EU: BCN (Hanzo Cloud region eu-west-1)</li>
         </ul>
         <p>
           Regions are strictly separated, and no data is shared across regions.
