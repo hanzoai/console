@@ -34,7 +34,7 @@ import { getCookieName, getCookieOptions } from "./utils/cookies";
 import {
   getSsoAuthProviderIdForDomain,
   loadSsoProviders,
-} from "@/src/ee/features/multi-tenant-sso/utils";
+} from "@/src/features/multi-tenant-sso/utils";
 import { z } from "zod";
 import { CloudConfigSchema } from "@hanzo/shared";
 import {

@@ -11,7 +11,7 @@ import DOMPurify from "dompurify";
 // import { ThemeToggle } from "@/src/features/theming/ThemeToggle";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { useEntitlements } from "@/src/features/entitlements/hooks";
-import { useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
+import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { hasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { SidebarInset, SidebarProvider } from "@/src/components/ui/sidebar";
 import { AppSidebar } from "@/src/components/nav/app-sidebar";

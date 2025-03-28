@@ -47,7 +47,7 @@ import { PromptDescription } from "@/src/features/prompts/components/prompt-desc
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { PRODUCTION_LABEL } from "@/src/features/prompts/constants";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import usePlaygroundCache from "@/src/ee/features/playground/page/hooks/usePlaygroundCache";
+import usePlaygroundCache from "@/src/features/playground/page/hooks/usePlaygroundCache";
 import { useQueryParam } from "use-query-params";
 import { usePromptNameValidation } from "@/src/features/prompts/hooks/usePromptNameValidation";
 

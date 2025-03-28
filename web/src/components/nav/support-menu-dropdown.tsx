@@ -21,7 +21,7 @@ import { useMemo, type ReactNode } from "react";
 import {
   type UiCustomizationOption,
   useUiCustomization,
-} from "@/src/ee/features/ui-customization/useUiCustomization";
+} from "@/src/features/ui-customization/useUiCustomization";
 import { SidebarMenuButton, useSidebar } from "@/src/components/ui/sidebar";
 import {
   chatAvailable,

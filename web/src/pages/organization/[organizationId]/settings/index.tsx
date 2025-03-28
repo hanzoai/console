@@ -8,7 +8,7 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { SettingsDangerZone } from "@/src/components/SettingsDangerZone";
 import { DeleteOrganizationButton } from "@/src/features/organizations/components/DeleteOrganizationButton";
-import { BillingSettings } from "@/src/ee/features/billing/components/BillingSettings";
+import { BillingSettings } from "@/src/features/billing/components/BillingSettings";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";

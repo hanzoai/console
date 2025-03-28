@@ -4,7 +4,7 @@
 // For more information see https://hanzo.ai/docs/open-source
 
 import { useRouter } from "next/router";
-import EvalLogTable from "@/src/ee/features/evals/components/eval-log";
+import EvalLogTable from "@/src/features/evals/components/eval-log";
 import {
   TabsBar,
   TabsBarList,

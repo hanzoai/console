@@ -29,7 +29,7 @@ import {
   ModelParams,
   TraceParams,
 } from "./types";
-import { CallbackHandler } from "hanzo-langchain";
+import { CallbackHandler } from "@hanzo/hanzo-langchain";
 import type { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 
 type ProcessTracedEvents = () => Promise<void>;

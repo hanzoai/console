@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
-import { type UiCustomizationOption } from "@/src/ee/features/ui-customization/useUiCustomization";
+import { type UiCustomizationOption } from "@/src/features/ui-customization/useUiCustomization";
 import { type User } from "next-auth";
 import { type OrganizationScope } from "@/src/features/rbac/constants/organizationAccessRights";
 import { SupportMenuDropdown } from "@/src/components/nav/support-menu-dropdown";

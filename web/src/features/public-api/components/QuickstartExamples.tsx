@@ -5,7 +5,7 @@ import {
   TabsContent,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import { useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
+import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { env } from "@/src/env.mjs";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import Link from "next/link";
@@ -178,7 +178,7 @@ export const QuickstartExamples = ({
             The integration uses the Langchain callback system to automatically
             capture detailed traces of your Langchain executions.
           </p>
-          <CodeView content="npm install hanzo-langchain" className="my-2" />
+          <CodeView content="npm install @hanzo/hanzo-langchain" className="my-2" />
           <CodeView
             content={LANGCHAIN_JS_CODE({ publicKey, secretKey, host })}
             className="my-2"
@@ -299,7 +299,7 @@ const LANGCHAIN_JS_CODE = (p: {
   publicKey: string;
   secretKey: string;
   host: string;
-}) => `import { CallbackHandler } from "hanzo-langchain";
+}) => `import { CallbackHandler } from "@hanzo/hanzo-langchain";
  
 // Initialize HanzoCloud callback handler
 const hanzoHandler = new CallbackHandler({

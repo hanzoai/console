@@ -7,7 +7,7 @@ import {
   transformDbDatasetRunItemToAPIDatasetRunItem,
 } from "@/src/features/public-api/types/datasets";
 import { HanzoNotFoundError, InvalidRequestError } from "@hanzo/shared";
-import { addDatasetRunItemsToEvalQueue } from "@/src/ee/features/evals/server/addDatasetRunItemsToEvalQueue";
+import { addDatasetRunItemsToEvalQueue } from "@/src/features/evals/server/addDatasetRunItemsToEvalQueue";
 import { getObservationById } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({

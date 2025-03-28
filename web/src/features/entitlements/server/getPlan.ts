@@ -1,4 +1,4 @@
-import { mapStripeProductIdToPlan } from "@/src/ee/features/billing/utils/stripeProducts";
+import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
 import { env } from "@/src/env.mjs";
 import { type Plan } from "@hanzo/shared";
 import { type CloudConfigSchema } from "@hanzo/shared";

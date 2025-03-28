@@ -4,6 +4,12 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export const BlobStorageIntegrationType = {
+    S3: "S3",
+    S3_COMPATIBLE: "S3_COMPATIBLE",
+    AZURE_BLOB_STORAGE: "AZURE_BLOB_STORAGE"
+} as const;
+export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const Role = {
     OWNER: "OWNER",
     ADMIN: "ADMIN",
@@ -196,6 +202,23 @@ export type BillingMeterBackup = {
     aggregated_value: number;
     event_name: string;
     org_id: string;
+    created_at: Generated<Timestamp>;
+    updated_at: Generated<Timestamp>;
+};
+export type BlobStorageIntegration = {
+    project_id: string;
+    type: BlobStorageIntegrationType;
+    bucket_name: string;
+    prefix: string;
+    access_key_id: string;
+    secret_access_key: string;
+    region: string;
+    endpoint: string | null;
+    force_path_style: boolean;
+    next_sync_at: Timestamp | null;
+    last_sync_at: Timestamp | null;
+    enabled: boolean;
+    export_frequency: string;
     created_at: Generated<Timestamp>;
     updated_at: Generated<Timestamp>;
 };
@@ -601,6 +624,7 @@ export type DB = {
     background_migrations: BackgroundMigration;
     batch_exports: BatchExport;
     billing_meter_backups: BillingMeterBackup;
+    blob_storage_integrations: BlobStorageIntegration;
     comments: Comment;
     cron_jobs: CronJobs;
     dataset_items: DatasetItem;

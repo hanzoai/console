@@ -19,7 +19,7 @@ import Link from "next/link";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { HanzoCloudLogo } from "@/src/components/HanzoLogo";
 import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications";
-import { UsageTracker } from "@/src/ee/features/billing/components/UsageTracker";
+import { UsageTracker } from "@/src/features/billing/components/UsageTracker";
 
 type AppSidebarProps = {
   navItems: NavMainItem[];

@@ -1,4 +1,4 @@
-import { stripeWebhookApiHandler } from "@/src/ee/features/billing/server/stripeWebhookApiHandler";
+import { stripeWebhookApiHandler } from "@/src/features/billing/server/stripeWebhookApiHandler";
 import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 

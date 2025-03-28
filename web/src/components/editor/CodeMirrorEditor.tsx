@@ -1,4 +1,6 @@
-import CodeMirror, { EditorView } from "@uiw/react-codemirror";
+import dynamic from 'next/dynamic';
+import type { ReactCodeMirrorProps } from '@uiw/react-codemirror';
+import { EditorView } from '@codemirror/view';
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter, type Diagnostic } from "@codemirror/lint";
 import { useTheme } from "next-themes";
@@ -14,6 +16,11 @@ import {
 } from "@hanzo/shared";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
+
+const CodeMirror = dynamic(
+  () => import('@uiw/react-codemirror').then((mod) => mod.default),
+  { ssr: false }
+);
 
 // Custom language mode for prompts that highlights mustache variables
 const promptLanguage = StreamLanguage.define({

@@ -27,7 +27,7 @@ import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPriv
 import { CloudRegionSwitch } from "@/src/features/auth/components/AuthCloudRegionSwitch";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { Turnstile } from "@marsidev/react-turnstile";
-import { isAnySsoConfigured } from "@/src/ee/features/multi-tenant-sso/utils";
+import { isAnySsoConfigured } from "@/src/features/multi-tenant-sso/utils";
 import { Shield, Code } from "lucide-react";
 import { useRouter } from "next/router";
 import { captureException } from "@sentry/nextjs";
