@@ -1,4 +1,3 @@
 // Placeholder for experiments router
-import { createTRPCRouter } from "@/src/server/api/trpc";
-
-export const experimentsRouter = createTRPCRouter({});
+// Stubbed implementation
+export const experimentsRouter = {};

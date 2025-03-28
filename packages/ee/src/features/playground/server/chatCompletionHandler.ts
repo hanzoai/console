@@ -1,6 +1,6 @@
 // Placeholder for chat completion handler
-import { NextRequest, NextResponse } from "next/server";
+// Stubbed implementation
 
-export default async function chatCompletionHandler(req: NextRequest) {
-  return NextResponse.json({ success: true });
+export default async function chatCompletionHandler(req: any) {
+  return { json: () => ({ success: true }) };
 }
