@@ -50,7 +50,7 @@ services:
       REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
       REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
-      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}      
+      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
     networks:
       - ai-platform_default
 
@@ -138,8 +138,8 @@ services:
     restart: always
     command: >
       --requirepass ${REDIS_AUTH:-myredissecret}
-    ports:
-      - 6379:6379
+    #ports:
+    #  - 6379:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
@@ -160,8 +160,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    ports:
-      - 5432:5432
+    #ports:
+    #  - 5432:5432
     volumes:
       - hanzo_postgres_data:/var/lib/postgresql/data
     networks:
