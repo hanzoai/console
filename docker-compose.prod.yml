@@ -1,0 +1,178 @@
+networks:
+  ai-platform_default:
+    driver: bridge
+
+services:
+  hanzo-worker:
+    image: maui1209/ai-platform-worker:latest
+    restart: always
+    depends_on: &hanzo-depends-on
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "3030:3030"
+    environment: &hanzo-worker-env
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+      SALT: "mysalt"
+      ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
+      TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
+      HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
+      CLICKHOUSE_MIGRATION_URL: "clickhouse://clickhouse:9000"
+      CLICKHOUSE_URL: "http://clickhouse:8123"
+      CLICKHOUSE_USER: "clickhouse"
+      CLICKHOUSE_PASSWORD: "clickhouse"
+      CLICKHOUSE_CLUSTER_ENABLED: "false"
+      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
+      HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
+      HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+      HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+      HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+      HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
+      HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
+      HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+      HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
+      HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+      HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+      HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+      HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+      HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
+      HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
+      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
+      REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
+      REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
+      REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
+      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}      
+    networks:
+      - ai-platform_default
+
+  hanzo-web:
+    image: maui1209/ai-platform-web:latest
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+        STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
+        STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
+    restart: always
+    depends_on: *hanzo-depends-on
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *hanzo-worker-env
+      NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
+      STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
+      NEXTAUTH_URL: https://cloud.hanzo.ai
+      NEXTAUTH_SECRET: mysecret
+      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
+      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
+      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
+      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
+      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
+      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
+      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
+      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
+      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
+    networks:
+      - ai-platform_default
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    restart: always
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - hanzo_clickhouse_data:/var/lib/clickhouse
+      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+    networks:
+      - ai-platform_default
+
+  minio:
+    image: minio/minio
+    restart: always
+    entrypoint: sh
+    # create the 'hanzo' bucket before starting the service
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    ports:
+      - "9090:9000"
+      - "9091:9001"
+    volumes:
+      - hanzo_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 1s
+
+  redis:
+    image: redis:alpine
+    restart: always
+    command: >
+      --requirepass ${REDIS_AUTH:-myredissecret}
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    networks:
+      - ai-platform_default
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-latest}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - hanzo_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-platform_default
+
+volumes:
+  hanzo_postgres_data:
+    driver: local
+  hanzo_clickhouse_data:
+    driver: local
+  hanzo_clickhouse_logs:
+    driver: local
+  hanzo_minio_data:
+    driver: local
