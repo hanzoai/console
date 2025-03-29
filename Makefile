@@ -11,8 +11,9 @@ help:
 	@echo "Hanzo Cloud Platform Build Tools"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make build-images       Build Docker images locally"
-	@echo "  make push-images        Push Docker images to registry"
+	@echo "  make build-images       Build multi-platform Docker images and push to registry"
+	@echo "  make build-local        Build single-platform Docker images for local testing"
+	@echo "  make push-images        Push Docker images to registry (redundant with build-images)"
 	@echo "  make build-push-images  Build and push Docker images"
 	@echo "  make update-compose     Update docker-compose files to use new images"
 	@echo "  make deploy             Build, push images and update compose files"
@@ -24,25 +25,40 @@ help:
 .PHONY: build-images
 build-images:
 	@echo "Building Hanzo Cloud images v$(VERSION) ($(COMMIT_SHA))"
-	docker build -f worker/Dockerfile -t $(REGISTRY)/cloud-worker:$(VERSION) -t $(REGISTRY)/cloud-worker:latest .
-	docker build -f web/Dockerfile -t $(REGISTRY)/cloud-web:$(VERSION) -t $(REGISTRY)/cloud-web:latest .
+	docker buildx create --name cloud-builder --use --bootstrap || true
+	docker buildx build --platform linux/amd64,linux/arm64 \
+		-f worker/Dockerfile \
+		-t $(REGISTRY)/cloud-worker:$(VERSION) \
+		-t $(REGISTRY)/cloud-worker:latest \
+		--push .
+	docker buildx build --platform linux/amd64,linux/arm64 \
+		-f web/Dockerfile \
+		-t $(REGISTRY)/cloud-web:$(VERSION) \
+		-t $(REGISTRY)/cloud-web:latest \
+		--push .
 	@echo "Successfully built images:"
-	@echo "  - $(REGISTRY)/cloud-worker:$(VERSION)"
-	@echo "  - $(REGISTRY)/cloud-web:$(VERSION)"
+	@echo "  - $(REGISTRY)/cloud-worker:$(VERSION) (multi-platform)"
+	@echo "  - $(REGISTRY)/cloud-web:$(VERSION) (multi-platform)"
 
-# Push Docker images
+# Push Docker images (now handled by buildx with --push flag)
 .PHONY: push-images
 push-images:
-	@echo "Pushing Hanzo Cloud images v$(VERSION)"
-	docker push $(REGISTRY)/cloud-worker:$(VERSION)
-	docker push $(REGISTRY)/cloud-worker:latest
-	docker push $(REGISTRY)/cloud-web:$(VERSION)
-	docker push $(REGISTRY)/cloud-web:latest
-	@echo "Successfully pushed all images"
+	@echo "Images v$(VERSION) already pushed during build with buildx"
+	@echo "If you need to push again, run build-images"
+
+# Build local images for testing (single platform)
+.PHONY: build-local
+build-local:
+	@echo "Building local Hanzo Cloud images v$(VERSION) ($(COMMIT_SHA))"
+	docker build -f worker/Dockerfile -t $(REGISTRY)/cloud-worker:local .
+	docker build -f web/Dockerfile -t $(REGISTRY)/cloud-web:local .
+	@echo "Successfully built local images:"
+	@echo "  - $(REGISTRY)/cloud-worker:local"
+	@echo "  - $(REGISTRY)/cloud-web:local"
 
 # Build and push images
 .PHONY: build-push-images
-build-push-images: build-images push-images
+build-push-images: build-images
 
 # Update docker-compose files
 .PHONY: update-compose
