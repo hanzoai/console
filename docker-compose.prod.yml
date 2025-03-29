@@ -4,7 +4,7 @@ networks:
 
 services:
   hanzo-worker:
-    image: maui1209/ai-platform-worker:latest
+    image: hanzoai/cloud-worker:3.38.0
     restart: always
     depends_on: &hanzo-depends-on
       postgres:
@@ -55,7 +55,7 @@ services:
       - ai-platform_default
 
   hanzo-web:
-    image: maui1209/ai-platform-web:latest
+    image: hanzoai/cloud-web:3.38.0
     build:
       context: .
       dockerfile: web/Dockerfile
