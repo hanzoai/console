@@ -1,5 +1,5 @@
 # Define common dependencies anchor before it's used
-x-hanzo-depends-on: &hanzo-depends-on
+x-cloud-depends-on: &cloud-depends-on
   postgres:
     condition: service_healthy
   minio:
@@ -10,33 +10,33 @@ x-hanzo-depends-on: &hanzo-depends-on
     condition: service_healthy
 
 # Define environment variables anchor before it's used
-x-hanzo-environment: &hanzo-worker-env
+x-cloud-environment: &cloud-worker-env
   DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
-  SALT: "mysalt"
-  ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
+  SALT: ${SALT:-mysalt}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000"} # generate via `openssl rand -hex 32`
   TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
-  HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
+  cloud_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
   CLICKHOUSE_MIGRATION_URL: "clickhouse://clickhouse:9000"
   CLICKHOUSE_URL: "http://clickhouse:8123"
   CLICKHOUSE_USER: "clickhouse"
   CLICKHOUSE_PASSWORD: "clickhouse"
   CLICKHOUSE_CLUSTER_ENABLED: "false"
-  HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
-  HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
-  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
-  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
-  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
-  HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
-  HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
-  HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
-  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
-  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
-  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
-  HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
-  HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
-  HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+  cloud_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
+  cloud_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
+  cloud_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+  cloud_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+  cloud_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+  cloud_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
+  cloud_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
+  cloud_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+  cloud_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
+  cloud_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+  cloud_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+  cloud_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+  cloud_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+  cloud_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
+  cloud_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
+  cloud_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
   REDIS_HOST: ${REDIS_HOST:-redis}
   REDIS_PORT: ${REDIS_PORT:-6379}
   REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
@@ -46,59 +46,59 @@ x-hanzo-environment: &hanzo-worker-env
   REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
 
 services:
-  hanzo-web:
+  cloud-web:
     image: hanzoai/cloud-web:3.38.0
     build:
       context: .
       dockerfile: web/Dockerfile
       args:
-        NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+        NEXT_PUBLIC_cloud_CLOUD_REGION: "DEV"
         STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
         NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
         STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
     restart: always
-    depends_on: *hanzo-depends-on
+    depends_on: *cloud-depends-on
     #ports:
     #  - "3000:3000"
     environment:
-      <<: *hanzo-worker-env
-      NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+      <<: *cloud-worker-env
+      NEXT_PUBLIC_cloud_CLOUD_REGION: "DEV"
       STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
       STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
-      NEXTAUTH_URL: https://cloud.hanzo.ai
+      NEXTAUTH_URL: https://cloud.cloud.ai
       NEXTAUTH_SECRET: mysecret
-      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
-      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
-      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
-      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
-      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
-      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
-      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
-      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
-      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
+      cloud_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
+      cloud_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
+      cloud_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
+      cloud_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
+      cloud_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
+      cloud_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
+      cloud_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
+      cloud_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
+      cloud_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
     networks:
       - hanzo-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.well-known.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai;"
-      - "traefik.http.routers.cloud-http.rule=Host(`cloud.hanzo.ai`)"
+      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.cloud.ai http://cloud.hanzo.ai;"
+      - "traefik.http.routers.cloud-http.rule=Host(`cloud.cloud.ai`)"
       - "traefik.http.routers.cloud-http.entrypoints=web"
       - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https"
-      - "traefik.http.routers.cloud-https.rule=Host(`cloud.hanzo.ai`)"
+      - "traefik.http.routers.cloud-https.rule=Host(`cloud.cloud.ai`)"
       - "traefik.http.routers.cloud-https.entrypoints=websecure"
       - "traefik.http.routers.cloud-https.middlewares=well-known,cloud-csp"
       - "traefik.http.routers.cloud-https.tls.certresolver=letsencrypt"
       - "traefik.http.services.cloud-service.loadbalancer.server.port=3000"
 
-  hanzo-worker:
+  cloud-worker:
     image: hanzoai/cloud-worker:3.38.0
     restart: always
-    depends_on: *hanzo-depends-on
+    depends_on: *cloud-depends-on
     #ports:
     #  - "3030:3030"
-    environment: *hanzo-worker-env
+    environment: *cloud-worker-env
     networks:
       - hanzo-network
 
@@ -112,8 +112,8 @@ services:
       CLICKHOUSE_PASSWORD: clickhouse
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - hanzo_clickhouse_data:/var/lib/clickhouse
-      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+      - cloud_clickhouse_data:/var/lib/clickhouse
+      - cloud_clickhouse_logs:/var/log/clickhouse-server
     #ports:
     #  - "8123:8123"
     #  - "9000:9000"
@@ -130,8 +130,8 @@ services:
     image: minio/minio
     restart: always
     entrypoint: sh
-    # create the 'hanzo' bucket before starting the service
-    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
+    # create the 'cloud' bucket before starting the service
+    command: -c 'mkdir -p /data/cloud && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
@@ -139,7 +139,7 @@ services:
     #  - "9090:9000"
     #  - "9091:9001"
     volumes:
-      - hanzo_minio_data:/data
+      - cloud_minio_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -179,7 +179,7 @@ services:
     #ports:
     #  - 5432:5432
     volumes:
-      - hanzo_postgres_data:/var/lib/postgresql/data
+      - cloud_postgres_data:/var/lib/postgresql/data
     networks:
       - hanzo-network
 
@@ -188,11 +188,11 @@ networks:
     external: true
 
 volumes:
-  hanzo_postgres_data:
+  cloud_postgres_data:
     driver: local
-  hanzo_clickhouse_data:
+  cloud_clickhouse_data:
     driver: local
-  hanzo_clickhouse_logs:
+  cloud_clickhouse_logs:
     driver: local
-  hanzo_minio_data:
+  cloud_minio_data:
     driver: local
