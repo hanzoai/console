@@ -678,28 +678,28 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     id: "hanzo-iam",
     name: "Hanzo IAM",
     type: "oauth" as const,
-    clientId: env.AUTH_HANZO_IAM_CLIENT_ID,
-    clientSecret: env.AUTH_HANZO_IAM_CLIENT_SECRET,
-    wellKnown: `${env.AUTH_HANZO_IAM_SERVER_URL}/.well-known/openid-configuration`,
+    clientId: env.HANZO_IAM_CLIENT_ID,
+    clientSecret: env.HANZO_IAM_CLIENT_SECRET,
+    wellKnown: `${env.HANZO_IAM_SERVER_URL}/.well-known/openid-configuration`,
     authorization: {
       params: {
         scope: "openid email profile",
         prompt: "select_account",
         response_type: "code",
       },
-      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/authorize`,
+      url: `${env.HANZO_IAM_SERVER_URL}/oauth/authorize`,
     },
     token: {
-      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/token`,
+      url: `${env.HANZO_IAM_SERVER_URL}/oauth/token`,
     },
     userinfo: {
-      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/userinfo`,
+      url: `${env.HANZO_IAM_SERVER_URL}/oauth/userinfo`,
     },
     checks: ["state", "pkce"],
     client: {
       token_endpoint_auth_method: "client_secret_basic",
     },
-    allowDangerousEmailAccountLinking: env.AUTH_HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+    allowDangerousEmailAccountLinking: env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
     async profile(profile, tokens) {
       const dbUser = await prisma.user.upsert({
         where: { email: profile.email },
