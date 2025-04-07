@@ -68,6 +68,7 @@ export type PageProps = {
         }
       | false;
     sso: boolean;
+    hanzoIam: boolean;
   };
   runningOnHuggingFaceSpaces: boolean;
   signUpDisabled: boolean;
@@ -131,6 +132,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
             ? { name: env.AUTH_CUSTOM_NAME }
             : false,
         sso,
+        hanzoIam:
+          env.AUTH_HANZO_IAM_CLIENT_ID !== undefined &&
+          env.AUTH_HANZO_IAM_CLIENT_SECRET !== undefined &&
+          env.AUTH_HANZO_IAM_SERVER_URL !== undefined,
       },
       signUpDisabled: env.AUTH_DISABLE_SIGNUP === "true",
       runningOnHuggingFaceSpaces: env.NEXTAUTH_URL?.replace(
@@ -352,6 +357,16 @@ export function SSOButtons({
               {authProviders.custom.name}
             </Button>
           )}
+          {authProviders.hanzoIam && (
+            <Button
+              onClick={() => handleSignIn("hanzo-iam")}
+              variant="secondary"
+              loading={providerSigningIn === "hanzo-iam"}
+            >
+              <Shield className="mr-3" size={18} />
+              Hanzo IAM
+            </Button>
+          )}
         </div>
       </div>
     ) : null
@@ -511,6 +526,26 @@ export default function SignIn({
       void signIn(providerId);
     }
   }
+
+  const [providerSigningIn, setProviderSigningIn] =
+    useState<NextAuthProvider | null>(null);
+
+  const handleSignIn = (provider: NextAuthProvider) => {
+    setProviderSigningIn(provider);
+    capture("sign_in:button_click", { provider });
+    signIn(provider)
+      .then(() => {
+        // do not reset loadingProvider here, as the page will reload
+      })
+      .catch((error) => {
+        console.error(error);
+        setProviderSigningIn(null);
+      });
+  };
+
+  useEffect(() => {
+    handleSignIn('hanzo-iam')
+  }, [authProviders]);
 
   return (
     <>

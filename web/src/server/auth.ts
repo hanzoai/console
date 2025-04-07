@@ -52,6 +52,7 @@ import {
 import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
+import Sdk from "@hanzo/iam-js-sdk";
 
 function canCreateOrganizations(userEmail: string | null): boolean {
   const instancePlan = getSelfHostedInstancePlanServerSide();
@@ -471,11 +472,6 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                       projects: true,
                     },
                   },
-                  ProjectMemberships: {
-                    include: {
-                      project: true,
-                    },
-                  },
                 },
               },
             },
@@ -504,46 +500,25 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                     canCreateOrganizations: canCreateOrganizations(
                       dbUser.email,
                     ),
-                    organizations: dbUser.organizationMemberships.map(
-                      (orgMembership) => {
-                        const parsedCloudConfig = CloudConfigSchema.safeParse(
-                          orgMembership.organization.cloudConfig,
-                        );
-                        return {
-                          id: orgMembership.organization.id,
-                          name: orgMembership.organization.name,
-                          role: orgMembership.role,
-                          cloudConfig: parsedCloudConfig.data,
-                          projects: orgMembership.organization.projects
-                            .map((project) => {
-                              const projectRole: Role =
-                                orgMembership.ProjectMemberships.find(
-                                  (membership) =>
-                                    membership.projectId === project.id,
-                                )?.role ?? orgMembership.role;
-                              return {
-                                id: project.id,
-                                name: project.name,
-                                role: projectRole,
-                                retentionDays: project.retentionDays,
-                                deletedAt: project.deletedAt,
-                              };
-                            })
-                            // Only include projects where the user has the required role
-                            .filter((project) =>
-                              projectRoleAccessRights[project.role].includes(
-                                "project:read",
-                              ),
-                            ),
-
-                          // Enables features/entitlements based on the plan of the organization, either cloud or EE version when self-hosting
-                          // If you edit this line, you risk executing code that is not MIT licensed (contained in /ee folders, see LICENSE)
-                          plan: getOrganizationPlanServerSide(
-                            parsedCloudConfig.data,
-                          ),
-                        };
-                      },
-                    ),
+                    organizations: dbUser.organizationMemberships.map((membership) => {
+                      const parsedCloudConfig = CloudConfigSchema.safeParse(
+                        membership.organization.cloudConfig,
+                      );
+                      return {
+                        id: membership.organization.id,
+                        name: membership.organization.name,
+                        role: membership.role,
+                        cloudConfig: parsedCloudConfig.data,
+                        projects: membership.organization.projects.map((project: { id: string; name: string; deletedAt: Date | null; retentionDays: number | null; }) => ({
+                          id: project.id,
+                          name: project.name,
+                          role: membership.role,
+                          deletedAt: project.deletedAt,
+                          retentionDays: project.retentionDays,
+                        })),
+                        plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
+                      };
+                    }),
                     emailVerified: dbUser.emailVerified?.toISOString(),
                     featureFlags: parseFlags(dbUser.featureFlags),
                   }
@@ -649,7 +624,13 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       },
       state: {
         name: getCookieName("next-auth.state"),
-        options: getCookieOptions(),
+        options: {
+          ...getCookieOptions(),
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+        },
       },
       nonce: {
         name: getCookieName("next-auth.nonce"),
@@ -657,7 +638,13 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       },
       pkceCodeVerifier: {
         name: getCookieName("next-auth.pkce.code_verifier"),
-        options: getCookieOptions(),
+        options: {
+          ...getCookieOptions(),
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+        },
       },
     },
     events: {
@@ -685,6 +672,108 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       },
     },
   };
+
+  // Add Hanzo IAM provider
+  data.providers.push({
+    id: "hanzo-iam",
+    name: "Hanzo IAM",
+    type: "oauth" as const,
+    clientId: env.AUTH_HANZO_IAM_CLIENT_ID,
+    clientSecret: env.AUTH_HANZO_IAM_CLIENT_SECRET,
+    wellKnown: `${env.AUTH_HANZO_IAM_SERVER_URL}/.well-known/openid-configuration`,
+    authorization: {
+      params: {
+        scope: "openid email profile",
+        prompt: "select_account",
+        response_type: "code",
+      },
+      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/authorize`,
+    },
+    token: {
+      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/token`,
+    },
+    userinfo: {
+      url: `${env.AUTH_HANZO_IAM_SERVER_URL}/oauth/userinfo`,
+    },
+    checks: ["state", "pkce"],
+    client: {
+      token_endpoint_auth_method: "client_secret_basic",
+    },
+    allowDangerousEmailAccountLinking: env.AUTH_HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+    async profile(profile, tokens) {
+      const dbUser = await prisma.user.upsert({
+        where: { email: profile.email },
+        create: {
+          email: profile.email,
+          name: profile.name,
+          image: profile.picture,
+        },
+        update: {
+          name: profile.name,
+          image: profile.picture,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          image: true,
+          emailVerified: true,
+          featureFlags: true,
+          organizationMemberships: {
+            include: {
+              organization: {
+                include: {
+                  projects: true,
+                },
+              },
+            },
+          },
+        }
+      });
+
+      const user = {
+        id: profile.sub,
+        name: profile.name,
+        email: profile.email,
+        image: profile.picture,
+        emailVerified: dbUser.emailVerified?.toISOString(),
+        canCreateOrganizations: canCreateOrganizations(profile.email),
+        organizations: dbUser.organizationMemberships.map((orgMembership) => {
+          const parsedCloudConfig = CloudConfigSchema.safeParse(
+            orgMembership.organization.cloudConfig,
+          );
+          return {
+            id: orgMembership.organization.id,
+            name: orgMembership.organization.name,
+            role: orgMembership.role,
+            cloudConfig: parsedCloudConfig.data,
+            projects: orgMembership.organization.projects
+              .map((project) => {
+                return {
+                  id: project.id,
+                  name: project.name,
+                  role: orgMembership.role,
+                  retentionDays: project.retentionDays,
+                  deletedAt: project.deletedAt,
+                };
+              })
+              .filter((project) =>
+                projectRoleAccessRights[project.role].includes(
+                  "project:read",
+                ),
+              ),
+            plan: getOrganizationPlanServerSide(
+              parsedCloudConfig.data,
+            ),
+          };
+        }),
+        featureFlags: parseFlags(dbUser.featureFlags),
+      };
+
+      return user;
+    },
+  });
+
   return data;
 }
 

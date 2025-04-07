@@ -7,9 +7,10 @@ const shouldSecureCookies = () =>
 export const getCookieOptions = () => ({
   domain: env.NEXTAUTH_COOKIE_DOMAIN ?? undefined,
   httpOnly: true,
-  sameSite: "lax" as const,
+  sameSite: (process.env.NODE_ENV === "development" ? "lax" : "strict") as "lax" | "strict",
   path: "/",
   secure: shouldSecureCookies(),
+  maxAge: 30 * 24 * 60 * 60, // 30 days
 });
 
 export const getCookieName = (name: string) =>

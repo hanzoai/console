@@ -36,6 +36,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hanzo/ee": "workspace:*",
+    "@hanzo/iam-js-sdk": "^0.0.1",
     "@hanzo/shared": "workspace:*",
     "@headlessui/react": "2.1.9",
     "@headlessui/tailwindcss": "0.2.1",

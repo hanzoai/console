@@ -290,6 +290,13 @@ export const env = createEnv({
       .number()
       .positive()
       .default(50_000),
+    AUTH_HANZO_IAM_CLIENT_ID: z.string().optional(),
+    AUTH_HANZO_IAM_CLIENT_SECRET: z.string().optional(),
+    AUTH_HANZO_IAM_SERVER_URL: z.string().optional(),
+    AUTH_HANZO_IAM_ORG_NAME: z.string().optional(),
+    AUTH_HANZO_IAM_APP_NAME: z.string().optional(),
+    AUTH_HANZO_IAM_REDIRECT_URI: z.string().optional(),
+    AUTH_HANZO_IAM_ALLOW_ACCOUNT_LINKING: z.enum(["true", "false"]).optional(),
   },
 
   /**
@@ -561,6 +568,13 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
       process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+    AUTH_HANZO_IAM_CLIENT_ID: process.env.AUTH_HANZO_IAM_CLIENT_ID,
+    AUTH_HANZO_IAM_CLIENT_SECRET: process.env.AUTH_HANZO_IAM_CLIENT_SECRET,
+    AUTH_HANZO_IAM_SERVER_URL: process.env.AUTH_HANZO_IAM_SERVER_URL,
+    AUTH_HANZO_IAM_ORG_NAME: process.env.AUTH_HANZO_IAM_ORG_NAME,
+    AUTH_HANZO_IAM_APP_NAME: process.env.AUTH_HANZO_IAM_APP_NAME,
+    AUTH_HANZO_IAM_REDIRECT_URI: process.env.AUTH_HANZO_IAM_REDIRECT_URI,
+    AUTH_HANZO_IAM_ALLOW_ACCOUNT_LINKING: process.env.AUTH_HANZO_IAM_ALLOW_ACCOUNT_LINKING,
   },
   // Skip validation in Docker builds
   // DOCKER_BUILD is set in Dockerfile
