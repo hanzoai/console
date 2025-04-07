@@ -1,3 +1,50 @@
+# Define common dependencies anchor before it's used
+x-hanzo-depends-on: &hanzo-depends-on
+  postgres:
+    condition: service_healthy
+  minio:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  clickhouse:
+    condition: service_healthy
+
+# Define environment variables anchor before it's used
+x-hanzo-environment: &hanzo-worker-env
+  DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+  SALT: "mysalt"
+  ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
+  TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
+  HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
+  CLICKHOUSE_MIGRATION_URL: "clickhouse://clickhouse:9000"
+  CLICKHOUSE_URL: "http://clickhouse:8123"
+  CLICKHOUSE_USER: "clickhouse"
+  CLICKHOUSE_PASSWORD: "clickhouse"
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
+  HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
+  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+  HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
+  HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
+  HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+  HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
+  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+  HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
+  HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
+  HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+  REDIS_HOST: ${REDIS_HOST:-redis}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
+  REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
+  REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
+  REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
+  REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+
 services:
   hanzo-web:
     image: hanzoai/cloud-web:3.38.0
@@ -48,51 +95,10 @@ services:
   hanzo-worker:
     image: hanzoai/cloud-worker:3.38.0
     restart: always
-    depends_on: &hanzo-depends-on
-      postgres:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      clickhouse:
-        condition: service_healthy
+    depends_on: *hanzo-depends-on
     #ports:
     #  - "3030:3030"
-    environment: &hanzo-worker-env
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
-      SALT: "mysalt"
-      ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
-      TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
-      HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
-      CLICKHOUSE_MIGRATION_URL: "clickhouse://clickhouse:9000"
-      CLICKHOUSE_URL: "http://clickhouse:8123"
-      CLICKHOUSE_USER: "clickhouse"
-      CLICKHOUSE_PASSWORD: "clickhouse"
-      CLICKHOUSE_CLUSTER_ENABLED: "false"
-      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
-      HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
-      HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
-      HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
-      HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
-      HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
-      HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
-      HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
-      HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
-      HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
-      HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
-      HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
-      HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
-      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-      REDIS_HOST: ${REDIS_HOST:-redis}
-      REDIS_PORT: ${REDIS_PORT:-6379}
-      REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
-      REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
-      REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
-      REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
-      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+    environment: *hanzo-worker-env
     networks:
       - hanzo-network
 
@@ -140,6 +146,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 1s
+    networks:
+      - hanzo-network
 
   redis:
     image: redis:alpine
