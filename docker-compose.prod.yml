@@ -1,8 +1,50 @@
-networks:
-  ai-platform_default:
-    driver: bridge
-
 services:
+  hanzo-web:
+    image: hanzoai/cloud-web:3.38.0
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+        STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
+        STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
+    restart: always
+    depends_on: *hanzo-depends-on
+    #ports:
+    #  - "3000:3000"
+    environment:
+      <<: *hanzo-worker-env
+      NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
+      STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
+      NEXTAUTH_URL: https://cloud.hanzo.ai
+      NEXTAUTH_SECRET: mysecret
+      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
+      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
+      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
+      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
+      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
+      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
+      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
+      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
+      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
+    networks:
+      - hanzo-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.well-known.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai;"
+      - "traefik.http.routers.cloud-http.rule=Host(`cloud.hanzo.ai`)"
+      - "traefik.http.routers.cloud-http.entrypoints=web"
+      - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https"
+      - "traefik.http.routers.cloud-https.rule=Host(`cloud.hanzo.ai`)"
+      - "traefik.http.routers.cloud-https.entrypoints=websecure"
+      - "traefik.http.routers.cloud-https.middlewares=well-known,cloud-csp"
+      - "traefik.http.routers.cloud-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cloud-service.loadbalancer.server.port=3000"
+
   hanzo-worker:
     image: hanzoai/cloud-worker:3.38.0
     restart: always
@@ -52,41 +94,7 @@ services:
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
     networks:
-      - ai-platform_default
-
-  hanzo-web:
-    image: hanzoai/cloud-web:3.38.0
-    build:
-      context: .
-      dockerfile: web/Dockerfile
-      args:
-        NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
-        STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
-        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
-        STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
-    restart: always
-    depends_on: *hanzo-depends-on
-    #ports:
-    #  - "3000:3000"
-    environment:
-      <<: *hanzo-worker-env
-      NEXT_PUBLIC_HANZO_CLOUD_REGION: "DEV"
-      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${STRIPE_PUBLISHABLE_KEY}"
-      STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
-      NEXTAUTH_URL: https://cloud.hanzo.ai
-      NEXTAUTH_SECRET: mysecret
-      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
-      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
-      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
-      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
-      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
-      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
-      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
-      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
-      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
-    networks:
-      - ai-platform_default
+      - hanzo-network
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -110,7 +118,7 @@ services:
       retries: 10
       start_period: 1s
     networks:
-      - ai-platform_default
+      - hanzo-network
 
   minio:
     image: minio/minio
@@ -146,7 +154,7 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - ai-platform_default
+      - hanzo-network
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -165,7 +173,11 @@ services:
     volumes:
       - hanzo_postgres_data:/var/lib/postgresql/data
     networks:
-      - ai-platform_default
+      - hanzo-network
+
+networks:
+  hanzo-network:
+    external: true
 
 volumes:
   hanzo_postgres_data:
