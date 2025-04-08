@@ -560,7 +560,7 @@ export default function SignIn({
           </h2>
         </div>
 
-        {env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined && (
+        {/* {env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined && (
           <div className="-mb-4 mt-4 rounded-lg bg-card p-3 text-center text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-6">
             If you are experiencing issues signing in, please force refresh this
             page (CMD + SHIFT + R) or clear your browser cache. We are working
@@ -574,7 +574,7 @@ export default function SignIn({
           </div>
         )}
 
-        <CloudRegionSwitch />
+        <CloudRegionSwitch /> */}
 
         <div className="mt-14 bg-background px-6 py-10 shadow sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
           <div className="space-y-6">

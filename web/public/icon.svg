@@ -1,10 +1,1 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="32" height="32" fill="black"/>
-<path d="M12.3653 25.1108V18.7321H6V25.1108H12.3653Z" fill="white"/>
-<path d="M6 18.7321L12.3653 19.3572V18.7321H6Z" fill="#D3D3D3"/>
-<path d="M25.1173 12.366H12.3779L6.02539 18.7319H18.7432L25.1173 12.366Z" fill="white"/>
-<path d="M12.3653 6H6V12.366H12.3653V6Z" fill="white"/>
-<path d="M25.1212 6H18.7559V12.366H25.1212V6Z" fill="white"/>
-<path d="M25.1084 12.366L18.7559 11.7281V12.366H25.1084Z" fill="#D3D3D3"/>
-<path d="M25.1212 25.1108V18.7321H18.7559V25.1108H25.1212Z" fill="white"/>
-</svg>
+<svg viewBox="0 0 67 67" xmlns="http://www.w3.org/2000/svg" class="w-full h-full"><path d="M22.21 67V44.6369H0V67H22.21Z" fill="#ffffff" opacity="1" transform-origin="11.104999542236328px 55.818450927734375px" style="transform: none; transform-origin: 11.105px 55.8185px;"></path><path d="M0 44.6369L22.21 46.8285V44.6369H0Z" fill="#DDDDDD" opacity="1" transform-origin="11.104999542236328px 45.73270034790039px" style="transform: none; transform-origin: 11.105px 45.7327px;"></path><path d="M66.7038 22.3184H22.2534L0.0878906 44.6367H44.4634L66.7038 22.3184Z" fill="#ffffff" opacity="1" transform-origin="33.395843490958214px 33.47754955291748px" style="transform: none; transform-origin: 33.3958px 33.4775px;"></path><path d="M22.21 0H0V22.3184H22.21V0Z" fill="#ffffff" opacity="1" transform-origin="11.104999542236328px 11.159199714660645px" style="transform: none; transform-origin: 11.105px 11.1592px;"></path><path d="M66.7198 0H44.5098V22.3184H66.7198V0Z" fill="#ffffff" opacity="1" transform-origin="55.61480140686035px 11.159199714660645px" style="transform: none; transform-origin: 55.6148px 11.1592px;"></path><path d="M66.6753 22.3185L44.5098 20.0822V22.3185H66.6753Z" fill="#DDDDDD" opacity="1" transform-origin="55.59255027770996px 21.200349807739258px" style="transform: none; transform-origin: 55.5926px 21.2003px;"></path><path d="M66.7198 67V44.6369H44.5098V67H66.7198Z" fill="#ffffff" opacity="1" transform-origin="55.61480140686035px 55.818450927734375px" style="transform: none; transform-origin: 55.6148px 55.8185px;"></path></svg>
