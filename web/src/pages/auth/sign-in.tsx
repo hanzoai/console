@@ -133,9 +133,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
             : false,
         sso,
         hanzoIam:
-          env.AUTH_HANZO_IAM_CLIENT_ID !== undefined &&
-          env.AUTH_HANZO_IAM_CLIENT_SECRET !== undefined &&
-          env.AUTH_HANZO_IAM_SERVER_URL !== undefined,
+          env.HANZO_IAM_CLIENT_ID !== undefined &&
+          env.HANZO_IAM_CLIENT_SECRET !== undefined &&
+          env.HANZO_IAM_SERVER_URL !== undefined,
       },
       signUpDisabled: env.AUTH_DISABLE_SIGNUP === "true",
       runningOnHuggingFaceSpaces: env.NEXTAUTH_URL?.replace(
