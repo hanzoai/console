@@ -3,6 +3,9 @@ import { headers } from "next/headers";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const fetchCache = "force-no-store";
+
 // This is important for Stripe webhook handling
 export const config = {
   api: {
@@ -16,7 +19,7 @@ export async function POST(req: Request) {
     const headersList = headers();
     const stripeSignature = headersList.get("stripe-signature");
     const contentLength = headersList.get("content-length");
-    
+
     if (!stripeSignature) {
       console.error("[Stripe Webhook] Missing stripe-signature header");
       return new Response(
@@ -70,7 +73,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("[Stripe Webhook] Error in webhook handler:", error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: "Failed to process webhook",
         details: error instanceof Error ? error.message : "Unknown error"
       }),
