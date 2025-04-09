@@ -205,8 +205,8 @@ pip install hanzo openai
 配置环境变量（创建名为 **.env** 的文件）：
 
 ````bash:.env
-HANZO_SECRET_KEY="sk-lf-..."
-HANZO_PUBLIC_KEY="pk-lf-..."
+HANZO_SECRET_KEY="sk-hz-..."
+HANZO_PUBLIC_KEY="pk-hz-..."
 HANZO_HOST="https://cloud.hanzo.ai" # 🇪🇺 欧盟区域
 # HANZO_HOST="https://us.cloud.hanzo.ai" # 🇺🇸 美洲区域
 ````

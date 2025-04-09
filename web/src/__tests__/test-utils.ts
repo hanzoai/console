@@ -66,7 +66,7 @@ export async function makeAPICall<T = IngestionAPIResponse>(
 ): Promise<{ body: T; status: number }> {
   const finalUrl = `http://localhost:3000/${url}`;
   const authorization =
-    auth || createBasicAuthHeader("pk-lf-1234567890", "sk-lf-1234567890");
+    auth || createBasicAuthHeader("pk-hz-1234567890", "sk-hz-1234567890");
   const options = {
     method: method,
     headers: {

@@ -9,6 +9,7 @@ import {
   OrgEnrichedApiKey,
   logger,
   instrumentAsync,
+  unregisterKeyFromLLM,
 } from "@hanzo/shared/src/server";
 import {
   type PrismaClient,
@@ -73,6 +74,16 @@ export class ApiAuthService {
     });
 
     await this.invalidate(apiKeys, `project ${projectId}`);
+    
+    // Unregister all project keys from LLM API
+    for (const apiKey of apiKeys) {
+      try {
+        await unregisterKeyFromLLM(apiKey.publicKey);
+      } catch (error) {
+        logger.error(`Error unregistering project key from LLM API: ${error instanceof Error ? error.message : String(error)}`);
+        // Continue with next key
+      }
+    }
   }
 
   async deleteApiKey(id: string, projectId: string) {
@@ -85,6 +96,14 @@ export class ApiAuthService {
     });
     if (!apiKey) {
       return false;
+    }
+
+    // Unregister key from LLM API
+    try {
+      await unregisterKeyFromLLM(apiKey.publicKey);
+    } catch (error) {
+      logger.error(`Error unregistering key from LLM API: ${error instanceof Error ? error.message : String(error)}`);
+      // Continue with deletion even if LLM unregistration fails
     }
 
     // if redis is available, delete the key from there as well

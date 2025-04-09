@@ -3,6 +3,8 @@ import { compare, hash } from "bcryptjs";
 import { randomUUID } from "crypto";
 import * as crypto from "crypto";
 import { env } from "../../env";
+import fetch from "node-fetch";
+import { logger } from "../index";
 
 export function getDisplaySecretKey(secretKey: string) {
   return secretKey.slice(0, 6) + "..." + secretKey.slice(-4);
@@ -16,8 +18,8 @@ export async function hashSecretKey(key: string) {
 
 async function generateKeySet() {
   return {
-    pk: `pk-lf-${randomUUID()}`,
-    sk: `sk-lf-${randomUUID()}`,
+    pk: `pk-hz-${randomUUID()}`,
+    sk: `sk-hz-${randomUUID()}`,
   };
 }
 
@@ -34,6 +36,75 @@ export function createShaHash(privateKey: string, salt: string): string {
     .digest("hex");
 
   return hash;
+}
+
+async function registerKeyWithLLM(publicKey: string, secretKey: string, projectId: string, orgId?: string) {
+  const llmApiUrl = process.env.LLM_API_URL;
+  const llmApiKey = process.env.LLM_ADMIN_KEY;
+  
+  if (!llmApiUrl || !llmApiKey) {
+    logger.warn("LLM_API_URL or LLM_ADMIN_KEY not set, skipping LLM registration");
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${llmApiUrl}/api/register-key`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${llmApiKey}`
+      },
+      body: JSON.stringify({
+        publicKey,
+        secretKey,
+        projectId,
+        orgId
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to register key with LLM API: ${response.statusText}`);
+    }
+    
+    logger.info(`Successfully registered API key with LLM API for project ${projectId}`);
+    return await response.json();
+  } catch (error) {
+    logger.error(`Error registering key with LLM API: ${error instanceof Error ? error.message : String(error)}`);
+    // Non-blocking - we still want to create the key even if LLM registration fails
+  }
+}
+
+export async function unregisterKeyFromLLM(publicKey: string) {
+  const llmApiUrl = process.env.LLM_API_URL;
+  const llmApiKey = process.env.LLM_ADMIN_KEY;
+  
+  if (!llmApiUrl || !llmApiKey) {
+    logger.warn("LLM_API_URL or LLM_ADMIN_KEY not set, skipping LLM unregistration");
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${llmApiUrl}/api/unregister-key`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${llmApiKey}`
+      },
+      body: JSON.stringify({
+        publicKey
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to unregister key from LLM API: ${response.statusText}`);
+    }
+    
+    logger.info(`Successfully unregistered API key from LLM API`);
+    return await response.json();
+  } catch (error) {
+    logger.error(`Error unregistering key from LLM API: ${error instanceof Error ? error.message : String(error)}`);
+    // Non-blocking
+  }
 }
 
 export async function createAndAddApiKeysToDb(p: {
@@ -68,7 +139,17 @@ export async function createAndAddApiKeysToDb(p: {
       fastHashedSecretKey: hashFromProvidedKey,
       note: p.note,
     },
+    include: {
+      project: {
+        include: {
+          organization: true
+        }
+      }
+    }
   });
+
+  // Register with LLM API
+  await registerKeyWithLLM(pk, sk, p.projectId, apiKey.project.orgId);
 
   return {
     id: apiKey.id,

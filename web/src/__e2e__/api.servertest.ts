@@ -15,7 +15,7 @@ const generateAuth = (username: string, password: string) => {
 
 const workerAdminAuth = generateAuth("admin", "myworkerpassword");
 
-const userApiKeyAuth = generateAuth("pk-lf-1234567890", "sk-lf-1234567890");
+const userApiKeyAuth = generateAuth("pk-hz-1234567890", "sk-hz-1234567890");
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
 describe("Health endpoints", () => {

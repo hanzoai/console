@@ -212,8 +212,8 @@ pip install hanzo openai
 ```
 
 ```bash filename=".env"
-HANZO_SECRET_KEY="sk-lf-..."
-HANZO_PUBLIC_KEY="pk-lf-..."
+HANZO_SECRET_KEY="sk-hz-..."
+HANZO_PUBLIC_KEY="pk-hz-..."
 HANZO_HOST="https://cloud.hanzo.ai" # 🇪🇺 EUリージョン
 # HANZO_HOST="https://us.cloud.hanzo.ai" # 🇺🇸 USリージョン
 ```

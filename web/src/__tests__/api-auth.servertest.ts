@@ -29,7 +29,7 @@ describe("Authenticate API calls", () => {
       expect(auth.validKey).toBe(true);
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
@@ -46,7 +46,7 @@ describe("Authenticate API calls", () => {
       expect(auth.validKey).toBe(true);
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
@@ -97,7 +97,7 @@ describe("Authenticate API calls", () => {
       }
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
@@ -157,7 +157,7 @@ describe("Authenticate API calls", () => {
       }
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
@@ -183,7 +183,7 @@ describe("Authenticate API calls", () => {
       expect(auth.validKey).toBe(true);
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
 
       expect(apiKey).not.toBeNull();
@@ -201,7 +201,7 @@ describe("Authenticate API calls", () => {
     it("should fail on wrong api key without new key", async () => {
       await createAPIKey();
       const initialApiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(initialApiKey).not.toBeNull();
       expect(initialApiKey?.fastHashedSecretKey).toBeNull();
@@ -215,7 +215,7 @@ describe("Authenticate API calls", () => {
       expect(auth.validKey).toBe(false);
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
       expect(apiKey?.fastHashedSecretKey).toBeNull();
@@ -278,7 +278,7 @@ describe("Authenticate API calls", () => {
       );
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
 
       expect(apiKey).not.toBeNull();
@@ -422,7 +422,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         id: expect.any(String),
         note: "seeded key",
-        publicKey: "pk-lf-1234567890",
+        publicKey: "pk-hz-1234567890",
         hashedSecretKey: expect.any(String),
         fastHashedSecretKey: expect.any(String),
         displaySecretKey: expect.any(String),
@@ -505,7 +505,7 @@ describe("Authenticate API calls", () => {
       expect(auth2.validKey).toBe(true);
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
 
       expect(apiKey).not.toBeNull();
@@ -587,7 +587,7 @@ describe("Authenticate API calls", () => {
       );
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
 
@@ -610,7 +610,7 @@ describe("Authenticate API calls", () => {
       await createAPIKey();
 
       await prisma.apiKey.update({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
         data: {
           fastHashedSecretKey: Math.random().toString(36).substring(2, 15),
         },
@@ -647,7 +647,7 @@ describe("Authenticate API calls", () => {
       );
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
       expect(apiKey).not.toBeNull();
 
@@ -670,7 +670,7 @@ describe("Authenticate API calls", () => {
       await createAPIKey();
 
       await prisma.apiKey.update({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
         data: {
           fastHashedSecretKey: Math.random().toString(36).substring(2, 15),
         },
@@ -688,7 +688,7 @@ describe("Authenticate API calls", () => {
       await createAPIKey();
 
       await prisma.apiKey.update({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
         data: {
           fastHashedSecretKey: Math.random().toString(36).substring(2, 15),
         },
@@ -706,8 +706,8 @@ describe("Authenticate API calls", () => {
   const createAPIKey = async () => {
     const seedApiKey = {
       id: "seed-api-key",
-      secret: "sk-lf-1234567890",
-      public: "pk-lf-1234567890",
+      secret: "sk-hz-1234567890",
+      public: "pk-hz-1234567890",
       note: "seeded key",
     };
     await prisma.apiKey.create({
