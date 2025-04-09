@@ -10,6 +10,7 @@ import type Stripe from "stripe";
 import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
 import { traceException, redis, logger } from "@hanzo/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
+import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
 
 /*
  * Sign-up endpoint (email/password users), creates user in database.
@@ -84,6 +85,10 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       const subscription = event.data.object;
       logger.info("[Stripe Webhook] Start customer.subscription.created", {
         payload: subscription,
+        subscriptionId: subscription.id,
+        customerId: subscription.customer,
+        status: subscription.status,
+        items: subscription.items.data
       });
       await handleSubscriptionChanged(subscription, "created");
       break;
@@ -92,6 +97,10 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       const updatedSubscription = event.data.object;
       logger.info("[Stripe Webhook] Start customer.subscription.updated", {
         payload: updatedSubscription,
+        subscriptionId: updatedSubscription.id,
+        customerId: updatedSubscription.customer,
+        status: updatedSubscription.status,
+        items: updatedSubscription.items.data
       });
       await handleSubscriptionChanged(updatedSubscription, "updated");
       break;
@@ -100,6 +109,9 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       const deletedSubscription = event.data.object;
       logger.info("[Stripe Webhook] Start customer.subscription.deleted", {
         payload: deletedSubscription,
+        subscriptionId: deletedSubscription.id,
+        customerId: deletedSubscription.customer,
+        status: deletedSubscription.status
       });
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
@@ -125,15 +137,29 @@ async function handleSubscriptionChanged(
   action: "created" | "deleted" | "updated",
 ) {
   const subscriptionId = subscription.id;
-  // const subscriptionPlan = subscription.items.data[0].price.nickname;
+  logger.info("[Stripe Webhook] Processing subscription:", {
+    subscriptionId,
+    action,
+    status: subscription.status,
+    customerId: subscription.customer
+  });
 
   // get the checkout session from the subscription to retrieve the client reference for this subscription
   const checkoutSessionsResponse = await stripeClient?.checkout.sessions.list({
     subscription: subscriptionId,
     limit: 1,
   });
+  
+  logger.info("[Stripe Webhook] Found checkout sessions:", {
+    count: checkoutSessionsResponse?.data.length,
+    sessions: checkoutSessionsResponse?.data
+  });
+
   if (!checkoutSessionsResponse || checkoutSessionsResponse.data.length !== 1) {
-    logger.error("[Stripe Webhook] No checkout session found");
+    logger.error("[Stripe Webhook] No checkout session found", {
+      subscriptionId,
+      sessions: checkoutSessionsResponse?.data
+    });
     traceException("[Stripe Webhook] No checkout session found");
     return;
   }
@@ -142,7 +168,10 @@ async function handleSubscriptionChanged(
   // the client reference is passed to the stripe checkout session via the pricing page
   const clientReference = checkoutSession.client_reference_id;
   if (!clientReference) {
-    logger.error("[Stripe Webhook] No client reference");
+    logger.error("[Stripe Webhook] No client reference", {
+      checkoutSession,
+      subscriptionId
+    });
     traceException("[Stripe Webhook] No client reference");
     return NextResponse.json(
       { message: "No client reference" },
@@ -152,6 +181,7 @@ async function handleSubscriptionChanged(
   if (!isStripeClientReferenceFromCurrentCloudRegion(clientReference)) {
     logger.info(
       "[Stripe Webhook] Client reference not from current cloud region",
+      { clientReference }
     );
     return;
   }
@@ -164,9 +194,13 @@ async function handleSubscriptionChanged(
     },
   });
 
-  console.log("organization=============", organization);
+  logger.info("[Stripe Webhook] Found organization:", {
+    organization,
+    orgId
+  });
+  
   if (!organization) {
-    logger.error("[Stripe Webhook] Organization not found");
+    logger.error("[Stripe Webhook] Organization not found", { orgId });
     traceException("[Stripe Webhook] Organization not found");
     return;
   }
@@ -175,24 +209,19 @@ async function handleSubscriptionChanged(
   // assert that no other stripe customer id is already set on the org
   const customerId = subscription.customer;
   if (!customerId || typeof customerId !== "string") {
-    logger.error("[Stripe Webhook] Customer ID not found");
+    logger.error("[Stripe Webhook] Customer ID not found", {
+      customerId,
+      subscriptionId
+    });
     traceException("[Stripe Webhook] Customer ID not found");
-    return;
-  }
-  if (
-    parsedOrg.cloudConfig?.stripe?.customerId &&
-    parsedOrg.cloudConfig?.stripe?.customerId !== customerId
-  ) {
-    logger.error("[Stripe Webhook] Another customer id already set on org");
-    traceException("[Stripe Webhook] Another customer id already set on org");
     return;
   }
 
   // check subscription items
-
   if (!subscription.items.data || subscription.items.data.length !== 1) {
     logger.error(
       "[Stripe Webhook] Subscription items not found or more than one",
+      { items: subscription.items.data }
     );
     traceException(
       "[Stripe Webhook] Subscription items not found or more than one",
@@ -204,67 +233,100 @@ async function handleSubscriptionChanged(
   const productId = subscriptionItem.price.product;
 
   if (!productId || typeof productId !== "string") {
-    logger.error("[Stripe Webhook] Product ID not found");
+    logger.error("[Stripe Webhook] Product ID not found", {
+      productId,
+      subscriptionItem
+    });
     traceException("[Stripe Webhook] Product ID not found");
     return;
   }
 
-  // assert that no other product is already set on the org if this is not an update
-  if (
-    action !== "updated" &&
-    parsedOrg.cloudConfig?.stripe?.activeProductId &&
-    parsedOrg.cloudConfig?.stripe?.activeProductId !== productId
-  ) {
-    traceException(
-      "[Stripe Webhook] Another active product id already set on (one of the) org with this active subscription id",
-    );
-    logger.error(
-      "[Stripe Webhook] Another active product id already set on (one of the) org with this active subscription id",
-    );
+  // Get the plan name from the product ID
+  const planName = mapStripeProductIdToPlan(productId);
+  if (!planName) {
+    logger.error("[Stripe Webhook] Could not map product ID to plan name", {
+      productId,
+      subscriptionItem
+    });
+    traceException("[Stripe Webhook] Could not map product ID to plan name");
     return;
   }
-  
 
-  console.log("subscription.items.data", subscriptionItem.plan.id);
-  // update the cloud config with the product ID
-  if (action === "created" || action === "updated") {
-    await prisma.organization.update({
-      where: {
-        id: parsedOrg.id,
-      },
-      data: {
-        cloudConfig: {
-          ...parsedOrg.cloudConfig,
-          stripe: {
-            ...parsedOrg.cloudConfig?.stripe,
-            ...CloudConfigSchema.shape.stripe.parse({
-              activeProductId: productId,
-              activeSubscriptionId: subscriptionId,
-              customerId: customerId,
-            }),
-          },
-        },        
-        
-        
+  logger.info("[Stripe Webhook] Updating organization plan:", {
+    orgId,
+    planName,
+    productId,
+    subscriptionId,
+    customerId,
+  });
 
-      },
-    });
-  } else if (action === "deleted") {
-    await prisma.organization.update({
-      where: {
-        id: parsedOrg.id,
-      },
-      data: {
-        cloudConfig: {
-          ...parsedOrg.cloudConfig,
-          plan: subscriptionItem.price.nickname,
+  try {
+    // update the cloud config with the product ID
+    if (action === "created" || action === "updated") {
+      const updatedOrg = await prisma.organization.update({
+        where: {
+          id: parsedOrg.id,
         },
-      },
-    });
-  }
+        data: {
+          cloudConfig: {
+            ...parsedOrg.cloudConfig,
+            stripe: {
+              ...parsedOrg.cloudConfig?.stripe,
+              ...CloudConfigSchema.shape.stripe.parse({
+                activeProductId: productId,
+                activeSubscriptionId: subscriptionId,
+                customerId: customerId,
+                subscriptionStatus: subscription.status,
+              }),
+            },
+            plan: planName,
+          },
+        },
+      });
 
-  // need to update the plan in the api keys
-  await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
+      logger.info("[Stripe Webhook] Successfully updated organization plan", {
+        updatedOrg,
+        planName
+      });
+    } else if (action === "deleted") {
+      const updatedOrg = await prisma.organization.update({
+        where: {
+          id: parsedOrg.id,
+        },
+        data: {
+          cloudConfig: {
+            ...parsedOrg.cloudConfig,
+            stripe: {
+              ...parsedOrg.cloudConfig?.stripe,
+              activeProductId: null,
+              activeSubscriptionId: null,
+              subscriptionStatus: "canceled",
+            },
+            plan: "free",
+          },
+        },
+      });
+
+      logger.info("[Stripe Webhook] Successfully removed organization plan", {
+        updatedOrg
+      });
+    }
+
+    // need to update the plan in the api keys
+    await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
+    logger.info("[Stripe Webhook] Successfully invalidated API keys", {
+      orgId: parsedOrg.id
+    });
+  } catch (error) {
+    logger.error("[Stripe Webhook] Error updating organization", {
+      error,
+      orgId,
+      planName,
+      action
+    });
+    traceException("[Stripe Webhook] Error updating organization");
+    throw error;
+  }
 
   return;
 }

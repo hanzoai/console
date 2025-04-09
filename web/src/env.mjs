@@ -322,6 +322,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CRISP_WEBSITE_ID: z.string().optional(),
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
+    NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
   },
 
   /**
@@ -575,6 +576,7 @@ export const env = createEnv({
     HANZO_IAM_APP_NAME: process.env.HANZO_IAM_APP_NAME,
     HANZO_IAM_REDIRECT_URI: process.env.HANZO_IAM_REDIRECT_URI,
     HANZO_IAM_ALLOW_ACCOUNT_LINKING: process.env.HANZO_IAM_ALLOW_ACCOUNT_LINKING,
+    NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
   },
   // Skip validation in Docker builds
   // DOCKER_BUILD is set in Dockerfile

@@ -612,40 +612,28 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     cookies: {
       sessionToken: {
         name: getCookieName("next-auth.session-token"),
-        options: getCookieOptions(),
+        options: getCookieOptions()
       },
       csrfToken: {
         name: getCookieName("next-auth.csrf-token"),
-        options: getCookieOptions(),
+        options: getCookieOptions()
       },
       callbackUrl: {
         name: getCookieName("next-auth.callback-url"),
-        options: getCookieOptions(),
+        options: getCookieOptions()
       },
       state: {
         name: getCookieName("next-auth.state"),
-        options: {
-          ...getCookieOptions(),
-          httpOnly: true,
-          sameSite: "lax",
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-        },
+        options: getCookieOptions()
       },
       nonce: {
         name: getCookieName("next-auth.nonce"),
-        options: getCookieOptions(),
+        options: getCookieOptions()
       },
       pkceCodeVerifier: {
         name: getCookieName("next-auth.pkce.code_verifier"),
-        options: {
-          ...getCookieOptions(),
-          httpOnly: true,
-          sameSite: "lax",
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-        },
-      },
+        options: getCookieOptions()
+      }
     },
     events: {
       createUser: async ({ user }) => {
