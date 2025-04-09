@@ -120,8 +120,8 @@ services:
       CLICKHOUSE_PASSWORD: clickhouse
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - cloud_clickhouse_data:/var/lib/clickhouse
-      - cloud_clickhouse_logs:/var/log/clickhouse-server
+      - cloud-clickhouse-data:/var/lib/clickhouse
+      - cloud-clickhouse-logs:/var/log/clickhouse-server
     #ports:
     #  - "8123:8123"
     #  - "9000:9000"
@@ -147,7 +147,7 @@ services:
     #  - "9090:9000"
     #  - "9091:9001"
     volumes:
-      - cloud_minio_data:/data
+      - cloud-minio-data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -187,7 +187,7 @@ services:
     #ports:
     #  - 5432:5432
     volumes:
-      - cloud_postgres_data:/var/lib/postgresql/data
+      - cloud-postgres-data:/var/lib/postgresql/data
     networks:
       - hanzo-network
 
@@ -196,11 +196,12 @@ networks:
     external: true
 
 volumes:
-  cloud_postgres_data:
+  cloud-postgres-data:
+    name: cloud-postgres-data-prod
     driver: local
-  cloud_clickhouse_data:
+  cloud-clickhouse-data:
     driver: local
-  cloud_clickhouse_logs:
+  cloud-clickhouse-logs:
     driver: local
-  cloud_minio_data:
+  cloud-minio-data:
     driver: local
