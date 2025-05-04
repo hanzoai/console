@@ -153,8 +153,6 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
-    ports:
-     - "3030:3030"
     environment:
       # <<: *cloud-dev-worker-env
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
@@ -205,9 +203,6 @@ services:
     volumes:
       - cloud_dev_clickhouse_data:/var/lib/clickhouse
       - cloud_dev_clickhouse_logs:/var/log/clickhouse-server
-    ports:
-     - "8123:8123"
-     - "9000:9000"
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
       interval: 5s
@@ -226,9 +221,6 @@ services:
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
-    ports:
-     - "9090:9000"
-     - "9091:9001"
     volumes:
       - cloud_dev_minio_data:/data
     healthcheck:
@@ -245,8 +237,6 @@ services:
     restart: always
     command: >
       --requirepass ${REDIS_AUTH:-myredissecret}
-    ports:
-     - 6379:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
@@ -267,8 +257,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    ports:
-     - 5432:5432
     volumes:
       - cloud_dev_postgres_data:/var/lib/postgresql/data
     networks:
@@ -276,7 +264,7 @@ services:
 
 networks:
   hanzo-network:
-    # external: true
+    external: true
 
 volumes:
   cloud_dev_postgres_data:
