@@ -51,11 +51,13 @@ export function TagPromptDetailsPopover({
         (oldQueryData: RouterOutput["prompts"]["allVersions"] | undefined) => {
           return oldQueryData
             ? {
-                promptVersions: oldQueryData.promptVersions.map((prompt) => {
-                  return prompt.name === promptName
-                    ? { ...prompt, tags }
-                    : prompt;
-                }),
+                promptVersions: oldQueryData.promptVersions.map(
+                  (prompt: any) => {
+                    return prompt.name === promptName
+                      ? { ...prompt, tags }
+                      : prompt;
+                  },
+                ),
                 totalCount: oldQueryData.totalCount,
               }
             : undefined;
