@@ -35,7 +35,7 @@ export function TagPromptPopover({
     },
     onError: (err, _newTags, context) => {
       utils.prompts.all.setData(promptsFilter, context?.prevPrompt);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       setIsLoading(false);
     },
     onSettled: (data, error, { name, tags }) => {

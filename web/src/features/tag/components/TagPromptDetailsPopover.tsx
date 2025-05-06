@@ -37,7 +37,7 @@ export function TagPromptDetailsPopover({
     },
     onError: (err, _newTags, context) => {
       setIsLoading(false);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
       utils.prompts.allVersions.setData(
         { projectId: projectId, name: promptName },

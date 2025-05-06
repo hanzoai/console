@@ -6,7 +6,8 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { type RouterOutput, type RouterInput } from "@/src/utils/types";
 import { useState } from "react";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
+// import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
+// import { AnyColumnWithTable } from "kysely";
 
 export function StarToggle({
   value,
@@ -72,7 +73,7 @@ export function StarTraceToggle({
         if (!old) return old;
         return {
           ...old,
-          traces: old.traces.map((trace) =>
+          traces: old.traces.map((trace: any) =>
             trace.id === traceId
               ? { ...trace, bookmarked: newBookmarkState.bookmarked }
               : trace,
@@ -84,7 +85,7 @@ export function StarTraceToggle({
     },
     onError: (err, newBookmarkState, context) => {
       setIsLoading(false);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       if (context?.previousData) {
         utils.traces.all.setData(tracesFilter, context.previousData);
       }
@@ -158,7 +159,7 @@ export function StarTraceDetailsToggle({
     },
     onError: (err, _newTodo, context) => {
       setIsLoading(false);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
       utils.traces.byIdWithObservationsAndScores.setData(
         { traceId, projectId, timestamp },
