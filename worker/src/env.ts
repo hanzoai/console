@@ -50,8 +50,8 @@ const EnvSchema = z.object({
     .number()
     .positive()
     .default(50_000),
-  EMAIL_FROM_ADDRESS: z.string().optional(),
-  SMTP_CONNECTION_URL: z.string().optional(),
+  EMAIL_FROM_ADDRESS: z.string().default("nonreply@hanzo,ai"),
+  SMTP_CONNECTION_URL: z.string(),
   HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY: z.coerce
     .number()
     .positive()
@@ -127,9 +127,7 @@ const EnvSchema = z.object({
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().default("http://localhost:4318"),
   OTEL_SERVICE_NAME: z.string().default("worker"),
 
-  HANZO_ENABLE_BACKGROUND_MIGRATIONS: z
-    .enum(["true", "false"])
-    .default("true"),
+  HANZO_ENABLE_BACKGROUND_MIGRATIONS: z.enum(["true", "false"]).default("true"),
 
   HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE: z
     .enum(["true", "false"])
@@ -209,10 +207,7 @@ const EnvSchema = z.object({
     .enum(["true", "false"])
     .default("false"),
 
-  HANZO_S3_CONCURRENT_READS: z.coerce
-    .number()
-    .positive()
-    .default(50),
+  HANZO_S3_CONCURRENT_READS: z.coerce.number().positive().default(50),
 });
 
 export const env: z.infer<typeof EnvSchema> =
