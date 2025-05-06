@@ -1,6 +1,7 @@
 import { removeEmptyEnvVariables } from "@hanzo/shared";
 import { z } from "zod";
-
+import { config } from "dotenv";
+config();
 const EnvSchema = z.object({
   BUILD_ID: z.string().optional(),
   NODE_ENV: z

@@ -3,7 +3,6 @@ import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type RouterOutput, type RouterInput } from "@/src/utils/types";
 import TagManager from "@/src/features/tag/components/TagMananger";
-import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
 
 type TagPromptPopverProps = {
   tags: string[];
@@ -43,7 +42,7 @@ export function TagPromptPopover({
         promptsFilter,
         (oldQueryData: RouterOutput["prompts"]["all"] | undefined) => {
           const updatedPrompts = oldQueryData
-            ? oldQueryData.prompts.map((prompt) => {
+            ? oldQueryData.prompts.map((prompt: any) => {
                 return prompt.name === name ? { ...prompt, tags } : prompt;
               })
             : [];
