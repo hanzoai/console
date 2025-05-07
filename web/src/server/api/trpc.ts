@@ -295,6 +295,7 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
   const sessionOrg = ctx.session.user.organizations.find(
     (org) => org.id === orgId,
   );
+  logger.error(`Check org session:>>>>`, sessionOrg);
 
   if (
     !sessionOrg
