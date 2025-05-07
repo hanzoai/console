@@ -49,7 +49,7 @@ COPY --from=pruner /app/out/json/ .
 
 # Add this line to copy .env from root directory
 COPY ./.env ./,env
-# COPY ../.env ./.env
+COPY ../.env ./.env
 
 RUN pnpm install --frozen-lockfile
 
