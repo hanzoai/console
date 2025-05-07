@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 const zAuthMethod = z
   .enum([
@@ -158,8 +158,8 @@ export const env = createEnv({
     AUTH_HTTP_PROXY: z.string().url().optional(),
     AUTH_HTTPS_PROXY: z.string().url().optional(),
     // EMAIL
-    EMAIL_FROM_ADDRESS: z.string().optional(),
-    SMTP_CONNECTION_URL: z.string().optional(),
+    EMAIL_FROM_ADDRESS: z.string().default("nonreply@hanzo.ai"),
+    SMTP_CONNECTION_URL: z.string().default(""),
 
     // S3 Batch Export
     HANZO_S3_BATCH_EXPORT_ENABLED: z
