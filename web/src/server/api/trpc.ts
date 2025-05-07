@@ -79,7 +79,6 @@ import { ZodError } from "zod";
 import { setUpSuperjson } from "@/src/utils/superjson";
 import { DB } from "@/src/server/db";
 import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
-import { CopyX } from "lucide-react";
 
 setUpSuperjson();
 
