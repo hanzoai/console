@@ -79,6 +79,7 @@ import { ZodError } from "zod";
 import { setUpSuperjson } from "@/src/utils/superjson";
 import { DB } from "@/src/server/db";
 import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
+import { CopyX } from "lucide-react";
 
 setUpSuperjson();
 
@@ -292,6 +293,7 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
   }
 
   const orgId = result.data.orgId;
+  console.log("check session:>>>>>", ctx.session);
   const sessionOrg = ctx.session.user.organizations.find(
     (org) => org.id === orgId,
   );
