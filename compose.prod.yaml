@@ -6,6 +6,8 @@ x-cloud-depends-on: &cloud-depends-on
     condition: service_healthy
   redis:
     condition: service_healthy
+  redis-cloud:
+    condition: service_healthy
   clickhouse:
     condition: service_healthy
 
@@ -191,6 +193,23 @@ services:
     networks:
       - hanzo-network
 
+  redis-cloud:
+    image: redis:alpine
+    restart: always
+    command: >
+      --requirepass ${REDIS_AUTH:-myredissecret}
+    environment:
+      REDIS_PASSWORD: ${REDIS_AUTH:-myredissecret}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_AUTH:-myredissecret}", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    networks:
+      - hanzo-network
+    volumes:
+      - cloud-redis-cloud-data:/data
+
 networks:
   hanzo-network:
     external: true
@@ -204,4 +223,6 @@ volumes:
   cloud-clickhouse-logs:
     driver: local
   cloud-minio-data:
+    driver: local
+  cloud-redis-cloud-data:
     driver: local

@@ -52,7 +52,7 @@ const EnvSchema = z.object({
     .positive()
     .default(50_000),
   EMAIL_FROM_ADDRESS: z.string().default("nonreply@hanzo,ai"),
-  SMTP_CONNECTION_URL: z.string(),
+  SMTP_CONNECTION_URL: z.string().default(""),
   HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY: z.coerce
     .number()
     .positive()
