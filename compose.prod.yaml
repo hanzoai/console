@@ -201,7 +201,6 @@ services:
 
   redis-cloud:
     image: redis:alpine
-    container-name: redis-cloud
     restart: always
     command: >
       --requirepass ${REDIS_AUTH:-myredissecret}
