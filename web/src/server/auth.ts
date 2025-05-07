@@ -448,6 +448,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     session: {
       strategy: "jwt",
       maxAge: env.AUTH_SESSION_MAX_AGE * 60, // convert minutes to seconds, default is set in env.mjs
+      updateAge: 60 * 60 * 24,
     },
     callbacks: {
       async session({ session, token }): Promise<Session> {
@@ -500,25 +501,36 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                     canCreateOrganizations: canCreateOrganizations(
                       dbUser.email,
                     ),
-                    organizations: dbUser.organizationMemberships.map((membership) => {
-                      const parsedCloudConfig = CloudConfigSchema.safeParse(
-                        membership.organization.cloudConfig,
-                      );
-                      return {
-                        id: membership.organization.id,
-                        name: membership.organization.name,
-                        role: membership.role,
-                        cloudConfig: parsedCloudConfig.data,
-                        projects: membership.organization.projects.map((project: { id: string; name: string; deletedAt: Date | null; retentionDays: number | null; }) => ({
-                          id: project.id,
-                          name: project.name,
+                    organizations: dbUser.organizationMemberships.map(
+                      (membership) => {
+                        const parsedCloudConfig = CloudConfigSchema.safeParse(
+                          membership.organization.cloudConfig,
+                        );
+                        return {
+                          id: membership.organization.id,
+                          name: membership.organization.name,
                           role: membership.role,
-                          deletedAt: project.deletedAt,
-                          retentionDays: project.retentionDays,
-                        })),
-                        plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
-                      };
-                    }),
+                          cloudConfig: parsedCloudConfig.data,
+                          projects: membership.organization.projects.map(
+                            (project: {
+                              id: string;
+                              name: string;
+                              deletedAt: Date | null;
+                              retentionDays: number | null;
+                            }) => ({
+                              id: project.id,
+                              name: project.name,
+                              role: membership.role,
+                              deletedAt: project.deletedAt,
+                              retentionDays: project.retentionDays,
+                            }),
+                          ),
+                          plan: getOrganizationPlanServerSide(
+                            parsedCloudConfig.data,
+                          ),
+                        };
+                      },
+                    ),
                     emailVerified: dbUser.emailVerified?.toISOString(),
                     featureFlags: parseFlags(dbUser.featureFlags),
                   }
@@ -612,28 +624,28 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     cookies: {
       sessionToken: {
         name: getCookieName("next-auth.session-token"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       csrfToken: {
         name: getCookieName("next-auth.csrf-token"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       callbackUrl: {
         name: getCookieName("next-auth.callback-url"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       state: {
         name: getCookieName("next-auth.state"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       nonce: {
         name: getCookieName("next-auth.nonce"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       pkceCodeVerifier: {
         name: getCookieName("next-auth.pkce.code_verifier"),
-        options: getCookieOptions()
-      }
+        options: getCookieOptions(),
+      },
     },
     events: {
       createUser: async ({ user }) => {
@@ -687,7 +699,8 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     client: {
       token_endpoint_auth_method: "client_secret_basic",
     },
-    allowDangerousEmailAccountLinking: env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+    allowDangerousEmailAccountLinking:
+      env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
     async profile(profile, tokens) {
       const dbUser = await prisma.user.upsert({
         where: { email: profile.email },
@@ -716,7 +729,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               },
             },
           },
-        }
+        },
       });
 
       const user = {
@@ -746,13 +759,9 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                 };
               })
               .filter((project) =>
-                projectRoleAccessRights[project.role].includes(
-                  "project:read",
-                ),
+                projectRoleAccessRights[project.role].includes("project:read"),
               ),
-            plan: getOrganizationPlanServerSide(
-              parsedCloudConfig.data,
-            ),
+            plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
           };
         }),
         featureFlags: parseFlags(dbUser.featureFlags),
