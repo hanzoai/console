@@ -78,11 +78,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { setUpSuperjson } from "@/src/utils/superjson";
 import { DB } from "@/src/server/db";
-import {
-  addUserToSpan,
-  getTraceById,
-  logger,
-} from "@hanzo/shared/src/server";
+import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
 
 setUpSuperjson();
 
@@ -300,7 +296,10 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
     (org) => org.id === orgId,
   );
 
-  if (!sessionOrg && ctx.session.user.admin !== true) {
+  if (
+    !sessionOrg
+    // && ctx.session.user.admin !== true
+  ) {
     logger.error(`User ${ctx.session.user.id} is not a member of org ${orgId}`);
     throw new TRPCError({
       code: "UNAUTHORIZED",
