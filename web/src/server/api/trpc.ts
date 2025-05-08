@@ -82,8 +82,6 @@ import {
 } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
-
 setUpSuperjson();
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -94,7 +92,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof z.ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -296,9 +294,11 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
   }
 
   const orgId = result.data.orgId;
+  console.log("check session:>>>>>", ctx.session);
   const sessionOrg = ctx.session.user.organizations.find(
     (org) => org.id === orgId,
   );
+  logger.error(`Check org session:>>>>`, sessionOrg);
 
   if (!sessionOrg
     // && ctx.session.user.admin !== true
