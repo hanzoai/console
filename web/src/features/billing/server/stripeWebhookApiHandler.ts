@@ -245,6 +245,7 @@ async function handleSubscriptionChanged(
 
   // Get the plan name from the product ID
   const planName = mapStripeProductIdToPlan(productId);
+  console.log("check Plan :>>>>", planName, productId)
   if (!planName) {
     logger.error("[Stripe Webhook] Could not map product ID to plan name", {
       productId,

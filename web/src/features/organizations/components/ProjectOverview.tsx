@@ -1,10 +1,6 @@
-import {
-  BookOpen,
-  LockIcon,
-  MessageSquareText,
-  Settings,
-  Users,
-} from "lucide-react";
+import ContainerPage from "@/src/components/layouts/container-page";
+import Header from "@/src/components/layouts/header";
+import { Button } from "@/src/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,25 +9,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import Header from "@/src/components/layouts/header";
-import { Button } from "@/src/components/ui/button";
-import { PlusIcon } from "lucide-react";
-import Link from "next/link";
-import { StringParam, useQueryParams } from "use-query-params";
 import { Input } from "@/src/components/ui/input";
-import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { env } from "@/src/env.mjs";
-import { Divider } from "@tremor/react";
-import { Fragment } from "react";
-import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan, planLabels } from "@hanzo/shared";
-import ContainerPage from "@/src/components/layouts/container-page";
+import { isCloudPlan } from "@hanzo/shared";
+import { Divider } from "@tremor/react";
+import {
+  BookOpen,
+  LockIcon,
+  MessageSquareText,
+  PlusIcon,
+  Settings,
+  Users,
+} from "lucide-react";
 import { type User } from "next-auth";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Fragment } from "react";
+import { StringParam, useQueryParams } from "use-query-params";
 
 const OrganizationProjectTiles = ({
   org,
@@ -217,9 +217,10 @@ const SingleOrganizationProjectOverviewTile = ({
         label={
           isCloudPlan(org.plan)
             ? {
-                text: planLabels[org.plan],
-                href: `/organization/${org.id}/settings/billing`,
-              }
+              // text: planLabels[org.plan],
+              text: org.cloudConfig?.plan ?? "Free",
+              href: `/organization/${org.id}/settings/billing`,
+            }
             : undefined
         }
         actionButtons={
