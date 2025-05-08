@@ -106,7 +106,7 @@ const BreadcrumbComponent = ({
                     variant="secondary"
                   >
                     {/* {planLabels[organization.plan]} */}
-                    {organization?.cloudConfig?.plan} ?? "Free"
+                    {organization?.cloudConfig?.plan ?? "Free"}
                   </Badge>
                 )}
               <ChevronDownIcon className="h-4 w-4" />
