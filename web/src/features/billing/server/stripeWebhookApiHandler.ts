@@ -262,6 +262,7 @@ async function handleSubscriptionChanged(
     subscriptionId,
     customerId,
   });
+  console.log("Check Parorg:>>>", parsedOrg)
 
   try {
     // update the cloud config with the product ID
