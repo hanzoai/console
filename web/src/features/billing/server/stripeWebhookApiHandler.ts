@@ -1,16 +1,16 @@
+import { env } from "@/src/env.mjs";
 import {
   getOrgIdFromStripeClientReference,
   isStripeClientReferenceFromCurrentCloudRegion,
 } from "@/src/features/billing/stripeClientReference";
-import { env } from "@/src/env.mjs";
-import { type NextRequest, NextResponse } from "next/server";
-import { prisma } from "@hanzo/shared/src/db";
 import { stripeClient } from "@/src/features/billing/utils/stripe";
-import type Stripe from "stripe";
-import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
-import { traceException, redis, logger } from "@hanzo/shared/src/server";
-import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
+import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
+import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { logger, redis, traceException } from "@hanzo/shared/src/server";
+import { type NextRequest, NextResponse } from "next/server";
+import type Stripe from "stripe";
 
 /*
  * Sign-up endpoint (email/password users), creates user in database.
@@ -83,6 +83,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     case "customer.subscription.created":
       // update the active product id on the organization linked to the subscription + customer and subscription id (if null or same)
       const subscription = event.data.object;
+      console.log("Check Subscription :>>>", subscription)
       logger.info("[Stripe Webhook] Start customer.subscription.created", {
         payload: subscription,
         subscriptionId: subscription.id,
@@ -139,6 +140,7 @@ async function handleSubscriptionChanged(
   const subscriptionId = subscription.id;
   logger.info("[Stripe Webhook] Processing subscription:", {
     subscriptionId,
+    subscription,
     action,
     status: subscription.status,
     customerId: subscription.customer
@@ -149,7 +151,7 @@ async function handleSubscriptionChanged(
     subscription: subscriptionId,
     limit: 1,
   });
-  
+
   logger.info("[Stripe Webhook] Found checkout sessions:", {
     count: checkoutSessionsResponse?.data.length,
     sessions: checkoutSessionsResponse?.data
@@ -198,7 +200,7 @@ async function handleSubscriptionChanged(
     organization,
     orgId
   });
-  
+
   if (!organization) {
     logger.error("[Stripe Webhook] Organization not found", { orgId });
     traceException("[Stripe Webhook] Organization not found");
@@ -333,8 +335,8 @@ async function handleSubscriptionChanged(
 
 async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Checkout.Session) {
   // Extract the amount paid and organization ID from the payment metadata
-  const amountPaid = 'amount_received' in payment 
-    ? payment.amount_received 
+  const amountPaid = 'amount_received' in payment
+    ? payment.amount_received
     : (payment as Stripe.Checkout.Session).amount_total;
   const orgId = payment.metadata?.orgId;
 
@@ -355,7 +357,7 @@ async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Check
     },
     data: {
       credits: {
-        increment: amountPaid/100
+        increment: amountPaid / 100
       }
     },
   });

@@ -1,58 +1,57 @@
+import { env } from "@/src/env.mjs";
+import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
+import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
+import { parseFlags } from "@/src/features/feature-flags/utils";
+import { prisma } from "@hanzo/shared/src/db";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type User,
   type NextAuthOptions,
   type Session,
+  type User,
 } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma, type Role } from "@hanzo/shared/src/db";
-import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
-import { parseFlags } from "@/src/features/feature-flags/utils";
-import { env } from "@/src/env.mjs";
-import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
 import {
-  type AdapterUser,
   type Adapter,
   type AdapterAccount,
+  type AdapterUser,
 } from "next-auth/adapters";
 
 // Providers
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
-import GitLabProvider from "next-auth/providers/gitlab";
-import OktaProvider from "next-auth/providers/okta";
-import EmailProvider from "next-auth/providers/email";
-import Auth0Provider from "next-auth/providers/auth0";
-import CognitoProvider from "next-auth/providers/cognito";
-import AzureADProvider from "next-auth/providers/azure-ad";
-import KeycloakProvider from "next-auth/providers/keycloak";
-import WorkOSProvider from "next-auth/providers/workos";
-import { type Provider } from "next-auth/providers/index";
-import { getCookieName, getCookieOptions } from "./utils/cookies";
-import {
-  getSsoAuthProviderIdForDomain,
-  loadSsoProviders,
-} from "@/src/features/multi-tenant-sso/utils";
-import { z } from "zod";
-import { CloudConfigSchema } from "@hanzo/shared";
-import {
-  CustomSSOProvider,
-  GitHubEnterpriseProvider,
-  traceException,
-  sendResetPasswordVerificationRequest,
-  instrumentAsync,
-  logger,
-} from "@hanzo/shared/src/server";
+import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
 import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,
 } from "@/src/features/entitlements/server/getPlan";
-import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
-import Sdk from "@hanzo/iam-js-sdk";
+import {
+  getSsoAuthProviderIdForDomain,
+  loadSsoProviders,
+} from "@/src/features/multi-tenant-sso/utils";
+import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
+import { CloudConfigSchema } from "@hanzo/shared";
+import {
+  CustomSSOProvider,
+  GitHubEnterpriseProvider,
+  instrumentAsync,
+  logger,
+  sendResetPasswordVerificationRequest,
+  traceException,
+} from "@hanzo/shared/src/server";
+import Auth0Provider from "next-auth/providers/auth0";
+import AzureADProvider from "next-auth/providers/azure-ad";
+import CognitoProvider from "next-auth/providers/cognito";
+import CredentialsProvider from "next-auth/providers/credentials";
+import EmailProvider from "next-auth/providers/email";
+import GitHubProvider from "next-auth/providers/github";
+import GitLabProvider from "next-auth/providers/gitlab";
+import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
+import { type Provider } from "next-auth/providers/index";
+import KeycloakProvider from "next-auth/providers/keycloak";
+import OktaProvider from "next-auth/providers/okta";
+import WorkOSProvider from "next-auth/providers/workos";
+import { z } from "zod";
+import { getCookieName, getCookieOptions } from "./utils/cookies";
 
 function canCreateOrganizations(userEmail: string | null): boolean {
   const instancePlan = getSelfHostedInstancePlanServerSide();
@@ -388,7 +387,7 @@ const extendedPrismaAdapter: Adapter = {
     if (!profile.email) {
       throw new Error(
         "Cannot create db user as login profile does not contain an email: " +
-          JSON.stringify(profile),
+        JSON.stringify(profile),
       );
     }
 
@@ -448,6 +447,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     session: {
       strategy: "jwt",
       maxAge: env.AUTH_SESSION_MAX_AGE * 60, // convert minutes to seconds, default is set in env.mjs
+      updateAge: 60 * 60 * 24
     },
     callbacks: {
       async session({ session, token }): Promise<Session> {
@@ -491,37 +491,37 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             user:
               dbUser !== null
                 ? {
-                    ...session.user,
-                    id: dbUser.id,
-                    name: dbUser.name,
-                    email: dbUser.email,
-                    image: dbUser.image,
-                    admin: dbUser.admin,
-                    canCreateOrganizations: canCreateOrganizations(
-                      dbUser.email,
-                    ),
-                    organizations: dbUser.organizationMemberships.map((membership) => {
-                      const parsedCloudConfig = CloudConfigSchema.safeParse(
-                        membership.organization.cloudConfig,
-                      );
-                      return {
-                        id: membership.organization.id,
-                        name: membership.organization.name,
+                  ...session.user,
+                  id: dbUser.id,
+                  name: dbUser.name,
+                  email: dbUser.email,
+                  image: dbUser.image,
+                  admin: dbUser.admin,
+                  canCreateOrganizations: canCreateOrganizations(
+                    dbUser.email,
+                  ),
+                  organizations: dbUser.organizationMemberships.map((membership) => {
+                    const parsedCloudConfig = CloudConfigSchema.safeParse(
+                      membership.organization.cloudConfig,
+                    );
+                    return {
+                      id: membership.organization.id,
+                      name: membership.organization.name,
+                      role: membership.role,
+                      cloudConfig: parsedCloudConfig.data,
+                      projects: membership.organization.projects.map((project: { id: string; name: string; deletedAt: Date | null; retentionDays: number | null; }) => ({
+                        id: project.id,
+                        name: project.name,
                         role: membership.role,
-                        cloudConfig: parsedCloudConfig.data,
-                        projects: membership.organization.projects.map((project: { id: string; name: string; deletedAt: Date | null; retentionDays: number | null; }) => ({
-                          id: project.id,
-                          name: project.name,
-                          role: membership.role,
-                          deletedAt: project.deletedAt,
-                          retentionDays: project.retentionDays,
-                        })),
-                        plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
-                      };
-                    }),
-                    emailVerified: dbUser.emailVerified?.toISOString(),
-                    featureFlags: parseFlags(dbUser.featureFlags),
-                  }
+                        deletedAt: project.deletedAt,
+                        retentionDays: project.retentionDays,
+                      })),
+                      plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
+                    };
+                  }),
+                  emailVerified: dbUser.emailVerified?.toISOString(),
+                  featureFlags: parseFlags(dbUser.featureFlags),
+                }
                 : null,
           };
         });
@@ -605,8 +605,8 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       error: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/error`,
       ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION
         ? {
-            newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
-          }
+          newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
+        }
         : {}),
     },
     cookies: {
