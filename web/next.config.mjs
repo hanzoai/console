@@ -2,9 +2,9 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-await import("./src/env.mjs");
 import { withSentryConfig } from "@sentry/nextjs";
 import { env } from "./src/env.mjs";
+import { scheduleCronJob } from "./src/server/serverCron.mjs";
 
 /**
  * CSP headers
@@ -30,7 +30,12 @@ const cspHeader = `
 
 // Match rules for Hugging Face
 const huggingFaceHosts = ["huggingface.co", ".*\\.hf\\.space$"];
-
+const initCronJob = async () => {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    console.log("🚀 Initializing Cron Job from next.config.js...");
+    scheduleCronJob();
+  }
+};
 const reportToHeader = {
   key: "Report-To",
   value: JSON.stringify({
@@ -139,22 +144,22 @@ const nextConfig = {
       // Required to check authentication status from hanzo.ai
       ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined
         ? [
-          {
-            source: "/api/auth/session",
-            headers: [
-              {
-                key: "Access-Control-Allow-Origin",
-                value: "https://hanzo.ai",
-              },
-              { key: "Access-Control-Allow-Credentials", value: "true" },
-              { key: "Access-Control-Allow-Methods", value: "GET,POST" },
-              {
-                key: "Access-Control-Allow-Headers",
-                value: "Content-Type, Authorization",
-              },
-            ],
-          },
-        ]
+            {
+              source: "/api/auth/session",
+              headers: [
+                {
+                  key: "Access-Control-Allow-Origin",
+                  value: "https://hanzo.ai",
+                },
+                { key: "Access-Control-Allow-Credentials", value: "true" },
+                { key: "Access-Control-Allow-Methods", value: "GET,POST" },
+                {
+                  key: "Access-Control-Allow-Headers",
+                  value: "Content-Type, Authorization",
+                },
+              ],
+            },
+          ]
         : []),
       // all files in /public/generated are public and can be accessed from any origin, e.g. to render an API reference based on our openapi schema
       {
@@ -180,6 +185,9 @@ const nextConfig = {
       layers: true,
     };
 
+    if (isServer) {
+      initCronJob();
+    }
     return config;
   },
 };

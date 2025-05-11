@@ -30,7 +30,10 @@ import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan, planLabels } from "@hanzo/shared";
+import {
+  isCloudPlan,
+  // , planLabels
+} from "@hanzo/shared";
 import Link from "next/link";
 import { Badge } from "@/src/components/ui/badge";
 
@@ -105,7 +108,8 @@ const BreadcrumbComponent = ({
                     className="ml-1 px-1 py-0 text-xs font-normal"
                     variant="secondary"
                   >
-                    {planLabels[organization.plan]}
+                    {/* {planLabels[organization.plan]} */}
+                    {organization?.cloudConfig?.plan}
                   </Badge>
                 )}
               <ChevronDownIcon className="h-4 w-4" />

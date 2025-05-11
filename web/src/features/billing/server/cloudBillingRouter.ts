@@ -12,10 +12,8 @@ import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import {
-  getObservationCountOfProjectsSinceCreationDate,
-} from "@hanzo/shared/src/server";
-import Stripe from "stripe";
+import { getObservationCountOfProjectsSinceCreationDate } from "@hanzo/shared/src/server";
+import type Stripe from "stripe";
 
 export const cloudBillingRouter = createTRPCRouter({
   createStripeCheckoutSession: protectedOrganizationProcedure
@@ -28,8 +26,6 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      
-
       try {
         // Access checks
         throwIfNoOrganizationAccess({
@@ -67,12 +63,14 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         // Product validation
-        const validProducts = stripeProducts.filter(product => product.checkout);
+        const validProducts = stripeProducts.filter(
+          (product) => product.checkout,
+        );
 
         const isValidProduct = validProducts.some(
-          product => product.stripeProductId === input.stripeProductId
+          (product) => product.stripeProductId === input.stripeProductId,
         );
-        
+
         if (!isValidProduct) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -81,7 +79,9 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         // Retrieve Stripe product
-        const product = await stripeClient.products.retrieve(input.stripeProductId);
+        const product = await stripeClient.products.retrieve(
+          input.stripeProductId,
+        );
 
         // Retrieve the default price and verify its type
         if (!product.default_price) {
@@ -91,16 +91,17 @@ export const cloudBillingRouter = createTRPCRouter({
           });
         }
 
-        const price = await stripeClient.prices.retrieve(product.default_price as string);
+        const price = await stripeClient.prices.retrieve(
+          product.default_price as string,
+        );
 
         // Determine the checkout mode based on price type
-        const checkoutMode = price.type === 'recurring' 
-          ? 'subscription' 
-          : 'payment';       
-       
+        const checkoutMode =
+          price.type === "recurring" ? "subscription" : "payment";
 
         // Use the custom email if provided, otherwise fall back to session email
-        const customerEmail = input.customerEmail || ctx.session.user.email || "";
+        const customerEmail =
+          input.customerEmail || ctx.session.user.email || "";
 
         // Create checkout session
         const returnUrl = `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`;
@@ -108,30 +109,35 @@ export const cloudBillingRouter = createTRPCRouter({
           line_items: [
             {
               price: product.default_price as string,
-              quantity: checkoutMode === 'payment' ? 10 : 1,
-              ...(checkoutMode === 'payment' ? {
-                adjustable_quantity: {
-                  enabled: true,
-                  minimum: 10,
-                  maximum: 1000,
-                }
-              } : {})
+              quantity: checkoutMode === "payment" ? 10 : 1,
+              ...(checkoutMode === "payment"
+                ? {
+                    adjustable_quantity: {
+                      enabled: true,
+                      minimum: 10,
+                      maximum: 1000,
+                    },
+                  }
+                : {}),
             },
           ],
-          client_reference_id: createStripeClientReference(input.orgId) ?? undefined,
+          client_reference_id:
+            createStripeClientReference(input.orgId) ?? undefined,
           // Handle customer configuration for payment mode
-          ...(checkoutMode === 'payment' ? {
-            // If we have an existing customer, use it
-            ...(parsedOrg.cloudConfig?.stripe?.customerId 
-              ? { customer: parsedOrg.cloudConfig.stripe.customerId }
-              : { 
-                  // Only create new customer if we don't have one
-                  customer_creation: 'if_required',
-                  customer_email: customerEmail 
-                })
-          } : {
-            customer_email: customerEmail
-          }),
+          ...(checkoutMode === "payment"
+            ? {
+                // If we have an existing customer, use it
+                ...(parsedOrg.cloudConfig?.stripe?.customerId
+                  ? { customer: parsedOrg.cloudConfig.stripe.customerId }
+                  : {
+                      // Only create new customer if we don't have one
+                      customer_creation: "if_required",
+                      customer_email: customerEmail,
+                    }),
+              }
+            : {
+                customer_email: customerEmail,
+              }),
           allow_promotion_codes: true,
           success_url: returnUrl,
           cancel_url: returnUrl,
@@ -140,11 +146,11 @@ export const cloudBillingRouter = createTRPCRouter({
             orgId: input.orgId,
             cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
             productType: price.type,
-          },         
-        };       
+          },
+        };
 
-
-        const session = await stripeClient.checkout.sessions.create(sessionConfig);
+        const session =
+          await stripeClient.checkout.sessions.create(sessionConfig);
 
         // Audit logging
         auditLog({
@@ -161,23 +167,23 @@ export const cloudBillingRouter = createTRPCRouter({
           sessionId: session.id,
         };
       } catch (error) {
-        
         // Log additional details about the error
         if (error instanceof Error) {
           console.error("Error Name:", error.name);
           console.error("Error Message:", error.message);
           console.error("Error Stack:", error.stack);
         }
-        
+
         if (error instanceof TRPCError) {
           throw error;
         }
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error 
-            ? `Unexpected error: ${error.message}` 
-            : "Unknown error occurred",
+          message:
+            error instanceof Error
+              ? `Unexpected error: ${error.message}`
+              : "Unknown error occurred",
         });
       }
     }),
@@ -186,7 +192,6 @@ export const cloudBillingRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         stripeProductId: z.string(),
-
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -344,11 +349,11 @@ export const cloudBillingRouter = createTRPCRouter({
 
       const parsedOrg = parseDbOrg(org);
       let stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
-      
+
       // Fetch subscriptions separately
-      
+
       let stripeSubscriptionId =
-        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId
+        parsedOrg.cloudConfig?.stripe?.activeSubscriptionId;
 
       if (!stripeCustomerId || !stripeSubscriptionId) {
         // Do not create a new customer if the org is on a plan (assigned manually)
@@ -370,7 +375,6 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-
       try {
         throwIfNoEntitlement({
           entitlement: "cloud-billing",
@@ -415,24 +419,28 @@ export const cloudBillingRouter = createTRPCRouter({
             parsedOrg.cloudConfig.stripe.activeSubscriptionId,
           );
           if (subscription) {
-            const billingPeriod = subscription.current_period_start && subscription.current_period_end
-              ? {
-                  start: new Date(subscription.current_period_start * 1000),
-                  end: new Date(subscription.current_period_end * 1000),
-                }
-              : null;
+            const billingPeriod =
+              subscription.current_period_start &&
+              subscription.current_period_end
+                ? {
+                    start: new Date(subscription.current_period_start * 1000),
+                    end: new Date(subscription.current_period_end * 1000),
+                  }
+                : null;
             try {
-              const stripeInvoice = await stripeClient.invoices.retrieveUpcoming({
-                subscription: parsedOrg.cloudConfig.stripe.activeSubscriptionId,
-              });
+              const stripeInvoice =
+                await stripeClient.invoices.retrieveUpcoming({
+                  subscription:
+                    parsedOrg.cloudConfig.stripe.activeSubscriptionId,
+                });
 
               const upcomingInvoice = {
                 usdAmount: stripeInvoice.amount_due / 100,
                 date: new Date(stripeInvoice.period_end * 1000),
               };
 
-              const usageInvoiceLines = stripeInvoice.lines.data.filter((line) =>
-                Boolean(line.plan?.meter),
+              const usageInvoiceLines = stripeInvoice.lines.data.filter(
+                (line) => Boolean(line.plan?.meter),
               );
               const usage = usageInvoiceLines.reduce((acc, line) => {
                 if (line.quantity) {
@@ -486,9 +494,10 @@ export const cloudBillingRouter = createTRPCRouter({
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error 
-            ? `Unexpected error: ${error.message}` 
-            : "Unknown error occurred",
+          message:
+            error instanceof Error
+              ? `Unexpected error: ${error.message}`
+              : "Unknown error occurred",
         });
       }
     }),
@@ -497,7 +506,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .input(
       z.object({
         orgId: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       if (!stripeClient) {
@@ -523,7 +532,9 @@ export const cloudBillingRouter = createTRPCRouter({
 
       // If no Stripe customer ID, return null
       if (!stripeCustomerId) {
-        console.warn(`No Stripe customer ID found for organization ${input.orgId}`);
+        console.warn(
+          `No Stripe customer ID found for organization ${input.orgId}`,
+        );
         return null;
       }
 
@@ -531,14 +542,16 @@ export const cloudBillingRouter = createTRPCRouter({
         // Fetch subscriptions that are still relevant (active, past_due, or scheduled to cancel)
         const subscriptionsResponse = await stripeClient.subscriptions.list({
           limit: 1,
-          expand: ['data'],
+          expand: ["data"],
           customer: stripeCustomerId,
-          status: 'active',
+          status: "active",
         });
 
         // No subscriptions found
         if (!subscriptionsResponse.data.length) {
-          console.info(`No subscriptions found for customer ${stripeCustomerId}`);
+          console.info(
+            `No subscriptions found for customer ${stripeCustomerId}`,
+          );
           return null;
         }
 
@@ -553,22 +566,36 @@ export const cloudBillingRouter = createTRPCRouter({
         return {
           id: latestSubscription.id,
           status: latestSubscription.status,
-          current_period_start: new Date(latestSubscription.current_period_start * 1000),
-          current_period_end: new Date(latestSubscription.current_period_end * 1000),
-          cancel_at: latestSubscription.cancel_at ? new Date(latestSubscription.cancel_at * 1000) : null,
-          canceled_at: latestSubscription.canceled_at ? new Date(latestSubscription.canceled_at * 1000) : null,
+          current_period_start: new Date(
+            latestSubscription.current_period_start * 1000,
+          ),
+          current_period_end: new Date(
+            latestSubscription.current_period_end * 1000,
+          ),
+          cancel_at: latestSubscription.cancel_at
+            ? new Date(latestSubscription.cancel_at * 1000)
+            : null,
+          canceled_at: latestSubscription.canceled_at
+            ? new Date(latestSubscription.canceled_at * 1000)
+            : null,
           plan: {
-            name: productDetails.name || 'Unknown Plan',
-            description: productDetails.description || 'No description available',
+            name: productDetails.name || "Unknown Plan",
+            description:
+              productDetails.description || "No description available",
             id: productId,
           },
           price: {
-            amount: firstItem?.price?.unit_amount ? firstItem.price.unit_amount / 100 : null,
+            amount: firstItem?.price?.unit_amount
+              ? firstItem.price.unit_amount / 100
+              : null,
             currency: firstItem?.price?.currency,
           },
         };
       } catch (error) {
-        console.error(`Error retrieving subscription for organization ${input.orgId}:`, error);
+        console.error(
+          `Error retrieving subscription for organization ${input.orgId}:`,
+          error,
+        );
         return null;
       }
     }),
@@ -598,7 +625,7 @@ export const cloudBillingRouter = createTRPCRouter({
       try {
         // Retrieve the full subscription details
         const subscription = await stripeClient.subscriptions.retrieve(
-          input.stripeSubscriptionId
+          input.stripeSubscriptionId,
         );
 
         // Ensure we have a single price/product
@@ -611,7 +638,7 @@ export const cloudBillingRouter = createTRPCRouter({
 
         const subscriptionItem = subscription.items.data[0];
         const productId = subscriptionItem.price.product as string;
-        const priceId = subscriptionItem.price.id;       
+        const priceId = subscriptionItem.price.id;
 
         // Update organization's cloud config with subscription details
         const org = await ctx.prisma.organization.findUnique({
@@ -626,17 +653,21 @@ export const cloudBillingRouter = createTRPCRouter({
         }
 
         // Prepare updated cloud config
-        const updatedCloudConfig = org.cloudConfig 
-          ? { 
+        const updatedCloudConfig = org.cloudConfig
+          ? {
               ...JSON.parse(JSON.stringify(org.cloudConfig)),
               stripe: {
-                ...(org.cloudConfig as any)?.stripe || {},
+                ...((org.cloudConfig as any)?.stripe || {}),
                 activeSubscriptionId: input.stripeSubscriptionId,
                 activeProductId: productId,
                 activePriceId: priceId,
                 subscriptionStatus: subscription.status,
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+                currentPeriodStart: new Date(
+                  subscription.current_period_start * 1000,
+                ),
+                currentPeriodEnd: new Date(
+                  subscription.current_period_end * 1000,
+                ),
               },
             }
           : {
@@ -645,13 +676,16 @@ export const cloudBillingRouter = createTRPCRouter({
                 activeProductId: productId,
                 activePriceId: priceId,
                 subscriptionStatus: subscription.status,
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+                currentPeriodStart: new Date(
+                  subscription.current_period_start * 1000,
+                ),
+                currentPeriodEnd: new Date(
+                  subscription.current_period_end * 1000,
+                ),
               },
             };
 
         // Create or update StripeSubscription record
-       
 
         // Update organization with new cloud config
         await ctx.prisma.organization.update({
@@ -677,12 +711,13 @@ export const cloudBillingRouter = createTRPCRouter({
         };
       } catch (error) {
         console.error("Error saving subscription data:", error);
-        
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error 
-            ? `Failed to save subscription: ${error.message}` 
-            : "Unknown error occurred while saving subscription",
+          message:
+            error instanceof Error
+              ? `Failed to save subscription: ${error.message}`
+              : "Unknown error occurred while saving subscription",
         });
       }
     }),
@@ -693,7 +728,7 @@ export const cloudBillingRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         limit: z.number().optional().default(10),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       if (!stripeClient) {
@@ -716,11 +751,11 @@ export const cloudBillingRouter = createTRPCRouter({
 
       const parsedOrg = parseDbOrg(org);
       const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
-      
+
       if (!stripeCustomerId) {
-        return { 
+        return {
           subscriptions: [],
-          hasMore: false 
+          hasMore: false,
         };
       }
 
@@ -729,53 +764,68 @@ export const cloudBillingRouter = createTRPCRouter({
         const subscriptionsResponse = await stripeClient.subscriptions.list({
           customer: stripeCustomerId,
           limit: input.limit,
-          expand: ['data.latest_invoice', 'data.items.data.price'],
+          expand: ["data.latest_invoice", "data.items.data.price"],
         });
 
         // Fetch all unique product details first
         const productIds = new Set(
           subscriptionsResponse.data
-            .map(subscription => subscription.items.data[0]?.price?.product)
-            .filter(Boolean) as string[]
+            .map((subscription) => subscription.items.data[0]?.price?.product)
+            .filter(Boolean) as string[],
         );
 
         const productDetailsMap = new Map<string, string>();
         for (const productId of productIds) {
           try {
             const product = await stripeClient.products.retrieve(productId);
-            productDetailsMap.set(productId, product.name || 'Unknown Plan');
+            productDetailsMap.set(productId, product.name || "Unknown Plan");
           } catch (error) {
             console.error(`Failed to retrieve product ${productId}:`, error);
-            productDetailsMap.set(productId, 'Unknown Plan');
+            productDetailsMap.set(productId, "Unknown Plan");
           }
         }
         // Then use the map when transforming subscriptions
-        const subscriptionHistory = subscriptionsResponse.data.map(subscription => {
-          const firstItem = subscription.items.data[0];
-          const productId = firstItem?.price?.product as string;
-          const billingPeriod = subscription.current_period_start && subscription.current_period_end
-            ? {
-              start: new Date(subscription.current_period_start * 1000),
-              end: new Date(subscription.current_period_end * 1000),
-             }
-            : null;
-          return {
-            id: subscription.id,
-            status: subscription.status,
-            plan: {
-              name: productDetailsMap.get(productId) || 'Unknown Plan',
-              amount: firstItem?.price?.unit_amount ? firstItem.price.unit_amount / 100 : 0,
-              billingPeriod: billingPeriod,
-            },
-            latestInvoice: subscription.latest_invoice ? {
-              id: (subscription.latest_invoice as Stripe.Invoice).id,
-              amountDue: (subscription.latest_invoice as Stripe.Invoice).amount_due / 100,
-              status: (subscription.latest_invoice as Stripe.Invoice).status,
-              number: (subscription.latest_invoice as Stripe.Invoice).number || 'N/A',
-              pdfUrl: (subscription.latest_invoice as Stripe.Invoice).invoice_pdf || null,
-            } : null,
-          };
-        });
+        const subscriptionHistory = subscriptionsResponse.data.map(
+          (subscription) => {
+            const firstItem = subscription.items.data[0];
+            const productId = firstItem?.price?.product as string;
+            const billingPeriod =
+              subscription.current_period_start &&
+              subscription.current_period_end
+                ? {
+                    start: new Date(subscription.current_period_start * 1000),
+                    end: new Date(subscription.current_period_end * 1000),
+                  }
+                : null;
+            return {
+              id: subscription.id,
+              status: subscription.status,
+              plan: {
+                name: productDetailsMap.get(productId) || "Unknown Plan",
+                amount: firstItem?.price?.unit_amount
+                  ? firstItem.price.unit_amount / 100
+                  : 0,
+                billingPeriod: billingPeriod,
+              },
+              latestInvoice: subscription.latest_invoice
+                ? {
+                    id: (subscription.latest_invoice as Stripe.Invoice).id,
+                    amountDue:
+                      (subscription.latest_invoice as Stripe.Invoice)
+                        .amount_due / 100,
+                    status: (subscription.latest_invoice as Stripe.Invoice)
+                      .status,
+                    number:
+                      (subscription.latest_invoice as Stripe.Invoice).number ||
+                      "N/A",
+                    pdfUrl:
+                      (subscription.latest_invoice as Stripe.Invoice)
+                        .invoice_pdf || null,
+                  }
+                : null,
+            };
+          },
+        );
 
         return {
           subscriptions: subscriptionHistory,
@@ -795,7 +845,7 @@ export const cloudBillingRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         invoiceId: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       if (!stripeClient) {
@@ -848,13 +898,16 @@ export const cloudBillingRouter = createTRPCRouter({
 
         return {
           pdfUrl: invoice.invoice_pdf,
-          invoiceNumber: invoice.number || 'Unknown',
+          invoiceNumber: invoice.number || "Unknown",
           amountDue: invoice.amount_due / 100,
           invoiceDate: new Date(invoice.created * 1000),
         };
       } catch (error) {
-        console.error(`Error retrieving invoice PDF for ${input.invoiceId}:`, error);
-        
+        console.error(
+          `Error retrieving invoice PDF for ${input.invoiceId}:`,
+          error,
+        );
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to retrieve invoice PDF",
@@ -870,7 +923,6 @@ export const cloudBillingRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
         scope: "hanzoCloudBilling:CRUD",
@@ -903,13 +955,13 @@ export const cloudBillingRouter = createTRPCRouter({
       const parsedOrg = parseDbOrg(org);
 
       // Try to get the active subscription ID from cloud config
-      let stripeSubscriptionId = 
+      let stripeSubscriptionId =
         parsedOrg.cloudConfig?.stripe?.activeSubscriptionId;
 
       // If no active subscription ID, try to fetch the latest active subscription
       if (!stripeSubscriptionId) {
         const stripeCustomerId = parsedOrg.cloudConfig?.stripe?.customerId;
-        
+
         if (!stripeCustomerId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -920,7 +972,7 @@ export const cloudBillingRouter = createTRPCRouter({
         // Fetch active subscriptions for this customer
         const subscriptionsResponse = await stripeClient.subscriptions.list({
           customer: stripeCustomerId,
-          status: 'active',
+          status: "active",
           limit: 1,
         });
 
@@ -936,18 +988,18 @@ export const cloudBillingRouter = createTRPCRouter({
 
       try {
         // Retrieve the current subscription to validate
-        const currentSubscription = await stripeClient.subscriptions.retrieve(
-          stripeSubscriptionId
-        );
+        const currentSubscription =
+          await stripeClient.subscriptions.retrieve(stripeSubscriptionId);
 
         // Validate that the current subscription matches the product being canceled
-        const currentProductId = currentSubscription.items.data[0]?.price?.product;
-
+        const currentProductId =
+          currentSubscription.items.data[0]?.price?.product;
 
         if (currentProductId !== input.stripeProductId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Subscription product does not match the requested cancellation",
+            message:
+              "Subscription product does not match the requested cancellation",
           });
         }
 
@@ -956,7 +1008,7 @@ export const cloudBillingRouter = createTRPCRouter({
           stripeSubscriptionId,
           {
             cancel_at_period_end: true,
-          }
+          },
         );
 
         // Audit log the subscription cancellation
@@ -970,23 +1022,25 @@ export const cloudBillingRouter = createTRPCRouter({
 
         return {
           success: true,
-          message: "Subscription will be canceled at the end of the current billing period",
-          cancelAt: canceledSubscription.cancel_at 
-            ? new Date(canceledSubscription.cancel_at * 1000) 
+          message:
+            "Subscription will be canceled at the end of the current billing period",
+          cancelAt: canceledSubscription.cancel_at
+            ? new Date(canceledSubscription.cancel_at * 1000)
             : null,
         };
       } catch (error) {
         console.error("Full Error in cancelStripeSubscription:", error);
-        
+
         if (error instanceof TRPCError) {
           throw error;
         }
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error 
-            ? `Unexpected error: ${error.message}` 
-            : "Unknown error occurred",
+          message:
+            error instanceof Error
+              ? `Unexpected error: ${error.message}`
+              : "Unknown error occurred",
         });
       }
     }),

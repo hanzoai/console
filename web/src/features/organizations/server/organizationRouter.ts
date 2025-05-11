@@ -137,18 +137,19 @@ export const organizationsRouter = createTRPCRouter({
     .input(
       z.object({
         orgId: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       const organization = await ctx.prisma.organization.findUnique({
         where: { id: input.orgId },
-        select: {
-          id: true,
-          name: true,
-          cloudConfig: true,
-          credits: true,
-          usageMeters: true,
-        }
+        // select: {
+        //   id: true,
+        //   name: true,
+        //   cloudConfig: true,
+        //   credits: true,
+        //   usageMeters: true,
+        //   created_at
+        // }
       });
 
       if (!organization) {
@@ -163,7 +164,7 @@ export const organizationsRouter = createTRPCRouter({
 
       return {
         ...organization,
-        credits: Number(credits)
+        credits: Number(credits),
       };
     }),
 });
