@@ -14,9 +14,9 @@
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
+import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
-import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 
 import { getServerAuthSession } from "@/src/server/auth";
 import { prisma, Role } from "@hanzo/shared/src/db";
@@ -73,13 +73,15 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
+import { DB } from "@/src/server/db";
+import { setUpSuperjson } from "@/src/utils/superjson";
+import {
+  addUserToSpan,
+  getTraceById,
+  logger,
+} from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
-import { setUpSuperjson } from "@/src/utils/superjson";
-import { DB } from "@/src/server/db";
-import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
-
 setUpSuperjson();
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -90,7 +92,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof z.ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -298,8 +300,7 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
   );
   logger.error(`Check org session:>>>>`, sessionOrg);
 
-  if (
-    !sessionOrg
+  if (!sessionOrg
     // && ctx.session.user.admin !== true
   ) {
     logger.error(`User ${ctx.session.user.id} is not a member of org ${orgId}`);
@@ -369,14 +370,14 @@ const enforceTraceAccess = t.middleware(async ({ ctx, rawInput, next }) => {
 
   const traceSession = !!trace.sessionId
     ? await ctx.prisma.traceSession.findFirst({
-        where: {
-          id: trace.sessionId,
-          projectId,
-        },
-        select: {
-          public: true,
-        },
-      })
+      where: {
+        id: trace.sessionId,
+        projectId,
+      },
+      select: {
+        public: true,
+      },
+    })
     : null;
 
   const isSessionPublic = traceSession?.public === true;

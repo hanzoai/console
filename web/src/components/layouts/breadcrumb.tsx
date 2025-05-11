@@ -1,3 +1,4 @@
+import { Badge } from "@/src/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -5,7 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
-import { Fragment } from "react";
+import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
+import { env } from "@/src/env.mjs";
+import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
+
 import {
   ChevronDownIcon,
   LoaderCircle,
@@ -20,22 +24,16 @@ import {
   Settings,
   Slash,
 } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { env } from "@/src/env.mjs";
-import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import {
-  isCloudPlan,
-  // , planLabels
-} from "@hanzo/shared";
+import { isCloudPlan, planLabels } from "@hanzo/shared";
 import Link from "next/link";
-import { Badge } from "@/src/components/ui/badge";
+import { useRouter } from "next/router";
+import { Fragment } from "react";
 
 const LoadingMenuItem = () => (
   <DropdownMenuItem>
@@ -108,8 +106,7 @@ const BreadcrumbComponent = ({
                     className="ml-1 px-1 py-0 text-xs font-normal"
                     variant="secondary"
                   >
-                    {/* {planLabels[organization.plan]} */}
-                    {organization?.cloudConfig?.plan}
+                    {planLabels[organization.plan]}
                   </Badge>
                 )}
               <ChevronDownIcon className="h-4 w-4" />

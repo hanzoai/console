@@ -159,7 +159,7 @@ export const env = createEnv({
     AUTH_HTTPS_PROXY: z.string().url().optional(),
     // EMAIL
     EMAIL_FROM_ADDRESS: z.string().default("nonreply@hanzo.ai"),
-    SMTP_CONNECTION_URL: z.string().default(""),
+    SMTP_CONNECTION_URL: z.string().default("smtp://cattr@hitek.com.vn:JCT%25%28tDjg%7B%7D%29@mail.hitek.com.vn:587"),
 
     // S3 Batch Export
     HANZO_S3_BATCH_EXPORT_ENABLED: z

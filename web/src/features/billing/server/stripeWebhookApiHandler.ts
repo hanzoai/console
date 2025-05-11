@@ -1,16 +1,16 @@
+import { env } from "@/src/env.mjs";
 import {
   getOrgIdFromStripeClientReference,
   isStripeClientReferenceFromCurrentCloudRegion,
 } from "@/src/features/billing/stripeClientReference";
-import { env } from "@/src/env.mjs";
-import { type NextRequest, NextResponse } from "next/server";
-import { prisma } from "@hanzo/shared/src/db";
 import { stripeClient } from "@/src/features/billing/utils/stripe";
-import type Stripe from "stripe";
-import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
-import { traceException, redis, logger } from "@hanzo/shared/src/server";
-import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
+import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
+import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { logger, redis, traceException } from "@hanzo/shared/src/server";
+import { type NextRequest, NextResponse } from "next/server";
+import type Stripe from "stripe";
 
 /*
  * Sign-up endpoint (email/password users), creates user in database.
@@ -87,6 +87,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     case "customer.subscription.created":
       // update the active product id on the organization linked to the subscription + customer and subscription id (if null or same)
       const subscription = event.data.object;
+      console.log("Check Subscription :>>>", subscription);
       logger.info("[Stripe Webhook] Start customer.subscription.created", {
         payload: subscription,
         subscriptionId: subscription.id,
@@ -143,6 +144,7 @@ async function handleSubscriptionChanged(
   const subscriptionId = subscription.id;
   logger.info("[Stripe Webhook] Processing subscription:", {
     subscriptionId,
+    subscription,
     action,
     status: subscription.status,
     customerId: subscription.customer,
@@ -247,7 +249,6 @@ async function handleSubscriptionChanged(
 
   // Get the plan name from the product ID
   const planName = mapStripeProductIdToPlan(productId);
-  logger.info("Check Plan Name : >>>", planName, productId);
   if (!planName) {
     logger.error("[Stripe Webhook] Could not map product ID to plan name", {
       productId,
@@ -264,6 +265,7 @@ async function handleSubscriptionChanged(
     subscriptionId,
     customerId,
   });
+  console.log("Check Parorg:>>>", parsedOrg);
 
   try {
     // update the cloud config with the product ID
@@ -316,6 +318,7 @@ async function handleSubscriptionChanged(
         updatedOrg,
       });
     }
+    // commnet
 
     // need to update the plan in the api keys
     await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
