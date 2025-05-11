@@ -69,6 +69,7 @@ export const scheduleCronJob = () => {
           console.log("🚫 No organizations found to update");
         }
       } catch {
+        // pass loi
         console.error("❌ Error during cron job execution");
       }
     });
