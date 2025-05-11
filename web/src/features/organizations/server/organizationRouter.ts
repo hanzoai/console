@@ -10,6 +10,7 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { redis } from "@hanzo/shared/src/server";
+import { env } from "@/src/env.mjs";
 
 export const organizationsRouter = createTRPCRouter({
   create: protectedProcedure
@@ -23,6 +24,10 @@ export const organizationsRouter = createTRPCRouter({
 
       const organization = await ctx.prisma.organization.create({
         data: {
+          expiredAt: new Date(
+            Date.now() +
+              Number(env.HANZO_S3_FREE_PLAN_EXPIRE) * 24 * 60 * 60 * 1000,
+          ),
           name: input.name,
           organizationMemberships: {
             create: {

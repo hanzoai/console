@@ -49,7 +49,6 @@ COPY --from=pruner /app/out/json/ .
 
 # Add this line to copy .env from root directory
 COPY ./.env ./.env
-COPY ../.env ./.env
 
 RUN pnpm install --frozen-lockfile
 
@@ -158,6 +157,8 @@ COPY --chown=nextjs:nodejs ./web/entrypoint.sh ./web/entrypoint.sh
 COPY --chown=nextjs:nodejs ./packages/shared/scripts/cleanup.sql ./packages/shared/scripts/cleanup.sql
 RUN chmod +x ./web/entrypoint.sh
 
+COPY ../.env ./.env
+COPY ./.env ./.env
 COPY --from=builder --chown=nextjs:nodejs /app/.env /app/.env
 USER nextjs
 
