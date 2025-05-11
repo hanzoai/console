@@ -68,8 +68,8 @@ export const scheduleCronJob = () => {
         } else {
           console.log("🚫 No organizations found to update");
         }
-      } catch (error) {
-        console.error("❌ Error during cron job execution:", error.message);
+      } catch {
+        console.error("❌ Error during cron job execution");
       }
     });
 
