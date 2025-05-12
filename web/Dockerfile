@@ -119,7 +119,7 @@ WORKDIR /app
 ARG NEXT_PUBLIC_BUILD_ID
 ENV BUILD_ID=$NEXT_PUBLIC_BUILD_ID
 
-ENV NODE_ENV prodcution
+ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 # Needed to re-enable validation of environment variables during runtime
