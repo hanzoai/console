@@ -75,11 +75,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { DB } from "@/src/server/db";
 import { setUpSuperjson } from "@/src/utils/superjson";
-import {
-  addUserToSpan,
-  getTraceById,
-  logger,
-} from "@hanzo/shared/src/server";
+import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 setUpSuperjson();
@@ -294,13 +290,13 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
   }
 
   const orgId = result.data.orgId;
-  console.log("check session:>>>>>", ctx.session);
   const sessionOrg = ctx.session.user.organizations.find(
     (org) => org.id === orgId,
   );
   logger.error(`Check org session:>>>>`, sessionOrg);
 
-  if (!sessionOrg
+  if (
+    !sessionOrg
     // && ctx.session.user.admin !== true
   ) {
     logger.error(`User ${ctx.session.user.id} is not a member of org ${orgId}`);
@@ -370,14 +366,14 @@ const enforceTraceAccess = t.middleware(async ({ ctx, rawInput, next }) => {
 
   const traceSession = !!trace.sessionId
     ? await ctx.prisma.traceSession.findFirst({
-      where: {
-        id: trace.sessionId,
-        projectId,
-      },
-      select: {
-        public: true,
-      },
-    })
+        where: {
+          id: trace.sessionId,
+          projectId,
+        },
+        select: {
+          public: true,
+        },
+      })
     : null;
 
   const isSessionPublic = traceSession?.public === true;
