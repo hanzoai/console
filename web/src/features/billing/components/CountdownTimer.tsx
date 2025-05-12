@@ -51,13 +51,13 @@ const CountdownTimer: React.FC<CountdownProps> = ({ expiredAt, orgId }) => {
       }
 
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-      );
-      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-      setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      // const hours = Math.floor(
+      //   (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      // );
+      // const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      // const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+      //${hours}h ${minutes}m ${seconds}s
+      setCountdown(`${days}d `);
     }, 1000);
 
     return () => clearInterval(timer);
