@@ -11,8 +11,45 @@ import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { redis } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
+import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 export const organizationsRouter = createTRPCRouter({
+  // update credit when expired
+  updateCredits: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        credits: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoOrganizationAccess({
+        session: ctx.session,
+        organizationId: input.orgId,
+        scope: "organization:update",
+      });
+
+      await ctx.prisma.organization.update({
+        where: {
+          id: input.orgId,
+        },
+        data: {
+          credits: input.credits,
+        },
+      });
+
+      await auditLog({
+        session: ctx.session,
+        resourceType: "organization",
+        resourceId: input.orgId,
+        action: "update",
+        before: { credits: "old_value" },
+        after: { credits: input.credits },
+      });
+
+      return true;
+    }),
+
   create: protectedProcedure
     .input(organizationNameSchema)
     .mutation(async ({ input, ctx }) => {
@@ -24,9 +61,8 @@ export const organizationsRouter = createTRPCRouter({
 
       const organization = await ctx.prisma.organization.create({
         data: {
-          expiredAt: new Date(
-            Date.now() +
-              Number(env.HANZO_S3_FREE_PLAN_EXPIRE) * 24 * 60 * 60 * 1000,
+          expiredAt: addDaysAndRoundToNextDay(
+            Number(env.HANZO_S3_FREE_PLAN_EXPIRE) ?? 90, // default 90 day if not config in env
           ),
           name: input.name,
           organizationMemberships: {

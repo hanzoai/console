@@ -131,7 +131,10 @@ export const BillingOverview = () => {
                 <div>
                   Free credit grant of $5.00
                   {timeExpireIfPlanFree && (
-                    <CountdownTimer expiredAt={timeExpireIfPlanFree} />
+                    <CountdownTimer
+                      expiredAt={timeExpireIfPlanFree}
+                      orgId={organization?.id!}
+                    />
                   )}
                 </div>
               )}

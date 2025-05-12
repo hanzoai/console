@@ -10,32 +10,28 @@ export const scheduleCronJob = () => {
   if (!isScheduled) {
     console.log("🚀 Starting Cron Job...");
 
-    // Đặt lịch chạy mỗi ngày lúc 00:00
-    // cron.schedule("0 0 * * *", async () => {
-    cron.schedule("*/1 * * * *", async () => {
-      console.log("✅ Cron Job is running every day at midnight");
-
-      // Tính thời gian 90 ngày trước
+    cron.schedule("0 0 * * *", async () => {
+      // cron.schedule("*/1 * * * *", async () => {
+      console.log("CRON RUNNNNNNNN");
       const dateThreshold = new Date();
       dateThreshold.setDate(dateThreshold.getDate() - 90);
 
       try {
-        // Lấy danh sách organization có created_at < 90 ngày trước
         const organizations = await prisma.organization.findMany({
           where: {
             createdAt: {
-              lte: dateThreshold, // lte: Less Than or Equal
+              lte: dateThreshold,
             },
             credits: {
-              not: 0, // Chỉ lấy những org có credits khác 0
+              not: 0,
             },
             OR: [
               {
-                cloudConfig: undefined, // Không có cloudConfig
+                cloudConfig: undefined,
               },
               {
                 cloudConfig: {
-                  path: ["plan"], // Truy cập vào plan bên trong cloudConfig
+                  path: ["plan"],
                   not: {
                     contains: "free",
                     mode: "insensitive",
@@ -45,15 +41,13 @@ export const scheduleCronJob = () => {
             ],
           },
         });
-        console.log("check org:>>>", organizations);
 
         if (organizations.length > 0) {
           console.log(
             `🔍 Found ${organizations.length} organizations to update`,
           );
 
-          // Cập nhật credits = 0
-          const updateCount = await prisma.organization.updateMany({
+          await prisma.organization.updateMany({
             where: {
               id: {
                 in: organizations.map((org) => org.id),
@@ -63,14 +57,12 @@ export const scheduleCronJob = () => {
               credits: 0,
             },
           });
-
-          console.log(`✅ Updated ${updateCount.count} organizations`);
         } else {
           console.log("🚫 No organizations found to update");
         }
-      } catch {
+      } catch (err) {
         // pass loi
-        console.error("❌ Error during cron job execution");
+        console.error("❌ Error during cron job execution", err);
       }
     });
 
