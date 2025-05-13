@@ -162,7 +162,6 @@ services:
       retries: 5
       start_period: 1s
     networks:
-      - hanzo-network
       - cloud-hanzo-network
 
   redis:
