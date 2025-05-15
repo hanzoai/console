@@ -42,7 +42,7 @@ export function CommandMenu({
   const orgSettingsItems = orgSettingsPages
     .filter((page) => page.show !== false && !("href" in page))
     .map((page) => ({
-      title: `Organization Settings > ${page.title}`,
+      title: `Account Settings > ${page.title}`,
       url: `/organization/${organization?.id}/settings${page.slug === "index" ? "" : `/${page.slug}`}`,
       keywords: page.cmdKKeywords || [],
     }));
@@ -192,7 +192,7 @@ export function CommandMenu({
         {orgSettingsItems.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="Organization Settings">
+            <CommandGroup heading="Account Settings">
               {orgSettingsItems.map((item) => (
                 <CommandItem
                   key={item.url}

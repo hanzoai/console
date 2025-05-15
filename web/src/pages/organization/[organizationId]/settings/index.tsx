@@ -3,7 +3,6 @@ import Header from "@/src/components/layouts/header";
 import { MembershipInvitesPage } from "@/src/features/rbac/components/MembershipInvitesPage";
 import { MembersTable } from "@/src/features/rbac/components/MembersTable";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
-import RenameOrganization from "@/src/features/organizations/components/RenameOrganization";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { SettingsDangerZone } from "@/src/components/SettingsDangerZone";
@@ -45,7 +44,6 @@ export const getOrganizationSettingsPages = ({
     cmdKKeywords: ["name", "id", "delete"],
     content: (
       <div className="flex flex-col gap-6">
-        <RenameOrganization />
         <div>
           <Header title="Debug Information" />
           <JSONView
@@ -107,7 +105,7 @@ const OrgSettingsPage = () => {
   return (
     <ContainerPage
       headerProps={{
-        title: "Organization Settings",
+        title: "Account Settings",
       }}
     >
       <PagedSettingsContainer

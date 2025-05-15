@@ -80,8 +80,8 @@ const DemoOrganizationTile = () => {
         <CardTitle>Try Hanzo Cloud Demo</CardTitle>
       </CardHeader>
       <CardContent>
-        We have built a Q&A chatbot that answers questions based on the HanzoCloud
-        Docs. Interact with it to see traces in HanzoCloudud.
+        We have built a Q&A chatbot that answers questions based on the
+        HanzoCloud Docs. Interact with it to see traces in HanzoCloudud.
       </CardContent>
       <CardFooter>
         <Button asChild variant="secondary">
@@ -260,6 +260,15 @@ export const OrganizationProjectOverview = () => {
     return (
       <SingleOrganizationPage orgId={org.id} search={search ?? undefined} />
     );
+  }
+
+  // Show default org of user
+  if (organizations.length > 0) {
+    const org = organizations?.[0];
+    if (!org) {
+      return null;
+    }
+    router.push(`organization/${org.id}`);
   }
 
   return (
