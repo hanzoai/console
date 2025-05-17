@@ -115,5 +115,11 @@ const reduceScopesToListItems = (
   );
 };
 
-const formatRole = (role: Role) =>
-  role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+const formatRole = (role: Role) => {
+  const roleValue = role
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+
+  return roleValue;
+};

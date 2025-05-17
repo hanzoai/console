@@ -1,3 +1,4 @@
+// Ensure Role type includes 'ADMIN_BILLING' in @hanzo/shared/src/db
 import { type Role } from "@hanzo/shared/src/db";
 
 const organizationScopes = [
@@ -29,7 +30,9 @@ export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
     "organization:update",
     "organizationMembers:CUD",
     "organizationMembers:read",
+    "hanzoCloudBilling:CRUD",
   ],
+  ADMIN_BILLING: ["hanzoCloudBilling:CRUD"],
   MEMBER: ["organizationMembers:read"],
   VIEWER: [],
   NONE: [],
