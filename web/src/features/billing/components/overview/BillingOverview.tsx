@@ -33,11 +33,6 @@ export const BillingOverview = () => {
     },
   );
 
-  // Add debug logging for subscription
-  console.log("BillingOverview - Subscription Details:", {
-    status: subscription?.status,
-    fullSubscription: subscription,
-  });
 
   // Fetch organization details to get credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
@@ -138,6 +133,7 @@ export const BillingOverview = () => {
                   )}
                 </div>
               )}
+
             </p>
           </div>
         </div>

@@ -13,6 +13,7 @@ export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[key
 export const Role = {
     OWNER: "OWNER",
     ADMIN: "ADMIN",
+    ADMIN_BILLING: "ADMIN_BILLING",
     MEMBER: "MEMBER",
     VIEWER: "VIEWER",
     NONE: "NONE"

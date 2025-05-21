@@ -98,8 +98,9 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       await handleSubscriptionChanged(subscription, "created");
       break;
     case "customer.subscription.updated":
+    case "invoice.updated":
       // update the active product id on the organization linked to the subscription + customer and subscription id (if null or same)
-      const updatedSubscription = event.data.object;
+      const updatedSubscription = event.data.object as Stripe.Subscription;
       logger.info("[Stripe Webhook] Start customer.subscription.updated", {
         payload: updatedSubscription,
         subscriptionId: updatedSubscription.id,
@@ -122,8 +123,9 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       break;
     case "payment_intent.succeeded":
     case "checkout.session.completed":
+    case "invoice.payment_succeeded":
       // Add handling for credit purchases
-      const paymentObject = event.data.object;
+      const paymentObject = event.data.object as Stripe.PaymentIntent | Stripe.Checkout.Session;
       console.log("paymentObject=============", paymentObject);
       logger.info("[Stripe Webhook] Start payment.succeeded", {
         payload: paymentObject,
@@ -347,6 +349,7 @@ async function handleCreditPurchase(
     "amount_received" in payment
       ? payment.amount_received
       : (payment as Stripe.Checkout.Session).amount_total;
+
   const orgId = payment.metadata?.orgId;
 
   if (!orgId) {
