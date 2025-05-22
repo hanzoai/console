@@ -40,9 +40,9 @@ type AuditLog = {
   | {
       userId: string;
       orgId: string;
-      orgRole: Role;
+      orgRole: string;
       projectId?: string;
-      projectRole?: Role;
+      projectRole?: string;
     }
   | {
       session: {
@@ -50,9 +50,9 @@ type AuditLog = {
           id: string;
         };
         orgId: string;
-        orgRole: Role;
+        orgRole: string;
         projectId?: string;
-        projectRole?: Role;
+        projectRole?: string;
       };
     }
 );

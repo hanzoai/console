@@ -19,8 +19,8 @@ export type tmp = Organization;
 export type InvitesTableRow = {
   email: string;
   createdAt: Date;
-  orgRole: Role;
-  projectRole?: Role;
+  orgRole: String;
+  projectRole?: String;
   invitedByUser: {
     name: string | null;
     image: string | null;

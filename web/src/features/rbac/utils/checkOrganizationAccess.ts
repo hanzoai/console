@@ -58,7 +58,7 @@ export function hasOrganizationAccess(p: HasOrganizationAccessParams): boolean {
   const isAdmin = "role" in p ? p.admin : p.session?.user?.admin;
   if (isAdmin) return true;
 
-  const organizationRole: Role | undefined =
+  const organizationRole: string | undefined =
     "role" in p
       ? p.role
       : p.session?.user?.organizations.find(

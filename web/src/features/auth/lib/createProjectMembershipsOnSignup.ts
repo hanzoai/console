@@ -22,7 +22,7 @@ export async function createProjectMembershipsOnSignup(user: {
         data: {
           userId: user.id,
           orgId: demoProject.orgId,
-          role: Role.VIEWER,
+          role: "VIEWER",
         },
       });
     }

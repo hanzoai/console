@@ -17,7 +17,7 @@ import { CreateProjectMemberButton } from "@/src/features/rbac/components/Create
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
 import type { RouterOutput } from "@/src/utils/types";
-import { Role } from "@hanzo/shared";
+import { ClientRole, Role } from "@hanzo/shared";
 import { type Row } from "@tanstack/react-table";
 import { Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -43,8 +43,8 @@ export type MembersTableRow = {
   };
   email: string | null;
   createdAt: Date;
-  orgRole: Role;
-  projectRole?: Role;
+  orgRole: string;
+  projectRole?: string;
   meta: {
     userId: string;
     orgMembershipId: string;
@@ -388,7 +388,7 @@ const OrgRoleDropdown = ({
   hasCudAccess,
 }: {
   orgMembershipId: string;
-  currentRole: Role;
+  currentRole: string;
   orgId: string;
   userId: string;
   hasCudAccess: boolean;
@@ -421,7 +421,7 @@ const OrgRoleDropdown = ({
           mut.mutate({
             orgId,
             orgMembershipId,
-            role: value as Role,
+            role: value,
           });
         }
       }}
@@ -430,7 +430,7 @@ const OrgRoleDropdown = ({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {Object.values(Role).map((role) => (
+        {Object.values(ClientRole).map((role) => (
           <RoleSelectItem role={role} key={role} />
         ))}
       </SelectContent>
@@ -448,7 +448,7 @@ const ProjectRoleDropdown = ({
 }: {
   orgMembershipId: string;
   userId: string;
-  currentProjectRole: Role | null;
+  currentProjectRole: string | null;
   orgId: string;
   projectId: string;
   hasCudAccess: boolean;
@@ -470,7 +470,7 @@ const ProjectRoleDropdown = ({
   return (
     <Select
       disabled={!hasCudAccess || mut.isLoading}
-      value={currentProjectRole ?? Role.NONE}
+      value={currentProjectRole ?? "NONE"}
       onValueChange={(value) => {
         if (
           userId !== session.data?.user?.id ||
@@ -481,7 +481,7 @@ const ProjectRoleDropdown = ({
             orgMembershipId,
             projectId,
             userId,
-            projectRole: value as Role,
+            projectRole: value,
           });
         }
       }}
@@ -490,7 +490,7 @@ const ProjectRoleDropdown = ({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {Object.values(Role).map((role) => (
+        {Object.values(ClientRole).map((role) => (
           <RoleSelectItem role={role} key={role} isProjectRole />
         ))}
       </SelectContent>

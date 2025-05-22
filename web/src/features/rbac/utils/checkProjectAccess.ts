@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 
 type HasProjectAccessParams =
   | {
-      role: Role;
+      role: string;
       scope: ProjectScope;
       admin?: boolean; // prop user.admin
     }
@@ -53,7 +53,7 @@ export function hasProjectAccess(p: HasProjectAccessParams): boolean {
   const isAdmin = "role" in p ? p.admin : p.session?.user?.admin;
   if (isAdmin) return true;
 
-  const projectRole: Role | undefined =
+  const projectRole: string | undefined =
     "role" in p
       ? p.role
       : p.session?.user?.organizations

@@ -13,27 +13,28 @@ const organizationScopes = [
 // type string of all Resource:Action, e.g. "organizationMembers:read"
 export type OrganizationScope = (typeof organizationScopes)[number];
 
-export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
-  OWNER: [
-    "projects:create",
-    "projects:transfer_org",
-    "organization:update",
-    "organization:delete",
-    "organizationMembers:CUD",
-    "organizationMembers:read",
-    "hanzoCloudBilling:CRUD",
-  ],
-  ADMIN: [
-    "projects:create",
-    "projects:transfer_org",
-    "organization:update",
-    "organizationMembers:CUD",
-    "organizationMembers:read",
-  ],
-  MEMBER: ["organizationMembers:read"],
-  VIEWER: [],
-  NONE: [],
-};
+export const organizationRoleAccessRights: Record<string, OrganizationScope[]> =
+  {
+    OWNER: [
+      "projects:create",
+      "projects:transfer_org",
+      "organization:update",
+      "organization:delete",
+      "organizationMembers:CUD",
+      "organizationMembers:read",
+      "hanzoCloudBilling:CRUD",
+    ],
+    ADMIN: [
+      "projects:create",
+      "projects:transfer_org",
+      "organization:update",
+      "organizationMembers:CUD",
+      "organizationMembers:read",
+    ],
+    MEMBER: ["organizationMembers:read"],
+    VIEWER: [],
+    NONE: [],
+  };
 
 export const orgNoneRoleComment =
   "No access to organization resources by default. User needs to be granted project-level access via project roles.";

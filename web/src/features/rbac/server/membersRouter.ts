@@ -86,10 +86,10 @@ export const membersRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         email: z.string().email(),
-        orgRole: z.nativeEnum(Role),
+        orgRole: z.string(),
         // in case a projectRole should be set for a specific project
         projectId: z.string().optional(),
-        projectRole: z.nativeEnum(Role).optional(),
+        projectRole: z.string().optional().nullable(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -124,7 +124,7 @@ export const membersRouter = createTRPCRouter({
       if (
         // Require only project-level access rights if no orgRole is set but a projectId is
         input.projectId &&
-        input.orgRole === Role.NONE
+        input.orgRole === "NONE"
       ) {
         throwIfNoProjectAccess({
           session: ctx.session,
@@ -205,10 +205,10 @@ export const membersRouter = createTRPCRouter({
         if (existingOrgMembership) {
           // user exists and only a project role shall be added
           if (
-            input.orgRole === Role.NONE &&
+            input.orgRole === "NONE" &&
             project &&
             input.projectRole &&
-            input.projectRole !== Role.NONE
+            input.projectRole !== "NONE"
           ) {
             // Create project role for user
             const newProjectMembership =
@@ -253,7 +253,7 @@ export const membersRouter = createTRPCRouter({
           action: "create",
           after: orgMembership,
         });
-        if (project && input.projectRole && input.projectRole !== Role.NONE) {
+        if (project && input.projectRole && input.projectRole !== "NONE") {
           const projectMembership = await ctx.prisma.projectMembership.create({
             data: {
               userId: user.id,
@@ -283,13 +283,13 @@ export const membersRouter = createTRPCRouter({
           data: {
             orgId: input.orgId,
             projectId:
-              project && input.projectRole && input.projectRole !== Role.NONE
+              project && input.projectRole && input.projectRole !== "NONE"
                 ? project.id
                 : null,
             email: input.email.toLowerCase(),
             orgRole: input.orgRole,
             projectRole:
-              input.projectRole && input.projectRole !== Role.NONE && project
+              input.projectRole && input.projectRole !== "NONE" && project
                 ? input.projectRole
                 : null,
             invitedByUserId: ctx.session.user.id,
@@ -356,12 +356,12 @@ export const membersRouter = createTRPCRouter({
         role: orgMembership.role,
       });
 
-      if (orgMembership.role === Role.OWNER) {
+      if (orgMembership.role === "OWNER") {
         // check if there are other remaining owners
         const owners = await ctx.prisma.organizationMembership.count({
           where: {
             orgId: input.orgId,
-            role: Role.OWNER,
+            role: "OWNER",
           },
         });
         if (owners === 1) {
@@ -415,7 +415,7 @@ export const membersRouter = createTRPCRouter({
             scope: "organizationMembers:CUD",
           }) ||
           (invitation.projectId &&
-            invitation.orgRole === Role.NONE &&
+            invitation.orgRole === "NONE" &&
             hasProjectAccess({
               session: ctx.session,
               projectId: invitation.projectId,
@@ -449,7 +449,7 @@ export const membersRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         orgMembershipId: z.string(),
-        role: z.nativeEnum(Role),
+        role: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -484,7 +484,7 @@ export const membersRouter = createTRPCRouter({
       const otherOwners = await ctx.prisma.organizationMembership.count({
         where: {
           orgId: input.orgId,
-          role: Role.OWNER,
+          role: "OWNER",
           id: {
             not: membership.id,
           },
@@ -586,7 +586,7 @@ export const membersRouter = createTRPCRouter({
       }
 
       // If the project role is set to null, delete the project membership
-      if (input.projectRole === null || input.projectRole === Role.NONE) {
+      if (input.projectRole === null || input.projectRole === "NONE") {
         if (projectMembership) {
           await ctx.prisma.projectMembership.delete({
             where: {

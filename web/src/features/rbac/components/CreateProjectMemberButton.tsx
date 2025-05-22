@@ -27,8 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
+import { type ClientRole, Role } from "@hanzo/shared";
 import { Input } from "@/src/components/ui/input";
-import { Role } from "@hanzo/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import {
@@ -41,40 +41,34 @@ import { ActionButton } from "@/src/components/ActionButton";
 
 const formSchema = z.object({
   email: z.string().trim().email(),
-  orgRole: z.nativeEnum(Role),
-  projectRole: z.nativeEnum(Role),
+  orgRole: z.string(),
+  projectRole: z.string(),
 });
 
 export function CreateProjectMemberButton(props: {
   orgId: string;
   project?: { id: string; name: string };
 }) {
+  const roles = ["ADMIN", "MEMBER", "VIEWER", "NONE"];
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const hasOrgAccess = useHasOrganizationAccess({
     organizationId: props.orgId,
     scope: "organizationMembers:CUD",
   });
+
   const hasProjectAccess = useHasProjectAccess({
     projectId: props.project?.id,
     scope: "projectMembers:CUD",
   });
   const orgMemberLimit = useEntitlementLimit("organization-member-count");
   const orgMemberCount = api.members.allFromOrg.useQuery(
-    {
-      orgId: props.orgId,
-    },
-    {
-      enabled: hasOrgAccess,
-    },
+    { orgId: props.orgId },
+    { enabled: hasOrgAccess },
   ).data?.totalCount;
   const inviteCount = api.members.allInvitesFromOrg.useQuery(
-    {
-      orgId: props.orgId,
-    },
-    {
-      enabled: hasOrgAccess,
-    },
+    { orgId: props.orgId },
+    { enabled: hasOrgAccess },
   ).data?.totalCount;
   const hasProjectRoleEntitlement = useHasEntitlement("rbac-project-roles");
   const hasOnlySingleProjectAccess =
@@ -84,18 +78,15 @@ export function CreateProjectMemberButton(props: {
   const mutCreateProjectMember = api.members.create.useMutation({
     onSuccess: () => utils.members.invalidate(),
     onError: (error) =>
-      form.setError("email", {
-        type: "manual",
-        message: error.message,
-      }),
+      form.setError("email", { type: "manual", message: error.message }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      orgRole: hasOnlySingleProjectAccess ? Role.NONE : Role.MEMBER,
-      projectRole: hasOnlySingleProjectAccess ? Role.MEMBER : Role.NONE,
+      orgRole: hasOnlySingleProjectAccess ? "NONE" : "MEMBER",
+      projectRole: hasOnlySingleProjectAccess ? "MEMBER" : "NONE",
     },
   });
 
@@ -117,7 +108,7 @@ export function CreateProjectMemberButton(props: {
         //optional
         projectId: props.project?.id,
         projectRole:
-          values.projectRole === Role.NONE ? undefined : values.projectRole,
+          values.projectRole === "NONE" ? undefined : values.projectRole,
       })
       .then(() => {
         form.reset();
@@ -177,12 +168,12 @@ export function CreateProjectMemberButton(props: {
                   name="orgRole"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Organization Role</FormLabel>
+                      <FormLabel>Organization ClientRole</FormLabel>
                       <Select
                         defaultValue={field.value}
                         onValueChange={(value) =>
                           field.onChange(
-                            value as (typeof Role)[keyof typeof Role],
+                            value as (typeof ClientRole)[keyof typeof ClientRole],
                           )
                         }
                       >
@@ -192,7 +183,7 @@ export function CreateProjectMemberButton(props: {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(Role).map((role) => (
+                          {roles.map((role) => (
                             <RoleSelectItem role={role} key={role} />
                           ))}
                         </SelectContent>
@@ -211,11 +202,7 @@ export function CreateProjectMemberButton(props: {
                       <FormLabel>Project Role</FormLabel>
                       <Select
                         defaultValue={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(
-                            value as (typeof Role)[keyof typeof Role],
-                          )
-                        }
+                        onValueChange={(value) => field.onChange(value)}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -223,11 +210,10 @@ export function CreateProjectMemberButton(props: {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(Role)
+                          {roles
                             .filter(
                               (role) =>
-                                !hasOnlySingleProjectAccess ||
-                                role !== Role.NONE,
+                                !hasOnlySingleProjectAccess || role !== "NONE",
                             )
                             .map((role) => (
                               <RoleSelectItem

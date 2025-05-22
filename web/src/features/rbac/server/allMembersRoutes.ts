@@ -35,18 +35,12 @@ async function getMembers(
         ? {
             // either org level role or project level role
             OR: [
-              {
-                role: {
-                  not: Role.NONE,
-                },
-              },
+              { role: { not: "NONE" } },
               {
                 ProjectMemberships: {
                   some: {
                     projectId: query.projectId,
-                    role: {
-                      not: Role.NONE,
-                    },
+                    role: { not: "NONE" },
                   },
                 },
               },

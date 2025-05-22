@@ -75,11 +75,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { DB } from "@/src/server/db";
 import { setUpSuperjson } from "@/src/utils/superjson";
-import {
-  addUserToSpan,
-  getTraceById,
-  logger,
-} from "@hanzo/shared/src/server";
+import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -239,9 +235,9 @@ const enforceUserIsAuthedAndProjectMember = t.middleware(
               ...ctx.session,
               user: ctx.session.user,
               orgId: dbProject.orgId,
-              orgRole: Role.OWNER,
+              orgRole: "OWNER",
               projectId: projectId,
-              projectRole: Role.OWNER,
+              projectRole: "OWNER",
             },
           },
         });
@@ -368,14 +364,14 @@ const enforceTraceAccess = t.middleware(async ({ ctx, rawInput, next }) => {
 
   const traceSession = !!trace.sessionId
     ? await ctx.prisma.traceSession.findFirst({
-      where: {
-        id: trace.sessionId,
-        projectId,
-      },
-      select: {
-        public: true,
-      },
-    })
+        where: {
+          id: trace.sessionId,
+          projectId,
+        },
+        select: {
+          public: true,
+        },
+      })
     : null;
 
   const isSessionPublic = traceSession?.public === true;
@@ -478,7 +474,7 @@ const enforceSessionAccess = t.middleware(async ({ ctx, rawInput, next }) => {
         ...ctx.session,
         projectRole:
           ctx.session?.user?.admin === true
-            ? Role.OWNER
+            ? "OWNER"
             : userSessionProject?.role,
       },
     },

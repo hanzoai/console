@@ -4,7 +4,7 @@ import {
   HoverCardTrigger,
 } from "@/src/components/ui/hover-card";
 import { SelectItem } from "@/src/components/ui/select";
-import { Role } from "@hanzo/shared";
+import { type Role } from "@hanzo/shared";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import {
   organizationRoleAccessRights,
@@ -20,11 +20,11 @@ export const RoleSelectItem = ({
   role,
   isProjectRole,
 }: {
-  role: Role;
+  role: string;
   isProjectRole?: boolean;
 }) => {
-  const isProjectNoneRole = role === Role.NONE && isProjectRole;
-  const isOrgNoneRole = role === Role.NONE && !isProjectRole;
+  const isProjectNoneRole = role === "NONE" && isProjectRole;
+  const isOrgNoneRole = role === "NONE" && !isProjectRole;
   const orgScopes = reduceScopesToListItems(organizationRoleAccessRights, role);
   const projectScopes = reduceScopesToListItems(projectRoleAccessRights, role);
 
@@ -66,12 +66,13 @@ export const RoleSelectItem = ({
 
 const reduceScopesToListItems = (
   accessRights: Record<string, string[]>,
-  role: Role,
+  role: string,
 ) => {
+  console.log(`role: `, role);
   const currentRoleLevel = orderedRoles[role];
   const lowerRole = Object.entries(orderedRoles).find(
     ([_role, level]) => level === currentRoleLevel - 1,
-  )?.[0] as Role | undefined;
+  )?.[0] as string | undefined;
   const inheritedScopes = lowerRole ? accessRights[lowerRole] : [];
 
   return accessRights[role].length > 0 ? (
@@ -115,5 +116,5 @@ const reduceScopesToListItems = (
   );
 };
 
-const formatRole = (role: Role) =>
+const formatRole = (role: string) =>
   role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();

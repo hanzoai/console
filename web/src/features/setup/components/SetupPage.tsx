@@ -196,9 +196,7 @@ export function SetupPage() {
               </p>
               <NewProjectForm
                 orgId={organization.id}
-                onSuccess={(projectId) =>
-                  router.push(`/project/${projectId}`)
-                }
+                onSuccess={(projectId) => router.push(`/project/${projectId}`)}
               />
             </div>
           )

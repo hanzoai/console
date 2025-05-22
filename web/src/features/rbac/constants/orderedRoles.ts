@@ -1,9 +1,7 @@
-import { Role } from "@hanzo/shared";
-
-export const orderedRoles: Record<Role, number> = {
-  [Role.OWNER]: 4,
-  [Role.ADMIN]: 3,
-  [Role.MEMBER]: 2,
-  [Role.VIEWER]: 1,
-  [Role.NONE]: 0,
+export const orderedRoles: Record<string, number> = {
+  OWNER: 4,
+  ADMIN: 3,
+  MEMBER: 2,
+  VIEWER: 1,
+  NONE: 0,
 };

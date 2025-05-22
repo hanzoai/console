@@ -1,5 +1,3 @@
-import { type Role } from "@hanzo/shared/src/db";
-
 const projectScopes = [
   "projectMembers:read",
   "projectMembers:CUD",
@@ -59,7 +57,7 @@ const projectScopes = [
 // type string of all Resource:Action, e.g. "members:read"
 export type ProjectScope = (typeof projectScopes)[number];
 
-export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
+export const projectRoleAccessRights: Record<string, ProjectScope[]> = {
   OWNER: [
     "project:read",
     "project:update",

@@ -68,15 +68,14 @@ async function main() {
     },
   });
 
-  
   await prisma.organization.upsert({
     where: { id: seedOrgId },
     update: {
-      name: "Seed Org",      
+      name: "Seed Org",
     },
     create: {
       id: seedOrgId,
-      name: "Seed Org",     
+      name: "Seed Org",
     },
   });
 

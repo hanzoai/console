@@ -34,13 +34,13 @@ async function getInvites(
             OR: [
               {
                 orgRole: {
-                  not: Role.NONE,
+                  not: "NONE",
                 },
               },
               {
                 projectId: query.projectId,
                 projectRole: {
-                  not: Role.NONE,
+                  not: "NONE",
                 },
               },
             ],
