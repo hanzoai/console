@@ -80,6 +80,7 @@ export function CreateProjectMemberButton(props: {
   const hasOnlySingleProjectAccess =
     !hasOrgAccess && hasProjectAccess && hasProjectRoleEntitlement;
 
+  const displayRoles = Object.values(Role).filter((r) => r !== Role.OWNER);
   const utils = api.useUtils();
   const mutCreateProjectMember = api.members.create.useMutation({
     onSuccess: () => utils.members.invalidate(),
@@ -192,7 +193,7 @@ export function CreateProjectMemberButton(props: {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(Role).map((role) => (
+                          {displayRoles.map((role) => (
                             <RoleSelectItem role={role} key={role} />
                           ))}
                         </SelectContent>
@@ -223,7 +224,7 @@ export function CreateProjectMemberButton(props: {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(Role)
+                          {displayRoles
                             .filter(
                               (role) =>
                                 !hasOnlySingleProjectAccess ||
