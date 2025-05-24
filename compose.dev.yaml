@@ -129,26 +129,21 @@ services:
     networks:
       - hanzo-network
     labels:
-      - traefik.enable=true
 
-      # Middlewares
-      - traefik.http.middlewares.cloud-dev-headers.headers.customrequestheaders.X-Forwarded-Proto=https
-      - traefik.http.middlewares.cloud-dev-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud-dev.hanzo.ai http://cloud-dev.hanzo.ai;
-      - traefik.http.routers.cloud-dev-http.service=cloud-dev-service@docker
-      # HTTP router (redirect)
-      - traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)
-      - traefik.http.routers.cloud-dev-http.entrypoints=web
-      - traefik.http.routers.cloud-dev-http.middlewares=well-known@file,cloud-dev-csp@file,redirect-to-https@file
+      # HTTPS Router
+      - "traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)"
+      - "traefik.http.routers.cloud-dev-https.entrypoints=websecure"
+      - "traefik.http.routers.cloud-dev-https.tls=true"
+      - "traefik.http.routers.cloud-dev-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cloud-dev-https.middlewares=well-known"
+      - "traefik.http.routers.cloud-dev-https.service=cloud-dev-service"
+      - "traefik.http.services.cloud-dev-service.loadbalancer.server.port=3000"
 
-      # HTTPS router (main)
-      - traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)
-      - traefik.http.routers.cloud-dev-https.entrypoints=websecure
-      - traefik.http.routers.cloud-dev-https.tls.certresolver=letsencrypt
-      - traefik.http.routers.cloud-dev-https.middlewares=cloud-dev-headers,cloud-dev-csp
-      - traefik.http.routers.cloud-dev-https.service=cloud-dev-service
-
-      # Service mapping
-      - traefik.http.services.cloud-dev-service.loadbalancer.server.port=3000
+      # HTTP Router (redirect to HTTPS)
+      - "traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)"
+      - "traefik.http.routers.cloud-dev-http.entrypoints=web"
+      - "traefik.http.routers.cloud-dev-http.middlewares=well-known,redirect-to-https"
+      - "traefik.http.routers.cloud-dev-http.service=cloud-dev-service"
 
 
   cloud-dev-worker:
