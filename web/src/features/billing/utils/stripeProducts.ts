@@ -27,48 +27,6 @@ export const stripeProducts: StripeProduct[] = [
     active: true
   },
   {
-    id: 'pro-plan',
-    stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-        env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-        ? "prod_RtxpuU81xgUmtC" // test
-        : "prod_RsXQA8ueb1y03D", // live
-    name: "Pro",
-    title: "Pro",
-    description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
-    checkout: true,
-    active: false
-
-  },
-  {
-    id: 'team-plan',
-    stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-        env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-        ? "prod_RtxpPPb2RTz8bj" // test
-        : "prod_RsXMLhxoR4rauv", // live
-    name: "Team",
-    title: "Team",
-    description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
-    checkout: true,
-    active: false
-
-  },
-  {
-    id: 'dev-plan',
-    stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-        env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-        ? "prod_RtxoClDkiPAOAs" // test
-        : "prod_RsVYLiuNEcSgQj", // live
-    name: "Dev",
-    title: "Dev",
-    description: "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
-    checkout: true,
-    active: false
-
-  },
-  {
     id: 'premium-plan',
     stripeProductId:
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
