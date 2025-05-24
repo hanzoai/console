@@ -134,7 +134,7 @@ services:
       # Middlewares
       - traefik.http.middlewares.cloud-dev-headers.headers.customrequestheaders.X-Forwarded-Proto=https
       - traefik.http.middlewares.cloud-dev-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud-dev.hanzo.ai http://cloud-dev.hanzo.ai;
-
+      - traefik.http.routers.cloud-dev-http.service=cloud-dev-service@docker
       # HTTP router (redirect)
       - traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)
       - traefik.http.routers.cloud-dev-http.entrypoints=web
