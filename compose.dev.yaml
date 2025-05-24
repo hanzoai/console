@@ -129,6 +129,7 @@ services:
     networks:
       - hanzo-network
     labels:
+      - "traefik.enable=true"
 
       # HTTPS Router
       - "traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)"
