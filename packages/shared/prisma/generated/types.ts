@@ -1,116 +1,104 @@
-import type { ColumnType } from 'kysely';
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+import type { ColumnType } from "kysely";
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export const BlobStorageIntegrationType = {
-  S3: 'S3',
-  S3_COMPATIBLE: 'S3_COMPATIBLE',
-  AZURE_BLOB_STORAGE: 'AZURE_BLOB_STORAGE',
+  S3: "S3",
+  S3_COMPATIBLE: "S3_COMPATIBLE",
+  AZURE_BLOB_STORAGE: "AZURE_BLOB_STORAGE"
 } as const;
-export type BlobStorageIntegrationType =
-  (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
+export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const Role = {
-  OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  MEMBER: 'MEMBER',
-  VIEWER: 'VIEWER',
-  NONE: 'NONE',
+  OWNER: "OWNER",
+  ADMIN: "ADMIN",
+  MEMBER: "MEMBER",
+  VIEWER: "VIEWER",
+  NONE: "NONE"
 } as const;
 export type Role = (typeof Role)[keyof typeof Role];
 export const LegacyPrismaObservationType = {
-  SPAN: 'SPAN',
-  EVENT: 'EVENT',
-  GENERATION: 'GENERATION',
+  SPAN: "SPAN",
+  EVENT: "EVENT",
+  GENERATION: "GENERATION"
 } as const;
-export type LegacyPrismaObservationType =
-  (typeof LegacyPrismaObservationType)[keyof typeof LegacyPrismaObservationType];
+export type LegacyPrismaObservationType = (typeof LegacyPrismaObservationType)[keyof typeof LegacyPrismaObservationType];
 export const LegacyPrismaObservationLevel = {
-  DEBUG: 'DEBUG',
-  DEFAULT: 'DEFAULT',
-  WARNING: 'WARNING',
-  ERROR: 'ERROR',
+  DEBUG: "DEBUG",
+  DEFAULT: "DEFAULT",
+  WARNING: "WARNING",
+  ERROR: "ERROR"
 } as const;
-export type LegacyPrismaObservationLevel =
-  (typeof LegacyPrismaObservationLevel)[keyof typeof LegacyPrismaObservationLevel];
+export type LegacyPrismaObservationLevel = (typeof LegacyPrismaObservationLevel)[keyof typeof LegacyPrismaObservationLevel];
 export const LegacyPrismaScoreSource = {
-  ANNOTATION: 'ANNOTATION',
-  API: 'API',
-  EVAL: 'EVAL',
+  ANNOTATION: "ANNOTATION",
+  API: "API",
+  EVAL: "EVAL"
 } as const;
-export type LegacyPrismaScoreSource =
-  (typeof LegacyPrismaScoreSource)[keyof typeof LegacyPrismaScoreSource];
+export type LegacyPrismaScoreSource = (typeof LegacyPrismaScoreSource)[keyof typeof LegacyPrismaScoreSource];
 export const ScoreDataType = {
-  CATEGORICAL: 'CATEGORICAL',
-  NUMERIC: 'NUMERIC',
-  BOOLEAN: 'BOOLEAN',
+  CATEGORICAL: "CATEGORICAL",
+  NUMERIC: "NUMERIC",
+  BOOLEAN: "BOOLEAN"
 } as const;
 export type ScoreDataType = (typeof ScoreDataType)[keyof typeof ScoreDataType];
 export const AnnotationQueueStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
+  PENDING: "PENDING",
+  COMPLETED: "COMPLETED"
 } as const;
-export type AnnotationQueueStatus =
-  (typeof AnnotationQueueStatus)[keyof typeof AnnotationQueueStatus];
+export type AnnotationQueueStatus = (typeof AnnotationQueueStatus)[keyof typeof AnnotationQueueStatus];
 export const AnnotationQueueObjectType = {
-  TRACE: 'TRACE',
-  OBSERVATION: 'OBSERVATION',
+  TRACE: "TRACE",
+  OBSERVATION: "OBSERVATION"
 } as const;
-export type AnnotationQueueObjectType =
-  (typeof AnnotationQueueObjectType)[keyof typeof AnnotationQueueObjectType];
+export type AnnotationQueueObjectType = (typeof AnnotationQueueObjectType)[keyof typeof AnnotationQueueObjectType];
 export const DatasetStatus = {
-  ACTIVE: 'ACTIVE',
-  ARCHIVED: 'ARCHIVED',
+  ACTIVE: "ACTIVE",
+  ARCHIVED: "ARCHIVED"
 } as const;
 export type DatasetStatus = (typeof DatasetStatus)[keyof typeof DatasetStatus];
 export const CommentObjectType = {
-  TRACE: 'TRACE',
-  OBSERVATION: 'OBSERVATION',
-  SESSION: 'SESSION',
-  PROMPT: 'PROMPT',
+  TRACE: "TRACE",
+  OBSERVATION: "OBSERVATION",
+  SESSION: "SESSION",
+  PROMPT: "PROMPT"
 } as const;
-export type CommentObjectType =
-  (typeof CommentObjectType)[keyof typeof CommentObjectType];
+export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
 export const JobType = {
-  EVAL: 'EVAL',
+  EVAL: "EVAL"
 } as const;
 export type JobType = (typeof JobType)[keyof typeof JobType];
 export const JobConfigState = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE"
 } as const;
-export type JobConfigState =
-  (typeof JobConfigState)[keyof typeof JobConfigState];
+export type JobConfigState = (typeof JobConfigState)[keyof typeof JobConfigState];
 export const JobExecutionStatus = {
-  COMPLETED: 'COMPLETED',
-  ERROR: 'ERROR',
-  PENDING: 'PENDING',
-  CANCELLED: 'CANCELLED',
+  COMPLETED: "COMPLETED",
+  ERROR: "ERROR",
+  PENDING: "PENDING",
+  CANCELLED: "CANCELLED"
 } as const;
-export type JobExecutionStatus =
-  (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
+export type JobExecutionStatus = (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
 export const UsageMeterType = {
-  AI: 'AI',
-  STORAGE: 'STORAGE',
-  NETWORK: 'NETWORK',
-  NETWORK_EGRESS: 'NETWORK_EGRESS',
-  GPU: 'GPU',
-  CPU: 'CPU',
-  MEMORY: 'MEMORY',
+  AI: "AI",
+  STORAGE: "STORAGE",
+  NETWORK: "NETWORK",
+  NETWORK_EGRESS: "NETWORK_EGRESS",
+  GPU: "GPU",
+  CPU: "CPU",
+  MEMORY: "MEMORY"
 } as const;
-export type UsageMeterType =
-  (typeof UsageMeterType)[keyof typeof UsageMeterType];
+export type UsageMeterType = (typeof UsageMeterType)[keyof typeof UsageMeterType];
 export const UsageAggregationMethod = {
-  SUM: 'SUM',
-  AVERAGE: 'AVERAGE',
-  MAX: 'MAX',
-  MIN: 'MIN',
-  LAST: 'LAST',
+  SUM: "SUM",
+  AVERAGE: "AVERAGE",
+  MAX: "MAX",
+  MIN: "MIN",
+  LAST: "LAST"
 } as const;
-export type UsageAggregationMethod =
-  (typeof UsageAggregationMethod)[keyof typeof UsageAggregationMethod];
+export type UsageAggregationMethod = (typeof UsageAggregationMethod)[keyof typeof UsageAggregationMethod];
 export type Account = {
   id: string;
   user_id: string;
@@ -480,6 +468,8 @@ export type Organization = {
   credits: Generated<number>;
   cloud_config: unknown | null;
   created_at: Generated<Timestamp>;
+  updated_at: Generated<Timestamp>;
+  expired_at: Timestamp | null;
 };
 export type OrganizationMembership = {
   id: string;

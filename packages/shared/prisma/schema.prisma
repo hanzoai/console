@@ -99,7 +99,7 @@ model Organization {
   id          String @id @default(cuid())
   name        String
   // Credits tracking
-  credits     Float  @default(0)
+  credits     Float  @default(5)
   cloudConfig Json?  @map("cloud_config")
 
   organizationMemberships OrganizationMembership[]
@@ -109,8 +109,12 @@ model Organization {
   usageMeters             UsageMeter[]
   UsageRecord             UsageRecord[]
 
-  // New field
-  created_at DateTime @default(now())
+  // created at
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  //exprire
+  expiredAt DateTime? @map("expired_at")
 
   @@map("organizations")
 }

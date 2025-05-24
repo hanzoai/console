@@ -16,12 +16,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { env } from "@/src/env.mjs";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
-import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import {
-  createOrganizationRoute,
-  createProjectRoute,
-} from "@/src/features/setup/setupRoutes";
-import { isCloudPlan } from "@hanzo/shared";
+
 import {
   ChevronDownIcon,
   LoaderCircle,
@@ -30,6 +25,12 @@ import {
   Slash,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
+import {
+  createOrganizationRoute,
+  createProjectRoute,
+} from "@/src/features/setup/setupRoutes";
+import { isCloudPlan, planLabels } from "@hanzo/shared";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
@@ -79,17 +80,17 @@ const BreadcrumbComponent = ({
   const getProjectPath = (projectId: string) =>
     router.query.projectId
       ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-        router.query.projectId as string,
-        projectId,
-      )
+          router.query.projectId as string,
+          projectId,
+        )
       : `/project/${projectId}`;
 
   const getOrgPath = (orgId: string) =>
     router.query.organizationId
       ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-        router.query.organizationId as string,
-        orgId,
-      )
+          router.query.organizationId as string,
+          orgId,
+        )
       : `/organization/${orgId}`;
 
   return (
@@ -105,8 +106,7 @@ const BreadcrumbComponent = ({
                     className="ml-1 px-1 py-0 text-xs font-normal"
                     variant="secondary"
                   >
-                    {/* {planLabels[organization.plan]} */}
-                    {organization?.cloudConfig?.plan ?? "Free"}
+                    {planLabels[organization.plan]}
                   </Badge>
                 )}
               <ChevronDownIcon className="h-4 w-4" />

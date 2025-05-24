@@ -24,7 +24,9 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     );
 
   if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION || !stripeClient) {
-    logger.error("[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud");
+    logger.error(
+      "[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud",
+    );
     return NextResponse.json(
       { message: "Stripe webhook endpoint only available in Hanzo Cloud" },
       { status: 500 },
@@ -49,7 +51,9 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
         { status: 400 },
       );
     }
-    logger.debug("[Stripe Webhook] Received raw body", { length: rawBody.length });
+    logger.debug("[Stripe Webhook] Received raw body", {
+      length: rawBody.length,
+    });
   } catch (error) {
     logger.error("[Stripe Webhook] Error reading request body", error);
     return NextResponse.json(
@@ -83,13 +87,13 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     case "customer.subscription.created":
       // update the active product id on the organization linked to the subscription + customer and subscription id (if null or same)
       const subscription = event.data.object;
-      console.log("Check Subscription :>>>", subscription)
+      console.log("Check Subscription :>>>", subscription);
       logger.info("[Stripe Webhook] Start customer.subscription.created", {
         payload: subscription,
         subscriptionId: subscription.id,
         customerId: subscription.customer,
         status: subscription.status,
-        items: subscription.items.data
+        items: subscription.items.data,
       });
       await handleSubscriptionChanged(subscription, "created");
       break;
@@ -101,7 +105,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
         subscriptionId: updatedSubscription.id,
         customerId: updatedSubscription.customer,
         status: updatedSubscription.status,
-        items: updatedSubscription.items.data
+        items: updatedSubscription.items.data,
       });
       await handleSubscriptionChanged(updatedSubscription, "updated");
       break;
@@ -112,7 +116,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
         payload: deletedSubscription,
         subscriptionId: deletedSubscription.id,
         customerId: deletedSubscription.customer,
-        status: deletedSubscription.status
+        status: deletedSubscription.status,
       });
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
@@ -143,7 +147,7 @@ async function handleSubscriptionChanged(
     subscription,
     action,
     status: subscription.status,
-    customerId: subscription.customer
+    customerId: subscription.customer,
   });
 
   // get the checkout session from the subscription to retrieve the client reference for this subscription
@@ -154,13 +158,13 @@ async function handleSubscriptionChanged(
 
   logger.info("[Stripe Webhook] Found checkout sessions:", {
     count: checkoutSessionsResponse?.data.length,
-    sessions: checkoutSessionsResponse?.data
+    sessions: checkoutSessionsResponse?.data,
   });
 
   if (!checkoutSessionsResponse || checkoutSessionsResponse.data.length !== 1) {
     logger.error("[Stripe Webhook] No checkout session found", {
       subscriptionId,
-      sessions: checkoutSessionsResponse?.data
+      sessions: checkoutSessionsResponse?.data,
     });
     traceException("[Stripe Webhook] No checkout session found");
     return;
@@ -172,7 +176,7 @@ async function handleSubscriptionChanged(
   if (!clientReference) {
     logger.error("[Stripe Webhook] No client reference", {
       checkoutSession,
-      subscriptionId
+      subscriptionId,
     });
     traceException("[Stripe Webhook] No client reference");
     return NextResponse.json(
@@ -183,7 +187,7 @@ async function handleSubscriptionChanged(
   if (!isStripeClientReferenceFromCurrentCloudRegion(clientReference)) {
     logger.info(
       "[Stripe Webhook] Client reference not from current cloud region",
-      { clientReference }
+      { clientReference },
     );
     return;
   }
@@ -198,7 +202,7 @@ async function handleSubscriptionChanged(
 
   logger.info("[Stripe Webhook] Found organization:", {
     organization,
-    orgId
+    orgId,
   });
 
   if (!organization) {
@@ -213,7 +217,7 @@ async function handleSubscriptionChanged(
   if (!customerId || typeof customerId !== "string") {
     logger.error("[Stripe Webhook] Customer ID not found", {
       customerId,
-      subscriptionId
+      subscriptionId,
     });
     traceException("[Stripe Webhook] Customer ID not found");
     return;
@@ -223,7 +227,7 @@ async function handleSubscriptionChanged(
   if (!subscription.items.data || subscription.items.data.length !== 1) {
     logger.error(
       "[Stripe Webhook] Subscription items not found or more than one",
-      { items: subscription.items.data }
+      { items: subscription.items.data },
     );
     traceException(
       "[Stripe Webhook] Subscription items not found or more than one",
@@ -237,7 +241,7 @@ async function handleSubscriptionChanged(
   if (!productId || typeof productId !== "string") {
     logger.error("[Stripe Webhook] Product ID not found", {
       productId,
-      subscriptionItem
+      subscriptionItem,
     });
     traceException("[Stripe Webhook] Product ID not found");
     return;
@@ -245,11 +249,10 @@ async function handleSubscriptionChanged(
 
   // Get the plan name from the product ID
   const planName = mapStripeProductIdToPlan(productId);
-  console.log("check Plan :>>>>", planName, productId)
   if (!planName) {
     logger.error("[Stripe Webhook] Could not map product ID to plan name", {
       productId,
-      subscriptionItem
+      subscriptionItem,
     });
     traceException("[Stripe Webhook] Could not map product ID to plan name");
     return;
@@ -262,7 +265,7 @@ async function handleSubscriptionChanged(
     subscriptionId,
     customerId,
   });
-  console.log("Check Parorg:>>>", parsedOrg)
+  console.log("Check Parorg:>>>", parsedOrg);
 
   try {
     // update the cloud config with the product ID
@@ -290,7 +293,7 @@ async function handleSubscriptionChanged(
 
       logger.info("[Stripe Webhook] Successfully updated organization plan", {
         updatedOrg,
-        planName
+        planName,
       });
     } else if (action === "deleted") {
       const updatedOrg = await prisma.organization.update({
@@ -312,7 +315,7 @@ async function handleSubscriptionChanged(
       });
 
       logger.info("[Stripe Webhook] Successfully removed organization plan", {
-        updatedOrg
+        updatedOrg,
       });
     }
     // commnet
@@ -320,14 +323,14 @@ async function handleSubscriptionChanged(
     // need to update the plan in the api keys
     await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
     logger.info("[Stripe Webhook] Successfully invalidated API keys", {
-      orgId: parsedOrg.id
+      orgId: parsedOrg.id,
     });
   } catch (error) {
     logger.error("[Stripe Webhook] Error updating organization", {
       error,
       orgId,
       planName,
-      action
+      action,
     });
     traceException("[Stripe Webhook] Error updating organization");
     throw error;
@@ -336,11 +339,14 @@ async function handleSubscriptionChanged(
   return;
 }
 
-async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Checkout.Session) {
+async function handleCreditPurchase(
+  payment: Stripe.PaymentIntent | Stripe.Checkout.Session,
+) {
   // Extract the amount paid and organization ID from the payment metadata
-  const amountPaid = 'amount_received' in payment
-    ? payment.amount_received
-    : (payment as Stripe.Checkout.Session).amount_total;
+  const amountPaid =
+    "amount_received" in payment
+      ? payment.amount_received
+      : (payment as Stripe.Checkout.Session).amount_total;
   const orgId = payment.metadata?.orgId;
 
   if (!orgId) {
@@ -360,8 +366,8 @@ async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Check
     },
     data: {
       credits: {
-        increment: amountPaid / 100
-      }
+        increment: amountPaid / 100,
+      },
     },
   });
 }
