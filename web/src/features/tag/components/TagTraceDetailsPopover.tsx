@@ -38,7 +38,7 @@ export function TagTraceDetailsPopover({
     },
     onError: (err, _newTags, context) => {
       setIsLoading(false);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
       utils.traces.byIdWithObservationsAndScores.setData(
         { traceId, projectId },

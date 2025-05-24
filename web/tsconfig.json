@@ -2,6 +2,7 @@
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
     "declaration": false,
+    "allowImportingTsExtensions": true,
     "declarationMap": false,
     "outDir": "dist",
     "plugins": [

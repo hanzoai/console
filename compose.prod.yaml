@@ -6,6 +6,8 @@ x-cloud-depends-on: &cloud-depends-on
     condition: service_healthy
   redis:
     condition: service_healthy
+  redis-cloud:
+    condition: service_healthy
   clickhouse:
     condition: service_healthy
 
@@ -85,8 +87,11 @@ services:
       HANZO_IAM_SERVER_URL: ${HANZO_IAM_SERVER_URL:-}
       HANZO_IAM_ALLOW_ACCOUNT_LINKING: ${HANZO_IAM_ALLOW_ACCOUNT_LINKING:-}
       AUTH_DISABLE_USERNAME_PASSWORD: ${AUTH_DISABLE_USERNAME_PASSWORD:-true}
+      HANZO_S3_FREE_PLAN_EXPIRE: ${HANZO_S3_FREE_PLAN_EXPIRE:-90}
+      SMTP_CONNECTION_URL: ${SMTP_CONNECTION_URL:-smtp://dev@hanzo.ai:md-iOMNRc1olJUrZMSvBaGAbA@smtp.mandrillapp.com:587}
     networks:
       - hanzo-network
+      - cloud-hanzo-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.well-known.headers.customrequestheaders.X-Forwarded-Proto=https"
@@ -109,6 +114,7 @@ services:
     environment: *cloud-worker-env
     networks:
       - hanzo-network
+      - cloud-hanzo-network
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -133,6 +139,7 @@ services:
       start_period: 1s
     networks:
       - hanzo-network
+      - cloud-hanzo-network
 
   minio:
     image: minio/minio
@@ -155,7 +162,7 @@ services:
       retries: 5
       start_period: 1s
     networks:
-      - hanzo-network
+      - cloud-hanzo-network
 
   redis:
     image: redis:alpine
@@ -171,6 +178,7 @@ services:
       retries: 10
     networks:
       - hanzo-network
+      - cloud-hanzo-network
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -190,8 +198,30 @@ services:
       - cloud-postgres-data:/var/lib/postgresql/data
     networks:
       - hanzo-network
+      - cloud-hanzo-network
+
+  redis-cloud:
+    image: redis:alpine
+    restart: always
+    command: >
+      --requirepass ${REDIS_AUTH:-myredissecret}
+    environment:
+      REDIS_PASSWORD: ${REDIS_AUTH:-myredissecret}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_AUTH:-myredissecret}", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    networks:
+      - hanzo-network
+      - cloud-hanzo-network
+
+    volumes:
+      - cloud-redis-cloud-data:/data
 
 networks:
+  cloud-hanzo-network:
+    driver: bridge
   hanzo-network:
     external: true
 
@@ -204,4 +234,6 @@ volumes:
   cloud-clickhouse-logs:
     driver: local
   cloud-minio-data:
+    driver: local
+  cloud-redis-cloud-data:
     driver: local

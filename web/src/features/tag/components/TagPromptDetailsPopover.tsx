@@ -3,7 +3,6 @@ import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type RouterOutput } from "@/src/utils/types";
 import TagManager from "@/src/features/tag/components/TagMananger";
-import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
 
 type TagPromptDetailsPopoverProps = {
   tags: string[];
@@ -37,7 +36,7 @@ export function TagPromptDetailsPopover({
     },
     onError: (err, _newTags, context) => {
       setIsLoading(false);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
       utils.prompts.allVersions.setData(
         { projectId: projectId, name: promptName },
@@ -51,11 +50,13 @@ export function TagPromptDetailsPopover({
         (oldQueryData: RouterOutput["prompts"]["allVersions"] | undefined) => {
           return oldQueryData
             ? {
-                promptVersions: oldQueryData.promptVersions.map((prompt) => {
-                  return prompt.name === promptName
-                    ? { ...prompt, tags }
-                    : prompt;
-                }),
+                promptVersions: oldQueryData.promptVersions.map(
+                  (prompt: any) => {
+                    return prompt.name === promptName
+                      ? { ...prompt, tags }
+                      : prompt;
+                  },
+                ),
                 totalCount: oldQueryData.totalCount,
               }
             : undefined;

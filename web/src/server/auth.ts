@@ -1,58 +1,58 @@
+import { env } from "@/src/env.mjs";
+import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
+import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
+import { parseFlags } from "@/src/features/feature-flags/utils";
+import { prisma } from "@hanzo/shared/src/db";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type User,
   type NextAuthOptions,
   type Session,
+  type User,
 } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma, type Role } from "@hanzo/shared/src/db";
-import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
-import { parseFlags } from "@/src/features/feature-flags/utils";
-import { env } from "@/src/env.mjs";
-import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
 import {
-  type AdapterUser,
   type Adapter,
   type AdapterAccount,
+  type AdapterUser,
 } from "next-auth/adapters";
-
+// Comment
 // Providers
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
-import GitLabProvider from "next-auth/providers/gitlab";
-import OktaProvider from "next-auth/providers/okta";
-import EmailProvider from "next-auth/providers/email";
-import Auth0Provider from "next-auth/providers/auth0";
-import CognitoProvider from "next-auth/providers/cognito";
-import AzureADProvider from "next-auth/providers/azure-ad";
-import KeycloakProvider from "next-auth/providers/keycloak";
-import WorkOSProvider from "next-auth/providers/workos";
-import { type Provider } from "next-auth/providers/index";
-import { getCookieName, getCookieOptions } from "./utils/cookies";
-import {
-  getSsoAuthProviderIdForDomain,
-  loadSsoProviders,
-} from "@/src/features/multi-tenant-sso/utils";
-import { z } from "zod";
-import { CloudConfigSchema } from "@hanzo/shared";
-import {
-  CustomSSOProvider,
-  GitHubEnterpriseProvider,
-  traceException,
-  sendResetPasswordVerificationRequest,
-  instrumentAsync,
-  logger,
-} from "@hanzo/shared/src/server";
+import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
 import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,
 } from "@/src/features/entitlements/server/getPlan";
-import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
-import Sdk from "@hanzo/iam-js-sdk";
+import {
+  getSsoAuthProviderIdForDomain,
+  loadSsoProviders,
+} from "@/src/features/multi-tenant-sso/utils";
+import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
+import { CloudConfigSchema } from "@hanzo/shared";
+import {
+  CustomSSOProvider,
+  GitHubEnterpriseProvider,
+  instrumentAsync,
+  logger,
+  sendResetPasswordVerificationRequest,
+  traceException,
+} from "@hanzo/shared/src/server";
+import Auth0Provider from "next-auth/providers/auth0";
+import AzureADProvider from "next-auth/providers/azure-ad";
+import CognitoProvider from "next-auth/providers/cognito";
+import CredentialsProvider from "next-auth/providers/credentials";
+import EmailProvider from "next-auth/providers/email";
+import GitHubProvider from "next-auth/providers/github";
+import GitLabProvider from "next-auth/providers/gitlab";
+import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
+import { type Provider } from "next-auth/providers/index";
+import KeycloakProvider from "next-auth/providers/keycloak";
+import OktaProvider from "next-auth/providers/okta";
+import WorkOSProvider from "next-auth/providers/workos";
+import { z } from "zod";
+import { getCookieName, getCookieOptions } from "./utils/cookies";
+import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 function canCreateOrganizations(userEmail: string | null): boolean {
   const instancePlan = getSelfHostedInstancePlanServerSide();
@@ -448,6 +448,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     session: {
       strategy: "jwt",
       maxAge: env.AUTH_SESSION_MAX_AGE * 60, // convert minutes to seconds, default is set in env.mjs
+      // updateAge: 60 * 60 * 24,
     },
     callbacks: {
       async session({ session, token }): Promise<Session> {
@@ -500,25 +501,36 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                     canCreateOrganizations: canCreateOrganizations(
                       dbUser.email,
                     ),
-                    organizations: dbUser.organizationMemberships.map((membership) => {
-                      const parsedCloudConfig = CloudConfigSchema.safeParse(
-                        membership.organization.cloudConfig,
-                      );
-                      return {
-                        id: membership.organization.id,
-                        name: membership.organization.name,
-                        role: membership.role,
-                        cloudConfig: parsedCloudConfig.data,
-                        projects: membership.organization.projects.map((project: { id: string; name: string; deletedAt: Date | null; retentionDays: number | null; }) => ({
-                          id: project.id,
-                          name: project.name,
+                    organizations: dbUser.organizationMemberships.map(
+                      (membership) => {
+                        const parsedCloudConfig = CloudConfigSchema.safeParse(
+                          membership.organization.cloudConfig,
+                        );
+                        return {
+                          id: membership.organization.id,
+                          name: membership.organization.name,
                           role: membership.role,
-                          deletedAt: project.deletedAt,
-                          retentionDays: project.retentionDays,
-                        })),
-                        plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
-                      };
-                    }),
+                          cloudConfig: parsedCloudConfig.data,
+                          projects: membership.organization.projects.map(
+                            (project: {
+                              id: string;
+                              name: string;
+                              deletedAt: Date | null;
+                              retentionDays: number | null;
+                            }) => ({
+                              id: project.id,
+                              name: project.name,
+                              role: membership.role,
+                              deletedAt: project.deletedAt,
+                              retentionDays: project.retentionDays,
+                            }),
+                          ),
+                          plan: getOrganizationPlanServerSide(
+                            parsedCloudConfig.data,
+                          ),
+                        };
+                      },
+                    ),
                     emailVerified: dbUser.emailVerified?.toISOString(),
                     featureFlags: parseFlags(dbUser.featureFlags),
                   }
@@ -537,6 +549,36 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           if (z.string().email().safeParse(email).success === false) {
             logger.error("Invalid email found in user object");
             throw new Error("Invalid email found in user object");
+          }
+
+          //FEA : auto creating org when signup or login accout with SSO
+          const dbUser = await prisma.user.findUnique({
+            where: { email },
+            include: {
+              organizationMemberships: true,
+            },
+          });
+          if (dbUser && dbUser.organizationMemberships.length === 0) {
+            console.log("Creating default org :>>>>>>");
+
+            await prisma.organization.create({
+              data: {
+                expiredAt: addDaysAndRoundToNextDay(
+                  Number(env.HANZO_S3_FREE_PLAN_EXPIRE) ?? 90, // default 90 day if not config in env
+                ),
+                name: `Default Org's ${dbUser.name}`,
+                organizationMemberships: {
+                  create: {
+                    userId: dbUser.id,
+                    role: "OWNER",
+                  },
+                },
+              },
+            });
+
+            console.log(
+              `User ${email} đã được thêm vào Organization mặc định.`,
+            );
           }
 
           // EE: Check custom SSO enforcement, enforce the specific SSO provider on email domain
@@ -612,28 +654,28 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     cookies: {
       sessionToken: {
         name: getCookieName("next-auth.session-token"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       csrfToken: {
         name: getCookieName("next-auth.csrf-token"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       callbackUrl: {
         name: getCookieName("next-auth.callback-url"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       state: {
         name: getCookieName("next-auth.state"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       nonce: {
         name: getCookieName("next-auth.nonce"),
-        options: getCookieOptions()
+        options: getCookieOptions(),
       },
       pkceCodeVerifier: {
         name: getCookieName("next-auth.pkce.code_verifier"),
-        options: getCookieOptions()
-      }
+        options: getCookieOptions(),
+      },
     },
     events: {
       createUser: async ({ user }) => {
@@ -687,7 +729,8 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     client: {
       token_endpoint_auth_method: "client_secret_basic",
     },
-    allowDangerousEmailAccountLinking: env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+    allowDangerousEmailAccountLinking:
+      env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
     async profile(profile, tokens) {
       const dbUser = await prisma.user.upsert({
         where: { email: profile.email },
@@ -716,7 +759,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               },
             },
           },
-        }
+        },
       });
 
       const user = {
@@ -746,13 +789,9 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                 };
               })
               .filter((project) =>
-                projectRoleAccessRights[project.role].includes(
-                  "project:read",
-                ),
+                projectRoleAccessRights[project.role].includes("project:read"),
               ),
-            plan: getOrganizationPlanServerSide(
-              parsedCloudConfig.data,
-            ),
+            plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
           };
         }),
         featureFlags: parseFlags(dbUser.featureFlags),

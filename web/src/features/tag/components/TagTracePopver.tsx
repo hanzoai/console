@@ -35,7 +35,7 @@ export function TagTracePopover({
     },
     onError: (err, _newTags, context) => {
       utils.traces.all.setData(tracesFilter, context?.prevTrace);
-      trpcErrorToast(err);
+      //trpcErrorToast(err);
       setIsLoading(false);
     },
     onSettled: (data, error, { traceId, tags }) => {
