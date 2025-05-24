@@ -75,11 +75,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { DB } from "@/src/server/db";
 import { setUpSuperjson } from "@/src/utils/superjson";
-import {
-  addUserToSpan,
-  getTraceById,
-  logger,
-} from "@hanzo/shared/src/server";
+import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -94,7 +90,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof z.ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -300,7 +296,10 @@ const enforceIsAuthedAndOrgMember = t.middleware(({ ctx, rawInput, next }) => {
     (org) => org.id === orgId,
   );
 
-  if (!sessionOrg && ctx.session.user.admin !== true) {
+  if (
+    !sessionOrg
+    // && ctx.session.user.admin !== true
+  ) {
     logger.error(`User ${ctx.session.user.id} is not a member of org ${orgId}`);
     throw new TRPCError({
       code: "UNAUTHORIZED",

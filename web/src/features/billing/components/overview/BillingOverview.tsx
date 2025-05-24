@@ -7,6 +7,7 @@ import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { useRouter } from "next/router";
 import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
 import { useSession } from "next-auth/react";
+import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
@@ -14,6 +15,7 @@ export const BillingOverview = () => {
   const router = useRouter();
   const organization = useQueryOrganization();
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+
   const { data: usage } = api.cloudBilling.getUsage.useQuery(
     {
       orgId: organization?.id ?? "",
@@ -30,6 +32,7 @@ export const BillingOverview = () => {
       enabled: organization !== undefined,
     },
   );
+
 
   // Fetch organization details to get credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
@@ -73,6 +76,9 @@ export const BillingOverview = () => {
   const currentPlan = subscription?.plan?.name || "Free Plan";
   const currentUsage = usage?.usageCount || 0;
   const availableCredits = orgDetails?.credits || 0;
+  const timeExpireIfPlanFree = orgDetails?.expiredAt
+    ? new Date(orgDetails.expiredAt)
+    : null;
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -85,38 +91,49 @@ export const BillingOverview = () => {
             </h3>
             <p className="mt-2 text-2xl font-bold">{currentPlan}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {subscription
-                ? subscription?.current_period_end && (
-                    <p className="text-sm text-muted-foreground">
-                      {(() => {
-                        // Check if subscription is scheduled to be canceled
-                        if (subscription.cancel_at) {
-                          return `Active until: ${new Date(subscription.cancel_at).toLocaleDateString()}`;
-                        }
+              {subscription ? (
+                subscription?.current_period_end && (
+                  <p className="text-sm text-muted-foreground">
+                    {(() => {
+                      // Check if subscription is scheduled to be canceled
+                      if (subscription.cancel_at) {
+                        return `Active until: ${new Date(subscription.cancel_at).toLocaleDateString()}`;
+                      }
 
-                        switch (subscription.status) {
-                          case "canceled":
-                            return `Expires on: ${subscription.current_period_end.toLocaleDateString()}`;
-                          case "past_due":
-                            return `Payment overdue since: ${subscription.current_period_end.toLocaleDateString()}`;
-                          case "incomplete":
-                            return "Payment processing";
-                          case "incomplete_expired":
-                            return "Payment failed";
-                          case "trialing":
-                            return `Trial ends: ${subscription.current_period_end.toLocaleDateString()}`;
-                          case "unpaid":
-                            return "Payment failed - subscription unpaid";
-                          case "paused":
-                            return "Subscription paused";
-                          case "active":
-                          default:
-                            return `Next billing date: ${subscription.current_period_end.toLocaleDateString()}`;
-                        }
-                      })()}
-                    </p>
-                  )
-                : "Free credit grant of $5.00"}
+                      switch (subscription.status) {
+                        case "canceled":
+                          return `Expires on: ${subscription.current_period_end.toLocaleDateString()}`;
+                        case "past_due":
+                          return `Payment overdue since: ${subscription.current_period_end.toLocaleDateString()}`;
+                        case "incomplete":
+                          return "Payment processing";
+                        case "incomplete_expired":
+                          return "Payment failed";
+                        case "trialing":
+                          return `Trial ends: ${subscription.current_period_end.toLocaleDateString()}`;
+                        case "unpaid":
+                          return "Payment failed - subscription unpaid";
+                        case "paused":
+                          return "Subscription paused";
+                        case "active":
+                        default:
+                          return `Next billing date: ${subscription.current_period_end.toLocaleDateString()}`;
+                      }
+                    })()}
+                  </p>
+                )
+              ) : (
+                <div>
+                  Free credit grant of $5.00
+                  {timeExpireIfPlanFree && (
+                    <CountdownTimer
+                      expiredAt={timeExpireIfPlanFree}
+                      orgId={organization?.id!}
+                    />
+                  )}
+                </div>
+              )}
+
             </p>
           </div>
         </div>

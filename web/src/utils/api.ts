@@ -20,7 +20,7 @@ import superjson from "superjson";
 
 import { type AppRouter } from "@/src/server/api/root";
 import { setUpSuperjson } from "@/src/utils/superjson";
-import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
+// import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
 import { showVersionUpdateToast } from "@/src/features/notifications/showVersionUpdateToast";
 import { captureException } from "@sentry/nextjs";
 import { env } from "@/src/env.mjs";
@@ -61,7 +61,7 @@ const handleTrpcError = (error: unknown) => {
     }
   }
 
-  trpcErrorToast(error);
+  // trpcErrorToast(error);
 };
 
 // onError update build id to compare versions
