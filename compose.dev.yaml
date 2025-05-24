@@ -138,7 +138,7 @@ services:
       # HTTP router (redirect)
       - traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)
       - traefik.http.routers.cloud-dev-http.entrypoints=web
-      - traefik.http.routers.cloud-dev-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.cloud-dev-http.middlewares=well-known@file,cloud-dev-csp@file,redirect-to-https@file
 
       # HTTPS router (main)
       - traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)

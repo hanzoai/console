@@ -479,6 +479,7 @@ export type Organization = {
   name: string;
   credits: Generated<number>;
   cloud_config: unknown | null;
+  created_at: Generated<Timestamp>;
 };
 export type OrganizationMembership = {
   id: string;
