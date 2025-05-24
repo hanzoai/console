@@ -115,6 +115,7 @@ services:
       REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
       interval: 30s
