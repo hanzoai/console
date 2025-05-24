@@ -116,6 +116,7 @@ model Organization {
   // ✅ Thêm mới 2 trường này
   trialStartedAt DateTime? @map("trial_started_at")
   trialEndsAt    DateTime? @map("trial_ends_at")
+  isTrialActive  Boolean   @default(true) @map("is_trial_active")
 
   //exprire
   expiredAt DateTime? @map("expired_at")
