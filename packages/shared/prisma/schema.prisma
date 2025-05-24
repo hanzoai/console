@@ -113,45 +113,49 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  //exprire 
+  // ✅ Thêm mới 2 trường này
+  trialStartedAt DateTime? @map("trial_started_at")
+  trialEndsAt    DateTime? @map("trial_ends_at")
+
+  //exprire
   expiredAt DateTime? @map("expired_at")
 
   @@map("organizations")
 }
 
 model Project {
-  id                  String                    @id @default(cuid())
-  orgId               String                    @map("org_id")
-  createdAt           DateTime                  @default(now()) @map("created_at")
-  updatedAt           DateTime                  @default(now()) @updatedAt @map("updated_at")
-  deletedAt           DateTime?                 @map("deleted_at")
-  name                String
-  retentionDays       Int?                      @map("retention_days")
-  projectMembers      ProjectMembership[]
-  organization        Organization              @relation(fields: [orgId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  apiKeys             ApiKey[]
-  dataset             Dataset[]
-  invitations         MembershipInvitation[]
-  sessions            TraceSession[]
-  Prompt              Prompt[]
-  Model               Model[]
-  EvalTemplate        EvalTemplate[]
-  JobConfiguration    JobConfiguration[]
-  JobExecution        JobExecution[]
-  LlmApiKeys          LlmApiKeys[]
-  PosthogIntegration  PosthogIntegration[]
+  id                     String                    @id @default(cuid())
+  orgId                  String                    @map("org_id")
+  createdAt              DateTime                  @default(now()) @map("created_at")
+  updatedAt              DateTime                  @default(now()) @updatedAt @map("updated_at")
+  deletedAt              DateTime?                 @map("deleted_at")
+  name                   String
+  retentionDays          Int?                      @map("retention_days")
+  projectMembers         ProjectMembership[]
+  organization           Organization              @relation(fields: [orgId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  apiKeys                ApiKey[]
+  dataset                Dataset[]
+  invitations            MembershipInvitation[]
+  sessions               TraceSession[]
+  Prompt                 Prompt[]
+  Model                  Model[]
+  EvalTemplate           EvalTemplate[]
+  JobConfiguration       JobConfiguration[]
+  JobExecution           JobExecution[]
+  LlmApiKeys             LlmApiKeys[]
+  PosthogIntegration     PosthogIntegration[]
   BlobStorageIntegration BlobStorageIntegration[]
-  scoreConfig         ScoreConfig[]
-  BatchExport         BatchExport[]
-  comment             Comment[]
-  annotationQueue     AnnotationQueue[]
-  annotationQueueItem AnnotationQueueItem[]
-  TraceMedia          TraceMedia[]
-  Media               Media[]
-  ObservationMedia    ObservationMedia[]
-  LegacyTrace         LegacyPrismaTrace[]
-  LegacyObservation   LegacyPrismaObservation[]
-  LegacyScore         LegacyPrismaScore[]
+  scoreConfig            ScoreConfig[]
+  BatchExport            BatchExport[]
+  comment                Comment[]
+  annotationQueue        AnnotationQueue[]
+  annotationQueueItem    AnnotationQueueItem[]
+  TraceMedia             TraceMedia[]
+  Media                  Media[]
+  ObservationMedia       ObservationMedia[]
+  LegacyTrace            LegacyPrismaTrace[]
+  LegacyObservation      LegacyPrismaObservation[]
+  LegacyScore            LegacyPrismaScore[]
 
   @@index([orgId])
   @@map("projects")
