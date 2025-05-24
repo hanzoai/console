@@ -24,7 +24,7 @@ export const stripeProducts: StripeProduct[] = [
     title: "Credits",
     description: "For serious projects. Includes access to full history, higher usage and access to features.",
     checkout: true,
-    active: false
+    active: true
   },
   {
     id: 'pro-plan',
