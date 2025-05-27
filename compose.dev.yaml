@@ -132,6 +132,7 @@ services:
       - "traefik.enable=true"
 
       # HTTPS Router
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)"
       - "traefik.http.routers.cloud-dev-https.entrypoints=websecure"
       - "traefik.http.routers.cloud-dev-https.tls=true"
