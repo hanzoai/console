@@ -113,7 +113,7 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  // ✅ Thêm mới 2 trường này
+  // trial 
   trialStartedAt DateTime? @map("trial_started_at")
   trialEndsAt    DateTime? @map("trial_ends_at")
   isTrialActive  Boolean   @default(true) @map("is_trial_active")
