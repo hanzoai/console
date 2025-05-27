@@ -388,7 +388,7 @@ const extendedPrismaAdapter: Adapter = {
     if (!profile.email) {
       throw new Error(
         "Cannot create db user as login profile does not contain an email: " +
-        JSON.stringify(profile),
+          JSON.stringify(profile),
       );
     }
 
@@ -492,55 +492,55 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             user:
               dbUser !== null
                 ? {
-                  ...session.user,
-                  id: dbUser.id,
-                  name: dbUser.name,
-                  email: dbUser.email,
-                  image: dbUser.image,
-                  admin: dbUser.admin,
-                  canCreateOrganizations: canCreateOrganizations(
-                    dbUser.email,
-                  ),
-                  organizations: dbUser.organizationMemberships.map(
-                    (membership) => {
-                      const parsedCloudConfig = CloudConfigSchema.safeParse(
-                        membership.organization.cloudConfig,
-                      );
-                      return {
-                        id: membership.organization.id,
-                        name: membership.organization.name,
-                        role: membership.role,
-                        cloudConfig: parsedCloudConfig.data,
-                        projects: membership.organization.projects.map(
-                          (project: {
-                            id: string;
-                            name: string;
-                            deletedAt: Date | null;
-                            retentionDays: number | null;
-                          }) => ({
-                            id: project.id,
-                            name: project.name,
-                            role: membership.role,
-                            deletedAt: project.deletedAt,
-                            retentionDays: project.retentionDays,
-                          }),
-                        ),
-                        plan: getOrganizationPlanServerSide(
-                          parsedCloudConfig.data,
-                        ),
-                      };
-                    },
-                  ),
-                  emailVerified: dbUser.emailVerified?.toISOString(),
-                  featureFlags: parseFlags(dbUser.featureFlags),
-                }
+                    ...session.user,
+                    id: dbUser.id,
+                    name: dbUser.name,
+                    email: dbUser.email,
+                    image: dbUser.image,
+                    admin: dbUser.admin,
+                    canCreateOrganizations: canCreateOrganizations(
+                      dbUser.email,
+                    ),
+                    organizations: dbUser.organizationMemberships.map(
+                      (membership) => {
+                        const parsedCloudConfig = CloudConfigSchema.safeParse(
+                          membership.organization.cloudConfig,
+                        );
+                        return {
+                          id: membership.organization.id,
+                          name: membership.organization.name,
+                          role: membership.role,
+                          cloudConfig: parsedCloudConfig.data,
+                          projects: membership.organization.projects.map(
+                            (project: {
+                              id: string;
+                              name: string;
+                              deletedAt: Date | null;
+                              retentionDays: number | null;
+                            }) => ({
+                              id: project.id,
+                              name: project.name,
+                              role: membership.role,
+                              deletedAt: project.deletedAt,
+                              retentionDays: project.retentionDays,
+                            }),
+                          ),
+                          plan: getOrganizationPlanServerSide(
+                            parsedCloudConfig.data,
+                          ),
+                        };
+                      },
+                    ),
+                    emailVerified: dbUser.emailVerified?.toISOString(),
+                    featureFlags: parseFlags(dbUser.featureFlags),
+                  }
                 : null,
           };
         });
       },
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async () => {
-          console.log("Chay ham sign in")
+          console.log("Chay ham sign in");
           // Block sign in without valid user.email
           const email = user.email?.toLowerCase();
           if (!email) {
@@ -560,11 +560,9 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             },
           });
           if (dbUser && dbUser.organizationMemberships.length === 0) {
-            console.log("Creating default org with trial");
-
             const now = new Date();
             const freePlanDays = Number(env.HANZO_S3_FREE_PLAN_EXPIRE ?? "90");
-            const trialDays = Number(env.HANZO_TRIAL_EXPIRE ?? "15")
+            const trialDays = Number(env.HANZO_TRIAL_EXPIRE ?? "15");
             await prisma.organization.create({
               data: {
                 name: `Default Org's ${dbUser.name ?? dbUser.email}`,
@@ -582,7 +580,6 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
 
             console.log(`✅ Created organization with trial for ${email}`);
           }
-
 
           // EE: Check custom SSO enforcement, enforce the specific SSO provider on email domain
           // This also blocks setting a password for an email that is enforced to use SSO via password reset flow
@@ -650,8 +647,8 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       error: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/error`,
       ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION
         ? {
-          newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
-        }
+            newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
+          }
         : {}),
     },
     cookies: {

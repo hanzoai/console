@@ -33,7 +33,6 @@ export const BillingOverview = () => {
     },
   );
 
-
   // Fetch organization details to get credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
     { orgId: organization?.id ?? "" },
@@ -131,12 +130,35 @@ export const BillingOverview = () => {
                       orgId={organization?.id!}
                     />
                   )}
+                  {currentPlan === "Free Plan" &&
+                    orgDetails?.trialEndsAt &&
+                    new Date() < new Date(orgDetails.trialEndsAt) && (
+                      <div className="mt-1 text-sm font-medium text-blue-600">
+                        🎁 Trial active — expires in{" "}
+                        <CountdownTimer
+                          expiredAt={new Date(orgDetails.trialEndsAt)}
+                          orgId={organization?.id!}
+                        />
+                      </div>
+                    )}
                 </div>
               )}
-
             </p>
           </div>
         </div>
+        {orgDetails?.trialStartedAt && orgDetails?.trialEndsAt && (
+          <div className="mt-4 text-sm text-muted-foreground">
+            🎁
+            <span className="font-medium">
+              {new Date(orgDetails.trialStartedAt).toLocaleDateString()}
+            </span>
+            -
+            <span className="font-medium">
+              {new Date(orgDetails.trialEndsAt).toLocaleDateString()}
+            </span>
+          </div>
+        )}
+
         <Button
           variant="secondary"
           className="mt-4 w-full"
