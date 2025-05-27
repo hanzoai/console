@@ -128,6 +128,8 @@ services:
       AUTH_DISABLE_USERNAME_PASSWORD: ${AUTH_DISABLE_USERNAME_PASSWORD:-true}
     networks:
       - hanzo-network
+      - interal-cloud-dev-network
+
     labels:
       - "traefik.enable=true"
 
@@ -196,7 +198,8 @@ services:
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
     networks:
-      - hanzo-network
+      - interal-cloud-dev-network
+
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -217,7 +220,8 @@ services:
       retries: 10
       start_period: 1s
     networks:
-      - hanzo-network
+      - interal-cloud-dev-network
+
 
   minio-dev:
     image: minio/minio
@@ -237,7 +241,7 @@ services:
       retries: 5
       start_period: 1s
     networks:
-      - hanzo-network
+      - interal-cloud-dev-network
 
   redis-dev:
     image: redis:alpine
@@ -250,7 +254,7 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - hanzo-network
+      - interal-cloud-dev-network
 
   postgres-dev:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -267,9 +271,10 @@ services:
     volumes:
       - cloud_dev_postgres_data:/var/lib/postgresql/data
     networks:
-      - hanzo-network
+      - interal-cloud-dev-network
 
 networks:
+  interal-cloud-dev-network:
   hanzo-network:
     external: true
 
