@@ -245,6 +245,8 @@ services:
   redis:
     image: redis:alpine
     restart: always
+    ports:
+      - "6379:6379"
     command: >
       --requirepass ${REDIS_AUTH:-myredissecret}
     healthcheck:
@@ -254,6 +256,9 @@ services:
       retries: 10
     networks:
       - cloud-dev-internal
+    volumes:
+      - redis_data:/data
+      - ./certs:/certs:ro
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
@@ -287,3 +292,4 @@ volumes:
     driver: local
   cloud_dev_minio_data:
     driver: local
+  redis_data:
