@@ -39,14 +39,14 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? // @db.Text
-  access_token             String? // @db.Text
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
   expires_at               Int?
   expires_in               Int?
   ext_expires_in           Int?
   token_type               String?
   scope                    String?
-  id_token                 String? // @db.Text
+  id_token                 String? @db.Text
   session_state            String?
   refresh_token_expires_in Int?
   created_at               Int? // GitLab
@@ -113,45 +113,45 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  //exprire 
+  //exprire
   expiredAt DateTime? @map("expired_at")
 
   @@map("organizations")
 }
 
 model Project {
-  id                  String                    @id @default(cuid())
-  orgId               String                    @map("org_id")
-  createdAt           DateTime                  @default(now()) @map("created_at")
-  updatedAt           DateTime                  @default(now()) @updatedAt @map("updated_at")
-  deletedAt           DateTime?                 @map("deleted_at")
-  name                String
-  retentionDays       Int?                      @map("retention_days")
-  projectMembers      ProjectMembership[]
-  organization        Organization              @relation(fields: [orgId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  apiKeys             ApiKey[]
-  dataset             Dataset[]
-  invitations         MembershipInvitation[]
-  sessions            TraceSession[]
-  Prompt              Prompt[]
-  Model               Model[]
-  EvalTemplate        EvalTemplate[]
-  JobConfiguration    JobConfiguration[]
-  JobExecution        JobExecution[]
-  LlmApiKeys          LlmApiKeys[]
-  PosthogIntegration  PosthogIntegration[]
+  id                     String                    @id @default(cuid())
+  orgId                  String                    @map("org_id")
+  createdAt              DateTime                  @default(now()) @map("created_at")
+  updatedAt              DateTime                  @default(now()) @updatedAt @map("updated_at")
+  deletedAt              DateTime?                 @map("deleted_at")
+  name                   String
+  retentionDays          Int?                      @map("retention_days")
+  projectMembers         ProjectMembership[]
+  organization           Organization              @relation(fields: [orgId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  apiKeys                ApiKey[]
+  dataset                Dataset[]
+  invitations            MembershipInvitation[]
+  sessions               TraceSession[]
+  Prompt                 Prompt[]
+  Model                  Model[]
+  EvalTemplate           EvalTemplate[]
+  JobConfiguration       JobConfiguration[]
+  JobExecution           JobExecution[]
+  LlmApiKeys             LlmApiKeys[]
+  PosthogIntegration     PosthogIntegration[]
   BlobStorageIntegration BlobStorageIntegration[]
-  scoreConfig         ScoreConfig[]
-  BatchExport         BatchExport[]
-  comment             Comment[]
-  annotationQueue     AnnotationQueue[]
-  annotationQueueItem AnnotationQueueItem[]
-  TraceMedia          TraceMedia[]
-  Media               Media[]
-  ObservationMedia    ObservationMedia[]
-  LegacyTrace         LegacyPrismaTrace[]
-  LegacyObservation   LegacyPrismaObservation[]
-  LegacyScore         LegacyPrismaScore[]
+  scoreConfig            ScoreConfig[]
+  BatchExport            BatchExport[]
+  comment                Comment[]
+  annotationQueue        AnnotationQueue[]
+  annotationQueueItem    AnnotationQueueItem[]
+  TraceMedia             TraceMedia[]
+  Media                  Media[]
+  ObservationMedia       ObservationMedia[]
+  LegacyTrace            LegacyPrismaTrace[]
+  LegacyObservation      LegacyPrismaObservation[]
+  LegacyScore            LegacyPrismaScore[]
 
   @@index([orgId])
   @@map("projects")

@@ -274,7 +274,7 @@ services:
 
 networks:
   hanzo-network:
-    # external: true
+    external: true
 
 volumes:
   cloud_dev_postgres_data:
