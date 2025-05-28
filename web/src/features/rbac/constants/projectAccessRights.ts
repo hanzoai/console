@@ -135,6 +135,18 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "promptExperiments:read",
     "auditLogs:read",
   ],
+  ADMIN_BILLING: [
+    "project:read",
+    "prompts:read",
+    "evalTemplate:read",
+    "scoreConfigs:read",
+    "evalJob:read",
+    "evalJobExecution:read",
+    "llmApiKeys:read",
+    "comments:read",
+    "annotationQueues:read",
+    "promptExperiments:read",
+  ],
   MEMBER: [
     "project:read",
     "projectMembers:read",

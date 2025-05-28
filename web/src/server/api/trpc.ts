@@ -78,6 +78,8 @@ import { setUpSuperjson } from "@/src/utils/superjson";
 import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { ZodError } from "zod";
+
 setUpSuperjson();
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -365,14 +367,14 @@ const enforceTraceAccess = t.middleware(async ({ ctx, rawInput, next }) => {
 
   const traceSession = !!trace.sessionId
     ? await ctx.prisma.traceSession.findFirst({
-        where: {
-          id: trace.sessionId,
-          projectId,
-        },
-        select: {
-          public: true,
-        },
-      })
+      where: {
+        id: trace.sessionId,
+        projectId,
+      },
+      select: {
+        public: true,
+      },
+    })
     : null;
 
   const isSessionPublic = traceSession?.public === true;

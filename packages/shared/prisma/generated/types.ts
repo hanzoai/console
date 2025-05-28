@@ -11,11 +11,12 @@ export const BlobStorageIntegrationType = {
 } as const;
 export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const Role = {
-  OWNER: "OWNER",
-  ADMIN: "ADMIN",
-  MEMBER: "MEMBER",
-  VIEWER: "VIEWER",
-  NONE: "NONE"
+    OWNER: "OWNER",
+    ADMIN: "ADMIN",
+    ADMIN_BILLING: "ADMIN_BILLING",
+    MEMBER: "MEMBER",
+    VIEWER: "VIEWER",
+    NONE: "NONE"
 } as const;
 export type Role = (typeof Role)[keyof typeof Role];
 export const LegacyPrismaObservationType = {

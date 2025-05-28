@@ -39,14 +39,14 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? // @db.Text
-  access_token             String? // @db.Text
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
   expires_at               Int?
   expires_in               Int?
   ext_expires_in           Int?
   token_type               String?
   scope                    String?
-  id_token                 String? // @db.Text
+  id_token                 String? @db.Text
   session_state            String?
   refresh_token_expires_in Int?
   created_at               Int? // GitLab
@@ -307,6 +307,7 @@ model MembershipInvitation {
 enum Role {
   OWNER
   ADMIN
+  ADMIN_BILLING
   MEMBER
   VIEWER
   NONE

@@ -28,5 +28,10 @@
     "editor.defaultFormatter": "Prisma.prisma"
   },
   "eslint.lintTask.enable": true,
-  "eslint.workingDirectories": ["./web", "./worker"]
+  "eslint.workingDirectories": ["./web", "./worker"],
+
+  "search.useIgnoreFiles": true,
+  "[jsonc]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  }
 }
