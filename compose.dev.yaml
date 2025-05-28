@@ -130,26 +130,26 @@ services:
       - hanzo-network
       - cloud-dev-internal
     labels:
-      - traefik.enable=true
+      - "traefik.enable=true"
 
       # Middlewares
-      - traefik.http.middlewares.cloud-dev-headers.headers.customrequestheaders.X-Forwarded-Proto=https
-      - traefik.http.middlewares.cloud-dev-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud-dev.hanzo.ai http://cloud-dev.hanzo.ai;
+      - "traefik.http.middlewares.cloud-dev-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.cloud-dev-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud-dev.hanzo.ai http://cloud-dev.hanzo.ai;"
 
       # HTTP router (redirect)
-      - traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)
-      - traefik.http.routers.cloud-dev-http.entrypoints=web
-      - traefik.http.routers.cloud-dev-http.middlewares=redirect-to-https,well-known
+      - "traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)"
+      - "traefik.http.routers.cloud-dev-http.entrypoints=web"
+      - "traefik.http.routers.cloud-dev-http.middlewares=redirect-to-https,well-known"
 
       # HTTPS router (main)
-      - traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)
-      - traefik.http.routers.cloud-dev-https.entrypoints=websecure
-      - traefik.http.routers.cloud-dev-https.tls.certresolver=letsencrypt
-      - traefik.http.routers.cloud-dev-https.middlewares=well-known,cloud-dev-csp
-      - traefik.http.routers.cloud-dev-https.service=cloud-dev-service
+      - "traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)"
+      - "traefik.http.routers.cloud-dev-https.entrypoints=websecure"
+      - "traefik.http.routers.cloud-dev-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cloud-dev-https.middlewares=well-known,cloud-dev-csp"
+      - "traefik.http.routers.cloud-dev-https.service=cloud-dev-service"
 
       # Service mapping
-      - traefik.http.services.cloud-dev-service.loadbalancer.server.port=3000
+      - "traefik.http.services.cloud-dev-service.loadbalancer.server.port=3000"
 
   cloud-dev-worker:
     image: hanzoai/cloud-worker:latest
