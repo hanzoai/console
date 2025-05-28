@@ -4,7 +4,7 @@ x-cloud-dev-depends-on: &cloud-depends-on
     condition: service_healthy
   minio:
     condition: service_healthy
-  redis:
+  redis-dev:
     condition: service_healthy
   clickhouse:
     condition: service_healthy
@@ -37,7 +37,7 @@ x-cloud-dev-environment: &cloud-worker-env
   HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
   HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
   HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-  REDIS_HOST: ${REDIS_HOST:-redis}
+  REDIS_HOST: ${REDIS_HOST:-redis-dev}
   REDIS_PORT: ${REDIS_PORT:-6379}
   REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
   REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -62,7 +62,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-      redis:
+      redis-dev:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
@@ -96,7 +96,7 @@ services:
       HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
       HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_HOST: ${REDIS_HOST:-redis-dev}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
       REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -159,7 +159,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-      redis:
+      redis-dev:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
@@ -191,7 +191,7 @@ services:
       HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
       HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_HOST: ${REDIS_HOST:-redis-dev}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
       REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -242,7 +242,7 @@ services:
     networks:
       - cloud-dev-internal
 
-  redis:
+  redis-dev:
     image: redis:alpine
     restart: always
     command: >
