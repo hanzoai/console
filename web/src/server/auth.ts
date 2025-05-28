@@ -28,6 +28,7 @@ import {
   getSsoAuthProviderIdForDomain,
   loadSsoProviders,
 } from "@/src/features/multi-tenant-sso/utils";
+import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { CloudConfigSchema } from "@hanzo/shared";
 import {
@@ -52,7 +53,6 @@ import OktaProvider from "next-auth/providers/okta";
 import WorkOSProvider from "next-auth/providers/workos";
 import { z } from "zod";
 import { getCookieName, getCookieOptions } from "./utils/cookies";
-import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 function canCreateOrganizations(userEmail: string | null): boolean {
   const instancePlan = getSelfHostedInstancePlanServerSide();
@@ -388,7 +388,7 @@ const extendedPrismaAdapter: Adapter = {
     if (!profile.email) {
       throw new Error(
         "Cannot create db user as login profile does not contain an email: " +
-          JSON.stringify(profile),
+        JSON.stringify(profile),
       );
     }
 
@@ -424,7 +424,7 @@ const extendedPrismaAdapter: Adapter = {
         delete data[ignoredField];
       }
     }
-
+    console.log("check data", data)
     await prismaAdapter.linkAccount(data);
   },
 };
@@ -492,48 +492,48 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             user:
               dbUser !== null
                 ? {
-                    ...session.user,
-                    id: dbUser.id,
-                    name: dbUser.name,
-                    email: dbUser.email,
-                    image: dbUser.image,
-                    admin: dbUser.admin,
-                    canCreateOrganizations: canCreateOrganizations(
-                      dbUser.email,
-                    ),
-                    organizations: dbUser.organizationMemberships.map(
-                      (membership) => {
-                        const parsedCloudConfig = CloudConfigSchema.safeParse(
-                          membership.organization.cloudConfig,
-                        );
-                        return {
-                          id: membership.organization.id,
-                          name: membership.organization.name,
-                          role: membership.role,
-                          cloudConfig: parsedCloudConfig.data,
-                          projects: membership.organization.projects.map(
-                            (project: {
-                              id: string;
-                              name: string;
-                              deletedAt: Date | null;
-                              retentionDays: number | null;
-                            }) => ({
-                              id: project.id,
-                              name: project.name,
-                              role: membership.role,
-                              deletedAt: project.deletedAt,
-                              retentionDays: project.retentionDays,
-                            }),
-                          ),
-                          plan: getOrganizationPlanServerSide(
-                            parsedCloudConfig.data,
-                          ),
-                        };
-                      },
-                    ),
-                    emailVerified: dbUser.emailVerified?.toISOString(),
-                    featureFlags: parseFlags(dbUser.featureFlags),
-                  }
+                  ...session.user,
+                  id: dbUser.id,
+                  name: dbUser.name,
+                  email: dbUser.email,
+                  image: dbUser.image,
+                  admin: dbUser.admin,
+                  canCreateOrganizations: canCreateOrganizations(
+                    dbUser.email,
+                  ),
+                  organizations: dbUser.organizationMemberships.map(
+                    (membership) => {
+                      const parsedCloudConfig = CloudConfigSchema.safeParse(
+                        membership.organization.cloudConfig,
+                      );
+                      return {
+                        id: membership.organization.id,
+                        name: membership.organization.name,
+                        role: membership.role,
+                        cloudConfig: parsedCloudConfig.data,
+                        projects: membership.organization.projects.map(
+                          (project: {
+                            id: string;
+                            name: string;
+                            deletedAt: Date | null;
+                            retentionDays: number | null;
+                          }) => ({
+                            id: project.id,
+                            name: project.name,
+                            role: membership.role,
+                            deletedAt: project.deletedAt,
+                            retentionDays: project.retentionDays,
+                          }),
+                        ),
+                        plan: getOrganizationPlanServerSide(
+                          parsedCloudConfig.data,
+                        ),
+                      };
+                    },
+                  ),
+                  emailVerified: dbUser.emailVerified?.toISOString(),
+                  featureFlags: parseFlags(dbUser.featureFlags),
+                }
                 : null,
           };
         });
@@ -647,8 +647,8 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       error: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/error`,
       ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION
         ? {
-            newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
-          }
+          newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
+        }
         : {}),
     },
     cookies: {
