@@ -256,7 +256,6 @@ services:
       - cloud-dev-internal
     volumes:
       - redis_data:/data
-      - ./certs:/certs:ro
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
