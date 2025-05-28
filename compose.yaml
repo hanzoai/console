@@ -55,7 +55,7 @@ services:
       - ai-platform_default
 
   hanzo-web:
-    image: hanzoai/cloud-web:3.38.0
+    # image: hanzoai/cloud-web:3.38.0
     build:
       context: .
       dockerfile: web/Dockerfile
