@@ -15,10 +15,10 @@ export type BlobStorageIntegrationType =
 export const Role = {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
-  ADMIN_BILLING: 'ADMIN_BILLING',
   MEMBER: 'MEMBER',
   VIEWER: 'VIEWER',
   NONE: 'NONE',
+  ADMIN_BILLING: 'ADMIN_BILLING',
 } as const;
 export type Role = (typeof Role)[keyof typeof Role];
 export const LegacyPrismaObservationType = {
@@ -114,19 +114,19 @@ export type UsageAggregationMethod =
   (typeof UsageAggregationMethod)[keyof typeof UsageAggregationMethod];
 export type Account = {
   id: string;
-  user_id: string;
   type: string;
   provider: string;
   providerAccountId: string;
   refresh_token: string | null;
   access_token: string | null;
   expires_at: number | null;
-  expires_in: number | null;
-  ext_expires_in: number | null;
   token_type: string | null;
   scope: string | null;
   id_token: string | null;
   session_state: string | null;
+  user_id: string;
+  expires_in: number | null;
+  ext_expires_in: number | null;
   refresh_token_expires_in: number | null;
   created_at: number | null;
 };
@@ -159,38 +159,38 @@ export type ApiKey = {
   note: string | null;
   public_key: string;
   hashed_secret_key: string;
-  fast_hashed_secret_key: string | null;
   display_secret_key: string;
   last_used_at: Timestamp | null;
   expires_at: Timestamp | null;
   project_id: string;
+  fast_hashed_secret_key: string | null;
 };
 export type AuditLog = {
   id: string;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
   user_id: string;
-  org_id: string;
-  user_org_role: string;
   project_id: string | null;
-  user_project_role: string | null;
   resource_type: string;
   resource_id: string;
   action: string;
   before: string | null;
   after: string | null;
+  org_id: string;
+  user_org_role: string;
+  user_project_role: string | null;
 };
 export type BackgroundMigration = {
   id: string;
   name: string;
   script: string;
   args: unknown;
-  state: Generated<unknown>;
   finished_at: Timestamp | null;
   failed_at: Timestamp | null;
   failed_reason: string | null;
   worker_id: string | null;
   locked_at: Timestamp | null;
+  state: Generated<unknown>;
 };
 export type BatchExport = {
   id: string;
@@ -248,50 +248,50 @@ export type Comment = {
 export type CronJobs = {
   name: string;
   last_run: Timestamp | null;
-  job_started_at: Timestamp | null;
   state: string | null;
+  job_started_at: Timestamp | null;
 };
 export type Dataset = {
   id: string;
-  project_id: string;
   name: string;
-  description: string | null;
-  metadata: unknown | null;
+  project_id: string;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  description: string | null;
+  metadata: unknown | null;
 };
 export type DatasetItem = {
   id: string;
-  project_id: string;
-  status: Generated<DatasetStatus>;
   input: unknown | null;
   expected_output: unknown | null;
-  metadata: unknown | null;
-  source_trace_id: string | null;
   source_observation_id: string | null;
   dataset_id: string;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  status: Generated<DatasetStatus>;
+  source_trace_id: string | null;
+  metadata: unknown | null;
+  project_id: string;
 };
 export type DatasetRunItems = {
   id: string;
-  project_id: string;
   dataset_run_id: string;
   dataset_item_id: string;
-  trace_id: string;
   observation_id: string | null;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  trace_id: string;
+  project_id: string;
 };
 export type DatasetRuns = {
   id: string;
-  project_id: string;
   name: string;
-  description: string | null;
-  metadata: unknown | null;
   dataset_id: string;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  metadata: unknown | null;
+  description: string | null;
+  project_id: string;
 };
 export type EvalTemplate = {
   id: string;
@@ -302,10 +302,10 @@ export type EvalTemplate = {
   version: number;
   prompt: string;
   model: string;
-  provider: string;
   model_params: unknown;
   vars: Generated<string[]>;
   output_schema: unknown;
+  provider: string;
 };
 export type JobConfiguration = {
   id: string;
@@ -313,7 +313,6 @@ export type JobConfiguration = {
   updated_at: Generated<Timestamp>;
   project_id: string;
   job_type: JobType;
-  status: Generated<JobConfigState>;
   eval_template_id: string | null;
   score_name: string;
   filter: unknown;
@@ -321,6 +320,7 @@ export type JobConfiguration = {
   variable_mapping: unknown;
   sampling: string;
   delay: number;
+  status: Generated<JobConfigState>;
   time_scope: Generated<string[]>;
 };
 export type JobExecution = {
@@ -334,78 +334,78 @@ export type JobExecution = {
   end_time: Timestamp | null;
   error: string | null;
   job_input_trace_id: string | null;
-  job_input_observation_id: string | null;
-  job_input_dataset_item_id: string | null;
   job_output_score_id: string | null;
+  job_input_dataset_item_id: string | null;
+  job_input_observation_id: string | null;
 };
 export type LegacyPrismaObservation = {
   id: string;
-  trace_id: string | null;
-  project_id: string;
-  type: LegacyPrismaObservationType;
+  name: string | null;
   start_time: Generated<Timestamp>;
   end_time: Timestamp | null;
-  name: string | null;
-  metadata: unknown | null;
   parent_observation_id: string | null;
-  level: Generated<LegacyPrismaObservationLevel>;
-  status_message: string | null;
-  version: string | null;
-  created_at: Generated<Timestamp>;
-  updated_at: Generated<Timestamp>;
+  type: LegacyPrismaObservationType;
+  trace_id: string | null;
+  metadata: unknown | null;
   model: string | null;
-  internal_model: string | null;
-  internal_model_id: string | null;
   modelParameters: unknown | null;
   input: unknown | null;
   output: unknown | null;
-  prompt_tokens: Generated<number>;
+  level: Generated<LegacyPrismaObservationLevel>;
+  status_message: string | null;
+  completion_start_time: Timestamp | null;
   completion_tokens: Generated<number>;
+  prompt_tokens: Generated<number>;
   total_tokens: Generated<number>;
+  version: string | null;
+  project_id: string;
+  created_at: Generated<Timestamp>;
   unit: string | null;
+  prompt_id: string | null;
   input_cost: string | null;
   output_cost: string | null;
   total_cost: string | null;
+  internal_model: string | null;
+  updated_at: Generated<Timestamp>;
   calculated_input_cost: string | null;
   calculated_output_cost: string | null;
   calculated_total_cost: string | null;
-  completion_start_time: Timestamp | null;
-  prompt_id: string | null;
+  internal_model_id: string | null;
 };
 export type LegacyPrismaScore = {
   id: string;
   timestamp: Generated<Timestamp>;
-  project_id: string;
   name: string;
   value: number | null;
-  source: LegacyPrismaScoreSource;
-  author_user_id: string | null;
-  comment: string | null;
-  trace_id: string;
   observation_id: string | null;
+  trace_id: string;
+  comment: string | null;
+  source: LegacyPrismaScoreSource;
+  project_id: string;
+  author_user_id: string | null;
   config_id: string | null;
+  data_type: Generated<ScoreDataType>;
   string_value: string | null;
-  queue_id: string | null;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
-  data_type: Generated<ScoreDataType>;
+  queue_id: string | null;
 };
 export type LegacyPrismaTrace = {
   id: string;
-  external_id: string | null;
   timestamp: Generated<Timestamp>;
   name: string | null;
-  user_id: string | null;
+  project_id: string;
   metadata: unknown | null;
+  external_id: string | null;
+  user_id: string | null;
   release: string | null;
   version: string | null;
-  project_id: string;
   public: Generated<boolean>;
   bookmarked: Generated<boolean>;
-  tags: Generated<string[]>;
   input: unknown | null;
   output: unknown | null;
   session_id: string | null;
+  tags: Generated<string[]>;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
 };
@@ -414,16 +414,16 @@ export type LlmApiKeys = {
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
   provider: string;
-  adapter: string;
   display_secret_key: string;
   secret_key: string;
+  project_id: string;
   base_url: string | null;
+  adapter: string;
   custom_models: Generated<string[]>;
   with_default_models: Generated<boolean>;
+  config: unknown | null;
   extra_headers: string | null;
   extra_header_keys: Generated<string[]>;
-  config: unknown | null;
-  project_id: string;
 };
 export type Media = {
   id: string;
@@ -442,13 +442,13 @@ export type Media = {
 export type MembershipInvitation = {
   id: string;
   email: string;
-  org_id: string;
-  org_role: Role;
   project_id: string | null;
-  project_role: Role | null;
   invited_by_user_id: string | null;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  org_id: string;
+  org_role: Role;
+  project_role: Role | null;
 };
 export type Model = {
   id: string;
@@ -462,8 +462,8 @@ export type Model = {
   output_price: string | null;
   total_price: string | null;
   unit: string | null;
-  tokenizer_id: string | null;
   tokenizer_config: unknown | null;
+  tokenizer_id: string | null;
 };
 export type ObservationMedia = {
   id: string;
@@ -478,8 +478,8 @@ export type ObservationMedia = {
 export type Organization = {
   id: string;
   name: string;
-  credits: Generated<number>;
   cloud_config: unknown | null;
+  credits: Generated<number>;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
   expired_at: Timestamp | null;
@@ -510,20 +510,20 @@ export type Price = {
 };
 export type Project = {
   id: string;
-  org_id: string;
   created_at: Generated<Timestamp>;
-  updated_at: Generated<Timestamp>;
-  deleted_at: Timestamp | null;
   name: string;
+  updated_at: Generated<Timestamp>;
+  org_id: string;
+  deleted_at: Timestamp | null;
   retention_days: number | null;
 };
 export type ProjectMembership = {
-  org_membership_id: string;
   project_id: string;
   user_id: string;
-  role: Role;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  org_membership_id: string;
+  role: Role;
 };
 export type Prompt = {
   id: string;
@@ -531,12 +531,12 @@ export type Prompt = {
   updated_at: Generated<Timestamp>;
   project_id: string;
   created_by: string;
-  prompt: unknown;
   name: string;
   version: number;
-  type: Generated<string>;
   is_active: boolean | null;
   config: Generated<unknown>;
+  prompt: unknown;
+  type: Generated<string>;
   tags: Generated<string[]>;
   labels: Generated<string[]>;
   commit_message: string | null;
@@ -563,9 +563,9 @@ export type ScoreConfig = {
 };
 export type Session = {
   id: string;
+  expires: Timestamp;
   session_token: string;
   user_id: string;
-  expires: Timestamp;
 };
 export type SsoConfig = {
   domain: string;
@@ -621,10 +621,10 @@ export type User = {
   email_verified: Timestamp | null;
   password: string | null;
   image: string | null;
-  admin: Generated<boolean>;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
   feature_flags: Generated<string[]>;
+  admin: Generated<boolean>;
 };
 export type VerificationToken = {
   identifier: string;
