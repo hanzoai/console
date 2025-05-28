@@ -1,17 +1,17 @@
 # Define common dependencies anchor before it's used
 x-cloud-dev-depends-on: &cloud-depends-on
-  postgres-dev:
+  postgres:
     condition: service_healthy
-  minio-dev:
+  minio:
     condition: service_healthy
-  redis-dev:
+  redis:
     condition: service_healthy
   clickhouse:
     condition: service_healthy
 
 # Define environment variables anchor before it's used
 x-cloud-dev-environment: &cloud-worker-env
-  DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres-dev:5432/postgres}
+  DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
   SALT: ${SALT:-mysalt}
   ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000} # generate via `openssl rand -hex 32`
   TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
@@ -25,19 +25,19 @@ x-cloud-dev-environment: &cloud-worker-env
   HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
   HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
   HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+  HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
   HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
-  HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
+  HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events}
   HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
   HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
   HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
   HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
   HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
   HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
   HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
   HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-  REDIS_HOST: ${REDIS_HOST:-redis-dev}
+  REDIS_HOST: ${REDIS_HOST:-redis}
   REDIS_PORT: ${REDIS_PORT:-6379}
   REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
   REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -58,11 +58,11 @@ services:
         STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
     restart: always
     depends_on:
-      postgres-dev:
+      postgres:
         condition: service_healthy
-      minio-dev:
+      minio:
         condition: service_healthy
-      redis-dev:
+      redis:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
     # ports:
     #  - "3003:3000"
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres-dev:5432/postgres}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
       SALT: ${SALT:-mysalt}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000} # generate via `openssl rand -hex 32`
       TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
@@ -84,19 +84,19 @@ services:
       HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
       HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
       HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
       HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
       HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
       HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
       HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
       HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
       HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
       HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-      REDIS_HOST: ${REDIS_HOST:-redis-dev}
+      REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
       REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -138,34 +138,33 @@ services:
       # HTTP router (redirect)
       - traefik.http.routers.cloud-dev-http.rule=Host(`cloud-dev.hanzo.ai`)
       - traefik.http.routers.cloud-dev-http.entrypoints=web
-      - traefik.http.routers.cloud-dev-http.middlewares=redirect-to-https@file
+      - traefik.http.routers.cloud-dev-http.middlewares=redirect-to-https,well-known
 
       # HTTPS router (main)
       - traefik.http.routers.cloud-dev-https.rule=Host(`cloud-dev.hanzo.ai`)
       - traefik.http.routers.cloud-dev-https.entrypoints=websecure
       - traefik.http.routers.cloud-dev-https.tls.certresolver=letsencrypt
-      - traefik.http.routers.cloud-dev-https.middlewares=cloud-dev-headers,cloud-dev-csp
+      - traefik.http.routers.cloud-dev-https.middlewares=well-known,cloud-dev-csp
       - traefik.http.routers.cloud-dev-https.service=cloud-dev-service
 
       # Service mapping
       - traefik.http.services.cloud-dev-service.loadbalancer.server.port=3000
 
-
   cloud-dev-worker:
     image: hanzoai/cloud-worker:latest
     restart: always
     depends_on:
-      postgres-dev:
+      postgres:
         condition: service_healthy
-      minio-dev:
+      minio:
         condition: service_healthy
-      redis-dev:
+      redis:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
     environment:
       # <<: *cloud-dev-worker-env
-      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres-dev:5432/postgres}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
       SALT: ${SALT:-mysalt}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000} # generate via `openssl rand -hex 32`
       TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
@@ -191,7 +190,7 @@ services:
       HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
       HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
-      REDIS_HOST: ${REDIS_HOST:-redis-dev}
+      REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
       REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
@@ -220,9 +219,9 @@ services:
       retries: 10
       start_period: 1s
     networks:
-      - hanzo-network
+      - cloud-dev-internal
 
-  minio-dev:
+  minio:
     image: minio/minio
     restart: always
     entrypoint: sh
@@ -242,7 +241,7 @@ services:
     networks:
       - hanzo-network
 
-  redis-dev:
+  redis:
     image: redis:alpine
     restart: always
     command: >
@@ -253,9 +252,9 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - hanzo-network
+      - cloud-dev-internal
 
-  postgres-dev:
+  postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
     restart: always
     healthcheck:
@@ -270,9 +269,11 @@ services:
     volumes:
       - cloud_dev_postgres_data:/var/lib/postgresql/data
     networks:
-      - hanzo-network
+      - cloud-dev-internal
 
 networks:
+  cloud-dev-internal:
+    driver: bridge
   hanzo-network:
     external: true
 
