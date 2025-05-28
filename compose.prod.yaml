@@ -138,7 +138,7 @@ services:
       retries: 10
       start_period: 1s
     networks:
-      - hanzo-network
+      # - hanzo-network
       - cloud-hanzo-network
 
   minio:
@@ -177,7 +177,7 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - hanzo-network
+      # - hanzo-network
       - cloud-hanzo-network
 
   postgres:
@@ -197,7 +197,7 @@ services:
     volumes:
       - cloud-postgres-data:/var/lib/postgresql/data
     networks:
-      - hanzo-network
+      # - hanzo-network
       - cloud-hanzo-network
 
   redis-cloud:
@@ -213,9 +213,8 @@ services:
       timeout: 10s
       retries: 10
     networks:
-      - hanzo-network
+      # - hanzo-network
       - cloud-hanzo-network
-
     volumes:
       - cloud-redis-cloud-data:/data
 
