@@ -98,13 +98,12 @@ services:
       - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai;"
       - "traefik.http.routers.cloud-http.rule=Host(`cloud.hanzo.ai`)"
       - "traefik.http.routers.cloud-http.entrypoints=web"
-      - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https,buffer-request"
+      - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https"
       - "traefik.http.routers.cloud-https.rule=Host(`cloud.hanzo.ai`)"
       - "traefik.http.routers.cloud-https.entrypoints=websecure"
-      - "traefik.http.routers.cloud-https.middlewares=well-known,cloud-csp,buffer-request"
+      - "traefik.http.routers.cloud-https.middlewares=well-known,cloud-csp"
       - "traefik.http.routers.cloud-https.tls.certresolver=letsencrypt"
       - "traefik.http.services.cloud-service.loadbalancer.server.port=3000"
-
 
   cloud-worker:
     image: hanzoai/cloud-worker:3.38.0
