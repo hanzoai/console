@@ -1,13 +1,13 @@
-import React, { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-import { api } from "@/src/utils/api";
-import { useQueryOrganization } from "@/src/features/organizations/hooks";
-import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
-import { useRouter } from "next/router";
-import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
-import { useSession } from "next-auth/react";
 import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
+import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
+import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { useQueryOrganization } from "@/src/features/organizations/hooks";
+import { api } from "@/src/utils/api";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
@@ -32,7 +32,6 @@ export const BillingOverview = () => {
       enabled: organization !== undefined,
     },
   );
-
 
   // Fetch organization details to get credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
@@ -131,12 +130,35 @@ export const BillingOverview = () => {
                       orgId={organization?.id!}
                     />
                   )}
+                  {currentPlan === "Free Plan" &&
+                    orgDetails?.trialEndsAt &&
+                    new Date() < new Date(orgDetails.trialEndsAt) && (
+                      <div className="mt-1 text-sm font-medium text-blue-600">
+                        🎁 Trial active — expires in
+                        <CountdownTimer
+                          expiredAt={new Date(orgDetails.trialEndsAt)}
+                          orgId={organization?.id!}
+                        />
+                      </div>
+                    )}
                 </div>
               )}
-
             </p>
           </div>
         </div>
+        {orgDetails?.trialStartedAt && orgDetails?.trialEndsAt && (
+          <div className="mt-4 text-sm text-muted-foreground">
+            From:
+            <span className="font-medium">
+              {new Date(orgDetails.trialStartedAt).toLocaleDateString()}
+            </span>
+            To:
+            <span className="font-medium">
+              {new Date(orgDetails.trialEndsAt).toLocaleDateString()}
+            </span>
+          </div>
+        )}
+
         <Button
           variant="secondary"
           className="mt-4 w-full"

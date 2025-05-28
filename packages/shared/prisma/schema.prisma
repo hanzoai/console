@@ -113,6 +113,11 @@ model Organization {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
+  // trial 
+  trialStartedAt DateTime? @map("trial_started_at")
+  trialEndsAt    DateTime? @map("trial_ends_at")
+  isTrialActive  Boolean   @default(true) @map("is_trial_active")
+
   //exprire
   expiredAt DateTime? @map("expired_at")
 

@@ -167,6 +167,7 @@ export const env = createEnv({
 
     // plan
     HANZO_S3_FREE_PLAN_EXPIRE: z.string().default("90"),
+    HANZO_TRIAL_EXPIRE  : z.string().default("15"),
 
     // S3 Batch Export
     HANZO_S3_BATCH_EXPORT_ENABLED: z.enum(["true", "false"]).default("false"),
@@ -335,6 +336,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    HANZO_TRIAL_EXPIRE: process.env.HANZO_TRIAL_EXPIRE,
     SEED_SECRET_KEY: process.env.SEED_SECRET_KEY,
     NEXT_PUBLIC_DEMO_PROJECT_ID: process.env.NEXT_PUBLIC_DEMO_PROJECT_ID,
     NEXT_PUBLIC_DEMO_ORG_ID: process.env.NEXT_PUBLIC_DEMO_ORG_ID,

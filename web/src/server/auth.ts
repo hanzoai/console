@@ -28,6 +28,7 @@ import {
   getSsoAuthProviderIdForDomain,
   loadSsoProviders,
 } from "@/src/features/multi-tenant-sso/utils";
+import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { CloudConfigSchema } from "@hanzo/shared";
 import {
@@ -52,7 +53,6 @@ import OktaProvider from "next-auth/providers/okta";
 import WorkOSProvider from "next-auth/providers/workos";
 import { z } from "zod";
 import { getCookieName, getCookieOptions } from "./utils/cookies";
-import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 function canCreateOrganizations(userEmail: string | null): boolean {
   const instancePlan = getSelfHostedInstancePlanServerSide();
@@ -540,6 +540,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       },
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async () => {
+          console.log("Chay ham sign in");
           // Block sign in without valid user.email
           const email = user.email?.toLowerCase();
           if (!email) {
@@ -559,14 +560,15 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             },
           });
           if (dbUser && dbUser.organizationMemberships.length === 0) {
-            console.log("Creating default org :>>>>>>");
-
+            const now = new Date();
+            const freePlanDays = Number(env.HANZO_S3_FREE_PLAN_EXPIRE ?? "90");
+            const trialDays = Number(env.HANZO_TRIAL_EXPIRE ?? "15");
             await prisma.organization.create({
               data: {
-                expiredAt: addDaysAndRoundToNextDay(
-                  Number(env.HANZO_S3_FREE_PLAN_EXPIRE) ?? 90, // default 90 day if not config in env
-                ),
-                name: `Default Org's ${dbUser.name}`,
+                name: `Default Org's ${dbUser.name ?? dbUser.email}`,
+                expiredAt: addDaysAndRoundToNextDay(freePlanDays),
+                trialStartedAt: now,
+                trialEndsAt: addDaysAndRoundToNextDay(trialDays),
                 organizationMemberships: {
                   create: {
                     userId: dbUser.id,
@@ -576,9 +578,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               },
             });
 
-            console.log(
-              `User ${email} đã được thêm vào Organization mặc định.`,
-            );
+            console.log(`✅ Created organization with trial for ${email}`);
           }
 
           // EE: Check custom SSO enforcement, enforce the specific SSO provider on email domain

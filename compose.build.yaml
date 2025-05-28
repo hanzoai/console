@@ -121,6 +121,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - local-dev
 
   clickhouse:
     image: clickhouse/clickhouse-server
@@ -141,6 +143,8 @@ services:
       timeout: 5s
       retries: 10
       start_period: 1s
+    networks:
+      - local-dev
 
   minio:
     image: minio/minio
@@ -161,6 +165,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 1s
+    networks:
+      - local-dev
 
   redis:
     image: redis:7
@@ -174,7 +180,8 @@ services:
       interval: 3s
       timeout: 10s
       retries: 10
-
+    networks:
+      - local-dev
   postgres:
     image: postgres:${POSTGRES_VERSION:-latest}
     restart: always
@@ -191,6 +198,8 @@ services:
       - 5432:5432
     volumes:
       - hanzo_postgres_data:/var/lib/postgresql/data
+    networks:
+      - local-dev
 
 volumes:
   hanzo_postgres_data:
@@ -201,3 +210,7 @@ volumes:
     driver: local
   hanzo_minio_data:
     driver: local
+
+
+networks:
+  local-dev:

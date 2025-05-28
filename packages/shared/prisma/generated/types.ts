@@ -1,7 +1,6 @@
 import type { ColumnType } from "kysely";
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
+export type Generated<T> =
+  T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export const BlobStorageIntegrationType = {
@@ -11,12 +10,12 @@ export const BlobStorageIntegrationType = {
 } as const;
 export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const Role = {
-    OWNER: "OWNER",
-    ADMIN: "ADMIN",
-    ADMIN_BILLING: "ADMIN_BILLING",
-    MEMBER: "MEMBER",
-    VIEWER: "VIEWER",
-    NONE: "NONE"
+  OWNER: "OWNER",
+  ADMIN: "ADMIN",
+  ADMIN_BILLING: "ADMIN_BILLING",
+  MEMBER: "MEMBER",
+  VIEWER: "VIEWER",
+  NONE: "NONE",
 } as const;
 export type Role = (typeof Role)[keyof typeof Role];
 export const LegacyPrismaObservationType = {
@@ -24,18 +23,21 @@ export const LegacyPrismaObservationType = {
   EVENT: "EVENT",
   GENERATION: "GENERATION"
 } as const;
-export type LegacyPrismaObservationType = (typeof LegacyPrismaObservationType)[keyof typeof LegacyPrismaObservationType];
+export type LegacyPrismaObservationType =
+  (typeof LegacyPrismaObservationType)[keyof typeof LegacyPrismaObservationType];
 export const LegacyPrismaObservationLevel = {
   DEBUG: "DEBUG",
   DEFAULT: "DEFAULT",
   WARNING: "WARNING",
+
   ERROR: "ERROR"
 } as const;
-export type LegacyPrismaObservationLevel = (typeof LegacyPrismaObservationLevel)[keyof typeof LegacyPrismaObservationLevel];
+export type LegacyPrismaObservationLevel =
+  (typeof LegacyPrismaObservationLevel)[keyof typeof LegacyPrismaObservationLevel];
 export const LegacyPrismaScoreSource = {
   ANNOTATION: "ANNOTATION",
   API: "API",
-  EVAL: "EVAL"
+  EVAL: "EVAL",
 } as const;
 export type LegacyPrismaScoreSource = (typeof LegacyPrismaScoreSource)[keyof typeof LegacyPrismaScoreSource];
 export const ScoreDataType = {
@@ -63,6 +65,11 @@ export const CommentObjectType = {
   TRACE: "TRACE",
   OBSERVATION: "OBSERVATION",
   SESSION: "SESSION",
+  PROMPT: "PROMPT",
+} as const;
+export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
+export const JobType = {
+  EVAL: "EVAL",
   PROMPT: "PROMPT"
 } as const;
 export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
@@ -72,7 +79,7 @@ export const JobType = {
 export type JobType = (typeof JobType)[keyof typeof JobType];
 export const JobConfigState = {
   ACTIVE: "ACTIVE",
-  INACTIVE: "INACTIVE"
+  INACTIVE: "INACTIVE",
 } as const;
 export type JobConfigState = (typeof JobConfigState)[keyof typeof JobConfigState];
 export const JobExecutionStatus = {
@@ -470,6 +477,9 @@ export type Organization = {
   cloud_config: unknown | null;
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
+  trial_started_at: Timestamp | null;
+  trial_ends_at: Timestamp | null;
+  is_trial_active: Generated<boolean>;
   expired_at: Timestamp | null;
 };
 export type OrganizationMembership = {

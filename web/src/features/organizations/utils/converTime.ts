@@ -5,7 +5,6 @@ export const addDaysAndRoundToNextDay = (value: number): Date => {
 
   const isDevOrStaging = env.NODE_ENV && env.NODE_ENV !== "production";
   // checking for prod
-  console.log("Checkiing >>>", isDevOrStaging, env.NODE_ENV);
   if (isDevOrStaging) {
     // second for testing
     now.setSeconds(now.getSeconds() + value);
