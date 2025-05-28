@@ -424,7 +424,6 @@ const extendedPrismaAdapter: Adapter = {
         delete data[ignoredField];
       }
     }
-    console.log("check data", data)
     await prismaAdapter.linkAccount(data);
   },
 };
@@ -576,9 +575,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               },
             });
 
-            console.log(
-              `User ${email} đã được thêm vào Organization mặc định.`,
-            );
+
           }
 
           // EE: Check custom SSO enforcement, enforce the specific SSO provider on email domain
