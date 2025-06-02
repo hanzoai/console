@@ -173,6 +173,7 @@ async function handleSubscriptionChanged(
   }
   const checkoutSession = checkoutSessionsResponse.data[0];
 
+
   // the client reference is passed to the stripe checkout session via the pricing page
   const clientReference = checkoutSession.client_reference_id;
   if (!clientReference) {
@@ -202,10 +203,7 @@ async function handleSubscriptionChanged(
     },
   });
 
-  logger.info("[Stripe Webhook] Found organization:", {
-    organization,
-    orgId,
-  });
+  console.log("Check Organization :>>>", organization, orgId);
 
   if (!organization) {
     logger.error("[Stripe Webhook] Organization not found", { orgId });

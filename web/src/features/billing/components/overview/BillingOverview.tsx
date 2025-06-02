@@ -1,13 +1,13 @@
-import React, { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-import { api } from "@/src/utils/api";
-import { useQueryOrganization } from "@/src/features/organizations/hooks";
-import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
-import { useRouter } from "next/router";
-import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
-import { useSession } from "next-auth/react";
 import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
+import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
+import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { useQueryOrganization } from "@/src/features/organizations/hooks";
+import { api } from "@/src/utils/api";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
@@ -73,7 +73,15 @@ export const BillingOverview = () => {
     setIsPlanModalOpen(true);
   };
 
-  const currentPlan = subscription?.plan?.name || "Free Plan";
+  const cloudConfig = orgDetails?.cloudConfig;
+  const currentPlan =
+    typeof cloudConfig === 'object' &&
+      cloudConfig !== null &&
+      'plan' in cloudConfig
+      ? (cloudConfig as { plan?: string }).plan ?? 'Free Plan'
+      : 'Free Plan';
+
+
   const currentUsage = usage?.usageCount || 0;
   const availableCredits = orgDetails?.credits || 0;
   const timeExpireIfPlanFree = orgDetails?.expiredAt
