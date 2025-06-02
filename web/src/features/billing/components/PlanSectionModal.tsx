@@ -93,7 +93,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid gap-6 justify-center grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))]">
           {availablePlans.map((product) => {
             // Calculate button state for each plan
             const isPlanActive = isActiveSubscription &&
