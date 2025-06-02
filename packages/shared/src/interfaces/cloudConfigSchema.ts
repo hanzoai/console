@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CloudConfigRateLimit } from "./rate-limits";
 
 export const CloudConfigSchema = z.object({
-  plan: z.enum(["Pro", "Team", "Dev"]).optional(),
+  plan: z.enum(["Pro", "Team", "Dev", "Premium"]).optional(),
   monthlyObservationLimit: z.number().int().positive().optional(),
   // used for table and dashboard queries
   defaultLookBackDays: z.number().int().positive().optional(),
