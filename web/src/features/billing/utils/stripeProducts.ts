@@ -31,8 +31,7 @@ export const stripeProducts: StripeProduct[] = [
     stripeProductId:
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
         env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-        // ? "prod_SMzWLE1hJzYfTf" // test
-        ? "prod_RtxpuU81xgUmtC" // test
+        ? "prod_SMzWLE1hJzYfTf" // test
         : "prod_SMzWLE1hJzYfTf", // live
     name: "Premium",
     title: "Premium",
