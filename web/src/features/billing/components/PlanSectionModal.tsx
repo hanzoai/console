@@ -2,6 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { api } from "@/src/utils/api";
+import { cn } from "@/src/utils/tailwind";
 import React from 'react';
 
 interface PlanSelectionModalProps {
@@ -86,14 +87,20 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className={cn("max-w-4xl", availablePlans.length === 1 && "max-w-md")}>
         <DialogHeader>
           <DialogTitle>
             {currentSubscription ? "Change Your Plan" : "Choose a Plan"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-6 justify-center grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))]">
+        <div
+          className={availablePlans.length === 1
+            ? "flex justify-center"
+            : "grid gap-6 justify-center grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))]"
+          }
+        >
+
           {availablePlans.map((product) => {
             // Calculate button state for each plan
             const isPlanActive = isActiveSubscription &&
