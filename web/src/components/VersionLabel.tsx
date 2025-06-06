@@ -1,4 +1,21 @@
+import { StatusBadge } from "@/src/components/layouts/status-badge";
+import { Button } from "@/src/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
+import { VERSION } from "@/src/constants";
+import { env } from "@/src/env.mjs";
+import { usePlan } from "@/src/features/entitlements/hooks";
+import { api } from "@/src/utils/api";
+import { cn } from "@/src/utils/tailwind";
+import { isSelfHostedPlan, planLabels } from "@hanzo/shared";
+import {
+  ArrowUp,
   ArrowUp10,
   BadgeCheck,
   Github,
@@ -7,24 +24,7 @@ import {
   Map,
   Newspaper,
 } from "lucide-react";
-import { VERSION } from "@/src/constants";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/src/components/ui/dropdown-menu";
-import { ArrowUp } from "lucide-react";
-import { api } from "@/src/utils/api";
-import { Button } from "@/src/components/ui/button";
-import { env } from "@/src/env.mjs";
-import { cn } from "@/src/utils/tailwind";
-import { usePlan } from "@/src/features/entitlements/hooks";
-import { isSelfHostedPlan, planLabels } from "@hanzo/shared";
-import { StatusBadge } from "@/src/components/layouts/status-badge";
 
 export const VersionLabel = ({ className }: { className?: string }) => {
   const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(
@@ -52,17 +52,21 @@ export const VersionLabel = ({ className }: { className?: string }) => {
   const selfHostedPlanLabel = !isHanzoCloud
     ? plan && isSelfHostedPlan(plan)
       ? // self-host plan
-        {
-          short: plan === "self-hosted:pro" ? "Pro" : "EE",
-          long: planLabels[plan],
-        }
+      {
+        short: plan === "self-hosted:pro"
+          ? "Pro"
+          : plan === "self-hosted:ee"
+            ? "EE"
+            : "Custom",
+        long: planLabels[plan] ?? "",
+      }
       : // no plan, oss
-        {
-          short: "OSS",
-          long: "Open Source",
-        }
+      {
+        short: "OSS",
+        long: "Open Source",
+      }
     : // null on cloud
-      null;
+    null;
 
   const showBackgroundMigrationStatus =
     !isHanzoCloud &&

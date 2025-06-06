@@ -5,7 +5,7 @@ import { type CloudConfigSchema, type Plan } from "@hanzo/shared";
 /**
  * Get the plan of the organization based on the cloud configuration. Used to add this plan to the organization object in JWT via NextAuth.
  */
-type PlanType = Plan | "cloud:premium";
+export type PlanType = Plan | "cloud:premium";
 export function getOrganizationPlanServerSide(
   cloudConfig?: CloudConfigSchema,
 ): PlanType {
