@@ -73,7 +73,9 @@ export async function increaseStripeSlot(orgId: string) {
   };
 
   // Increase the quantity (slot count) by 1
+  logger.info("Increasing Stripe slot", { currentQuantity: item.quantity });
   const newQuantity = (item.quantity || 1) + 1;
+  logger.info("New quantity for Stripe slot", { newQuantity });
   await stripeClient.subscriptionItems.update(item.id, {
     quantity: newQuantity,
     // Optionally, you can set proration_behavior if needed
@@ -119,7 +121,9 @@ export async function decreaseStripeSlot(orgId: string) {
   }
 
   // Decrease the quantity (slot count) by 1, but not less than 1
+  logger.info("Decreasing Stripe slot", { currentQuantity: item.quantity });
   const newQuantity = Math.max((item.quantity || 1) - 1, 1);
+  logger.info("New quantity for Stripe slot", { newQuantity });
   await stripeClient.subscriptionItems.update(item.id, {
     quantity: newQuantity,
     // Optionally, you can set proration_behavior if needed
