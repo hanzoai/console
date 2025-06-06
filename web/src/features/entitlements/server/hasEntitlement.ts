@@ -2,9 +2,10 @@ import {
   entitlementAccess,
   type Entitlement,
 } from "@/src/features/entitlements/constants/entitlements";
+import { PlanType } from "@/src/features/entitlements/server/getPlan";
+import { type Plan } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
-import { type Plan } from "@hanzo/shared";
 
 type HasEntitlementParams = {
   entitlement: Entitlement;
@@ -23,8 +24,8 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
     const org =
       "projectId" in p
         ? p.sessionUser.organizations?.find((org) =>
-            org.projects?.some((proj) => proj.id === p.projectId),
-          )
+          org.projects?.some((proj) => proj.id === p.projectId),
+        )
         : p.sessionUser.organizations?.find((org) => org.id === p.orgId);
 
     // If no organization found, return false
@@ -32,7 +33,7 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
 
     // Use getOrganizationPlanServerSide to get the plan
     const rawPlan = org.plan;
-    
+
     // Convert the plan using similar logic as getOrganizationPlanServerSide
     let plan: Plan;
     if (rawPlan?.toUpperCase() === "PRO") {
@@ -57,7 +58,7 @@ export const hasEntitlementBasedOnPlan = ({
   plan,
   entitlement,
 }: {
-  plan: Plan | null;
+  plan: Plan | null | PlanType;
   entitlement: Entitlement;
 }) => {
   try {

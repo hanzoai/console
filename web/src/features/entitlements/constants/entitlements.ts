@@ -1,4 +1,4 @@
-import { type Plan } from "@hanzo/shared";
+import { PlanType } from "@/src/features/entitlements/server/getPlan";
 
 // Entitlements: Binary feature access
 const entitlements = [
@@ -47,7 +47,7 @@ export type EntitlementLimits = Record<
 >;
 
 export const entitlementAccess: Record<
-  Plan & "cloud:premium",
+  PlanType,
   {
     entitlements: Entitlement[];
     entitlementLimits: EntitlementLimits;

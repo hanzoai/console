@@ -50,7 +50,7 @@ export function getOrganizationPlanServerSide(
   return "cloud:free";
 }
 
-export function getSelfHostedInstancePlanServerSide(): Plan | null {
+export function getSelfHostedInstancePlanServerSide(): PlanType | null {
   const licenseKey = env.HANZO_EE_LICENSE_KEY;
   if (!licenseKey) return null;
   if (licenseKey.startsWith("hanzo_ee_")) {
