@@ -1,6 +1,6 @@
 import { env } from "@/src/env.mjs";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { increaseStripeSlot } from "@/src/features/billing/utils/stripeSlot";
+import { decreaseStripeSlot, increaseStripeSlot } from "@/src/features/billing/utils/stripeSlot";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
 import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
@@ -386,12 +386,16 @@ export const membersRouter = createTRPCRouter({
         before: orgMembership,
       });
 
-      return await ctx.prisma.organizationMembership.delete({
+      const data = await ctx.prisma.organizationMembership.delete({
         where: {
           id: orgMembership.id,
           orgId: input.orgId,
         },
       });
+      if (data) {
+        await decreaseStripeSlot(input.orgId)
+      }
+      return data
     }),
   deleteInvite: protectedOrganizationProcedure
     .input(
@@ -442,12 +446,16 @@ export const membersRouter = createTRPCRouter({
         before: invitation,
       });
 
-      return await ctx.prisma.membershipInvitation.delete({
+      const data = await ctx.prisma.membershipInvitation.delete({
         where: {
           id: invitation.id,
           orgId: input.orgId,
         },
       });
+      if (data) {
+        decreaseStripeSlot(input.orgId)
+      }
+      return data
     }),
   updateOrgMembership: protectedOrganizationProcedure
     .input(

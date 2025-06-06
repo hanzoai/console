@@ -329,3 +329,6 @@ None of the data is shared with third parties and does not include any sensitive
 
 You can opt-out by setting `TELEMETRY_ENABLED=false`.
 
+
+members.deleteInvite
+members.create
