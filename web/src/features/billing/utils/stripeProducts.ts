@@ -32,10 +32,10 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
         env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_SMzWLE1hJzYfTf" // test
-        : "prod_SMzWLE1hJzYfTf", // live
+        : "prod_SRnfvBzuBEfiVI", // live
     name: "Premium",
     title: "Premium",
-    description: "Premium plan ideal for individuals and teams working on advanced projects. Includes access to AI-powered tools, team collaboration features, extended usage limits, and priority support. ",
+    description: "$20/user/month — billed based on your active team member list. Access all AI- powered tools and features. Built for teams needing full collaboration capabilities.Includes extended usage limits and priority support.Ideal for growing businesses and advanced projects.",
     checkout: true,
     active: true
   },
