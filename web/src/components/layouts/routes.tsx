@@ -1,29 +1,29 @@
-import { type Flag } from "@/src/features/feature-flags/types";
-import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
-import {
-  Database,
-  LayoutDashboard,
-  LifeBuoy,
-  ListTree,
-  type LucideIcon,
-  Settings,
-  UsersIcon,
-  TerminalIcon,
-  Lightbulb,
-  Grid2X2,
-  Sparkle,
-  FileJson,
-  Search,
-} from "lucide-react";
-import { type ReactNode } from "react";
-import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
-import { type UiCustomizationOption } from "@/src/features/ui-customization/useUiCustomization";
-import { type User } from "next-auth";
-import { type OrganizationScope } from "@/src/features/rbac/constants/organizationAccessRights";
 import { SupportMenuDropdown } from "@/src/components/nav/support-menu-dropdown";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
+import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
+import { type Flag } from "@/src/features/feature-flags/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { type OrganizationScope } from "@/src/features/rbac/constants/organizationAccessRights";
+import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
+import { type UiCustomizationOption } from "@/src/features/ui-customization/useUiCustomization";
+import {
+  Database,
+  FileJson,
+  Grid2X2,
+  LayoutDashboard,
+  LifeBuoy,
+  Lightbulb,
+  ListTree,
+  type LucideIcon,
+  Search,
+  Settings,
+  Sparkle,
+  TerminalIcon,
+  UsersIcon,
+} from "lucide-react";
+import { type User } from "next-auth";
+import { type ReactNode } from "react";
 
 export type Route = {
   title: string;
@@ -140,7 +140,7 @@ export const ROUTES: Route[] = [
     bottom: true,
     entitlements: ["cloud-billing"],
     organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:free",
+    show: ({ organization }) => organization?.plan as string === "cloud:free",
   },
   {
     title: "Upgrade",
@@ -149,7 +149,7 @@ export const ROUTES: Route[] = [
     bottom: true,
     entitlements: ["cloud-billing"],
     organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:free",
+    show: ({ organization }) => organization?.plan as string === "cloud:free",
   },
   {
     title: "Settings",
