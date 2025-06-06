@@ -9,7 +9,7 @@ export const planLabels = {
   "self-hosted:dev": "Dev (self-hosted)",
 } as const;
 
-export type Plan = keyof typeof planLabels & "cloud:premium";
+export type Plan = keyof typeof planLabels;
 
 export const plans = Object.keys(planLabels) as Plan[];
 

@@ -2,7 +2,6 @@ import {
   entitlementAccess,
   type Entitlement,
 } from "@/src/features/entitlements/constants/entitlements";
-import { PlanType } from "@/src/features/entitlements/server/getPlan";
 import { type Plan } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
@@ -58,7 +57,7 @@ export const hasEntitlementBasedOnPlan = ({
   plan,
   entitlement,
 }: {
-  plan: Plan | null | PlanType;
+  plan: Plan | null;
   entitlement: Entitlement;
 }) => {
   try {

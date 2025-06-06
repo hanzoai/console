@@ -486,7 +486,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                 env.HANZO_DISABLE_EXPENSIVE_POSTGRES_QUERIES === "true",
               // Enables features that are only available under an enterprise license when self-hosting HanzoCloud
               // If you edit this line, you risk executing code that is not MIT licensed (self-contained in /ee folders otherwise)
-              selfHostedInstancePlan: getSelfHostedInstancePlanServerSide() as any,
+              selfHostedInstancePlan: getSelfHostedInstancePlanServerSide(),
             },
             user:
               dbUser !== null
@@ -526,7 +526,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                         ),
                         plan: getOrganizationPlanServerSide(
                           parsedCloudConfig.data,
-                        ) as any,
+                        ),
                       };
                     },
                   ),
@@ -788,7 +788,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               .filter((project) =>
                 projectRoleAccessRights[project.role].includes("project:read"),
               ),
-            plan: getOrganizationPlanServerSide(parsedCloudConfig.data) as any,
+            plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
           };
         }),
         featureFlags: parseFlags(dbUser.featureFlags),
