@@ -3,11 +3,15 @@ import { Card } from "@/src/components/ui/card";
 import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
 import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import fetchUpcomingCharge from "@/src/features/billing/utils/upcomingCharge";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import useSWR from "swr";
+
+
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
@@ -88,6 +92,11 @@ export const BillingOverview = () => {
     ? new Date(orgDetails.expiredAt)
     : null;
 
+  const { data: upcomingCharge } = useSWR(
+    organization?.id ? ["upcoming-charge", organization.id] : null,
+    () => fetchUpcomingCharge(organization?.id ?? "")
+  );
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {/* Active Subscription Card */}
@@ -125,7 +134,16 @@ export const BillingOverview = () => {
                           return "Subscription paused";
                         case "active":
                         default:
-                          return `Next billing date: ${subscription.current_period_end.toLocaleDateString()}`;
+                          return (
+                            <>
+                              {`Next billing date: ${subscription.current_period_end.toLocaleDateString()}`}
+                              {upcomingCharge && (
+                                <span style={{ display: "block" }}>
+                                  {`Upcoming charge: $${upcomingCharge.amount_due?.toFixed(2) ?? "0.00"} ${upcomingCharge.currency?.toUpperCase() || ""}`}
+                                </span>
+                              )}
+                            </>
+                          );
                       }
                     })()}
                   </p>

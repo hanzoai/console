@@ -79,7 +79,7 @@ export function CreateProjectMemberButton(props: {
   const hasProjectRoleEntitlement = useHasEntitlement("rbac-project-roles");
   const hasOnlySingleProjectAccess =
     !hasOrgAccess && hasProjectAccess && hasProjectRoleEntitlement;
-
+  
   const utils = api.useUtils();
   const mutCreateProjectMember = api.members.create.useMutation({
     onSuccess: () => utils.members.invalidate(),

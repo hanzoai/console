@@ -89,5 +89,8 @@
     "patchedDependencies": {
       "next-auth@4.24.11": "patches/next-auth@4.24.11.patch"
     }
+  },
+  "dependencies": {
+    "swr": "^2.3.3"
   }
 }
