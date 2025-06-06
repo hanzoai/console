@@ -3,12 +3,13 @@ export const planLabels = {
   "cloud:pro": "Pro",
   "cloud:team": "Team",
   "cloud:dev": "Dev",
+  "cloud:premium": "Premium",
   "self-hosted:pro": "Pro (self-hosted)",
   "self-hosted:team": "Team (self-hosted)",
   "self-hosted:dev": "Dev (self-hosted)",
 } as const;
 
-export type Plan = keyof typeof planLabels;
+export type Plan = keyof typeof planLabels & "cloud:premium";
 
 export const plans = Object.keys(planLabels) as Plan[];
 

@@ -47,7 +47,7 @@ export type EntitlementLimits = Record<
 >;
 
 export const entitlementAccess: Record<
-  Plan,
+  Plan & "cloud:premium",
   {
     entitlements: Entitlement[];
     entitlementLimits: EntitlementLimits;
@@ -57,7 +57,7 @@ export const entitlementAccess: Record<
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
       "annotation-queue-count": 0,
-      "organization-member-count": 2,
+      "organization-member-count": 1,
       "data-access-days": 7,
       "model-based-evaluations-count-evaluators": 1,
       "prompt-management-count-prompts": false,
@@ -93,6 +93,16 @@ export const entitlementAccess: Record<
     entitlementLimits: {
       "annotation-queue-count": 1,
       "organization-member-count": 2,
+      "data-access-days": 30,
+      "model-based-evaluations-count-evaluators": 1,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  "cloud:premium": {
+    entitlements: [...cloudAllPlansEntitlements],
+    entitlementLimits: {
+      "annotation-queue-count": 1,
+      "organization-member-count": 99999,
       "data-access-days": 30,
       "model-based-evaluations-count-evaluators": 1,
       "prompt-management-count-prompts": false,
