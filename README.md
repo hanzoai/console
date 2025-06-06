@@ -5,10 +5,10 @@
       <h3>
          <a href="https://cloud.hanzo.ai">
             <strong>Hanzo Cloud</strong>
-         </a> · 
+         </a> ·
          <a href="https://hanzo.ai/docs/deployment/self-host">
             <strong>Self Host</strong>
-         </a> · 
+         </a> ·
          <a href="https://hanzo.ai/demo">
             <strong>Demo</strong>
          </a>
@@ -328,3 +328,4 @@ This helps us to:
 None of the data is shared with third parties and does not include any sensitive information. We want to be super transparent about this and you can find the exact data we collect [here](/web/src/features/telemetry/index.ts).
 
 You can opt-out by setting `TELEMETRY_ENABLED=false`.
+

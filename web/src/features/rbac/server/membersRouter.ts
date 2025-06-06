@@ -1,25 +1,26 @@
+import { env } from "@/src/env.mjs";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import {
-  createTRPCRouter,
-  protectedOrganizationProcedure,
-} from "@/src/server/api/trpc";
-import { TRPCError } from "@trpc/server";
-import * as z from "zod";
+import { increaseStripeSlot } from "@/src/features/billing/utils/stripeSlot";
+import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
+import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
+import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
+import { allMembersRoutes } from "@/src/features/rbac/server/allMembersRoutes";
 import {
   hasOrganizationAccess,
   throwIfNoOrganizationAccess,
 } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { type PrismaClient, Role } from "@hanzo/shared";
-import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
-import { env } from "@/src/env.mjs";
-import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import {
   hasProjectAccess,
   throwIfNoProjectAccess,
 } from "@/src/features/rbac/utils/checkProjectAccess";
-import { allMembersRoutes } from "@/src/features/rbac/server/allMembersRoutes";
-import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
-import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
+import {
+  createTRPCRouter,
+  protectedOrganizationProcedure,
+} from "@/src/server/api/trpc";
+import { type PrismaClient, Role } from "@hanzo/shared";
+import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
+import { TRPCError } from "@trpc/server";
+import * as z from "zod";
 
 // Record as it allows to type check that all roles are included
 function throwIfHigherRole({ ownRole, role }: { ownRole: Role; role: Role }) {
@@ -65,9 +66,9 @@ async function throwIfHigherProjectRole({
 
   const ownRoleValue: number = projectMembership
     ? Math.max(
-        orderedRoles[projectMembership.role],
-        orderedRoles[orgCtx.session.orgRole],
-      )
+      orderedRoles[projectMembership.role],
+      orderedRoles[orgCtx.session.orgRole],
+    )
     : orderedRoles[orgCtx.session.orgRole];
 
   if (ownRoleValue < orderedRoles[projectRole]) {
@@ -169,12 +170,12 @@ export const membersRouter = createTRPCRouter({
       // security check if project is in org
       const project = input.projectId
         ? await ctx.prisma.project.findFirst({
-            where: {
-              id: input.projectId,
-              orgId: input.orgId,
-              deletedAt: null,
-            },
-          })
+          where: {
+            id: input.projectId,
+            orgId: input.orgId,
+            deletedAt: null,
+          },
+        })
         : null;
       if (project && input.projectRole)
         await throwIfHigherProjectRole({
@@ -278,6 +279,9 @@ export const membersRouter = createTRPCRouter({
           orgName: org.name,
           env: env,
         });
+        // increase slot in stripe if project role is set
+        await increaseStripeSlot(input.orgId)
+
       } else {
         const invitation = await ctx.prisma.membershipInvitation.create({
           data: {
@@ -309,7 +313,8 @@ export const membersRouter = createTRPCRouter({
           orgName: org.name,
           env: env,
         });
-
+        // updater slot stripe
+        await increaseStripeSlot(input.orgId)
         return invitation;
       }
     }),
