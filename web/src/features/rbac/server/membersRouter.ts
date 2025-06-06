@@ -1,6 +1,5 @@
 import { env } from "@/src/env.mjs";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { decreaseStripeSlot, increaseStripeSlot } from "@/src/features/billing/utils/stripeSlot";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
 import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
@@ -280,7 +279,7 @@ export const membersRouter = createTRPCRouter({
           env: env,
         });
         // increase slot in stripe if project role is set
-        await increaseStripeSlot(input.orgId)
+        // await increaseStripeSlot(input.orgId)
 
       } else {
         const invitation = await ctx.prisma.membershipInvitation.create({
@@ -314,7 +313,7 @@ export const membersRouter = createTRPCRouter({
           env: env,
         });
         // updater slot stripe
-        await increaseStripeSlot(input.orgId)
+        // await increaseStripeSlot(input.orgId)
         return invitation;
       }
     }),
@@ -393,7 +392,7 @@ export const membersRouter = createTRPCRouter({
         },
       });
       if (data) {
-        await decreaseStripeSlot(input.orgId)
+        // await decreaseStripeSlot(input.orgId)
       }
       return data
     }),
@@ -453,7 +452,7 @@ export const membersRouter = createTRPCRouter({
         },
       });
       if (data) {
-        decreaseStripeSlot(input.orgId)
+        // decreaseStripeSlot(input.orgId)
       }
       return data
     }),
