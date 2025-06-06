@@ -1,21 +1,21 @@
-import type Redis from "ioredis";
-import { type z } from "zod";
-import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { env } from "@/src/env.mjs";
 import {
-  type RateLimitResult,
-  type RateLimitResource,
-  type RateLimitConfig,
   type Plan,
+  type RateLimitConfig,
+  type RateLimitResource,
+  type RateLimitResult,
 } from "@hanzo/shared";
 import {
-  recordIncrement,
-  type ApiAccessScope,
-  logger,
   createNewRedisInstance,
+  logger,
+  recordIncrement,
   redisQueueRetryOptions,
+  type ApiAccessScope,
 } from "@hanzo/shared/src/server";
+import type Redis from "ioredis";
 import { type NextApiResponse } from "next";
+import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
+import { type z } from "zod";
 
 // Business Logic
 // - rate limit strategy is based on org-id, org plan, and resources. Rate limits are applied in buckets of minutes.
@@ -326,11 +326,47 @@ const getPlanBasedRateLimitConfig = (
             durationInSec: 60,
           };
         default:
-          const exhaustiveCheckDev: never = resource;
+          const exhaustiveCheckDev = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheckDev}`);
+      }
+    case "cloud:premium":
+      switch (resource) {
+        case "ingestion":
+          return {
+            resource: "ingestion",
+            points: 20000,
+            durationInSec: 60,
+          };
+        case "legacy-ingestion":
+          return {
+            resource: "prompts",
+            points: 400,
+            durationInSec: 60,
+          };
+        case "prompts":
+          return {
+            resource: "prompts",
+            points: null,
+            durationInSec: null,
+          };
+        case "public-api":
+          return {
+            resource: "public-api",
+            points: 1000,
+            durationInSec: 60,
+          };
+        case "public-api-metrics":
+          return {
+            resource: "public-api-metrics",
+            points: 10,
+            durationInSec: 60,
+          };
+        default:
+          const exhaustiveCheckDev = resource;
           throw new Error(`Unhandled resource case: ${exhaustiveCheckDev}`);
       }
     default:
-      const exhaustiveCheck: never = plan;
+      const exhaustiveCheck = plan;
       throw new Error(`Unhandled plan case: ${exhaustiveCheck}`);
   }
 };
