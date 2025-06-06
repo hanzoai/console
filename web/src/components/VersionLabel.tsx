@@ -53,11 +53,12 @@ export const VersionLabel = ({ className }: { className?: string }) => {
     ? plan && isSelfHostedPlan(plan)
       ? // self-host plan
       {
-        short: plan === "self-hosted:pro"
-          ? "Pro"
-          : plan === "self-hosted:ee"
-            ? "EE"
-            : "Custom",
+        short:
+          (plan as string) === "self-hosted:pro"
+            ? "Pro"
+            : (plan as string) === "self-hosted:ee"
+              ? "EE"
+              : "Custom",
         long: planLabels[plan] ?? "",
       }
       : // no plan, oss
