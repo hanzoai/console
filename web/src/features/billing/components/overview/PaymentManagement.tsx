@@ -103,7 +103,9 @@ export const PaymentManagement = () => {
           </div>
           <Button
             variant="outline"
-            onClick={() => router.push("/pricing")}
+            onClick={() => {
+              setIsPlanModalOpen(true)
+            }}
           >
             Upgrade Plan
           </Button>
