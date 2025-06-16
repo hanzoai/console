@@ -1,12 +1,16 @@
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-import { CreditCard, Plus } from "lucide-react";
-import { api } from "@/src/utils/api";
-import { useQueryOrganization } from "@/src/features/organizations/hooks";
+import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { useQueryOrganization } from "@/src/features/organizations/hooks";
+import { api } from "@/src/utils/api";
+import { CreditCard, Plus } from "lucide-react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export const PaymentManagement = () => {
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+
   const router = useRouter();
   const organization = useQueryOrganization();
 
@@ -81,7 +85,7 @@ export const PaymentManagement = () => {
 
   const currentPlan = subscription?.plan?.name || "Free Plan";
   const availableCredits = orgDetails?.credits || 0;
-  const nextBillingDate = subscription?.current_period_end 
+  const nextBillingDate = subscription?.current_period_end
     ? new Date(subscription.current_period_end).toLocaleDateString()
     : "N/A";
 
@@ -97,7 +101,7 @@ export const PaymentManagement = () => {
               ${subscription?.price?.amount || 0}/month
             </p>
           </div>
-          <Button 
+          <Button
             variant="outline"
             onClick={() => router.push("/pricing")}
           >
@@ -153,7 +157,7 @@ export const PaymentManagement = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Payment Method</h3>
-          <Button 
+          <Button
             variant="outline"
             onClick={handleCustomerPortal}
           >
@@ -177,7 +181,7 @@ export const PaymentManagement = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Recent Invoice</h3>
-          <Button 
+          <Button
             variant="link"
             onClick={handleCustomerPortal}
           >
@@ -203,8 +207,8 @@ export const PaymentManagement = () => {
                   </p>
                 </div>
               </div>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={handleCustomerPortal}
               >
@@ -214,6 +218,12 @@ export const PaymentManagement = () => {
           ))}
         </div>
       </Card>
+      <PlanSelectionModal
+        isOpen={isPlanModalOpen}
+        onClose={() => setIsPlanModalOpen(false)}
+        orgId={organization?.id ?? ""}
+        currentSubscription={subscription}
+      />
     </div>
   );
 };
