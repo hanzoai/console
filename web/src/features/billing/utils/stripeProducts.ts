@@ -19,7 +19,8 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
         env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_Ru16ryEtJtEmRh" // test
-        : "prod_Ru0gok2x52s57Y", // live
+        // : "prod_Ru0gok2x52s57Y", // live
+        : "prod_SVUpp1cE7V42At", // live
     name: "Credits",
     title: "Credits",
     description: "For serious projects. Includes access to full history, higher usage and access to features.",
