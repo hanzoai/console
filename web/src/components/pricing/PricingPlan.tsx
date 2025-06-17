@@ -1,5 +1,5 @@
-
 import { Button } from "@/src/components/ui/radix-button";
+import { api } from "@/src/utils/api";
 import { Check } from "lucide-react";
 import React from "react";
 
@@ -26,16 +26,35 @@ const PricingPlan = ({
   popular = false,
   customColor,
   showDetails = false,
-  githubLink = false
+  githubLink = false,
 }: PricingPlanProps) => {
   // Use monochrome design
-  const borderColor = popular
-    ? "border-gray-700"
-    : "border-gray-800";
+  const borderColor = popular ? "border-white-700" : "border-white-800";
 
-  const bgColor = popular
-    ? "bg-gray-900/30"
-    : "bg-[var(--black)]/50";
+  const bgColor = popular ? "bg-gray-900/30" : "bg-[var(--black)]/50";
+
+  const { mutate: createCheckoutSession } =
+    api.cloudBilling.createStripeCheckoutSession.useMutation({
+      onSuccess: (data) => {
+        if (data.url) window.location.href = data.url;
+      },
+      onError: (error) => {
+        console.error("Failed to create checkout session", error);
+        // TODO: Add error handling toast/notification
+      },
+    });
+
+  const { mutate: cancelSubscription } =
+    api.cloudBilling.cancelStripeSubscription.useMutation({
+      onSuccess: () => {
+        // Optionally refresh subscription or show success message
+        // onClose();
+      },
+      onError: (error: { message: string }) => {
+        console.error("Failed to change subscription", error.message);
+        // TODO: Add error handling toast/notification
+      },
+    });
 
   // Button color - prominent option gets white bg, others get outline
   const buttonClass = popular
@@ -46,48 +65,54 @@ const PricingPlan = ({
     if (githubLink || name === "Dev") {
       return (
         <Button
-          className={`w-full mb-8 ${buttonClass}`}
+          className={`mb-8 w-full ${buttonClass}`}
           onClick={() => {
-            window.open('https://github.com/hanzoai/', '_blank');
+            window.open("https://github.com/hanzoai/", "_blank");
           }}
         >
           Get on GitHub
         </Button>
       );
-    } else if (name === "Team" && showDetails) {
+    } else if (name.toLowerCase() === "Team" && showDetails) {
       return (
         <Button
-          className={`w-full mb-8 ${buttonClass}`}
+          className={`mb-8 w-full ${buttonClass}`}
           onClick={() => {
-            const teamConfigSection = document.getElementById('team-config-section');
+            const teamConfigSection = document.getElementById(
+              "team-config-section",
+            );
             if (teamConfigSection) {
-              teamConfigSection.scrollIntoView({ behavior: 'smooth' });
+              teamConfigSection.scrollIntoView({ behavior: "smooth" });
             }
           }}
         >
           Configure Plan
         </Button>
       );
-    } else if (name === "Pro" && showDetails) {
+    } else if (name.toLowerCase() === "Pro" && showDetails) {
       return (
         <Button
-          className={`w-full mb-8 ${buttonClass}`}
+          className={`mb-8 w-full ${buttonClass}`}
           onClick={() => {
-            const teamConfigSection = document.getElementById('team-config-section');
+            const teamConfigSection = document.getElementById(
+              "team-config-section",
+            );
             if (teamConfigSection) {
-              window.history.pushState({}, '', window.location.pathname + '?from=pro');
-              teamConfigSection.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(
+                {},
+                "",
+                window.location.pathname + "?from=pro",
+              );
+              teamConfigSection.scrollIntoView({ behavior: "smooth" });
             }
           }}
         >
-          Get Started
+          Configure Plan
         </Button>
       );
     } else {
       return (
-        <Button className={`w-full mb-8 ${buttonClass}`}>
-          Get Started
-        </Button>
+        <Button className={`mb-8 w-full ${buttonClass}`}>Configure Plan</Button>
       );
     }
   };
@@ -98,19 +123,19 @@ const PricingPlan = ({
     >
       {popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <div className="bg-[var(--white)] text-black px-3 py-1 rounded-full text-sm font-medium">
+          <div className="rounded-full bg-[var(--white)] px-3 py-1 text-sm font-medium text-black">
             Most Popular
           </div>
         </div>
       )}
 
-      <div className="flex items-center gap-3 mb-4">
+      <div className="mb-4 flex items-center gap-3">
         {icon}
         <h3 className="text-xl font-semibold">{name}</h3>
       </div>
 
       <div className="mb-6">
-        <div className="flex items-baseline gap-1 mb-2">
+        <div className="mb-2 flex items-baseline gap-1">
           <span className="text-4xl font-bold">{price}</span>
           {billingPeriod && (
             <span className="text-neutral-400">{billingPeriod}</span>
@@ -124,7 +149,7 @@ const PricingPlan = ({
       <ul className="space-y-4">
         {features.map((feature) => (
           <li key={feature} className="flex items-start gap-3">
-            <Check className="h-5 w-5 text-neutral-400 mt-0.5 flex-shrink-0" />
+            <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-neutral-400" />
             <span className="text-neutral-300">{feature}</span>
           </li>
         ))}

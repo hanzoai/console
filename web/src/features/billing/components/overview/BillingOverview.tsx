@@ -11,13 +11,14 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import useSWR from "swr";
 
-
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export const BillingOverview = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const organization = useQueryOrganization();
+  const organizationId = router.query.organizationId;
+
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
 
   const { data: usage } = api.cloudBilling.getUsage.useQuery(
@@ -36,7 +37,6 @@ export const BillingOverview = () => {
       enabled: organization !== undefined,
     },
   );
-
 
   // Fetch organization details to get credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
@@ -73,18 +73,19 @@ export const BillingOverview = () => {
     if (result.url) window.location.href = result.url;
   };
 
-  const handleUpgradePlan = () => {
-    setIsPlanModalOpen(true);
-  };
+  // const handleUpgradePlan = (id: string) => {
+  //   router.push({
+  //     href: `organization/${organization?.id}/pricing`,
+  //   });
+  // };
 
   const cloudConfig = orgDetails?.cloudConfig;
   const currentPlan =
-    typeof cloudConfig === 'object' &&
-      cloudConfig !== null &&
-      'plan' in cloudConfig
-      ? (cloudConfig as { plan?: string }).plan ?? 'Free Plan'
-      : 'Free Plan';
-
+    typeof cloudConfig === "object" &&
+    cloudConfig !== null &&
+    "plan" in cloudConfig
+      ? ((cloudConfig as { plan?: string }).plan ?? "Free Plan")
+      : "Free Plan";
 
   const currentUsage = usage?.usageCount || 0;
   const availableCredits = orgDetails?.credits || 0;
@@ -94,7 +95,7 @@ export const BillingOverview = () => {
 
   const { data: upcomingCharge } = useSWR(
     organization?.id ? ["upcoming-charge", organization.id] : null,
-    () => fetchUpcomingCharge(organization?.id ?? "")
+    () => fetchUpcomingCharge(organization?.id ?? ""),
   );
 
   return (
@@ -159,14 +160,19 @@ export const BillingOverview = () => {
                   )}
                 </div>
               )}
-
             </p>
           </div>
         </div>
         <Button
           variant="secondary"
           className="mt-4 w-full"
-          onClick={handleUpgradePlan}
+          onClick={() => {
+            const organizationId = router.query.organizationId;
+
+            if (organizationId) {
+              router.push(`/organization/${organizationId}/pricing`);
+            }
+          }}
         >
           {subscription ? "Change Plan" : "Upgrade Plan"}
         </Button>

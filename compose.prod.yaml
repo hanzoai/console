@@ -60,8 +60,8 @@ services:
         STRIPE_WEBHOOK_SIGNING_SECRET: ${STRIPE_WEBHOOK_SIGNING_SECRET:-your-secret}
     restart: always
     depends_on: *cloud-depends-on
-    #ports:
-    #  - "3000:3000"
+    ports:
+      - "3000:3000"
     environment:
       <<: *cloud-worker-env
       NEXT_PUBLIC_HANZO_CLOUD_REGION: ${NEXT_PUBLIC_HANZO_CLOUD_REGION:-US}

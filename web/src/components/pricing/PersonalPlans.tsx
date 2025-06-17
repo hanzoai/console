@@ -1,6 +1,7 @@
 import React from "react";
 import PricingPlan from "./PricingPlan";
 import { Code, Zap, Github } from "lucide-react";
+import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 
 const PersonalPlans = () => {
   const plans = [
@@ -12,15 +13,15 @@ const PersonalPlans = () => {
       description: "Open source tools, run locally and privately",
       features: [
         "Access to Zen and Sho foundational models",
-        "Local deployment on your infrastructure", 
+        "Local deployment on your infrastructure",
         "Full source code access",
         "Community support",
         "Run models privately and securely",
         "No cloud dependencies",
         "All future model updates",
-        "Developer tools and CLI"
+        "Developer tools and CLI",
       ],
-      githubLink: true
+      githubLink: true,
     },
     {
       name: "Pro",
@@ -37,8 +38,8 @@ const PersonalPlans = () => {
         "Hanzo integration",
         "Automated backups",
         "All upcoming feature updates",
-        "1 AI Credit"
-      ]
+        "1 AI Credit",
+      ],
     },
     {
       name: "Max",
@@ -55,27 +56,42 @@ const PersonalPlans = () => {
         "Image generation",
         "Real-time web search",
         "Access to deep research models",
-        "Up to 10 AI Credits (Adjustable)"
-      ]
-    }
+        "Up to 10 AI Credits (Adjustable)",
+      ],
+    },
   ];
 
+  const plan2 = stripeProducts.map((stripe) => {
+    if (stripe.type === "persional") {
+      return {
+        ...stripe,
+        icon: <Code className="h-6 w-6 text-neutral-400" />,
+        features: [],
+        popular: false,
+      };
+    }
+  });
+
   return (
-    <div className="max-w-7xl mx-auto mb-16">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {plans.map((plan) => (
-          <PricingPlan
-            key={plan.name}
-            name={plan.name}
-            icon={plan.icon}
-            price={plan.price}
-            billingPeriod={plan.billingPeriod}
-            description={plan.description}
-            features={plan.features}
-            popular={plan.popular}
-            githubLink={plan.githubLink}
-          />
-        ))}
+    <div className="mx-auto mb-16 max-w-7xl">
+      <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+        {plan2.map((plan) => {
+          if (plan) {
+            return (
+              <PricingPlan
+                key={plan.name}
+                name={plan.name ?? ""}
+                icon={plan.icon}
+                price={plan.price ?? ""}
+                billingPeriod={plan.billingPeriod}
+                description={plan.description ?? ""}
+                features={plan.features ?? []}
+                popular={plan.popular ?? false}
+              />
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );
