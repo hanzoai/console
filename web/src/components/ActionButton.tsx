@@ -1,4 +1,3 @@
-import { Lock, AlertCircle, Sparkle } from "lucide-react";
 import { Button, type ButtonProps } from "@/src/components/ui/button";
 import {
   HoverCard,
@@ -6,6 +5,7 @@ import {
   HoverCardTrigger,
 } from "@/src/components/ui/hover-card";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
+import { AlertCircle, Lock, Sparkle } from "lucide-react";
 import Link from "next/link";
 
 const BUTTON_STATE_MESSAGES = {
