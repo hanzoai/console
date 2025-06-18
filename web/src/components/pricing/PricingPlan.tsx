@@ -108,6 +108,7 @@ const PricingPlan = ({
     }
     if (
       isActiveSubscription &&
+      currentSubscription &&
       currentSubscription.plan.id === effectiveStripeProductId
     ) {
       cancelSubscription({
@@ -154,7 +155,8 @@ const PricingPlan = ({
           }}
           className={`mb-8 w-full ${buttonClass}`}
         >
-          {currentSubscription.plan.id === stripeProductId
+          {currentSubscription &&
+          currentSubscription.plan.id === stripeProductId
             ? "Cancel PLan"
             : "Configure Plan"}
         </Button>
