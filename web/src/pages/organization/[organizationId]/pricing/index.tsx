@@ -3,6 +3,7 @@ import BillingManagement from "@/src/components/pricing/BillingManagement";
 import PersonalPlans from "@/src/components/pricing/PersonalPlans";
 import PricingFAQ from "@/src/components/pricing/PricingFAQ";
 import TeamEnterprisePlans from "@/src/components/pricing/TeamEnterprisePlans";
+import { InvoiceHistory } from "@/src/features/billing/components/overview/InvoiceHistory";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
@@ -42,6 +43,7 @@ const PricingPlans = () => {
               currentSubscription={subscription}
               orgId={organization?.id}
             />
+            <InvoiceHistory />
             {/* <FeatureComparison /> */}
             <PricingFAQ />
             <BillingManagement />
@@ -54,6 +56,8 @@ const PricingPlans = () => {
               currentSubscription={subscription}
               orgId={organization?.id}
             />
+            <InvoiceHistory />
+
             {/* <FeatureComparison /> */}
             <PricingFAQ />
             <BillingManagement />
@@ -78,9 +82,7 @@ const PricingPlans = () => {
         breadcrumb={[{ name: "pricing", href: "/pricing" }]}
         container={true}
       />
-      <main className="px-4 pb-16 pt-32 sm:px-6 lg:px-8">
-        {/* <PricingHeader /> */}
-
+      <main className="px-4 pb-16 pt-12 sm:px-6 lg:px-8">
         {/* Tab Navigation */}
         <div className="mx-auto mb-12 max-w-3xl">
           <div className="flex justify-center">

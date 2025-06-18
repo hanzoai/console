@@ -1,16 +1,12 @@
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { CreditCard, Plus } from "lucide-react";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 export const PaymentManagement = () => {
-  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
-
   const router = useRouter();
   const organization = useQueryOrganization();
 
@@ -21,7 +17,7 @@ export const PaymentManagement = () => {
     },
     {
       enabled: organization !== undefined,
-    }
+    },
   );
 
   // Fetch usage data
@@ -37,34 +33,38 @@ export const PaymentManagement = () => {
   // Fetch organization details for credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
     { orgId: organization?.id ?? "" },
-    { enabled: !!organization }
+    { enabled: !!organization },
   );
 
   // Fetch subscription history
-  const { data: subscriptionHistory } = api.cloudBilling.getSubscriptionHistory.useQuery(
-    {
-      orgId: organization?.id ?? "",
-      limit: 2, // Only fetch 2 recent invoices for the display
-    },
-    {
-      enabled: organization !== undefined,
-    }
-  );
+  const { data: subscriptionHistory } =
+    api.cloudBilling.getSubscriptionHistory.useQuery(
+      {
+        orgId: organization?.id ?? "",
+        limit: 2, // Only fetch 2 recent invoices for the display
+      },
+      {
+        enabled: organization !== undefined,
+      },
+    );
 
   // Mutation for creating checkout session
-  const createCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation();
+  const createCheckoutSession =
+    api.cloudBilling.createStripeCheckoutSession.useMutation();
 
   // Update this to use useQuery
-  const { data: customerPortalUrl } = api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
-    { orgId: organization?.id ?? "" },
-    { enabled: !!organization }
-  );
+  const { data: customerPortalUrl } =
+    api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
+      { orgId: organization?.id ?? "" },
+      { enabled: !!organization },
+    );
 
   // Add this near your other hooks
-  const cancelSubscription = api.cloudBilling.cancelStripeSubscription.useMutation();
+  const cancelSubscription =
+    api.cloudBilling.cancelStripeSubscription.useMutation();
 
   const handleAddCredits = async () => {
-    const creditsProduct = stripeProducts.find(p => p.id === "credits-plan");
+    const creditsProduct = stripeProducts.find((p) => p.id === "credits-plan");
     if (!creditsProduct) {
       console.error("Credits product not found");
       return;
@@ -104,7 +104,9 @@ export const PaymentManagement = () => {
           <Button
             variant="outline"
             onClick={() => {
-              setIsPlanModalOpen(true)
+              if (organization) {
+                router.push(`organizaion/${organization.id}/pricing`);
+              }
             }}
           >
             Upgrade Plan
@@ -122,7 +124,7 @@ export const PaymentManagement = () => {
                 if (subscription?.plan?.id) {
                   cancelSubscription.mutate({
                     orgId: organization?.id ?? "",
-                    stripeProductId: subscription.plan.id
+                    stripeProductId: subscription.plan.id,
                   });
                 }
               }}
@@ -144,9 +146,7 @@ export const PaymentManagement = () => {
         </div>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-            <span className="text-xl font-bold text-primary-foreground">
-              $
-            </span>
+            <span className="text-xl font-bold text-primary-foreground">$</span>
           </div>
           <div>
             <p className="text-2xl font-bold">${availableCredits.toFixed(2)}</p>
@@ -159,10 +159,7 @@ export const PaymentManagement = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Payment Method</h3>
-          <Button
-            variant="outline"
-            onClick={handleCustomerPortal}
-          >
+          <Button variant="outline" onClick={handleCustomerPortal}>
             Manage
           </Button>
         </div>
@@ -183,10 +180,7 @@ export const PaymentManagement = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Recent Invoice</h3>
-          <Button
-            variant="link"
-            onClick={handleCustomerPortal}
-          >
+          <Button variant="link" onClick={handleCustomerPortal}>
             View All
           </Button>
         </div>
@@ -199,33 +193,29 @@ export const PaymentManagement = () => {
               <div className="flex items-center gap-3">
                 <div className="text-sm">
                   <p className="font-medium">
-                    {sub.plan.billingPeriod ? new Date(sub.plan.billingPeriod.start).toLocaleDateString() + " - " + new Date(sub.plan.billingPeriod.end).toLocaleDateString() : "N/A"}
+                    {sub.plan.billingPeriod
+                      ? new Date(
+                          sub.plan.billingPeriod.start,
+                        ).toLocaleDateString() +
+                        " - " +
+                        new Date(
+                          sub.plan.billingPeriod.end,
+                        ).toLocaleDateString()
+                      : "N/A"}
                   </p>
-                  <p className="text-muted-foreground">
-                    {sub.plan.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground capitalize">
+                  <p className="text-muted-foreground">{sub.plan.name}</p>
+                  <p className="text-xs capitalize text-muted-foreground">
                     {sub.status}
                   </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCustomerPortal}
-              >
+              <Button variant="ghost" size="sm" onClick={handleCustomerPortal}>
                 View Details
               </Button>
             </div>
           ))}
         </div>
       </Card>
-      <PlanSelectionModal
-        isOpen={isPlanModalOpen}
-        onClose={() => setIsPlanModalOpen(false)}
-        orgId={organization?.id ?? ""}
-        currentSubscription={subscription}
-      />
     </div>
   );
 };

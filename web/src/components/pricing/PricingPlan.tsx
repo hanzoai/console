@@ -2,6 +2,7 @@ import { Button } from "@/src/components/ui/radix-button";
 import { api } from "@/src/utils/api";
 import { Check } from "lucide-react";
 import React, { useState } from "react";
+import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 
 interface PricingPlanProps {
   name: string;
@@ -27,7 +28,7 @@ const PricingPlan = ({
   billingPeriod,
   description,
   features,
-  popular = false,
+  popular = true,
   customColor,
   showDetails = false,
   githubLink = false,
@@ -65,8 +66,13 @@ const PricingPlan = ({
 
   const { mutate: cancelSubscription } =
     api.cloudBilling.cancelStripeSubscription.useMutation({
-      onSuccess: () => {
+      onSuccess: (data) => {
         // Optionally refresh subscription or show success message
+        showSuccessToast({
+          title: "Cancel successfull",
+          description: data.message ?? "Cancel subscription success",
+          duration: 10000,
+        });
         // onClose();
       },
       onError: (error: { message: string }) => {
@@ -149,7 +155,9 @@ const PricingPlan = ({
           }}
           className={`mb-8 w-full ${buttonClass}`}
         >
-          Configure Plan
+          {currentSubscription.plan.id === stripeProductId
+            ? "Cancel PLan"
+            : "Configure Plan"}
         </Button>
       );
     }
