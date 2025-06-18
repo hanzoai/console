@@ -12,7 +12,6 @@ import { BillingSettings } from "@/src/features/billing/components/BillingSettin
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
-import PricingPlans from "@/src/pages/pricing";
 
 type OrganizationSettingsPage = {
   title: string;
