@@ -1,15 +1,12 @@
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
-import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import fetchUpcomingCharge from "@/src/features/billing/utils/upcomingCharge";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import useSWR from "swr";
 
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
@@ -17,9 +14,8 @@ export const BillingOverview = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const organization = useQueryOrganization();
-  const organizationId = router.query.organizationId;
 
-  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  if (!organization?.id) return null;
 
   const { data: usage } = api.cloudBilling.getUsage.useQuery(
     {
@@ -93,9 +89,13 @@ export const BillingOverview = () => {
     ? new Date(orgDetails.expiredAt)
     : null;
 
-  const { data: upcomingCharge } = useSWR(
-    organization?.id ? ["upcoming-charge", organization.id] : null,
-    () => fetchUpcomingCharge(organization?.id ?? ""),
+  const { data: upcomingCharge } = api.cloudBilling.getUpcomingCharge.useQuery(
+    {
+      orgId: organization.id,
+    },
+    {
+      enabled: !!organization?.id,
+    },
   );
 
   return (
@@ -227,13 +227,6 @@ export const BillingOverview = () => {
           View Pricing
         </Button>
       </Card>
-
-      <PlanSelectionModal
-        isOpen={isPlanModalOpen}
-        onClose={() => setIsPlanModalOpen(false)}
-        orgId={organization?.id ?? ""}
-        currentSubscription={subscription}
-      />
     </div>
   );
 };

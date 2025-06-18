@@ -1,20 +1,36 @@
 import PageHeader from "@/src/components/layouts/page-header";
-import APIPricing from "@/src/components/pricing/APIPricing";
 import BillingManagement from "@/src/components/pricing/BillingManagement";
-import FeatureComparison from "@/src/components/pricing/FeatureComparison";
 import PersonalPlans from "@/src/components/pricing/PersonalPlans";
 import PricingFAQ from "@/src/components/pricing/PricingFAQ";
-import PricingHeader from "@/src/components/pricing/PricingHeader";
 import TeamEnterprisePlans from "@/src/components/pricing/TeamEnterprisePlans";
+import { useQueryOrganization } from "@/src/features/organizations/hooks";
+import { api } from "@/src/utils/api";
 import { useState } from "react";
 
 const PricingPlans = () => {
   const [activeTab, setActiveTab] = useState("personal");
 
+  const organization = useQueryOrganization();
+
+  const { data: subscription } = api.cloudBilling.getSubscription.useQuery(
+    {
+      orgId: organization?.id ?? "",
+    },
+    {
+      enabled: organization !== undefined,
+    },
+  );
+
+  // Fetch organization details to get credits
+  // const { data: orgDetails } = api.organizations.getDetails.useQuery(
+  //   { orgId: organization?.id ?? "" },
+  //   { enabled: !!organization },
+  // );
+
   const tabs = [
     { id: "personal", label: "Personal" },
     { id: "team", label: "Team & Enterprise" },
-    { id: "api", label: "API" },
+    // { id: "api", label: "API" },
   ];
 
   const renderTabContent = () => {
@@ -22,7 +38,10 @@ const PricingPlans = () => {
       case "personal":
         return (
           <>
-            <PersonalPlans />
+            <PersonalPlans
+              currentSubscription={subscription}
+              orgId={organization?.id}
+            />
             {/* <FeatureComparison /> */}
             <PricingFAQ />
             <BillingManagement />
@@ -31,7 +50,10 @@ const PricingPlans = () => {
       case "team":
         return (
           <>
-            <TeamEnterprisePlans />
+            <TeamEnterprisePlans
+              currentSubscription={subscription}
+              orgId={organization?.id}
+            />
             {/* <FeatureComparison /> */}
             <PricingFAQ />
             <BillingManagement />
@@ -40,7 +62,12 @@ const PricingPlans = () => {
       // case "api":
       //   return <APIPricing />;
       default:
-        return <PersonalPlans />;
+        return (
+          <PersonalPlans
+            currentSubscription={subscription}
+            orgId={organization?.id}
+          />
+        );
     }
   };
 

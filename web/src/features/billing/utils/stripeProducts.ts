@@ -13,6 +13,7 @@ export interface StripeProduct {
   billingPeriod: string;
   title?: string; // Add optional title for backwards compatibility
   isPay?: boolean;
+  billingPeriodsObject?: Record<string, Object>;
 }
 
 // map of planid to plan name
@@ -76,7 +77,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_RtxpuU81xgUmtC" // test
         : "prod_RsXQA8ueb1y03D", // live
-    name: "Max Plan",
+    name: "Max",
     title: "Max Plan",
     description:
       "Dedicated solutions and support for your team. Contact us for additional add-ons listed on the pricing page.",
@@ -92,7 +93,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_SMzWLE1hJzYfTf" // test
-        : "prod_SMzWLE1hJzYfTf", // live
+        : "prod_SRnfvBzuBEfiVI", // live
     name: "Premium",
     title: "Premium",
     description:
@@ -102,24 +103,42 @@ export const stripeProducts: StripeProduct[] = [
     type: "team",
     price: "30$",
     billingPeriod: "/month",
+    billingPeriodsObject: {
+      "/month": {
+        price: "30$",
+        priceId:
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+            ? "price_1RawtqJ03IK6WYmUYBKPaOy7" // test
+            : "price_1RawvVJ03IK6WYmUkHWoZ7xd", // live
+      },
+      "/year": {
+        price: "25$",
+        priceId:
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+            ? "price_1Rax8YJ03IK6WYmUc4Xtu6sS" // test
+            : "price_1Rax9KJ03IK6WYmUowIK1Y9N", // live
+      },
+    },
   },
-  {
-    id: "premium-plan-year",
-    stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
-        ? "prod_SMzWLE1hJzYfTf" // test
-        : "prod_SMzWLE1hJzYfTf", // live
-    name: "Premium",
-    title: "Premium",
-    description:
-      "Premium plan ideal for individuals and teams working on advanced projects. Includes access to AI-powered tools, team collaboration features, extended usage limits, and priority support. ",
-    checkout: true,
-    active: true,
-    type: "team",
-    price: "25$",
-    billingPeriod: "/year",
-  },
+  // {
+  //   id: "premium-plan-year",
+  //   stripeProductId:
+  //     env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+  //     env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+  //       ? "prod_SMzWLE1hJzYfTf" // test
+  //       : "prod_SMzWLE1hJzYfTf", // live
+  //   name: "Premium",
+  //   title: "Premium",
+  //   description:
+  //     "Premium plan ideal for individuals and teams working on advanced projects. Includes access to AI-powered tools, team collaboration features, extended usage limits, and priority support. ",
+  //   checkout: true,
+  //   active: true,
+  //   type: "team",
+  //   price: "25$",
+  //   billingPeriod: "/user/year",
+  // },
 ];
 
 export const mapStripeProductIdToPlan = (productId: string): string | null =>

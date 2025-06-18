@@ -1,4 +1,4 @@
-import { Plan } from "@hanzo/shared";
+import { type Plan } from "@hanzo/shared";
 
 // Entitlements: Binary feature access
 const entitlements = [
@@ -53,7 +53,8 @@ export const entitlementAccess: Record<
     entitlementLimits: EntitlementLimits;
   }
 > = {
-  "cloud:free": {  // Add new free plan
+  "cloud:free": {
+    // Add new free plan
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
       "annotation-queue-count": 0,
@@ -102,9 +103,19 @@ export const entitlementAccess: Record<
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
       "annotation-queue-count": 1,
-      "organization-member-count": 99999,
+      "organization-member-count": 1000,
       "data-access-days": 30,
       "model-based-evaluations-count-evaluators": 1,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  "cloud:max": {
+    entitlements: [...cloudAllPlansEntitlements],
+    entitlementLimits: {
+      "annotation-queue-count": 1,
+      "organization-member-count": 99999,
+      "data-access-days": 30,
+      "model-based-evaluations-count-evaluators": 2,
       "prompt-management-count-prompts": false,
     },
   },

@@ -20,9 +20,12 @@ export function getOrganizationPlanServerSide(
           case "Pro":
             return "cloud:pro";
           case "Team":
+            return "cloud:team";
           case "Dev":
             return "cloud:dev";
           case "Premium":
+            return "cloud:premium";
+          case "Max":
             return "cloud:premium";
           default:
             return "cloud:free";

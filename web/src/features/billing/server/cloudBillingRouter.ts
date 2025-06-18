@@ -14,8 +14,152 @@ import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrga
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { getObservationCountOfProjectsSinceCreationDate } from "@hanzo/shared/src/server";
 import type Stripe from "stripe";
+import fetchUpcomingCharge from "@/src/features/billing/utils/upcomingCharge";
 
 export const cloudBillingRouter = createTRPCRouter({
+  // backend router (trpc)
+  getUpcomingCharge: protectedOrganizationProcedure
+    .input(z.object({ orgId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return await fetchUpcomingCharge(input.orgId);
+    }),
+
+  createStripeCheckoutSessionWithPrice: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        stripeProductId: z.string(),
+        priceId: z.string(),
+        customerEmail: z.string().email().optional(),
+        customerName: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        throwIfNoOrganizationAccess({
+          organizationId: input.orgId,
+          scope: "hanzoCloudBilling:CRUD",
+          session: ctx.session,
+        });
+        throwIfNoEntitlement({
+          entitlement: "cloud-billing",
+          sessionUser: ctx.session.user,
+          orgId: input.orgId,
+        });
+
+        const org = await ctx.prisma.organization.findUnique({
+          where: { id: input.orgId },
+        });
+        if (!org) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Organization not found",
+          });
+        }
+        const parsedOrg = parseDbOrg(org);
+        if (!stripeClient) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Stripe client not initialized",
+          });
+        }
+        const validProducts = stripeProducts.filter(
+          (product) => product.checkout,
+        );
+        const isValidProduct = validProducts.some(
+          (product) => product.stripeProductId === input.stripeProductId,
+        );
+        if (!isValidProduct) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid Stripe product ID",
+          });
+        }
+        // Retrieve Stripe price
+        const price = await stripeClient.prices.retrieve(input.priceId);
+        if (!price) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid Stripe price ID",
+          });
+        }
+        const checkoutMode =
+          price.type === "recurring" ? "subscription" : "payment";
+        const customerEmail =
+          input.customerEmail || ctx.session.user.email || "";
+        const returnUrl = `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`;
+        const sessionConfig: Stripe.Checkout.SessionCreateParams = {
+          line_items: [
+            {
+              price: input.priceId,
+              quantity: checkoutMode === "payment" ? 10 : 1,
+              ...(checkoutMode === "payment"
+                ? {
+                    adjustable_quantity: {
+                      enabled: true,
+                      minimum: 10,
+                      maximum: 1000,
+                    },
+                  }
+                : {}),
+            },
+          ],
+          client_reference_id:
+            createStripeClientReference(input.orgId) ?? undefined,
+          ...(checkoutMode === "payment"
+            ? {
+                ...(parsedOrg.cloudConfig?.stripe?.customerId
+                  ? { customer: parsedOrg.cloudConfig.stripe.customerId }
+                  : {
+                      customer_creation: "if_required",
+                      customer_email: customerEmail,
+                    }),
+              }
+            : {
+                customer_email: customerEmail,
+              }),
+          allow_promotion_codes: true,
+          success_url: returnUrl,
+          cancel_url: returnUrl,
+          mode: checkoutMode,
+          metadata: {
+            orgId: input.orgId,
+            cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
+            productType: price.type,
+          },
+        };
+        const session =
+          await stripeClient.checkout.sessions.create(sessionConfig);
+        auditLog({
+          session: ctx.session,
+          orgId: input.orgId,
+          resourceType: "stripeCheckoutSession",
+          resourceId: session.id,
+          action: "create",
+        });
+        return {
+          url: session.url,
+          sessionId: session.id,
+        };
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error Name:", error.name);
+          console.error("Error Message:", error.message);
+          console.error("Error Stack:", error.stack);
+        }
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error
+              ? `Unexpected error: ${error.message}`
+              : "Unknown error occurred",
+        });
+      }
+    }),
+
   createStripeCheckoutSession: protectedOrganizationProcedure
     .input(
       z.object({

@@ -95,11 +95,6 @@ export const getOrganizationSettingsPages = ({
     slug: "projects",
     href: `/organization/${organization.id}`,
   },
-  {
-    title: "Pricing",
-    slug: "pricing",
-    href: `/organization/${organization.id}/pricing`,
-  },
 ];
 
 const OrgSettingsPage = () => {

@@ -4,6 +4,7 @@ export const planLabels = {
   "cloud:team": "Team",
   "cloud:dev": "Dev",
   "cloud:premium": "Premium",
+  "cloud:max": "Max",
   "self-hosted:pro": "Pro (self-hosted)",
   "self-hosted:team": "Team (self-hosted)",
   "self-hosted:dev": "Dev (self-hosted)",
@@ -17,5 +18,4 @@ export const plans = Object.keys(planLabels) as Plan[];
 export const isCloudPlan = (plan: Plan) => true; // bypass olg login
 export const isSelfHostedPlan = (plan: Plan) => plan.startsWith("self-hosted");
 
-export const isPlan = (value: string): value is Plan =>
-  plans.includes(value as Plan);
+export const isPlan = (value: string): value is Plan => plans.includes(value as Plan);
