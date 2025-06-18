@@ -144,7 +144,13 @@ const PricingPlan = ({
             window.open("https://github.com/hanzoai/", "_blank");
           }}
         >
-          Get on GitHub
+          {currentSubscription ? "Default Plan" : "Current Plan"}
+        </Button>
+      );
+    } else if (name === "Enterprise") {
+      return (
+        <Button onClick={() => {}} className={`mb-8 w-full ${buttonClass}`}>
+          Contact Us
         </Button>
       );
     } else {
@@ -157,8 +163,8 @@ const PricingPlan = ({
         >
           {currentSubscription &&
           currentSubscription.plan.id === stripeProductId
-            ? "Cancel PLan"
-            : "Configure Plan"}
+            ? "Cancel Plan"
+            : "Get Started"}
         </Button>
       );
     }
