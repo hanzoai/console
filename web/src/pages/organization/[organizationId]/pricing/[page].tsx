@@ -1,2 +1,2 @@
-import PricingPlans from "@/src/pages/organization/[organizationId]/pricing";
+import PricingPlans from "./index";
 export default PricingPlans;
