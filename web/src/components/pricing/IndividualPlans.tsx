@@ -1,26 +1,8 @@
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PricingPlan from "./PricingPlan";
 import { Code, Users, Zap } from "lucide-react";
-import TeamPlanDetails from "./TeamPlanDetails";
 
 const IndividualPlans = () => {
-  const [fromProPlan, setFromProPlan] = useState(false);
-  const [fromDevPlan, setFromDevPlan] = useState(false);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const from = urlParams.get('from');
-    if (from === 'pro') {
-      setFromProPlan(true);
-      setFromDevPlan(false);
-    } else if (from === 'dev') {
-      setFromDevPlan(true);
-      setFromProPlan(false);
-    }
-    window.history.replaceState({}, '', window.location.pathname);
-  }, []);
-
   const plans = [
     {
       name: "Pro",
@@ -37,8 +19,8 @@ const IndividualPlans = () => {
         "Hanzo integration",
         "Automated backups",
         "All upcoming feature updates",
-        "1 AI Credit"
-      ]
+        "1 AI Credit",
+      ],
     },
     {
       name: "Max",
@@ -55,9 +37,9 @@ const IndividualPlans = () => {
         "Image generation",
         "Real-time web search",
         "Access to deep research models",
-        "Up to 10 AI Credits (Adjustable)"
+        "Up to 10 AI Credits (Adjustable)",
       ],
-      showDetails: true
+      showDetails: true,
     },
     {
       name: "Team",
@@ -73,15 +55,15 @@ const IndividualPlans = () => {
         "Unified team billing",
         "Team data excluded from training",
         "Custom GPT creation and sharing",
-        "Up to 10 AI Credits per user (Adjustable)"
+        "Up to 10 AI Credits per user (Adjustable)",
       ],
-      showDetails: true
-    }
+      showDetails: true,
+    },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto mb-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+    <div className="mx-auto mb-16 max-w-7xl">
+      <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => (
           <PricingPlan
             key={plan.name}
@@ -96,8 +78,6 @@ const IndividualPlans = () => {
           />
         ))}
       </div>
-      
-      <TeamPlanDetails fromProPlan={fromProPlan} fromDevPlan={fromDevPlan} />
     </div>
   );
 };
