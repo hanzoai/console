@@ -28,7 +28,7 @@ const PricingPlan = ({
   billingPeriod,
   description,
   features,
-  popular = true,
+  popular = false,
   customColor,
   showDetails = false,
   githubLink = false,
@@ -131,9 +131,8 @@ const PricingPlan = ({
   };
 
   // Button color - prominent option gets white bg, others get outline
-  const buttonClass = popular
-    ? "bg-[var(--white)] text-black border border-gray-300 hover:bg-transparent hover:text-[var(--white)] hover:border-[var(--white)] transition-all duration-300"
-    : "bg-transparent border border-white/20 text-white hover:bg-[var(--white)] hover:text-black transition-all duration-300";
+  const buttonClass =
+    "bg-transparent border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-300";
 
   const renderButton = () => {
     if (githubLink || name === "Dev") {
