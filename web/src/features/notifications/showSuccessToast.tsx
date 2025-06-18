@@ -15,6 +15,7 @@ export const showSuccessToast = ({
     {
       duration,
       style: {
+        color: "white",
         padding: "1rem",
         border: "1px solid hsl(var(--dark-green))",
         borderRadius: "0.5rem",
