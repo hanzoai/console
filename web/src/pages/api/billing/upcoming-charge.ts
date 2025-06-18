@@ -1,6 +1,6 @@
 import { stripeClient } from "@/src/features/billing/utils/stripe";
 import { prisma } from "@hanzo/shared/src/db";
-import { NextApiRequest, NextApiResponse } from "next";
+import { type NextApiRequest, type NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {

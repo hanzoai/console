@@ -23,7 +23,6 @@
     "build": "turbo run build",
     "start": "turbo run start",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
     "test": "turbo run test",
     "release": "dotenv -e ../.env -- release-it",
     "prepare": "husky"

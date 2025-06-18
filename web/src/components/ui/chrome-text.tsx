@@ -1,6 +1,6 @@
 
 import { cn } from "@/src/utils/tailwind";
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, { type CSSProperties, useEffect, useRef, useState } from "react";
 
 interface ChromeTextProps {
   children: React.ReactNode;
