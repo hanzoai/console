@@ -222,7 +222,9 @@ export const BillingOverview = () => {
         <Button
           variant="outline"
           className="mt-4 w-full"
-          onClick={() => router.push(`organization/${organization.id}/pricing`)}
+          onClick={() =>
+            router.push(`/organization/${organization.id}/pricing`)
+          }
         >
           View Pricing
         </Button>

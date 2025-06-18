@@ -105,7 +105,7 @@ export const PaymentManagement = () => {
             variant="outline"
             onClick={() => {
               if (organization) {
-                router.push(`organizaion/${organization.id}/pricing`);
+                router.push(`/organizaion/${organization.id}/pricing`);
               }
             }}
           >
