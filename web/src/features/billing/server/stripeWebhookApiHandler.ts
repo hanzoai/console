@@ -121,18 +121,27 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       });
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
-    case "payment_intent.succeeded":
-    case "payment_intent.created":
-      // Add handling for credit purchases
-      const paymentObject = event.data.object as
-        | Stripe.PaymentIntent
-        | Stripe.Checkout.Session;
-      console.log("paymentObject=============", paymentObject);
-      logger.info("[Stripe Webhook] Start payment.succeeded", {
-        payload: paymentObject,
-      });
-      await handleCreditPurchase(paymentObject);
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      if (session.mode === "payment") {
+        logger.info(
+          "[Stripe Webhook] Start checkout.session.completed for one-time payment",
+          {
+            payload: session,
+          },
+        );
+
+        await handleCreditPurchase(session);
+      } else {
+        logger.info(
+          "[Stripe Webhook] Skipped checkout.session.completed (mode !== payment)",
+        );
+      }
+
       break;
+    }
+
     default:
       logger.warn(`Unhandled event type ${event.type}`);
   }
