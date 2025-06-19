@@ -141,7 +141,7 @@ const PricingPlan = ({
         <Button
           className={`mb-8 w-full ${buttonClass}`}
           onClick={() => {
-            window.open("https://github.com/hanzoai/", "_blank");
+            // window.open("https://github.com/hanzoai/", "_blank");
           }}
         >
           {currentSubscription ? "Default Plan" : "Current Plan"}
