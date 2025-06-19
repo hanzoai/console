@@ -59,7 +59,7 @@ export const stripeProducts: StripeProduct[] = [
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_SVyXlhcWNjma3F" // test
-        : "prod_RsXQA8ueb1y03D", // live
+        : "prod_RsVYLiuNEcSgQj", // live
     name: "Pro",
     title: "Pro",
     description:
