@@ -122,6 +122,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
     case "payment_intent.succeeded":
+    case "payment_intent.created":
       // Add handling for credit purchases
       const paymentObject = event.data.object as
         | Stripe.PaymentIntent
