@@ -122,10 +122,10 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       await handleSubscriptionChanged(deletedSubscription, "deleted");
       break;
     case "payment_intent.succeeded":
-    case "checkout.session.completed":
-    case "invoice.payment_succeeded":
       // Add handling for credit purchases
-      const paymentObject = event.data.object as Stripe.PaymentIntent | Stripe.Checkout.Session;
+      const paymentObject = event.data.object as
+        | Stripe.PaymentIntent
+        | Stripe.Checkout.Session;
       console.log("paymentObject=============", paymentObject);
       logger.info("[Stripe Webhook] Start payment.succeeded", {
         payload: paymentObject,
@@ -172,7 +172,6 @@ async function handleSubscriptionChanged(
     return;
   }
   const checkoutSession = checkoutSessionsResponse.data[0];
-
 
   // the client reference is passed to the stripe checkout session via the pricing page
   const clientReference = checkoutSession.client_reference_id;
