@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PricingPlan from "./PricingPlan";
-import { Users, Shield, Code } from "lucide-react";
-import TeamPlanDetails from "./TeamPlanDetails";
+import { Shield, Code } from "lucide-react";
+
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 
 const TeamEnterprisePlans = ({
@@ -11,22 +11,6 @@ const TeamEnterprisePlans = ({
   orgId: string | undefined;
   currentSubscription: any;
 }) => {
-  const [fromMaxPlan, setFromMaxPlan] = useState(false);
-  const [fromProPlan, setFromProPlan] = useState(false);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const from = urlParams.get("from");
-    if (from === "max") {
-      setFromMaxPlan(true);
-      setFromProPlan(false);
-    } else if (from === "pro") {
-      setFromProPlan(true);
-      setFromMaxPlan(false);
-    }
-    window.history.replaceState({}, "", window.location.pathname);
-  }, []);
-
   const plan2 = [
     ...stripeProducts.map((stripe) => {
       if (stripe.type === "team") {
@@ -45,9 +29,15 @@ const TeamEnterprisePlans = ({
       icon: <Shield className="h-6 w-6 text-neutral-400" />,
       price: "Custom",
       popular: false,
-      billingPeriod: "Custom",
-      billingPeriodsObject: null,
-      description: "For large businesses requiring enterprise-grade security",
+      billingPeriod: "/Custom",
+      billingPeriodsObject: {
+        "/custom": {
+          price: "custom",
+          priceId: "custom",
+        },
+      },
+      description:
+        "Enterprise plan designed for large organizations that require advanced security, governance, and scalability. Includes everything in the Team plan plus expanded compliance features, customizable data policies, advanced user management, and dedicated enterprise support.",
       features: [
         "Everything in the Team plan",
         "Expanded context window",
@@ -86,8 +76,6 @@ const TeamEnterprisePlans = ({
           );
         })}
       </div>
-
-      <TeamPlanDetails fromMaxPlan={fromMaxPlan} fromProPlan={fromProPlan} />
     </div>
   );
 };

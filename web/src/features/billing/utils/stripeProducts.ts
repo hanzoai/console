@@ -51,7 +51,7 @@ export const stripeProducts: StripeProduct[] = [
     active: false,
     type: "persional",
     price: "Free",
-    billingPeriod: "forever",
+    billingPeriod: "/forever",
   },
   {
     id: "pro-plan",

@@ -149,7 +149,12 @@ const PricingPlan = ({
       );
     } else if (name === "Enterprise") {
       return (
-        <Button onClick={() => {}} className={`mb-8 w-full ${buttonClass}`}>
+        <Button
+          onClick={() => {
+            window.open("https://hanzo.ai/discord", "_blank");
+          }}
+          className={`mb-8 w-full ${buttonClass}`}
+        >
           Contact Us
         </Button>
       );
@@ -170,6 +175,12 @@ const PricingPlan = ({
     }
   };
 
+  const time: Record<string, string> = {
+    "/month": "Monthly",
+    "/year": "Yearly",
+    "/custom": "Custom",
+  };
+
   return (
     <div
       className={`relative rounded-2xl border ${borderColor} ${bgColor} p-8 backdrop-blur-sm transition-all duration-300 hover:border-gray-700 hover:bg-gray-900/20`}
@@ -187,7 +198,7 @@ const PricingPlan = ({
         <h3 className="text-xl font-semibold">{name}</h3>
       </div>
 
-      {periods.length > 1 && (
+      {periods.length >= 1 && (
         <div className="mb-4 flex gap-2">
           {periods.map((period) => (
             <button
@@ -195,11 +206,7 @@ const PricingPlan = ({
               className={`rounded-full border px-3 py-1 ${selectedPeriod === period ? "bg-white text-black" : "border-white/20 bg-transparent text-white"}`}
               onClick={() => setSelectedPeriod(period)}
             >
-              {period === "/month"
-                ? "Monthly"
-                : period === "/year"
-                  ? "Yearly"
-                  : period}
+              {time[period]}
             </button>
           ))}
         </div>
@@ -212,7 +219,7 @@ const PricingPlan = ({
             <span className="text-neutral-400">{displayBillingPeriod}</span>
           )}
         </div>
-        <p className="text-neutral-400">{description}</p>
+        <p className="min-h-32 text-neutral-400">{description}</p>
       </div>
 
       {renderButton()}

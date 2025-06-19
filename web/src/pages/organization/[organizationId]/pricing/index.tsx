@@ -1,7 +1,5 @@
 import PageHeader from "@/src/components/layouts/page-header";
-import BillingManagement from "@/src/components/pricing/BillingManagement";
 import PersonalPlans from "@/src/components/pricing/PersonalPlans";
-import PricingFAQ from "@/src/components/pricing/PricingFAQ";
 import TeamEnterprisePlans from "@/src/components/pricing/TeamEnterprisePlans";
 import { InvoiceHistory } from "@/src/features/billing/components/overview/InvoiceHistory";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
@@ -45,8 +43,8 @@ const PricingPlans = () => {
             />
             <InvoiceHistory />
             {/* <FeatureComparison /> */}
-            <PricingFAQ />
-            <BillingManagement />
+            {/* <PricingFAQ /> */}
+            {/* <BillingManagement /> */}
           </>
         );
       case "team":
@@ -59,8 +57,8 @@ const PricingPlans = () => {
             <InvoiceHistory />
 
             {/* <FeatureComparison /> */}
-            <PricingFAQ />
-            <BillingManagement />
+            {/* <PricingFAQ /> */}
+            {/* <BillingManagement /> */}
           </>
         );
       // case "api":
