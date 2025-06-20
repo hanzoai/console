@@ -1,12 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
+import * as React from "react";
 
-import { useIsMobile } from "@/src/hooks/use-mobile";
-import { cn } from "@/src/utils/tailwind";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Separator } from "@/src/components/ui/separator";
@@ -18,6 +16,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
+import { useIsMobile } from "@/src/hooks/use-mobile";
+import { cn } from "@/src/utils/tailwind";
 import { Portal } from "@radix-ui/react-tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
@@ -35,6 +35,7 @@ type SidebarContext = {
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
   toggleSidebar: () => void;
+  closeSidebarOnMobile: () => void;
 };
 
 const SidebarContext = React.createContext<SidebarContext | null>(null);
@@ -127,6 +128,9 @@ const SidebarProvider = React.forwardRef<
         openMobile,
         setOpenMobile,
         toggleSidebar,
+        closeSidebarOnMobile: () => {
+          if (isMobile) setOpenMobile(false);
+        },
       }),
       [
         state,
@@ -564,7 +568,7 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state, closeSidebarOnMobile } = useSidebar();
 
     const button = (
       <Comp
@@ -574,6 +578,10 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
+        onClick={(e) => {
+          props.onClick?.(e);
+          if (isMobile) closeSidebarOnMobile();
+        }}
       />
     );
 
@@ -629,7 +637,7 @@ const SidebarMenuAction = React.forwardRef<
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className,
       )}
       {...props}
@@ -727,9 +735,10 @@ const SidebarMenuSubButton = React.forwardRef<
     size?: "sm" | "md";
     isActive?: boolean;
   }
->(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
+>(({
+  asChild = false, size = "md", isActive, className, ...props }, ref) => {
   const Comp = asChild ? Slot : "a";
-
+  const { isMobile, closeSidebarOnMobile } = useSidebar();
   return (
     <Comp
       ref={ref}
@@ -745,6 +754,10 @@ const SidebarMenuSubButton = React.forwardRef<
         className,
       )}
       {...props}
+      onClick={(e) => {
+        props.onClick?.(e);
+        if (isMobile) closeSidebarOnMobile();
+      }}
     />
   );
 });
@@ -774,5 +787,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 };
+
