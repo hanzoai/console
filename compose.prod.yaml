@@ -95,7 +95,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.well-known.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai;"
+      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai https://uptime.betterstack.com;"
       - "traefik.http.routers.cloud-http.rule=Host(`cloud.hanzo.ai`)"
       - "traefik.http.routers.cloud-http.entrypoints=web"
       - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https"
