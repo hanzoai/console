@@ -2,7 +2,6 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import CountdownTimer from "@/src/features/billing/components/CountdownTimer";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
-import fetchUpcomingCharge from "@/src/features/billing/utils/upcomingCharge";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";

@@ -21,7 +21,11 @@ export const cloudBillingRouter = createTRPCRouter({
   getUpcomingCharge: protectedOrganizationProcedure
     .input(z.object({ orgId: z.string() }))
     .query(async ({ input, ctx }) => {
-      return await fetchUpcomingCharge(input.orgId);
+      try {
+        return await fetchUpcomingCharge(input.orgId);
+      } catch (error) {
+        return null;
+      }
     }),
 
   createStripeCheckoutSessionWithPrice: protectedOrganizationProcedure
