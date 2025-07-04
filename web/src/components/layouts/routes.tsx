@@ -91,6 +91,34 @@ export const ROUTES: Route[] = [
     ],
   },
   {
+    title: "Router",
+    icon: Sparkle,
+    pathname: `/project/[projectId]/router`,
+    items: [
+      {
+        title: "Models",
+        pathname: `/project/[projectId]/router/models`,
+      },
+      {
+        title: "API Keys",
+        pathname: `/project/[projectId]/router/keys`,
+      },
+      {
+        title: "Usage",
+        pathname: `/project/[projectId]/router/usage`,
+      },
+      {
+        title: "MCP Tools",
+        pathname: `/project/[projectId]/router/mcp`,
+        projectRbacScopes: ["router:admin"],
+      },
+      {
+        title: "Billing",
+        pathname: `/project/[projectId]/router/billing`,
+      },
+    ],
+  },
+  {
     title: "Evaluation",
     icon: Lightbulb,
     pathname: `/project/[projectId]/annotation-queues`,
