@@ -1,0 +1,73 @@
+# Hanzo Cloud - Development Mode with Hot Reload
+# Usage: docker compose -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hanzo
+      POSTGRES_PASSWORD: hanzo123
+      POSTGRES_DB: cloud
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass myredissecret
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  # Development server with hot reload
+  cloud-dev:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+      - clickhouse
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://hanzo:hanzo123@postgres:5432/cloud
+      DIRECT_URL: postgresql://hanzo:hanzo123@postgres:5432/cloud
+      CLICKHOUSE_URL: http://clickhouse:8123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_AUTH: myredissecret
+      NEXTAUTH_URL: http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/web/node_modules
+      - /app/web/.next
+    command: >
+      sh -c "
+        npm install -g pnpm &&
+        pnpm install &&
+        cd web &&
+        pnpm run db:migrate &&
+        pnpm run dev
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+  clickhouse_data:

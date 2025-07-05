@@ -1,0 +1,32 @@
+# Development Dockerfile for Hanzo Cloud
+FROM node:20-alpine
+
+# Install additional dependencies
+RUN apk add --no-cache git python3 make g++
+
+WORKDIR /app/web
+
+# Copy package files
+COPY web/package*.json ./
+COPY web/pnpm-lock.yaml* ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies
+RUN pnpm install
+
+# Copy source (will be overridden by volume mount)
+COPY web/ .
+
+# Environment for hot reloading
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Expose port
+EXPOSE 3000
+
+# Development command with hot reloading
+CMD ["pnpm", "run", "dev"]

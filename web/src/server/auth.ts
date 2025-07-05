@@ -371,6 +371,30 @@ if (env.AUTH_WORKOS_CLIENT_ID && env.AUTH_WORKOS_CLIENT_SECRET)
     }),
   );
 
+// Hanzo IAM Provider
+if (
+  env.HANZO_IAM_CLIENT_ID &&
+  env.HANZO_IAM_CLIENT_SECRET &&
+  env.HANZO_IAM_SERVER_URL
+)
+  staticProviders.push(
+    CustomSSOProvider({
+      id: "hanzo-iam",
+      name: "Hanzo IAM",
+      clientId: env.HANZO_IAM_CLIENT_ID,
+      clientSecret: env.HANZO_IAM_CLIENT_SECRET,
+      issuer: env.HANZO_IAM_SERVER_URL,
+      allowDangerousEmailAccountLinking:
+        env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+      authorization: {
+        params: { scope: "openid email profile" },
+      },
+      client: {
+        token_endpoint_auth_method: "client_secret_basic",
+      },
+    }),
+  );
+
 // Extend Prisma Adapter
 const prismaAdapter = PrismaAdapter(prisma);
 const ignoredAccountFields = env.AUTH_IGNORE_ACCOUNT_FIELDS?.split(",") ?? [];
@@ -661,106 +685,6 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     },
   };
 
-  // Add Hanzo IAM provider
-  data.providers.push({
-    id: "hanzo-iam",
-    name: "Hanzo IAM",
-    type: "oauth" as const,
-    clientId: env.HANZO_IAM_CLIENT_ID,
-    clientSecret: env.HANZO_IAM_CLIENT_SECRET,
-    wellKnown: `${env.HANZO_IAM_SERVER_URL}/.well-known/openid-configuration`,
-    authorization: {
-      params: {
-        scope: "openid email profile",
-        prompt: "select_account",
-        response_type: "code",
-      },
-      url: `${env.HANZO_IAM_SERVER_URL}/oauth/authorize`,
-    },
-    token: {
-      url: `${env.HANZO_IAM_SERVER_URL}/oauth/token`,
-    },
-    userinfo: {
-      url: `${env.HANZO_IAM_SERVER_URL}/oauth/userinfo`,
-    },
-    checks: ["state", "pkce"],
-    client: {
-      token_endpoint_auth_method: "client_secret_basic",
-    },
-    allowDangerousEmailAccountLinking: env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
-    async profile(profile, tokens) {
-      const dbUser = await prisma.user.upsert({
-        where: { email: profile.email },
-        create: {
-          email: profile.email,
-          name: profile.name,
-          image: profile.picture,
-        },
-        update: {
-          name: profile.name,
-          image: profile.picture,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          image: true,
-          emailVerified: true,
-          featureFlags: true,
-          organizationMemberships: {
-            include: {
-              organization: {
-                include: {
-                  projects: true,
-                },
-              },
-            },
-          },
-        }
-      });
-
-      const user = {
-        id: profile.sub,
-        name: profile.name,
-        email: profile.email,
-        image: profile.picture,
-        emailVerified: dbUser.emailVerified?.toISOString(),
-        canCreateOrganizations: canCreateOrganizations(profile.email),
-        organizations: dbUser.organizationMemberships.map((orgMembership) => {
-          const parsedCloudConfig = CloudConfigSchema.safeParse(
-            orgMembership.organization.cloudConfig,
-          );
-          return {
-            id: orgMembership.organization.id,
-            name: orgMembership.organization.name,
-            role: orgMembership.role,
-            cloudConfig: parsedCloudConfig.data,
-            projects: orgMembership.organization.projects
-              .map((project) => {
-                return {
-                  id: project.id,
-                  name: project.name,
-                  role: orgMembership.role,
-                  retentionDays: project.retentionDays,
-                  deletedAt: project.deletedAt,
-                };
-              })
-              .filter((project) =>
-                projectRoleAccessRights[project.role].includes(
-                  "project:read",
-                ),
-              ),
-            plan: getOrganizationPlanServerSide(
-              parsedCloudConfig.data,
-            ),
-          };
-        }),
-        featureFlags: parseFlags(dbUser.featureFlags),
-      };
-
-      return user;
-    },
-  });
 
   return data;
 }
