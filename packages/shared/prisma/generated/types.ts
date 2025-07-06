@@ -6,7 +6,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 export const BlobStorageIntegrationType = {
   S3: "S3",
   S3_COMPATIBLE: "S3_COMPATIBLE",
-  AZURE_BLOB_STORAGE: "AZURE_BLOB_STORAGE"
+  AZURE_BLOB_STORAGE: "AZURE_BLOB_STORAGE",
 } as const;
 export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const Role = {
@@ -21,7 +21,7 @@ export type Role = (typeof Role)[keyof typeof Role];
 export const LegacyPrismaObservationType = {
   SPAN: "SPAN",
   EVENT: "EVENT",
-  GENERATION: "GENERATION"
+  GENERATION: "GENERATION",
 } as const;
 export type LegacyPrismaObservationType =
   (typeof LegacyPrismaObservationType)[keyof typeof LegacyPrismaObservationType];
@@ -29,8 +29,7 @@ export const LegacyPrismaObservationLevel = {
   DEBUG: "DEBUG",
   DEFAULT: "DEFAULT",
   WARNING: "WARNING",
-
-  ERROR: "ERROR"
+  ERROR: "ERROR",
 } as const;
 export type LegacyPrismaObservationLevel =
   (typeof LegacyPrismaObservationLevel)[keyof typeof LegacyPrismaObservationLevel];
@@ -43,22 +42,22 @@ export type LegacyPrismaScoreSource = (typeof LegacyPrismaScoreSource)[keyof typ
 export const ScoreDataType = {
   CATEGORICAL: "CATEGORICAL",
   NUMERIC: "NUMERIC",
-  BOOLEAN: "BOOLEAN"
+  BOOLEAN: "BOOLEAN",
 } as const;
 export type ScoreDataType = (typeof ScoreDataType)[keyof typeof ScoreDataType];
 export const AnnotationQueueStatus = {
   PENDING: "PENDING",
-  COMPLETED: "COMPLETED"
+  COMPLETED: "COMPLETED",
 } as const;
 export type AnnotationQueueStatus = (typeof AnnotationQueueStatus)[keyof typeof AnnotationQueueStatus];
 export const AnnotationQueueObjectType = {
   TRACE: "TRACE",
-  OBSERVATION: "OBSERVATION"
+  OBSERVATION: "OBSERVATION",
 } as const;
 export type AnnotationQueueObjectType = (typeof AnnotationQueueObjectType)[keyof typeof AnnotationQueueObjectType];
 export const DatasetStatus = {
   ACTIVE: "ACTIVE",
-  ARCHIVED: "ARCHIVED"
+  ARCHIVED: "ARCHIVED",
 } as const;
 export type DatasetStatus = (typeof DatasetStatus)[keyof typeof DatasetStatus];
 export const CommentObjectType = {
@@ -70,11 +69,6 @@ export const CommentObjectType = {
 export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
 export const JobType = {
   EVAL: "EVAL",
-  PROMPT: "PROMPT"
-} as const;
-export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
-export const JobType = {
-  EVAL: "EVAL"
 } as const;
 export type JobType = (typeof JobType)[keyof typeof JobType];
 export const JobConfigState = {
@@ -86,7 +80,7 @@ export const JobExecutionStatus = {
   COMPLETED: "COMPLETED",
   ERROR: "ERROR",
   PENDING: "PENDING",
-  CANCELLED: "CANCELLED"
+  CANCELLED: "CANCELLED",
 } as const;
 export type JobExecutionStatus = (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
 export const UsageMeterType = {
@@ -96,7 +90,7 @@ export const UsageMeterType = {
   NETWORK_EGRESS: "NETWORK_EGRESS",
   GPU: "GPU",
   CPU: "CPU",
-  MEMORY: "MEMORY"
+  MEMORY: "MEMORY",
 } as const;
 export type UsageMeterType = (typeof UsageMeterType)[keyof typeof UsageMeterType];
 export const UsageAggregationMethod = {
@@ -104,7 +98,7 @@ export const UsageAggregationMethod = {
   AVERAGE: "AVERAGE",
   MAX: "MAX",
   MIN: "MIN",
-  LAST: "LAST"
+  LAST: "LAST",
 } as const;
 export type UsageAggregationMethod = (typeof UsageAggregationMethod)[keyof typeof UsageAggregationMethod];
 export type Account = {
