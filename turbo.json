@@ -29,6 +29,10 @@
     "lint": {
       "cache": false
     },
+    "type-check": {
+      "cache": false,
+      "dependsOn": ["db:generate", "@hanzo/shared#build"]
+    },
     "test": {
       "dependsOn": ["^test", "db:generate"]
     }

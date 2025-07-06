@@ -15,6 +15,7 @@
     "dev": "dotenv -e ../.env -- nodemon src/index.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 31",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
     "refill-ingestion-events": "dotenv -e ../.env -- tsx src/scripts/refill-ingestion-events.ts",
     "refill-billing-event": "dotenv -e ../.env -- tsx src/scripts/refill-billing-event.ts"
   },

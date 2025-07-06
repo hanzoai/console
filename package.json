@@ -24,6 +24,7 @@
     "start": "turbo run start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
     "test": "turbo run test",
     "release": "dotenv -e ../.env -- release-it",
     "prepare": "husky"
