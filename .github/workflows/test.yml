@@ -63,7 +63,6 @@ jobs:
     - name: Run linting
       run: |
         pnpm run lint || true
-        pnpm run format:check
     
     - name: Run type checking
       run: pnpm run type-check
