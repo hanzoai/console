@@ -47,7 +47,7 @@ x-cloud-dev-environment: &cloud-worker-env
 
 services:
   cloud-dev-web:
-    image: hanzoai/cloud-web:latest
+    image: ghcr.io/hanzoai/hanzo-cloud-web:latest
     build:
       context: .
       dockerfile: web/Dockerfile
@@ -151,7 +151,7 @@ services:
 
 
   cloud-dev-worker:
-    image: hanzoai/cloud-worker:latest
+    image: ghcr.io/hanzoai/hanzo-cloud-worker:latest
     restart: always
     depends_on:
       postgres-dev:
