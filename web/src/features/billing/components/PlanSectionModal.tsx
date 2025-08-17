@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/componen
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { api } from "@/src/utils/api";
 import React from 'react';
+import { billingAnalytics } from "@/src/features/billing/analytics";
 
 interface PlanSelectionModalProps {
   isOpen: boolean;
@@ -66,9 +67,18 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       isMatch: currentSubscription?.plan?.id === stripeProductId
     });
 
+    // Find the plan details
+    const plan = availablePlans.find(p => p.stripeProductId === stripeProductId);
+    const planName = plan?.title || 'Unknown';
+
     // Check if current subscription exists and is not in a terminal state
     if (isActiveSubscription && currentSubscription.plan.id === stripeProductId) {
       console.log('Cancelling subscription for product:', stripeProductId);
+      // Track cancellation intent
+      billingAnalytics.subscriptionCanceled({
+        planName,
+        reason: 'user_initiated'
+      });
       // If already subscribed to this plan, cancel the subscription
       cancelSubscription({
         orgId,
@@ -76,6 +86,11 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       });
     } else {
       console.log('Creating checkout session for product:', stripeProductId);
+      // Track checkout start
+      billingAnalytics.checkoutStarted({
+        planName,
+        stripeProductId
+      });
       // If no current subscription or different plan, create a new checkout session
       createCheckoutSession({
         orgId,

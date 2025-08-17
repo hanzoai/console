@@ -329,6 +329,9 @@ export const env = createEnv({
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
     NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
+    NEXT_PUBLIC_HANZO_ANALYTICS_URL: z.string().url().optional(),
+    NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID: z.string().optional(),
+    NEXT_PUBLIC_HANZO_ANALYTICS_SCRIPT: z.string().optional(),
   },
 
   /**
@@ -506,6 +509,9 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     // Other
     NEXT_PUBLIC_CRISP_WEBSITE_ID: process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID,
+    NEXT_PUBLIC_HANZO_ANALYTICS_URL: process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL,
+    NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID: process.env.NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID,
+    NEXT_PUBLIC_HANZO_ANALYTICS_SCRIPT: process.env.NEXT_PUBLIC_HANZO_ANALYTICS_SCRIPT,
     // clickhouse
     CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
     CLICKHOUSE_CLUSTER_NAME: process.env.CLICKHOUSE_CLUSTER_NAME,

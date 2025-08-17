@@ -33,7 +33,7 @@ jobs:
       run: npm install -g pnpm@8
       
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --no-frozen-lockfile
       
     - name: Build packages
       run: pnpm run build
@@ -92,7 +92,7 @@ jobs:
       run: npm install -g pnpm@8
       
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --no-frozen-lockfile
       
     - name: Build packages
       run: pnpm run build

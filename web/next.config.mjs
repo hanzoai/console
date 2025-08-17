@@ -11,8 +11,8 @@ import { scheduleCronJob } from "./src/server/serverCron.mjs";
  * img-src https to allow loading images from SSO providers
  */
 const cspHeader = `
-  default-src 'self' https://*.hanzo.ai https://*.hanzo.dev https://*.posthog.com https://*.sentry.io wss://*.crisp.chat https://*.crisp.chat;
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.hanzo.ai https://*.hanzo.dev https://client.crisp.chat https://settings.crisp.chat https://challenges.cloudflare.com https://*.sentry.io  https://static.cloudflareinsights.com https://*.stripe.com https://uptime.betterstack.com;
+  default-src 'self' https://*.hanzo.ai https://*.hanzo.dev https://*.posthog.com https://*.sentry.io wss://*.crisp.chat https://*.crisp.chat https://a.hanzo.ai http://localhost:3090;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.hanzo.ai https://*.hanzo.dev https://client.crisp.chat https://settings.crisp.chat https://challenges.cloudflare.com https://*.sentry.io  https://static.cloudflareinsights.com https://*.stripe.com https://uptime.betterstack.com https://a.hanzo.ai http://localhost:3090;
   style-src 'self' 'unsafe-inline' https://client.crisp.chat https://uptime.betterstack.com;
   img-src 'self' https: blob: data: http://localhost:* https://client.crisp.chat https://image.crisp.chat https://storage.crisp.chat;
   font-src 'self' https://client.crisp.chat;
@@ -22,7 +22,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  connect-src 'self' https://*.hanzo.ai https://*.hanzo.dev https://client.crisp.chat https://storage.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://*.ingest.us.sentry.io https://uptime.betterstack.com;
+  connect-src 'self' https://*.hanzo.ai https://*.hanzo.dev https://client.crisp.chat https://storage.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://*.ingest.us.sentry.io https://uptime.betterstack.com https://a.hanzo.ai http://localhost:3090;
   media-src 'self' https: http://localhost:* https://client.crisp.chat;
   ${env.HANZO_CSP_ENFORCE_HTTPS === "true" ? "upgrade-insecure-requests; block-all-mixed-content;" : ""}
   ${env.SENTRY_CSP_REPORT_URI ? `report-uri ${env.SENTRY_CSP_REPORT_URI}; report-to csp-endpoint;` : ""}

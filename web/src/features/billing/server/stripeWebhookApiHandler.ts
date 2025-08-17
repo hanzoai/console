@@ -11,6 +11,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis, traceException } from "@hanzo/shared/src/server";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { serverBillingAnalytics } from "@/src/features/billing/server/analytics";
 
 /*
  * Sign-up endpoint (email/password users), creates user in database.
@@ -297,6 +298,26 @@ async function handleSubscriptionChanged(
         updatedOrg,
         planName,
       });
+
+      // Track analytics event
+      if (action === "created") {
+        await serverBillingAnalytics.subscriptionCreated({
+          orgId: parsedOrg.id,
+          planName,
+          stripeProductId: productId,
+          amount: subscriptionItem.price.unit_amount || 0,
+          interval: subscriptionItem.price.recurring?.interval,
+          status: subscription.status,
+        });
+      } else if (action === "updated") {
+        await serverBillingAnalytics.subscriptionUpdated({
+          orgId: parsedOrg.id,
+          oldPlan: parsedOrg.cloudConfig?.plan || "free",
+          newPlan: planName,
+          stripeProductId: productId,
+          status: subscription.status,
+        });
+      }
     } else if (action === "deleted") {
       const updatedOrg = await prisma.organization.update({
         where: {
@@ -318,6 +339,13 @@ async function handleSubscriptionChanged(
 
       logger.info("[Stripe Webhook] Successfully removed organization plan", {
         updatedOrg,
+      });
+
+      // Track analytics event
+      await serverBillingAnalytics.subscriptionDeleted({
+        orgId: parsedOrg.id,
+        planName: parsedOrg.cloudConfig?.plan,
+        stripeProductId: parsedOrg.cloudConfig?.stripe?.activeProductId || undefined,
       });
     }
     // commnet
@@ -363,14 +391,29 @@ async function handleCreditPurchase(
   }
 
   // Update the organization's credits
+  const creditsAdded = amountPaid / 100;
   await prisma.organization.update({
     where: {
       id: orgId,
     },
     data: {
       credits: {
-        increment: amountPaid / 100,
+        increment: creditsAdded,
       },
     },
+  });
+
+  // Track analytics events
+  await serverBillingAnalytics.paymentSucceeded({
+    orgId,
+    amount: amountPaid,
+    currency: "amount_received" in payment ? payment.currency : (payment as Stripe.Checkout.Session).currency || "usd",
+    type: "credit",
+  });
+
+  await serverBillingAnalytics.creditsAdded({
+    orgId,
+    amount: amountPaid,
+    credits: creditsAdded,
   });
 }

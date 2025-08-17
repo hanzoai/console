@@ -1,8 +1,120 @@
-Dockerfile
+# Dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
+.npm/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+out/
+**/.next/
+.next/
+
+# Logs
+logs/
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+playwright-report/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+local.env
+
+# Git
+.git/
+.gitignore
+
+# Docker
 .dockerignore
-node_modules
-npm-debug.log
+Dockerfile*
+docker-compose*.yml
+compose*.yaml
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Cache directories
+.cache/
+.turbo/
+.parcel-cache/
+.eslintcache
+.yarn-integrity
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Husky
+.husky/
+
+# Documentation
 README.md
-**/.next
-.git
-**/node_modules
+CHANGELOG.md
+*.md
+
+# Temporary files
+.tmp/
+temp/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Fern
+fern/
+generated/
+
+# Monitoring
+monitoring/
+
+# Scripts
+scripts/
+
+# Tests
+tests/
+
+# Patches
+patches/
+
+# Misc
+*.tar.gz
+*.zip
