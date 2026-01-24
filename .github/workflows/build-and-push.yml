@@ -22,35 +22,36 @@ jobs:
     permissions:
       contents: read
       packages: write
-      
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm@8
-      
-    - name: Install dependencies
-      run: pnpm install --no-frozen-lockfile
-      
-    - name: Build packages
-      run: pnpm run build
-      
+
+    - name: Create build .env file
+      run: |
+        cat > .env << 'EOF'
+        DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+        NEXTAUTH_SECRET=build-time-placeholder-secret-32chars
+        NEXTAUTH_URL=http://localhost:3000
+        SALT=build-time-placeholder-salt-32chars
+        ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000
+        CLICKHOUSE_URL=http://localhost:8123
+        CLICKHOUSE_USER=placeholder
+        CLICKHOUSE_PASSWORD=placeholder
+        REDIS_HOST=localhost
+        REDIS_PORT=6379
+        EOF
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
+
     - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -75,41 +76,42 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        
+
   build-worker:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm@8
-      
-    - name: Install dependencies
-      run: pnpm install --no-frozen-lockfile
-      
-    - name: Build packages
-      run: pnpm run build
-      
+
+    - name: Create build .env file
+      run: |
+        cat > .env << 'EOF'
+        DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+        NEXTAUTH_SECRET=build-time-placeholder-secret-32chars
+        NEXTAUTH_URL=http://localhost:3000
+        SALT=build-time-placeholder-salt-32chars
+        ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000
+        CLICKHOUSE_URL=http://localhost:8123
+        CLICKHOUSE_USER=placeholder
+        CLICKHOUSE_PASSWORD=placeholder
+        REDIS_HOST=localhost
+        REDIS_PORT=6379
+        EOF
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-      
+
     - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -134,12 +136,12 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        
+
   deploy:
     needs: [build-web, build-worker]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
     - name: Deploy notification
       run: |
