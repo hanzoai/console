@@ -1,19 +1,31 @@
 {
-  "name": "@hanzo/ee",
-  "version": "0.0.1",
+  "name": "@langfuse/ee",
+  "version": "1.0.0",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js"
+    },
+    "./sso": {
+      "import": "./dist/src/sso/index.js",
+      "require": "./dist/src/sso/index.js"
+    }
+  },
   "engines": {
-    "node": ">=20 <=23"
+    "node": ">=20 <=24"
   },
   "scripts": {
     "build": "tsc",
+    "build:check": "tsc",
+    "typecheck": "tsc --noEmit",
     "dev": "tsc --watch",
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@hanzo/shared": "workspace:*"
+    "@langfuse/shared": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
