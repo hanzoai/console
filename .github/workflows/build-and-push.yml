@@ -1,4 +1,4 @@
-name: Build and Push Cloud
+name: Build and Push Console
 
 on:
   push:
@@ -11,7 +11,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository_owner }}/hanzo-cloud
+  # Web image: ghcr.io/hanzoai/console:latest
+  # Worker image: ghcr.io/hanzoai/console-worker:latest
+  WEB_IMAGE: ${{ github.repository_owner }}/console
+  WORKER_IMAGE: ${{ github.repository_owner }}/console-worker
 
 jobs:
   build-web:
@@ -52,7 +55,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-web
+        images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -60,7 +63,7 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
-          
+
     - name: Build and push Web image
       uses: docker/build-push-action@v5
       with:
@@ -111,7 +114,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-worker
+        images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -119,7 +122,7 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
-          
+
     - name: Build and push Worker image
       uses: docker/build-push-action@v5
       with:
@@ -140,6 +143,6 @@ jobs:
     steps:
     - name: Deploy notification
       run: |
-        echo "Cloud images deployed:"
-        echo "- Web: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-web:latest"
-        echo "- Worker: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-worker:latest"
+        echo "Console images deployed:"
+        echo "- Web: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest"
+        echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest"
