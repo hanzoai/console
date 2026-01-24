@@ -27,20 +27,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Create build .env file
-      run: |
-        echo "DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder" > .env
-        echo "NEXTAUTH_SECRET=build-time-placeholder-secret-32chars" >> .env
-        echo "NEXTAUTH_URL=http://localhost:3000" >> .env
-        echo "SALT=build-time-placeholder-salt-32chars" >> .env
-        echo "ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000" >> .env
-        echo "CLICKHOUSE_URL=http://localhost:8123" >> .env
-        echo "CLICKHOUSE_USER=placeholder" >> .env
-        echo "CLICKHOUSE_PASSWORD=placeholder" >> .env
-        echo "REDIS_HOST=localhost" >> .env
-        echo "REDIS_PORT=6379" >> .env
-        cat .env
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -85,20 +71,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Create build .env file
-      run: |
-        echo "DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder" > .env
-        echo "NEXTAUTH_SECRET=build-time-placeholder-secret-32chars" >> .env
-        echo "NEXTAUTH_URL=http://localhost:3000" >> .env
-        echo "SALT=build-time-placeholder-salt-32chars" >> .env
-        echo "ENCRYPTION_KEY=0000000000000000000000000000000000000000000000000000000000000000" >> .env
-        echo "CLICKHOUSE_URL=http://localhost:8123" >> .env
-        echo "CLICKHOUSE_USER=placeholder" >> .env
-        echo "CLICKHOUSE_PASSWORD=placeholder" >> .env
-        echo "REDIS_HOST=localhost" >> .env
-        echo "REDIS_PORT=6379" >> .env
-        cat .env
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3

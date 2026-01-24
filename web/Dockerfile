@@ -47,8 +47,8 @@ COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --from=pruner /app/out/json/ .
 
-# Add this line to copy .env from root directory
-COPY ./.env ./.env
+# Copy build-time .env file (real values provided at runtime)
+COPY ./.env.build ./.env
 
 RUN pnpm install --frozen-lockfile
 
@@ -157,8 +157,7 @@ COPY --chown=nextjs:nodejs ./web/entrypoint.sh ./web/entrypoint.sh
 COPY --chown=nextjs:nodejs ./packages/shared/scripts/cleanup.sql ./packages/shared/scripts/cleanup.sql
 RUN chmod +x ./web/entrypoint.sh
 
-COPY ../.env ./.env
-COPY ./.env ./.env
+# Copy .env from builder stage (contains build-time placeholders, runtime uses env vars)
 COPY --from=builder --chown=nextjs:nodejs /app/.env /app/.env
 USER nextjs
 
