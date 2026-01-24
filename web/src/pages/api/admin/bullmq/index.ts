@@ -1,8 +1,15 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { z } from "zod";
-import { logger, QueueName, getQueue } from "@hanzo/shared/src/server";
-import { env } from "@/src/env.mjs";
-import { prisma } from "@hanzo/shared/src/db";
+import { z } from "zod/v4";
+import {
+  logger,
+  QueueName,
+  getQueue,
+  IngestionQueue,
+  TraceUpsertQueue,
+  IngestionEvent,
+  OtelIngestionQueue,
+} from "@langfuse/shared/src/server";
+import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 
 /* 
 This API route is used by Hanzo Cloud to retry failed bullmq jobs.
@@ -29,15 +36,9 @@ const ManageBullBody = z.discriminatedUnion("action", [
     bullStatus: BullStatus,
   }),
   z.object({
-    action: z.literal("backup"),
-    queueName: z.string(),
-    bullStatus: BullStatus,
-    numberOfEvents: z.number(),
-  }),
-  z.object({
-    action: z.literal("restore"),
-    queueName: z.string(),
-    numberOfEvents: z.number(),
+    action: z.literal("add"),
+    queueName: z.literal(QueueName.IngestionSecondaryQueue),
+    events: z.array(IngestionEvent),
   }),
 ]);
 
@@ -46,51 +47,45 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    // allow only POST requests
+    // allow only POST and GET requests
     if (req.method !== "POST" && req.method !== "GET") {
       res.status(405).json({ error: "Method Not Allowed" });
       return;
     }
 
-    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
-      res.status(403).json({ error: "Only accessible on Hanzo Cloud cloud" });
-      return;
-    }
-
-    // check if ADMIN_API_KEY is set
-    if (!env.ADMIN_API_KEY) {
-      logger.error("ADMIN_API_KEY is not set");
-      res.status(500).json({ error: "ADMIN_API_KEY is not set" });
-      return;
-    }
-
-    // check bearer token
-    const { authorization } = req.headers;
-    if (!authorization) {
-      res
-        .status(401)
-        .json({ error: "Unauthorized: No authorization header provided" });
-      return;
-    }
-    const [scheme, token] = authorization.split(" ");
-    if (scheme !== "Bearer" || !token || token !== env.ADMIN_API_KEY) {
-      res.status(401).json({ error: "Unauthorized: Invalid token" });
-      return;
-    }
-
-    const body = ManageBullBody.safeParse(req.body);
-
-    if (!body.success) {
-      res.status(400).json({ error: body.error });
+    if (
+      !AdminApiAuthService.handleAdminAuth(req, res, {
+        isAllowedOnLangfuseCloud: true,
+      })
+    ) {
       return;
     }
 
     if (req.method === "GET") {
-      const queues = Object.values(QueueName);
+      const queues: string[] = Object.values(QueueName);
+      queues.push(...IngestionQueue.getShardNames());
+      queues.push(...TraceUpsertQueue.getShardNames());
+      queues.push(...OtelIngestionQueue.getShardNames());
       const queueCounts = await Promise.all(
         queues.map(async (queueName) => {
           try {
-            const queue = getQueue(queueName);
+            let queue;
+            if (queueName.startsWith(QueueName.IngestionQueue)) {
+              queue = IngestionQueue.getInstance({ shardName: queueName });
+            } else if (queueName.startsWith(QueueName.TraceUpsert)) {
+              queue = TraceUpsertQueue.getInstance({ shardName: queueName });
+            } else if (queueName.startsWith(QueueName.OtelIngestionQueue)) {
+              queue = OtelIngestionQueue.getInstance({ shardName: queueName });
+            } else {
+              queue = getQueue(
+                queueName as Exclude<
+                  QueueName,
+                  | QueueName.IngestionQueue
+                  | QueueName.TraceUpsert
+                  | QueueName.OtelIngestionQueue
+                >,
+              );
+            }
             const jobCount = await queue?.getJobCounts();
             return { queueName, jobCount };
           } catch (e) {
@@ -102,13 +97,36 @@ export default async function handler(
       return res.status(200).json(queueCounts);
     }
 
+    const body = ManageBullBody.safeParse(req.body);
+
+    if (!body.success) {
+      res.status(400).json({ error: body.error });
+      return;
+    }
+
     if (req.method === "POST" && body.data.action === "remove") {
       logger.info(
         `Removing jobs for queues ${body.data.queueNames.join(", ")}`,
       );
 
       for (const queueName of body.data.queueNames) {
-        const queue = getQueue(queueName as QueueName);
+        let queue;
+        if (queueName.startsWith(QueueName.IngestionQueue)) {
+          queue = IngestionQueue.getInstance({ shardName: queueName });
+        } else if (queueName.startsWith(QueueName.TraceUpsert)) {
+          queue = TraceUpsertQueue.getInstance({ shardName: queueName });
+        } else if (queueName.startsWith(QueueName.OtelIngestionQueue)) {
+          queue = OtelIngestionQueue.getInstance({ shardName: queueName });
+        } else {
+          queue = getQueue(
+            queueName as Exclude<
+              QueueName,
+              | QueueName.IngestionQueue
+              | QueueName.TraceUpsert
+              | QueueName.OtelIngestionQueue
+            >,
+          );
+        }
 
         let totalCount = 0;
         let failedCountInLoop;
@@ -143,7 +161,23 @@ export default async function handler(
       );
 
       for (const queueName of body.data.queueNames) {
-        const queue = getQueue(queueName as QueueName);
+        let queue;
+        if (queueName.startsWith(QueueName.IngestionQueue)) {
+          queue = IngestionQueue.getInstance({ shardName: queueName });
+        } else if (queueName.startsWith(QueueName.TraceUpsert)) {
+          queue = TraceUpsertQueue.getInstance({ shardName: queueName });
+        } else if (queueName.startsWith(QueueName.OtelIngestionQueue)) {
+          queue = OtelIngestionQueue.getInstance({ shardName: queueName });
+        } else {
+          queue = getQueue(
+            queueName as Exclude<
+              QueueName,
+              | QueueName.IngestionQueue
+              | QueueName.TraceUpsert
+              | QueueName.OtelIngestionQueue
+            >,
+          );
+        }
         const jobCount = await queue?.getJobCounts("failed");
         logger.info(
           `Retrying ${JSON.stringify(jobCount)} jobs for queue ${queueName}`,
@@ -176,20 +210,32 @@ export default async function handler(
       return res.status(200).json({ message: "Retried all jobs" });
     }
 
-    if (req.method === "POST" && body.data.action === "backup") {
-      await backUpEvents(
-        body.data.queueName as QueueName,
-        body.data.numberOfEvents,
-        body.data.bullStatus,
-      );
-    }
+    // if (req.method === "POST" && body.data.action === "add") {
+    //   logger.info(
+    //     `Adding ${body.data.events.length} events to ${body.data.queueName}`,
+    //   );
 
-    if (req.method === "POST" && body.data.action === "restore") {
-      await restoreEvents(
-        body.data.queueName as QueueName,
-        body.data.numberOfEvents,
-      );
-    }
+    //   try {
+    //     await insertJobs({
+    //       queueName: body.data.queueName,
+    //       data: body.data.events,
+    //     });
+
+    //     logger.info(
+    //       `Successfully added ${body.data.events.length} events to ${body.data.queueName}`,
+    //     );
+
+    //     return res.status(200).json({
+    //       message: `Added ${body.data.events.length} events to ${body.data.queueName}`,
+    //       count: body.data.events.length,
+    //     });
+    //   } catch (error) {
+    //     logger.error(`Failed to add events to ${body.data.queueName}`, error);
+    //     return res.status(500).json({
+    //       error: `Failed to add events to queue: ${error instanceof Error ? error.message : "Unknown error"}`,
+    //     });
+    //   }
+    // }
 
     // return not implemented error
     res.status(404).json({ error: "Action does not exist" });
@@ -199,68 +245,31 @@ export default async function handler(
   }
 }
 
-const backUpEvents = async (
-  queueName: QueueName,
-  numberOfEvents: number,
-  bullStatus: z.infer<typeof BullStatus>,
-) => {
-  const queue = getQueue(queueName);
-  let processedEvents = 0;
-  const batchSize = 1000;
+// const insertJobType = z.discriminatedUnion("queueName", [
+//   z.object({
+//     queueName: z.literal(QueueName.IngestionSecondaryQueue),
+//     data: z.array(IngestionEvent),
+//   }),
+// ]);
 
-  while (processedEvents < numberOfEvents) {
-    const remainingEvents = numberOfEvents - processedEvents;
-    const currentBatchSize = Math.min(batchSize, remainingEvents);
+// const insertJobs = async (payload: z.infer<typeof insertJobType>) => {
+//   const queue = getQueue(
+//     payload.queueName as Exclude<QueueName, QueueName.IngestionQueue>,
+//   );
 
-    const events = await queue?.getJobs(
-      [bullStatus],
-      0,
-      currentBatchSize,
-      true,
-    );
+//   if (!queue) {
+//     throw new Error("Failed to get queue");
+//   }
 
-    if (!events || events.length === 0) {
-      break;
-    }
-
-    await prisma.queueBackUp.createMany({
-      data: events.map((event) => ({
-        queueName,
-        content: event,
-        projectId: event.data.projectId ?? undefined,
-        createdAt: new Date(),
-      })),
-    });
-
-    // remove events from the queue but might throw in case if the job is already processing
-    await Promise.all(
-      events.map(async (event) => {
-        try {
-          await event.remove();
-        } catch (error) {
-          logger.error(`Failed to remove event ${event.id}:`, error);
-        }
-      }),
-    );
-
-    processedEvents += events.length;
-  }
-};
-
-const restoreEvents = async (queueName: QueueName, numberOfEvents: number) => {
-  const queue = getQueue(queueName);
-
-  const queueBackUp = await prisma.queueBackUp.findMany({
-    where: {
-      queueName,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: numberOfEvents,
-  });
-
-  await queue?.addBulk(
-    queueBackUp.map((event) => ({ name: queueName, data: event.content })),
-  );
-};
+//   await queue.addBulk(
+//     payload.data.map((data) => ({
+//       name: QueueJobs.IngestionSecondaryJob,
+//       data: {
+//         id: v4(),
+//         timestamp: new Date(),
+//         name: QueueJobs.IngestionSecondaryJob,
+//         payload: data,
+//       },
+//     })),
+//   );
+// };

@@ -2,6 +2,7 @@
 imports:
   commons: ./commons.yml
   pagination: ./utils/pagination.yml
+  scim: ./scim.yml
 service:
   auth: true
   base-path: /api/public/v2
@@ -13,7 +14,9 @@ service:
       path-parameters:
         promptName:
           type: string
-          docs: The name of the prompt
+          docs: |
+            The name of the prompt. If the prompt is in a folder (e.g., "folder/subfolder/prompt-name"), 
+            the folder path must be URL encoded.
       request:
         name: GetPromptRequest
         query-parameters:
@@ -57,6 +60,24 @@ service:
       request: CreatePromptRequest
       response: Prompt
 
+    delete:
+      docs: Delete prompt versions. If neither version nor label is specified, all versions of the prompt are deleted.
+      method: DELETE
+      path: /prompts/{promptName}
+      path-parameters:
+        promptName:
+          type: string
+          docs: The name of the prompt
+      request:
+        name: DeletePromptRequest
+        query-parameters:
+          label:
+            type: optional<string>
+            docs: Optional label to filter deletion. If specified, deletes all prompt versions that have this label.
+          version:
+            type: optional<integer>
+            docs: Optional version to filter deletion. If specified, deletes only this specific version of the prompt.
+
 types:
   PromptMetaListResponse:
     properties:
@@ -66,6 +87,9 @@ types:
   PromptMeta:
     properties:
       name: string
+      type:
+        type: PromptType
+        docs: Indicates whether the prompt is a text or chat prompt.
       versions: list<integer>
       labels: list<string>
       tags: list<string>
@@ -82,7 +106,7 @@ types:
   CreateChatPromptRequest:
     properties:
       name: string
-      prompt: list<ChatMessage>
+      prompt: list<ChatMessageWithPlaceholders>
       config: optional<unknown>
       labels:
         type: optional<list<string>>
@@ -114,6 +138,11 @@ types:
       chat: ChatPrompt
       text: TextPrompt
 
+  PromptType:
+    enum:
+      - chat
+      - text
+
   BasePrompt:
     properties:
       name: string
@@ -128,12 +157,25 @@ types:
       commitMessage:
         type: optional<string>
         docs: Commit message for this prompt version.
+      resolutionGraph:
+        type: optional<map<string, unknown>>
+        docs: The dependency resolution graph for the current prompt. Null if prompt has no dependencies.
+
+  ChatMessageWithPlaceholders:
+    union:
+      chatmessage: ChatMessage
+      placeholder: PlaceholderMessage
 
   ChatMessage:
     properties:
       role:
         type: string
       content:
+        type: string
+
+  PlaceholderMessage:
+    properties:
+      name:
         type: string
 
   TextPrompt:
@@ -144,4 +186,4 @@ types:
   ChatPrompt:
     extends: BasePrompt
     properties:
-      prompt: list<ChatMessage>
+      prompt: list<ChatMessageWithPlaceholders>

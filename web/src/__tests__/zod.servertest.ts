@@ -1,5 +1,5 @@
-import { paginationZod, parseJsonPrioritised } from "@hanzo/shared";
-import { ZodError } from "zod";
+import { paginationZod, parseJsonPrioritised } from "@langfuse/shared";
+import { ZodError } from "zod/v4";
 
 // Create test cases
 describe("Pagination Zod Schema", () => {
@@ -20,8 +20,8 @@ describe("Pagination Zod Schema", () => {
   });
 
   it("should handle invalid input", () => {
-    expect(() => paginationZod.page.parse("abc")).toThrowError(ZodError);
-    expect(() => paginationZod.limit.parse("abc")).toThrowError(ZodError);
+    expect(() => paginationZod.page.parse("abc")).toThrow(ZodError);
+    expect(() => paginationZod.limit.parse("abc")).toThrow(ZodError);
   });
 });
 
@@ -46,6 +46,8 @@ describe("parseJsonPrioritised", () => {
       '{"array": [1, 2], "nested": {"key": "value"}}',
       { array: [1, 2], nested: { key: "value" } },
     ], // Complex object
+    ["1983516295378495150", "1983516295378495150"], // Large number
+    ["3.4", 3.4], // Decimal number
   ])(
     "should parse input correctly  (%s, %s)",
     (input: string, expectedOutput: any) => {

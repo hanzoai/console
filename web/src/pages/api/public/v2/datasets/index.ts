@@ -4,50 +4,60 @@ import {
   GetDatasetsV2Response,
   PostDatasetsV2Body,
   PostDatasetsV2Response,
+  transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
+import { auditLog } from "@/src/features/audit-logs/auditLog";
+import { upsertDataset } from "@/src/features/datasets/server/actions/createDataset";
 
 export default withMiddlewares({
-  POST: createAuthedAPIRoute({
+  POST: createAuthedProjectAPIRoute({
     name: "Create Dataset",
     bodySchema: PostDatasetsV2Body,
     responseSchema: PostDatasetsV2Response,
+    rateLimitResource: "datasets",
     fn: async ({ body, auth }) => {
-      const { name, description, metadata } = body;
+      const { name, description, metadata, inputSchema, expectedOutputSchema } =
+        body;
 
-      const dataset = await prisma.dataset.upsert({
-        where: {
-          projectId_name: {
-            projectId: auth.scope.projectId,
-            name,
-          },
-        },
-        create: {
+      const dataset = await upsertDataset({
+        input: {
           name,
           description: description ?? undefined,
-          projectId: auth.scope.projectId,
           metadata: metadata ?? undefined,
+          inputSchema,
+          expectedOutputSchema,
         },
-        update: {
-          description: description ?? null,
-          metadata: metadata ?? undefined,
-        },
+        projectId: auth.scope.projectId,
       });
 
-      return dataset;
+      await auditLog({
+        action: "create",
+        resourceType: "dataset",
+        resourceId: dataset.id,
+        projectId: auth.scope.projectId,
+        orgId: auth.scope.orgId,
+        apiKeyId: auth.scope.apiKeyId,
+        after: dataset,
+      });
+
+      return transformDbDatasetToAPIDataset(dataset);
     },
   }),
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Datasets",
     querySchema: GetDatasetsV2Query,
     responseSchema: GetDatasetsV2Response,
+    rateLimitResource: "datasets",
     fn: async ({ query, auth }) => {
       const datasets = await prisma.dataset.findMany({
         select: {
           name: true,
           description: true,
           metadata: true,
+          inputSchema: true,
+          expectedOutputSchema: true,
           projectId: true,
           createdAt: true,
           updatedAt: true,

@@ -2,17 +2,25 @@ import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   createTRPCRouter,
   protectedOrganizationProcedure,
+  protectedProjectProcedure,
 } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import * as z from "zod";
+import * as z from "zod/v4";
 import {
   hasOrganizationAccess,
   throwIfNoOrganizationAccess,
 } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { type PrismaClient, Role } from "@hanzo/shared";
-import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
+import {
+  type FilterState,
+  optionalPaginationZod,
+  Prisma,
+  type PrismaClient,
+  Role,
+} from "@langfuse/shared";
+import { sendMembershipInvitationEmail } from "@langfuse/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
+import { throwIfExceedsLimit } from "@/src/features/entitlements/server/hasEntitlementLimit";
 import {
   hasProjectAccess,
   throwIfNoProjectAccess,
@@ -20,6 +28,26 @@ import {
 import { allMembersRoutes } from "@/src/features/rbac/server/allMembersRoutes";
 import { allInvitesRoutes } from "@/src/features/rbac/server/allInvitesRoutes";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
+import {
+  getUserProjectRoles,
+  getUserProjectRolesCount,
+} from "@langfuse/shared/src/server";
+
+function buildUserSearchFilter(searchQuery: string | undefined | null) {
+  if (searchQuery === undefined || searchQuery === null || searchQuery === "") {
+    return Prisma.empty;
+  }
+
+  const q = searchQuery;
+  const searchConditions: Prisma.Sql[] = [];
+
+  searchConditions.push(Prisma.sql`u.name ILIKE ${`%${q}%`}`);
+  searchConditions.push(Prisma.sql`u.email ILIKE ${`%${q}%`}`);
+
+  return searchConditions.length > 0
+    ? Prisma.sql` AND (${Prisma.join(searchConditions, " OR ")})`
+    : Prisma.empty;
+}
 
 // Record as it allows to type check that all roles are included
 function throwIfHigherRole({ ownRole, role }: { ownRole: Role; role: Role }) {
@@ -86,10 +114,10 @@ export const membersRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         email: z.string().email(),
-        orgRole: z.nativeEnum(Role),
+        orgRole: z.enum(Role),
         // in case a projectRole should be set for a specific project
         projectId: z.string().optional(),
-        projectRole: z.nativeEnum(Role).optional(),
+        projectRole: z.enum(Role).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -192,6 +220,16 @@ export const membersRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Org not found" });
       }
 
+      // Count current members + pending invitations for limit check
+      const [currentMemberCount, pendingInviteCount] = await Promise.all([
+        ctx.prisma.organizationMembership.count({
+          where: { orgId: input.orgId },
+        }),
+        ctx.prisma.membershipInvitation.count({
+          where: { orgId: input.orgId },
+        }),
+      ]);
+
       if (user) {
         const existingOrgMembership =
           await ctx.prisma.organizationMembership.findFirst({
@@ -238,6 +276,14 @@ export const membersRouter = createTRPCRouter({
           }
         }
 
+        // Check member limit before creating new membership
+        throwIfExceedsLimit({
+          entitlementLimit: "organization-member-count",
+          sessionUser: ctx.session.user,
+          orgId: input.orgId,
+          currentUsage: currentMemberCount + pendingInviteCount,
+        });
+
         // create org membership as user is not a member yet
         const orgMembership = await ctx.prisma.organizationMembership.create({
           data: {
@@ -276,41 +322,69 @@ export const membersRouter = createTRPCRouter({
           inviterName: ctx.session.user.name!,
           to: input.email,
           orgName: org.name,
+          orgId: input.orgId,
+          userExists: true,
           env: env,
         });
       } else {
-        const invitation = await ctx.prisma.membershipInvitation.create({
-          data: {
-            orgId: input.orgId,
-            projectId:
-              project && input.projectRole && input.projectRole !== Role.NONE
-                ? project.id
-                : null,
-            email: input.email.toLowerCase(),
-            orgRole: input.orgRole,
-            projectRole:
-              input.projectRole && input.projectRole !== Role.NONE && project
-                ? input.projectRole
-                : null,
-            invitedByUserId: ctx.session.user.id,
-          },
-        });
-        await auditLog({
-          session: ctx.session,
-          resourceType: "membershipInvitation",
-          resourceId: invitation.id,
-          action: "create",
-          after: invitation,
-        });
-        await sendMembershipInvitationEmail({
-          inviterEmail: ctx.session.user.email!,
-          inviterName: ctx.session.user.name!,
-          to: input.email,
-          orgName: org.name,
-          env: env,
+        // Check member limit before creating invitation
+        throwIfExceedsLimit({
+          entitlementLimit: "organization-member-count",
+          sessionUser: ctx.session.user,
+          orgId: input.orgId,
+          currentUsage: currentMemberCount + pendingInviteCount,
         });
 
-        return invitation;
+        try {
+          const invitation = await ctx.prisma.membershipInvitation.create({
+            data: {
+              orgId: input.orgId,
+              projectId:
+                project && input.projectRole && input.projectRole !== Role.NONE
+                  ? project.id
+                  : null,
+              email: input.email.toLowerCase(),
+              orgRole: input.orgRole,
+              projectRole:
+                input.projectRole && input.projectRole !== Role.NONE && project
+                  ? input.projectRole
+                  : null,
+              invitedByUserId: ctx.session.user.id,
+            },
+          });
+
+          await auditLog({
+            session: ctx.session,
+            resourceType: "membershipInvitation",
+            resourceId: invitation.id,
+            action: "create",
+            after: invitation,
+          });
+          await sendMembershipInvitationEmail({
+            inviterEmail: ctx.session.user.email!,
+            inviterName: ctx.session.user.name!,
+            to: input.email,
+            orgName: org.name,
+            orgId: input.orgId,
+            userExists: false,
+            env: env,
+          });
+
+          return invitation;
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+          ) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "A pending membership invitation with this email and organization already exists",
+            });
+          } else {
+            throw error;
+          }
+        }
       }
     }),
   deleteMembership: protectedOrganizationProcedure
@@ -449,7 +523,7 @@ export const membersRouter = createTRPCRouter({
       z.object({
         orgId: z.string(),
         orgMembershipId: z.string(),
-        role: z.nativeEnum(Role),
+        role: z.enum(Role),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -523,7 +597,7 @@ export const membersRouter = createTRPCRouter({
         orgMembershipId: z.string(),
         userId: z.string(),
         projectId: z.string(),
-        projectRole: z.nativeEnum(Role).nullable(),
+        projectRole: z.enum(Role).nullable(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -648,5 +722,62 @@ export const membersRouter = createTRPCRouter({
       });
 
       return updatedProjectMembership;
+    }),
+  byProjectId: protectedProjectProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        searchQuery: z.string().optional(),
+        excludeUserIds: z.array(z.string()).optional(),
+        ...optionalPaginationZod,
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "projectMembers:read",
+      });
+
+      const searchFilter = buildUserSearchFilter(input.searchQuery);
+
+      const filterCondition: FilterState =
+        input.excludeUserIds && input.excludeUserIds.length > 0
+          ? [
+              {
+                column: "userId",
+                operator: "none of",
+                value: input.excludeUserIds,
+                type: "stringOptions",
+              },
+            ]
+          : [];
+
+      const [users, totalCount] = await Promise.all([
+        getUserProjectRoles({
+          projectId: input.projectId,
+          orgId: ctx.session.orgId,
+          searchFilter: searchFilter,
+          filterCondition,
+          limit: input.limit,
+          page: input.page,
+          orderBy: Prisma.sql`ORDER BY all_eligible_users.name ASC NULLS LAST, all_eligible_users.email ASC NULLS LAST`,
+        }),
+        getUserProjectRolesCount({
+          projectId: input.projectId,
+          orgId: ctx.session.orgId,
+          searchFilter: searchFilter,
+          filterCondition,
+        }),
+      ]);
+
+      return {
+        users: users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        })),
+        totalCount,
+      };
     }),
 });

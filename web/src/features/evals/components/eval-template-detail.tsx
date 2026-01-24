@@ -1,7 +1,7 @@
 import * as React from "react";
 import { EvalTemplateForm } from "@/src/features/evals/components/template-form";
 import { api } from "@/src/utils/api";
-import { type EvalTemplate } from "@hanzo/shared";
+import { type EvalTemplate } from "@langfuse/shared";
 import { useRouter } from "next/router";
 import {
   Select,
@@ -12,11 +12,20 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { Button } from "@/src/components/ui/button";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import Page from "@/src/components/layouts/page";
+import { Switch } from "@/src/components/ui/switch";
+import { Command } from "@/src/components/ui/command";
+import { Badge } from "@/src/components/ui/badge";
+import { StatusBadge } from "@/src/components/layouts/status-badge";
+import {
+  SidePanel,
+  SidePanelContent,
+  SidePanelHeader,
+  SidePanelTitle,
+} from "@/src/components/ui/side-panel";
+import { LangfuseIcon } from "@/src/components/LangfuseLogo";
 
 export const EvalTemplateDetail = () => {
   const router = useRouter();
@@ -36,59 +45,132 @@ export const EvalTemplateDetail = () => {
     {
       projectId: projectId,
       name: template.data?.name ?? "",
+      isUserManaged: template.data?.projectId !== null,
     },
     {
       enabled:
-        !template.isLoading &&
+        !template.isPending &&
         !template.isError &&
         template.data?.name !== undefined,
     },
   );
 
+  const handleTemplateSelect = (newTemplate: EvalTemplate) => {
+    // Update URL without full page reload
+    router.push(
+      `/project/${projectId}/evals/templates/${newTemplate.id}`,
+      undefined,
+      { shallow: true },
+    );
+  };
+
   return (
     <Page
-      scrollable
       headerProps={{
-        title: `${template.data?.name}: ${templateId}`,
-        itemType: "EVAL_TEMPLATE",
+        title: `${template.data?.name ?? ""}`,
+        itemType: "EVALUATOR",
         breadcrumb: [
           {
-            name: "Eval Templates",
+            name: "Evaluator Library",
             href: `/project/${router.query.projectId as string}/evals/templates`,
           },
         ],
         actionButtonsRight: (
           <>
-            {!isEditing && (
-              <UpdateTemplate
-                projectId={projectId}
-                isLoading={template.isLoading}
-                setIsEditing={setIsEditing}
-              />
-            )}
-            <EvalVersionDropdown
-              disabled={allTemplates.isLoading}
-              options={allTemplates.data?.templates ?? []}
-              defaultOption={template.data ?? undefined}
-              onSelect={(template) => {
-                router.push(
-                  `/project/${projectId}/evals/templates/${template.id}`,
-                );
-              }}
+            <UpdateTemplate
+              projectId={projectId}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+              isCustom={!!template.data?.projectId}
             />
+
+            {/* TODO: moved to LFE-4573 */}
+            {/* <DeleteEvaluatorTemplateButton
+              itemId={templateId}
+              projectId={projectId}
+              redirectUrl={`/project/${projectId}/evals/templates`}
+              deleteConfirmation={
+                template.data != null
+                  ? `${template.data.name}-v${template.data.version}`
+                  : undefined
+              }
+              enabled={!template.isPending}
+            /> */}
           </>
         ),
       }}
     >
-      {allTemplates.isLoading || !allTemplates.data ? (
+      {allTemplates.isLoading || !allTemplates.data || !template.data ? (
         <div className="p-3">Loading...</div>
+      ) : isEditing ? (
+        <div className="overflow-y-auto p-3 pt-1">
+          <EvalTemplateForm
+            useDialog={false}
+            projectId={projectId}
+            existingEvalTemplate={template.data}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+          />
+        </div>
       ) : (
-        <EvalTemplateForm
-          projectId={projectId}
-          existingEvalTemplate={template.data ?? undefined}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-        />
+        <div className="grid flex-1 grid-cols-[1fr,auto] overflow-hidden contain-layout">
+          <div className="flex max-h-full min-h-0 flex-col overflow-y-auto px-3 pt-1">
+            <EvalTemplateForm
+              useDialog={false}
+              projectId={projectId}
+              existingEvalTemplate={template.data}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+            />
+          </div>
+          <SidePanel mobileTitle="Change history" id="change-history">
+            <SidePanelHeader>
+              <SidePanelTitle className="text-base font-semibold">
+                Change history
+              </SidePanelTitle>
+            </SidePanelHeader>
+            <SidePanelContent>
+              <Command className="flex flex-col gap-2 overflow-y-auto rounded-none font-medium focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[focus]:ring-0">
+                <div className="flex flex-col overflow-y-auto">
+                  {allTemplates.data.templates.map((template, index) => (
+                    <div
+                      key={template.id}
+                      className={`flex cursor-pointer flex-col rounded-md px-2 py-1.5 hover:bg-accent ${
+                        template.id === templateId ? "bg-accent" : ""
+                      }`}
+                      onClick={() => handleTemplateSelect(template)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <Badge
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            variant="outline"
+                            className="h-6 shrink-0 bg-background/50"
+                            data-version-trigger="false"
+                          >
+                            # {template.version}
+                          </Badge>
+                          {index === 0 && (
+                            <StatusBadge
+                              type="active"
+                              key="active"
+                              className="break-all sm:break-normal"
+                            />
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {template.createdAt.toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Command>
+            </SidePanelContent>
+          </SidePanel>
+        </div>
       )}
     </Page>
   );
@@ -135,33 +217,45 @@ export function EvalVersionDropdown(props: {
 
 export function UpdateTemplate({
   projectId,
-  isLoading,
+  isEditing,
   setIsEditing,
+  isCustom,
 }: {
   projectId: string;
-  isLoading: boolean;
+  isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  isCustom: boolean;
 }) {
   const hasAccess = useHasProjectAccess({
     projectId,
-    scope: "evalTemplate:create",
+    scope: "evalTemplate:CUD",
   });
   const capture = usePostHogClientCapture();
 
-  const handlePromptEdit = () => {
-    setIsEditing(true);
-    capture("eval_templates:update_form_open");
+  const handlePromptEdit = (checked: boolean) => {
+    setIsEditing(checked);
+    if (checked) capture("eval_templates:update_form_open");
   };
 
+  if (!isCustom) {
+    return (
+      <div className="flex items-center gap-2">
+        <LangfuseIcon size={16} />
+        <span className="text-sm font-medium text-muted-foreground">
+          View only
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <Button
-      variant="outline"
-      onClick={() => handlePromptEdit()}
-      disabled={!hasAccess}
-      loading={isLoading}
-    >
-      <Plus className="h-4 w-4" />
-      New version
-    </Button>
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-medium">Edit mode</span>
+      <Switch
+        checked={isEditing}
+        onCheckedChange={handlePromptEdit}
+        disabled={!hasAccess}
+      />
+    </div>
   );
 }

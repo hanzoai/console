@@ -5,17 +5,13 @@ const shouldSecureCookies = () => {
   return process.env.NODE_ENV === "production" || env.NEXTAUTH_URL.startsWith("https");
 };
 
-export const getCookieOptions = () => {
-  const isNgrok = env.NEXTAUTH_URL.includes("ngrok");
-  return {
-    domain: isNgrok ? undefined : env.NEXTAUTH_COOKIE_DOMAIN ?? undefined,
-    httpOnly: true,
-    sameSite: isNgrok ? "none" : (process.env.NODE_ENV === "development" ? "lax" : "strict") as "lax" | "strict" | "none",
-    path: "/",
-    secure: isNgrok ? true : shouldSecureCookies(),
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  };
-};
+export const getCookieOptions = () => ({
+  domain: env.NEXTAUTH_COOKIE_DOMAIN ?? undefined,
+  httpOnly: true,
+  sameSite: "lax" as const,
+  path: env.NEXT_PUBLIC_BASE_PATH || "/",
+  secure: shouldSecureCookies(),
+});
 
 export const getCookieName = (name: string) =>
   [

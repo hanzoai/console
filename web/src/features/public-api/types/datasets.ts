@@ -5,11 +5,13 @@ import {
   paginationMetaResponseZod,
   queryStringZod,
   type DatasetRuns as DbDatasetRuns,
-  type DatasetItem as DbDatasetItems,
-  type DatasetRunItems as DbDatasetRunItems,
+  type Dataset as DbDataset,
   removeObjectKeys,
-} from "@hanzo/shared";
-import { z } from "zod";
+  type DatasetRunItemDomain,
+  type DatasetItemDomain,
+} from "@langfuse/shared";
+import { DatasetJSONSchema } from "@langfuse/shared/src/server";
+import { z } from "zod/v4";
 
 /**
  * Objects
@@ -22,6 +24,8 @@ const APIDataset = z
     name: z.string(),
     description: z.string().nullable(),
     metadata: z.any(),
+    inputSchema: z.any().nullable(),
+    expectedOutputSchema: z.any().nullable(),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
   })
@@ -53,6 +57,8 @@ const APIDatasetRunItem = z
   })
   .strict();
 
+export type APIDatasetRunItem = z.infer<typeof APIDatasetRunItem>;
+
 const APIDatasetItem = z
   .object({
     datasetName: z.string(),
@@ -78,15 +84,32 @@ export const transformDbDatasetRunToAPIDatasetRun = (
 ): z.infer<typeof APIDatasetRun> =>
   removeObjectKeys(dbDatasetRun, ["projectId"]);
 
-export const transformDbDatasetItemToAPIDatasetItem = (
-  dbDatasetItem: DbDatasetItems & { datasetName: string },
+export const transformDbDatasetItemDomainToAPIDatasetItem = (
+  dbDatasetItem: DatasetItemDomain & {
+    datasetName: string;
+  },
 ): z.infer<typeof APIDatasetItem> =>
-  removeObjectKeys(dbDatasetItem, ["projectId"]);
+  removeObjectKeys(dbDatasetItem, ["projectId", "validFrom"]);
 
-export const transformDbDatasetRunItemToAPIDatasetRunItem = (
-  dbDatasetRunItem: DbDatasetRunItems & { datasetRunName: string },
+export const transformDbDatasetRunItemToAPIDatasetRunItemCh = (
+  dbDatasetRunItem: DatasetRunItemDomain,
 ): z.infer<typeof APIDatasetRunItem> =>
-  removeObjectKeys(dbDatasetRunItem, ["projectId"]);
+  removeObjectKeys(dbDatasetRunItem, [
+    "projectId",
+    "datasetRunDescription",
+    "datasetRunMetadata",
+    "datasetRunCreatedAt",
+    "datasetItemInput",
+    "datasetItemExpectedOutput",
+    "datasetItemMetadata",
+    "datasetId",
+    "error",
+  ]);
+
+export const transformDbDatasetToAPIDataset = (
+  dataset: DbDataset,
+): z.infer<typeof APIDataset> =>
+  removeObjectKeys(dataset, ["remoteExperimentUrl", "remoteExperimentPayload"]);
 
 /**
  * Endpoints
@@ -97,6 +120,8 @@ export const PostDatasetsV2Body = z.object({
   name: z.string(),
   description: z.string().nullish(),
   metadata: jsonSchema.nullish(),
+  inputSchema: DatasetJSONSchema.nullish(),
+  expectedOutputSchema: DatasetJSONSchema.nullish(),
 });
 export const PostDatasetsV2Response = APIDataset.strict();
 
@@ -141,9 +166,9 @@ export const GetDatasetRunV1Response = APIDatasetRun.extend({
 // POST /dataset-items
 export const PostDatasetItemsV1Body = z.object({
   datasetName: z.string(),
-  input: jsonSchema.nullish(),
-  expectedOutput: jsonSchema.nullish(),
-  metadata: jsonSchema.nullish(),
+  input: z.any().nullish(),
+  expectedOutput: z.any().nullish(),
+  metadata: z.any().nullish(),
   id: z.string().nullish(),
   sourceTraceId: z.string().nullish(),
   sourceObservationId: z.string().nullish(),
@@ -198,6 +223,19 @@ export const PostDatasetRunItemsV1Body = z
   });
 export const PostDatasetRunItemsV1Response = APIDatasetRunItem.strict();
 
+// GET /dataset-run-items
+export const GetDatasetRunItemsV1Query = z.object({
+  datasetId: z.string(),
+  runName: z.string(),
+  ...publicApiPaginationZod,
+});
+export const GetDatasetRunItemsV1Response = z
+  .object({
+    data: z.array(APIDatasetRunItem),
+    meta: paginationMetaResponseZod,
+  })
+  .strict();
+
 /**
  * Deprecated endpoints replaced with v2, available for backward compatibility
  */
@@ -207,6 +245,8 @@ export const PostDatasetsV1Body = z.object({
   name: z.string(),
   description: z.string().nullish(),
   metadata: jsonSchema.nullish(),
+  inputSchema: DatasetJSONSchema.nullish(),
+  expectedOutputSchema: DatasetJSONSchema.nullish(),
 });
 export const PostDatasetsV1Response = APIDataset.extend({
   items: z.array(APIDatasetItem),

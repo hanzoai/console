@@ -1,17 +1,26 @@
-export type UiColumnMapping = {
+export type UiColumnMappings = readonly UiColumnMapping[];
+
+export type UiColumnMapping = Readonly<{
   uiTableName: string;
   uiTableId: string;
   clickhouseTableName: string;
   clickhouseSelect: string;
   clickhouseTypeOverwrite?: string;
   queryPrefix?: string;
-};
+}>;
 
-export type OptionsDefinition = {
+export type SingleValueOption = {
   value: string;
   count?: number;
   displayValue?: string; // FIX: Temporary workaround: Used to display a different value than the actual value since multiSelect doesn't support key-value pairs
 };
+
+export type MultiValueOption = {
+  label: string;
+  values: string[];
+};
+
+export type OptionsDefinition = SingleValueOption | MultiValueOption;
 
 export type ColumnDefinition =
   | {
@@ -25,7 +34,7 @@ export type ColumnDefinition =
       name: string;
       id: string;
       type: "stringOptions";
-      options: Array<OptionsDefinition>;
+      options: Array<SingleValueOption>;
       internal: string;
       nullable?: boolean;
     }
@@ -33,7 +42,7 @@ export type ColumnDefinition =
       name: string;
       id: string;
       type: "arrayOptions";
-      options: Array<OptionsDefinition>;
+      options: Array<SingleValueOption>;
       internal: string;
       nullable?: boolean;
     }
@@ -43,6 +52,14 @@ export type ColumnDefinition =
       type: "stringObject" | "numberObject";
       internal: string;
       keyOptions?: Array<string>;
+      nullable?: boolean;
+    }
+  | {
+      name: string;
+      id: string;
+      type: "categoryOptions";
+      options: Array<MultiValueOption>;
+      internal: string;
       nullable?: boolean;
     };
 
@@ -57,7 +74,11 @@ export const tableNames = [
   "sessions",
   "prompts",
   "users",
+  "job_configurations",
+  "job_executions",
   "dataset_items",
+  "annotation_queue_assignments",
+  "dataset_item_events",
 ] as const;
 
 export type TableNames = (typeof tableNames)[number];

@@ -20,21 +20,23 @@ import {
 import { ArrowUp } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
-import { env } from "@/src/env.mjs";
 import { cn } from "@/src/utils/tailwind";
 import { usePlan } from "@/src/features/entitlements/hooks";
 import { isSelfHostedPlan, planLabels } from "@hanzo/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
+import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 
 export const VersionLabel = ({ className }: { className?: string }) => {
+  const { isLangfuseCloud } = useLangfuseCloudRegion();
+
   const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(
     undefined,
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      enabled: !env.NEXT_PUBLIC_HANZO_CLOUD_REGION, // do not check for updates on Hanzo Cloud
-      onError: (error) => console.error("checkUpdate error", error), // do not render default error message
+      enabled: !isLangfuseCloud, // do not check for updates on Langfuse Cloud
+      throwOnError: false, // do not render default error message
     },
   );
 
@@ -42,16 +44,16 @@ export const VersionLabel = ({ className }: { className?: string }) => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: !env.NEXT_PUBLIC_HANZO_CLOUD_REGION, // do not check for updates on Hanzo Cloud
-    onError: (error) => console.error("checkUpdate error", error), // do not render default error message
+    enabled: !isLangfuseCloud, // do not check for updates on Langfuse Cloud
+    throwOnError: false, // do not render default error message
   });
 
   const plan = usePlan();
-  const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
   const selfHostedPlanLabel = !isHanzoCloud
     ? plan && isSelfHostedPlan(plan)
       ? // self-host plan
+        // TODO: clean up to use planLabels in packages/shared/src/features/entitlements/plans.ts
         {
           short: plan === "self-hosted:pro" ? "Pro" : "EE",
           long: planLabels[plan],
@@ -82,9 +84,13 @@ export const VersionLabel = ({ className }: { className?: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="xs" className={cn("text-xs", className)}>
+        <Button
+          variant="ghost"
+          size="xs"
+          className={cn("mt-[0.2px] text-[0.625rem]", className)}
+        >
           {VERSION}
-          {selfHostedPlanLabel ? ` ${selfHostedPlanLabel.short}` : null}
+          {selfHostedPlanLabel ? <> {selfHostedPlanLabel.short}</> : null}
           {showBackgroundMigrationStatus && (
             <StatusBadge
               type={backgroundMigrationStatus.data?.status.toLowerCase()}
@@ -93,7 +99,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             />
           )}
           {hasUpdate && !showBackgroundMigrationStatus && (
-            <ArrowUp className={`ml-1 h-3 w-3 ${color}`} />
+            <ArrowUp className={`h-3 w-3 ${color}`} />
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -106,7 +112,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
-        ) : !env.NEXT_PUBLIC_HANZO_CLOUD_REGION ? (
+        ) : !isLangfuseCloud ? (
           <>
             <DropdownMenuLabel>This is the latest release</DropdownMenuLabel>
             <DropdownMenuSeparator />

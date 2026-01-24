@@ -1,146 +1,371 @@
-import { Prisma } from "@prisma/client";
-import Decimal from "decimal.js";
 import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
-import { ObservationRecordReadType } from "./definitions";
-import { parseJsonPrioritised } from "../../utils/json";
+import {
+  ObservationRecordReadType,
+  EventsObservationRecordReadType,
+} from "./definitions";
 import {
   Observation,
-  ObservationView,
-  ObservationType,
+  EventsObservation,
   ObservationLevelType,
-} from "./types";
+  ObservationType,
+  PartialEventsObservation,
+  PartialObservation,
+  ObservationCoreFields,
+} from "../../domain";
+import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
+import {
+  RenderingProps,
+  DEFAULT_RENDERING_PROPS,
+  applyInputOutputRendering,
+} from "../utils/rendering";
+import { logger } from "../logger";
+import type { Model, Price } from "@prisma/client";
 
-export const convertObservationToView = (
-  record: ObservationRecordReadType,
-): Omit<ObservationView, "inputPrice" | "outputPrice" | "totalPrice"> & {
-  usageDetails: Record<string, number>;
-  costDetails: Record<string, number>;
-} => {
-  // these cost are not used from the view. They are in the select statement but not in the
-  // Prisma file. We will not clean this up but keep it as it is for now.
-  // eslint-disable-next-line no-unused-vars
-  const { inputCost, outputCost, totalCost, internalModelId, ...rest } =
-    convertObservation(record ?? undefined);
+type ModelWithPrice = Model & { Price: Price[] };
+
+/**
+ * Validates that all ObservationCoreFields are present and not undefined in a ClickHouse record.
+ * Throws an error if any required core field is missing.
+ *
+ * @param record - The partial observation record from ClickHouse to validate
+ * @throws Error if any core field is undefined
+ * @returns The validated core fields in domain format
+ */
+function ensureObservationCoreFields(
+  record: Partial<ObservationRecordReadType>,
+): ObservationCoreFields {
+  const missingFields: string[] = [];
+
+  if (record.id === undefined) missingFields.push("id");
+  if (record.trace_id === undefined) missingFields.push("trace_id");
+  if (record.start_time === undefined) missingFields.push("start_time");
+  if (record.project_id === undefined) missingFields.push("project_id");
+
+  if (missingFields.length > 0) {
+    const errorMessage = `Missing required ObservationCoreFields: ${missingFields.join(", ")}${record.id ? ` (record: ${record.id})` : ""}`;
+    logger.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+
   return {
-    ...rest,
-    latency: record.end_time
-      ? parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
-        parseClickhouseUTCDateTimeFormat(record.start_time).getTime()
-      : null,
+    id: record.id!,
+    traceId: record.trace_id ?? null,
+    startTime: parseClickhouseUTCDateTimeFormat(record.start_time!),
+    projectId: record.project_id!,
+    parentObservationId: record.parent_observation_id ?? null,
+  };
+}
 
-    promptName: record.prompt_name ?? null,
-    promptVersion: record.prompt_version ?? null,
-    modelId: record.internal_model_id ?? null,
+/**
+ * Enriches observation data with model pricing information
+ * @param model - The model with price data (can be null)
+ * @returns Object with modelId and pricing fields
+ */
+export const enrichObservationWithModelData = (
+  model: ModelWithPrice | null | undefined,
+) => {
+  return {
+    modelId: model?.id ?? null,
+    inputPrice:
+      model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
+    outputPrice:
+      model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
+    totalPrice:
+      model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
   };
 };
 
-export const convertObservation = (
+/**
+ * Convert observation record from ClickHouse to domain model
+ * Return type depends on input parameters: either complete Observation or Partial<Observation>
+ *
+ * @param record - Raw observation record from ClickHouse
+ * @param renderingProps - Rendering options for input/output
+ * @param complete - If true, fills missing fields with defaults (V1 API). If false/undefined, returns only present fields (V2 API)
+ *
+ * Type signatures:
+ * - convertObservation(record, props, true) → Observation
+ * - convertObservation(record, props) → Partial<Observation>
+ */
+export function convertObservationPartial(
   record: ObservationRecordReadType,
-): Omit<Observation, "internalModel"> & {
-  promptName: string | null;
-  promptVersion: number | null;
-  latency: number | null;
-  timeToFirstToken: number | null;
-  usageDetails: Record<string, number>;
-  costDetails: Record<string, number>;
-} => {
-  const reducedUsageDetails = reduceUsageOrCostDetails(record.usage_details);
-  const reducedCostDetails = reduceUsageOrCostDetails(record.cost_details);
-  const reducedProvidedCostDetails = reduceUsageOrCostDetails(
-    record.provided_cost_details,
-  );
+  renderingProps: RenderingProps,
+  complete: true,
+): Observation;
+export function convertObservationPartial(
+  record: Partial<ObservationRecordReadType>,
+  renderingProps: RenderingProps,
+  complete: false,
+): PartialObservation;
+export function convertObservationPartial(
+  record: Partial<ObservationRecordReadType>,
+  renderingProps: RenderingProps = DEFAULT_RENDERING_PROPS,
+  complete: boolean,
+): Observation | PartialObservation {
+  // Core fields validation - these should always be present
+  if (record.start_time !== undefined && !record.start_time) {
+    logger.error(
+      `Found invalid value start_time: ${record.start_time} for record ${record.id} in project ${record.project_id}. Processing will fail.`,
+      {
+        ...record,
+        input: null,
+        output: null,
+        metadata: null,
+      },
+    );
+  }
 
-  return {
-    id: record.id,
-    traceId: record.trace_id ?? null,
-    projectId: record.project_id,
-    type: record.type as ObservationType,
-    environment: record.environment,
-    parentObservationId: record.parent_observation_id ?? null,
-    startTime: parseClickhouseUTCDateTimeFormat(record.start_time),
-    endTime: record.end_time
-      ? parseClickhouseUTCDateTimeFormat(record.end_time)
-      : null,
-    name: record.name ?? null,
-    metadata:
-      record.metadata &&
-      Object.fromEntries(
-        Object.entries(record.metadata ?? {}).map(([key, val]) => [
+  const reducedCostDetails =
+    record.cost_details !== undefined
+      ? reduceUsageOrCostDetails(record.cost_details)
+      : { input: null, output: null, total: null };
+
+  const reducedUsageDetails =
+    record.usage_details !== undefined
+      ? reduceUsageOrCostDetails(record.usage_details)
+      : { input: null, output: null, total: null };
+
+  // Core fields are not optional
+  const coreFields = ensureObservationCoreFields(record);
+
+  const partial = {
+    ...coreFields,
+    ...(record.type !== undefined && { type: record.type as ObservationType }),
+    ...(record.end_time !== undefined && {
+      endTime: record.end_time
+        ? parseClickhouseUTCDateTimeFormat(record.end_time)
+        : null,
+    }),
+
+    // Basic fields
+    ...(record.name !== undefined && { name: record.name ?? null }),
+    ...(record.level !== undefined && {
+      level: record.level as ObservationLevelType,
+    }),
+    ...(record.status_message !== undefined && {
+      statusMessage: record.status_message ?? null,
+    }),
+    ...(record.version !== undefined && { version: record.version ?? null }),
+    ...(record.environment !== undefined && {
+      environment: record.environment,
+    }),
+
+    // Time fields
+    ...(record.completion_start_time !== undefined && {
+      completionStartTime: record.completion_start_time
+        ? parseClickhouseUTCDateTimeFormat(record.completion_start_time)
+        : null,
+    }),
+    ...(record.created_at !== undefined && {
+      createdAt: parseClickhouseUTCDateTimeFormat(record.created_at),
+    }),
+    ...(record.updated_at !== undefined && {
+      updatedAt: parseClickhouseUTCDateTimeFormat(record.updated_at),
+    }),
+
+    // IO fields
+    ...(record.input !== undefined && {
+      input: applyInputOutputRendering(record.input, renderingProps),
+    }),
+    ...(record.output !== undefined && {
+      output: applyInputOutputRendering(record.output, renderingProps),
+    }),
+
+    // Metadata
+    ...(record.metadata !== undefined && {
+      metadata: parseMetadataCHRecordToDomain(record.metadata),
+    }),
+
+    // Model fields
+    ...(record.provided_model_name !== undefined && {
+      model: record.provided_model_name ?? null,
+    }),
+    ...(record.internal_model_id !== undefined && {
+      internalModelId: record.internal_model_id ?? null,
+    }),
+    ...(record.model_parameters !== undefined && {
+      modelParameters: record.model_parameters
+        ? ((typeof record.model_parameters === "string"
+            ? JSON.parse(record.model_parameters)
+            : record.model_parameters) ?? null)
+        : null,
+    }),
+
+    // Usage fields
+    ...(record.usage_details !== undefined && {
+      usageDetails: Object.fromEntries(
+        Object.entries(record.usage_details ?? {}).map(([key, value]) => [
           key,
-          val && parseJsonPrioritised(val),
+          Number(value),
         ]),
       ),
-    level: record.level as ObservationLevelType,
-    statusMessage: record.status_message ?? null,
-    version: record.version ?? null,
-    input: (record.input
-      ? parseJsonPrioritised(record.input)
-      : null) as Prisma.JsonValue | null,
-    output: (record.output
-      ? parseJsonPrioritised(record.output)
-      : null) as Prisma.JsonValue | null,
-    modelParameters: record.model_parameters
-      ? JSON.parse(record.model_parameters)
-      : null,
-    completionStartTime: record.completion_start_time
-      ? parseClickhouseUTCDateTimeFormat(record.completion_start_time)
-      : null,
-    promptId: record.prompt_id ?? null,
-    createdAt: parseClickhouseUTCDateTimeFormat(record.created_at),
-    updatedAt: parseClickhouseUTCDateTimeFormat(record.updated_at),
-    promptTokens: reducedUsageDetails.input ?? 0,
-    completionTokens: reducedUsageDetails.output ?? 0,
-    totalTokens: reducedUsageDetails.total ?? 0,
-    calculatedInputCost:
-      reducedCostDetails.input != null
-        ? new Decimal(reducedCostDetails.input)
+      inputUsage: reducedUsageDetails.input ?? 0,
+      outputUsage: reducedUsageDetails.output ?? 0,
+      totalUsage: reducedUsageDetails.total ?? 0,
+    }),
+    ...(record.cost_details !== undefined && {
+      costDetails: Object.fromEntries(
+        Object.entries(record.cost_details ?? {}).map(([key, value]) => [
+          key,
+          Number(value),
+        ]),
+      ),
+      inputCost: reducedCostDetails.input,
+      outputCost: reducedCostDetails.output,
+      totalCost: reducedCostDetails.total,
+    }),
+    ...(record.provided_cost_details !== undefined && {
+      providedCostDetails: Object.fromEntries(
+        Object.entries(record.provided_cost_details ?? {}).map(
+          ([key, value]) => [key, Number(value)],
+        ),
+      ),
+    }),
+
+    // Prompt fields
+    ...(record.prompt_id !== undefined && {
+      promptId: record.prompt_id ?? null,
+    }),
+    ...(record.prompt_name !== undefined && {
+      promptName: record.prompt_name ?? null,
+    }),
+    ...(record.prompt_version !== undefined && {
+      promptVersion: record.prompt_version
+        ? Number(record.prompt_version)
         : null,
-    calculatedOutputCost:
-      reducedCostDetails.output != null
-        ? new Decimal(reducedCostDetails.output)
-        : null,
-    calculatedTotalCost: record.cost_details?.total
-      ? new Decimal(record.cost_details.total)
-      : null,
-    inputCost:
-      reducedProvidedCostDetails.input != null
-        ? new Decimal(reducedProvidedCostDetails.input)
-        : null,
-    outputCost:
-      reducedProvidedCostDetails.output != null
-        ? new Decimal(reducedProvidedCostDetails.output)
-        : null,
-    totalCost: record.total_cost ? new Decimal(record.total_cost) : null,
-    usageDetails: Object.fromEntries(
-      Object.entries(record.usage_details ?? {}).map(([key, value]) => [
-        key,
-        Number(value),
-      ]),
-    ),
-    costDetails: Object.fromEntries(
-      Object.entries(record.cost_details ?? {}).map(([key, value]) => [
-        key,
-        Number(value),
-      ]),
-    ),
-    model: record.provided_model_name ?? null,
-    internalModelId: record.internal_model_id ?? null,
-    unit: "TOKENS", // to be removed.
-    promptName: record.prompt_name ?? null,
-    promptVersion: record.prompt_version ?? null,
-    latency: record.end_time
-      ? parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
-        parseClickhouseUTCDateTimeFormat(record.start_time).getTime()
-      : null,
-    timeToFirstToken: record.completion_start_time
-      ? (parseClickhouseUTCDateTimeFormat(
-          record.completion_start_time,
-        ).getTime() -
-          parseClickhouseUTCDateTimeFormat(record.start_time).getTime()) /
-        1000
-      : null,
+    }),
+
+    // Pricing tier fields
+    ...(record.usage_pricing_tier_id !== undefined && {
+      usagePricingTierId: record.usage_pricing_tier_id ?? null,
+    }),
+    ...(record.usage_pricing_tier_name !== undefined && {
+      usagePricingTierName: record.usage_pricing_tier_name ?? null,
+    }),
+
+    // Tool fields
+    ...(record.tool_definitions !== undefined && {
+      toolDefinitions: record.tool_definitions ?? null,
+    }),
+    ...(record.tool_calls !== undefined && {
+      toolCalls: record.tool_calls ?? null,
+    }),
+    ...(record.tool_call_names !== undefined && {
+      toolCallNames: record.tool_call_names ?? null,
+    }),
+
+    // Metrics (calculated fields)
+    ...((record.end_time !== undefined || record.start_time !== undefined) && {
+      latency:
+        record.end_time && record.start_time
+          ? (parseClickhouseUTCDateTimeFormat(record.end_time).getTime() -
+              parseClickhouseUTCDateTimeFormat(record.start_time).getTime()) /
+            1000
+          : null,
+    }),
+    ...((record.completion_start_time !== undefined ||
+      record.start_time !== undefined) && {
+      timeToFirstToken:
+        record.completion_start_time && record.start_time
+          ? (parseClickhouseUTCDateTimeFormat(
+              record.completion_start_time,
+            ).getTime() -
+              parseClickhouseUTCDateTimeFormat(record.start_time).getTime()) /
+            1000
+          : null,
+    }),
   };
-};
+
+  // V2 API: return partial observation (only fields that were present in record)
+  if (!complete) {
+    return partial;
+  }
+
+  // V1 API: fill missing fields with defaults to ensure complete Observation
+  return {
+    // These fields should always be present from partial conversion
+    ...coreFields,
+    type: partial.type!,
+    environment: partial.environment ?? "",
+    endTime: partial.endTime ?? null,
+    name: partial.name ?? null,
+    level: partial.level ?? "DEFAULT",
+    statusMessage: partial.statusMessage ?? null,
+    version: partial.version ?? null,
+    createdAt: partial.createdAt!,
+    updatedAt: partial.updatedAt!,
+
+    // Fields that may not be selected from ClickHouse (default to null)
+    input: partial.input ?? null,
+    output: partial.output ?? null,
+    metadata: partial.metadata ?? {},
+    model: partial.model ?? null,
+    internalModelId: partial.internalModelId ?? null,
+    modelParameters: partial.modelParameters ?? null,
+    completionStartTime: partial.completionStartTime ?? null,
+    promptId: partial.promptId ?? null,
+    promptName: partial.promptName ?? null,
+    promptVersion: partial.promptVersion ?? null,
+    latency: partial.latency ?? null,
+    timeToFirstToken: partial.timeToFirstToken ?? null,
+    usageDetails: partial.usageDetails ?? {},
+    costDetails: partial.costDetails ?? {},
+    providedCostDetails: partial.providedCostDetails ?? {},
+    inputCost: partial.inputCost ?? null,
+    outputCost: partial.outputCost ?? null,
+    totalCost: partial.totalCost ?? null,
+    inputUsage: partial.inputUsage ?? 0,
+    outputUsage: partial.outputUsage ?? 0,
+    totalUsage: partial.totalUsage ?? 0,
+    usagePricingTierId: partial.usagePricingTierId ?? null,
+    usagePricingTierName: partial.usagePricingTierName ?? null,
+    toolDefinitions: partial.toolDefinitions ?? null,
+    toolCalls: partial.toolCalls ?? null,
+    toolCallNames: partial.toolCallNames ?? null,
+  };
+}
+
+export function convertObservation(
+  record: ObservationRecordReadType,
+  renderingProps: RenderingProps = DEFAULT_RENDERING_PROPS,
+): Observation {
+  return convertObservationPartial(record, renderingProps, true);
+}
+
+/**
+ * Events-specific converter that includes userId and sessionId fields.
+ * Use this for observations from the events table which contain user context.
+ */
+export function convertEventsObservation(
+  record: EventsObservationRecordReadType,
+  renderingProps: RenderingProps,
+  complete: true,
+): EventsObservation;
+export function convertEventsObservation(
+  record: Partial<EventsObservationRecordReadType>,
+  renderingProps: RenderingProps,
+  complete: false,
+): PartialEventsObservation;
+export function convertEventsObservation(
+  record: Partial<EventsObservationRecordReadType>,
+  renderingProps: RenderingProps = DEFAULT_RENDERING_PROPS,
+  complete: boolean,
+): EventsObservation | PartialEventsObservation {
+  // Branch based on complete flag to use correct overload
+  const baseObservation = complete
+    ? convertObservationPartial(
+        record as ObservationRecordReadType,
+        renderingProps,
+        true,
+      )
+    : convertObservationPartial(record, renderingProps, false);
+
+  return {
+    ...baseObservation,
+    userId: record.user_id ?? null,
+    sessionId: record.session_id ?? null,
+  };
+}
 
 export const reduceUsageOrCostDetails = (
   details: Record<string, number> | null | undefined,
@@ -153,13 +378,13 @@ export const reduceUsageOrCostDetails = (
     input: Object.entries(details ?? {})
       .filter(([usageType]) => usageType.startsWith("input"))
       .reduce(
-        (acc, [_, value]) => (acc ?? 0) + Number(value),
+        (acc, [, value]) => (acc ?? 0) + Number(value),
         null as number | null, // default to null if no input usage is found
       ),
     output: Object.entries(details ?? {})
       .filter(([usageType]) => usageType.startsWith("output"))
       .reduce(
-        (acc, [_, value]) => (acc ?? 0) + Number(value),
+        (acc, [, value]) => (acc ?? 0) + Number(value),
         null as number | null, // default to null if no output usage is found
       ),
     total: Number(details?.total ?? 0),

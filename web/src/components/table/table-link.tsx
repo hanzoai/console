@@ -6,6 +6,8 @@ export type TableLinkProps = {
   value: string;
   icon?: React.ReactNode;
   className?: string;
+  onClick?: (event: React.MouseEvent) => void;
+  title?: string;
 };
 
 export default function TableLink({
@@ -13,18 +15,31 @@ export default function TableLink({
   value,
   icon,
   className,
+  onClick,
+  title,
 }: TableLinkProps) {
+  const handleClick = (event: React.MouseEvent) => {
+    if (onClick) {
+      event.preventDefault();
+      onClick(event);
+    }
+  };
+
   return (
     <Link
       className={cn(
-        "inline-block max-w-full overflow-hidden text-ellipsis text-nowrap rounded bg-primary-accent/20 px-2 py-0.5 text-xs font-semibold text-accent-dark-blue shadow-sm hover:bg-accent-light-blue/45",
+        "inline-block max-w-full text-xs font-semibold text-accent-dark-blue hover:text-primary-accent/60",
         className,
+        icon && "max-h-4",
       )}
       href={path}
-      title={value}
+      title={title || value}
       prefetch={false}
+      onClick={handleClick}
     >
-      {icon ? icon : value}
+      <span className="inline-block max-w-full overflow-hidden text-ellipsis text-nowrap">
+        {icon ? <span className="inline-block">{icon}</span> : value}
+      </span>
     </Link>
   );
 }

@@ -1,11 +1,16 @@
+import { env } from "@/src/env.mjs";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { filterAndValidateDbScoreList } from "@hanzo/shared";
-import { type GetAllGenerationsInput } from "../getAllQueries";
+import {
+  AGGREGATABLE_SCORE_TYPES,
+  filterAndValidateDbScoreList,
+} from "@langfuse/shared";
 import {
   getObservationsTableWithModelData,
+  getObservationsWithModelDataFromEventsTable,
   getScoresForObservations,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
+import { type GetAllGenerationsInput } from "../getAllQueries";
 
 export async function getAllGenerations({
   input,
@@ -14,21 +19,34 @@ export async function getAllGenerations({
   input: GetAllGenerationsInput;
   selectIOAndMetadata: boolean;
 }) {
-  const generations = await getObservationsTableWithModelData({
+  const queryOpts = {
     projectId: input.projectId,
     filter: input.filter,
     orderBy: input.orderBy,
     searchQuery: input.searchQuery ?? undefined,
+    searchType: input.searchType,
     selectIOAndMetadata: selectIOAndMetadata,
     offset: input.page * input.limit,
     limit: input.limit,
-  });
-  const scores = await getScoresForObservations(
-    input.projectId,
-    generations.map((gen) => gen.id),
-  );
+  };
+  let generations =
+    env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
+      ? await getObservationsWithModelDataFromEventsTable(queryOpts)
+      : await getObservationsTableWithModelData(queryOpts);
 
-  const validatedScores = filterAndValidateDbScoreList(scores, traceException);
+  const scores = await getScoresForObservations({
+    projectId: input.projectId,
+    observationIds: generations.map((gen) => gen.id),
+    excludeMetadata: true,
+    includeHasMetadata: true,
+  });
+
+  const validatedScores = filterAndValidateDbScoreList({
+    scores,
+    dataTypes: AGGREGATABLE_SCORE_TYPES,
+    includeHasMetadata: true,
+    onParseError: traceException,
+  });
 
   const fullGenerations = generations.map((generation) => {
     const filteredScores = aggregateScores(

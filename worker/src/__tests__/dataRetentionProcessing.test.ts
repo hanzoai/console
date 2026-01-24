@@ -1,15 +1,15 @@
-import { expect, it, describe, beforeAll } from "vitest";
+import { expect, it, describe, beforeAll, beforeEach, afterEach } from "vitest";
 import { env } from "../env";
 import { randomUUID } from "crypto";
 import {
   clickhouseClient,
   createObservation,
   createObservationsCh,
-  createScore,
+  createTraceScore,
   createScoresCh,
   createTrace,
   createTracesCh,
-  getEventLogByProjectAndEntityId,
+  getBlobStorageByProjectAndEntityId,
   getObservationById,
   getScoreById,
   getTraceById,
@@ -22,35 +22,56 @@ import { Job } from "bullmq";
 
 describe("DataRetentionProcessingJob", () => {
   let storageService: StorageService;
+  let s3Prefix: string | null = null;
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
+      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
+  beforeEach(() => {
+    s3Prefix = `${randomUUID()}/`;
+  });
+
+  afterEach(async () => {
+    // Clean up all files created during this test
+    if (!s3Prefix) return;
+
+    const files = await storageService.listFiles(s3Prefix);
+
+    if (files.length == 0) return;
+
+    await storageService.deleteFiles(files.map((f) => f.file));
+    s3Prefix = null;
+  });
+
   it("should NOT delete event files from cloud storage if after expiry cutoff", async () => {
-    // Setup
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
     const baseId = randomUUID();
-    const fileName = `${baseId}.json`;
+    const fileName = `${s3Prefix}${baseId}.json`;
     const fileType = "application/json";
     const data = JSON.stringify({ hello: "world" });
-    const expiresInSeconds = 3600;
+
     await storageService.uploadFile({
       fileName,
       fileType,
       data,
-      expiresInSeconds,
     });
 
     await clickhouseClient().insert({
-      table: "event_log",
+      table: "blob_storage_file_log",
       format: "JSONEachRow",
       values: [
         {
@@ -73,33 +94,43 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const files = await storageService.listFiles("");
+    const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).toContain(fileName);
 
-    const eventLogRecord = await getEventLogByProjectAndEntityId(
+    const eventLogRecord = await getBlobStorageByProjectAndEntityId(
       projectId,
       "trace",
       `${baseId}-trace`,
     );
     expect(eventLogRecord).toHaveLength(1);
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should delete event files from cloud storage if expired", async () => {
-    // Setup
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
     const baseId = randomUUID();
-    const fileName = `${baseId}.json`;
+    const fileName = `${s3Prefix}${baseId}.json`;
     const fileType = "application/json";
     const data = JSON.stringify({ hello: "world" });
-    const expiresInSeconds = 3600;
+
     await storageService.uploadFile({
       fileName,
       fileType,
       data,
-      expiresInSeconds,
     });
 
     await clickhouseClient().insert({
-      table: "event_log",
+      table: "blob_storage_file_log",
       format: "JSONEachRow",
       values: [
         {
@@ -122,28 +153,38 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const files = await storageService.listFiles("");
+    const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).not.toContain(fileName);
 
-    const eventLogRecord = await getEventLogByProjectAndEntityId(
+    const eventLogRecord = await getBlobStorageByProjectAndEntityId(
       projectId,
       "trace",
       `${baseId}-trace`,
     );
     expect(eventLogRecord).toHaveLength(0);
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should NOT delete media files from cloud storage and database if after expiry cutoff", async () => {
-    // Setup
-    const fileName = `${randomUUID()}.txt`;
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
+    const fileName = `${s3Prefix}${randomUUID()}.txt`;
     const fileType = "text/plain";
     const data = "Hello, world!";
-    const expiresInSeconds = 3600;
+
     await storageService.uploadFile({
       fileName,
       fileType,
       data,
-      expiresInSeconds,
     });
 
     const mediaId = randomUUID();
@@ -155,7 +196,7 @@ describe("DataRetentionProcessingJob", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: fileName,
-        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
@@ -177,11 +218,11 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const files = await storageService.listFiles("");
+    const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).toContain(fileName);
 
     const media = await prisma.media.findUnique({
-      where: { id: mediaId },
+      where: { projectId_id: { projectId, id: mediaId } },
     });
     expect(media).toBeDefined();
 
@@ -189,19 +230,29 @@ describe("DataRetentionProcessingJob", () => {
       where: { mediaId },
     });
     expect(traceMedia).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should delete media files from cloud storage and database if expired", async () => {
-    // Setup
-    const fileName = `${randomUUID()}.txt`;
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
+    const fileName = `${s3Prefix}${randomUUID()}.txt`;
     const fileType = "text/plain";
     const data = "Hello, world!";
-    const expiresInSeconds = 3600;
+
     await storageService.uploadFile({
       fileName,
       fileType,
       data,
-      expiresInSeconds,
     });
 
     const mediaId = randomUUID();
@@ -213,7 +264,7 @@ describe("DataRetentionProcessingJob", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), // 30 days in the past
         bucketPath: fileName,
-        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
@@ -235,11 +286,11 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const files = await storageService.listFiles("");
+    const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).not.toContain(fileName);
 
     const media = await prisma.media.findUnique({
-      where: { id: mediaId },
+      where: { projectId_id: { projectId, id: mediaId } },
     });
     expect(media).toBeNull();
 
@@ -247,10 +298,21 @@ describe("DataRetentionProcessingJob", () => {
       where: { mediaId },
     });
     expect(traceMedia).toBeNull();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should delete traces older than retention days", async () => {
-    // Setup
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
     const baseId = randomUUID();
     await createTracesCh([
       createTrace({
@@ -270,14 +332,31 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const traceOld = await getTraceById(`${baseId}-trace-old`, projectId);
+    const traceOld = await getTraceById({
+      traceId: `${baseId}-trace-old`,
+      projectId,
+    });
     expect(traceOld).toBeUndefined();
-    const traceNew = await getTraceById(`${baseId}-trace-new`, projectId);
+    const traceNew = await getTraceById({
+      traceId: `${baseId}-trace-new`,
+      projectId,
+    });
     expect(traceNew).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should delete observations older than retention days", async () => {
-    // Setup
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
     const baseId = randomUUID();
     await createObservationsCh([
       createObservation({
@@ -298,25 +377,36 @@ describe("DataRetentionProcessingJob", () => {
 
     // Then
     expect(() =>
-      getObservationById(`${baseId}-observation-old`, projectId),
+      getObservationById({ id: `${baseId}-observation-old`, projectId }),
     ).rejects.toThrowError("not found");
-    const observationNew = await getObservationById(
-      `${baseId}-observation-new`,
+    const observationNew = await getObservationById({
+      id: `${baseId}-observation-new`,
       projectId,
-    );
+    });
     expect(observationNew).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 
   it("should delete scores older than retention days", async () => {
-    // Setup
+    // Setup: Set retention in database to match job payload
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 7 },
+    });
+
     const baseId = randomUUID();
     await createScoresCh([
-      createScore({
+      createTraceScore({
         id: `${baseId}-score-old`,
         project_id: projectId,
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
       }),
-      createScore({
+      createTraceScore({
         id: `${baseId}-score-new`,
         project_id: projectId,
       }),
@@ -328,9 +418,136 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    const scoresOld = await getScoreById(projectId, `${baseId}-score-old`);
+    const scoresOld = await getScoreById({
+      projectId,
+      scoreId: `${baseId}-score-old`,
+    });
     expect(scoresOld).toBeUndefined();
-    const scoresNew = await getScoreById(projectId, `${baseId}-score-new`);
+    const scoresNew = await getScoreById({
+      projectId,
+      scoreId: `${baseId}-score-new`,
+    });
     expect(scoresNew).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
+  });
+
+  it("should skip deletion when retention is changed to 0 (indefinite) after job was queued", async () => {
+    // Setup: Create data that would be deleted if retention was still 7 days
+    const baseId = randomUUID();
+    await createTracesCh([
+      createTrace({
+        id: `${baseId}-trace-old`,
+        project_id: projectId,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
+      }),
+    ]);
+
+    // Simulate that project retention was changed to 0 (indefinite)
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 0 },
+    });
+
+    // When: Process job that was queued with retention: 7
+    await handleDataRetentionProcessingJob({
+      data: { payload: { projectId, retention: 7 } }, // Job queued with 7 day retention
+    } as Job);
+
+    // Then: Data should NOT be deleted because current retention is 0
+    const traceOld = await getTraceById({
+      traceId: `${baseId}-trace-old`,
+      projectId,
+    });
+    expect(traceOld).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
+  });
+
+  it("should skip deletion when retention is changed to null after job was queued", async () => {
+    // Setup: Create data that would be deleted if retention was still 7 days
+    const baseId = randomUUID();
+    await createTracesCh([
+      createTrace({
+        id: `${baseId}-trace-old-2`,
+        project_id: projectId,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
+      }),
+    ]);
+
+    // Simulate that project retention was removed (null)
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
+
+    // When: Process job that was queued with retention: 7
+    await handleDataRetentionProcessingJob({
+      data: { payload: { projectId, retention: 7 } }, // Job queued with 7 day retention
+    } as Job);
+
+    // Then: Data should NOT be deleted because current retention is null
+    const traceOld = await getTraceById({
+      traceId: `${baseId}-trace-old-2`,
+      projectId,
+    });
+    expect(traceOld).toBeDefined();
+  });
+
+  it("should use current retention value if it changed from queued value", async () => {
+    // Setup: Create data with different ages
+    const baseId = randomUUID();
+    await createTracesCh([
+      createTrace({
+        id: `${baseId}-trace-very-old`,
+        project_id: projectId,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 40).getTime(), // 40 days in the past
+      }),
+      createTrace({
+        id: `${baseId}-trace-old`,
+        project_id: projectId,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).getTime(), // 25 days in the past
+      }),
+    ]);
+
+    // Simulate that project retention was changed from 7 to 30 days
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: 30 },
+    });
+
+    // When: Process job that was queued with retention: 7
+    await handleDataRetentionProcessingJob({
+      data: { payload: { projectId, retention: 7 } }, // Job queued with 7 day retention
+    } as Job);
+
+    // Then: Should use current retention (30 days)
+    // - Trace at 40 days should be deleted
+    // - Trace at 25 days should remain
+    const traceVeryOld = await getTraceById({
+      traceId: `${baseId}-trace-very-old`,
+      projectId,
+    });
+    expect(traceVeryOld).toBeUndefined();
+
+    const traceOld = await getTraceById({
+      traceId: `${baseId}-trace-old`,
+      projectId,
+    });
+    expect(traceOld).toBeDefined();
+
+    // Cleanup
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { retentionDays: null },
+    });
   });
 });

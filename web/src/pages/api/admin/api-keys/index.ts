@@ -1,13 +1,13 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { z } from "zod";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis } from "@hanzo/shared/src/server";
-import { env } from "@/src/env.mjs";
+import { z } from "zod/v4";
+import { prisma } from "@langfuse/shared/src/db";
+import { logger, redis } from "@langfuse/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
+import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 
 /* 
-This API route is used by Hanzo Cloud to delete API keys for a project. It will return 403 for self-hosters.
-We will work on admin APIs in the future. See the discussion here: https://github.com/orgs/hanzoai/discussions/3243
+This API route is used by Langfuse Cloud to delete API keys for a project.
+We will work on admin APIs in the future. See the discussion here: https://github.com/orgs/langfuse/discussions/3243
 */
 
 const DeleteApiKeySchema = z.object({
@@ -36,29 +36,11 @@ export default async function handler(
       return;
     }
 
-    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
-      res.status(403).json({ error: "Only accessible on Hanzo cloud" });
-      return;
-    }
-
-    // check if ADMIN_API_KEY is set
-    if (!env.ADMIN_API_KEY) {
-      logger.error("ADMIN_API_KEY is not set");
-      res.status(500).json({ error: "ADMIN_API_KEY is not set" });
-      return;
-    }
-
-    // check bearer token
-    const { authorization } = req.headers;
-    if (!authorization) {
-      res
-        .status(401)
-        .json({ error: "Unauthorized: No authorization header provided" });
-      return;
-    }
-    const [scheme, token] = authorization.split(" ");
-    if (scheme !== "Bearer" || !token || token !== env.ADMIN_API_KEY) {
-      res.status(401).json({ error: "Unauthorized: Invalid token" });
+    if (
+      !AdminApiAuthService.handleAdminAuth(req, res, {
+        isAllowedOnLangfuseCloud: true,
+      })
+    ) {
       return;
     }
 
@@ -80,6 +62,7 @@ export default async function handler(
           projectId: {
             in: body.data.projectIds,
           },
+          scope: "PROJECT",
         },
       });
 
@@ -88,11 +71,12 @@ export default async function handler(
           projectId: {
             in: body.data.projectIds,
           },
+          scope: "PROJECT",
         },
       });
 
       // then delete from the cache
-      await new ApiAuthService(prisma, redis).invalidate(
+      await new ApiAuthService(prisma, redis).invalidateCachedApiKeys(
         apiKeysToBeDeleted,
         `projects ${body.data.projectIds.join(", ")}`,
       );
@@ -109,11 +93,12 @@ export default async function handler(
           projectId: {
             in: body.data.projectIds,
           },
+          scope: "PROJECT",
         },
       });
 
       // then delete from the cache
-      await new ApiAuthService(prisma, redis).invalidate(
+      await new ApiAuthService(prisma, redis).invalidateCachedApiKeys(
         apiKeysToBeInvalidated,
         `projects ${body.data.projectIds.join(", ")}`,
       );

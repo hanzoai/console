@@ -2,16 +2,18 @@ import { prisma } from "@hanzo/shared/src/db";
 import {
   GetDatasetV2Query,
   GetDatasetV2Response,
+  transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "get-dataset",
     querySchema: GetDatasetV2Query,
     responseSchema: GetDatasetV2Response,
+    rateLimitResource: "datasets",
     fn: async ({ query, auth }) => {
       const { datasetName } = query;
 
@@ -25,7 +27,7 @@ export default withMiddlewares({
       if (!dataset) {
         throw new HanzoNotFoundError("Dataset not found");
       }
-      return dataset;
+      return transformDbDatasetToAPIDataset(dataset);
     },
   }),
 });

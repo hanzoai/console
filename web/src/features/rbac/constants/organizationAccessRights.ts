@@ -1,14 +1,18 @@
 // Ensure Role type includes 'ADMIN_BILLING' in @hanzo/shared/src/db
 import { type Role } from "@hanzo/shared/src/db";
 
-const organizationScopes = [
+// Exported to silence @typescript-eslint/no-unused-vars v8 warning
+// (used for type extraction via typeof, which is a legitimate pattern)
+export const organizationScopes = [
   "projects:create",
   "projects:transfer_org",
+  "organization:CRUD_apiKeys",
   "organization:update",
   "organization:delete",
   "organizationMembers:read",
   "organizationMembers:CUD",
-  "hanzoCloudBilling:CRUD",
+  "langfuseCloudBilling:CRUD",
+  "auditLogs:read",
 ] as const;
 
 // type string of all Resource:Action, e.g. "organizationMembers:read"
@@ -18,19 +22,22 @@ export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
   OWNER: [
     "projects:create",
     "projects:transfer_org",
+    "organization:CRUD_apiKeys",
     "organization:update",
     "organization:delete",
     "organizationMembers:CUD",
     "organizationMembers:read",
-    "hanzoCloudBilling:CRUD",
+    "langfuseCloudBilling:CRUD",
+    "auditLogs:read",
   ],
   ADMIN: [
     "projects:create",
     "projects:transfer_org",
+    "organization:CRUD_apiKeys",
     "organization:update",
     "organizationMembers:CUD",
     "organizationMembers:read",
-    "hanzoCloudBilling:CRUD",
+    "auditLogs:read",
   ],
   ADMIN_BILLING: ["hanzoCloudBilling:CRUD"],
   MEMBER: ["organizationMembers:read"],

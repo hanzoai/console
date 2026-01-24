@@ -9,12 +9,14 @@ import {
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
+import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 
 const regions =
   env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
@@ -55,6 +57,11 @@ const regions =
             location: "BCN",
             regionId: "eu-west-1"
           },
+          {
+            name: "HIPAA",
+            hostname: "hipaa.cloud.langfuse.com",
+            flag: "⚕️",
+          },
         ];
 
 export function CloudRegionSwitch({
@@ -63,12 +70,11 @@ export function CloudRegionSwitch({
   isSignUpPage?: boolean;
 }) {
   const capture = usePostHogClientCapture();
+  const { isLangfuseCloud, region: cloudRegion } = useLangfuseCloudRegion();
 
-  if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION === undefined) return null;
+  if (!isLangfuseCloud) return null;
 
-  const currentRegion = regions.find(
-    (region) => region.name === env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
-  );
+  const currentRegion = regions.find((region) => region.name === cloudRegion);
 
   return (
     <div className="-mb-10 mt-8 rounded-lg bg-card px-6 py-6 text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
@@ -78,9 +84,9 @@ export function CloudRegionSwitch({
             Data Region
             <DataRegionInfo />
           </span>
-          {isSignUpPage && env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "US" ? (
+          {isSignUpPage && cloudRegion === "HIPAA" ? (
             <p className="text-xs text-muted-foreground">
-              Demo project is only available in the EU region.
+              Demo project is not available in the HIPAA data region.
             </p>
           ) : null}
         </div>
@@ -115,6 +121,23 @@ export function CloudRegionSwitch({
             ))}
           </SelectContent>
         </Select>
+
+        {cloudRegion === "HIPAA" && (
+          <div className="mt-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+            <p>
+              The Business Associate Agreement (BAA) is only effective on the
+              Cloud Pro and Teams plans.{" "}
+              <a
+                href="https://langfuse.com/security/hipaa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-accent underline hover:text-hover-primary-accent"
+              >
+                Learn more about HIPAA compliance →
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -136,35 +159,49 @@ const DataRegionInfo = () => (
       <DialogHeader>
         <DialogTitle>Data Regions</DialogTitle>
       </DialogHeader>
-      <DialogDescription className="flex flex-col gap-2">
-        <p>Hanzo Cloud is available in three data regions:</p>
-        <ul className="list-disc pl-5">
-          <li>US: MCI (Hanzo Cloud region us-central-1)</li>
-          <li>CA: YVR (Hanzo Cloud region ca-west-1)</li>
-          <li>EU: BCN (Hanzo Cloud region eu-west-1)</li>
-        </ul>
-        <p>
-          Regions are strictly separated, and no data is shared across regions.
-          Choosing a region close to you can help improve speed and comply with
-          local data residency laws and privacy regulations.
-        </p>
-        <p>
-          You can have accounts in both regions and data migrations are
-          available on Team plans.
-        </p>
-        <p>
-          For more information, visit{" "}
-          <a
-            href="https://hanzo.ai/docs/data-security-privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary-accent underline"
-          >
-            hanzo.ai/security
-          </a>
-          .
-        </p>
-      </DialogDescription>
+      <DialogBody>
+        <DialogDescription className="flex flex-col gap-2">
+          <p>Langfuse Cloud is available in three data regions:</p>
+          <ul className="list-disc pl-5">
+            <li>US: Oregon (AWS us-west-2)</li>
+            <li>EU: Ireland (AWS eu-west-1)</li>
+            <li>
+              HIPAA: Oregon (AWS us-west-2) - HIPAA-compliant region (available
+              with Pro and Teams plans)
+            </li>
+          </ul>
+          <p>
+            Regions are strictly separated, and no data is shared across
+            regions. Choosing a region close to you can help improve speed and
+            comply with local data residency laws and privacy regulations.
+          </p>
+          <p>
+            You can have accounts in multiple regions. Each region requires a
+            separate subscription.
+          </p>
+          <p>
+            Learn more about{" "}
+            <a
+              href="https://langfuse.com/security/data-regions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-accent underline"
+            >
+              data regions
+            </a>{" "}
+            and{" "}
+            <a
+              href="https://langfuse.com/docs/data-security-privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-accent underline"
+            >
+              data security & privacy
+            </a>
+            .
+          </p>
+        </DialogDescription>
+      </DialogBody>
     </DialogContent>
   </Dialog>
 );

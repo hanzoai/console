@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+migrate
+/.pnpm-store
 
 # testing
 /coverage
@@ -15,6 +17,7 @@
 
 # next.js
 /.next/
+/.next-check/
 /out/
 next-env.d.ts
 
@@ -39,7 +42,9 @@ yarn-error.log*
 .env*
 !.env.dev.example
 !.env.dev-azure.example
+!.env.dev-redis-cluster.example
 !.env.prod.example
+!.env.test.example
 
 # vercel
 .vercel
@@ -52,19 +57,31 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-/generated/typescript-server
+/generated
 
 # openapi spec that is copied during build
 /public/openapi*.yml
 
+# claude meta files
+.claude/tsc-cache
 
 # vscode
-.devcontainer
-
 node_modules
 **/node_modules
 **/dist
 **/.next/*
+**/.next-check/*
 **/.turbo/*
 .yarn
 .turbo
+
+web/test-results/*
+
+# local config files
+*.local.*
+
+# claude meta files
+.claude/tsc-cache
+
+# Refactoring planning files (local only)
+**/.refactor/

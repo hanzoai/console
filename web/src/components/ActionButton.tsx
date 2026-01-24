@@ -1,3 +1,4 @@
+import React from "react";
 import { Lock, AlertCircle, Sparkle } from "lucide-react";
 import { Button, type ButtonProps } from "@/src/components/ui/button";
 import {
@@ -7,6 +8,7 @@ import {
 } from "@/src/components/ui/hover-card";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import Link from "next/link";
+import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
 const BUTTON_STATE_MESSAGES = {
   limitReached: (current: number, max: number) =>
@@ -26,21 +28,32 @@ interface ActionButtonProps extends ButtonProps {
   children: React.ReactNode;
   className?: string;
   href?: string;
+  trackingEventName?: Parameters<ReturnType<typeof usePostHogClientCapture>>[0];
+  trackingProps?: Record<string, unknown>;
 }
 
-export function ActionButton({
-  loading = false,
-  hasAccess = true,
-  hasEntitlement = true,
-  limitValue,
-  limit = false,
-  disabled = false,
-  children,
-  icon,
-  className,
-  href,
-  ...buttonProps
-}: ActionButtonProps) {
+export const ActionButton = React.forwardRef<
+  HTMLButtonElement,
+  ActionButtonProps
+>(function ActionButton(
+  {
+    loading = false,
+    hasAccess = true,
+    hasEntitlement = true,
+    limitValue,
+    limit = false,
+    disabled = false,
+    children,
+    icon,
+    className,
+    href,
+    trackingEventName,
+    trackingProps,
+    ...buttonProps
+  },
+  ref,
+) {
+  const capture = usePostHogClientCapture();
   const hasReachedLimit =
     typeof limit === "number" &&
     limitValue !== undefined &&
@@ -63,8 +76,16 @@ export function ActionButton({
 
   const message = getMessage();
 
+  // Handle click tracking for external links
+  const handleLinkClick = () => {
+    if (trackingEventName && href && isExternalUrl(href)) {
+      capture(trackingEventName, trackingProps ?? null);
+    }
+  };
+
   const btnContent = (
     <ButtonContent
+      ref={ref}
       icon={icon}
       isDisabled={isDisabled}
       loading={loading}
@@ -74,6 +95,7 @@ export function ActionButton({
       className={className}
       buttonProps={buttonProps}
       href={href}
+      onLinkClick={handleLinkClick}
     >
       {children}
     </ButtonContent>
@@ -95,31 +117,47 @@ export function ActionButton({
   }
 
   return btnContent;
-}
+});
 
-function ButtonContent({
-  icon,
-  isDisabled,
-  loading,
-  hasAccess,
-  hasEntitlement,
-  hasReachedLimit,
-  className,
-  buttonProps,
-  children,
-  href,
-}: {
-  icon?: React.ReactNode;
-  isDisabled: boolean;
-  loading: boolean;
-  hasAccess: boolean;
-  hasEntitlement: boolean;
-  hasReachedLimit: boolean;
-  className?: string;
-  buttonProps: Omit<ButtonProps, "disabled" | "loading" | "className">;
-  children: React.ReactNode;
-  href?: string;
-}) {
+const isExternalUrl = (url: string) => {
+  return (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("//")
+  );
+};
+
+const ButtonContent = React.forwardRef<
+  HTMLButtonElement,
+  {
+    icon?: React.ReactNode;
+    isDisabled: boolean;
+    loading: boolean;
+    hasAccess: boolean;
+    hasEntitlement: boolean;
+    hasReachedLimit: boolean;
+    className?: string;
+    buttonProps: Omit<ButtonProps, "disabled" | "loading" | "className">;
+    children: React.ReactNode;
+    href?: string;
+    onLinkClick?: () => void;
+  }
+>(function ButtonContent(
+  {
+    icon,
+    isDisabled,
+    loading,
+    hasAccess,
+    hasEntitlement,
+    hasReachedLimit,
+    className,
+    buttonProps,
+    children,
+    href,
+    onLinkClick,
+  },
+  ref,
+) {
   const content = (
     <>
       {!hasAccess ? (
@@ -136,16 +174,29 @@ function ButtonContent({
   );
 
   const renderLink = href && !isDisabled;
+  const isExternal = href && isExternalUrl(href);
 
   return (
     <Button
+      ref={ref}
       disabled={isDisabled}
       loading={loading}
       className={className}
       {...buttonProps}
       asChild={renderLink ? true : undefined}
     >
-      {renderLink ? <Link href={href}>{content}</Link> : content}
+      {renderLink ? (
+        <Link
+          href={href}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          onClick={onLinkClick}
+        >
+          {content}
+        </Link>
+      ) : (
+        content
+      )}
     </Button>
   );
-}
+});

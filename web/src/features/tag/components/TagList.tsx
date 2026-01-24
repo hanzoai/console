@@ -1,4 +1,4 @@
-import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/src/components/ui/badge";
 import { TagButton } from "@/src/features/tag/components/TagButton";
 import { TagIcon } from "lucide-react";
 
@@ -27,13 +27,9 @@ const TagList = ({
       />
     ))
   ) : (
-    <Button
-      variant="tertiary"
-      size="icon-xs"
-      className={isTableCell ? "opacity-0 hover:opacity-100" : ""}
-    >
+    <Badge variant="tertiary">
       <TagIcon className="h-3.5 w-3.5" />
-    </Button>
+    </Badge>
   );
 };
 

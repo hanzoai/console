@@ -1,4 +1,4 @@
-import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
+import { mapStripeProductIdToPlan } from "@/src/ee/features/billing/utils/stripeCatalogue";
 import { env } from "@/src/env.mjs";
 import { type Plan } from "@hanzo/shared";
 import { type CloudConfigSchema } from "@hanzo/shared";
@@ -18,13 +18,19 @@ export function getOrganizationPlanServerSide(
       // manual plan override
       if (cloudConfig.plan) {
         switch (cloudConfig.plan) {
+          case "Hobby":
+            return "cloud:hobby";
+          case "Core":
+            return "cloud:core";
           case "Pro":
             return "cloud:pro";
           case "Team":
-          case "Dev":
-            return "cloud:dev";
+            return "cloud:team";
+          case "Enterprise":
+            return "cloud:enterprise";
           default:
-            return "cloud:free";
+            const exhaustiveCheck: never = cloudConfig.plan;
+            throw new Error(`Unhandled plan case: ${exhaustiveCheck}`);
         }
       }
       // stripe plan via product id

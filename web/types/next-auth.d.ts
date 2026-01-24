@@ -21,8 +21,7 @@ declare module "next-auth" {
     environment: {
       // Run-time environment variables that need to be available client-side
       enableExperimentalFeatures: boolean;
-      disableExpensivePostgresQueries: boolean;
-      // Enables features that are only available under an enterprise/commercial license when self-hosting HanzoCloud
+      // Enables features that are only available under an enterprise/commercial license when self-hosting Langfuse
       selfHostedInstancePlan: Plan | null;
     };
   }
@@ -31,6 +30,7 @@ declare module "next-auth" {
     id: PrismaUser["id"];
     name?: PrismaUser["name"];
     email?: PrismaUser["email"];
+    emailSupportHash?: string | null;
     image?: PrismaUser["image"];
     admin?: PrismaUser["admin"];
     emailVerified?: string | null; // iso datetime string, need to stringify as JWT & useSession do not support Date objects
@@ -41,11 +41,14 @@ declare module "next-auth" {
       role: Role;
       cloudConfig: CloudConfigSchema | undefined;
       plan: Plan;
+      metadata: Record<string, unknown>;
+      aiFeaturesEnabled: boolean;
       projects: {
         id: PrismaProject["id"];
         name: PrismaProject["name"];
         deletedAt: PrismaProject["deletedAt"];
         retentionDays: PrismaProject["retentionDays"];
+        metadata: Record<string, unknown>;
         role: Role; // include only projects where user has a role
       }[];
     }[];

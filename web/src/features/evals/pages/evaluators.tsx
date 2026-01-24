@@ -1,23 +1,19 @@
 import Page from "@/src/components/layouts/page";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Plus } from "lucide-react";
 import EvaluatorTable from "@/src/features/evals/components/evaluator-table";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {
-  TabsBar,
-  TabsBarList,
-  TabsBarTrigger,
-} from "@/src/components/ui/tabs-bar";
+  getEvalsTabs,
+  EVALS_TABS,
+} from "@/src/features/navigation/utils/evals-tabs";
 import { ActionButton } from "@/src/components/ActionButton";
 import { api } from "@/src/utils/api";
-import {
-  useEntitlementLimit,
-  useHasEntitlement,
-} from "@/src/features/entitlements/hooks";
-import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
+import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
+import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
 import { EvaluatorsOnboarding } from "@/src/components/onboarding/EvaluatorsOnboarding";
+import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
 
 export default function EvaluatorsPage() {
   const router = useRouter();
@@ -27,7 +23,6 @@ export default function EvaluatorsPage() {
   const evaluatorLimit = useEntitlementLimit(
     "model-based-evaluations-count-evaluators",
   );
-  const hasEntitlement = useHasEntitlement("model-based-evaluations");
   const hasWriteAccess = useHasProjectAccess({
     projectId,
     scope: "evalJob:CUD",
@@ -44,7 +39,7 @@ export default function EvaluatorsPage() {
       projectId,
     },
     {
-      enabled: !!projectId && hasEntitlement,
+      enabled: !!projectId,
       trpc: {
         context: {
           skipBatch: true,
@@ -57,7 +52,7 @@ export default function EvaluatorsPage() {
     countsQuery.data?.configCount === 0 &&
     countsQuery.data?.templateCount === 0;
 
-  if (!hasReadAccess || !hasEntitlement) {
+  if (!hasReadAccess) {
     return <SupportOrUpgradePage />;
   }
 
@@ -65,11 +60,11 @@ export default function EvaluatorsPage() {
     return (
       <Page
         headerProps={{
-          title: "Evaluators",
+          title: "LLM-as-a-Judge Evaluators",
           help: {
             description:
-              "Use LLM-as-a-judge evaluators as practical addition to human annotation. Configure an evaluation prompt and a model as judge to evaluate incoming traces.",
-            href: "https://hanzo.ai/docs/scores/model-based-evals",
+              "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
+            href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
         }}
         scrollable
@@ -80,45 +75,41 @@ export default function EvaluatorsPage() {
   }
 
   return (
-    <Page
-      headerProps={{
-        title: "Evaluators",
-        help: {
-          description:
-            "Use LLM-as-a-judge evaluators as practical addition to human annotation. Configure an evaluation prompt and a model as judge to evaluate incoming traces.",
-          href: "https://hanzo.ai/docs/scores/model-based-evals",
-        },
-        tabsComponent: (
-          <TabsBar value="evaluators">
-            <TabsBarList className="justify-start">
-              <TabsBarTrigger value="evaluators">Evaluators</TabsBarTrigger>
-              <TabsBarTrigger value="templates" asChild>
-                <Link href={`/project/${projectId}/evals/templates`}>
-                  Templates
-                </Link>
-              </TabsBarTrigger>
-              <TabsBarTrigger value="log" asChild>
-                <Link href={`/project/${projectId}/evals/log`}>Log</Link>
-              </TabsBarTrigger>
-            </TabsBarList>
-          </TabsBar>
-        ),
-        actionButtonsRight: (
-          <ActionButton
-            hasAccess={hasWriteAccess}
-            icon={<Plus className="h-4 w-4" />}
-            variant="outline"
-            onClick={() => capture("eval_config:new_form_open")}
-            href={`/project/${projectId}/evals/new`}
-            limitValue={countsQuery.data?.configActiveCount ?? 0}
-            limit={evaluatorLimit}
-          >
-            New evaluator
-          </ActionButton>
-        ),
-      }}
-    >
-      <EvaluatorTable projectId={projectId} />
-    </Page>
+    <>
+      <Page
+        headerProps={{
+          title: "LLM-as-a-Judge Evaluators",
+          help: {
+            description:
+              "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
+            href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+          },
+          tabsProps: {
+            tabs: getEvalsTabs(projectId),
+            activeTab: EVALS_TABS.CONFIGS,
+          },
+          actionButtonsRight: (
+            <>
+              <ManageDefaultEvalModel projectId={projectId} />
+              <ActionButton
+                hasAccess={hasWriteAccess}
+                icon={<Plus className="h-4 w-4" />}
+                variant="default"
+                onClick={() => {
+                  capture("eval_config:new_form_open");
+                  router.push(`/project/${projectId}/evals/new`);
+                }}
+                limitValue={countsQuery.data?.configActiveCount ?? 0}
+                limit={evaluatorLimit}
+              >
+                Set up evaluator
+              </ActionButton>
+            </>
+          ),
+        }}
+      >
+        <EvaluatorTable projectId={projectId} />
+      </Page>
+    </>
   );
 }

@@ -1,16 +1,17 @@
 import {
-  deleteEventLogByProjectIdAndIds,
+  deleteEventsByTraceIds,
   deleteObservationsByTraceIds,
   deleteScoresByTraceIds,
   deleteTraces,
-  getEventLogByProjectIdAndTraceIds,
   logger,
+  removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces,
   StorageService,
   StorageServiceFactory,
   traceException,
 } from "@hanzo/shared/src/server";
 import { env } from "../../env";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
+import { chunk } from "lodash";
 
 let s3MediaStorageClient: StorageService;
 
@@ -18,30 +19,16 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3MediaStorageClient;
-};
-
-let s3EventStorageClient: StorageService;
-
-const getS3EventStorageClient = (bucketName: string): StorageService => {
-  if (!s3EventStorageClient) {
-    s3EventStorageClient = StorageServiceFactory.getInstance({
-      bucketName,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-    });
-  }
-  return s3EventStorageClient;
 };
 
 const deleteMediaItemsForTraces = async (
@@ -51,11 +38,12 @@ const deleteMediaItemsForTraces = async (
   if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     return;
   }
-  // First, find all records associated with the traces to be deleted
+
+  // Phase 1: Find and delete references, collect affected mediaIds
+  const allMediaIds = new Set<string>();
   const [traceMediaItems, observationMediaItems] = await Promise.all([
     prisma.traceMedia.findMany({
       select: {
-        id: true,
         mediaId: true,
       },
       where: {
@@ -67,7 +55,6 @@ const deleteMediaItemsForTraces = async (
     }),
     prisma.observationMedia.findMany({
       select: {
-        id: true,
         mediaId: true,
       },
       where: {
@@ -79,73 +66,75 @@ const deleteMediaItemsForTraces = async (
     }),
   ]);
 
-  // Find media items that will have no remaining references after deletion
-  const mediaDeleteCandidates = await prisma.media.findMany({
-    select: {
-      id: true,
-      bucketPath: true,
-    },
-    where: {
-      projectId,
-      id: {
-        in: [...traceMediaItems, ...observationMediaItems].map(
-          (ref) => ref.mediaId,
-        ),
-      },
-      TraceMedia: {
-        every: {
-          id: {
-            in: traceMediaItems.map((ref) => ref.id),
-          },
-        },
-      },
-      ObservationMedia: {
-        every: {
-          id: {
-            in: observationMediaItems.map((ref) => ref.id),
-          },
-        },
-      },
-    },
-  });
+  // Collect all affected mediaIds
+  traceMediaItems.forEach((item) => allMediaIds.add(item.mediaId));
+  observationMediaItems.forEach((item) => allMediaIds.add(item.mediaId));
 
-  // Remove the media items that will have no remaining references
-  if (mediaDeleteCandidates.length > 0) {
-    // Delete from Cloud Storage
-    await getS3MediaStorageClient(
-      env.HANZO_S3_MEDIA_UPLOAD_BUCKET ?? "", // Fallback is never used.
-    ).deleteFiles(mediaDeleteCandidates.map((f) => f.bucketPath));
-
-    // Delete from postgres
-    await prisma.media.deleteMany({
-      where: {
-        id: {
-          in: mediaDeleteCandidates.map((f) => f.id),
-        },
-        projectId,
-      },
-    });
-  }
-
-  // Remove all traceMedia and observationMedia items that we found earlier
+  // Delete the junction table records by traceId (should be covered by indexes)
   await Promise.all([
     prisma.traceMedia.deleteMany({
       where: {
         projectId,
-        id: {
-          in: traceMediaItems.map((ref) => ref.id),
+        traceId: {
+          in: traceIds,
         },
       },
     }),
     prisma.observationMedia.deleteMany({
       where: {
         projectId,
-        id: {
-          in: observationMediaItems.map((ref) => ref.id),
+        traceId: {
+          in: traceIds,
         },
       },
     }),
   ]);
+
+  // Phase 2: Delete orphaned media items using NOT EXISTS subquery
+  if (allMediaIds.size === 0) {
+    return;
+  }
+
+  const mediaIdChunks = chunk(Array.from(allMediaIds), 1000);
+
+  for (const mediaIdChunk of mediaIdChunks) {
+    // First, fetch media items that are orphaned (no references) to get their bucket paths
+    const orphanedMedia = await prisma.media.findMany({
+      select: {
+        id: true,
+        bucketPath: true,
+      },
+      where: {
+        projectId,
+        id: {
+          in: mediaIdChunk,
+        },
+        TraceMedia: {
+          none: {},
+        },
+        ObservationMedia: {
+          none: {},
+        },
+      },
+    });
+
+    if (orphanedMedia.length > 0) {
+      // Delete from S3
+      await getS3MediaStorageClient(
+        env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET ?? "", // Fallback is never used.
+      ).deleteFiles(orphanedMedia.map((f) => f.bucketPath));
+
+      // Delete from postgres
+      await prisma.media.deleteMany({
+        where: {
+          projectId,
+          id: {
+            in: orphanedMedia.map((f) => f.id),
+          },
+        },
+      });
+    }
+  }
 };
 
 export const processClickhouseTraceDelete = async (
@@ -158,35 +147,20 @@ export const processClickhouseTraceDelete = async (
 
   await deleteMediaItemsForTraces(projectId, traceIds);
 
-  const eventLogStream = getEventLogByProjectIdAndTraceIds(projectId, traceIds);
-  let eventLogRecords: { id: string; path: string }[] = [];
-  const eventStorageClient = getS3EventStorageClient(
-    env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-  );
-  for await (const eventLog of eventLogStream) {
-    eventLogRecords.push({ id: eventLog.id, path: eventLog.bucket_path });
-    if (eventLogRecords.length > 500) {
-      // Delete the current batch and reset the list
-      await eventStorageClient.deleteFiles(eventLogRecords.map((r) => r.path));
-      await deleteEventLogByProjectIdAndIds(
-        projectId,
-        eventLogRecords.map((r) => r.id),
-      );
-      eventLogRecords = [];
-    }
-  }
-  // Delete any remaining files
-  await eventStorageClient.deleteFiles(eventLogRecords.map((r) => r.path));
-  await deleteEventLogByProjectIdAndIds(
-    projectId,
-    eventLogRecords.map((r) => r.id),
-  );
-
   try {
     await Promise.all([
+      env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
+        ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces({
+            projectId,
+            traceIds,
+          })
+        : Promise.resolve(),
       deleteTraces(projectId, traceIds),
       deleteObservationsByTraceIds(projectId, traceIds),
       deleteScoresByTraceIds(projectId, traceIds),
+      env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
+        ? deleteEventsByTraceIds(projectId, traceIds)
+        : Promise.resolve(),
     ]);
   } catch (e) {
     logger.error(

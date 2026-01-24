@@ -1,13 +1,14 @@
-import z from "zod";
+import z from "zod/v4";
 import { singleFilter } from "../../../interfaces/filters";
 import { FilterCondition } from "../../../types";
 import { isValidTableName } from "../../clickhouse/schemaUtils";
 import { logger } from "../../logger";
-import { UiColumnMapping } from "../../../tableDefinitions";
+import { UiColumnMappings } from "../../../tableDefinitions";
 import {
   StringFilter,
   DateTimeFilter,
   StringOptionsFilter,
+  CategoryOptionsFilter,
   FilterList,
   NumberFilter,
   ArrayOptionsFilter,
@@ -29,7 +30,7 @@ export class QueryBuilderError extends Error {
 // User input for values (e.g. project_id = <value>) are sent to Clickhouse as parameters to prevent SQL injection
 export const createFilterFromFilterState = (
   filter: FilterCondition[],
-  columnMapping: UiColumnMapping[],
+  columnMapping: UiColumnMappings,
 ) => {
   return filter.map((frontEndFilter) => {
     // checks if the column exists in the clickhouse schema
@@ -57,6 +58,15 @@ export const createFilterFromFilterState = (
           clickhouseTable: column.clickhouseTableName,
           field: column.clickhouseSelect,
           operator: frontEndFilter.operator,
+          values: frontEndFilter.value,
+          tablePrefix: column.queryPrefix,
+        });
+      case "categoryOptions":
+        return new CategoryOptionsFilter({
+          clickhouseTable: column.clickhouseTableName,
+          field: column.clickhouseSelect,
+          operator: frontEndFilter.operator,
+          key: frontEndFilter.key,
           values: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
         });
@@ -111,6 +121,7 @@ export const createFilterFromFilterState = (
           tablePrefix: column.queryPrefix,
         });
       default:
+        // eslint-disable-next-line no-case-declarations
         const exhaustiveCheck: never = frontEndFilter;
         logger.error(`Invalid filter type: ${JSON.stringify(exhaustiveCheck)}`);
         throw new QueryBuilderError(`Invalid filter type`);
@@ -120,10 +131,9 @@ export const createFilterFromFilterState = (
 
 const matchAndVerifyTracesUiColumn = (
   filter: z.infer<typeof singleFilter>,
-  uiTableDefinitions: UiColumnMapping[],
+  uiTableDefinitions: UiColumnMappings,
 ) => {
   // tries to match the column name to the clickhouse table name
-  logger.debug(`Filter to match: ${JSON.stringify(filter)}`);
   const uiTable = uiTableDefinitions.find(
     (col) =>
       col.uiTableName === filter.column || col.uiTableId === filter.column, // matches on the NAME of the column in the UI.

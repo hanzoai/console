@@ -1,5 +1,5 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
   GetCommentsV1Query,
   GetCommentsV1Response,
@@ -9,35 +9,53 @@ import {
 import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { LangfuseNotFoundError } from "@langfuse/shared";
+import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 export default withMiddlewares({
-  POST: createAuthedAPIRoute({
+  POST: createAuthedProjectAPIRoute({
     name: "Create Comment",
     bodySchema: PostCommentsV1Body,
     responseSchema: PostCommentsV1Response,
     fn: async ({ body, auth }) => {
       const result = await validateCommentReferenceObject({
         ctx: { prisma, auth },
-        input: body,
+        input: {
+          ...body,
+          projectId: auth.scope.projectId,
+        },
       });
 
       if (result.errorMessage) {
         throw new HanzoNotFoundError(result.errorMessage);
       }
 
+      // Create comment with content as-is (no mention processing, no inline positioning)
       const comment = await prisma.comment.create({
         data: {
-          ...body,
+          content: body.content,
+          objectId: body.objectId,
+          objectType: body.objectType,
+          authorUserId: body.authorUserId,
           id: v4(),
           projectId: auth.scope.projectId,
         },
       });
 
+      await auditLog({
+        action: "create",
+        resourceType: "comment",
+        resourceId: comment.id,
+        projectId: auth.scope.projectId,
+        orgId: auth.scope.orgId,
+        apiKeyId: auth.scope.apiKeyId,
+        after: comment,
+      });
+
       return { id: comment.id };
     },
   }),
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Comments",
     querySchema: GetCommentsV1Query,
     responseSchema: GetCommentsV1Response,
@@ -55,7 +73,27 @@ export default withMiddlewares({
         skip: (page - 1) * limit,
       });
 
-      return { data: comments };
+      const totalItems = await prisma.comment.count({
+        where: {
+          projectId: auth.scope.projectId,
+          objectType: objectType ?? undefined,
+          objectId: objectId ?? undefined,
+          authorUserId: authorUserId ?? undefined,
+        },
+      });
+
+      return {
+        data: comments.map(
+          // Exclude inline positioning fields from public API
+          ({ dataField, path, rangeStart, rangeEnd, ...rest }) => rest,
+        ),
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          totalItems,
+          totalPages: Math.ceil(totalItems / query.limit),
+        },
+      };
     },
   }),
 });

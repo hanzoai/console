@@ -27,8 +27,8 @@ Fixes # (issue)
 
 <!-- Remove bullet points below that don't apply to you -->
 
-- I haven't read the [contributing guide](https://github.com/hanzoai/cloud/blob/main/CONTRIBUTING.md)
-- My code doesn't follow the style guidelines of this project (`npm run prettier`)
+- I haven't read the [contributing guide](https://github.com/langfuse/langfuse/blob/main/CONTRIBUTING.md)
+- My code doesn't follow the style guidelines of this project (`pnpm run format`)
 - I haven't commented my code, particularly in hard-to-understand areas
 - I haven't checked if my PR needs changes to the documentation
 - I haven't checked if my changes generate no new warnings (`npm run lint`)

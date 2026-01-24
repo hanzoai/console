@@ -1,5 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import type * as z from "zod";
+import type * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -14,7 +14,6 @@ import { Input } from "@/src/components/ui/input";
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { chatRunTrigger } from "@/src/features/support-chat/chat";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
@@ -28,7 +27,7 @@ export const NewProjectForm = ({
   const capture = usePostHogClientCapture();
   const { update: updateSession } = useSession();
 
-  const form = useForm<z.infer<typeof projectNameSchema>>({
+  const form = useForm({
     resolver: zodResolver(projectNameSchema),
     defaultValues: {
       name: "",
@@ -57,15 +56,19 @@ export const NewProjectForm = ({
       .catch((error) => {
         console.error(error);
       });
-    chatRunTrigger("after-project-creation");
   }
   return (
     <Form {...form}>
       <form
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-3"
         data-testid="new-project-form"
+        onKeyDown={(e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+            e.preventDefault();
+            void form.handleSubmit(onSubmit)();
+          }
+        }}
       >
         <FormField
           control={form.control}
@@ -84,7 +87,7 @@ export const NewProjectForm = ({
             </FormItem>
           )}
         />
-        <Button type="submit" loading={createProjectMutation.isLoading}>
+        <Button type="submit" loading={createProjectMutation.isPending}>
           Create
         </Button>
       </form>

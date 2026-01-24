@@ -1,12 +1,12 @@
-FROM --platform=${TARGETPLATFORM:-linux/amd64} node:23-alpine AS alpine
+# The node alpine image is available here: https://github.com/nodejs/docker-node
+FROM --platform=${TARGETPLATFORM:-linux/amd64} node:24-alpine AS alpine
 
 # It's important to update the index before installing packages to ensure you're getting the latest versions.
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk update && apk upgrade --no-cache libcrypto3 libssl3 libc6-compat busybox ssl_client
 
-
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine AS base
-RUN npm install turbo@^1.13.4 --global
+RUN npm install turbo@^2.7.5 --global
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -73,8 +73,9 @@ RUN chmod +x ./worker/entrypoint.sh
 EXPOSE 3030
 ENV PORT=3030
 
+# Docker ENTRYPOINT (dumb-init) is covered by semantic versioning, not the entrypoint.sh itself
+# Reasoning: ENTRYPOINT is overridden by some self-hosted deployments, thus changing this is breaking
 ENTRYPOINT ["dumb-init", "--", "./worker/entrypoint.sh"]
 
 # startup command
 CMD ["node", "worker/dist/index.js"]
-

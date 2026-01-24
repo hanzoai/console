@@ -4,17 +4,21 @@ import { AnnotationQueueItemsTable } from "@/src/features/annotation-queues/comp
 import { CardDescription } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { ClipboardPen, Lock } from "lucide-react";
-import { Separator } from "@/src/components/ui/separator";
 import { Badge } from "@/src/components/ui/badge";
-import { getScoreDataTypeIcon } from "@/src/features/scores/components/ScoreDetailColumnHelpers";
 import Link from "next/link";
 import { CreateOrEditAnnotationQueueButton } from "@/src/features/annotation-queues/components/CreateOrEditAnnotationQueueButton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { useHasEntitlement } from "@/src/features/entitlements/hooks";
-import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
+import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { TableWithMetadataWrapper } from "@/src/components/table/TableWithMetadataWrapper";
 import Page from "@/src/components/layouts/page";
+import {
+  SidePanel,
+  SidePanelContent,
+  SidePanelHeader,
+  SidePanelTitle,
+} from "@/src/components/ui/side-panel";
+import { SubHeaderLabel } from "@/src/components/layouts/header";
+import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 
 export default function QueueItems() {
   const router = useRouter();
@@ -34,8 +38,8 @@ export default function QueueItems() {
     projectId,
     scope: "annotationQueues:CUD",
   });
-  const hasEntitlement = useHasEntitlement("annotation-queues");
-  if (!hasReadAccess || !hasEntitlement) return <SupportOrUpgradePage />;
+
+  if (!hasReadAccess) return <SupportOrUpgradePage />;
 
   return (
     <Page
@@ -65,43 +69,49 @@ export default function QueueItems() {
         ),
       }}
     >
-      <TableWithMetadataWrapper
-        tableComponent={
+      <div className="grid flex-1 grid-cols-[1fr,auto] overflow-hidden">
+        <div className="flex h-full flex-col overflow-hidden">
           <AnnotationQueueItemsTable projectId={projectId} queueId={queueId} />
-        }
-        cardTitleChildren={
-          <div className="flex w-full flex-row items-center justify-between">
-            {queue.data ? (
-              <span>{queue.data.name}</span>
-            ) : (
-              <Skeleton className="h-full w-1/2" />
-            )}
+        </div>
+        <SidePanel
+          mobileTitle={queue.data?.name ?? "Queue details"}
+          id="queue-details"
+        >
+          <SidePanelHeader>
+            <SidePanelTitle>
+              {queue.data?.name ?? "Queue details"}
+            </SidePanelTitle>
             <CreateOrEditAnnotationQueueButton
               projectId={projectId}
               queueId={queueId}
             />
-          </div>
-        }
-        cardContentChildren={
-          <>
-            {queue.data?.description && (
-              <CardDescription className="text-sm">
-                {queue.data?.description}
-              </CardDescription>
+          </SidePanelHeader>
+          <SidePanelContent>
+            {queue.isLoading ? (
+              <Skeleton className="h-full w-full" />
+            ) : (
+              <>
+                {queue.data?.description && (
+                  <CardDescription className="text-sm">
+                    {queue.data?.description}
+                  </CardDescription>
+                )}
+                <div className="flex flex-col gap-2">
+                  <SubHeaderLabel title="Score Configs" />
+                  <div className="flex flex-wrap gap-2">
+                    {queue.data?.scoreConfigs.map((scoreConfig) => (
+                      <Badge key={scoreConfig.id} variant="outline">
+                        {getScoreDataTypeIcon(scoreConfig.dataType)}
+                        <span className="ml-0.5">{scoreConfig.name}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
-            <Separator orientation="horizontal" />
-            <h5 className="text-md font-bold leading-7 sm:tracking-tight">
-              Score Configs
-            </h5>
-            {queue.data?.scoreConfigs.map((scoreConfig) => (
-              <Badge key={scoreConfig.id} className="mr-2" variant="outline">
-                {getScoreDataTypeIcon(scoreConfig.dataType)}
-                <span className="ml-0.5">{scoreConfig.name}</span>
-              </Badge>
-            ))}
-          </>
-        }
-      />
+          </SidePanelContent>
+        </SidePanel>
+      </div>
     </Page>
   );
 }

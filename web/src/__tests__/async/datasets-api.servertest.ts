@@ -1,4 +1,8 @@
 /** @jest-environment node */
+// Set environment variable before any imports to ensure it's picked up by env module
+process.env.LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
+  "true";
+process.env.LANGFUSE_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 import { prisma } from "@hanzo/shared/src/db";
 import {
@@ -21,6 +25,7 @@ import {
   PostDatasetsV2Response,
   DeleteDatasetItemV1Response,
   DeleteDatasetRunV1Response,
+  GetDatasetRunItemsV1Response,
 } from "@/src/features/public-api/types/datasets";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -29,7 +34,15 @@ import {
   createTrace,
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@hanzo/shared/src/server";
+  getDatasetRunItemsByDatasetIdCh,
+  createDatasetRunItemsCh,
+  createDatasetRunItem,
+  getDatasetItemById,
+  createDatasetItemFilterState,
+  createDatasetItem,
+  getDatasetItems,
+} from "@langfuse/shared/src/server";
+import waitForExpect from "wait-for-expect";
 
 describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () => {
   const traceId = v4();
@@ -262,10 +275,10 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       auth,
     );
 
-    const databaseDatasetItem = await prisma.datasetItem.findFirst({
-      where: {
-        id: datasetItemId,
-      },
+    const databaseDatasetItem = await getDatasetItemById({
+      projectId,
+      datasetItemId: datasetItemId,
+      includeIO: true,
     });
     expect(databaseDatasetItem).toMatchObject({
       input: { john: "doe" },
@@ -274,8 +287,6 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
   });
 
   it("should return 404 when trying to update dataset item that exists in different dataset of the same project", async () => {
-    const datasetItemId = v4();
-
     const dataset = await prisma.dataset.create({
       data: {
         name: "dataset-name-1",
@@ -290,13 +301,15 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       },
     });
 
-    await prisma.datasetItem.create({
-      data: {
-        id: datasetItemId,
-        datasetId: dataset.id,
-        projectId: projectId,
-      },
+    const res = await createDatasetItem({
+      projectId: projectId,
+      datasetId: dataset.id,
     });
+
+    if (!res.success) {
+      throw new Error("Failed to create dataset item");
+    }
+    const datasetItemId = res.datasetItem.id;
 
     const response = await makeAPICall(
       "POST",
@@ -456,27 +469,30 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
         auth,
       );
     }
-    const dbDatasetItems = await prisma.datasetItem.findMany({
-      where: {
-        projectId: projectId,
-        dataset: {
-          name: "dataset-name",
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+    const dataset1 = await prisma.dataset.findUnique({
+      where: { projectId_name: { projectId, name: "dataset-name" } },
+    });
+    const dbDatasetItems = await getDatasetItems({
+      projectId: projectId,
+      filterState: createDatasetItemFilterState({
+        datasetIds: [dataset1!.id],
+      }),
+      includeIO: true,
     });
     expect(dbDatasetItems.length).toBe(5);
-    const dbDatasetItemsApiResponseFormat = dbDatasetItems.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ projectId, ...item }) => ({
-        ...item,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-        datasetName: "dataset-name",
-      }),
-    );
+    const dbDatasetItemsApiResponseFormat = dbDatasetItems.map((item) => ({
+      id: item.id,
+      datasetId: item.datasetId,
+      status: item.status,
+      input: item.input,
+      expectedOutput: item.expectedOutput,
+      metadata: item.metadata,
+      sourceTraceId: item.sourceTraceId,
+      sourceObservationId: item.sourceObservationId,
+      createdAt: item.createdAt.toISOString(),
+      updatedAt: item.updatedAt.toISOString(),
+      datasetName: "dataset-name",
+    }));
 
     // add another dataset to test the list endpoint
     await makeZodVerifiedAPICall(
@@ -499,22 +515,27 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       },
       auth,
     );
-    const dbDatasetItemsOther = await prisma.datasetItem.findMany({
-      where: {
-        projectId: projectId,
-        dataset: {
-          name: "dataset-name-other",
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+    const dataset2 = await prisma.dataset.findUnique({
+      where: { projectId_name: { projectId, name: "dataset-name-other" } },
+    });
+    const dbDatasetItemsOther = await getDatasetItems({
+      projectId: projectId,
+      filterState: createDatasetItemFilterState({
+        datasetIds: [dataset2!.id],
+      }),
+      includeIO: true,
     });
     expect(dbDatasetItemsOther.length).toBe(1);
     const dbDatasetItemsOtherApiResponseFormat = dbDatasetItemsOther.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ projectId, ...item }) => ({
-        ...item,
+      (item) => ({
+        id: item.id,
+        datasetId: item.datasetId,
+        status: item.status,
+        input: item.input,
+        expectedOutput: item.expectedOutput,
+        metadata: item.metadata,
+        sourceTraceId: item.sourceTraceId,
+        sourceObservationId: item.sourceObservationId,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
         datasetName: "dataset-name-other",
@@ -574,15 +595,15 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       }),
     });
     // Get filtered list by datasetName
-    const getDatasetItems = await makeZodVerifiedAPICall(
+    const getDatasetItemsByDatasetName = await makeZodVerifiedAPICall(
       GetDatasetItemsV1Response,
       "GET",
       `/api/public/dataset-items?datasetName=dataset-name`,
       undefined,
       auth,
     );
-    expect(getDatasetItems.status).toBe(200);
-    expect(getDatasetItems.body).toMatchObject({
+    expect(getDatasetItemsByDatasetName.status).toBe(200);
+    expect(getDatasetItemsByDatasetName.body).toMatchObject({
       data: dbDatasetItemsApiResponseFormat,
       meta: expect.objectContaining({
         totalItems: 5,
@@ -688,8 +709,10 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       status: "ARCHIVED",
     });
 
-    const dbDatasetItem = await prisma.datasetItem.findFirst({
-      where: { id: "dataset-item-id" },
+    const dbDatasetItem = await getDatasetItemById({
+      projectId,
+      datasetItemId: "dataset-item-id",
+      includeIO: true,
     });
     expect(dbDatasetItem).not.toBeNull();
     expect(dbDatasetItem?.input).toMatchObject({ key: "value2" });
@@ -758,6 +781,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       "/api/public/dataset-run-items",
       {
         datasetItemId: "dataset-item-id",
+        traceId: traceId,
         observationId: observationId,
         runName: "run + only + observation",
         runDescription: "run-description",
@@ -770,44 +794,60 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
         projectId,
         name: "run + only + observation",
       },
-      include: {
-        datasetRunItems: true,
-      },
     });
     expect(dbRunObservation).not.toBeNull();
     expect(dbRunObservation?.datasetId).toBe(dataset.body.id);
     expect(dbRunObservation?.metadata).toMatchObject({ key: "value" });
     expect(dbRunObservation?.description).toBe("run-description");
     expect(runItemObservation.status).toBe(200);
-    expect(dbRunObservation?.datasetRunItems[0]).toMatchObject({
-      datasetItemId: "dataset-item-id",
-      observationId: observationId,
-      traceId: traceId,
-    });
 
-    const getRunAPI = await makeZodVerifiedAPICall(
-      GetDatasetRunV1Response,
-      "GET",
-      `/api/public/datasets/${encodeURIComponent("dataset name")}/runs/${encodeURIComponent("run + only + observation")}`,
-      undefined,
-      auth,
-    );
-    expect(getRunAPI.status).toBe(200);
-    expect(getRunAPI.body).toMatchObject({
-      name: "run + only + observation",
-      description: "run-description",
-      metadata: { key: "value" },
-      datasetId: dataset.body.id,
-      datasetName: "dataset name",
-      datasetRunItems: expect.arrayContaining([
-        expect.objectContaining({
-          datasetItemId: "dataset-item-id",
-          observationId: observationId,
-          traceId: traceId,
-          datasetRunName: "run + only + observation",
-        }),
-      ]),
-    });
+    await waitForExpect(async () => {
+      const runItems = await getDatasetRunItemsByDatasetIdCh({
+        projectId,
+        datasetId: dbRunObservation!.datasetId,
+        filter: [
+          {
+            column: "datasetRunId",
+            operator: "any of",
+            value: [runItemObservation.body.datasetRunId],
+            type: "stringOptions" as const,
+          },
+        ],
+        orderBy: {
+          column: "createdAt",
+          order: "DESC",
+        },
+        limit: 10,
+      });
+
+      expect(runItems).toHaveLength(1);
+      expect(runItems[0].id).toBe(runItemObservation.body.id);
+
+      const getRunAPI = await makeZodVerifiedAPICall(
+        GetDatasetRunV1Response,
+        "GET",
+        `/api/public/datasets/${encodeURIComponent("dataset name")}/runs/${encodeURIComponent("run + only + observation")}`,
+        undefined,
+        auth,
+      );
+      expect(getRunAPI.status).toBe(200);
+      expect(getRunAPI.body.datasetRunItems).toHaveLength(1);
+      expect(getRunAPI.body).toMatchObject({
+        name: "run + only + observation",
+        description: "run-description",
+        metadata: { key: "value" },
+        datasetId: dataset.body.id,
+        datasetName: "dataset name",
+        datasetRunItems: expect.arrayContaining([
+          expect.objectContaining({
+            datasetItemId: "dataset-item-id",
+            observationId: observationId,
+            traceId: traceId,
+            datasetRunName: "run + only + observation",
+          }),
+        ]),
+      });
+    }, 30000);
 
     const runItemTrace = await makeZodVerifiedAPICall(
       PostDatasetRunItemsV1Response,
@@ -832,19 +872,11 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
         projectId,
         name: "run-only-trace",
       },
-      include: {
-        datasetRunItems: true,
-      },
     });
     expect(dbRunTrace).not.toBeNull();
     expect(dbRunTrace?.datasetId).toBe(dataset.body.id);
     expect(dbRunTrace?.metadata).toMatchObject({ key: "value" });
     expect(runItemTrace.status).toBe(200);
-    expect(dbRunTrace?.datasetRunItems[0]).toMatchObject({
-      datasetItemId: "dataset-item-id",
-      traceId: traceId,
-      observationId: null,
-    });
 
     const runItemBoth = await makeZodVerifiedAPICall(
       PostDatasetRunItemsV1Response,
@@ -864,20 +896,12 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
         projectId,
         name: "run-name-both",
       },
-      include: {
-        datasetRunItems: true,
-      },
     });
     expect(dbRunBoth).not.toBeNull();
     expect(dbRunBoth?.datasetId).toBe(dataset.body.id);
     expect(dbRunBoth?.metadata).toMatchObject({ key: "value" });
     expect(runItemBoth.status).toBe(200);
-    expect(dbRunBoth?.datasetRunItems[0]).toMatchObject({
-      datasetItemId: "dataset-item-id",
-      observationId: observationId,
-      traceId: traceId,
-    });
-  });
+  }, 90000);
 
   it("GET /api/public/datasets/{datasetName}/runs", async () => {
     // create multiple runs
@@ -979,15 +1003,12 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       },
     });
     expect(dbRuns.length).toBe(3);
-    const dbRunsApiResponseFormat = dbRuns.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ projectId, ...run }) => ({
-        ...run,
-        createdAt: run.createdAt.toISOString(),
-        updatedAt: run.updatedAt.toISOString(),
-        datasetName: "dataset-name",
-      }),
-    );
+    const dbRunsApiResponseFormat = dbRuns.map(({ projectId, ...run }) => ({
+      ...run,
+      createdAt: run.createdAt.toISOString(),
+      updatedAt: run.updatedAt.toISOString(),
+      datasetName: "dataset-name",
+    }));
 
     // test get runs
     const getRuns = await makeZodVerifiedAPICall(
@@ -1102,12 +1123,8 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
           name: datasetName,
         },
       },
-      include: {
-        datasetRunItems: true,
-      },
     });
     expect(dbRunBeforeDelete).not.toBeNull();
-    expect(dbRunBeforeDelete?.datasetRunItems.length).toBe(1);
 
     // Delete the run and verify response matches DeleteDatasetRunV1Response
     const deleteResponse = await makeZodVerifiedAPICall(
@@ -1135,14 +1152,20 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     expect(dbRunAfterDelete).toBeNull();
 
     // Verify run items are also deleted
-    const dbRunItems = await prisma.datasetRunItems.findMany({
-      where: {
-        datasetRunId: dbRunBeforeDelete?.id,
+    await waitForExpect(async () => {
+      const dbRunItems = await getDatasetRunItemsByDatasetIdCh({
         projectId: dataset.body.projectId,
-      },
-    });
-    expect(dbRunItems).toHaveLength(0);
-  });
+        datasetId: dataset.body.id,
+        filter: [],
+        orderBy: {
+          column: "createdAt",
+          order: "DESC",
+        },
+        limit: 10,
+      });
+      expect(dbRunItems).toHaveLength(0);
+    }, 30000);
+  }, 90000);
 
   it("dataset-run-items should fail when neither trace nor observation provided", async () => {
     const response = await makeAPICall(
@@ -1197,16 +1220,17 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     // item ids can be set by the user
     const datasetItemBody = {
       input: "item-input",
-      id: uuidv4(),
     };
-    await prisma.datasetItem.create({
-      data: {
-        ...datasetItemBody,
-        expectedOutput: "other-proj",
-        projectId: otherProject.id,
-        datasetId: otherProjDbDataset.id,
-      },
+    const res = await createDatasetItem({
+      ...datasetItemBody,
+      expectedOutput: "other-proj",
+      projectId: otherProject.id,
+      datasetId: otherProjDbDataset.id,
     });
+    if (!res.success) {
+      throw new Error("Failed to create dataset item");
+    }
+    const datasetItemId = res.datasetItem.id;
 
     // dataset item, id is set
     await makeZodVerifiedAPICall(
@@ -1215,6 +1239,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       "/api/public/dataset-items",
       {
         ...datasetItemBody,
+        id: datasetItemId,
         expectedOutput: "api-item",
         datasetName: datasetBody.name,
         metadata: "api-item",
@@ -1223,31 +1248,37 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     const getApiDatasetItem = await makeZodVerifiedAPICall(
       GetDatasetItemV1Response,
       "GET",
-      `/api/public/dataset-items/${datasetItemBody.id}`,
+      `/api/public/dataset-items/${datasetItemId}`,
     );
     expect(getApiDatasetItem.body.metadata).toBe("api-item");
-    const dbItems = await prisma.datasetItem.findMany({
-      where: { id: datasetItemBody.id },
+    const dbItem1 = await getDatasetItemById({
+      projectId: apiDataset.body.projectId,
+      datasetItemId: datasetItemId,
+      includeIO: true,
     });
+    const dbItem2 = await getDatasetItemById({
+      projectId: otherProject.id,
+      datasetItemId: datasetItemId,
+      includeIO: true,
+    });
+    const dbItems = [dbItem1, dbItem2].filter((item) => item !== null);
     expect(dbItems.length).toBe(2);
     expect(dbItems).toHaveLength(2);
     expect(dbItems).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           metadata: "api-item",
-          projectId: apiDataset.body.projectId,
-          id: datasetItemBody.id,
+          id: datasetItemId,
         }),
         expect.objectContaining({
           metadata: null,
-          projectId: otherProject.id,
-          id: datasetItemBody.id,
+          id: datasetItemId,
         }),
       ]),
     );
   });
 
-  it("should delete a dataset item and its run items", async () => {
+  it("should delete a dataset item but not its run items", async () => {
     const datasetName = `dataset-${uuidv4()}`;
     const itemId = `item-${uuidv4()}`;
     const nonExistentItemId = `non-existent-${uuidv4()}`;
@@ -1302,29 +1333,16 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     );
     expect(deleteNonExistent.status).toBe(404);
 
-    // Create a run item associated with the dataset item
-    const runItem = await makeZodVerifiedAPICall(
-      PostDatasetRunItemsV1Response,
-      "POST",
-      "/api/public/dataset-run-items",
-      {
-        datasetItemId: itemId,
-        traceId: traceId,
-        runName: `run-${uuidv4()}`,
-        metadata: { key: "value" },
-      },
-      auth,
-    );
-    expect(runItem.status).toBe(200);
-
-    // Verify run item exists in database
-    const dbRunItem = await prisma.datasetRunItems.findFirst({
-      where: {
-        datasetItemId: itemId,
-        projectId: dataset.body.projectId,
-      },
-    });
-    expect(dbRunItem).not.toBeNull();
+    await createDatasetRunItemsCh([
+      createDatasetRunItem({
+        dataset_item_id: itemId,
+        trace_id: traceId,
+        dataset_run_name: `run-${uuidv4()}`,
+        dataset_item_metadata: { key: "value" },
+        dataset_id: dataset.body.id,
+        project_id: dataset.body.projectId,
+      }),
+    ]);
 
     // Delete the item and verify response matches DeleteDatasetItemV1Response
     const deleteResponse = await makeZodVerifiedAPICall(
@@ -1349,23 +1367,256 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     expect(getDeletedItem.status).toBe(404);
 
     // Verify item is removed from database
-    const dbItem = await prisma.datasetItem.findUnique({
-      where: {
-        id_projectId: {
-          id: itemId,
-          projectId: dataset.body.projectId,
-        },
-      },
+    const dbItem = await getDatasetItemById({
+      projectId: dataset.body.projectId,
+      datasetItemId: itemId,
+      includeIO: true,
     });
     expect(dbItem).toBeNull();
 
     // Verify run items are also deleted
-    const dbRunItemAfterDelete = await prisma.datasetRunItems.findFirst({
-      where: {
-        datasetItemId: itemId,
+    await waitForExpect(async () => {
+      const dbRunItems = await getDatasetRunItemsByDatasetIdCh({
+        projectId: dataset.body.projectId,
+        datasetId: dataset.body.id,
+        filter: [],
+        orderBy: {
+          column: "createdAt",
+          order: "DESC",
+        },
+        limit: 10,
+      });
+      expect(dbRunItems).toHaveLength(1);
+    }, 60000);
+  }, 90000);
+
+  it("should properly paginate and filter dataset run items", async () => {
+    // Create a dataset
+    const datasetName = `pagination-test-${v4()}`;
+    const dataset = await makeZodVerifiedAPICall(
+      PostDatasetsV1Response,
+      "POST",
+      "/api/public/datasets",
+      {
+        name: datasetName,
+      },
+      auth,
+    );
+
+    // Create 10 dataset items with different inputs
+    const itemIds = [];
+    for (let i = 0; i < 10; i++) {
+      const itemId = `item-${i}-${v4()}`;
+      itemIds.push(itemId);
+
+      await makeZodVerifiedAPICall(
+        PostDatasetItemsV1Response,
+        "POST",
+        "/api/public/dataset-items",
+        {
+          datasetName: datasetName,
+          id: itemId,
+          input: { value: `test-value-${i}` },
+          metadata: { index: i },
+          // Add sourceObservationId to odd numbered items
+          sourceTraceId: v4(),
+          sourceObservationId: i % 2 === 1 ? v4() : undefined,
+          datasetId: dataset.body.id,
+        },
+        auth,
+      );
+    }
+
+    // Create a run
+    const runName = `run-${v4()}`;
+    const run = await prisma.datasetRuns.create({
+      data: {
+        id: v4(),
+        datasetId: dataset.body.id,
+        name: runName,
+        metadata: {},
         projectId: dataset.body.projectId,
       },
     });
-    expect(dbRunItemAfterDelete).toBeNull();
-  });
+
+    // Create 10 run items
+    for (let i = 0; i < 10; i++) {
+      await makeZodVerifiedAPICall(
+        PostDatasetRunItemsV1Response,
+        "POST",
+        "/api/public/dataset-run-items",
+        {
+          runName,
+          datasetItemId: itemIds[i],
+          traceId: v4(),
+          metadata: { index: i },
+        },
+        auth,
+      );
+    }
+
+    // Wrapping the GET run response verification inside a waitForExpect block ensures
+    // the test waits for eventual consistency (from asynchronous writes to ClickHouse for dataset run items)
+    await waitForExpect(async () => {
+      const runItems = await getDatasetRunItemsByDatasetIdCh({
+        projectId,
+        datasetId: dataset.body.id,
+        filter: [
+          {
+            column: "datasetRunId",
+            operator: "any of",
+            value: [run.id],
+            type: "stringOptions" as const,
+          },
+        ],
+        orderBy: {
+          column: "createdAt",
+          order: "DESC",
+        },
+        limit: 10,
+      });
+
+      expect(runItems).toHaveLength(10);
+
+      // Test basic pagination with limit
+      const pageSize = 3;
+      const page1 = await makeZodVerifiedAPICall(
+        GetDatasetRunItemsV1Response,
+        "GET",
+        `/api/public/dataset-run-items?datasetId=${dataset.body.id}&runName=${encodeURIComponent(runName)}&limit=${pageSize}&page=1`,
+        undefined,
+        auth,
+      );
+
+      expect(page1.status).toBe(200);
+      expect(page1.body.data.length).toBe(pageSize);
+      expect(page1.body.meta).toMatchObject({
+        totalItems: 10,
+        limit: pageSize,
+        page: 1,
+        totalPages: Math.ceil(10 / pageSize),
+      });
+
+      // Test second page
+      const page2 = await makeZodVerifiedAPICall(
+        GetDatasetRunItemsV1Response,
+        "GET",
+        `/api/public/dataset-run-items?datasetId=${dataset.body.id}&runName=${encodeURIComponent(runName)}&limit=${pageSize}&page=2`,
+        undefined,
+        auth,
+      );
+
+      expect(page2.status).toBe(200);
+      expect(page2.body.data.length).toBe(pageSize);
+      // Check that we got different items on different pages
+      const page1Ids = page1.body.data.map((item) => item.id);
+      const page2Ids = page2.body.data.map((item) => item.id);
+      page2Ids.forEach((id) => {
+        expect(page1Ids).not.toContain(id);
+      });
+    }, 30000);
+
+    // Test non-existent dataset name
+    const nonExistent = await makeAPICall(
+      "GET",
+      `/api/public/dataset-run-items?datasetId=${v4()}&runName=does-not-exist`,
+      undefined,
+      auth,
+    );
+
+    expect(nonExistent.status).toBe(404);
+  }, 90000);
+
+  it("should create and fetch a dataset with slashes in the name", async () => {
+    const datasetName = `folder/subfolder/dataset-${v4()}`;
+
+    // Create dataset with slashes in name
+    const createRes = await makeZodVerifiedAPICall(
+      PostDatasetsV2Response,
+      "POST",
+      "/api/public/v2/datasets",
+      {
+        name: datasetName,
+        description: "Dataset in folder structure",
+        metadata: { folder: true },
+      },
+      auth,
+    );
+
+    expect(createRes.status).toBe(200);
+    expect(createRes.body.name).toBe(datasetName);
+    expect(createRes.body.name).toContain("/");
+
+    // Fetch dataset using encoded name
+    const getRes = await makeZodVerifiedAPICall(
+      GetDatasetV2Response,
+      "GET",
+      `/api/public/v2/datasets/${encodeURIComponent(datasetName)}`,
+      undefined,
+      auth,
+    );
+
+    expect(getRes.status).toBe(200);
+    expect(getRes.body.name).toBe(datasetName);
+    expect(getRes.body.description).toBe("Dataset in folder structure");
+
+    // Create dataset item
+    const datasetItem = await makeZodVerifiedAPICall(
+      PostDatasetItemsV1Response,
+      "POST",
+      "/api/public/dataset-items",
+      {
+        datasetName: datasetName,
+        input: { value: "test-value" },
+      },
+      auth,
+    );
+
+    // Create a dataset run with slashes in name
+    const runName = `run/nested/test-${v4()}`;
+    await makeAPICall(
+      "POST",
+      "/api/public/dataset-run-items",
+      {
+        runName,
+        datasetItemId: datasetItem.body.id,
+        traceId: traceId,
+      },
+      auth,
+    );
+
+    // Fetch runs using encoded names
+    const runsRes = await makeZodVerifiedAPICall(
+      GetDatasetRunsV1Response,
+      "GET",
+      `/api/public/datasets/${encodeURIComponent(datasetName)}/runs`,
+      undefined,
+      auth,
+    );
+
+    expect(runsRes.status).toBe(200);
+
+    // Fetch specific run using encoded names
+    const runRes = await makeZodVerifiedAPICall(
+      GetDatasetRunV1Response,
+      "GET",
+      `/api/public/datasets/${encodeURIComponent(datasetName)}/runs/${encodeURIComponent(runName)}`,
+      undefined,
+      auth,
+    );
+
+    expect(runRes.status).toBe(200);
+    expect(runRes.body.name).toBe(runName);
+    expect(runRes.body.datasetName).toBe(datasetName);
+
+    // Delete run using encoded names
+    const deleteRes = await makeAPICall(
+      "DELETE",
+      `/api/public/datasets/${encodeURIComponent(datasetName)}/runs/${encodeURIComponent(runName)}`,
+      undefined,
+      auth,
+    );
+
+    expect(deleteRes.status).toBe(200);
+  }, 90000);
 });

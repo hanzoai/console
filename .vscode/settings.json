@@ -28,10 +28,11 @@
     "editor.defaultFormatter": "Prisma.prisma"
   },
   "eslint.lintTask.enable": true,
-  "eslint.workingDirectories": ["./web", "./worker"],
-
-  "search.useIgnoreFiles": true,
-  "[jsonc]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-  }
+  "eslint.workingDirectories": [
+    { "pattern": "./web" },
+    { "pattern": "./worker" },
+    { "pattern": "./packages/shared" },
+    { "pattern": "./ee" }
+  ],
+  "eslint.useFlatConfig": true
 }

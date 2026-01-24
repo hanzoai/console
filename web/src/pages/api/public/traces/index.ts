@@ -3,22 +3,30 @@ import {
   GetTracesV1Query,
   GetTracesV1Response,
   PostTracesV1Response,
+  DeleteTracesV1Body,
+  DeleteTracesV1Response,
 } from "@/src/features/public-api/types/traces";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { processEventBatch } from "@hanzo/shared/src/server";
-
-import { eventTypes, logger } from "@hanzo/shared/src/server";
-
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
+import { processEventBatch } from "@langfuse/shared/src/server";
+import {
+  eventTypes,
+  logger,
+  traceDeletionProcessor,
+  getTracesFromEventsTableForPublicApi,
+  getTracesCountFromEventsTableForPublicApi,
+} from "@langfuse/shared/src/server";
 import { v4 } from "uuid";
 import { telemetry } from "@/src/features/telemetry";
+import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   generateTracesForPublicApi,
   getTracesCountForPublicApi,
 } from "@/src/features/public-api/server/traces";
+import { env } from "@/src/env.mjs";
 
 export default withMiddlewares({
-  POST: createAuthedAPIRoute({
+  POST: createAuthedProjectAPIRoute({
     name: "Create Trace (Legacy)",
     bodySchema: PostTracesV1Body,
     responseSchema: PostTracesV1Response, // Adjust this if you have a specific response schema
@@ -50,7 +58,7 @@ export default withMiddlewares({
     },
   }),
 
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Traces",
     querySchema: GetTracesV1Query,
     responseSchema: GetTracesV1Response,
@@ -59,6 +67,7 @@ export default withMiddlewares({
         projectId: auth.scope.projectId,
         page: query.page ?? undefined,
         limit: query.limit ?? undefined,
+        fields: query.fields ?? undefined,
         userId: query.userId ?? undefined,
         name: query.name ?? undefined,
         tags: query.tags ?? undefined,
@@ -70,14 +79,58 @@ export default withMiddlewares({
         toTimestamp: query.toTimestamp ?? undefined,
       };
 
+      // Use events table if query parameter is explicitly set, otherwise use environment variable
+      const useEventsTable =
+        query.useEventsTable !== undefined && query.useEventsTable !== null
+          ? query.useEventsTable === true
+          : env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true";
+
+      if (useEventsTable) {
+        const [items, count] = await Promise.all([
+          getTracesFromEventsTableForPublicApi({
+            ...filterProps,
+            advancedFilters: query.filter,
+            orderBy: query.orderBy ?? null,
+          }),
+          getTracesCountFromEventsTableForPublicApi({
+            ...filterProps,
+            advancedFilters: query.filter,
+          }),
+        ]);
+
+        return {
+          data: items.map((item) => ({
+            ...item,
+            externalId: null,
+          })),
+          meta: {
+            page: query.page,
+            limit: query.limit,
+            totalItems: count,
+            totalPages: Math.ceil(count / query.limit),
+          },
+        };
+      }
+
+      // Legacy code path using traces table
       const [items, count] = await Promise.all([
-        generateTracesForPublicApi(filterProps, query.orderBy ?? null),
-        getTracesCountForPublicApi(filterProps),
+        generateTracesForPublicApi({
+          props: filterProps,
+          advancedFilters: query.filter,
+          orderBy: query.orderBy ?? null,
+        }),
+        getTracesCountForPublicApi({
+          props: filterProps,
+          advancedFilters: query.filter,
+        }),
       ]);
 
       const finalCount = count || 0;
       return {
-        data: items,
+        data: items.map((item) => ({
+          ...item,
+          externalId: null,
+        })),
         meta: {
           page: query.page,
           limit: query.limit,
@@ -85,6 +138,33 @@ export default withMiddlewares({
           totalPages: Math.ceil(finalCount / query.limit),
         },
       };
+    },
+  }),
+
+  DELETE: createAuthedProjectAPIRoute({
+    name: "Delete Multiple Traces",
+    bodySchema: DeleteTracesV1Body,
+    responseSchema: DeleteTracesV1Response,
+    rateLimitResource: "trace-delete",
+    fn: async ({ body, auth }) => {
+      const { traceIds } = body;
+
+      await Promise.all(
+        traceIds.map((traceId) =>
+          auditLog({
+            resourceType: "trace",
+            resourceId: traceId,
+            action: "delete",
+            projectId: auth.scope.projectId,
+            apiKeyId: auth.scope.apiKeyId,
+            orgId: auth.scope.orgId,
+          }),
+        ),
+      );
+
+      await traceDeletionProcessor(auth.scope.projectId, traceIds);
+
+      return { message: "Traces deleted successfully" };
     },
   }),
 });

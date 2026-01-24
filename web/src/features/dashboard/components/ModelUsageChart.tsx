@@ -1,5 +1,4 @@
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { env } from "@/src/env.mjs";
 import { BaseTimeSeriesChart } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import {
@@ -16,30 +15,34 @@ import {
   dashboardDateRangeAggregationSettings,
 } from "@/src/utils/date-range-utils";
 import { compactNumberFormatter } from "@/src/utils/numbers";
-import { type FilterState } from "@hanzo/shared";
+import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
 import {
   ModelSelectorPopover,
   useModelSelection,
 } from "@/src/features/dashboard/components/ModelSelector";
-
-type ModelUsageReturnType = {
-  startTime: string;
-  units: Record<string, number>;
-  cost: Record<string, number>;
-  model: string;
-};
+import {
+  type QueryType,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
+import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 
 export const ModelUsageChart = ({
   className,
   projectId,
   globalFilterState,
   agg,
+  fromTimestamp,
+  toTimestamp,
+  userAndEnvFilterState,
   isLoading = false,
 }: {
   className?: string;
   projectId: string;
   globalFilterState: FilterState;
   agg: DashboardDateRangeAggregationOption;
+  fromTimestamp: Date;
+  toTimestamp: Date;
+  userAndEnvFilterState: FilterState;
   isLoading?: boolean;
 }) => {
   const {
@@ -49,44 +52,48 @@ export const ModelUsageChart = ({
     isAllSelected,
     buttonText,
     handleSelectAll,
-  } = useModelSelection(projectId, globalFilterState);
+  } = useModelSelection(
+    projectId,
+    userAndEnvFilterState,
+    fromTimestamp,
+    toTimestamp,
+  );
 
-  const queryResult = api.dashboard.chart.useQuery(
+  const modelUsageQuery: QueryType = {
+    view: "observations",
+    dimensions: [{ field: "providedModelName" }],
+    metrics: [
+      { measure: "totalCost", aggregation: "sum" },
+      { measure: "totalTokens", aggregation: "sum" },
+    ],
+    filters: [
+      ...mapLegacyUiTableFilterToView("observations", userAndEnvFilterState),
+      {
+        column: "type",
+        operator: "any of",
+        value: getGenerationLikeTypes(),
+        type: "stringOptions",
+      },
+      {
+        column: "providedModelName",
+        operator: "any of",
+        value: selectedModels,
+        type: "stringOptions",
+      },
+    ],
+    timeDimension: {
+      granularity:
+        dashboardDateRangeAggregationSettings[agg].dateTrunc ?? "day",
+    },
+    fromTimestamp: fromTimestamp.toISOString(),
+    toTimestamp: toTimestamp.toISOString(),
+    orderBy: null,
+  };
+
+  const queryResult = api.dashboard.executeQuery.useQuery(
     {
       projectId,
-      from: env.NEXT_PUBLIC_HANZO_CLOUD_REGION // Hanzo Cloud has already completed the cost backfill job, thus cost can be pulled directly from obs. table
-        ? "traces_observations"
-        : "traces_observationsview",
-      select: [
-        { column: "totalTokens", agg: "SUM" },
-        { column: "calculatedTotalCost", agg: "SUM" },
-        { column: "model" },
-      ],
-      filter: [
-        ...globalFilterState,
-        { type: "string", column: "type", operator: "=", value: "GENERATION" },
-        {
-          type: "stringOptions",
-          column: "model",
-          operator: "any of",
-          value: selectedModels,
-        } as const,
-      ],
-      groupBy: [
-        {
-          type: "datetime",
-          column: "startTime",
-          temporalUnit: dashboardDateRangeAggregationSettings[agg].date_trunc,
-        },
-        {
-          type: "string",
-          column: "model",
-        },
-      ],
-      orderBy: [
-        { column: "calculatedTotalCost", direction: "DESC", agg: "SUM" },
-      ],
-      queryName: "observations-usage-timeseries",
+      query: modelUsageQuery,
     },
     {
       enabled: !isLoading && selectedModels.length > 0 && allModels.length > 0,
@@ -98,86 +105,177 @@ export const ModelUsageChart = ({
     },
   );
 
-  const typedData = (queryResult.data as ModelUsageReturnType[]) ?? [];
-
-  const usageTypeMap = prepareUsageDataForTimeseriesChart(
-    selectedModels,
-    typedData,
+  const queryCostByType = api.dashboard.chart.useQuery(
+    {
+      projectId,
+      from: "traces_observations",
+      select: [
+        { column: "totalTokens", agg: "SUM" },
+        { column: "calculatedTotalCost", agg: "SUM" },
+        { column: "model" },
+      ],
+      filter: [
+        ...globalFilterState,
+        {
+          type: "stringOptions",
+          column: "type",
+          operator: "any of",
+          value: getGenerationLikeTypes(),
+        },
+        {
+          type: "stringOptions",
+          column: "model",
+          operator: "any of",
+          value: selectedModels,
+        } as const,
+      ],
+      groupBy: [
+        {
+          type: "datetime",
+          column: "startTime",
+          temporalUnit:
+            dashboardDateRangeAggregationSettings[agg].dateTrunc ?? "day",
+        },
+        {
+          type: "string",
+          column: "model",
+        },
+      ],
+      orderBy: [
+        { column: "calculatedTotalCost", direction: "DESC", agg: "SUM" },
+      ],
+      queryName: "observations-cost-by-type-timeseries",
+    },
+    {
+      enabled: !isLoading && selectedModels.length > 0 && allModels.length > 0,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
   );
 
-  const usageData = Array.from(usageTypeMap.values()).flat();
+  const queryUsageByType = api.dashboard.chart.useQuery(
+    {
+      projectId,
+      from: "traces_observations",
+      select: [
+        { column: "totalTokens", agg: "SUM" },
+        { column: "calculatedTotalCost", agg: "SUM" },
+        { column: "model" },
+      ],
+      filter: [
+        ...globalFilterState,
+        {
+          type: "stringOptions",
+          column: "type",
+          operator: "any of",
+          value: getGenerationLikeTypes(),
+        },
+        {
+          type: "stringOptions",
+          column: "model",
+          operator: "any of",
+          value: selectedModels,
+        } as const,
+      ],
+      groupBy: [
+        {
+          type: "datetime",
+          column: "startTime",
+          temporalUnit:
+            dashboardDateRangeAggregationSettings[agg].dateTrunc ?? "day",
+        },
+        {
+          type: "string",
+          column: "model",
+        },
+      ],
+      orderBy: [{ column: "totalTokens", direction: "DESC", agg: "SUM" }],
+      queryName: "observations-usage-by-type-timeseries",
+    },
+    {
+      enabled: !isLoading && selectedModels.length > 0 && allModels.length > 0,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
+  );
 
-  const currentModels = [
-    ...new Set(usageData.map((row) => row.model).filter(Boolean)),
-  ];
-
-  const unitsByType =
-    usageData && allModels.length > 0
+  const costByType =
+    queryCostByType.data && allModels.length > 0
       ? fillMissingValuesAndTransform(
-          extractTimeSeriesData(usageData, "startTime", [
+          extractTimeSeriesData(queryCostByType.data, "intervalStart", [
             {
-              uniqueIdentifierColumns: [{ accessor: "usageType" }],
-              valueColumn: "units",
+              uniqueIdentifierColumns: [{ accessor: "key" }],
+              valueColumn: "sum",
             },
           ]),
-          Array.from(usageTypeMap.keys()),
+          [],
+        )
+      : [];
+
+  const unitsByType =
+    queryUsageByType.data && allModels.length > 0
+      ? fillMissingValuesAndTransform(
+          extractTimeSeriesData(queryUsageByType.data, "intervalStart", [
+            {
+              uniqueIdentifierColumns: [{ accessor: "key" }],
+              valueColumn: "sum",
+            },
+          ]),
+          [],
         )
       : [];
 
   const unitsByModel =
-    usageData && allModels.length > 0
+    queryResult.data && allModels.length > 0
       ? fillMissingValuesAndTransform(
-          extractTimeSeriesData(usageData, "startTime", [
-            {
-              uniqueIdentifierColumns: [{ accessor: "model" }],
-              valueColumn: "units",
-            },
-          ]),
-          currentModels,
-        )
-      : [];
-
-  const costByType =
-    usageData && allModels.length > 0
-      ? fillMissingValuesAndTransform(
-          extractTimeSeriesData(usageData, "startTime", [
-            {
-              uniqueIdentifierColumns: [{ accessor: "usageType" }],
-              valueColumn: "cost",
-            },
-          ]),
-          Array.from(usageTypeMap.keys()),
+          extractTimeSeriesData(
+            queryResult.data as DatabaseRow[],
+            "time_dimension",
+            [
+              {
+                uniqueIdentifierColumns: [{ accessor: "providedModelName" }],
+                valueColumn: "sum_totalTokens",
+              },
+            ],
+          ),
+          selectedModels,
         )
       : [];
 
   const costByModel =
-    usageData && allModels.length > 0
+    queryResult.data && allModels.length > 0
       ? fillMissingValuesAndTransform(
-          extractTimeSeriesData(usageData, "startTime", [
-            {
-              uniqueIdentifierColumns: [{ accessor: "model" }],
-              valueColumn: "cost",
-            },
-          ]),
-          currentModels,
+          extractTimeSeriesData(
+            queryResult.data as DatabaseRow[],
+            "time_dimension",
+            [
+              {
+                uniqueIdentifierColumns: [{ accessor: "providedModelName" }],
+                valueColumn: "sum_totalCost",
+              },
+            ],
+          ),
+          selectedModels,
         )
       : [];
 
-  const totalCost = usageData?.reduce(
+  const totalCost = queryResult.data?.reduce(
     (acc, curr) =>
       acc +
-      (curr.usageType === "total" && !isNaN(curr.cost as number)
-        ? (curr.cost as number)
-        : 0),
+      (!isNaN(Number(curr.sum_totalCost)) ? Number(curr.sum_totalCost) : 0),
     0,
   );
 
-  const totalTokens = usageData?.reduce(
+  const totalTokens = queryResult.data?.reduce(
     (acc, curr) =>
       acc +
-      (curr.usageType === "total" && !isNaN(curr.units as number)
-        ? (curr.units as number)
-        : 0),
+      (!isNaN(Number(curr.sum_totalTokens)) ? Number(curr.sum_totalTokens) : 0),
     0,
   );
 
@@ -203,7 +301,7 @@ export const ModelUsageChart = ({
       formatter: oneValueUsdFormatter,
     },
     {
-      tabTitle: "Units by model",
+      tabTitle: "Usage by model",
       data: unitsByModel,
       totalMetric: totalTokens
         ? compactNumberFormatter(totalTokens)
@@ -211,7 +309,7 @@ export const ModelUsageChart = ({
       metricDescription: `Units`,
     },
     {
-      tabTitle: "Units by type",
+      tabTitle: "Usage by type",
       data: unitsByType,
       totalMetric: totalTokens
         ? compactNumberFormatter(totalTokens)
@@ -225,7 +323,7 @@ export const ModelUsageChart = ({
       className={className}
       title="Model Usage"
       isLoading={
-        isLoading || (queryResult.isLoading && selectedModels.length > 0)
+        isLoading || (queryResult.isPending && selectedModels.length > 0)
       }
       headerRight={
         <div className="flex items-center justify-end">
@@ -253,12 +351,13 @@ export const ModelUsageChart = ({
                 />
                 {isEmptyTimeSeries({ data: item.data }) ||
                 isLoading ||
-                queryResult.isLoading ? (
+                queryResult.isPending ? (
                   <NoDataOrLoading
-                    isLoading={isLoading || queryResult.isLoading}
+                    isLoading={isLoading || queryResult.isPending}
                   />
                 ) : (
                   <BaseTimeSeriesChart
+                    className="[&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground"
                     agg={agg}
                     data={item.data}
                     showLegend={true}
@@ -274,63 +373,3 @@ export const ModelUsageChart = ({
     </DashboardCard>
   );
 };
-
-export function prepareUsageDataForTimeseriesChart(
-  selectedModels: string[],
-  typedData: ModelUsageReturnType[],
-) {
-  const usageTypeMap = new Map<
-    string,
-    {
-      startTime: string;
-      units: number;
-      cost: number;
-      usageType: string;
-      model: string;
-    }[]
-  >();
-
-  const allUsageUnits = [
-    ...new Set(typedData.flatMap((r) => Object.keys(r.units))),
-  ];
-
-  const uniqueDates = [
-    ...new Set(typedData.flatMap((r) => new Date(r.startTime).getTime())),
-  ];
-
-  const uniqueModels = [...new Set(selectedModels)];
-
-  allUsageUnits.forEach((uu) => {
-    const unitEntries: {
-      startTime: string;
-      units: number;
-      cost: number;
-      usageType: string;
-      model: string;
-    }[] = [];
-
-    uniqueDates.forEach((d) => {
-      uniqueModels.forEach((m) => {
-        const existingEntry = typedData.find(
-          (td) =>
-            new Date(td.startTime).getTime() === new Date(d).getTime() &&
-            td.model === m,
-        );
-
-        const entry = {
-          startTime: new Date(d).toISOString(),
-          model: m,
-          units: existingEntry ? existingEntry.units[uu] || 0 : 0,
-          cost: existingEntry ? existingEntry.cost[uu] || 0 : 0,
-          usageType: uu,
-        };
-
-        unitEntries.push(entry);
-      });
-    });
-
-    usageTypeMap.set(uu, unitEntries);
-  });
-
-  return usageTypeMap;
-}

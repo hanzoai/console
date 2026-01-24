@@ -20,6 +20,7 @@ export type SpanCtx = {
   rootSpan?: boolean; // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/overview.md#traces
   traceScope?: string;
   traceContext?: TCarrier;
+  startNewTrace?: boolean; // Start a new trace, severing any parent trace relationships
 };
 
 type AsyncCallbackFn<T> = (span: opentelemetry.Span) => Promise<T>;
@@ -28,21 +29,31 @@ export async function instrumentAsync<T>(
   ctx: SpanCtx,
   callback: AsyncCallbackFn<T>,
 ): Promise<T> {
-  const activeContext = ctx.traceContext
-    ? opentelemetry.propagation.extract(
-        opentelemetry.context.active(),
-        ctx.traceContext,
-      )
-    : opentelemetry.context.active();
+  const activeContext = ctx.startNewTrace
+    ? opentelemetry.ROOT_CONTEXT
+    : ctx.traceContext
+      ? opentelemetry.propagation.extract(
+          opentelemetry.context.active(),
+          ctx.traceContext,
+        )
+      : opentelemetry.context.active();
 
   return getTracer(ctx.traceScope ?? callback.name).startActiveSpan(
     ctx.name,
     {
-      root: !ctx.traceContext && ctx.rootSpan,
+      root: ctx.startNewTrace || (!ctx.traceContext && ctx.rootSpan),
       kind: ctx.spanKind,
     },
     activeContext,
     async (span) => {
+      const baggage = opentelemetry.propagation.getBaggage(
+        opentelemetry.context.active(),
+      );
+      if (baggage) {
+        baggage
+          .getAllEntries()
+          .forEach(([k, v]) => span.setAttribute(k, v.value));
+      }
       try {
         const result = await callback(span);
         span.end();
@@ -62,21 +73,31 @@ export function instrumentSync<T>(
   ctx: SpanCtx,
   callback: SyncCallbackFn<T>,
 ): T {
-  const activeContext = ctx.traceContext
-    ? opentelemetry.propagation.extract(
-        opentelemetry.context.active(),
-        ctx.traceContext,
-      )
-    : opentelemetry.context.active();
+  const activeContext = ctx.startNewTrace
+    ? opentelemetry.ROOT_CONTEXT
+    : ctx.traceContext
+      ? opentelemetry.propagation.extract(
+          opentelemetry.context.active(),
+          ctx.traceContext,
+        )
+      : opentelemetry.context.active();
 
   return getTracer(ctx.traceScope ?? callback.name).startActiveSpan(
     ctx.name,
     {
-      root: !ctx.traceContext && ctx.rootSpan,
+      root: ctx.startNewTrace || (!ctx.traceContext && ctx.rootSpan),
       kind: ctx.spanKind,
     },
     activeContext,
     (span) => {
+      const baggage = opentelemetry.propagation.getBaggage(
+        opentelemetry.context.active(),
+      );
+      if (baggage) {
+        baggage
+          .getAllEntries()
+          .forEach(([k, v]) => span.setAttribute(k, v.value));
+      }
       try {
         const result = callback(span);
         span.end();
@@ -142,7 +163,13 @@ export const traceException = (
 };
 
 export const addUserToSpan = (
-  attributes: { userId?: string; projectId?: string; email?: string },
+  attributes: {
+    userId?: string;
+    projectId?: string;
+    email?: string;
+    orgId?: string;
+    plan?: string;
+  },
   span?: opentelemetry.Span,
 ) => {
   const activeSpan = span ?? getCurrentSpan();
@@ -151,42 +178,89 @@ export const addUserToSpan = (
     return;
   }
 
-  attributes.userId && activeSpan.setAttribute("user.id", attributes.userId);
-  attributes.email && activeSpan.setAttribute("user.email", attributes.email);
-  attributes.projectId &&
-    activeSpan.setAttribute("project.id", attributes.projectId);
+  const ctx = opentelemetry.context.active();
+  let baggage =
+    opentelemetry.propagation.getBaggage(ctx) ??
+    opentelemetry.propagation.createBaggage();
+
+  if (attributes.userId) {
+    baggage = baggage.setEntry("user.id", {
+      value: attributes.userId,
+    });
+    activeSpan.setAttribute("user.id", attributes.userId);
+  }
+  if (attributes.email) {
+    baggage = baggage.setEntry("user.email", {
+      value: attributes.email,
+    });
+    activeSpan.setAttribute("user.email", attributes.email);
+  }
+  if (attributes.projectId) {
+    baggage = baggage.setEntry("langfuse.project.id", {
+      value: attributes.projectId,
+    });
+    activeSpan.setAttribute("langfuse.project.id", attributes.projectId);
+  }
+  if (attributes.orgId) {
+    baggage = baggage.setEntry("langfuse.org.id", {
+      value: attributes.orgId,
+    });
+    activeSpan.setAttribute("langfuse.org.id", attributes.orgId);
+  }
+  if (attributes.plan) {
+    baggage = baggage.setEntry("langfuse.org.plan", {
+      value: attributes.plan,
+    });
+    activeSpan.setAttribute("langfuse.org.plan", attributes.plan);
+  }
+
+  return opentelemetry.propagation.setBaggage(ctx, baggage);
 };
 
 export const getTracer = (name: string) => opentelemetry.trace.getTracer(name);
 
 const cloudWatchClient = new CloudWatchClient();
-const cloudWatchLastSubmitted: Record<string, number> = {};
-const sendCloudWatchMetric = (key: string, value: number | undefined) => {
-  const currentTime = Date.now();
-  const interval = 30 * 1000;
+let lastFlushTime = 0;
+let metricCache: Record<string, number> = {};
 
-  // Check if the function has been executed in the last 30s for this key
-  if (
-    !cloudWatchLastSubmitted[key] ||
-    currentTime - cloudWatchLastSubmitted[key] >= interval
-  ) {
-    cloudWatchLastSubmitted[key] = currentTime;
-    cloudWatchClient
-      .send(
-        new PutMetricDataCommand({
-          Namespace: "HanzoCloud",
-          MetricData: [
-            {
-              MetricName: key,
-              Value: value ?? 0,
-            },
-          ],
-        }),
-      )
-      .catch((error) => {
-        logger.warn("Failed to send metric to CloudWatch", error);
-      });
+// Caches metrics and flushes them on schedule
+const sendCloudWatchMetric = (key: string, value: number, replace: boolean) => {
+  // Store the latest value for each metric key. If replace is false (e.g. for increments) we add the value to the existing value.
+  metricCache[key] = replace ? value : (metricCache[key] || 0) + value;
+
+  const currentTime = Date.now();
+  const flushInterval = 30 * 1000; // 30 seconds
+
+  // Check if it's time to flush the metrics
+  if (currentTime - lastFlushTime >= flushInterval) {
+    flushMetricsToCloudWatch();
   }
+};
+
+// Flush all cached metrics in a single API call
+const flushMetricsToCloudWatch = () => {
+  if (Object.keys(metricCache).length === 0) return;
+
+  lastFlushTime = Date.now();
+
+  const metricData = Object.entries(metricCache).map(([key, value]) => ({
+    MetricName: key,
+    Value: value,
+  }));
+
+  // Clear the cache after preparing the metrics
+  metricCache = {};
+
+  cloudWatchClient
+    .send(
+      new PutMetricDataCommand({
+        Namespace: "Langfuse",
+        MetricData: metricData,
+      }),
+    )
+    .catch((error) => {
+      logger.warn("Failed to send metrics to CloudWatch", error);
+    });
 };
 
 export const recordGauge = (
@@ -199,7 +273,7 @@ export const recordGauge = (
     | undefined,
 ) => {
   if (env.ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING === "true") {
-    sendCloudWatchMetric(stat, value);
+    sendCloudWatchMetric(stat, value ?? 0, true);
   }
   dd.dogstatsd.gauge(stat, value, tags);
 };
@@ -210,7 +284,7 @@ export const recordIncrement = (
   tags?: { [tag: string]: string | number } | undefined,
 ) => {
   if (env.ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING === "true") {
-    sendCloudWatchMetric(stat, value);
+    sendCloudWatchMetric(stat, value ?? 1, false);
   }
   dd.dogstatsd.increment(stat, value, tags);
 };
@@ -220,9 +294,6 @@ export const recordHistogram = (
   value?: number | undefined,
   tags?: { [tag: string]: string | number } | undefined,
 ) => {
-  if (env.ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING === "true") {
-    sendCloudWatchMetric(stat, value);
-  }
   dd.dogstatsd.histogram(stat, value, tags);
 };
 

@@ -1,26 +1,18 @@
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import {
-  TabsBar,
-  TabsBarList,
-  TabsBarTrigger,
-} from "@/src/components/ui/tabs-bar";
-import Link from "next/link";
+  getDatasetTabs,
+  DATASET_TABS,
+} from "@/src/features/navigation/utils/dataset-tabs";
 import { DatasetItemsTable } from "@/src/features/datasets/components/DatasetItemsTable";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { DatasetActionButton } from "@/src/features/datasets/components/DatasetActionButton";
-import { DeleteButton } from "@/src/components/deleteButton";
+import { DeleteDatasetButton } from "@/src/components/deleteButton";
 import { NewDatasetItemButton } from "@/src/features/datasets/components/NewDatasetItemButton";
 import { DuplicateDatasetButton } from "@/src/features/datasets/components/DuplicateDatasetButton";
 import { UploadDatasetCsvButton } from "@/src/features/datasets/components/UploadDatasetCsvButton";
-import { MarkdownJsonView } from "@/src/components/ui/MarkdownJsonView";
 import { Button } from "@/src/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
-import { FolderKanban, MoreVertical } from "lucide-react";
+import { History, MoreVertical } from "lucide-react";
 import Page from "@/src/components/layouts/page";
 import {
   DropdownMenu,
@@ -28,17 +20,51 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/src/components/ui/dropdown-menu";
+import { DatasetItemsOnboarding } from "@/src/components/onboarding/DatasetItemsOnboarding";
+import { SidePanel, SidePanelContent } from "@/src/components/ui/side-panel";
+import { DatasetVersionHistoryPanel } from "@/src/features/datasets/components/DatasetVersionHistoryPanel";
+import { DatasetVersionWarningBanner } from "@/src/features/datasets/components/DatasetVersionWarningBanner";
+import { useState } from "react";
+import { useDatasetVersion } from "@/src/features/datasets/hooks/useDatasetVersion";
 
-export default function DatasetItems() {
+function DatasetItemsView() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
-  const utils = api.useUtils();
+
+  const { selectedVersion, resetToLatest } = useDatasetVersion();
+  const isViewingOldVersion = selectedVersion !== null;
+
+  const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(false);
 
   const dataset = api.datasets.byId.useQuery({
     datasetId,
     projectId,
   });
+
+  const totalDatasetItemCount = api.datasets.countItemsByDatasetId.useQuery({
+    projectId,
+    datasetId,
+  });
+
+  const showOnboarding =
+    totalDatasetItemCount.isSuccess && totalDatasetItemCount.data === 0;
+
+  // Fetch change counts since selected version
+  const changeCounts = api.datasets.countChangesSinceVersion.useQuery(
+    {
+      projectId,
+      datasetId,
+      version: selectedVersion!,
+    },
+    {
+      enabled: selectedVersion !== null,
+    },
+  );
+
+  const handlePanelOpenChange = (open: boolean) => {
+    setIsVersionPanelOpen(open);
+  };
 
   return (
     <Page
@@ -53,49 +79,24 @@ export default function DatasetItems() {
         breadcrumb: [
           { name: "Datasets", href: `/project/${projectId}/datasets` },
         ],
-        tabsComponent: (
-          <TabsBar value="items">
-            <TabsBarList className="justify-start">
-              <TabsBarTrigger value="runs" asChild>
-                <Link href={`/project/${projectId}/datasets/${datasetId}`}>
-                  Runs
-                </Link>
-              </TabsBarTrigger>
-              <TabsBarTrigger value="items">Items</TabsBarTrigger>
-            </TabsBarList>
-          </TabsBar>
-        ),
-        actionButtonsRight: [
+        tabsProps: {
+          tabs: getDatasetTabs(projectId, datasetId),
+          activeTab: DATASET_TABS.ITEMS,
+        },
+        actionButtonsRight: (
           <>
-            <NewDatasetItemButton projectId={projectId} datasetId={datasetId} />
-            <UploadDatasetCsvButton
-              projectId={projectId}
-              datasetId={datasetId}
-            />
-            <Popover key="show-dataset-details">
-              <PopoverTrigger asChild>
-                <Button variant="outline">
-                  <FolderKanban className="mr-2 h-4 w-4" />
-                  <span className="hidden md:block">Dataset details</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="mx-2 max-h-[50vh] w-[50vw] overflow-y-auto md:w-[25vw]">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="mb-1 font-medium">Description</h4>
-                    <span className="text-sm text-muted-foreground">
-                      {dataset.data?.description ?? "No description"}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="mb-1 font-medium">Metadata</h4>
-                    <MarkdownJsonView
-                      content={dataset.data?.metadata ?? null}
-                    />
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            {!showOnboarding && (
+              <>
+                <NewDatasetItemButton
+                  projectId={projectId}
+                  datasetId={datasetId}
+                />
+                <UploadDatasetCsvButton
+                  projectId={projectId}
+                  datasetId={datasetId}
+                />
+              </>
+            )}
             <DetailPageNav
               currentId={datasetId}
               path={(entry) =>
@@ -118,6 +119,10 @@ export default function DatasetItems() {
                     datasetName={dataset.data?.name ?? ""}
                     datasetDescription={dataset.data?.description ?? undefined}
                     datasetMetadata={dataset.data?.metadata}
+                    datasetInputSchema={dataset.data?.inputSchema ?? undefined}
+                    datasetExpectedOutputSchema={
+                      dataset.data?.expectedOutputSchema ?? undefined
+                    }
                   />
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -126,25 +131,67 @@ export default function DatasetItems() {
                     projectId={projectId}
                   />
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <DeleteButton
+                <DropdownMenuItem
+                  asChild
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    return false;
+                  }}
+                >
+                  <DeleteDatasetButton
                     itemId={datasetId}
                     projectId={projectId}
-                    isTableAction={false}
-                    scope="datasets:CUD"
-                    invalidateFunc={() => void utils.datasets.invalidate()}
-                    type="dataset"
                     redirectUrl={`/project/${projectId}/datasets`}
                     deleteConfirmation={dataset.data?.name}
                   />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </>,
-        ],
+            <Button
+              variant="outline"
+              onClick={() => setIsVersionPanelOpen(!isVersionPanelOpen)}
+              title="Version History"
+            >
+              <History className="mr-2 h-4 w-4" />
+              Version History
+            </Button>
+          </>
+        ),
       }}
     >
-      <DatasetItemsTable projectId={projectId} datasetId={datasetId} />
+      {showOnboarding ? (
+        <DatasetItemsOnboarding projectId={projectId} datasetId={datasetId} />
+      ) : (
+        <div className="grid flex-1 grid-cols-[1fr,auto] overflow-hidden">
+          <div className="flex h-full flex-col overflow-hidden">
+            {isViewingOldVersion && selectedVersion && (
+              <DatasetVersionWarningBanner
+                selectedVersion={selectedVersion}
+                resetToLatest={resetToLatest}
+                changeCounts={changeCounts.data}
+              />
+            )}
+            <DatasetItemsTable projectId={projectId} datasetId={datasetId} />
+          </div>
+          <SidePanel
+            id="version-history-panel"
+            openState={{
+              open: isVersionPanelOpen,
+              onOpenChange: handlePanelOpenChange,
+            }}
+            mobileTitle="Version History"
+          >
+            <SidePanelContent className="h-full">
+              <DatasetVersionHistoryPanel
+                projectId={projectId}
+                datasetId={datasetId}
+              />
+            </SidePanelContent>
+          </SidePanel>
+        </div>
+      )}
     </Page>
   );
 }
+
+export default DatasetItemsView;

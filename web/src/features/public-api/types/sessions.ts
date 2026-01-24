@@ -5,7 +5,7 @@ import {
 } from "@hanzo/shared";
 import { stringDateTime } from "@hanzo/shared/src/server";
 
-import { z } from "zod";
+import { z } from "zod/v4";
 
 /**
  * Objects

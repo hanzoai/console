@@ -8,12 +8,13 @@ import {
 } from "@/src/components/ui/avatar";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
+import { safeExtract } from "@/src/utils/map-utils";
 import type { RouterOutput } from "@/src/utils/types";
 import { Trash } from "lucide-react";
-import { useQueryParams, withDefault, NumberParam } from "use-query-params";
-import { type Organization, type Role } from "@hanzo/shared";
+import { type Organization, type Role } from "@langfuse/shared";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import Header from "@/src/components/layouts/header";
+import useSessionStorage from "@/src/components/useSessionStorage";
 
 export type tmp = Organization;
 export type InvitesTableRow = {
@@ -37,6 +38,10 @@ export function MembershipInvitesPage({
   orgId: string;
   projectId?: string;
 }) {
+  const paginationKey = projectId
+    ? `projectInvites_${projectId}_pagination`
+    : `orgInvites_${orgId}_pagination`;
+
   const hasOrgViewAccess = useHasOrganizationAccess({
     organizationId: orgId,
     scope: "organizationMembers:read",
@@ -47,15 +52,17 @@ export function MembershipInvitesPage({
       scope: "projectMembers:read",
     }) || hasOrgViewAccess;
 
-  const [paginationState, setPaginationState] = useQueryParams({
-    pageIndex: withDefault(NumberParam, 0),
-    pageSize: withDefault(NumberParam, 10),
-  });
+  const [paginationState, setPaginationState] = useSessionStorage(
+    paginationKey,
+    {
+      pageIndex: 0,
+      pageSize: 10,
+    },
+  );
 
   const invites = projectId
     ? api.members.allInvitesFromProject.useQuery(
         {
-          orgId,
           projectId,
           page: paginationState.pageIndex,
           limit: paginationState.pageSize,
@@ -203,6 +210,7 @@ export function MembershipInvitesPage({
       <Header title="Membership Invites" />
       <DataTableToolbar columns={columns} />
       <DataTable
+        tableName={"membershipInvites"}
         columns={columns}
         data={
           invites.isLoading
@@ -216,7 +224,7 @@ export function MembershipInvitesPage({
               : {
                   isLoading: false,
                   isError: false,
-                  data: invites.data.invitations.map((i) =>
+                  data: safeExtract(invites.data, "invitations", []).map((i) =>
                     convertToTableRow(i),
                   ),
                 }

@@ -1,14 +1,35 @@
-import { z } from "zod";
-import { LLMAdapter, BedrockConfigSchema } from "@hanzo/shared";
+import { z } from "zod/v4";
+import {
+  LLMAdapter,
+  BedrockConfigSchema,
+  VertexAIConfigSchema,
+} from "@langfuse/shared";
 
-export const CreateLlmApiKey = z.object({
+export const LlmApiKeySchema = z.object({
   projectId: z.string(),
-  secretKey: z.string().min(1),
-  provider: z.string().min(1),
-  adapter: z.nativeEnum(LLMAdapter),
+  provider: z
+    .string()
+    .min(1)
+    .regex(/^[^:]+$/, "Provider name cannot contain colons"),
+  adapter: z.enum(LLMAdapter),
   baseURL: z.string().url().optional(),
   withDefaultModels: z.boolean().optional(),
   customModels: z.array(z.string().min(1)).optional(),
-  config: BedrockConfigSchema.optional(),
+  config: z.union([VertexAIConfigSchema, BedrockConfigSchema]).optional(),
   extraHeaders: z.record(z.string(), z.string()).optional(),
+});
+
+export const CreateLlmApiKey = LlmApiKeySchema.extend({
+  secretKey: z.string().min(1),
+});
+
+export const UpdateLlmApiKey = LlmApiKeySchema.extend({
+  secretKey: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || val.length >= 1,
+      "Secret key must be at least 1 character long",
+    ),
+  id: z.string(),
 });

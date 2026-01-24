@@ -1,7 +1,8 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
-import { type BatchExport } from "@hanzo/shared";
+import { safeExtract } from "@/src/utils/map-utils";
+import { type BatchExport } from "@langfuse/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { ActionButton } from "@/src/components/ActionButton";
@@ -13,17 +14,45 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/src/components/ui/alert-dialog";
+import { useState } from "react";
+import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 export function BatchExportsTable(props: { projectId: string }) {
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 10),
   });
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [selectedExportId, setSelectedExportId] = useState<string | null>(null);
 
   const batchExports = api.batchExport.all.useQuery({
     projectId: props.projectId,
     limit: paginationState.pageSize,
     page: paginationState.pageIndex,
+  });
+
+  const cancelBatchExport = api.batchExport.cancel.useMutation({
+    onSuccess: () => {
+      void batchExports.refetch();
+      setCancelDialogOpen(false);
+      setSelectedExportId(null);
+    },
+  });
+
+  const hasAccess = useHasProjectAccess({
+    projectId: props.projectId,
+    scope: "batchExports:create",
   });
 
   const columns = [
@@ -129,14 +158,77 @@ export function BatchExportsTable(props: { projectId: string }) {
         return log ?? null;
       },
     },
-  ] as HanzoColumnDef<BatchExport>[];
+    {
+      accessorKey: "actions",
+      id: "actions",
+      header: "Actions",
+      size: 100,
+      cell: ({ row }) => {
+        const id = row.original.id;
+        const status = row.getValue("status") as string;
+
+        // Only show cancel button for queued or processing exports
+        if (status !== "QUEUED" && status !== "PROCESSING") {
+          return null;
+        }
+
+        return (
+          <AlertDialog
+            open={cancelDialogOpen && selectedExportId === id}
+            onOpenChange={(open) => {
+              if (!open) {
+                setCancelDialogOpen(false);
+                setSelectedExportId(null);
+              }
+            }}
+          >
+            <AlertDialogTrigger asChild>
+              <ActionButton
+                hasAccess={hasAccess}
+                size="sm"
+                onClick={() => {
+                  setSelectedExportId(id);
+                  setCancelDialogOpen(true);
+                }}
+              >
+                Cancel
+              </ActionButton>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Cancel batch export?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to cancel this batch export? This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>No, keep it</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    cancelBatchExport.mutate({
+                      projectId: props.projectId,
+                      batchExportId: id,
+                    });
+                  }}
+                >
+                  Yes, cancel export
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        );
+      },
+    },
+  ] as LangfuseColumnDef<BatchExport>[];
 
   return (
     <>
       <DataTable
+        tableName={"batchExports"}
         columns={columns}
         data={
-          batchExports.isLoading
+          batchExports.isPending
             ? { isLoading: true, isError: false }
             : batchExports.isError
               ? {
@@ -147,7 +239,7 @@ export function BatchExportsTable(props: { projectId: string }) {
               : {
                   isLoading: false,
                   isError: false,
-                  data: batchExports.data.exports,
+                  data: safeExtract(batchExports.data, "exports", []),
                 }
         }
         pagination={{

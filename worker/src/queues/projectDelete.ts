@@ -1,12 +1,14 @@
 import { Job, Processor } from "bullmq";
 import {
-  deleteEventLogByProjectId,
+  deleteEventsByProjectId,
   deleteObservationsByProjectId,
   deleteScoresByProjectId,
   deleteTracesByProjectId,
-  getEventLogByProjectId,
+  deleteDatasetRunItemsByProjectId,
+  getCurrentSpan,
   logger,
   QueueName,
+  removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
   StorageService,
   StorageServiceFactory,
   TQueueJobTypes,
@@ -21,40 +23,41 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3MediaStorageClient;
-};
-
-let s3EventStorageClient: StorageService;
-
-const getS3EventStorageClient = (bucketName: string): StorageService => {
-  if (!s3EventStorageClient) {
-    s3EventStorageClient = StorageServiceFactory.getInstance({
-      bucketName,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-    });
-  }
-  return s3EventStorageClient;
 };
 
 export const projectDeleteProcessor: Processor = async (
   job: Job<TQueueJobTypes[QueueName.ProjectDelete]>,
 ): Promise<void> => {
   const { orgId, projectId } = job.data.payload;
+
+  const span = getCurrentSpan();
+  if (span) {
+    span.setAttribute("messaging.bullmq.job.input.id", job.data.id);
+    span.setAttribute(
+      "messaging.bullmq.job.input.projectId",
+      job.data.payload.projectId,
+    );
+    span.setAttribute(
+      "messaging.bullmq.job.input.orgId",
+      job.data.payload.orgId,
+    );
+  }
+
   logger.info(`Deleting ${projectId} in org ${orgId}`);
 
   // Delete media data from S3 for project
-  if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
+  if (env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+    logger.info(`Deleting media for ${projectId} in org ${orgId}`);
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
         id: true,
@@ -75,30 +78,30 @@ export const projectDeleteProcessor: Processor = async (
     // No need to delete from table as this will be done below via Prisma
   }
 
-  // Remove event files from S3
-  const eventLogStream = getEventLogByProjectId(projectId);
-  let eventLogPaths: string[] = [];
-  const eventStorageClient = getS3EventStorageClient(
-    env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+  logger.info(
+    `Deleting ClickHouse and S3 data for ${projectId} in org ${orgId}`,
   );
-  for await (const eventLog of eventLogStream) {
-    eventLogPaths.push(eventLog.bucket_path);
-    if (eventLogPaths.length > 500) {
-      // Delete the current batch and reset the list
-      await eventStorageClient.deleteFiles(eventLogPaths);
-      eventLogPaths = [];
-    }
-  }
-  // Delete any remaining files
-  await eventStorageClient.deleteFiles(eventLogPaths);
 
   // Delete project data from ClickHouse first
   await Promise.all([
+    env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
+      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
+          projectId,
+          undefined,
+        )
+      : Promise.resolve(),
     deleteTracesByProjectId(projectId),
     deleteObservationsByProjectId(projectId),
     deleteScoresByProjectId(projectId),
-    deleteEventLogByProjectId(projectId),
+    env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
+      ? deleteEventsByProjectId(projectId)
+      : Promise.resolve(),
   ]);
+
+  // Trigger async delete of dataset run items
+  await deleteDatasetRunItemsByProjectId(projectId);
+
+  logger.info(`Deleting PG data for project ${projectId} in org ${orgId}`);
 
   // Finally, delete the project itself which should delete all related
   // resources due to the referential actions defined via Prisma
@@ -122,6 +125,9 @@ export const projectDeleteProcessor: Processor = async (
       },
     });
   } catch (e) {
+    logger.error(`Error deleting project ${projectId} in org ${orgId}: ${e}`, {
+      stack: e instanceof Error ? e.stack : undefined,
+    });
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025" || e.code === "P2016") {
         logger.warn(

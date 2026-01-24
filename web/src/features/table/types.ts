@@ -7,10 +7,10 @@ type BaseTableAction = {
   id: ActionId;
   label: string;
   description: string;
-  icon?: ReactElement;
+  icon?: ReactElement<any>;
   accessCheck: {
     scope: ProjectScope;
-    entitlement: Entitlement;
+    entitlement?: Entitlement;
   };
 };
 
@@ -31,4 +31,13 @@ type DeleteTableAction = BaseTableAction & {
   execute: ({ projectId }: { projectId: string }) => Promise<void>;
 };
 
-export type TableAction = CreateTableAction | DeleteTableAction;
+export type CustomDialogTableAction = BaseTableAction & {
+  type: BatchActionType.Create;
+  customDialog: true;
+  // No execute or targetLabel - dialog handles everything
+};
+
+export type TableAction =
+  | CreateTableAction
+  | DeleteTableAction
+  | CustomDialogTableAction;

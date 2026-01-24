@@ -29,10 +29,8 @@ export const sendBatchExportSuccessEmail = async ({
   env.EMAIL_FROM_ADDRESS = "nonreply@hanzo.ai";
 
   try {
-    const mailer = createTransport(
-      parseConnectionUrl(env.SMTP_CONNECTION_URL as string),
-    );
-    const htmlTemplate = render(
+    const mailer = createTransport(parseConnectionUrl(env.SMTP_CONNECTION_URL));
+    const htmlTemplate = await render(
       BatchExportSuccessEmailTemplate({
         receiverEmail,
         downloadLink,

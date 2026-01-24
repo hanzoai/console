@@ -1,37 +1,39 @@
 import { type Plan } from "@hanzo/shared";
 
 // Entitlements: Binary feature access
-const entitlements = [
+// Exported to silence @typescript-eslint/no-unused-vars v8 warning
+// (used for type extraction via typeof, which is a legitimate pattern)
+export const entitlements = [
   // features
-  "playground",
-  "model-based-evaluations",
   "rbac-project-roles",
   "cloud-billing",
-  "integration-posthog",
-  "annotation-queues",
+  "cloud-spend-alerts",
+  "cloud-multi-tenant-sso",
   "self-host-ui-customization",
   "self-host-allowed-organization-creators",
-  "prompt-experiments",
   "trace-deletion", // Not in use anymore, but necessary to use the TableAction type.
   "audit-logs",
   "data-retention",
+  "scheduled-blob-exports",
+  "prompt-protected-labels",
+  "admin-api",
 ] as const;
 export type Entitlement = (typeof entitlements)[number];
 
 const cloudAllPlansEntitlements: Entitlement[] = [
-  "playground",
-  "model-based-evaluations",
   "cloud-billing",
-  "integration-posthog",
-  "annotation-queues",
-  "prompt-experiments",
   "trace-deletion",
 ];
 
-const selfHostedAllPlansEntitlements: Entitlement[] = ["trace-deletion"];
+const selfHostedAllPlansEntitlements: Entitlement[] = [
+  "trace-deletion",
+  "scheduled-blob-exports",
+];
 
 // Entitlement Limits: Limits on the number of resources that can be created/used
-const entitlementLimits = [
+// Exported to silence @typescript-eslint/no-unused-vars v8 warning
+// (used for type extraction via typeof, which is a legitimate pattern)
+export const entitlementLimits = [
   "annotation-queue-count",
   "organization-member-count",
   "data-access-days",
@@ -58,15 +60,30 @@ export const entitlementAccess: Record<
     entitlementLimits: {
       "annotation-queue-count": 0,
       "organization-member-count": 2,
-      "data-access-days": 7,
-      "model-based-evaluations-count-evaluators": 1,
+      "data-access-days": 30,
+      "annotation-queue-count": 1,
+      "model-based-evaluations-count-evaluators": false,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  "cloud:core": {
+    entitlements: [...cloudAllPlansEntitlements, "cloud-spend-alerts"],
+    entitlementLimits: {
+      "organization-member-count": false,
+      "data-access-days": 90,
+      "annotation-queue-count": 3,
+      "model-based-evaluations-count-evaluators": false,
       "prompt-management-count-prompts": false,
     },
   },
   "cloud:pro": {
-    entitlements: [...cloudAllPlansEntitlements],
+    entitlements: [
+      ...cloudAllPlansEntitlements,
+      "cloud-spend-alerts",
+      "data-retention",
+    ],
     entitlementLimits: {
-      "annotation-queue-count": 3,
+      "annotation-queue-count": false,
       "organization-member-count": false,
       "data-access-days": false,
       "model-based-evaluations-count-evaluators": false,
@@ -79,6 +96,11 @@ export const entitlementAccess: Record<
       "rbac-project-roles",
       "audit-logs",
       "data-retention",
+      "cloud-multi-tenant-sso",
+      "prompt-protected-labels",
+      "admin-api",
+      "scheduled-blob-exports",
+      "cloud-spend-alerts",
     ],
     entitlementLimits: {
       "annotation-queue-count": false,
@@ -88,25 +110,38 @@ export const entitlementAccess: Record<
       "prompt-management-count-prompts": false,
     },
   },
-  "cloud:dev": {
-    entitlements: [...cloudAllPlansEntitlements],
+  "cloud:enterprise": {
+    entitlements: [
+      ...cloudAllPlansEntitlements,
+      "rbac-project-roles",
+      "audit-logs",
+      "data-retention",
+      "cloud-multi-tenant-sso",
+      "prompt-protected-labels",
+      "admin-api",
+      "scheduled-blob-exports",
+      "cloud-spend-alerts",
+    ],
     entitlementLimits: {
-      "annotation-queue-count": 1,
-      "organization-member-count": 2,
-      "data-access-days": 30,
-      "model-based-evaluations-count-evaluators": 1,
+      "annotation-queue-count": false,
+      "organization-member-count": false,
+      "data-access-days": false,
+      "model-based-evaluations-count-evaluators": false,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  oss: {
+    entitlements: selfHostedAllPlansEntitlements,
+    entitlementLimits: {
+      "annotation-queue-count": false,
+      "organization-member-count": false,
+      "data-access-days": false,
+      "model-based-evaluations-count-evaluators": false,
       "prompt-management-count-prompts": false,
     },
   },
   "self-hosted:pro": {
-    entitlements: [
-      ...selfHostedAllPlansEntitlements,
-      "annotation-queues",
-      "model-based-evaluations",
-      "playground",
-      "prompt-experiments",
-      "integration-posthog",
-    ],
+    entitlements: selfHostedAllPlansEntitlements,
     entitlementLimits: {
       "annotation-queue-count": false,
       "organization-member-count": false,
@@ -118,16 +153,13 @@ export const entitlementAccess: Record<
   "self-hosted:team": {
     entitlements: [
       ...selfHostedAllPlansEntitlements,
-      "annotation-queues",
-      "model-based-evaluations",
-      "playground",
-      "prompt-experiments",
       "rbac-project-roles",
-      "integration-posthog",
+      "self-host-allowed-organization-creators",
+      "self-host-ui-customization",
       "audit-logs",
       "data-retention",
-      "self-host-ui-customization",
-      "self-host-allowed-organization-creators",
+      "prompt-protected-labels",
+      "admin-api",
     ],
     entitlementLimits: {
       "annotation-queue-count": false,

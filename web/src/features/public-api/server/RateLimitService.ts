@@ -1,5 +1,5 @@
-import type Redis from "ioredis";
-import { type z } from "zod";
+import { type Redis, type Cluster } from "ioredis";
+import { type z } from "zod/v4";
 import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { env } from "@/src/env.mjs";
 import {
@@ -24,7 +24,7 @@ import { type NextApiResponse } from "next";
 // - isRateLimited returns false for self-hosters
 // - sendRestResponseIfLimited sends a 429 response with headers if the rate limit is exceeded. Return this from the route handler.
 export class RateLimitService {
-  private static redis: Redis | null;
+  private static redis: Redis | Cluster | null;
   private static instance: RateLimitService | null = null;
 
   public static getInstance(redis: Redis | null = null) {
@@ -88,7 +88,7 @@ export class RateLimitService {
     if (RateLimitService?.redis?.status !== "ready") {
       try {
         await RateLimitService?.redis?.connect();
-      } catch (err) {
+      } catch (_err) {
         // Do nothing here. We will fail open if Redis is not available.
       }
     }
@@ -220,19 +220,18 @@ const getPlanBasedRateLimitConfig = (
         points: null,
         durationInSec: null,
       };
-    case "cloud:free":
-    case "cloud:pro":
+    case "cloud:hobby":
       switch (resource) {
         case "ingestion":
           return {
             resource: "ingestion",
-            points: 4000,
+            points: 1000,
             durationInSec: 60,
           };
         case "legacy-ingestion":
           return {
-            resource: "prompts",
-            points: 400,
+            resource: "legacy-ingestion",
+            points: 100,
             durationInSec: 60,
           };
         case "prompts":
@@ -244,30 +243,112 @@ const getPlanBasedRateLimitConfig = (
         case "public-api":
           return {
             resource: "public-api",
-            points: 1000,
+            points: 30,
+            durationInSec: 60,
+          };
+        case "datasets":
+          return {
+            resource: "datasets",
+            points: 100,
             durationInSec: 60,
           };
         case "public-api-metrics":
           return {
             resource: "public-api-metrics",
+            points: 100,
+            durationInSec: 86400, // 100 requests per day
+          };
+        case "public-api-daily-metrics-legacy":
+          return {
+            resource: "public-api-daily-metrics-legacy",
             points: 10,
-            durationInSec: 60,
+            durationInSec: 86400, // 10 requests per day
+          };
+        case "trace-delete":
+          return {
+            resource: "trace-delete",
+            points: 50,
+            durationInSec: 86400, // 50 requests per day
           };
         default:
-          const exhaustiveCheckDefault: never = resource;
-          throw new Error(`Unhandled resource case: ${exhaustiveCheckDefault}`);
+          const exhaustiveCheck: never = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheck}`);
       }
-    case "cloud:team":
+    case "cloud:core":
+      // TEMPORARY: Expanded core plan rate limits to pro limits to enable legacy pro -> core migration
+      // Original core limits (commented out):
+      // ingestion: 4000, public-api: 100, datasets: 200, public-api-metrics: 200, public-api-daily-metrics-legacy: 20
       switch (resource) {
         case "ingestion":
           return {
             resource: "ingestion",
-            points: 20000,
+            // points: 4000, // original core limit
+            points: 20_000, // temporary: using pro limit
             durationInSec: 60,
           };
         case "legacy-ingestion":
           return {
+            resource: "legacy-ingestion",
+            points: 400,
+            durationInSec: 60,
+          };
+        case "prompts":
+          return {
             resource: "prompts",
+            points: null,
+            durationInSec: null,
+          };
+        case "public-api":
+          return {
+            resource: "public-api",
+            // points: 100, // original core limit
+            points: 1000, // temporary: using pro limit
+            durationInSec: 60,
+          };
+        case "datasets":
+          return {
+            resource: "datasets",
+            // points: 200, // original core limit
+            points: 1000, // temporary: using pro limit
+            durationInSec: 60,
+          };
+        case "public-api-metrics":
+          return {
+            resource: "public-api-metrics",
+            // points: 200, // original core limit
+            points: 2000, // temporary: using pro limit
+            durationInSec: 86400, // 2000 requests per day
+          };
+        case "public-api-daily-metrics-legacy":
+          return {
+            resource: "public-api-daily-metrics-legacy",
+            // points: 20, // original core limit
+            points: 200, // temporary: using pro limit
+            durationInSec: 86400, // 200 requests per day
+          };
+        case "trace-delete":
+          return {
+            resource: "trace-delete",
+            points: 200,
+            durationInSec: 86400, // 200 requests per day
+          };
+        default:
+          const exhaustiveCheck: never = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheck}`);
+      }
+    case "cloud:pro":
+    case "cloud:team":
+    case "cloud:enterprise":
+      switch (resource) {
+        case "ingestion":
+          return {
+            resource: "ingestion",
+            points: 20_000,
+            durationInSec: 60,
+          };
+        case "legacy-ingestion":
+          return {
+            resource: "legacy-ingestion",
             points: 400,
             durationInSec: 60,
           };
@@ -283,15 +364,33 @@ const getPlanBasedRateLimitConfig = (
             points: 1000,
             durationInSec: 60,
           };
+        case "datasets":
+          return {
+            resource: "datasets",
+            points: 1000,
+            durationInSec: 60,
+          };
         case "public-api-metrics":
           return {
             resource: "public-api-metrics",
-            points: 10,
-            durationInSec: 60,
+            points: 2000,
+            durationInSec: 86400, // 2000 requests per day
+          };
+        case "public-api-daily-metrics-legacy":
+          return {
+            resource: "public-api-daily-metrics-legacy",
+            points: 200,
+            durationInSec: 86400, // 200 requests per day
+          };
+        case "trace-delete":
+          return {
+            resource: "trace-delete",
+            points: 1000,
+            durationInSec: 86400, // 1000 requests per day
           };
         default:
-          const exhaustiveCheckTeam: never = resource;
-          throw new Error(`Unhandled resource case: ${exhaustiveCheckTeam}`);
+          const exhaustiveCheck: never = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheck}`);
       }
     case "cloud:dev":
       switch (resource) {

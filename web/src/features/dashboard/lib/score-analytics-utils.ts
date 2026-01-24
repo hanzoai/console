@@ -1,5 +1,5 @@
 import { type DashboardDateRangeAggregationOption } from "@/src/utils/date-range-utils";
-import { type DatabaseRow } from "@/src/server/api/services/queryBuilder";
+import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import {
   type CategoryCounts,
   type ChartBin,
@@ -13,12 +13,14 @@ export const RESOURCE_METRICS = [
     value: "Latency",
     objectKey: "avgLatency",
     label: "Latency (s)",
+    maxFractionDigits: 2,
   },
   {
     key: "cost",
     value: "Cost",
     objectKey: "avgTotalCost",
     label: "Average Total Cost ($)",
+    maxFractionDigits: 5,
   },
 ];
 

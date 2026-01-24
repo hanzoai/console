@@ -6,22 +6,21 @@ import {
   pruneDatabase,
 } from "@/src/__tests__/test-utils";
 import {
-  type ScoreConfig,
-  prisma,
-  type ScoreDataType,
-} from "@hanzo/shared/src/db";
-import {
   GetScoreConfigResponse,
-  PostScoreConfigResponse,
   GetScoreConfigsResponse,
-} from "@hanzo/shared";
+  PostScoreConfigResponse,
+  PutScoreConfigResponse,
+} from "@/src/features/public-api/types/score-configs";
+import { ScoreConfigDataType } from "@langfuse/shared";
+import { type ScoreConfig, prisma } from "@langfuse/shared/src/db";
+import { createOrgProjectAndApiKey } from "@langfuse/shared/src/server";
 
 const configOne = [
   {
-    projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+    projectId: "<to be replaced>",
     name: "Test Boolean Config",
     description: "Test Description",
-    dataType: "BOOLEAN" as ScoreDataType,
+    dataType: ScoreConfigDataType.BOOLEAN,
     categories: [
       { label: "True", value: 1 },
       { label: "False", value: 0 },
@@ -32,10 +31,10 @@ const configOne = [
 ];
 const configTwo = [
   {
-    projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+    projectId: "<to be replaced>",
     name: "Test Numeric Config",
     description: "Test Description",
-    dataType: "NUMERIC" as ScoreDataType,
+    dataType: ScoreConfigDataType.NUMERIC,
     minValue: 0,
     createdAt: new Date("2024-05-11T00:00:00.000Z"),
     updatedAt: new Date("2024-05-11T00:00:00.000Z"),
@@ -44,10 +43,10 @@ const configTwo = [
 
 const configThree = [
   {
-    projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+    projectId: "<to be replaced>",
     name: "Test Categorical Config",
     description: "Test Description",
-    dataType: "CATEGORICAL" as ScoreDataType,
+    dataType: ScoreConfigDataType.CATEGORICAL,
     categories: [
       { label: "A", value: 0 },
       { label: "B", value: 1 },
@@ -59,9 +58,23 @@ const configThree = [
 ];
 
 describe("/api/public/score-configs API Endpoint", () => {
+  let auth: string;
+  let projectId: string;
+
   beforeAll(
     async () => {
       await pruneDatabase();
+
+      // Create authentication pairs
+      const { auth: newAuth, projectId: newProjectId } =
+        await createOrgProjectAndApiKey();
+      auth = newAuth;
+      projectId = newProjectId;
+
+      // Update the project IDs in configs to use the new project ID
+      configOne[0].projectId = projectId;
+      configTwo[0].projectId = projectId;
+      configThree[0].projectId = projectId;
 
       await prisma.scoreConfig.createMany({
         data: [...configOne, ...configTwo, ...configThree],
@@ -75,7 +88,7 @@ describe("/api/public/score-configs API Endpoint", () => {
   it("should GET a score config", async () => {
     const { id: configId } = (await prisma.scoreConfig.findFirst({
       where: {
-        projectId: configOne[0].projectId,
+        projectId,
         name: configOne[0].name,
       },
     })) as ScoreConfig;
@@ -84,6 +97,8 @@ describe("/api/public/score-configs API Endpoint", () => {
       GetScoreConfigResponse,
       "GET",
       `/api/public/score-configs/${configId}`,
+      undefined,
+      auth,
     );
 
     expect(getScoreConfig.status).toBe(200);
@@ -100,6 +115,8 @@ describe("/api/public/score-configs API Endpoint", () => {
       GetScoreConfigsResponse,
       "GET",
       `/api/public/score-configs?limit=50&page=1`,
+      undefined,
+      auth,
     );
 
     expect(fetchedConfigs.status).toBe(200);
@@ -125,6 +142,8 @@ describe("/api/public/score-configs API Endpoint", () => {
     const getScoreConfig = await makeAPICall(
       "GET",
       `/api/public/score-configs/${configId}`,
+      undefined,
+      auth,
     );
 
     expect(getScoreConfig.status).toBe(404);
@@ -147,6 +166,8 @@ describe("/api/public/score-configs API Endpoint", () => {
     const getScoreConfig = await makeAPICall(
       "GET",
       `/api/public/score-configs/${configId}`,
+      undefined,
+      auth,
     );
 
     expect(getScoreConfig.status).toBe(500);
@@ -165,12 +186,15 @@ describe("/api/public/score-configs API Endpoint", () => {
         dataType: "NUMERIC",
         maxValue: 0,
       },
+      auth,
     );
 
     const scoreConfig = await makeZodVerifiedAPICall(
       GetScoreConfigResponse,
       "GET",
       `/api/public/score-configs/${postScoreConfig.body.id}`,
+      undefined,
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(200);
@@ -188,12 +212,15 @@ describe("/api/public/score-configs API Endpoint", () => {
         name: "boolean-config-name",
         dataType: "BOOLEAN",
       },
+      auth,
     );
 
     const scoreConfig = await makeZodVerifiedAPICall(
       GetScoreConfigResponse,
       "GET",
       `/api/public/score-configs/${postScoreConfig.body.id}`,
+      undefined,
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(200);
@@ -218,12 +245,15 @@ describe("/api/public/score-configs API Endpoint", () => {
           { label: "Bad", value: 0 },
         ],
       },
+      auth,
     );
 
     const scoreConfig = await makeZodVerifiedAPICall(
       GetScoreConfigResponse,
       "GET",
       `/api/public/score-configs/${postScoreConfig.body.id}`,
+      undefined,
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(200);
@@ -247,6 +277,7 @@ describe("/api/public/score-configs API Endpoint", () => {
           maxValue: 0,
           minValue: 1,
         },
+        auth,
       );
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -267,6 +298,7 @@ describe("/api/public/score-configs API Endpoint", () => {
           { label: "Bad", value: 0 },
         ],
       },
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(400);
@@ -283,6 +315,7 @@ describe("/api/public/score-configs API Endpoint", () => {
         name: "invalid-categorical-config-name",
         dataType: "CATEGORICAL",
       },
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(400);
@@ -303,6 +336,7 @@ describe("/api/public/score-configs API Endpoint", () => {
           { key: "second", value: 0 },
         ],
       },
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(400);
@@ -331,6 +365,7 @@ describe("/api/public/score-configs API Endpoint", () => {
           { label: "first", value: 0 },
         ],
       },
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(400);
@@ -359,6 +394,7 @@ describe("/api/public/score-configs API Endpoint", () => {
           { label: "second", value: 1 },
         ],
       },
+      auth,
     );
 
     expect(postScoreConfig.status).toBe(400);
@@ -372,6 +408,343 @@ describe("/api/public/score-configs API Endpoint", () => {
           path: ["categories"],
         },
       ],
+    });
+  });
+
+  describe("PATCH /api/public/score-configs/:configId", () => {
+    it("should successfully archive a score config", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configOne[0].name,
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeZodVerifiedAPICall(
+        PutScoreConfigResponse,
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          isArchived: true,
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body.isArchived).toBe(true);
+    });
+
+    it("should fail when trying to update with invalid data type mismatch - numeric to categorical", async () => {
+      const foundConfig = await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name, // Numeric config
+        },
+      });
+      const { id: configId } = foundConfig as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          categories: [
+            { label: "Good", value: 1 },
+            { label: "Bad", value: 0 },
+          ],
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining("Invalid input"),
+      });
+    });
+
+    it("should fail when trying to update boolean with custom categories", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configOne[0].name, // Boolean config
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          categories: [
+            { label: "Custom Good", value: 1 },
+            { label: "Custom Bad", value: 0 },
+          ],
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining("Invalid input"),
+      });
+    });
+
+    it("should fail when trying to update with invalid numeric range", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name, // Numeric config
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          minValue: 100,
+          maxValue: 50,
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining(
+          "Maximum value must be greater than Minimum value",
+        ),
+      });
+    });
+
+    it("should fail when trying to update with invalid name length", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name,
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          name: "a".repeat(50), // Exceeds 35 character limit
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining("Invalid request"),
+      });
+    });
+
+    it("should fail when trying to update with empty name", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name,
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          name: "",
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining("Invalid request"),
+      });
+    });
+
+    it("should fail when trying to update non-existent config", async () => {
+      const nonExistentId = "non-existent-config-id";
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${nonExistentId}`,
+        {
+          name: "Updated Name",
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(404);
+      expect(patchResponse.body).toMatchObject({
+        message: "Score config not found within authorized project",
+      });
+    });
+
+    it("should successfully update only specific fields without affecting others", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name,
+        },
+      })) as ScoreConfig;
+
+      // Get current config state
+      const beforePatch = await makeZodVerifiedAPICall(
+        GetScoreConfigResponse,
+        "GET",
+        `/api/public/score-configs/${configId}`,
+        undefined,
+        auth,
+      );
+
+      // Update only description
+      const patchResponse = await makeZodVerifiedAPICall(
+        PutScoreConfigResponse,
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          description: "Only description updated",
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body.description).toBe("Only description updated");
+      // Verify other fields remain unchanged
+      expect(patchResponse.body.name).toBe(beforePatch.body.name);
+      expect(patchResponse.body.dataType).toBe(beforePatch.body.dataType);
+      expect(patchResponse.body.minValue).toBe(beforePatch.body.minValue);
+    });
+
+    it("should fail when trying to update with empty body", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name,
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeAPICall(
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {},
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(400);
+      expect(patchResponse.body).toMatchObject({
+        message: expect.stringContaining("Invalid request"),
+      });
+    });
+
+    it("should successfully update a numeric score config", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configTwo[0].name, // "Test Numeric Config"
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeZodVerifiedAPICall(
+        PutScoreConfigResponse,
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          name: "Updated Numeric Config",
+          minValue: 5,
+          maxValue: 100,
+          description: "Updated description",
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body).toMatchObject({
+        id: configId,
+        name: "Updated Numeric Config",
+        dataType: "NUMERIC",
+        minValue: 5,
+        maxValue: 100,
+        description: "Updated description",
+      });
+
+      // Verify the update persisted
+      const getResponse = await makeZodVerifiedAPICall(
+        GetScoreConfigResponse,
+        "GET",
+        `/api/public/score-configs/${configId}`,
+        undefined,
+        auth,
+      );
+
+      expect(getResponse.body.name).toBe("Updated Numeric Config");
+      expect(getResponse.body.minValue).toBe(5);
+      expect(getResponse.body.maxValue).toBe(100);
+    });
+
+    it("should successfully update a categorical score config", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configThree[0].name, // "Test Categorical Config"
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeZodVerifiedAPICall(
+        PutScoreConfigResponse,
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          name: "Updated Categorical Config",
+          categories: [
+            { label: "Excellent", value: 3 },
+            { label: "Good", value: 2 },
+            { label: "Poor", value: 1 },
+          ],
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body).toMatchObject({
+        id: configId,
+        name: "Updated Categorical Config",
+        dataType: "CATEGORICAL",
+        categories: [
+          { label: "Excellent", value: 3 },
+          { label: "Good", value: 2 },
+          { label: "Poor", value: 1 },
+        ],
+      });
+    });
+
+    it("should successfully update a boolean score config", async () => {
+      const { id: configId } = (await prisma.scoreConfig.findFirst({
+        where: {
+          projectId,
+          name: configOne[0].name, // "Test Boolean Config"
+        },
+      })) as ScoreConfig;
+
+      const patchResponse = await makeZodVerifiedAPICall(
+        PutScoreConfigResponse,
+        "PATCH",
+        `/api/public/score-configs/${configId}`,
+        {
+          name: "Updated Boolean Config",
+          description: "Updated boolean description",
+        },
+        auth,
+      );
+
+      expect(patchResponse.status).toBe(200);
+      expect(patchResponse.body).toMatchObject({
+        id: configId,
+        name: "Updated Boolean Config",
+        dataType: "BOOLEAN",
+        description: "Updated boolean description",
+        categories: [
+          { label: "True", value: 1 },
+          { label: "False", value: 0 },
+        ],
+      });
     });
   });
 });

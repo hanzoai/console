@@ -1,14 +1,11 @@
-import { singleFilter } from "@hanzo/shared";
-import { z } from "zod";
+import { singleFilter } from "@langfuse/shared";
+import { z } from "zod/v4";
 
-export const temporalUnit = z.enum([
-  "year",
-  "month",
-  "week",
-  "day",
-  "hour",
-  "minute",
-]);
+export type DatabaseRow = {
+  [key: string]: string | number | Date | Record<string, unknown> | null;
+};
+
+export const temporalUnit = z.enum(["month", "week", "day", "hour", "minute"]);
 
 export const aggregations = z
   .enum([

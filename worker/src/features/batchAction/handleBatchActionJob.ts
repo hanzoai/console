@@ -6,32 +6,36 @@ import {
   QueueJobs,
   QueueName,
   TQueueJobTypes,
-} from "@hanzo/shared/src/server";
+  traceDeletionProcessor,
+} from "@langfuse/shared/src/server";
 import {
-  BatchActionQuery,
   BatchActionType,
-  BatchExportTableName,
+  BatchTableNames,
   FilterCondition,
-} from "@hanzo/shared";
-import { getDatabaseReadStream } from "../batchExport/handleBatchExportJob";
-import { processClickhouseTraceDelete } from "../traces/processClickhouseTraceDelete";
+} from "@langfuse/shared";
+import {
+  getDatabaseReadStreamPaginated,
+  getTraceIdentifierStream,
+} from "../database-read-stream/getDatabaseReadStream";
 import { env } from "../../env";
 import { Job } from "bullmq";
-import { processAddToQueue } from "./processAddToQueue";
-import { processPostgresTraceDelete } from "../traces/processPostgresTraceDelete";
-import { prisma } from "@hanzo/shared/src/db";
+import {
+  processAddObservationsToQueue,
+  processAddSessionsToQueue,
+  processAddTracesToQueue,
+} from "./processAddToQueue";
+import { prisma } from "@langfuse/shared/src/db";
 import { randomUUID } from "node:crypto";
+import { processClickhouseScoreDelete } from "../scores/processClickhouseScoreDelete";
+import { getObservationStream } from "../database-read-stream/observation-stream";
+import { processAddObservationsToDataset } from "./processAddObservationsToDataset";
+import { ObservationAddToDatasetConfigSchema } from "@langfuse/shared";
 
 const CHUNK_SIZE = 1000;
-const convertDatesInQuery = (query: BatchActionQuery) => {
-  if (!query.filter) return query;
-
-  return {
-    ...query,
-    filter: query.filter.map((f: FilterCondition) =>
-      f.type === "datetime" ? { ...f, value: new Date(f.value) } : f,
-    ),
-  };
+const convertDatesInFiltersFromStrings = (filters: FilterCondition[]) => {
+  return filters.map((f: FilterCondition) =>
+    f.type === "datetime" ? { ...f, value: new Date(f.value) } : f,
+  );
 };
 
 /**
@@ -47,14 +51,31 @@ async function processActionChunk(
   try {
     switch (actionId) {
       case "trace-delete":
-        await Promise.all([
-          processPostgresTraceDelete(projectId, chunkIds),
-          processClickhouseTraceDelete(projectId, chunkIds),
-        ]);
+        await traceDeletionProcessor(projectId, chunkIds, { delayMs: 0 });
         break;
 
       case "trace-add-to-annotation-queue":
-        await processAddToQueue(projectId, chunkIds, targetId as string);
+        await processAddTracesToQueue(projectId, chunkIds, targetId as string);
+        break;
+
+      case "session-add-to-annotation-queue":
+        await processAddSessionsToQueue(
+          projectId,
+          chunkIds,
+          targetId as string,
+        );
+        break;
+
+      case "observation-add-to-annotation-queue":
+        await processAddObservationsToQueue(
+          projectId,
+          chunkIds,
+          targetId as string,
+        );
+        break;
+
+      case "score-delete":
+        await processClickhouseScoreDelete(projectId, chunkIds);
         break;
 
       default:
@@ -127,7 +148,10 @@ export const handleBatchActionJob = async (
 
   if (
     actionId === "trace-delete" ||
-    actionId === "trace-add-to-annotation-queue"
+    actionId === "trace-add-to-annotation-queue" ||
+    actionId === "session-add-to-annotation-queue" ||
+    actionId === "observation-add-to-annotation-queue" ||
+    actionId === "score-delete"
   ) {
     const { projectId, tableName, query, cutoffCreatedAt, targetId, type } =
       batchActionEvent;
@@ -136,13 +160,33 @@ export const handleBatchActionJob = async (
       throw new Error(`Target ID is required for create action`);
     }
 
-    const dbReadStream = await getDatabaseReadStream({
-      projectId: projectId,
-      cutoffCreatedAt: new Date(cutoffCreatedAt),
-      ...convertDatesInQuery(query),
-      tableName: tableName as unknown as BatchExportTableName,
-      exportLimit: env.BATCH_ACTION_EXPORT_ROW_LIMIT,
-    });
+    const dbReadStream =
+      actionId === "trace-delete"
+        ? await getTraceIdentifierStream({
+            projectId: projectId,
+            cutoffCreatedAt: new Date(cutoffCreatedAt),
+            filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+            orderBy: query.orderBy,
+            searchQuery: query.searchQuery ?? undefined,
+            searchType: query.searchType ?? ["id" as const],
+          })
+        : tableName === BatchTableNames.Observations
+          ? await getObservationStream({
+              projectId: projectId,
+              cutoffCreatedAt: new Date(cutoffCreatedAt),
+              filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+              searchQuery: query.searchQuery ?? undefined,
+              searchType: query.searchType ?? ["id" as const],
+            })
+          : await getDatabaseReadStreamPaginated({
+              projectId: projectId,
+              cutoffCreatedAt: new Date(cutoffCreatedAt),
+              filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+              orderBy: query.orderBy,
+              tableName: tableName as BatchTableNames,
+              searchQuery: query.searchQuery ?? undefined,
+              searchType: query.searchType ?? ["id" as const],
+            });
 
     // Process stream in database-sized batches
     // 1. Read all records
@@ -178,19 +222,31 @@ export const handleBatchActionJob = async (
     });
 
     if (!config) {
-      throw new Error("Eval config not found");
+      logger.error(
+        `Eval config ${configId} not found for project ${projectId}`,
+      );
+      return;
     }
 
-    const dbReadStream = await getDatabaseReadStream({
-      projectId: projectId,
-      cutoffCreatedAt: new Date(cutoffCreatedAt),
-      ...convertDatesInQuery(query),
-      tableName:
-        targetObject === "trace"
-          ? BatchExportTableName.Traces
-          : BatchExportTableName.DatasetRunItems,
-      exportLimit: env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
-    });
+    const dbReadStream =
+      targetObject === "trace"
+        ? await getTraceIdentifierStream({
+            projectId: projectId,
+            cutoffCreatedAt: new Date(cutoffCreatedAt),
+            filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+            orderBy: query.orderBy,
+            searchQuery: query.searchQuery ?? undefined,
+            searchType: query.searchType,
+            rowLimit: env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+          }) // when reading from clickhouse, we only want to read the necessary identifiers.
+        : await getDatabaseReadStreamPaginated({
+            projectId: projectId,
+            cutoffCreatedAt: new Date(cutoffCreatedAt),
+            filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+            orderBy: query.orderBy,
+            tableName: BatchTableNames.DatasetRunItems,
+            rowLimit: env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+          });
 
     const evalCreatorQueue = CreateEvalQueue.getInstance();
     if (!evalCreatorQueue) {
@@ -206,6 +262,7 @@ export const handleBatchActionJob = async (
           traceId: record.id,
           configId: configId,
           timestamp: new Date(record.timestamp),
+          exactTimestamp: new Date(record.timestamp),
         };
 
         await evalCreatorQueue.add(QueueJobs.CreateEvalJob, {
@@ -248,8 +305,52 @@ export const handleBatchActionJob = async (
       }
     }
     logger.info(
-      `Batch action job {${count} elements} completed, projectId: ${batchActionJob.payload.projectId}, actionId: ${actionId}`,
+      `Batch action job completed, projectId: ${batchActionJob.payload.projectId}, ${count} elements`,
     );
+  } else if (actionId === "observation-add-to-dataset") {
+    const { projectId, query, cutoffCreatedAt, config, batchActionId } =
+      batchActionEvent;
+
+    // Parse and validate config
+    const parsedConfig = ObservationAddToDatasetConfigSchema.parse(config);
+
+    // Get observation stream
+    const dbReadStream = await getObservationStream({
+      projectId,
+      cutoffCreatedAt: new Date(cutoffCreatedAt),
+      filter: convertDatesInFiltersFromStrings(query.filter ?? []),
+      searchQuery: query.searchQuery ?? undefined,
+      searchType: query.searchType ?? ["id" as const],
+    });
+
+    // Collect all observations
+    const observations: Array<{
+      id: string;
+      traceId: string;
+      input: unknown;
+      output: unknown;
+      metadata: unknown;
+    }> = [];
+
+    for await (const record of dbReadStream) {
+      if (record?.id) {
+        observations.push({
+          id: record.id,
+          traceId: record.traceId,
+          input: record.input,
+          output: record.output,
+          metadata: record.metadata,
+        });
+      }
+    }
+
+    // Process observations and add to dataset
+    await processAddObservationsToDataset({
+      projectId,
+      batchActionId: batchActionId as string,
+      config: parsedConfig,
+      observations,
+    });
   }
 
   logger.info(

@@ -51,7 +51,7 @@ export const ModelSelectorPopover = ({
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0">
         <InputCommand>
-          <InputCommandInput placeholder="Search models..." />
+          <InputCommandInput placeholder="Search models..." variant="bottom" />
           <InputCommandEmpty>No model found.</InputCommandEmpty>
           <InputCommandGroup>
             <InputCommandItem onSelect={handleSelectAll}>
@@ -104,8 +104,15 @@ export const ModelSelectorPopover = ({
 export const useModelSelection = (
   projectId: string,
   globalFilterState: FilterState,
+  fromTimestamp: Date,
+  toTimestamp: Date,
 ) => {
-  const allModels = getAllModels(projectId, globalFilterState);
+  const allModels = getAllModels(
+    projectId,
+    globalFilterState,
+    fromTimestamp,
+    toTimestamp,
+  );
 
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [firstAllModelUpdate, setFirstAllModelUpdate] = useState(true);

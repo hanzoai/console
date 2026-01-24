@@ -5,7 +5,12 @@ import {
   tracesTableCols,
   singleFilter,
   sessionsViewCols,
-} from "@hanzo/shared";
+  promptsTableCols,
+  datasetRunsTableCols,
+  datasetItemFilterColumns,
+  datasetRunItemsTableCols,
+  usersTableCols,
+} from "@langfuse/shared";
 import { scoresTableCols } from "@/src/server/api/definitions/scoresTable";
 import {
   useQueryParam,
@@ -13,9 +18,9 @@ import {
   decodeDelimitedArray,
   withDefault,
 } from "use-query-params";
-import { promptsTableCols } from "@/src/server/api/definitions/promptsTable";
-import { usersTableCols } from "@/src/server/api/definitions/usersTable";
 import useSessionStorage from "@/src/components/useSessionStorage";
+import { evalConfigFilterColumns } from "@/src/server/api/definitions/evalConfigsTable";
+import { evalExecutionsFilterCols } from "@/src/server/api/definitions/evalExecutionsTable";
 
 const DEBUG_QUERY_STATE = false;
 
@@ -25,24 +30,34 @@ const DEBUG_QUERY_STATE = false;
 const getCommaArrayParam = (table: TableName) => ({
   encode: (filterState: FilterState) =>
     encodeDelimitedArray(
-      filterState.map((f) => {
-        const columnId = getColumnId(table, f.column);
+      filterState
+        .map((f) => {
+          const columnId = getColumnId(table, f.column);
 
-        const stringified = `${columnId};${f.type};${
-          f.type === "numberObject" || f.type === "stringObject" ? f.key : ""
-        };${f.operator};${encodeURIComponent(
-          f.type === "datetime"
-            ? new Date(f.value).toISOString()
-            : f.type === "stringOptions"
-              ? f.value.join("|")
-              : f.type === "arrayOptions"
+          if (!columnId) {
+            return null;
+          }
+
+          const stringified = `${columnId};${f.type};${
+            f.type === "numberObject" ||
+            f.type === "stringObject" ||
+            f.type === "categoryOptions"
+              ? f.key
+              : ""
+          };${f.operator};${encodeURIComponent(
+            f.type === "datetime"
+              ? new Date(f.value).toISOString()
+              : f.type === "stringOptions" ||
+                  f.type === "arrayOptions" ||
+                  f.type === "categoryOptions"
                 ? f.value.join("|")
                 : f.value,
-        )}`;
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (DEBUG_QUERY_STATE) console.log("stringified", stringified);
-        return stringified;
-      }),
+          )}`;
+
+          if (DEBUG_QUERY_STATE) console.log("stringified", stringified);
+          return stringified;
+        })
+        .filter((s): s is string => s !== null),
       ",",
     ),
 
@@ -51,7 +66,7 @@ const getCommaArrayParam = (table: TableName) => ({
       ?.map((f) => {
         if (!f) return null;
         const [column, type, key, operator, value] = f.split(";");
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
         if (DEBUG_QUERY_STATE)
           console.log("values", [column, type, key, operator, value]);
         const decodedValue = value ? decodeURIComponent(value) : undefined;
@@ -62,14 +77,14 @@ const getCommaArrayParam = (table: TableName) => ({
               ? new Date(decodedValue)
               : type === "number" || type === "numberObject"
                 ? Number(decodedValue)
-                : type === "stringOptions"
+                : type === "stringOptions" ||
+                    type === "arrayOptions" ||
+                    type === "categoryOptions"
                   ? decodedValue.split("|")
-                  : type === "arrayOptions"
-                    ? decodedValue.split("|")
-                    : type === "boolean"
-                      ? decodedValue === "true"
-                      : decodedValue;
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                  : type === "boolean"
+                    ? decodedValue === "true"
+                    : decodedValue;
+
         if (DEBUG_QUERY_STATE) console.log("parsedValue", parsedValue);
         const parsed = singleFilter.safeParse({
           column: getColumnName(table, column),
@@ -133,6 +148,20 @@ const tableCols = {
   scores: scoresTableCols,
   prompts: promptsTableCols,
   users: usersTableCols,
+  eval_configs: evalConfigFilterColumns,
+  job_executions: evalExecutionsFilterCols,
+  dataset_items: datasetItemFilterColumns,
+  dataset_runs: datasetRunsTableCols,
+  dataset_run_items_by_run: datasetRunItemsTableCols,
+  widgets: [
+    { id: "environment", name: "Environment" },
+    { id: "traceName", name: "Trace Name" },
+    { id: "tags", name: "Tags" },
+    { id: "release", name: "Release" },
+    { id: "user", name: "User" },
+    { id: "session", name: "Session" },
+    { id: "version", name: "Version" },
+  ],
   dashboard: [
     { id: "traceName", name: "Trace Name" },
     { id: "tags", name: "Tags" },
@@ -143,7 +172,10 @@ const tableCols = {
 };
 
 function getColumnId(table: TableName, name: string): string | undefined {
-  return tableCols[table]?.find((col) => col.name === name)?.id;
+  // TODO: make this more robust, will change with new filters
+  // to give more leeway to LLMs, we check against name or id
+  return tableCols[table]?.find((col) => col.name === name || col.id === name)
+    ?.id;
 }
 
 function getColumnName(table: TableName, id: string): string | undefined {

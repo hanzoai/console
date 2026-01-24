@@ -2,7 +2,7 @@ import { Card } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { api } from "@/src/utils/api";
-import type * as z from "zod";
+import type * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -29,7 +29,7 @@ export default function RenameProject() {
     scope: "project:update",
   });
 
-  const form = useForm<z.infer<typeof projectNameSchema>>({
+  const form = useForm({
     resolver: zodResolver(projectNameSchema),
     defaultValues: {
       name: "",
@@ -78,7 +78,6 @@ export default function RenameProject() {
         )}
         <Form {...form}>
           <form
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex-1"
             id="rename-project-form"
@@ -111,7 +110,7 @@ export default function RenameProject() {
               <Button
                 variant="secondary"
                 type="submit"
-                loading={renameProject.isLoading}
+                loading={renameProject.isPending}
                 disabled={form.getValues().name === "" || !hasAccess}
                 className="mt-4"
               >

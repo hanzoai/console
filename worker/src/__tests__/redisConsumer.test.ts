@@ -13,9 +13,14 @@ describe.sequential("handle redis events", () => {
   });
 
   test("handle redis job succeeding", async () => {
-    WorkerManager.register(QueueName.TraceUpsert, async () => true);
+    const shardingKey = "project-id-trace-id";
+    const traceUpsertQueue = TraceUpsertQueue.getInstance({ shardingKey });
+    const shardNames = TraceUpsertQueue.getShardNames();
 
-    const traceUpsertQueue = TraceUpsertQueue.getInstance();
+    // Register workers for all shards since we don't know which one will be used
+    shardNames.forEach((shardName) => {
+      WorkerManager.register(shardName as QueueName, async () => true);
+    });
 
     expect(traceUpsertQueue).toBeDefined();
 
@@ -35,16 +40,17 @@ describe.sequential("handle redis events", () => {
         expect(jobState).toEqual("completed");
       },
       {
-        timeout: 20_000,
+        timeout: 35_000,
       },
     );
-  }, 20_000);
+  }, 35_000);
 
   test("handle no matching queue worker", async () => {
     // IngestionQueue worker vs TraceUpsert producer
     WorkerManager.register(QueueName.IngestionQueue, async () => true);
 
-    const traceUpsertQueue = TraceUpsertQueue.getInstance();
+    const shardingKey = "project-id-trace-id";
+    const traceUpsertQueue = TraceUpsertQueue.getInstance({ shardingKey });
 
     expect(traceUpsertQueue).toBeDefined();
 

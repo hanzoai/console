@@ -15,7 +15,7 @@ import {
   QueueJobs,
 } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const batchExportRouter = createTRPCRouter({
   create: protectedProjectProcedure
@@ -75,6 +75,25 @@ export const batchExportRouter = createTRPCRouter({
           message: "Creating export job failed.",
         });
       }
+    }),
+  cancel: protectedProjectProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        batchExportId: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "batchExports:create",
+      });
+
+      await ctx.prisma.batchExport.update({
+        where: { id: input.batchExportId, projectId: input.projectId },
+        data: { status: BatchExportStatus.CANCELLED },
+      });
     }),
   all: protectedProjectProcedure
     .input(

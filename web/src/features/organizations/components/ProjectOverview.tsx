@@ -49,7 +49,9 @@ const OrganizationProjectTiles = ({
         .map((project) => (
           <Card key={project.id}>
             <CardHeader>
-              <CardTitle className="text-base">{project.name}</CardTitle>
+              <CardTitle className="truncate text-base">
+                {project.name}
+              </CardTitle>
             </CardHeader>
             {!project.deletedAt ? (
               <CardFooter className="gap-2">
@@ -85,7 +87,7 @@ const DemoOrganizationTile = () => {
       </CardContent>
       <CardFooter>
         <Button asChild variant="secondary">
-          <Link href={`/project/${env.NEXT_PUBLIC_DEMO_PROJECT_ID}`}>
+          <Link href={`/project/${env.NEXT_PUBLIC_DEMO_PROJECT_ID}/traces`}>
             View Demo Project
           </Link>
         </Button>
@@ -213,6 +215,7 @@ const SingleOrganizationProjectOverviewTile = ({
     <div key={orgId} className="mb-10">
       <Header
         title={org.name}
+        className="truncate"
         status={orgId === env.NEXT_PUBLIC_DEMO_ORG_ID ? "Demo Org" : undefined}
         label={
           isCloudPlan(org.plan)

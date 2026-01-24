@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronsUpDown } from "lucide-react";
+import Link from "next/link";
 
 import {
   Avatar,
@@ -27,6 +28,7 @@ export type UserNavigationItem = {
   name: string;
   onClick?: () => void;
   content?: React.ReactNode;
+  href?: string;
 };
 
 export type UserNavigationProps = {
@@ -65,7 +67,9 @@ export function NavUser({ user, items }: UserNavigationProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate text-xs" title={user.email}>
+                  {user.email}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -86,17 +90,25 @@ export function NavUser({ user, items }: UserNavigationProps) {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate text-xs" title={user.email}>
+                    {user.email}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {items.map((item) => (
-                <DropdownMenuItem key={item.name} onClick={item.onClick}>
-                  {item.content ?? item.name}
-                </DropdownMenuItem>
-              ))}
+              {items.map((item) =>
+                item.href ? (
+                  <DropdownMenuItem key={item.name} asChild>
+                    <Link href={item.href}>{item.content ?? item.name}</Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem key={item.name} onClick={item.onClick}>
+                    {item.content ?? item.name}
+                  </DropdownMenuItem>
+                ),
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

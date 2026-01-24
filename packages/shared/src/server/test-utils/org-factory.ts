@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 import { prisma } from "../../db";
 import { hashSecretKey, getDisplaySecretKey } from "../auth/apiKeys";
+import { CloudConfigSchema } from "../../interfaces/cloudConfigSchema";
 
 export function createBasicAuthHeader(
   username: string,
@@ -14,6 +15,7 @@ export function createBasicAuthHeader(
 
 export type CreateOrgProjectAndApiKeyOptions = {
   projectId?: string;
+  plan?: "Team" | "Hobby" | "Core" | "Pro" | "Enterprise";
 };
 export const createOrgProjectAndApiKey = async (
   props?: CreateOrgProjectAndApiKeyOptions,
@@ -23,9 +25,12 @@ export const createOrgProjectAndApiKey = async (
     data: {
       id: v4(),
       name: v4(),
+      cloudConfig: CloudConfigSchema.parse({
+        plan: props?.plan ?? "Team",
+      }),
     },
   });
-  await prisma.project.create({
+  const project = await prisma.project.create({
     data: {
       id: projectId,
       name: v4(),
@@ -43,8 +48,9 @@ export const createOrgProjectAndApiKey = async (
       publicKey: publicKey,
       hashedSecretKey: await hashSecretKey(secretKey),
       displaySecretKey: getDisplaySecretKey(secretKey),
+      scope: "PROJECT",
     },
   });
 
-  return { projectId, publicKey, secretKey, auth };
+  return { projectId, orgId: org.id, publicKey, secretKey, auth, org, project };
 };

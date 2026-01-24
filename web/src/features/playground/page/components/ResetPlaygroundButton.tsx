@@ -2,30 +2,26 @@ import { ListRestartIcon } from "lucide-react";
 import { useRouter } from "next/router";
 
 import { Button } from "@/src/components/ui/button";
-import usePlaygroundCache from "@/src/features/playground/page/hooks/usePlaygroundCache";
-import { useHasEntitlement } from "@/src/features/entitlements/hooks";
+import { usePersistedWindowIds } from "@/src/features/playground/page/hooks/usePersistedWindowIds";
 
 export const ResetPlaygroundButton: React.FC = () => {
-  const available = useHasEntitlement("playground");
   const router = useRouter();
-  const { setPlaygroundCache } = usePlaygroundCache();
+  const { clearAllCache } = usePersistedWindowIds();
 
   const handleClick = () => {
-    setPlaygroundCache(null);
-
+    clearAllCache();
     router.reload();
   };
 
-  if (!available) return null;
-
   return (
     <Button
-      variant={"outline"}
+      variant="outline"
       title="Reset playground state"
       onClick={handleClick}
+      className="gap-1"
     >
-      <ListRestartIcon className="mr-1 h-4 w-4" />
-      <span>Reset playground</span>
+      <ListRestartIcon className="h-4 w-4" />
+      <span className="hidden lg:inline">Reset playground</span>
     </Button>
   );
 };

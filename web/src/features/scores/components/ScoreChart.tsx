@@ -1,11 +1,12 @@
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { getColorsForCategories } from "@/src/features/dashboard/utils/getColorsForCategories";
 import { isEmptyChart } from "@/src/features/dashboard/lib/score-analytics-utils";
-import { BarChart, LineChart } from "@tremor/react";
+import { BarChart, LineChart, type CustomTooltipProps } from "@tremor/react";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import { Card } from "@/src/components/ui/card";
 import { type ChartBin } from "@/src/features/scores/types";
 import { cn } from "@/src/utils/tailwind";
+import { Tooltip } from "@/src/features/dashboard/components/Tooltip";
 
 export function CategoricalChart(props: {
   chartData: ChartBin[];
@@ -24,6 +25,13 @@ export function CategoricalChart(props: {
   };
   const colors = getColorsForCategories(props.chartLabels);
 
+  const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
+    <Tooltip
+      {...tooltipProps}
+      formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()}
+    />
+  );
+
   return isEmptyChart({ data: props.chartData }) ? (
     <NoDataOrLoading
       isLoading={props.isLoading ?? false}
@@ -31,10 +39,16 @@ export function CategoricalChart(props: {
     />
   ) : (
     <Card
-      className={cn("w-full rounded-tremor-default border", props.className)}
+      className={cn(
+        "max-h-full min-h-0 min-w-0 max-w-full flex-1 rounded-tremor-default border",
+        props.className,
+      )}
     >
       <BarChart
-        className={cn("mt-4", props.chartClass)}
+        className={cn(
+          "max-h-full min-h-0 min-w-0 max-w-full [&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground",
+          props.chartClass,
+        )}
         data={props.chartData}
         index="binLabel"
         categories={props.chartLabels}
@@ -46,6 +60,7 @@ export function CategoricalChart(props: {
         barCategoryGap={barCategoryGap(props.chartData.length)}
         stack={props.stack ?? true}
         showXAxis={props.showXAxis ?? true}
+        customTooltip={TooltipComponent}
       />
     </Card>
   );
@@ -55,25 +70,40 @@ export function NumericChart(props: {
   chartData: ChartBin[];
   chartLabels: string[];
   index: string;
+  maxFractionDigits?: number;
 }) {
   const colors = getColorsForCategories(props.chartLabels);
+
+  const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
+    <div className="max-w-56">
+      <Tooltip
+        {...tooltipProps}
+        formatter={(value) =>
+          compactNumberFormatter(value, props.maxFractionDigits)
+        }
+      />
+    </div>
+  );
 
   return isEmptyChart({ data: props.chartData }) ? (
     <NoDataOrLoading isLoading={false} />
   ) : (
-    <Card className="h-full w-full rounded-tremor-default border">
+    <Card className="max-h-full min-h-0 min-w-0 max-w-full flex-1 rounded-tremor-default border">
       <LineChart
-        className="h-full"
+        className="max-h-full min-h-0 min-w-0 max-w-full [&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground"
         data={props.chartData}
         index={props.index}
         categories={props.chartLabels}
         colors={colors}
-        valueFormatter={compactNumberFormatter}
+        valueFormatter={(value) => {
+          return compactNumberFormatter(value, props.maxFractionDigits);
+        }}
         noDataText="No data"
         showAnimation={true}
         onValueChange={() => {}}
         enableLegendSlider={true}
         showXAxis={false}
+        customTooltip={TooltipComponent}
       />
     </Card>
   );

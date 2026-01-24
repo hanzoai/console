@@ -13,23 +13,19 @@ export const usePromptNameValidation = ({
   form,
 }: UsePromptNameValidationProps) => {
   useEffect(() => {
-    if (!currentName) return;
+    if (!currentName || !allPrompts) return;
 
     const isNewPrompt = !allPrompts
       ?.map((prompt) => prompt.value)
       .includes(currentName);
 
     if (!isNewPrompt) {
-      form.setError("name", { message: "Prompt name already exist." });
-    } else if (currentName === "new") {
-      form.setError("name", { message: "Prompt name cannot be 'new'" });
-    } else if (!/^[a-zA-Z0-9_\-.]+$/.test(currentName)) {
-      form.setError("name", {
-        message:
-          "Name must be alphanumeric with optional underscores, hyphens, or periods",
-      });
+      form.setError("name", { message: "Prompt name already exists." });
     } else {
-      form.clearErrors("name");
+      const currentError = form.getFieldState("name").error;
+      if (currentError?.message === "Prompt name already exists.") {
+        form.clearErrors("name");
+      }
     }
   }, [currentName, allPrompts, form]);
 };

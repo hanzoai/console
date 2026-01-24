@@ -23,8 +23,9 @@ export function TableSelectionManager<TData>({
     selectActionColumn: {
       id: "select",
       accessorKey: "select",
-      size: 30,
-      isPinned: true,
+      size: 35,
+      isFixedPosition: true,
+      isPinnedLeft: true,
       header: ({ table }: { table: Table<TData> }) => (
         <div className="flex h-full items-center">
           <Checkbox
@@ -48,15 +49,21 @@ export function TableSelectionManager<TData>({
         </div>
       ),
       cell: ({ row }: { row: Row<TData> }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-            if (!value) setSelectAll(false);
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
           }}
-          aria-label="Select row"
-          className="opacity-60"
-        />
+        >
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value);
+              if (!value) setSelectAll(false);
+            }}
+            aria-label="Select row"
+            className="opacity-60"
+          />
+        </div>
       ),
     },
   };

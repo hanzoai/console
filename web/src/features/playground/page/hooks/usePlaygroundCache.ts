@@ -1,30 +1,42 @@
 import { useEffect, useState } from "react";
-
 import { type PlaygroundCache } from "../types";
-import { useHasEntitlement } from "@/src/features/entitlements/hooks";
+import { getCacheKey } from "../storage/keys";
 
-const playgroundCacheKey = "playgroundCache";
+const readCache = (key: string): PlaygroundCache => {
+  if (typeof window === "undefined") return null;
+  const saved = sessionStorage.getItem(key);
+  if (!saved) return null;
+  try {
+    return JSON.parse(saved);
+  } catch {
+    sessionStorage.removeItem(key);
+    return null;
+  }
+};
 
-export default function usePlaygroundCache() {
-  const [cache, setCache] = useState<PlaygroundCache>(null);
-  const available = useHasEntitlement("playground");
-  const setPlaygroundCache = (cache: PlaygroundCache) => {
-    sessionStorage.setItem(playgroundCacheKey, JSON.stringify(cache));
-  };
+/**
+ * Hook for managing playground cache with window isolation support.
+ * Cache is read synchronously to avoid race conditions with effects
+ * that depend on playgroundCache being available on first render.
+ */
+export default function usePlaygroundCache(windowId?: string) {
+  const cacheKey = getCacheKey(windowId ?? "");
+  const [cache, setCache] = useState<PlaygroundCache>(() =>
+    readCache(cacheKey),
+  );
 
+  // Re-read when key changes (windowId change)
   useEffect(() => {
-    const savedCache = sessionStorage.getItem(playgroundCacheKey);
-    if (savedCache) {
-      try {
-        setCache(JSON.parse(savedCache));
-      } catch (e) {
-        console.error("Failed to parse playground cache", e);
-      }
-    }
-  }, []);
+    setCache(readCache(cacheKey));
+  }, [cacheKey]);
 
-  return {
-    playgroundCache: available ? cache : null,
-    setPlaygroundCache: available ? setPlaygroundCache : () => {},
+  const setPlaygroundCache = (newCache: PlaygroundCache) => {
+    if (newCache === null) {
+      sessionStorage.removeItem(cacheKey);
+    } else {
+      sessionStorage.setItem(cacheKey, JSON.stringify(newCache));
+    }
   };
+
+  return { playgroundCache: cache, setPlaygroundCache };
 }

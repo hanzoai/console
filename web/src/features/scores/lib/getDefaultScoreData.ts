@@ -1,30 +1,51 @@
-import { ScoreSource } from "@hanzo/shared";
-import { type APIScore, type ValidatedScoreConfig } from "@hanzo/shared";
+import {
+  type ScoreTarget,
+  type ScoreTargetTrace,
+  type ScoreTargetSession,
+  ScoreSourceEnum,
+} from "@langfuse/shared";
+import { type ScoreConfigDomain } from "@langfuse/shared";
+import { isTraceScore } from "@/src/features/scores/lib/helpers";
+import { type AnnotationScoreDataSchema } from "@/src/features/scores/schema";
+import { type z } from "zod/v4";
+import { type AnnotationScore } from "@/src/features/scores/types";
 
-export const getDefaultScoreData = ({
+const isAnnotationScore = (score: AnnotationScore) =>
+  score.source === ScoreSourceEnum.ANNOTATION;
+
+const filterTraceAnnotationScores =
+  ({ traceId, observationId }: ScoreTargetTrace) =>
+  (s: AnnotationScore) =>
+    isAnnotationScore(s) &&
+    s.traceId === traceId &&
+    (observationId !== undefined
+      ? s.observationId === observationId
+      : s.observationId === null);
+
+const filterSessionAnnotationScores =
+  ({ sessionId }: ScoreTargetSession) =>
+  (s: AnnotationScore) =>
+    isAnnotationScore(s) && s.sessionId === sessionId;
+
+export const getDefaultAnnotationScoreData = ({
   scores,
   emptySelectedConfigIds,
   configs,
-  traceId,
-  observationId,
+  scoreTarget,
 }: {
-  scores: APIScore[];
+  scores: AnnotationScore[];
   emptySelectedConfigIds: string[];
-  configs: ValidatedScoreConfig[];
-  traceId: string;
-  observationId?: string;
-}) => {
+  configs: ScoreConfigDomain[];
+  scoreTarget: ScoreTarget;
+}): z.infer<typeof AnnotationScoreDataSchema>[] => {
+  const isValidScore = isTraceScore(scoreTarget)
+    ? filterTraceAnnotationScores(scoreTarget)
+    : filterSessionAnnotationScores(scoreTarget);
+
   const populatedScores = scores
-    .filter(
-      (s) =>
-        s.source === ScoreSource.ANNOTATION &&
-        s.traceId === traceId &&
-        (observationId !== undefined
-          ? s.observationId === observationId
-          : s.observationId === null),
-    )
+    .filter(isValidScore)
     .map(({ id, name, value, dataType, stringValue, configId, comment }) => ({
-      scoreId: id,
+      scoreId: id ?? undefined,
       name,
       value,
       dataType,

@@ -1,18 +1,24 @@
 import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
   GetDatasetV1Query,
   GetDatasetV1Response,
-  transformDbDatasetItemToAPIDatasetItem,
+  transformDbDatasetItemDomainToAPIDatasetItem,
+  transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { LangfuseNotFoundError } from "@langfuse/shared";
+import {
+  createDatasetItemFilterState,
+  getDatasetItems,
+} from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Dataset",
     querySchema: GetDatasetV1Query,
     responseSchema: GetDatasetV1Response,
+    rateLimitResource: "datasets",
     fn: async ({ query, auth }) => {
       const { name } = query;
 
@@ -22,14 +28,6 @@ export default withMiddlewares({
           projectId: auth.scope.projectId,
         },
         include: {
-          datasetItems: {
-            where: {
-              status: "ACTIVE",
-            },
-            orderBy: {
-              createdAt: "desc",
-            },
-          },
           datasetRuns: {
             select: {
               name: true,
@@ -42,16 +40,20 @@ export default withMiddlewares({
         throw new HanzoNotFoundError("Dataset not found");
       }
 
-      const { datasetItems, datasetRuns, ...params } = dataset;
+      const datasetItems = await getDatasetItems({
+        projectId: auth.scope.projectId,
+        filterState: createDatasetItemFilterState({
+          datasetIds: [dataset.id],
+          status: "ACTIVE",
+        }),
+        includeDatasetName: true,
+      });
+
+      const { datasetRuns, ...params } = dataset;
 
       return {
-        ...params,
-        items: datasetItems
-          .map((item) => ({
-            ...item,
-            datasetName: dataset.name,
-          }))
-          .map(transformDbDatasetItemToAPIDatasetItem),
+        ...transformDbDatasetToAPIDataset(params),
+        items: datasetItems.map(transformDbDatasetItemDomainToAPIDatasetItem),
         runs: datasetRuns.map((run) => run.name),
       };
     },

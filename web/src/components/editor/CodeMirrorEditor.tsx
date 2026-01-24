@@ -1,6 +1,12 @@
-import dynamic from 'next/dynamic';
-import type { ReactCodeMirrorProps } from '@uiw/react-codemirror';
-import { EditorView } from '@codemirror/view';
+import CodeMirror, {
+  EditorView,
+  type ReactCodeMirrorRef,
+  Decoration,
+  type DecorationSet,
+  ViewPlugin,
+  type ViewUpdate,
+} from "@uiw/react-codemirror";
+import { RangeSetBuilder } from "@codemirror/state";
 import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { linter, type Diagnostic } from "@codemirror/lint";
 import { useTheme } from "next-themes";
@@ -13,20 +19,26 @@ import {
   MULTILINE_VARIABLE_REGEX,
   MUSTACHE_REGEX,
   UNCLOSED_VARIABLE_REGEX,
-} from "@hanzo/shared";
+  PromptDependencyRegex,
+  parsePromptDependencyTags,
+} from "@langfuse/shared";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 
-const CodeMirror = dynamic(
-  () => import('@uiw/react-codemirror').then((mod) => mod.default),
-  { ssr: false }
-);
-
-// Custom language mode for prompts that highlights mustache variables
+// Custom language mode for prompts that highlights mustache variables and prompt dependency tags
 const promptLanguage = StreamLanguage.define({
   name: "prompt",
   startState: () => ({}),
   token: (stream: StringStream) => {
+    // Highlight prompt tags
+    if (stream.match("@@@langfusePrompt:")) {
+      stream.skipTo("@@@") || stream.skipToEnd();
+      stream.match("@@@");
+
+      return "keyword";
+    }
+
+    // Highlight mustache variables
     if (stream.match("{{")) {
       const start = stream.pos;
       stream.skipTo("}}") || stream.skipToEnd();
@@ -85,11 +97,67 @@ const promptLinter = linter((view) => {
     }
   }
 
+  // Check for malformed prompt dependency tags
+  for (const match of content.matchAll(PromptDependencyRegex)) {
+    const tagContent = match[0];
+    try {
+      const parsedTags = parsePromptDependencyTags(tagContent);
+
+      if (parsedTags.length === 0) {
+        diagnostics.push({
+          from: match.index,
+          to: match.index + match[0].length,
+          severity: "warning",
+          message: "Malformed prompt dependency tag",
+        });
+      }
+    } catch {
+      diagnostics.push({
+        from: match.index,
+        to: match.index + match[0].length,
+        severity: "warning",
+        message: "Invalid prompt dependency tag format",
+      });
+    }
+  }
+
   return diagnostics;
 });
 
 // Create a language support instance that combines the language and its configuration
 const promptSupport = new LanguageSupport(promptLanguage);
+
+// RTL/bidirectional text support
+const dirAutoDecoration = Decoration.line({ attributes: { dir: "auto" } });
+
+const bidiSupport = [
+  EditorView.perLineTextDirection.of(true),
+  ViewPlugin.fromClass(
+    class {
+      decorations: DecorationSet;
+      constructor(view: EditorView) {
+        this.decorations = this.build(view);
+      }
+      update(update: ViewUpdate) {
+        if (update.docChanged || update.viewportChanged) {
+          this.decorations = this.build(update.view);
+        }
+      }
+      build(view: EditorView) {
+        const builder = new RangeSetBuilder<Decoration>();
+        for (const { from, to } of view.visibleRanges) {
+          for (let pos = from; pos <= to; ) {
+            const line = view.state.doc.lineAt(pos);
+            builder.add(line.from, line.from, dirAutoDecoration);
+            pos = line.to + 1;
+          }
+        }
+        return builder.finish();
+      }
+    },
+    { decorations: (v) => v.decorations },
+  ),
+];
 
 export function CodeMirrorEditor({
   value,
@@ -102,6 +170,7 @@ export function CodeMirrorEditor({
   mode,
   minHeight,
   placeholder,
+  editorRef,
 }: {
   value: string;
   onChange?: (value: string) => void;
@@ -113,6 +182,7 @@ export function CodeMirrorEditor({
   mode: "json" | "text" | "prompt";
   minHeight: "none" | 30 | 100 | 200;
   placeholder?: string;
+  editorRef?: React.RefObject<ReactCodeMirrorRef | null>;
 }) {
   const { resolvedTheme } = useTheme();
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
@@ -126,6 +196,7 @@ export function CodeMirrorEditor({
     <CodeMirror
       value={value}
       theme={codeMirrorTheme}
+      ref={editorRef}
       basicSetup={{
         foldGutter: lineNumbers,
         highlightActiveLine: false,
@@ -133,6 +204,14 @@ export function CodeMirrorEditor({
       }}
       lang={mode === "json" ? "json" : undefined}
       extensions={[
+        // RTL/bidi support - must be early for proper line decoration
+        ...bidiSupport,
+        // Remove outline if field is focussed
+        EditorView.theme({
+          "&.cm-focused": {
+            outline: "none",
+          },
+        }),
         // Hide gutter when lineNumbers is false
         // Fix missing gutter border
         ...(!lineNumbers

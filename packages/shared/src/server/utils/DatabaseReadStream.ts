@@ -24,12 +24,13 @@ export class DatabaseReadStream<EntityType> extends Readable {
 
   constructor(
     // the delegate function takes care of querying the database in a paginated manner
+
     private queryDelegate: (
       pageSize: number,
-      offset: number
+      offset: number,
     ) => Promise<Array<EntityType>>,
     private pageSize: number,
-    private maxRecords?: number
+    private maxRecords?: number,
   ) {
     super({ objectMode: true }); // Set object mode to true to allow pushing objects to the stream rather than strings or buffers
 

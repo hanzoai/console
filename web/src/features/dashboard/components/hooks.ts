@@ -1,28 +1,36 @@
 import { type TimeSeriesChartDataPoint } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
-import { type FilterState } from "@hanzo/shared";
-import { type DatabaseRow } from "@/src/server/api/services/queryBuilder";
+import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { api } from "@/src/utils/api";
+import { mapLegacyUiTableFilterToView } from "@/src/features/query";
 
 export const getAllModels = (
   projectId: string,
   globalFilterState: FilterState,
+  fromTimestamp: Date,
+  toTimestamp: Date,
 ) => {
-  const allModels = api.dashboard.chart.useQuery(
+  const allModels = api.dashboard.executeQuery.useQuery(
     {
       projectId,
-      from: "traces_observations",
-      select: [{ column: "model" }],
-      filter: [
-        ...globalFilterState,
-        {
-          type: "string",
-          column: "type",
-          operator: "=",
-          value: "GENERATION",
-        },
-      ],
-      groupBy: [{ type: "string", column: "model" }],
-      queryName: "distinct-models",
+      query: {
+        view: "observations",
+        dimensions: [{ field: "providedModelName" }],
+        metrics: [],
+        filters: [
+          ...mapLegacyUiTableFilterToView("observations", globalFilterState),
+          {
+            column: "type",
+            operator: "any of",
+            value: getGenerationLikeTypes(),
+            type: "stringOptions",
+          },
+        ],
+        timeDimension: null,
+        fromTimestamp: fromTimestamp.toISOString(),
+        toTimestamp: toTimestamp.toISOString(),
+        orderBy: null,
+      },
     },
     {
       trpc: {
@@ -37,12 +45,12 @@ export const getAllModels = (
 };
 
 const extractAllModels = (
-  data: DatabaseRow[],
+  data: Record<string, unknown>[],
 ): { model: string; count: number }[] => {
   return data
-    .filter((item) => item.model !== null)
+    .filter((item) => item.providedModelName !== null)
     .map((item) => ({
-      model: item.model as string,
+      model: item.providedModelName as string,
       count: item.count as number,
     }));
 };

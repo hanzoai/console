@@ -1,23 +1,26 @@
 import {
   ScoreBodyWithoutConfig,
+  ScoreConfigDomain,
+  type ScoreDataTypeType,
+  type ScoreDomain,
   ScorePropsAgainstConfig,
-  validateDbScoreConfigSafe,
-  ValidatedScoreConfig,
+  ScoreDataTypeEnum,
+  CORRECTION_NAME,
 } from "../../../src";
-import { prisma, ScoreDataType } from "../../db";
-import { Score } from "../repositories";
-
-import { InvalidRequestError, HanzoNotFoundError } from "../../errors";
+import { prisma } from "../../db";
+import { InvalidRequestError, LangfuseNotFoundError } from "../../errors";
+import { validateDbScoreConfigSafe } from "../../features/scoreConfigs/validation";
+import { ScoreEventType } from "./types";
 
 type ValidateAndInflateScoreParams = {
   projectId: string;
   scoreId: string;
-  body: any;
+  body: ScoreEventType["body"];
 };
 
 export async function validateAndInflateScore(
   params: ValidateAndInflateScoreParams,
-): Promise<Score> {
+) {
   const { body, projectId, scoreId } = params;
 
   if (body.configId) {
@@ -40,16 +43,17 @@ export async function validateAndInflateScore(
       name: config.name,
     };
 
-    validateConfigAgainstBody(
-      bodyWithConfigOverrides,
-      config as ValidatedScoreConfig,
-    );
+    validateConfigAgainstBody({
+      body: bodyWithConfigOverrides,
+      config: config as ScoreConfigDomain,
+      context: "INGESTION",
+    });
 
     return inflateScoreBody({
       projectId,
       scoreId,
       body: bodyWithConfigOverrides,
-      config: config as ValidatedScoreConfig,
+      config: config as ScoreConfigDomain,
     });
   }
 
@@ -67,59 +71,123 @@ export async function validateAndInflateScore(
   return inflateScoreBody(params);
 }
 
-function inferDataType(value: string | number): ScoreDataType {
+function inferDataType(value: string | number): ScoreDataTypeType {
   return typeof value === "number"
-    ? ScoreDataType.NUMERIC
-    : ScoreDataType.CATEGORICAL;
+    ? ScoreDataTypeEnum.NUMERIC
+    : ScoreDataTypeEnum.CATEGORICAL;
 }
 
 function mapStringValueToNumericValue(
-  config: ValidatedScoreConfig,
+  config: ScoreConfigDomain,
   label: string,
-): number | null {
+): number {
   return (
-    config.categories?.find((category) => category.label === label)?.value ??
-    null
+    config.categories?.find((category) => category.label === label)?.value ?? 0
   );
 }
 
 function inflateScoreBody(
-  params: ValidateAndInflateScoreParams & { config?: ValidatedScoreConfig },
-): Score {
+  params: ValidateAndInflateScoreParams & { config?: ScoreConfigDomain },
+) {
   const { body, projectId, scoreId, config } = params;
 
   const relevantDataType = config?.dataType ?? body.dataType;
-  const scoreProps = { source: "API", ...body, id: scoreId, projectId };
+  const scoreProps = {
+    ...body,
+    longStringValue: "",
+    source: body.source ?? "API",
+    id: scoreId,
+    projectId,
+  };
 
   if (typeof body.value === "number") {
-    if (relevantDataType && relevantDataType === ScoreDataType.BOOLEAN) {
+    if (relevantDataType && relevantDataType === ScoreDataTypeEnum.BOOLEAN) {
       return {
         ...scoreProps,
         value: body.value,
         stringValue: body.value === 1 ? "True" : "False",
-        dataType: ScoreDataType.BOOLEAN,
+        dataType: ScoreDataTypeEnum.BOOLEAN,
       };
     }
 
     return {
       ...scoreProps,
       value: body.value,
-      dataType: ScoreDataType.NUMERIC,
+      stringValue: null,
+      dataType: ScoreDataTypeEnum.NUMERIC,
+    };
+  }
+
+  if (relevantDataType && relevantDataType === ScoreDataTypeEnum.CORRECTION) {
+    // CORRECTION scores can only be associated with traces or observations
+    if (body.sessionId) {
+      throw new InvalidRequestError(
+        "CORRECTION scores cannot be associated with sessions. Please associate with a trace or observation instead.",
+      );
+    }
+    if (body.datasetRunId) {
+      throw new InvalidRequestError(
+        "CORRECTION scores cannot be associated with dataset runs. Please associate with a trace or observation instead.",
+      );
+    }
+
+    return {
+      ...scoreProps,
+      value: 0,
+      name: CORRECTION_NAME,
+      longStringValue: body.value,
+      stringValue: null,
+      dataType: ScoreDataTypeEnum.CORRECTION,
     };
   }
 
   return {
     ...scoreProps,
-    value: config ? mapStringValueToNumericValue(config, body.value) : null,
+    value: config ? mapStringValueToNumericValue(config, body.value) : 0,
     stringValue: body.value,
-    dataType: ScoreDataType.CATEGORICAL,
+    dataType: ScoreDataTypeEnum.CATEGORICAL,
   };
 }
 
-function validateConfigAgainstBody(
-  body: any,
-  config: ValidatedScoreConfig,
-): void {
+type ScoreBodyWithContext =
+  | {
+      body: ScoreEventType["body"];
+      context: "INGESTION";
+    }
+  | {
+      body: ScoreDomain;
+      context: "ANNOTATION";
+    };
+
+function resolveScoreValueIngestion(
+  body: ScoreEventType["body"],
+): string | number | null {
+  return body.value;
+}
+
+function resolveScoreValueAnnotation(
+  body: ScoreDomain,
+): string | number | null {
+  switch (body.dataType) {
+    case ScoreDataTypeEnum.NUMERIC:
+    case ScoreDataTypeEnum.BOOLEAN:
+      return body.value;
+    case ScoreDataTypeEnum.CATEGORICAL:
+      return body.stringValue;
+    case ScoreDataTypeEnum.CORRECTION:
+      throw new Error("CORRECTION type not supported in annotation drawer");
+  }
+}
+
+type ValidateConfigAgainstBodyParams = {
+  config: ScoreConfigDomain;
+} & ScoreBodyWithContext;
+
+export function validateConfigAgainstBody({
+  body,
+  config,
+  context,
+}: ValidateConfigAgainstBodyParams): void {
   const { maxValue, minValue, categories, dataType: configDataType } = config;
 
   if (body.dataType && body.dataType !== configDataType) {
@@ -141,20 +209,13 @@ function validateConfigAgainstBody(
   }
 
   const relevantDataType = configDataType ?? body.dataType;
-
-  const dataTypeValidation = ScoreBodyWithoutConfig.safeParse({
-    ...body,
-    dataType: relevantDataType,
-  });
-
-  if (!dataTypeValidation.success) {
-    throw new InvalidRequestError(
-      `Ingested score body not valid against provided config data type.`,
-    );
-  }
+  const scoreValue =
+    context === "INGESTION"
+      ? resolveScoreValueIngestion(body)
+      : resolveScoreValueAnnotation(body);
 
   const rangeValidation = ScorePropsAgainstConfig.safeParse({
-    value: body.value,
+    value: scoreValue,
     dataType: relevantDataType,
     ...(maxValue !== null && maxValue !== undefined && { maxValue }),
     ...(minValue !== null && minValue !== undefined && { minValue }),
@@ -162,7 +223,7 @@ function validateConfigAgainstBody(
   });
 
   if (!rangeValidation.success) {
-    const errorDetails = rangeValidation.error.errors
+    const errorDetails = rangeValidation.error.issues
       .map((error) => `${error.path.join(".")} - ${error.message}`)
       .join(", ");
 

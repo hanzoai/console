@@ -1,9 +1,6 @@
 import { Button } from "@/src/components/ui/button";
+import { useSupportDrawer } from "@/src/features/support-chat/SupportDrawerProvider";
 import { AlertTriangle, X } from "lucide-react";
-import {
-  chatAvailable,
-  sendUserChatMessage,
-} from "@/src/features/support-chat/chat";
 
 interface ErrorNotificationProps {
   error: string;
@@ -22,19 +19,20 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
   toast,
   path,
 }) => {
+  const { setOpen } = useSupportDrawer();
   const isError = type === "ERROR";
   const textColor = isError
     ? "text-destructive-foreground"
     : "text-dark-yellow";
 
-  const handleReportIssueClick = () => {
-    if (chatAvailable) {
-      const currentUrl = window.location.href;
-      const message = `I received the following error:\n\nError: ${error}\nDescription: ${description}\n ${path ? `Path: ${path}\n` : ""}URL: ${currentUrl}`;
-      sendUserChatMessage(message);
-      dismissToast(toast);
-    }
-  };
+  // const handleReportIssueClick = () => {
+  //   if (chatAvailable) {
+  //     const currentUrl = window.location.href;
+  //     const message = `I received the following error:\n\nError: ${error}\nDescription: ${description}\n ${path ? `Path: ${path}\n` : ""}URL: ${currentUrl}`;
+  //     sendUserChatMessage(message);
+  //     dismissToast(toast);
+  //   }
+  // };
 
   return (
     <div className="flex justify-between">
@@ -46,7 +44,9 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
           </div>
         </div>
         {description && (
-          <div className={`text-sm leading-tight ${textColor}`}>
+          <div
+            className={`whitespace-pre-line text-sm leading-tight ${textColor}`}
+          >
             {description}
           </div>
         )}
@@ -56,12 +56,12 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
           </div>
         )}
 
-        {isError && chatAvailable && (
+        {isError && (
           <Button
             variant="errorNotification"
             size={"sm"}
             onClick={() => {
-              handleReportIssueClick();
+              setOpen(true);
             }}
           >
             Report issue to Hanzo Cloud team
@@ -71,6 +71,14 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
       <button
         className={`flex h-6 w-6 cursor-pointer items-start justify-end border-none bg-transparent p-0 ${textColor} transition-colors duration-200`}
         onClick={() => dismissToast(toast)}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         aria-label="Close"
       >
         <X size={14} />

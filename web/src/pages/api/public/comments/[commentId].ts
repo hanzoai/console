@@ -1,14 +1,14 @@
 import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   GetCommentV1Query,
   GetCommentV1Response,
 } from "@/src/features/public-api/types/comments";
 
 export default withMiddlewares({
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Comment",
     querySchema: GetCommentV1Query,
     responseSchema: GetCommentV1Response,
@@ -28,7 +28,10 @@ export default withMiddlewares({
         );
       }
 
-      return comment;
+      // Exclude inline positioning fields from public API
+      const { dataField, path, rangeStart, rangeEnd, ...publicComment } =
+        comment;
+      return publicComment;
     },
   }),
 });

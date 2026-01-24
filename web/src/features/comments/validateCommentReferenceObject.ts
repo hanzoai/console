@@ -1,6 +1,6 @@
-import { CommentObjectType, type CreateCommentData } from "@hanzo/shared";
-import { type z } from "zod";
-import { getObservationById, getTraceById } from "@hanzo/shared/src/server";
+import { CommentObjectType, type CreateCommentData } from "@langfuse/shared";
+import { type z } from "zod/v4";
+import { getObservationById, getTraceById } from "@langfuse/shared/src/server";
 
 const isObservationOrTrace = (objectType: CommentObjectType) => {
   return (
@@ -21,9 +21,15 @@ export const validateCommentReferenceObject = async ({
   if (isObservationOrTrace(objectType)) {
     let clickhouseObject;
     if (objectType === CommentObjectType.OBSERVATION) {
-      clickhouseObject = await getObservationById(objectId, projectId);
+      clickhouseObject = await getObservationById({
+        id: objectId,
+        projectId,
+      });
     } else {
-      clickhouseObject = await getTraceById(objectId, projectId);
+      clickhouseObject = await getTraceById({
+        traceId: objectId,
+        projectId,
+      });
     }
 
     return !!clickhouseObject

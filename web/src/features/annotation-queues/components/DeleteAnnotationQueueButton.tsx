@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -50,13 +51,13 @@ export const DeleteAnnotationQueueButton = ({
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        if (!mutDelete.isLoading) {
+        if (!mutDelete.isPending) {
           setIsOpen(open);
         }
       }}
     >
       <DialogTrigger asChild>{button}</DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="overflow-hidden sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="mb-4">Please confirm</DialogTitle>
           <DialogDescription className="text-md p-0">
@@ -65,21 +66,23 @@ export const DeleteAnnotationQueueButton = ({
             deleted.
           </DialogDescription>
         </DialogHeader>
-        <Button
-          variant="destructive"
-          loading={mutDelete.isLoading}
-          disabled={mutDelete.isLoading}
-          onClick={async (event) => {
-            event.preventDefault();
-            await mutDelete.mutateAsync({
-              projectId,
-              queueId,
-            });
-            setIsOpen(false);
-          }}
-        >
-          Delete Annotation Queue
-        </Button>
+        <DialogFooter>
+          <Button
+            variant="destructive"
+            loading={mutDelete.isPending}
+            disabled={mutDelete.isPending}
+            onClick={async (event) => {
+              event.preventDefault();
+              await mutDelete.mutateAsync({
+                projectId,
+                queueId,
+              });
+              setIsOpen(false);
+            }}
+          >
+            Delete Annotation Queue
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   ) : (

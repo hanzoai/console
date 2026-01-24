@@ -1,6 +1,6 @@
 import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
   DeleteModelV1Query,
   DeleteModelV1Response,
@@ -8,10 +8,12 @@ import {
   GetModelV1Response,
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { LangfuseNotFoundError } from "@langfuse/shared";
+import { auditLog } from "@/src/features/audit-logs/auditLog";
+import { clearModelCacheForProject } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get model definitions",
     querySchema: GetModelV1Query,
     responseSchema: GetModelV1Response,
@@ -34,14 +36,35 @@ export default withMiddlewares({
             },
           ],
         },
+        include: {
+          pricingTiers: {
+            select: {
+              id: true,
+              name: true,
+              isDefault: true,
+              priority: true,
+              conditions: true,
+              prices: {
+                select: {
+                  usageType: true,
+                  price: true,
+                },
+              },
+            },
+            orderBy: { priority: "asc" },
+          },
+        },
       });
+
       if (!model) {
         throw new HanzoNotFoundError("No model with this id found.");
       }
+
       return prismaToApiModelDefinition(model);
     },
   }),
-  DELETE: createAuthedAPIRoute({
+
+  DELETE: createAuthedProjectAPIRoute({
     name: "Delete model",
     querySchema: DeleteModelV1Query,
     responseSchema: DeleteModelV1Response,
@@ -63,6 +86,19 @@ export default withMiddlewares({
           projectId: auth.scope.projectId,
         },
       });
+      await auditLog({
+        action: "delete",
+        resourceType: "model",
+        resourceId: query.modelId,
+        projectId: auth.scope.projectId,
+        orgId: auth.scope.orgId,
+        apiKeyId: auth.scope.apiKeyId,
+        before: model,
+      });
+
+      // Clear model cache for the project after successful deletion
+      await clearModelCacheForProject(auth.scope.projectId);
+
       return {
         message: "Model successfully deleted" as const,
       };

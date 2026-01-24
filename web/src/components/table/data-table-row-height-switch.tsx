@@ -1,22 +1,39 @@
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import { Button } from "@/src/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+} from "@/src/components/ui/dropdown-menu";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import {
-  MdDensityLarge,
-  MdDensityMedium,
-  MdDensitySmall,
-} from "react-icons/md";
+import { Rows3, Rows2, Rows4 } from "lucide-react";
 
 const heightOptions = [
-  { id: "s", label: "Small", value: "h-6", icon: <MdDensitySmall /> },
-  { id: "m", label: "Medium", value: "h-24", icon: <MdDensityMedium /> },
-  { id: "l", label: "Large", value: "h-64", icon: <MdDensityLarge /> },
+  { id: "s", label: "Small", icon: <Rows4 /> },
+  { id: "m", label: "Medium", icon: <Rows3 /> },
+  { id: "l", label: "Large", icon: <Rows2 /> },
 ] as const;
 
-export type RowHeight = (typeof heightOptions)[number]["id"];
+const defaultHeights: Record<RowHeight, string> = {
+  s: "h-7", // after removing the container around IO, we want the row height a bit more than 6
+  m: "h-24",
+  l: "h-64",
+};
 
-export const getRowHeightTailwindClass = (rowHeight: RowHeight | undefined) =>
-  heightOptions.find((h) => h.id === rowHeight)?.value;
+export type RowHeight = (typeof heightOptions)[number]["id"];
+export type CustomHeights = Record<RowHeight, string>;
+
+export const getRowHeightTailwindClass = (
+  rowHeight?: RowHeight,
+  customHeights?: CustomHeights,
+) => {
+  if (!rowHeight) return undefined;
+  return customHeights?.[rowHeight] || defaultHeights[rowHeight];
+};
 
 export function useRowHeightLocalStorage(
   tableName: string,
@@ -39,30 +56,34 @@ export const DataTableRowHeightSwitch = ({
 }) => {
   const capture = usePostHogClientCapture();
   return (
-    <Tabs
-      //defaultValue={height}
-      value={rowHeight}
-      onValueChange={(e) => {
-        capture("table:row_height_switch_select", {
-          rowHeight: e,
-        });
-        setRowHeight(e as any);
-      }}
-      key="height"
-    >
-      <TabsList className="gap-1 border bg-transparent px-2">
-        {heightOptions.map(({ id, label, icon }) => (
-          <TabsTrigger
-            key={id}
-            value={id}
-            className="px-2 shadow-none data-[state=active]:bg-input data-[state=active]:ring-border"
-          >
-            <span role="img" aria-label={`${label} size`}>
-              {icon}
-            </span>
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" title="Row height">
+          <Rows3 className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Row height</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {heightOptions.map(({ id, label }) => (
+            <DropdownMenuCheckboxItem
+              key={id}
+              checked={rowHeight === id}
+              onClick={(e) => {
+                // Prevent closing the dropdown menu to allow the user to adjust their selection
+                e.preventDefault();
+                capture("table:row_height_switch_select", {
+                  rowHeight: id,
+                });
+                setRowHeight(id);
+              }}
+            >
+              {label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 };

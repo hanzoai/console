@@ -4,12 +4,12 @@ import {
   createObservation,
   createObservationsCh,
   createOrgProjectAndApiKey,
-  createScore,
+  createTraceScore,
   createScoresCh,
   createTrace,
   createTracesCh,
-  getEventLogByProjectId,
-  getObservationsViewForTrace,
+  getBlobStorageByProjectId,
+  getObservationsForTrace,
   getScoresForTraces,
   getTracesByIds,
   StorageService,
@@ -35,12 +35,12 @@ describe("trace deletion", () => {
     });
 
     mediaStorageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
+      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -50,8 +50,8 @@ describe("trace deletion", () => {
 
     const traceId = randomUUID();
     await createTracesCh([createTrace({ id: traceId })]);
-    await createObservationsCh([createObservation({ traceId })]);
-    await createScoresCh([createScore({ traceId })]);
+    await createObservationsCh([createObservation({ trace_id: traceId })]);
+    await createScoresCh([createTraceScore({ trace_id: traceId })]);
 
     // When
     await processClickhouseTraceDelete("projectId", [traceId]);
@@ -60,7 +60,11 @@ describe("trace deletion", () => {
     const traces = await getTracesByIds([traceId], projectId);
     expect(traces).toHaveLength(0);
 
-    const observations = await getObservationsViewForTrace(traceId, projectId);
+    const observations = await getObservationsForTrace({
+      traceId,
+      projectId,
+      includeIO: true,
+    });
     expect(observations).toHaveLength(0);
 
     const scores = await getScoresForTraces({
@@ -88,19 +92,17 @@ describe("trace deletion", () => {
 
     const fileType = "text/plain";
     const data = "Hello, world!";
-    const expiresInSeconds = 3600;
+
     await Promise.all([
       mediaStorageService.uploadFile({
         fileName: `${projectId}/trace-${traceId}.txt`,
         fileType,
         data,
-        expiresInSeconds,
       }),
       mediaStorageService.uploadFile({
         fileName: `${projectId}/observation-${observationId}.txt`,
         fileType,
         data,
-        expiresInSeconds,
       }),
     ]);
 
@@ -112,7 +114,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/trace-${traceId}.txt`,
-        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
@@ -135,7 +137,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/observation-${observationId}.txt`,
-        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
@@ -182,12 +184,11 @@ describe("trace deletion", () => {
 
     const fileType = "text/plain";
     const data = "Hello, world!";
-    const expiresInSeconds = 3600;
+
     await mediaStorageService.uploadFile({
       fileName: `${projectId}/trace-${traceId1}.txt`,
       fileType,
       data,
-      expiresInSeconds,
     });
 
     const traceMediaId = randomUUID();
@@ -198,7 +199,7 @@ describe("trace deletion", () => {
         projectId,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days in the past
         bucketPath: `${projectId}/trace-${traceId1}.txt`,
-        bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
@@ -262,35 +263,36 @@ describe("trace deletion", () => {
       }),
     ]);
     await createScoresCh([
-      createScore({ id: scoreId, trace_id: traceId, project_id: projectId }),
+      createTraceScore({
+        id: scoreId,
+        trace_id: traceId,
+        project_id: projectId,
+      }),
     ]);
 
     const fileType = "application/json";
     const data = JSON.stringify({ hello: "world" });
-    const expiresInSeconds = 3600;
+
     await Promise.all([
       eventStorageService.uploadFile({
         fileName: `${projectId}/traces/${traceId}-trace.json`,
         fileType,
         data,
-        expiresInSeconds,
       }),
       eventStorageService.uploadFile({
         fileName: `${projectId}/observation/${traceId}-observation.json`,
         fileType,
         data,
-        expiresInSeconds,
       }),
       eventStorageService.uploadFile({
         fileName: `${projectId}/score/${traceId}-score.json`,
         fileType,
         data,
-        expiresInSeconds,
       }),
     ]);
 
     await clickhouseClient().insert({
-      table: "event_log",
+      table: "blob_storage_file_log",
       format: "JSONEachRow",
       values: [
         {
@@ -333,7 +335,7 @@ describe("trace deletion", () => {
     await processClickhouseTraceDelete(projectId, [traceId]);
 
     // Then
-    const eventLog = getEventLogByProjectId(projectId);
+    const eventLog = getBlobStorageByProjectId(projectId);
     for await (const _ of eventLog) {
       // Should never happen as the expect event log to be empty
       expect(true).toBe(false);

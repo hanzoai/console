@@ -11,7 +11,11 @@ import * as clickhouseWriteExports from "../../ClickhouseWriter";
 
 const mockAddToClickhouseWriter = vi.fn();
 const mockClickhouseClient = {
-  query: async () => ({ json: async () => [] }),
+  query: async () => ({
+    json: async () => [],
+    query_id: "1",
+    response_headers: { "x-clickhouse-summary": [] },
+  }),
 };
 
 vi.mock("../../ClickhouseWriter", async (importOriginal) => {
@@ -70,18 +74,33 @@ describe("Token Cost Calculation", () => {
 
   beforeEach(async () => {
     await pruneDatabase();
-    await prisma.model.create({
+    const model = await prisma.model.create({
       data: tokenModelData,
     });
+    const pricingTierId = uuidv4();
+    await prisma.pricingTier.create({
+      data: {
+        id: pricingTierId,
+        name: "Standard",
+        isDefault: true,
+        priority: 0,
+        conditions: [],
+        modelId,
+      },
+    });
+
     await Promise.all([
       prisma.price.createMany({
         data: modelPrices.map((price) => ({
+          pricingTierId,
           modelId,
+          projectId: null,
           usageType: price.usageType,
           price: price.price,
         })),
       }),
     ]);
+
     vi.clearAllMocks();
   });
 
@@ -1195,5 +1214,134 @@ describe("Token Cost Calculation", () => {
     expect(generation.usage_details.input).toBe(generationUsage1.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage1.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage1.usage.total);
+  });
+
+  it("should skip tokenization and cost calculation if generation status is ERROR", async () => {
+    const generationUsage1 = {
+      model: modelName,
+      input: "hello world",
+      output: "hey whassup",
+      usage: null,
+      level: "ERROR",
+    };
+
+    const events = [
+      {
+        id: uuidv4(),
+        type: "generation-create",
+        timestamp: new Date().toISOString(),
+        body: {
+          id: generationId,
+          startTime: new Date().toISOString(),
+          ...generationUsage1,
+        },
+      },
+    ];
+
+    await (mockIngestionService as any).processObservationEventList({
+      projectId,
+      entityId: generationId,
+      createdAtTimestamp: new Date(),
+      observationEventList: events,
+    });
+
+    expect(mockAddToClickhouseWriter).toHaveBeenCalled();
+    const args = mockAddToClickhouseWriter.mock.calls[0];
+    const tableName = args[0];
+    const generation = args[1];
+
+    expect(tableName).toBe("observations");
+    expect(generation).toBeDefined();
+    expect(generation.type).toBe("GENERATION");
+    expect(generation.level).toBe("ERROR");
+
+    // Model name should be matched
+    expect(generation.internal_model_id).toBe(tokenModelData.id);
+
+    // No user provided cost
+    expect(generation.provided_cost_details.input).toBeUndefined();
+    expect(generation.provided_cost_details.output).toBeUndefined();
+    expect(generation.provided_cost_details.total).toBeUndefined();
+
+    // No calculated cost
+    expect(generation.cost_details.input).toBeUndefined();
+    expect(generation.cost_details.output).toBeUndefined();
+    expect(generation.cost_details.total).toBeUndefined();
+
+    expect(generation.usage_details.input).toBeUndefined();
+    expect(generation.usage_details.output).toBeUndefined();
+    expect(generation.usage_details.total).toBeUndefined();
+  });
+
+  describe("string to number conversion in getUsageUnits", () => {
+    // These tests verify that usage_details values are correctly converted to numbers
+    // even when they come in as strings (which can happen when reading from ClickHouse,
+    // as the ClickHouse JS client may return UInt64 values as strings).
+    // This prevents string concatenation bugs like "100" + "200" = "100200" instead of 300.
+
+    it("should correctly convert string usage values to numbers and compute total", async () => {
+      const generationId = uuidv4();
+
+      // Simulate usageDetails coming from ClickHouse as strings
+      const events = [
+        {
+          id: generationId,
+          startTime: new Date().toISOString(),
+          modelName,
+          // These string values simulate what ClickHouse might return for UInt64
+          providedUsageDetails: {
+            input: "100" as unknown as number,
+            output: "200" as unknown as number,
+          },
+        },
+      ];
+
+      await (mockIngestionService as any).writeEvent(events[0], "testfile.txt");
+
+      expect(mockAddToClickhouseWriter).toHaveBeenCalled();
+      const args = mockAddToClickhouseWriter.mock.calls[0];
+      const generation = args[1];
+
+      // Values should be numbers, not strings
+      expect(typeof generation.usage_details.input).toBe("number");
+      expect(typeof generation.usage_details.output).toBe("number");
+      expect(typeof generation.usage_details.total).toBe("number");
+
+      // Total should be numeric addition (300), not string concatenation ("100200")
+      expect(generation.usage_details.input).toBe(100);
+      expect(generation.usage_details.output).toBe(200);
+      expect(generation.usage_details.total).toBe(300);
+    });
+
+    it("should ignore invalid string values that cannot be converted to numbers", async () => {
+      const generationId = uuidv4();
+
+      const events = [
+        {
+          id: generationId,
+          startTime: new Date().toISOString(),
+          modelName,
+          // These string values simulate what ClickHouse might return for UInt64
+          providedUsageDetails: {
+            input: "100" as unknown as number,
+            output: "non_a_number" as unknown as number,
+          },
+        },
+      ];
+
+      await (mockIngestionService as any).writeEvent(events[0], "testfile.txt");
+
+      // Invalid values should be ignored
+      expect(mockAddToClickhouseWriter).toHaveBeenCalled();
+      const args = mockAddToClickhouseWriter.mock.calls[0];
+      const generation = args[1];
+
+      // Values should be numbers, not strings
+      expect(typeof generation.usage_details.input).toBe("number");
+      expect(typeof generation.usage_details.total).toBe("number");
+
+      expect(generation.usage_details.input).toBe(100);
+      expect(generation.usage_details.total).toBe(100);
+    });
   });
 });

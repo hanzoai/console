@@ -10,7 +10,7 @@ export function transformStreamToJson(): Transform {
     transform(
       row: any,
       encoding: BufferEncoding,
-      callback: TransformCallback
+      callback: TransformCallback,
     ): void {
       if (isFirstElement) {
         this.push("["); // Push the opening bracket for the first element

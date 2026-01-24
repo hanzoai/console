@@ -1,33 +1,40 @@
-import { createAuthedAPIRoute } from "@/src/features/public-api/server/createAuthedAPIRoute";
+import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import {
-  DeleteScoreQuery,
-  DeleteScoreResponse,
-  GetScoreQuery,
-  GetScoreResponse,
+  DeleteScoreQueryV1,
+  DeleteScoreResponseV1,
+  GetScoreQueryV1,
+  GetScoreResponseV1,
   InternalServerError,
   HanzoNotFoundError,
 } from "@hanzo/shared";
 import {
-  deleteScore,
-  getScoreById,
   logger,
   traceException,
-} from "@hanzo/shared/src/server";
+  ScoreDeleteQueue,
+} from "@langfuse/shared/src/server";
+import { auditLog } from "@/src/features/audit-logs/auditLog";
+import { QueueJobs } from "@langfuse/shared/src/server";
+import { randomUUID } from "crypto";
+import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 
 export default withMiddlewares({
-  GET: createAuthedAPIRoute({
+  GET: createAuthedProjectAPIRoute({
     name: "Get Score",
-    querySchema: GetScoreQuery,
-    responseSchema: GetScoreResponse,
+    querySchema: GetScoreQueryV1,
+    responseSchema: GetScoreResponseV1,
     fn: async ({ query, auth }) => {
-      const score = await getScoreById(auth.scope.projectId, query.scoreId);
+      const scoresApiService = new ScoresApiService("v1");
+      const score = await scoresApiService.getScoreById({
+        projectId: auth.scope.projectId,
+        scoreId: query.scoreId,
+      });
 
       if (!score) {
         throw new HanzoNotFoundError("Score not found");
       }
 
-      const parsedScore = GetScoreResponse.safeParse(score);
+      const parsedScore = GetScoreResponseV1.safeParse(score);
 
       if (!parsedScore.success) {
         traceException(parsedScore.error);
@@ -38,14 +45,39 @@ export default withMiddlewares({
       return parsedScore.data;
     },
   }),
-  DELETE: createAuthedAPIRoute({
+  DELETE: createAuthedProjectAPIRoute({
     name: "Delete Score",
-    querySchema: DeleteScoreQuery,
-    responseSchema: DeleteScoreResponse,
+    querySchema: DeleteScoreQueryV1,
+    responseSchema: DeleteScoreResponseV1,
+    successStatusCode: 202,
     fn: async ({ query, auth }) => {
       const { scoreId } = query;
-      await deleteScore(auth.scope.projectId, scoreId);
-      return { message: "Score deleted successfully" };
+
+      const scoreDeleteQueue = ScoreDeleteQueue.getInstance();
+      if (!scoreDeleteQueue) {
+        throw new InternalServerError("ScoreDeleteQueue not initialized");
+      }
+
+      await auditLog({
+        action: "delete",
+        resourceType: "score",
+        resourceId: scoreId,
+        projectId: auth.scope.projectId,
+        orgId: auth.scope.orgId,
+        apiKeyId: auth.scope.apiKeyId,
+      });
+
+      await scoreDeleteQueue.add(QueueJobs.ScoreDelete, {
+        timestamp: new Date(),
+        id: randomUUID(),
+        payload: {
+          projectId: auth.scope.projectId,
+          scoreIds: [scoreId],
+        },
+        name: QueueJobs.ScoreDelete,
+      });
+
+      return { message: "Score deletion queued successfully" };
     },
   }),
 });
