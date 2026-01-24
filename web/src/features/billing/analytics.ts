@@ -7,6 +7,9 @@ declare global {
     hanzo?: {
       track: (eventName: string, eventData?: Record<string, any>) => void;
     };
+    posthog?: {
+      capture: (eventName: string, eventData?: Record<string, any>) => void;
+    };
   }
 }
 
