@@ -11,7 +11,7 @@ import { randomUUID } from "crypto";
 import {
   StorageService,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 
 const { Readable } = require("stream");
 

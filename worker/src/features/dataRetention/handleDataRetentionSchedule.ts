@@ -1,9 +1,9 @@
 import { Job } from "bullmq";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import {
   DataRetentionProcessingQueue,
   QueueJobs,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handleDataRetentionSchedule = async (job: Job) => {

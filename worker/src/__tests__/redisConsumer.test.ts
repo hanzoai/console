@@ -4,7 +4,7 @@ import {
   QueueJobs,
   QueueName,
   TraceUpsertQueue,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { WorkerManager } from "../queues/workerManager";
 
 describe.sequential("handle redis events", () => {

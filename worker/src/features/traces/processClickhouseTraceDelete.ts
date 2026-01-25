@@ -8,7 +8,7 @@ import {
   StorageService,
   StorageServiceFactory,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { env } from "../../env";
 import { prisma } from "@langfuse/shared/src/db";
 import { chunk } from "lodash";

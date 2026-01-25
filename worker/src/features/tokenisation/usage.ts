@@ -1,4 +1,4 @@
-import { Model, parseJsonPrioritised } from "@hanzo/shared";
+import { Model, parseJsonPrioritised } from "@langfuse/shared";
 import { isChatModel, isTiktokenModel } from "./types";
 import { countTokens } from "@anthropic-ai/tokenizer";
 

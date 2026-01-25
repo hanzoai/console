@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as serverExports from "@hanzo/shared/src/server";
+import * as serverExports from "@langfuse/shared/src/server";
 
 import { env } from "../../env";
-import { logger } from "@hanzo/shared/src/server";
+import { logger } from "@langfuse/shared/src/server";
 import { ClickhouseWriter, TableName } from "../ClickhouseWriter";
 
 // Mock recordHistogram, recordCount, recordGauge
-vi.mock("@hanzo/shared/src/server", async (importOriginal) => {
+vi.mock("@langfuse/shared/src/server", async (importOriginal) => {
   const original = (await importOriginal()) as {};
   return {
     ...original,

@@ -14,7 +14,7 @@ import {
   recordIncrement,
   redisQueueRetryOptions,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 
 export class WorkerManager {
   private static workers: { [key: string]: Worker } = {};

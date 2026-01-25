@@ -15,8 +15,8 @@ import {
   getTraceById,
   StorageService,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@langfuse/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
 import { handleDataRetentionProcessingJob } from "../ee/dataRetention/handleDataRetentionProcessingJob";
 import { Job } from "bullmq";
 

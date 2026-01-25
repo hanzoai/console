@@ -3,9 +3,9 @@ import {
   clickhouseClient,
   convertPostgresScoreToInsert,
   logger,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { parseArgs } from "node:util";
-import { prisma, Prisma } from "@hanzo/shared/src/db";
+import { prisma, Prisma } from "@langfuse/shared/src/db";
 import { env } from "../env";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table

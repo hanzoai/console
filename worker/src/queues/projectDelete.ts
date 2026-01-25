@@ -12,8 +12,8 @@ import {
   StorageService,
   StorageServiceFactory,
   TQueueJobTypes,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@langfuse/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
 import { Prisma } from "@prisma/client";
 import { env } from "../env";
 

@@ -14,11 +14,11 @@ import {
   getTracesByIds,
   StorageService,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { randomUUID } from "crypto";
 import { processClickhouseTraceDelete } from "../features/traces/processClickhouseTraceDelete";
 import { env } from "../env";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 
 describe("trace deletion", () => {
   let eventStorageService: StorageService;

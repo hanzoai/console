@@ -3,8 +3,8 @@ import {
   logger,
   StorageService,
   StorageServiceFactory,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@langfuse/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
 import { env } from "../env";
 
 let s3StorageServiceClient: StorageService;

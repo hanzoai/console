@@ -1,5 +1,5 @@
-import { parseDbOrg, Prisma } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
+import { parseDbOrg, Prisma } from "@langfuse/shared";
+import { prisma } from "@langfuse/shared/src/db";
 import Stripe from "stripe";
 import { env } from "../../env";
 import {
@@ -8,7 +8,7 @@ import {
   getScoreCountsByProjectInCreationInterval,
   getTraceCountsByProjectInCreationInterval,
   logger,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import {
   cloudUsageMeteringDbCronJobName,
   CloudUsageMeteringDbCronJobStates,
@@ -17,7 +17,7 @@ import {
   QueueJobs,
   recordGauge,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { Job } from "bullmq";
 import { backOff } from "exponential-backoff";
 

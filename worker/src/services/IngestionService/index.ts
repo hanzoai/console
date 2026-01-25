@@ -6,7 +6,7 @@ import {
   ObservationLevel,
   PrismaClient,
   Prompt,
-} from "@hanzo/shared";
+} from "@langfuse/shared";
 import {
   ClickhouseClientType,
   convertDateToClickhouseDateTime,

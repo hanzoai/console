@@ -1,6 +1,6 @@
 import { expect, describe, it, vi } from "vitest";
 import { IngestionService } from "../../IngestionService";
-import { convertDateToClickhouseDateTime } from "@hanzo/shared/src/server";
+import { convertDateToClickhouseDateTime } from "@langfuse/shared/src/server";
 
 describe("IngestionService unit tests", () => {
   it("correctly sorts events in ascending order by timestamp", async () => {
