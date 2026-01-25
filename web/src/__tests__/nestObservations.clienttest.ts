@@ -1,5 +1,5 @@
 // Mock shared dependencies
-jest.mock("@langfuse/shared", () => ({
+jest.mock("@hanzo/shared", () => ({
   ObservationLevel: {
     DEBUG: "DEBUG",
     DEFAULT: "DEFAULT",

@@ -1,14 +1,14 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import type { Session } from "next-auth";
-import { encrypt } from "@langfuse/shared/encryption";
+import { encrypt } from "@hanzo/shared/encryption";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import { appRouter } from "@/src/server/api/root";
-import { createOrgProjectAndApiKey } from "@langfuse/shared/src/server";
+import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 // Mock SlackService
-jest.mock("@langfuse/shared/src/server", () => {
-  const actual = jest.requireActual("@langfuse/shared/src/server");
+jest.mock("@hanzo/shared/src/server", () => {
+  const actual = jest.requireActual("@hanzo/shared/src/server");
   return {
     ...actual,
     SlackService: {
@@ -72,7 +72,7 @@ const prepare = async () => {
 describe("Slack Integration", () => {
   beforeAll(async () => {
     // Import mocked SlackService
-    const { SlackService } = await import("@langfuse/shared/src/server");
+    const { SlackService } = await import("@hanzo/shared/src/server");
 
     // Create mock service instance
     mockSlackService = {
@@ -494,7 +494,7 @@ describe("Slack Integration", () => {
       expect(rawIntegration?.botToken).not.toContain("xoxb-secret-bot-token");
 
       // Verify the encrypted token can be decrypted back to original
-      const { decrypt } = await import("@langfuse/shared/encryption");
+      const { decrypt } = await import("@hanzo/shared/encryption");
       const decryptedToken = decrypt(rawIntegration!.botToken);
       expect(decryptedToken).toBe(originalToken);
     });

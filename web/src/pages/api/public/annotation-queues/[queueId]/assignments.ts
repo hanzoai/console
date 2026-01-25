@@ -1,7 +1,7 @@
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { prisma } from "@langfuse/shared/src/db";
-import { LangfuseNotFoundError, Prisma } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError, Prisma } from "@hanzo/shared";
 import {
   AnnotationQueueAssignmentQuery,
   CreateAnnotationQueueAssignmentBody,
@@ -9,7 +9,7 @@ import {
   DeleteAnnotationQueueAssignmentBody,
   DeleteAnnotationQueueAssignmentResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { getUserProjectRoles } from "@langfuse/shared/src/server";
+import { getUserProjectRoles } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

@@ -14,7 +14,7 @@ import {
   type TraceDomain,
   type ScoreDomain,
   AnnotationQueueObjectType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { ItemBadge } from "@/src/components/ItemBadge";

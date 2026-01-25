@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@langfuse/shared";
+import { type EvalTemplate } from "@hanzo/shared";
 
 import {
   CheckIcon,

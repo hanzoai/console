@@ -1,6 +1,6 @@
-// Mock the problematic @langfuse/shared import before importing our functions
-jest.mock("@langfuse/shared", () => {
-  const actual = jest.requireActual("@langfuse/shared");
+// Mock the problematic @hanzo/shared import before importing our functions
+jest.mock("@hanzo/shared", () => {
+  const actual = jest.requireActual("@hanzo/shared");
   const { z } = require("zod/v4");
 
   const OpenAITextContentPart = z.object({

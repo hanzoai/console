@@ -4,8 +4,8 @@ import {
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
 import { z } from "zod/v4";
-import { ZodModelConfig } from "@langfuse/shared";
-import { DefaultEvalModelService } from "@langfuse/shared/src/server";
+import { ZodModelConfig } from "@hanzo/shared";
+import { DefaultEvalModelService } from "@hanzo/shared/src/server";
 
 export const defaultEvalModelRouter = createTRPCRouter({
   fetchDefaultModel: protectedProjectProcedure

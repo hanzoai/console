@@ -5,7 +5,7 @@
  * deepParseJsonIterative function to prevent UI blocking.
  */
 
-import { deepParseJsonIterative } from "@langfuse/shared";
+import { deepParseJsonIterative } from "@hanzo/shared";
 
 export interface ParseRequest {
   id: string;

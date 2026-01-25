@@ -40,12 +40,12 @@ import {
   ActionId,
   TableViewPresetTableName,
   type TimeFilter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { MemoizedIOTableCell } from "../../ui/IOTableCell";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

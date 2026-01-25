@@ -3,7 +3,7 @@ import {
   CreateCommentData,
   paginationMetaResponseZod,
   publicApiPaginationZod,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod/v4";
 
 /**

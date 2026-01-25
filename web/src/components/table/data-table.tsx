@@ -1,5 +1,5 @@
 "use client";
-import { type OrderByState } from "@langfuse/shared";
+import { type OrderByState } from "@hanzo/shared";
 import React, {
   useState,
   useMemo,

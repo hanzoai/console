@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,

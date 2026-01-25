@@ -3,7 +3,7 @@ import {
   mergeAggregatesWithCache,
   mergeAnnotationScoresWithCache,
 } from "@/src/features/scores/lib/mergeScoresWithCache";
-import { type ScoreDomain, type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreDomain, type ScoreAggregate } from "@hanzo/shared";
 import { type CachedScore } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { type AnnotationScore } from "@/src/features/scores/types";
 

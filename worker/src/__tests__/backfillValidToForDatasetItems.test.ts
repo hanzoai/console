@@ -1,5 +1,5 @@
 import { expect, describe, it, beforeAll, afterEach } from "vitest";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { backfillValidToForDatasetItems } from "../backgroundMigrations/utils/datasetItems";
 
 const t0 = new Date("2024-01-01T00:00:00Z");

@@ -2,7 +2,7 @@ import {
   queryClickhouse,
   queryClickhouseStream,
   ClickHouseResourceError,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { fail } from "assert";
 
 describe("ClickHouse Resource Error Handling", () => {

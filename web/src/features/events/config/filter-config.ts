@@ -1,4 +1,4 @@
-import { eventsTableCols } from "@langfuse/shared";
+import { eventsTableCols } from "@hanzo/shared";
 import type { FilterConfig } from "@/src/features/filters/lib/filter-config";
 import type { ColumnToBackendKeyMap } from "@/src/features/filters/lib/filter-transform";
 

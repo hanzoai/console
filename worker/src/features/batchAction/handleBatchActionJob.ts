@@ -7,12 +7,12 @@ import {
   QueueName,
   TQueueJobTypes,
   traceDeletionProcessor,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   BatchActionType,
   BatchTableNames,
   FilterCondition,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getDatabaseReadStreamPaginated,
   getTraceIdentifierStream,
@@ -24,12 +24,12 @@ import {
   processAddSessionsToQueue,
   processAddTracesToQueue,
 } from "./processAddToQueue";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "node:crypto";
 import { processClickhouseScoreDelete } from "../scores/processClickhouseScoreDelete";
 import { getObservationStream } from "../database-read-stream/observation-stream";
 import { processAddObservationsToDataset } from "./processAddObservationsToDataset";
-import { ObservationAddToDatasetConfigSchema } from "@langfuse/shared";
+import { ObservationAddToDatasetConfigSchema } from "@hanzo/shared";
 
 const CHUNK_SIZE = 1000;
 const convertDatesInFiltersFromStrings = (filters: FilterCondition[]) => {

@@ -3,7 +3,7 @@ import {
   isIPBlocked,
   isIPAddress,
   isHostnameBlocked,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("IP Blocking Module", () => {
   describe("isIPBlocked", () => {

@@ -42,11 +42,11 @@ import {
   BatchDataRetentionCleanerQueue,
   MediaRetentionCleanerQueue,
   BATCH_DATA_RETENTION_TABLES,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "./env";
 import { ingestionQueueProcessorBuilder } from "./queues/ingestionQueue";
 import { BackgroundMigrationManager } from "./backgroundMigrations/backgroundMigrationManager";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { ClickhouseReadSkipCache } from "./utils/clickhouseReadSkipCache";
 import { experimentCreateQueueProcessor } from "./queues/experimentQueue";
 import { traceDeleteProcessor } from "./queues/traceDelete";

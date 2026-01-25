@@ -6,13 +6,13 @@ import {
   GetCommentV1Response,
   PostCommentsV1Response,
 } from "@/src/features/public-api/types/comments";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
 import {
   createObservationsCh,
   createTracesCh,
-} from "@langfuse/shared/src/server";
-import { createObservation, createTrace } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { createObservation, createTrace } from "@hanzo/shared/src/server";
 
 describe("Create and get comments", () => {
   beforeAll(async () => {

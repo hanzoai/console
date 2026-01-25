@@ -3,7 +3,7 @@ import {
   QueueJobs,
   logger,
   instrumentAsync,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { handleBlobStorageIntegrationSchedule } from "../features/blobstorage/handleBlobStorageIntegrationSchedule";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";

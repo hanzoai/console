@@ -22,7 +22,7 @@ import {
   createTracesCh,
   createObservation,
   createObservationsCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type QueryType } from "@/src/features/query/types";
 import {
   transformToPivotTable,

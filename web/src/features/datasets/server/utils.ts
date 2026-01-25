@@ -1,6 +1,6 @@
-import { type DatasetRunItemDomain } from "@langfuse/shared";
+import { type DatasetRunItemDomain } from "@hanzo/shared";
 import { calculateRecursiveCost } from "../lib/costCalculations";
-import { type ObservationTuple } from "@langfuse/shared/src/server";
+import { type ObservationTuple } from "@hanzo/shared/src/server";
 
 // Helpers to extract fields from ObservationTuple
 const getObservationId = (obs: ObservationTuple) => obs[0];

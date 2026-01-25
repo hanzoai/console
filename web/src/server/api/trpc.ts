@@ -18,7 +18,7 @@ import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 import { getServerAuthSession } from "@/src/server/auth";
-import { prisma, Role } from "@langfuse/shared/src/db";
+import { prisma, Role } from "@hanzo/shared/src/db";
 import * as z from "zod/v4";
 import * as opentelemetry from "@opentelemetry/api";
 import { type IncomingHttpHeaders } from "node:http";
@@ -86,7 +86,7 @@ import {
   logger,
   contextWithLangfuseProps,
   ClickHouseResourceError,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 import superjson from "superjson";
@@ -94,7 +94,7 @@ import { ZodError as _ZodError } from "zod/v4";
 
 import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 import { env } from "@/src/env.mjs";
-import { BaseError, parseIO } from "@langfuse/shared";
+import { BaseError, parseIO } from "@hanzo/shared";
 
 setUpSuperjson();
 

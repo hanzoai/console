@@ -12,7 +12,7 @@
 
 import type { ToolDefinition, ToolHandler } from "../core/define-tool";
 import type { ServerContext } from "../types";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 /**
  * Registered MCP tool

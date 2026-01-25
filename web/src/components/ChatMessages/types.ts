@@ -2,7 +2,7 @@ import type {
   ChatMessage,
   ChatMessageWithId,
   PlaceholderMessage,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export type MessagesContext = {
   messages: ChatMessageWithId[];

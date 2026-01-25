@@ -5,7 +5,7 @@ import {
   type ScoreDomain,
   isPresent,
   type ScoreConfigDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { TriangleAlertIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AnnotationForm } from "@/src/features/scores/components/AnnotationForm";

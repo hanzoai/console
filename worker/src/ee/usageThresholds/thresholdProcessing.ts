@@ -3,7 +3,7 @@
  * This feature is only available in the enterprise/cloud edition.
  */
 
-import type { ParsedOrganization } from "@langfuse/shared";
+import type { ParsedOrganization } from "@hanzo/shared";
 
 /**
  * Data needed to update an organization's usage tracking fields

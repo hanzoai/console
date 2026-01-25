@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { TabComponent } from "@/src/features/dashboard/components/TabsComponent";

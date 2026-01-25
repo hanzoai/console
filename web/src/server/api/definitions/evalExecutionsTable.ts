@@ -1,4 +1,4 @@
-import { type ColumnDefinition, JobExecutionStatus } from "@langfuse/shared";
+import { type ColumnDefinition, JobExecutionStatus } from "@hanzo/shared";
 
 export const evalExecutionsFilterCols: ColumnDefinition[] = [
   {

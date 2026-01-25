@@ -8,8 +8,8 @@ import {
   observationsTableUiColumnDefinitions,
   convertObservation,
   shouldSkipObservationsFinal,
-} from "@langfuse/shared/src/server";
-import type { FilterState } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import type { FilterState } from "@hanzo/shared";
 
 type QueryType = {
   page: number;

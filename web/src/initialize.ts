@@ -1,11 +1,11 @@
 import { env } from "@/src/env.mjs";
 import { createUserEmailPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
-import { prisma } from "@langfuse/shared/src/db";
-import { createAndAddApiKeysToDb } from "@langfuse/shared/src/server/auth/apiKeys";
+import { prisma } from "@hanzo/shared/src/db";
+import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { CloudConfigSchema } from "@langfuse/shared";
-import { logger } from "@langfuse/shared/src/server";
+import { CloudConfigSchema } from "@hanzo/shared";
+import { logger } from "@hanzo/shared/src/server";
 
 // Warn if LANGFUSE_INIT_* variables are set but LANGFUSE_INIT_ORG_ID is missing
 if (!env.LANGFUSE_INIT_ORG_ID) {

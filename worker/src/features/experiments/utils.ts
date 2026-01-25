@@ -10,7 +10,7 @@ import {
   PromptContent,
   PromptType,
   stringifyValue,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { compileTemplateString } from "../utils/utilities";
 import {
   logger,
@@ -21,8 +21,8 @@ import {
   ExperimentMetadataSchema,
   LLMApiKeySchema,
   PromptContentSchema,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import z from "zod/v4";
 import { UnrecoverableError } from "../../errors/UnrecoverableError";
 

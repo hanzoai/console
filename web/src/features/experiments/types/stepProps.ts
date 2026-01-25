@@ -1,8 +1,8 @@
 import { type UseFormReturn } from "react-hook-form";
 import { type CreateExperiment } from "@/src/features/experiments/types";
-import { type UIModelParams } from "@langfuse/shared/src/server";
+import { type UIModelParams } from "@hanzo/shared/src/server";
 import { type ModelParamsContext } from "@/src/components/ModelParameters";
-import { type EvalTemplate, type PromptType } from "@langfuse/shared";
+import { type EvalTemplate, type PromptType } from "@hanzo/shared";
 import { type PartialConfig } from "@/src/features/evals/types";
 
 type ValidationResult =

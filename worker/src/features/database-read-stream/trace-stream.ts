@@ -3,7 +3,7 @@ import {
   ScoreDataTypeEnum,
   type ScoreDataTypeType,
   TracingSearchType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getDistinctScoreNames,
   queryClickhouseStream,
@@ -14,7 +14,7 @@ import {
   clickhouseSearchCondition,
   parseClickhouseUTCDateTimeFormat,
   StringFilter,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { Readable } from "stream";
 import { env } from "../../env";
 import {

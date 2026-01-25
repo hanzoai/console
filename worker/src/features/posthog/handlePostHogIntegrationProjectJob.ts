@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -9,13 +9,13 @@ import {
   getScoresForAnalyticsIntegrations,
   getCurrentSpan,
   validateWebhookURL,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   transformTraceForPostHog,
   transformGenerationForPostHog,
   transformScoreForPostHog,
 } from "./transformers";
-import { decrypt } from "@langfuse/shared/encryption";
+import { decrypt } from "@hanzo/shared/encryption";
 import { PostHog } from "posthog-node";
 
 type PostHogExecutionConfig = {

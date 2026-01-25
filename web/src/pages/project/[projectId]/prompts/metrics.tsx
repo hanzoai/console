@@ -12,7 +12,7 @@ import { numberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
 import Page from "@/src/components/layouts/page";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";

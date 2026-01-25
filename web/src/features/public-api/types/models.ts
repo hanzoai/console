@@ -4,7 +4,7 @@ import {
   type Model as PrismaModel,
   jsonSchema,
   publicApiPaginationZod,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod/v4";
 import { type Decimal } from "decimal.js";
 import {
@@ -12,7 +12,7 @@ import {
   PricingTierConditionSchema,
   PricingTierInputSchema,
   type PricingTierCondition,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 /**
  * Objects

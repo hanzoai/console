@@ -28,7 +28,7 @@ import {
 } from "@/src/components/ui/popover";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import { Label } from "@/src/components/ui/label";
-import { AnnotationQueueObjectType, type ScoreDomain } from "@langfuse/shared";
+import { AnnotationQueueObjectType, type ScoreDomain } from "@hanzo/shared";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { TablePeekView } from "@/src/components/table/peek";
 import { PeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";

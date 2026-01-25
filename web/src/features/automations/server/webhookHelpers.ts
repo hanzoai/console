@@ -2,21 +2,21 @@ import {
   decrypt,
   encrypt,
   generateWebhookSecret,
-} from "@langfuse/shared/encryption";
+} from "@hanzo/shared/encryption";
 import {
   type ActionCreate,
   type ActionConfig,
   type WebhookActionConfigWithSecrets,
   type WebhookActionCreate,
   isWebhookActionConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getActionByIdWithSecrets,
   mergeHeaders,
   createDisplayHeaders,
   encryptSecretHeaders,
   validateWebhookURL,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 interface WebhookConfigOptions {

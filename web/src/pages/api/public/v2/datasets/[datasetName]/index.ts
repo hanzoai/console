@@ -1,5 +1,5 @@
-import { prisma } from "@langfuse/shared/src/db";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@hanzo/shared";
 import {
   GetDatasetV2Query,
   GetDatasetV2Response,

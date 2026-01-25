@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -8,7 +8,7 @@ import {
   PutLlmConnectionV1Response,
   transformDbLlmConnectionToAPI,
 } from "@/src/features/public-api/types/llm-connections";
-import { encrypt } from "@langfuse/shared/encryption";
+import { encrypt } from "@hanzo/shared/encryption";
 import { getDisplaySecretKey } from "@/src/features/llm-api-key/server/router";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 

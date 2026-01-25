@@ -20,7 +20,7 @@ import {
   type LLMAdapter,
   type supportedModels,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { InfoIcon, Settings2 } from "lucide-react";
 import {
   Popover,

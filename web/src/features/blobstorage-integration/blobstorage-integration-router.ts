@@ -6,7 +6,7 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { encrypt } from "@langfuse/shared/encryption";
+import { encrypt } from "@hanzo/shared/encryption";
 import { blobStorageIntegrationFormSchema } from "@/src/features/blobstorage-integration/types";
 import { TRPCError } from "@trpc/server";
 import {
@@ -14,14 +14,14 @@ import {
   BlobStorageIntegrationProcessingQueue,
   QueueJobs,
   StorageServiceFactory,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
-import { decrypt } from "@langfuse/shared/encryption";
+import { decrypt } from "@hanzo/shared/encryption";
 import {
   type BlobStorageIntegration,
   BlobStorageIntegrationType,
   BlobStorageExportMode,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { env } from "@/src/env.mjs";
 
 export const blobStorageIntegrationRouter = createTRPCRouter({

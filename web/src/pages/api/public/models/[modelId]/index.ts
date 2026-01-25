@@ -1,5 +1,5 @@
-import { prisma } from "@langfuse/shared/src/db";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@hanzo/shared";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -10,7 +10,7 @@ import {
   prismaToApiModelDefinition,
 } from "@/src/features/public-api/types/models";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { clearModelCacheForProject } from "@langfuse/shared/src/server";
+import { clearModelCacheForProject } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

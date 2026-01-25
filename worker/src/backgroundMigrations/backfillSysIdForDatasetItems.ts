@@ -1,5 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table

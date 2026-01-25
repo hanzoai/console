@@ -1,7 +1,7 @@
 import {
   type AnnotationQueueItem,
   type ScoreConfigDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";
 import { AnnotationProcessingLayout } from "../shared/AnnotationProcessingLayout";
 import { SessionIO } from "@/src/components/session";

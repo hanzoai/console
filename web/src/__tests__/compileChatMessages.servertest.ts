@@ -4,7 +4,7 @@ import {
   ChatMessageType,
   compileChatMessages,
   extractPlaceholderNames,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 describe("compileChatMessages", () => {
   it("should compile message placeholders with provided values", () => {

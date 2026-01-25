@@ -22,7 +22,7 @@ import {
 } from "@/src/components/ui/popover";
 import { ChevronDown, CheckIcon, PlusIcon, EyeIcon } from "lucide-react";
 import { CreateOrEditLLMSchemaDialog } from "@/src/features/playground/page/components/CreateOrEditLLMSchemaDialog";
-import { type LlmSchema } from "@langfuse/shared";
+import { type LlmSchema } from "@hanzo/shared";
 import { Switch } from "@/src/components/ui/switch";
 import { api } from "@/src/utils/api";
 import { CardDescription } from "@/src/components/ui/card";

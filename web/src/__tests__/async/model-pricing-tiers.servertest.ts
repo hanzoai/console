@@ -1,7 +1,7 @@
 /** @jest-environment node */
 
 import { randomUUID } from "crypto";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   makeAPICall,
   makeZodVerifiedAPICall,
@@ -17,8 +17,8 @@ import {
   validatePricingTiers,
   validatePricingMethod,
   type PricingTierInput,
-} from "@langfuse/shared";
-import { createOrgProjectAndApiKey } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
 
 describe("validation methods", () => {
   describe("validateRegexPattern", () => {

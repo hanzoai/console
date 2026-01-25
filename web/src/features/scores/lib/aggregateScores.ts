@@ -5,7 +5,7 @@ import {
   type ScoreSourceType,
   type ScoreDomain,
   type AggregatableScoreDataType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 /**
  * Normalizes score names for comparison by converting - and . to _

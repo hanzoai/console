@@ -1,7 +1,7 @@
 /** @jest-environment node */
 
 import type { Session } from "next-auth";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import {
@@ -9,7 +9,7 @@ import {
   createObservationsCh,
   createTrace,
   createTracesCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 describe("traces trpc", () => {

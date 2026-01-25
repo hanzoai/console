@@ -1,12 +1,12 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   logger,
   redis,
   QueueJobs,
   ProjectDeleteQueue,
   type ApiAccessScope,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import { projectRetentionSchema } from "@/src/features/auth/lib/projectRetentionSchema";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";

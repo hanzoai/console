@@ -24,7 +24,7 @@ const USER_DEFINED_TEST_OBJECT: any = {
 
 // ============================================================================
 
-import { deepParseJson, deepParseJsonIterative } from "@langfuse/shared";
+import { deepParseJson, deepParseJsonIterative } from "@hanzo/shared";
 
 describe("deepParseJson (recursive)", () => {
   describe("basic functionality", () => {

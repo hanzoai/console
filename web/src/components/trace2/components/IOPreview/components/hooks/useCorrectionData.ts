@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useCorrectionCache } from "@/src/features/corrections/contexts/CorrectionCacheContext";
-import { type ScoreDomain } from "@langfuse/shared";
+import { type ScoreDomain } from "@hanzo/shared";
 
 /**
  * Merges cached correction with server data

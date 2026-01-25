@@ -21,7 +21,7 @@ import {
 } from "@/src/components/ui/table";
 import startCase from "lodash/startCase";
 import { getChartTypeDisplayName } from "@/src/features/widgets/chart-library/utils";
-import { type DashboardWidgetChartType } from "@langfuse/shared/src/db";
+import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
 
 export type WidgetItem = {
   id: string;

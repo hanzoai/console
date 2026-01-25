@@ -1,5 +1,5 @@
-import { logger, traceException } from "@langfuse/shared/src/server";
-import { AnnotationQueueObjectType, prisma } from "@langfuse/shared/src/db";
+import { logger, traceException } from "@hanzo/shared/src/server";
+import { AnnotationQueueObjectType, prisma } from "@hanzo/shared/src/db";
 
 const addToQueue = async ({
   projectId,

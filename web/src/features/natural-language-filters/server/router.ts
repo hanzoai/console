@@ -9,7 +9,7 @@ import {
   fetchLLMCompletion,
   logger,
   type TraceSinkParams,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { CreateNaturalLanguageFilterCompletion } from "./validation";
 import {
@@ -19,8 +19,8 @@ import {
 } from "./utils";
 import { randomBytes } from "crypto";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 
 export const naturalLanguageFilterRouter = createTRPCRouter({
   createCompletion: protectedProjectProcedure

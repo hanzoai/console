@@ -1,4 +1,4 @@
-import { Role } from "@langfuse/shared";
+import { Role } from "@hanzo/shared";
 
 export const orderedRoles: Record<Role, number> = {
   [Role.OWNER]: 5,

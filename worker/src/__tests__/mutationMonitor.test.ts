@@ -1,12 +1,12 @@
 import { expect, describe, it, beforeEach, vi, afterEach } from "vitest";
 import { MutationMonitor } from "../features/mutation-monitoring/mutationMonitor";
 import { WorkerManager } from "../queues/workerManager";
-import * as shared from "@langfuse/shared/src/server";
+import * as shared from "@hanzo/shared/src/server";
 import { Worker } from "bullmq";
 
 // Mock the dependencies
-vi.mock("@langfuse/shared/src/server", async () => {
-  const actual = await vi.importActual("@langfuse/shared/src/server");
+vi.mock("@hanzo/shared/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/shared/src/server");
   return {
     ...actual,
     queryClickhouse: vi.fn(),

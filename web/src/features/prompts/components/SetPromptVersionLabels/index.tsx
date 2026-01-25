@@ -15,7 +15,7 @@ import {
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
-import { PRODUCTION_LABEL, type Prompt } from "@langfuse/shared";
+import { PRODUCTION_LABEL, type Prompt } from "@hanzo/shared";
 import { AddLabelForm } from "./AddLabelForm";
 import { LabelCommandItem } from "./LabelCommandItem";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";

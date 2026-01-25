@@ -11,12 +11,12 @@ import { defineTool } from "../../../core/define-tool";
 import { ParamPromptName, ParamNewLabels } from "../validation";
 import { updatePrompt } from "@/src/features/prompts/server/actions/updatePrompts";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { UserInputError } from "../../../core/errors";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
-import { PROMPT_NAME_MAX_LENGTH } from "@langfuse/shared";
+import { PROMPT_NAME_MAX_LENGTH } from "@hanzo/shared";
 
 /**
  * Base schema for JSON Schema generation (MCP client display)

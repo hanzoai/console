@@ -26,7 +26,7 @@ import {
   DatasetNameSchema,
   isValidJSONSchema,
   type Prisma,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { Label } from "@/src/components/ui/label";
 import { useRouter } from "next/router";

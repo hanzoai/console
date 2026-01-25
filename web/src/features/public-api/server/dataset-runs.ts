@@ -1,5 +1,5 @@
-import { type jsonSchema } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+import { type jsonSchema } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import type z from "zod/v4";
 

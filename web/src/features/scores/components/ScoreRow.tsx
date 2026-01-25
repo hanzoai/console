@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   type ScoreSourceType,
   type AggregatedScoreData,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { MessageCircleMore } from "lucide-react";
 import {
   HoverCard,

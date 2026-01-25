@@ -2,7 +2,7 @@ import { type z } from "zod/v4";
 import {
   convertDateToClickhouseDateTime,
   shouldSkipObservationsFinal,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import type {
   QueryType,
   ViewDeclarationType,
@@ -16,8 +16,8 @@ import { getViewDeclaration } from "@/src/features/query/dataModel";
 import {
   FilterList,
   createFilterFromFilterState,
-} from "@langfuse/shared/src/server";
-import { InvalidRequestError } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import { InvalidRequestError } from "@hanzo/shared";
 
 type AppliedDimensionType = {
   table: string;

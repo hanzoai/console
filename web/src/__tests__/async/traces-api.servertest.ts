@@ -7,12 +7,12 @@ import {
   getTraceById,
   createEvent,
   type EventRecordInsertType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   createObservationsCh,
   createTracesCh,
   createEventsCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   makeZodVerifiedAPICall,
   makeZodVerifiedAPICallSilent,

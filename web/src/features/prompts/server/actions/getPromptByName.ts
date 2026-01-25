@@ -2,13 +2,13 @@ import {
   InvalidRequestError,
   PRODUCTION_LABEL,
   type Prompt,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   PromptService,
   redis,
   recordIncrement,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 
 type GetPromptByNameParams = {
   promptName: string;

@@ -11,4 +11,4 @@ export {
   type NormalizerContext,
   type ProviderAdapter,
   type ToolEvent,
-} from "@langfuse/shared";
+} from "@hanzo/shared";

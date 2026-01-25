@@ -3,9 +3,9 @@ import {
   logger,
   recordDistribution,
   RetryBaggage,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
-import { kyselyPrisma } from "@langfuse/shared/src/db";
+import { kyselyPrisma } from "@hanzo/shared/src/db";
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 

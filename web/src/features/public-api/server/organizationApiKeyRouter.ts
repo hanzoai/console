@@ -6,8 +6,8 @@ import {
 } from "@/src/server/api/trpc";
 import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { redis } from "@langfuse/shared/src/server";
-import { createAndAddApiKeysToDb } from "@langfuse/shared/src/server/auth/apiKeys";
+import { redis } from "@hanzo/shared/src/server";
+import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
 
 export const organizationApiKeysRouter = createTRPCRouter({
   byOrganizationId: protectedOrganizationProcedure

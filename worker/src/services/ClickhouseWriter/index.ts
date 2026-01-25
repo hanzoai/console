@@ -13,11 +13,11 @@ import {
   TraceNullRecordInsertType,
   DatasetRunItemRecordInsertType,
   EventRecordInsertType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 import { env } from "../../env";
-import { logger } from "@langfuse/shared/src/server";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { backOff } from "exponential-backoff";
 
 export class ClickhouseWriter {

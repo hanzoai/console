@@ -7,7 +7,7 @@ vi.hoisted(() => {
 });
 
 // Mock prisma
-vi.mock("@langfuse/shared/src/db", () => ({
+vi.mock("@hanzo/shared/src/db", () => ({
   prisma: {
     organization: {
       update: vi.fn(),
@@ -22,8 +22,8 @@ vi.mock("@langfuse/shared/src/db", () => ({
 }));
 
 import { processThresholds } from "../ee/usageThresholds/thresholdProcessing";
-import { prisma } from "@langfuse/shared/src/db";
-import { type ParsedOrganization } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { type ParsedOrganization } from "@hanzo/shared";
 
 const mockOrgUpdate = prisma.organization.update as Mock;
 const mockOrgMembershipFindMany = prisma.organizationMembership

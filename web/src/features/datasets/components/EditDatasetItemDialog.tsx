@@ -15,7 +15,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
-import type { DatasetItemDomain } from "@langfuse/shared";
+import type { DatasetItemDomain } from "@hanzo/shared";
 import { DatasetItemFields } from "./DatasetItemFields";
 import {
   stringifyDatasetItemData,

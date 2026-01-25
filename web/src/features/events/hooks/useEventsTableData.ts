@@ -4,7 +4,7 @@ import {
   type FilterState,
   AnnotationQueueObjectType,
   type EventsObservation,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";

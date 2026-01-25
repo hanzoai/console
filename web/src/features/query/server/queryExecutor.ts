@@ -2,7 +2,7 @@ import {
   queryClickhouse,
   measureAndReturn,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";
 import { type QueryType, type ViewVersion } from "@/src/features/query/types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";

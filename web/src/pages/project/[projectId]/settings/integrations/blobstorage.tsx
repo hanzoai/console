@@ -41,7 +41,7 @@ import {
   BlobStorageIntegrationFileType,
   BlobStorageExportMode,
   type BlobStorageIntegration,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 
 export default function BlobStorageIntegrationSettings() {

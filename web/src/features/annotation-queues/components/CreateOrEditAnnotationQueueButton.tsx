@@ -29,7 +29,7 @@ import {
   type CreateQueueWithAssignments,
   CreateQueueWithAssignmentsData,
   type ScoreConfigDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";

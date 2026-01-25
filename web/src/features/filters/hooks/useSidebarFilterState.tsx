@@ -5,7 +5,7 @@ import {
   singleFilter,
   type SingleValueOption,
   type ColumnDefinition,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   computeSelectedValues,
   encodeFiltersGeneric,

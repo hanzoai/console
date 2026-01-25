@@ -3,7 +3,7 @@ import {
   type ScoreDomain,
   type ScoreAggregate,
   type ScoreConfigDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 const mockConfigs: ScoreConfigDomain[] = [
   {

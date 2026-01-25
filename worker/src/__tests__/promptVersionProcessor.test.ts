@@ -6,13 +6,13 @@ import {
   TriggerEventSource,
   TriggerEventAction,
   PromptType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   createOrgProjectAndApiKey,
   redis,
   EntityChangeEventType,
-} from "@langfuse/shared/src/server";
-import { ActionType, prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { ActionType, prisma } from "@hanzo/shared/src/db";
 import { promptVersionProcessor } from "../features/entityChange/promptVersionProcessor";
 
 describe("promptVersionChangeWorker", () => {

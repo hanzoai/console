@@ -3,7 +3,7 @@ import {
   isPresent,
   type ScoreConfigDataType,
   type ScoreConfigCategoryDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const resolveConfigValue = ({
   name,

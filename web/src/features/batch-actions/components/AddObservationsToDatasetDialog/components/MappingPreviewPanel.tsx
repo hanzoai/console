@@ -11,7 +11,7 @@ import type {
 import {
   applyFieldMappingConfig,
   validateFieldAgainstSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 type MappingPreviewPanelProps = {
   fieldLabel: string;

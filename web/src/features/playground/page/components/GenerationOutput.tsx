@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { usePlaygroundContext } from "../context";
-import { ChatMessageRole, ChatMessageType } from "@langfuse/shared";
+import { ChatMessageRole, ChatMessageType } from "@hanzo/shared";
 import { BracesIcon, Check, Copy, Plus } from "lucide-react";
 import { ToolCallCard } from "@/src/components/ChatMessages/ToolCallCard";
 import { copyTextToClipboard } from "@/src/utils/clipboard";

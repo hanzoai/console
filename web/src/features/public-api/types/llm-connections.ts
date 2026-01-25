@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { paginationZod, LLMAdapter, type JSONValue } from "@langfuse/shared";
-import { BedrockConfigSchema, VertexAIConfigSchema } from "@langfuse/shared";
+import { paginationZod, LLMAdapter, type JSONValue } from "@hanzo/shared";
+import { BedrockConfigSchema, VertexAIConfigSchema } from "@hanzo/shared";
 
 // Base LLM connection response schema - strict to prevent secret leakage
 export const LlmConnectionResponse = z

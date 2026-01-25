@@ -13,7 +13,7 @@ import {
   PROMPT_LABEL_REGEX_ERROR,
   COMMIT_MESSAGE_MAX_LENGTH,
   LATEST_PROMPT_LABEL,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 /**
  * Prompt name parameter

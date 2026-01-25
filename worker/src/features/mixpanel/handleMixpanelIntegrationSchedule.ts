@@ -1,8 +1,8 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   MixpanelIntegrationProcessingQueue,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handleMixpanelIntegrationSchedule = async () => {

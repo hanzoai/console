@@ -10,9 +10,9 @@ import {
   InternalServerError,
   InvalidRequestError,
   LangfuseNotFoundError,
-  validateDbScoreConfigSafe } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
-import { traceException } from "@langfuse/shared/src/server";
+  validateDbScoreConfigSafe } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { traceException } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

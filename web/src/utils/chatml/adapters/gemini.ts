@@ -1,1 +1,1 @@
-export { geminiAdapter } from "@langfuse/shared";
+export { geminiAdapter } from "@hanzo/shared";

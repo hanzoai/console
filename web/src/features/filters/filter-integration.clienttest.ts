@@ -8,7 +8,7 @@ import {
   type FilterState,
   tracesTableCols,
   observationsTableCols,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   encodeFiltersGeneric,
   decodeFiltersGeneric,

@@ -6,8 +6,8 @@ import {
   BatchExportTableName,
   exportOptions,
   LangfuseNotFoundError,
-} from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   StorageServiceFactory,
   sendBatchExportSuccessEmail,
@@ -17,7 +17,7 @@ import {
   getCurrentSpan,
   applyCommentFilters,
   type CommentObjectType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { getDatabaseReadStreamPaginated } from "../database-read-stream/getDatabaseReadStream";
 import { getObservationStream } from "../database-read-stream/observation-stream";

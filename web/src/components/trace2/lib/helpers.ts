@@ -6,7 +6,7 @@ import {
   type ObservationLevelType,
   ObservationLevel,
   type TraceDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 export function nestObservations(

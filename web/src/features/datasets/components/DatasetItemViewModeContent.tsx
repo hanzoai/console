@@ -1,4 +1,4 @@
-import type { DatasetItemDomain } from "@langfuse/shared";
+import type { DatasetItemDomain } from "@hanzo/shared";
 import {
   stringifyDatasetItemData,
   type DatasetSchema,

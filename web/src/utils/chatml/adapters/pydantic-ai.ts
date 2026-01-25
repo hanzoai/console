@@ -1,1 +1,1 @@
-export { pydanticAIAdapter } from "@langfuse/shared";
+export { pydanticAIAdapter } from "@hanzo/shared";

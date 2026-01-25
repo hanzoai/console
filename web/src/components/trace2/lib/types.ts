@@ -5,7 +5,7 @@
  * TraceSearchListItem: Flattened representation of tree nodes for search/list views.
  */
 
-import { type ObservationType } from "@langfuse/shared";
+import { type ObservationType } from "@hanzo/shared";
 import type Decimal from "decimal.js";
 
 /**

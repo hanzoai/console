@@ -28,12 +28,12 @@ import {
   datasetFormFilterColsWithOptions,
   availableDatasetEvalVariables,
   type ObservationType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod/v4";
 import { useEffect, useMemo, useState, memo } from "react";
 import { api } from "@/src/utils/api";
 import { InlineFilterBuilder } from "@/src/features/filters/components/filter-builder";
-import { type EvalTemplate, variableMapping } from "@langfuse/shared";
+import { type EvalTemplate, variableMapping } from "@hanzo/shared";
 import { useRouter } from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";

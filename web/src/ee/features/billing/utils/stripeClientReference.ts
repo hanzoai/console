@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 /**

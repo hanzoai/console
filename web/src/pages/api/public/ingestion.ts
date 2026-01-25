@@ -7,18 +7,18 @@ import {
   logger,
   getCurrentSpan,
   contextWithLangfuseProps,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { telemetry } from "@/src/features/telemetry";
-import { jsonSchema } from "@langfuse/shared";
+import { jsonSchema } from "@hanzo/shared";
 import { isPrismaException } from "@/src/utils/exceptions";
 import {
   MethodNotAllowedError,
   BaseError,
   UnauthorizedError,
   ForbiddenError,
-} from "@langfuse/shared";
-import { processEventBatch } from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { processEventBatch } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import * as opentelemetry from "@opentelemetry/api";

@@ -8,12 +8,12 @@ import {
   filterAndValidateV1GetScoreList,
   PostScoresBodyV1,
   PostScoresResponseV1,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   eventTypes,
   logger,
   processEventBatch,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 
 export default withMiddlewares({

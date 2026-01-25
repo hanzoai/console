@@ -1,4 +1,4 @@
-import { type Role } from "@langfuse/shared/src/db";
+import { type Role } from "@hanzo/shared/src/db";
 
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
 // (used for type extraction via typeof, which is a legitimate pattern)

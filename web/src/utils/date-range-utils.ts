@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { addMinutes, format } from "date-fns";
-import { type DateTrunc } from "@langfuse/shared/src/server";
+import { type DateTrunc } from "@hanzo/shared/src/server";
 
 interface TimeRangeDefinition {
   label: string;

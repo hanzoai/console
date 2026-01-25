@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   getS3MediaStorageClient,
   logger,
@@ -6,7 +6,7 @@ import {
   recordIncrement,
   removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 

@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import {
   LegacySpanPatchSchema,
   LegacySpanPostSchema,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // POST /spans
 export const PostSpansV1Body = LegacySpanPostSchema;

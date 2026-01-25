@@ -6,12 +6,12 @@ import {
   type BatchActionQuery,
   type ActionId,
   type BatchActionType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   BatchActionQueue,
   logger,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 type CreateBatchActionJob = {

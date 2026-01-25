@@ -10,14 +10,14 @@ import {
   QueueJobs,
   getObservationsCountFromEventsTable,
   getObservationsTableCount,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import {
   BatchTableNames,
   BatchActionType,
   BatchActionStatus,
   ActionId,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { env } from "@/src/env.mjs";
 import { CreateObservationAddToDatasetActionSchema } from "../validation";
 

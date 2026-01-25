@@ -3,7 +3,7 @@ import {
   logger,
   QueueJobs,
   instrumentAsync,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { handleEventPropagationJob } from "../features/eventPropagation/handleEventPropagationJob";
 import { runExperimentBackfill } from "../features/eventPropagation/handleExperimentBackfill";
 import { SpanKind } from "@opentelemetry/api";

@@ -2,7 +2,7 @@ import {
   type FilterState,
   singleFilter,
   type SingleValueOption,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { encodeDelimitedArray, decodeDelimitedArray } from "use-query-params";
 
 // Generic helpers for reusable encoding/decoding across feature areas

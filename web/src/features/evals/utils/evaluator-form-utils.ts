@@ -3,8 +3,8 @@ import {
   singleFilter,
   type langfuseObjects,
   TimeScopeSchema,
-} from "@langfuse/shared";
-import { wipVariableMapping } from "@langfuse/shared";
+} from "@hanzo/shared";
+import { wipVariableMapping } from "@hanzo/shared";
 
 export const isTraceTarget = (target: string): boolean => target === "trace";
 export const isTraceOrDatasetObject = (object: string): boolean =>

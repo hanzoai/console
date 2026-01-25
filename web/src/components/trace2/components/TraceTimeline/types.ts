@@ -4,7 +4,7 @@
 
 import type { TreeNode } from "../../lib/types";
 import type Decimal from "decimal.js";
-import type { ScoreDomain } from "@langfuse/shared";
+import type { ScoreDomain } from "@hanzo/shared";
 import type { WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 /**

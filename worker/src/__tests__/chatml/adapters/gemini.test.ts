@@ -4,7 +4,7 @@ import {
   selectAdapter,
   SimpleChatMlArraySchema,
   type NormalizerContext,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 // Test helper
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {

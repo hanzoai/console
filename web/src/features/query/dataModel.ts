@@ -5,7 +5,7 @@ import type {
   DimensionsDeclarationType,
   views,
 } from "@/src/features/query/types";
-import { InvalidRequestError } from "@langfuse/shared";
+import { InvalidRequestError } from "@hanzo/shared";
 
 // The data model defines all available dimensions, measures, and the timeDimension for a given view.
 // Make sure to update ./dashboardUiTableToViewMapping.ts if you make changes

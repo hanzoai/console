@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/src/components/ui/dialog";
 import { ChevronLeft } from "lucide-react";
-import type { BatchActionQuery } from "@langfuse/shared";
+import type { BatchActionQuery } from "@hanzo/shared";
 
 // Step components
 import { DatasetChoiceStep } from "./DatasetChoiceStep";

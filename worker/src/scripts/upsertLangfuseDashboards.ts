@@ -1,11 +1,11 @@
 import { z } from "zod/v4";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import langfuseDashboards from "../constants/langfuse-dashboards.json";
 import {
   logger,
   WidgetDomainSchema,
   DashboardDomainSchema,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 /**
  * JSON STRUCTURE & SCHEMAS

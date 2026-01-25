@@ -3,7 +3,7 @@ import {
   extractToolsFromObservation,
   convertDefinitionsToMap,
   convertCallsToArrays,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("extractToolsFromObservation", () => {
   describe("Tool Definitions extraction", () => {

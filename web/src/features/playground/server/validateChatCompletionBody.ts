@@ -5,7 +5,7 @@ import {
   LLMToolDefinitionSchema,
   ChatMessageSchema,
   JSONObjectSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 const ModelParamsSchema = z.object({
   provider: z.string(),

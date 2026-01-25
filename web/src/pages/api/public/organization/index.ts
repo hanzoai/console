@@ -1,6 +1,6 @@
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
-import { CloudConfigSchema } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+import { CloudConfigSchema } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

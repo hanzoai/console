@@ -3,7 +3,7 @@ import {
   QueueJobs,
   DatasetRunItemUpsertQueue,
   redis,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export const addDatasetRunItemsToEvalQueue = async ({
   projectId,

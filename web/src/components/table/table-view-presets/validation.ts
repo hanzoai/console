@@ -3,7 +3,7 @@ import {
   type FilterState,
   type ColumnDefinition,
   type OrderByState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-transform";
 
 /**

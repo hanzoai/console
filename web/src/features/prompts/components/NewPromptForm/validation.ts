@@ -7,7 +7,7 @@ import {
   TextPromptContentSchema,
   COMMIT_MESSAGE_MAX_LENGTH,
   PromptType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 const NewPromptBaseSchema = z.object({
   name: PromptNameSchema,

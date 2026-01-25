@@ -2,12 +2,12 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import {
   SlackService,
   parseSlackInstallationMetadata,
-} from "@langfuse/shared/src/server";
-import { logger } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { getServerAuthSession } from "@/src/server/auth";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 /**
  * SlackOAuthHandlers

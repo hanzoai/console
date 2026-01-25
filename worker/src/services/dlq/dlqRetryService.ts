@@ -2,8 +2,8 @@ import {
   logger,
   QueueName,
   recordHistogram,
-} from "@langfuse/shared/src/server";
-import { getQueue } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { getQueue } from "@hanzo/shared/src/server";
 
 export class DlqRetryService {
   private static retryQueues = [

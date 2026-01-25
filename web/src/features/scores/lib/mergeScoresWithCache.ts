@@ -1,4 +1,4 @@
-import { type ScoreDomain, type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreDomain, type ScoreAggregate } from "@hanzo/shared";
 import { type CachedScore } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { type AnnotationScore } from "@/src/features/scores/types";
 import { composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";

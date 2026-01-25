@@ -9,11 +9,11 @@ import {
   updateEvents,
   getTraceByIdFromEventsTable,
   getObservationsBatchIOFromEventsTable,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
-import { type FilterCondition } from "@langfuse/shared";
+import { type FilterCondition } from "@hanzo/shared";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 

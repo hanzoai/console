@@ -3,7 +3,7 @@ import {
   type ScoreSourceType,
   type FilterState,
   type ScoreDataTypeType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import React from "react";
 import { BarChart, type CustomTooltipProps } from "@tremor/react";

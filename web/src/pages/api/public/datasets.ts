@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -13,7 +13,7 @@ import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   createDatasetItemFilterState,
   getDatasetItems,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

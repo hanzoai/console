@@ -3,7 +3,7 @@
  * This feature is only available in the enterprise/cloud edition.
  */
 
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
 
 export const handleCloudFreeTierUsageThresholdJob = async (job: Job) => {

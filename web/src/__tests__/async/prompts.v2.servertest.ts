@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { disconnectQueues, makeAPICall } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
 import {
@@ -9,8 +9,8 @@ import {
   type ChatMessage,
   type Prompt,
   PromptType,
-} from "@langfuse/shared";
-import { parsePromptDependencyTags } from "@langfuse/shared";
+} from "@hanzo/shared";
+import { parsePromptDependencyTags } from "@hanzo/shared";
 import { generateId, nanoid } from "ai";
 
 import { type PromptsMetaResponse } from "@/src/features/prompts/server/actions/getPromptsMeta";
@@ -19,7 +19,7 @@ import {
   getObservationById,
   MAX_PROMPT_NESTING_DEPTH,
   ChatMessageType,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "node:crypto";
 import waitForExpect from "wait-for-expect";
 import { createPrompt } from "@/src/features/prompts/server/actions/createPrompt";

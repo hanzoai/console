@@ -6,7 +6,7 @@ import {
   PromptType,
   extractPlaceholderNames,
   type PromptMessage,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 type ExperimentPromptDataProps = {
   projectId: string;

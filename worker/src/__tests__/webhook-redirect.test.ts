@@ -2,14 +2,14 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import { executeWebhook } from "../queues/webhooks";
-import { prisma } from "@langfuse/shared/src/db";
-import { encrypt } from "@langfuse/shared/encryption";
+import { prisma } from "@hanzo/shared/src/db";
+import { encrypt } from "@hanzo/shared/encryption";
 import {
   ActionExecutionStatus,
   JobConfigState,
   PromptDomainSchema,
-} from "@langfuse/shared";
-import type { WebhookInput } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import type { WebhookInput } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 /**

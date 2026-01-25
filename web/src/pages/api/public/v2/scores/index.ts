@@ -5,9 +5,9 @@ import {
   GetScoresResponseV2,
   filterAndValidateV2GetScoreList,
   InvalidRequestError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

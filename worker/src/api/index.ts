@@ -1,8 +1,8 @@
 import express from "express";
-import { traceException } from "@langfuse/shared/src/server";
+import { traceException } from "@hanzo/shared/src/server";
 
 import { checkContainerHealth } from "../features/health";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 const router = express.Router();
 
 router.get<{}, { status: string }>("/health", async (_req, res) => {

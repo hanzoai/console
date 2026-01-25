@@ -1,7 +1,7 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { logger } from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
-import { encrypt, decrypt } from "@langfuse/shared/encryption";
+import { logger } from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { encrypt, decrypt } from "@hanzo/shared/encryption";
 
 /**
  * Background migration to encrypt previously stored unencrypted secretAccessKey values

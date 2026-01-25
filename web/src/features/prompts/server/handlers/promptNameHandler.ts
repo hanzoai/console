@@ -8,10 +8,10 @@ import {
   GetPromptByNameSchema,
   LangfuseNotFoundError,
   PRODUCTION_LABEL,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 const getPromptNameHandler = async (
   req: NextApiRequest,

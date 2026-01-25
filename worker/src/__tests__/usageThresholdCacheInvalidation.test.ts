@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { prisma } from "@langfuse/shared/src/db";
-import { type ParsedOrganization } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { type ParsedOrganization } from "@hanzo/shared";
 import {
   redis,
   hashSecretKey,
   getDisplaySecretKey,
   createShaHash,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { processThresholds } from "../ee/usageThresholds/thresholdProcessing";
 import { bulkUpdateOrganizations } from "../ee/usageThresholds/bulkUpdates";
 

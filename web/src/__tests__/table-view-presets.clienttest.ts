@@ -6,7 +6,7 @@ import {
   type ColumnDefinition,
   type FilterState,
   type OrderByState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 // Mock data for testing
 const mockColumns = [

@@ -4,7 +4,7 @@ import {
   QueueJobs,
   BatchProjectCleanerJobType,
   BATCH_DELETION_TABLES,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   BatchProjectCleaner,
   BatchDeletionTable,

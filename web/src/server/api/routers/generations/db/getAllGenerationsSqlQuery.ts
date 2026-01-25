@@ -3,13 +3,13 @@ import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import {
   AGGREGATABLE_SCORE_TYPES,
   filterAndValidateDbScoreList,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getObservationsTableWithModelData,
   getObservationsWithModelDataFromEventsTable,
   getScoresForObservations,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type GetAllGenerationsInput } from "../getAllQueries";
 
 export async function getAllGenerations({

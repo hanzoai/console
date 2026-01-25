@@ -8,7 +8,7 @@ import {
   ScoreConfigCategory,
   validateCategories,
   validateNumericRangeFields,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod/v4";
 
 /**

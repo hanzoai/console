@@ -1,7 +1,7 @@
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
-import { prisma } from "@langfuse/shared/src/db";
-import { logger, redis } from "@langfuse/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { logger, redis } from "@hanzo/shared/src/server";
 import { handleGetApiKeys } from "@/src/ee/features/admin-api/server/organizations/apiKeys";
 
 import { type NextApiRequest, type NextApiResponse } from "next";

@@ -18,7 +18,7 @@ import {
   getObservationUsageByTypeByTime,
   DashboardService,
   DashboardDefinitionSchema,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import {
   type QueryType,
@@ -30,7 +30,7 @@ import {
   StringNoHTML,
   InvalidRequestError,
   singleFilter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

@@ -6,7 +6,7 @@ import {
   QueueName,
   QueueJobs,
   DatasetRunItemUpsertQueue,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import type { ObservationNotFoundError } from "../../errors/ObservationNotFoundError";
 

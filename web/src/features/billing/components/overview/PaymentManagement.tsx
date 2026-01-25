@@ -5,7 +5,7 @@ import { api } from "@/src/utils/api";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { useRouter } from "next/router";
-import { planLabels, type Plan } from "@langfuse/shared";
+import { planLabels, type Plan } from "@hanzo/shared";
 
 export const PaymentManagement = () => {
   const router = useRouter();

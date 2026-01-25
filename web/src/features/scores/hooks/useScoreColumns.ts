@@ -4,7 +4,7 @@ import {
   type ScoreDataTypeType,
   type FilterCondition,
   type ScoreAggregate,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
 import { ScoresTableCell } from "@/src/components/scores-table-cell";
 import { toOrderedScoresList } from "@/src/features/scores/lib/helpers";

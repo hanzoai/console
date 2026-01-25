@@ -4,7 +4,7 @@ import {
   type AnnotateFormSchemaType,
   type AnnotationScoreSchemaType,
 } from "@/src/features/scores/types";
-import { type ScoreConfigDomain } from "@langfuse/shared";
+import { type ScoreConfigDomain } from "@hanzo/shared";
 import { useCallback, useMemo } from "react";
 import {
   type UseFieldArrayRemove,

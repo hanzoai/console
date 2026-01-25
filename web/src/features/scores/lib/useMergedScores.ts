@@ -3,7 +3,7 @@ import { useScoreCache } from "@/src/features/scores/contexts/ScoreCacheContext"
 import { type ScoreTarget } from "@/src/features/scores/types";
 import { mergeScoresWithCache } from "@/src/features/scores/lib/mergeScoresWithCache";
 import { filterScoresByTarget } from "@/src/features/scores/lib/filterScoresByTarget";
-import { type ScoreDomain } from "@langfuse/shared";
+import { type ScoreDomain } from "@hanzo/shared";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 /**

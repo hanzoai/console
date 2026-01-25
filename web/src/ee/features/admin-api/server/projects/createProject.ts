@@ -1,10 +1,10 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "@langfuse/shared/src/db";
-import { logger } from "@langfuse/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { logger } from "@hanzo/shared/src/server";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
 import { projectRetentionSchema } from "@/src/features/auth/lib/projectRetentionSchema";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import { type ApiAccessScope } from "@langfuse/shared/src/server";
+import { type ApiAccessScope } from "@hanzo/shared/src/server";
 
 export async function handleCreateProject(
   req: NextApiRequest,

@@ -49,7 +49,7 @@ import { ExperimentDetailsStep } from "./steps/ExperimentDetailsStep";
 import { ReviewStep } from "./steps/ReviewStep";
 
 // Import step prop types
-import { PromptType } from "@langfuse/shared";
+import { PromptType } from "@hanzo/shared";
 
 export const MultiStepExperimentForm = ({
   projectId,

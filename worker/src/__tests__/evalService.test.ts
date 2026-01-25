@@ -3,9 +3,9 @@ import {
   LLMAdapter,
   ObservationType,
   variableMappingList,
-} from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import {
   convertDateToClickhouseDateTime,
   createObservation,
@@ -19,7 +19,7 @@ import {
   createOrgProjectAndApiKey,
   LLMCompletionError,
   LangfuseInternalTraceEnvironment,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { sql } from "kysely";
@@ -35,8 +35,8 @@ import {
 import { requiresDatabaseLookup } from "../features/evaluation/traceFilterUtils";
 
 // Mock fetchLLMCompletion module with default passthrough behavior
-vi.mock("@langfuse/shared/src/server", async () => {
-  const actual = await vi.importActual("@langfuse/shared/src/server");
+vi.mock("@hanzo/shared/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/shared/src/server");
   return {
     ...actual,
     fetchLLMCompletion: vi
@@ -46,7 +46,7 @@ vi.mock("@langfuse/shared/src/server", async () => {
 });
 
 // Import the mocked function
-import { fetchLLMCompletion } from "@langfuse/shared/src/server";
+import { fetchLLMCompletion } from "@hanzo/shared/src/server";
 import { UnrecoverableError } from "../errors/UnrecoverableError";
 
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;

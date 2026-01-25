@@ -3,7 +3,7 @@ import {
   type FilterCondition,
   type ScoreDataTypeType,
   type ScoreSourceType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const scoreFilters = {
   // Filter for trace level scores

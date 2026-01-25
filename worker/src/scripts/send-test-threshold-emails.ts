@@ -13,7 +13,7 @@ import {
   sendUsageThresholdWarningEmail,
   sendUsageThresholdSuspensionEmail,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "../env";
 
 const TEST_EMAILS: string[] = [

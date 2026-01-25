@@ -1,6 +1,6 @@
 import startCase from "lodash/startCase";
-import { type FilterState } from "@langfuse/shared";
-import { type DashboardWidgetChartType } from "@langfuse/shared/src/db";
+import { type FilterState } from "@hanzo/shared";
+import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
 
 // Shared widget chart configuration types
 export type WidgetChartConfig = {

@@ -20,8 +20,8 @@ import {
   getNumericScoresGroupedByName,
   getTracesGroupedByTags,
   getObservationsBatchIOFromEventsTable,
-} from "@langfuse/shared/src/server";
-import { type timeFilter, type FilterState } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import { type timeFilter, type FilterState } from "@hanzo/shared";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";
 
 type TimeFilter = z.infer<typeof timeFilter>;

@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 import { cn } from "@/src/utils/tailwind";
-import { evaluateJsonPath } from "@langfuse/shared";
+import { evaluateJsonPath } from "@hanzo/shared";
 
 // JSON path language mode for syntax highlighting
 const jsonPathLanguage = StreamLanguage.define({

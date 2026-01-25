@@ -3,9 +3,9 @@
 import {
   QueueJobs,
   CloudUsageMeteringQueue,
-} from "@langfuse/shared/src/server";
-import { logger } from "@langfuse/shared/src/server";
-import { redis } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
+import { redis } from "@hanzo/shared/src/server";
 
 const main = async () => {
   // Create queue connection

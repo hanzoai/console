@@ -3,7 +3,7 @@ import {
   AnnotationQueueObjectType,
   type ScoreDomain,
   isGenerationLike,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import { api } from "@/src/utils/api";

@@ -9,7 +9,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 import { createBillingServiceFromContext } from "./stripeBillingService";
 import { isCloudBillingEnabled } from "../utils/isCloudBilling";
 

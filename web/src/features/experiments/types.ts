@@ -1,4 +1,4 @@
-import { ZodModelConfig } from "@langfuse/shared";
+import { ZodModelConfig } from "@hanzo/shared";
 import z from "zod/v4";
 
 export const CreateExperimentData = z.object({

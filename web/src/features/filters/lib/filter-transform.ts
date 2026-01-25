@@ -1,4 +1,4 @@
-import { type FilterState, type ColumnDefinition } from "@langfuse/shared";
+import { type FilterState, type ColumnDefinition } from "@hanzo/shared";
 
 /**
  * Maps frontend column IDs to backend-expected column IDs

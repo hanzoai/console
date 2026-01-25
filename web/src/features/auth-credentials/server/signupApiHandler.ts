@@ -4,7 +4,7 @@ import { signupSchema } from "@/src/features/auth/lib/signupSchema";
 import { getSsoAuthProviderIdForDomain } from "@/src/ee/features/multi-tenant-sso/utils";
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 export function getSSOBlockedDomains() {
   return (

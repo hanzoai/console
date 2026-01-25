@@ -8,7 +8,7 @@ import {
   traceException,
   redis,
   recordGauge,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
 import { env } from "../../env";
 

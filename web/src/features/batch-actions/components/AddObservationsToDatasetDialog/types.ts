@@ -8,7 +8,7 @@ export type {
   MappingTarget,
   RootMappingConfig,
   AddToDatasetMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import type {
   SourceField,
@@ -16,7 +16,7 @@ import type {
   RootMappingConfig,
   KeyValueMappingEntry as SharedKeyValueMappingEntry,
   MappingTarget,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 // Step definitions - dialog-specific
 export type DialogStep =

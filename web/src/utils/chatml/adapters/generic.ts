@@ -1,1 +1,1 @@
-export { genericAdapter } from "@langfuse/shared";
+export { genericAdapter } from "@hanzo/shared";

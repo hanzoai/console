@@ -3,7 +3,7 @@ import {
   instrumentAsync,
   logger,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { handleDataRetentionSchedule } from "../ee/dataRetention/handleDataRetentionSchedule";
 import { handleDataRetentionProcessingJob } from "../ee/dataRetention/handleDataRetentionProcessingJob";
 import { SpanKind } from "@opentelemetry/api";

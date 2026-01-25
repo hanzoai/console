@@ -6,7 +6,7 @@ import {
   ObservationLevel,
   PrismaClient,
   Prompt,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   ClickhouseClientType,
   convertDateToClickhouseDateTime,
@@ -49,7 +49,7 @@ import {
   extractToolsFromObservation,
   convertDefinitionsToMap,
   convertCallsToArrays,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 import { tokenCountAsync } from "../../features/tokenisation/async-usage";
 import { tokenCount } from "../../features/tokenisation/usage";

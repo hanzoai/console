@@ -1,1 +1,1 @@
-export { openAIAdapter } from "@langfuse/shared";
+export { openAIAdapter } from "@hanzo/shared";

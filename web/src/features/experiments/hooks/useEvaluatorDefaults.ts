@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { type EvalTemplate } from "@langfuse/shared";
+import { type EvalTemplate } from "@hanzo/shared";
 import { createDefaultVariableMappings } from "../utils/evaluatorMappingUtils";
 import { type PartialConfig } from "@/src/features/evals/types";
 

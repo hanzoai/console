@@ -1,4 +1,4 @@
-import { queryClickhouse } from "@langfuse/shared/src/server";
+import { queryClickhouse } from "@hanzo/shared/src/server";
 import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
 
 /**

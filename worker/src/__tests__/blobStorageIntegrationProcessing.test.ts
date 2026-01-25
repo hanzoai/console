@@ -11,15 +11,15 @@ import {
   createTracesCh,
   StorageService,
   StorageServiceFactory,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { Job } from "bullmq";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
 import {
   BlobStorageIntegrationType,
   BlobStorageIntegrationFileType,
-} from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 
 // Skip tests that use Azurite in Azure mode due to known Azurite limitations
 // with multipart uploads. These tests use MinIO explicitly or are skipped.

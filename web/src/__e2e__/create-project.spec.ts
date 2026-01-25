@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 // const checkConsoleErrors = async (page: Page) => {
 //   const errors: string[] = [];

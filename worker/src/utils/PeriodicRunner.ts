@@ -1,4 +1,4 @@
-import { logger, traceException } from "@langfuse/shared/src/server";
+import { logger, traceException } from "@hanzo/shared/src/server";
 
 /**
  * Abstract base class for periodic task execution.

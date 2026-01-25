@@ -4,14 +4,14 @@ import {
   makeZodVerifiedAPICall,
   makeAPICall,
 } from "@/src/__tests__/test-utils";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 import {
   createAndAddApiKeysToDb,
   createBasicAuthHeader,
-} from "@langfuse/shared/src/server";
-import { decrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared/src/server";
+import { decrypt } from "@hanzo/shared/encryption";
 
 // Schemas based on Fern schema definition
 const BlobStorageIntegrationResponseSchema = z.object({

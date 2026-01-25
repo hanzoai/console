@@ -3,7 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { Pencil } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import type { FinalPreviewStepProps, DialogStep } from "./types";
-import { applyFullMapping } from "@langfuse/shared";
+import { applyFullMapping } from "@hanzo/shared";
 
 export function FinalPreviewStep({
   dataset,

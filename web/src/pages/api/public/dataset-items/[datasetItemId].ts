@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -8,12 +8,12 @@ import {
   DeleteDatasetItemV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { LangfuseNotFoundError } from "@hanzo/shared";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   deleteDatasetItem,
   getDatasetItemById,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

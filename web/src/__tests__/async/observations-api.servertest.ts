@@ -3,11 +3,11 @@ import {
   createTrace,
   createTracesCh,
   createEvent,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   createObservationsCh,
   createEventsCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   makeAPICall,
   makeZodVerifiedAPICall,

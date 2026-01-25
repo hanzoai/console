@@ -14,7 +14,7 @@ import {
 } from "../validation";
 import { ParamLimit, ParamPage } from "../../../core/validation";
 import { getPromptsMeta } from "@/src/features/prompts/server/actions/getPromptsMeta";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 /**

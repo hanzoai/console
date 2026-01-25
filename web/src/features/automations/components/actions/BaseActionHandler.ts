@@ -4,7 +4,7 @@ import {
   type ActionDomain,
   type ActionType,
   type AutomationDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export interface BaseActionHandler<
   TFormData extends FieldValues = FieldValues,

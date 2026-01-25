@@ -1,7 +1,7 @@
 // NOTE: this test should be in the packages/shared directory, but we don't have a test setup there yet.
 // TODO: move test to shared and create test setup there.
 import { beforeAll, afterAll, describe, it, expect, vi } from "vitest";
-import { encrypt, decrypt, keyGen } from "@langfuse/shared/encryption";
+import { encrypt, decrypt, keyGen } from "@hanzo/shared/encryption";
 import crypto from "crypto";
 
 // Mock environment variable for testing

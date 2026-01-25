@@ -10,7 +10,7 @@ import {
   createScoresCh,
   createTraceScore,
   queryClickhouse,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import waitForExpect from "wait-for-expect";
 

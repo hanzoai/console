@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { type ScoreDomain, type Prisma } from "@langfuse/shared";
+import { type ScoreDomain, type Prisma } from "@hanzo/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import usePreserveRelativeScroll from "@/src/hooks/usePreserveRelativeScroll";

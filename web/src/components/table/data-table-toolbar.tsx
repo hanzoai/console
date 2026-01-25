@@ -10,7 +10,7 @@ import {
   type TableViewPresetDomain,
   type TableViewPresetTableName,
   type TracingSearchType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   type RowSelectionState,
   type ColumnOrderState,

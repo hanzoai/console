@@ -1,5 +1,5 @@
-import { prisma } from "@langfuse/shared/src/db";
-import { LangfuseNotFoundError } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@hanzo/shared";
 import {
   GetObservationV1Query,
   GetObservationV1Response,
@@ -11,7 +11,7 @@ import {
   enrichObservationWithModelData,
   getObservationById,
   getObservationByIdFromEventsTable,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 
 export default withMiddlewares({

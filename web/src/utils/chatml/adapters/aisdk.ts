@@ -1,1 +1,1 @@
-export { aisdkAdapter } from "@langfuse/shared";
+export { aisdkAdapter } from "@hanzo/shared";

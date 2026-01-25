@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   commandClickhouse,
   convertDateToClickhouseDateTime,
@@ -10,7 +10,7 @@ import {
   recordIncrement,
   traceException,
   type BatchDataRetentionTable,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 

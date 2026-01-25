@@ -4,7 +4,7 @@
  */
 
 import { Job } from "bullmq";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 export const handleCloudSpendAlertJob = async (job: Job<{ orgId: string }>) => {
   logger.debug(

@@ -9,7 +9,7 @@ import {
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
   type ScoreDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   type WithStringifiedMetadata,
   toDomainArrayWithStringifiedMetadata,

@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { dashboardColumnDefinitions, singleFilter } from "@langfuse/shared";
+import { dashboardColumnDefinitions, singleFilter } from "@hanzo/shared";
 import { type views } from "@/src/features/query/types";
 
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning

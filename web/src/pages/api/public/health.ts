@@ -1,14 +1,14 @@
 import { VERSION } from "@/src/constants";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { telemetry } from "@/src/features/telemetry";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   convertDateToClickhouseDateTime,
   logger,
   measureAndReturn,
   queryClickhouse,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
 export default async function handler(

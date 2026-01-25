@@ -1,4 +1,4 @@
-import { type ObservationLevelType } from "@langfuse/shared";
+import { type ObservationLevelType } from "@hanzo/shared";
 
 export const LevelColors = {
   DEFAULT: { text: "", bg: "" },

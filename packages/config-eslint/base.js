@@ -68,7 +68,7 @@ export default tseslint.config(
         "error",
         {
           name: "redis",
-          message: "Import redis explicitly from '@langfuse/shared/src/server'",
+          message: "Import redis explicitly from '@hanzo/shared/src/server'",
         },
       ],
       // Custom rule from eslint v8 shared/.eslintrc.js

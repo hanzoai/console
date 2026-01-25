@@ -5,8 +5,8 @@ import {
   traceException,
   recordIncrement,
   BATCH_DELETION_TABLES,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../../env";
 
 export type BatchDeletionTable = (typeof BATCH_DELETION_TABLES)[number];

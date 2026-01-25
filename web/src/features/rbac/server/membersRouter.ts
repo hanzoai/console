@@ -16,8 +16,8 @@ import {
   Prisma,
   type PrismaClient,
   Role,
-} from "@langfuse/shared";
-import { sendMembershipInvitationEmail } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { sendMembershipInvitationEmail } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { hasEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 import { throwIfExceedsLimit } from "@/src/features/entitlements/server/hasEntitlementLimit";
@@ -31,7 +31,7 @@ import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
 import {
   getUserProjectRoles,
   getUserProjectRolesCount,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 function buildUserSearchFilter(searchQuery: string | undefined | null) {
   if (searchQuery === undefined || searchQuery === null || searchQuery === "") {

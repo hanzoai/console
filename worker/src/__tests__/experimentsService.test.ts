@@ -1,15 +1,15 @@
 import { expect, test, describe, beforeEach, vi, afterEach } from "vitest";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { pruneDatabase } from "./utils";
-import { LLMAdapter } from "@langfuse/shared";
-import { encrypt } from "@langfuse/shared/encryption";
+import { LLMAdapter } from "@hanzo/shared";
+import { encrypt } from "@hanzo/shared/encryption";
 import { createExperimentJobClickhouse } from "../features/experiments/experimentServiceClickhouse";
-import { createDatasetItem, logger } from "@langfuse/shared/src/server";
+import { createDatasetItem, logger } from "@hanzo/shared/src/server";
 
 // Mock the logger to capture log calls
-vi.mock("@langfuse/shared/src/server", async () => {
-  const actual = await vi.importActual("@langfuse/shared/src/server");
+vi.mock("@hanzo/shared/src/server", async () => {
+  const actual = await vi.importActual("@hanzo/shared/src/server");
   return {
     ...actual,
     fetchLLMCompletion: vi.fn().mockResolvedValue({ id: "test-id" }),

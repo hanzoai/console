@@ -1,9 +1,9 @@
 /** @jest-environment node */
 
-import { prisma } from "@langfuse/shared/src/db";
-import { Prisma, type Role } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { Prisma, type Role } from "@hanzo/shared";
 import { v4 } from "uuid";
-import { getUserProjectRoles } from "@langfuse/shared/src/server";
+import { getUserProjectRoles } from "@hanzo/shared/src/server";
 
 export const createOrgAndProject = async () => {
   const org = await prisma.organization.create({

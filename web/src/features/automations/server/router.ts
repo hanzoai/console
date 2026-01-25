@@ -11,7 +11,7 @@ import {
   convertToSafeWebhookConfig,
   isGitHubDispatchAction,
   convertToSafeGitHubDispatchConfig,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { v4 } from "uuid";
 import {
@@ -20,8 +20,8 @@ import {
   getAutomationById,
   getConsecutiveAutomationFailures,
   logger,
-} from "@langfuse/shared/src/server";
-import { generateWebhookSecret, encrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared/src/server";
+import { generateWebhookSecret, encrypt } from "@hanzo/shared/encryption";
 import { processWebhookActionConfig } from "./webhookHelpers";
 import { processGitHubDispatchActionConfig } from "./githubDispatchHelpers";
 import { TRPCError } from "@trpc/server";

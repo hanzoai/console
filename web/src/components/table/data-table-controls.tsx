@@ -39,7 +39,7 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { DataTableAIFilters } from "@/src/components/table/data-table-ai-filters";
-import { type FilterState } from "@langfuse/shared";
+import { type FilterState } from "@hanzo/shared";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 
 interface ControlsContextType {

@@ -1,5 +1,5 @@
 import { parse } from "csv-parse";
-import { type Prisma } from "@langfuse/shared";
+import { type Prisma } from "@hanzo/shared";
 import type {
   ParseOptions,
   CsvPreviewResult,

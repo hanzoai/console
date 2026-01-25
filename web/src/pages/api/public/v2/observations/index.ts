@@ -1,5 +1,5 @@
-import { getObservationsV2FromEventsTableForPublicApi } from "@langfuse/shared/src/server";
-import { NotImplementedError } from "@langfuse/shared";
+import { getObservationsV2FromEventsTableForPublicApi } from "@hanzo/shared/src/server";
+import { NotImplementedError } from "@hanzo/shared";
 
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";

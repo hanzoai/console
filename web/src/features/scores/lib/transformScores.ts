@@ -1,5 +1,5 @@
-import { type ScoreDomain, type ScoreConfigDomain } from "@langfuse/shared";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreDomain, type ScoreConfigDomain } from "@hanzo/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import {
   ANNOTATION_SCORE_DATA_TYPES_ARRAY,
   type AnnotationScoreDataType,

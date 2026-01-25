@@ -7,7 +7,7 @@ import {
 } from "@/src/features/query";
 import { type z } from "zod/v4";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
-import { type FilterState, type OrderByState } from "@langfuse/shared";
+import { type FilterState, type OrderByState } from "@hanzo/shared";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
 import {
   PencilIcon,

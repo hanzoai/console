@@ -7,8 +7,8 @@ import {
   LangfuseNotFoundError,
   optionalPaginationZod,
   Prisma,
- } from "@langfuse/shared";
-import { getUserProjectRoles } from "@langfuse/shared/src/server";
+ } from "@hanzo/shared";
+import { getUserProjectRoles } from "@hanzo/shared/src/server";
 import partition from "lodash/partition";
 import z from "zod/v4";
 

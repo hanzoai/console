@@ -18,7 +18,7 @@ import {
   ChatMessageRole,
   ChatMessageType,
   type ChatMessageWithId,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { ChatMessageComponent } from "./ChatMessageComponent";
 

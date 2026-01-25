@@ -17,8 +17,8 @@ import {
   redis,
   TQueueJobTypes,
   traceException,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 
 import { env } from "../env";
 import { IngestionService } from "../services/IngestionService";

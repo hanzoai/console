@@ -1,7 +1,7 @@
-import { LLMAdapter } from "@langfuse/shared/src/server";
+import { LLMAdapter } from "@hanzo/shared/src/server";
 import { Langfuse } from "langfuse";
 import { env } from "@/src/env.mjs";
-import { type FilterCondition, singleFilter } from "@langfuse/shared";
+import { type FilterCondition, singleFilter } from "@hanzo/shared";
 import { z } from "zod/v4";
 
 let langfuseClient: Langfuse | null = null;

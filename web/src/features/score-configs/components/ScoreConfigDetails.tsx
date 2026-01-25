@@ -1,5 +1,5 @@
 import { isNumericDataType } from "@/src/features/scores/lib/helpers";
-import { isPresent, type ScoreConfigDomain } from "@langfuse/shared";
+import { isPresent, type ScoreConfigDomain } from "@hanzo/shared";
 import React from "react";
 
 export function ScoreConfigDetails({ config }: { config: ScoreConfigDomain }) {

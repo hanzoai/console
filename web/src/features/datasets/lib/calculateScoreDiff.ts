@@ -1,5 +1,5 @@
 import { type BaselineDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";
-import { type AggregatedScoreData } from "@langfuse/shared";
+import { type AggregatedScoreData } from "@hanzo/shared";
 
 /**
  * Calculate diff between current and baseline score aggregate

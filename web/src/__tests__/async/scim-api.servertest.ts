@@ -8,8 +8,8 @@ import { z } from "zod/v4";
 import {
   createAndAddApiKeysToDb,
   createBasicAuthHeader,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 

@@ -3,11 +3,11 @@ import {
   logger,
   sendCommentMentionEmail,
   getObservationById,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
-import { Prisma } from "@langfuse/shared";
-import { getUserProjectRoles } from "@langfuse/shared/src/server";
-import { type NotificationEventType } from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { Prisma } from "@hanzo/shared";
+import { getUserProjectRoles } from "@hanzo/shared/src/server";
+import { type NotificationEventType } from "@hanzo/shared/src/server";
 
 type CommentMentionPayload = Omit<
   Extract<NotificationEventType, { type: "COMMENT_MENTION" }>,

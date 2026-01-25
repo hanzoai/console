@@ -25,7 +25,7 @@ import {
   extractVariables,
   PRODUCTION_LABEL,
   PromptType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getPromptTabs,
   PROMPT_TABS,

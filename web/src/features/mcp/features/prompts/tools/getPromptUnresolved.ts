@@ -14,7 +14,7 @@ import {
   ParamPromptVersion,
 } from "../validation";
 import { UserInputError } from "../../../core/errors";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 import { getPromptByName } from "@/src/features/prompts/server/actions/getPromptByName";
 

@@ -1,1 +1,1 @@
-export { microsoftAgentAdapter } from "@langfuse/shared";
+export { microsoftAgentAdapter } from "@hanzo/shared";

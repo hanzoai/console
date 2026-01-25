@@ -6,19 +6,19 @@ import {
   LangfuseNotFoundError,
   UnauthorizedError,
   ServiceUnavailableError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   ClickHouseResourceError,
   logger,
   traceException,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { createMocks } from "node-mocks-http";
 import { z } from "zod/v4";
 import { Prisma } from "@prisma/client";
 
 // Mock the logger and traceException
-jest.mock("@langfuse/shared/src/server", () => ({
-  ...jest.requireActual("@langfuse/shared/src/server"),
+jest.mock("@hanzo/shared/src/server", () => ({
+  ...jest.requireActual("@hanzo/shared/src/server"),
   logger: {
     info: jest.fn(),
     error: jest.fn(),

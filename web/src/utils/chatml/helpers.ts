@@ -5,4 +5,4 @@ export {
   isRichToolResult,
   parseMetadata,
   getNestedProperty,
-} from "@langfuse/shared";
+} from "@hanzo/shared";

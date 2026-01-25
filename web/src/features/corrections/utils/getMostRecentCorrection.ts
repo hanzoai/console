@@ -1,4 +1,4 @@
-import { type ScoreDomain } from "@langfuse/shared";
+import { type ScoreDomain } from "@hanzo/shared";
 
 /**
  * Extracts the most recent correction from an array of corrections.

@@ -1,14 +1,14 @@
 import {
   checkTraceExistsAndGetTimestamp,
   createTracesCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   getTraceById,
   getTracesBySessionId,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
-import { createObservation, createTrace } from "@langfuse/shared/src/server";
-import { createObservationsCh } from "@langfuse/shared/src/server";
+import { createObservation, createTrace } from "@hanzo/shared/src/server";
+import { createObservationsCh } from "@hanzo/shared/src/server";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 

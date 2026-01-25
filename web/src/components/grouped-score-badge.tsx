@@ -4,7 +4,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/src/components/ui/hover-card";
-import { type LastUserScore, type ScoreDomain } from "@langfuse/shared";
+import { type LastUserScore, type ScoreDomain } from "@hanzo/shared";
 import {
   BracesIcon,
   MessageCircleMoreIcon,

@@ -3,7 +3,7 @@ import {
   AddToDatasetMappingSchema,
   ObservationAddToDatasetConfigSchema,
   BatchActionQuerySchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const CreateObservationAddToDatasetActionSchema = z.object({
   projectId: z.string(),

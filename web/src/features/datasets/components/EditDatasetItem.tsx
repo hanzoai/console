@@ -16,7 +16,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { DatasetSchemaHoverCard } from "./DatasetSchemaHoverCard";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
-import type { DatasetItemDomain, Prisma } from "@langfuse/shared";
+import type { DatasetItemDomain, Prisma } from "@hanzo/shared";
 import { DatasetItemFieldSchemaErrors } from "./DatasetItemFieldSchemaErrors";
 
 const formSchema = z.object({

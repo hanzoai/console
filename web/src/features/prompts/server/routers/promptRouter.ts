@@ -7,7 +7,7 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { type Prompt, Prisma } from "@langfuse/shared/src/db";
+import { type Prompt, Prisma } from "@hanzo/shared/src/db";
 import { createPrompt, duplicatePrompt } from "../actions/createPrompt";
 import { checkHasProtectedLabels } from "../utils/checkHasProtectedLabels";
 import {
@@ -20,8 +20,8 @@ import {
   PromptType,
   StringNoHTMLNonEmpty,
   TracingSearchType,
-} from "@langfuse/shared";
-import { orderBy, singleFilter } from "@langfuse/shared";
+} from "@hanzo/shared";
+import { orderBy, singleFilter } from "@hanzo/shared";
 import {
   orderByToPrismaSql,
   PromptService,
@@ -31,7 +31,7 @@ import {
   getObservationsWithPromptName,
   getObservationMetricsForPrompts,
   getAggregatedScoresForPrompts,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import { TRPCError } from "@trpc/server";
 import { promptChangeEventSourcing } from "@/src/features/prompts/server/promptChangeEventSourcing";

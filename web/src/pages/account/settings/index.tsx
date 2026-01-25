@@ -28,7 +28,7 @@ import { useSession, signOut } from "next-auth/react";
 import { SettingsDangerZone } from "@/src/components/SettingsDangerZone";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { useRouter } from "next/router";
-import { StringNoHTML } from "@langfuse/shared";
+import { StringNoHTML } from "@hanzo/shared";
 import Link from "next/link";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";

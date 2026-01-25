@@ -9,14 +9,14 @@ import {
   type AutomationDomain,
   JobConfigState,
   type TriggerEventSource,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   TabsBar,
   TabsBarContent,
   TabsBarList,
   TabsBarTrigger,
 } from "@/src/components/ui/tabs-bar";
-import { type FilterState } from "@langfuse/shared";
+import { type FilterState } from "@hanzo/shared";
 import Header from "@/src/components/layouts/header";
 import { SettingsTableCard } from "@/src/components/layouts/settings-table-card";
 import { DeleteAutomationButton } from "./DeleteAutomationButton";

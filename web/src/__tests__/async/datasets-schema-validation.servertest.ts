@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   makeAPICall,
   makeZodVerifiedAPICall,
@@ -14,8 +14,8 @@ import {
   DatasetItemValidator,
   getDatasetItems,
   createDatasetItemFilterState,
-} from "@langfuse/shared/src/server";
-import { validateFieldAgainstSchema } from "@langfuse/shared";
+} from "@hanzo/shared/src/server";
+import { validateFieldAgainstSchema } from "@hanzo/shared";
 
 process.env.LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
   "true";

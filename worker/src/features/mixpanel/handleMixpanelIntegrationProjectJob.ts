@@ -1,5 +1,5 @@
 import { Job } from "bullmq";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   QueueName,
   TQueueJobTypes,
@@ -8,8 +8,8 @@ import {
   getGenerationsForAnalyticsIntegrations,
   getScoresForAnalyticsIntegrations,
   getCurrentSpan,
-} from "@langfuse/shared/src/server";
-import { decrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared/src/server";
+import { decrypt } from "@hanzo/shared/encryption";
 import { MixpanelClient } from "./mixpanelClient";
 import {
   transformTraceForMixpanel,

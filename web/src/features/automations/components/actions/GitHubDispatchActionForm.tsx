@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
-import { type ActionDomain } from "@langfuse/shared";
+import { type ActionDomain } from "@hanzo/shared";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 

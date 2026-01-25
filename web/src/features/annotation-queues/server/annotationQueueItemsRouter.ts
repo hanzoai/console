@@ -17,12 +17,12 @@ import {
   LangfuseNotFoundError,
   paginationZod,
   Prisma,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getObservationById,
   getTraceIdsForObservations,
   logger,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 

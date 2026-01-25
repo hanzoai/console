@@ -71,7 +71,7 @@ const nextConfig = {
   basePath: env.NEXT_PUBLIC_BASE_PATH,
   turbopack: {
     resolveAlias: {
-      "@langfuse/shared": "./packages/shared/src",
+      "@hanzo/shared": "./packages/shared/src",
       // this is an ugly hack to get turbopack to work with react-resizable, used in the
       // web/src/features/widgets/components/DashboardGrid.tsx file. This **only** affects
       // the dev server. The CSS is included in the non-turbopack based prod build anyways.

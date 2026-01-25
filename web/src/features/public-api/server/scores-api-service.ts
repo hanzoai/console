@@ -7,8 +7,8 @@ import {
 import {
   AGGREGATABLE_SCORE_TYPES,
   type ScoreSourceType,
-} from "@langfuse/shared";
-import { _handleGetScoreById } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { _handleGetScoreById } from "@hanzo/shared/src/server";
 
 export class ScoresApiService {
   constructor(private readonly apiVersion: "v1" | "v2") {}

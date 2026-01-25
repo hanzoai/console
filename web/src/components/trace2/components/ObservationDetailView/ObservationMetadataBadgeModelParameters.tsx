@@ -3,7 +3,7 @@
  * Renders dynamic badges for each model parameter with truncation
  */
 
-import { type JsonNested } from "@langfuse/shared";
+import { type JsonNested } from "@hanzo/shared";
 import { Badge } from "@/src/components/ui/badge";
 
 export function ModelParametersBadges({

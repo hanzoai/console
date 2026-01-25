@@ -4,7 +4,7 @@ import {
   getDisplaySecretKey,
   generateWebhookSignature,
   createSignatureHeader,
-} from "@langfuse/shared/encryption";
+} from "@hanzo/shared/encryption";
 
 describe("signature.ts", () => {
   describe("generateWebhookSecret", () => {

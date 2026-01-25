@@ -2,7 +2,7 @@ import { env } from "@/src/env.mjs";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
 import { parseFlags } from "@/src/features/feature-flags/utils";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -42,7 +42,7 @@ import {
 } from "@/src/ee/features/multi-tenant-sso/utils";
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import { z } from "zod/v4";
-import { CloudConfigSchema } from "@langfuse/shared";
+import { CloudConfigSchema } from "@hanzo/shared";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,
@@ -52,7 +52,7 @@ import {
   instrumentAsync,
   logger,
   resolveProjectRole,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,

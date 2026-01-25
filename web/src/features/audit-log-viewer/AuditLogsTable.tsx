@@ -15,7 +15,7 @@ import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { type RouterOutputs } from "@/src/utils/api";
 import { SettingsTableCard } from "@/src/components/layouts/settings-table-card";
 import { BatchExportTableButton } from "@/src/components/BatchExportTableButton";
-import { BatchExportTableName } from "@langfuse/shared";
+import { BatchExportTableName } from "@hanzo/shared";
 
 // Both endpoints return the same shape
 type AuditLogRow = RouterOutputs["auditLogs"]["all"]["data"][number];

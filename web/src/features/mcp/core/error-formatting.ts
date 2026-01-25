@@ -14,8 +14,8 @@ import {
   ForbiddenError,
   LangfuseNotFoundError,
   InvalidRequestError,
-} from "@langfuse/shared";
-import { logger } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { logger } from "@hanzo/shared/src/server";
 
 /**
  * Format an error for MCP response.

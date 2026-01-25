@@ -1,5 +1,5 @@
 export default async function teardown() {
-  const { redis, logger } = await import("@langfuse/shared/src/server");
+  const { redis, logger } = await import("@hanzo/shared/src/server");
 
   logger.debug(`Redis status ${redis?.status}`);
   if (!redis) {

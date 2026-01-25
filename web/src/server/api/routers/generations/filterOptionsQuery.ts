@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-import { timeFilter, type ObservationOptions } from "@langfuse/shared";
+import { timeFilter, type ObservationOptions } from "@hanzo/shared";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getCategoricalScoresGroupedByName,
@@ -14,7 +14,7 @@ import {
   getTracesGroupedByName,
   getTracesGroupedByTags,
   tracesTableUiColumnDefinitions,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export const filterOptionsQuery = protectedProjectProcedure
   .input(

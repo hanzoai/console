@@ -1,5 +1,5 @@
-import { BatchExportTableName } from "@langfuse/shared";
-import { BatchActionType } from "@langfuse/shared";
+import { BatchExportTableName } from "@hanzo/shared";
+import { BatchActionType } from "@hanzo/shared";
 import { expect, describe, it, vi } from "vitest";
 import { v4 as uuidv4 } from "uuid";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
@@ -18,8 +18,8 @@ import {
   createDatasetRunItemsCh,
   createDatasetRunItem,
   createDatasetItem,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { Decimal } from "decimal.js";
 import waitForExpect from "wait-for-expect";
 

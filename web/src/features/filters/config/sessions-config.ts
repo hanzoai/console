@@ -1,4 +1,4 @@
-import { sessionsViewCols } from "@langfuse/shared";
+import { sessionsViewCols } from "@hanzo/shared";
 import type { FilterConfig } from "@/src/features/filters/lib/filter-config";
 import type { ColumnToBackendKeyMap } from "@/src/features/filters/lib/filter-transform";
 

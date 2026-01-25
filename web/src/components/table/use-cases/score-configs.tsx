@@ -9,7 +9,7 @@ import {
   type ScoreConfigDataType,
   type Prisma,
   type ScoreConfigCategoryDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import {

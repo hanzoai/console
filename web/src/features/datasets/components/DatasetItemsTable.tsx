@@ -17,7 +17,7 @@ import {
   datasetItemFilterColumns,
   DatasetStatus,
   type Prisma,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type LangfuseColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { BatchExportTableButton } from "@/src/components/BatchExportTableButton";
-import { BatchExportTableName } from "@langfuse/shared";
+import { BatchExportTableName } from "@hanzo/shared";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { useFullTextSearch } from "@/src/components/table/use-cases/useFullTextSearch";

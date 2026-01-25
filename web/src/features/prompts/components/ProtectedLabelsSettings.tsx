@@ -36,7 +36,7 @@ import {
   LATEST_PROMPT_LABEL,
   PRODUCTION_LABEL,
   PromptLabelSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 const AddLabelFormSchema = z.object({
   label: PromptLabelSchema,

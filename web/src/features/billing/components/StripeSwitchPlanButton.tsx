@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { ActionButton } from "@/src/components/ActionButton";
-import { planLabels } from "@langfuse/shared";
+import { planLabels } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";

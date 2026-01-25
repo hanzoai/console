@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { Progress } from "@/src/components/ui/progress";
 import { api } from "@/src/utils/api";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
-import { BatchActionStatus } from "@langfuse/shared";
+import { BatchActionStatus } from "@hanzo/shared";
 import {
   Card,
   CardContent,

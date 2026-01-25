@@ -32,7 +32,7 @@ import {
   BatchActionType,
   TableViewPresetTableName,
   type TimeFilter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import TagList from "@/src/features/tag/components/TagList";
 import { cn } from "@/src/utils/tailwind";

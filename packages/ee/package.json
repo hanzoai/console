@@ -1,5 +1,5 @@
 {
-  "name": "@langfuse/ee",
+  "name": "@hanzo/ee",
   "version": "1.0.0",
   "private": true,
   "main": "./dist/src/index.js",
@@ -25,7 +25,7 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@langfuse/shared": "workspace:*"
+    "@hanzo/shared": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

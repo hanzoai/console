@@ -1,4 +1,4 @@
-import { type EvalTemplate } from "@langfuse/shared";
+import { type EvalTemplate } from "@hanzo/shared";
 
 export const partnerIdentifierToName = new Map([["ragas", "Ragas"]]);
 

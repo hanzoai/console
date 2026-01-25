@@ -3,7 +3,7 @@ import {
   instrumentAsync,
   logger,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { handlePostHogIntegrationSchedule } from "../features/posthog/handlePostHogIntegrationSchedule";
 import { handlePostHogIntegrationProjectJob } from "../features/posthog/handlePostHogIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";

@@ -1,4 +1,4 @@
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import { type BaselineDiff, calculateScoreDiff } from "./calculateBaselineDiff";
 
 /**

@@ -30,7 +30,7 @@ import {
   BatchActionType,
   ActionId,
   type TimeFilter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 import { LevelColors } from "@/src/components/level-colors";
 import { numberFormatter, usdFormatter } from "@/src/utils/numbers";
@@ -39,7 +39,7 @@ import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-
 import { MemoizedIOTableCell } from "../../ui/IOTableCell";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import TagList from "@/src/features/tag/components/TagList";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
 import { BatchExportTableButton } from "@/src/components/BatchExportTableButton";

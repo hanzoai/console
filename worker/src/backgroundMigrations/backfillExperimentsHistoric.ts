@@ -4,8 +4,8 @@ import {
   convertDateToClickhouseDateTime,
   logger,
   queryClickhouse,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import {
   DatasetRunItem,

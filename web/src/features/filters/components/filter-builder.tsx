@@ -41,8 +41,8 @@ import {
   type ColumnDefinition,
   filterOperators,
   singleFilter,
-} from "@langfuse/shared";
-import { NonEmptyString } from "@langfuse/shared";
+} from "@hanzo/shared";
+import { NonEmptyString } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {

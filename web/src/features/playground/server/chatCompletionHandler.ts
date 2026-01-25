@@ -6,20 +6,20 @@ import {
   ForbiddenError,
   InternalServerError,
   InvalidRequestError,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 import { PosthogCallbackHandler } from "./analytics/posthogCallback";
 import { authorizeRequestOrThrow } from "./authorizeRequest";
 import { validateChatCompletionBody } from "./validateChatCompletionBody";
 
 import { env } from "@/src/env.mjs";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   LLMApiKeySchema,
   logger,
   fetchLLMCompletion,
   contextWithLangfuseProps,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 export default async function chatCompletionHandler(req: NextRequest) {

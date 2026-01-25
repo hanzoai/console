@@ -19,7 +19,7 @@ import { MoreVertical } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { TableViewPresetTableName, type Prisma } from "@langfuse/shared";
+import { TableViewPresetTableName, type Prisma } from "@hanzo/shared";
 import { IOTableCell } from "@/src/components/ui/IOTableCell";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

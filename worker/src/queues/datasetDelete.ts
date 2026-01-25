@@ -1,5 +1,5 @@
 import { Job, Processor } from "bullmq";
-import { QueueName, TQueueJobTypes } from "@langfuse/shared/src/server";
+import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { processClickhouseDatasetDelete } from "../features/datasets/processClickhouseDatasetDelete";
 
 export const datasetDeleteProcessor: Processor = async (

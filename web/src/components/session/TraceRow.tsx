@@ -16,7 +16,7 @@ import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer"
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { NewDatasetItemFromTraceId } from "@/src/components/session/NewDatasetItemFromTrace";
-import { AnnotationQueueObjectType } from "@langfuse/shared";
+import { AnnotationQueueObjectType } from "@hanzo/shared";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 
 // Skeleton placeholder for trace cards

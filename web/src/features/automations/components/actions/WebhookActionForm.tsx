@@ -24,7 +24,7 @@ import {
   AvailableWebhookApiSchema,
   type SafeWebhookActionConfig,
   WebhookDefaultHeaders,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
 import {

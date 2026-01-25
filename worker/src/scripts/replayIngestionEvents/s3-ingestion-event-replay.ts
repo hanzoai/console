@@ -21,7 +21,7 @@ import {
   QueueJobs,
   QueueName,
   TQueueJobTypes,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const INPUT_FILE = "events.csv";
 const OUTPUT_FILE = "events_filtered.csv";

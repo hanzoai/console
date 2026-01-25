@@ -4,7 +4,7 @@
  */
 
 import { Processor } from "bullmq";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 export const meteringDataPostgresExportProcessor: Processor =
   async (): Promise<void> => {

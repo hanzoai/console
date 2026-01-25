@@ -15,7 +15,7 @@ import { SiDiscord } from "react-icons/si";
 import { RainbowButton } from "@/src/components/magicui/rainbow-button";
 import { Separator } from "@/src/components/ui/separator";
 import { usePlan } from "@/src/features/entitlements/hooks";
-import { isCloudPlan } from "@langfuse/shared";
+import { isCloudPlan } from "@hanzo/shared";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";

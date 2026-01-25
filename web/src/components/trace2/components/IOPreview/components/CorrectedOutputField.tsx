@@ -1,7 +1,7 @@
 import { Pencil, Trash, FileDiff, Loader2, Check, Info } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
 import { Button } from "@/src/components/ui/button";
-import { type ScoreDomain } from "@langfuse/shared";
+import { type ScoreDomain } from "@hanzo/shared";
 import { useCorrectionData } from "./hooks/useCorrectionData";
 import { useCorrectionMutations } from "./hooks/useCorrectionMutations";
 import { useCorrectionEditor } from "./hooks/useCorrectionEditor";

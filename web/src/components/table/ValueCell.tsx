@@ -1,6 +1,6 @@
 import { memo, type JSX, useState } from "react";
 import { type Row } from "@tanstack/react-table";
-import { urlRegex } from "@langfuse/shared";
+import { urlRegex } from "@hanzo/shared";
 import { type JsonTableRow } from "@/src/components/table/utils/jsonExpansionUtils";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 import { Button } from "@/src/components/ui/button";

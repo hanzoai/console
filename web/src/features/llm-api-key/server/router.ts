@@ -20,15 +20,15 @@ import {
   VertexAIConfigSchema,
   BEDROCK_USE_DEFAULT_CREDENTIALS,
   VERTEXAI_USE_DEFAULT_CREDENTIALS,
-} from "@langfuse/shared";
-import { encrypt, decrypt } from "@langfuse/shared/encryption";
+} from "@hanzo/shared";
+import { encrypt, decrypt } from "@hanzo/shared/encryption";
 import {
   ChatMessageType,
   fetchLLMCompletion,
   LLMAdapter,
   logger,
   decryptAndParseExtraHeaders,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { TRPCError } from "@trpc/server";
 

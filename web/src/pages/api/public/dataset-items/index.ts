@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -8,14 +8,14 @@ import {
   PostDatasetItemsV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError, Prisma } from "@langfuse/shared";
+import { LangfuseNotFoundError, Prisma } from "@hanzo/shared";
 import {
   createDatasetItemFilterState,
   getDatasetItems,
   getDatasetItemsCount,
   logger,
   upsertDatasetItem,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 export const config = {

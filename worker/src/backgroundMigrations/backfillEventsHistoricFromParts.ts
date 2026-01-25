@@ -4,8 +4,8 @@ import {
   commandClickhouse,
   logger,
   queryClickhouse,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import { parseArgs } from "node:util";
 import {
@@ -18,7 +18,7 @@ import {
   getQueryError,
   pollQueryStatus,
   sleep,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "d08146bd-3841-4ed3-a42c-5f43ff94b14e";

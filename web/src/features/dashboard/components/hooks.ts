@@ -1,5 +1,5 @@
 import { type TimeSeriesChartDataPoint } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
-import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { api } from "@/src/utils/api";
 import { mapLegacyUiTableFilterToView } from "@/src/features/query";

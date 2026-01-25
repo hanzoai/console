@@ -14,7 +14,7 @@ import {
 } from "../validation";
 import { getPromptByName } from "@/src/features/prompts/server/actions/getPromptByName";
 import { UserInputError } from "../../../core/errors";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 /**

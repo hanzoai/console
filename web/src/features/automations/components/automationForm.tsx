@@ -36,7 +36,7 @@ import {
   type ActionTypes,
   type JobConfigState,
   webhookActionFilterOptions,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { InlineFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { DeleteAutomationButton } from "./DeleteAutomationButton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";

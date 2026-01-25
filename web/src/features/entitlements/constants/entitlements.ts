@@ -1,4 +1,4 @@
-import { type Plan } from "@langfuse/shared";
+import { type Plan } from "@hanzo/shared";
 
 // Entitlements: Binary feature access
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning

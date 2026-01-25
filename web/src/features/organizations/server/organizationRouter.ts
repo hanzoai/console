@@ -12,8 +12,8 @@ import * as z from "zod/v4";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { parseDbOrg } from "@langfuse/shared";
-import { redis } from "@langfuse/shared/src/server";
+import { parseDbOrg } from "@hanzo/shared";
+import { redis } from "@hanzo/shared/src/server";
 import { createBillingServiceFromContext } from "@/src/ee/features/billing/server/stripeBillingService";
 import { isCloudBillingEnabled } from "@/src/ee/features/billing/utils/isCloudBilling";
 

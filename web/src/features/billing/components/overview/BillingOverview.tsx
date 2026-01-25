@@ -6,7 +6,7 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { planLabels, type Plan } from "@langfuse/shared";
+import { planLabels, type Plan } from "@hanzo/shared";
 
 export const BillingOverview = () => {
   const router = useRouter();

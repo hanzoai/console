@@ -5,7 +5,7 @@ import {
   BatchDataRetentionCleanerJobType,
   BatchDataRetentionTable,
   BATCH_DATA_RETENTION_TABLES,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { BatchDataRetentionCleaner } from "../features/batch-data-retention-cleaner";
 
 export const batchDataRetentionCleanerProcessor: Processor = async (job) => {

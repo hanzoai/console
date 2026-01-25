@@ -6,7 +6,7 @@ import {
   type AnnotationQueueItem,
   AnnotationQueueObjectType,
   type ScoreConfigDomain,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useEffect, useMemo } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";

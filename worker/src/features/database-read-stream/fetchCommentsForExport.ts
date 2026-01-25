@@ -1,4 +1,4 @@
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { type CommentObjectType } from "@prisma/client";
 
 export type ExportComment = {

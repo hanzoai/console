@@ -1,5 +1,5 @@
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { type ScoreDomain } from "@langfuse/shared";
+import { type ScoreDomain } from "@hanzo/shared";
 
 describe("aggregateScores", () => {
   it("should return an empty object for an empty array", () => {

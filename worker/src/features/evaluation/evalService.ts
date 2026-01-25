@@ -31,7 +31,7 @@ import {
   fetchLLMCompletion,
   LangfuseInternalTraceEnvironment,
   tableColumnsToSqlFilterAndPrefix,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   mapTraceFilterColumn,
   requiresDatabaseLookup,
@@ -50,8 +50,8 @@ import {
   TraceDomain,
   Observation,
   DatasetItem,
-} from "@langfuse/shared";
-import { kyselyPrisma, prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared";
+import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import { compileTemplateString, createW3CTraceId } from "../utils";
 import { env } from "../../env";
 import { JSONPath } from "jsonpath-plus";

@@ -1,16 +1,16 @@
-import { ObservationLevel, singleFilter } from "@langfuse/shared";
+import { ObservationLevel, singleFilter } from "@hanzo/shared";
 import {
   JobConfiguration,
   kyselyPrisma,
   prisma,
-} from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/db";
 import {
   convertDateToClickhouseDateTime,
   createOrgProjectAndApiKey,
   TraceRecordReadType,
   upsertObservation,
   upsertTrace,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { afterAll, test as baseTest, beforeAll, describe } from "vitest";

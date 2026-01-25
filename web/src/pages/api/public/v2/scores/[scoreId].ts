@@ -6,8 +6,8 @@ import {
   GetScoreResponseV2,
   InternalServerError,
   LangfuseNotFoundError,
- } from "@langfuse/shared";
-import { logger, traceException } from "@langfuse/shared/src/server";
+ } from "@hanzo/shared";
+import { logger, traceException } from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

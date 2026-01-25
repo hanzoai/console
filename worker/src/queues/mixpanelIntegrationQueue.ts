@@ -3,7 +3,7 @@ import {
   instrumentAsync,
   logger,
   QueueJobs,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { handleMixpanelIntegrationSchedule } from "../features/mixpanel/handleMixpanelIntegrationSchedule";
 import { handleMixpanelIntegrationProjectJob } from "../features/mixpanel/handleMixpanelIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";

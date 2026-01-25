@@ -25,7 +25,7 @@ import {
   type ScoreConfigCategoryDomain,
   type UpdateAnnotationScoreData,
   type CreateAnnotationScoreData,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { Input } from "@/src/components/ui/input";
 import {
   Popover,

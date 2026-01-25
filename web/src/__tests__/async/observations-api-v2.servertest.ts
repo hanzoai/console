@@ -2,7 +2,7 @@ import {
   createEvent,
   createEventsCh,
   queryClickhouse,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationsV2Response } from "@/src/features/public-api/types/observations";
 import { randomUUID } from "crypto";

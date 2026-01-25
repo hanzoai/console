@@ -13,11 +13,11 @@ import {
   PromptNameSchema,
   COMMIT_MESSAGE_MAX_LENGTH,
   PROMPT_NAME_MAX_LENGTH,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { createPrompt as createPromptAction } from "@/src/features/prompts/server/actions/createPrompt";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { instrumentAsync } from "@langfuse/shared/src/server";
+import { instrumentAsync } from "@hanzo/shared/src/server";
 import { SpanKind } from "@opentelemetry/api";
 
 /**

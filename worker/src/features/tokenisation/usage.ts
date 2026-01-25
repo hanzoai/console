@@ -1,4 +1,4 @@
-import { Model, parseJsonPrioritised } from "@langfuse/shared";
+import { Model, parseJsonPrioritised } from "@hanzo/shared";
 import { isChatModel, isTiktokenModel } from "./types";
 import { countTokens } from "@anthropic-ai/tokenizer";
 
@@ -10,7 +10,7 @@ import {
 } from "tiktoken";
 
 import { z } from "zod/v4";
-import { logger } from "@langfuse/shared/src/server";
+import { logger } from "@hanzo/shared/src/server";
 
 const OpenAiTokenConfig = z.object({
   tokenizerModel: z.string().refine(isTiktokenModel, {

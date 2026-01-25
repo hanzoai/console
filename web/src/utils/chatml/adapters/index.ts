@@ -11,4 +11,4 @@ export {
   genericAdapter,
   normalizeInput,
   normalizeOutput,
-} from "@langfuse/shared";
+} from "@hanzo/shared";

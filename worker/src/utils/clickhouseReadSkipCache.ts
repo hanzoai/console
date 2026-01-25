@@ -1,5 +1,5 @@
-import { PrismaClient, LangfuseNotFoundError } from "@langfuse/shared";
-import { logger } from "@langfuse/shared/src/server";
+import { PrismaClient, LangfuseNotFoundError } from "@hanzo/shared";
+import { logger } from "@hanzo/shared/src/server";
 import { env } from "../env";
 
 export class ClickhouseReadSkipCache {

@@ -6,7 +6,7 @@ import { type RouterOutput } from "@/src/utils/types";
 import {
   AnnotationQueueStatus,
   AnnotationQueueObjectType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { ArrowLeft, ArrowRight, SearchXIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";

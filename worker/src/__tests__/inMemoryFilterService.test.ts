@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { InMemoryFilterService } from "@langfuse/shared/src/server";
+import { InMemoryFilterService } from "@hanzo/shared/src/server";
 
 describe("InMemoryFilterService", () => {
   const mockData = {

@@ -26,8 +26,8 @@ import {
   useDatasetCompareFields,
 } from "@/src/features/datasets/contexts/DatasetCompareFieldsContext";
 import { useColumnFilterState } from "@/src/features/filters/hooks/useColumnFilterState";
-import { type Prisma } from "@langfuse/shared";
-import { type EnrichedDatasetRunItem } from "@langfuse/shared/src/server";
+import { type Prisma } from "@hanzo/shared";
+import { type EnrichedDatasetRunItem } from "@hanzo/shared/src/server";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { PeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";
 

@@ -5,7 +5,7 @@ import { MarkerBar } from "@tremor/react";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
 import { numberFormatter, compactNumberFormatter } from "@/src/utils/numbers";
-import { type Plan } from "@langfuse/shared";
+import { type Plan } from "@hanzo/shared";
 import { MAX_EVENTS_FREE_PLAN } from "@/src/ee/features/billing/constants";
 
 export const BillingUsageChart = () => {

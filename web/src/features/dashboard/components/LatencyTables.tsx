@@ -1,7 +1,7 @@
 import { RightAlignedCell } from "@/src/features/dashboard/components/RightAlignedCell";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 
 import { formatIntervalSeconds } from "@/src/utils/dates";

@@ -3,7 +3,7 @@
 // which displays the current trace view
 
 import { ErrorPage } from "@/src/components/error-page";
-import { getTracesByIdsForAnyProject } from "@langfuse/shared/src/server";
+import { getTracesByIdsForAnyProject } from "@hanzo/shared/src/server";
 import { type GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 

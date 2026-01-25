@@ -3,7 +3,7 @@
  * Billing is handled via Hanzo IAM at hanzo.id
  */
 
-import { type Plan } from "@langfuse/shared";
+import { type Plan } from "@hanzo/shared";
 
 export interface BillingCancellationInfo {
   isCancelled: boolean;

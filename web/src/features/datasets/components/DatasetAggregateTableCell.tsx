@@ -8,7 +8,7 @@ import { formatIntervalSeconds } from "@/src/utils/dates";
 import { cn } from "@/src/utils/tailwind";
 import { ClockIcon, ListTree } from "lucide-react";
 import { usdFormatter } from "@/src/utils/numbers";
-import { type EnrichedDatasetRunItem } from "@langfuse/shared/src/server";
+import { type EnrichedDatasetRunItem } from "@hanzo/shared/src/server";
 import { ScoreRow } from "@/src/features/scores/components/ScoreRow";
 import { type ScoreColumn } from "@/src/features/scores/types";
 import { useRouter } from "next/router";
@@ -16,7 +16,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { useMergedAggregates } from "@/src/features/scores/lib/useMergedAggregates";
 import { useMergeScoreColumns } from "@/src/features/scores/lib/mergeScoreColumns";
 import { useTrpcError } from "@/src/hooks/useTrpcError";
-import { type ScoreAggregate } from "@langfuse/shared";
+import { type ScoreAggregate } from "@hanzo/shared";
 import { computeScoreDiffs } from "@/src/features/datasets/lib/computeScoreDiffs";
 import { useMemo } from "react";
 import { type BaselineDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";

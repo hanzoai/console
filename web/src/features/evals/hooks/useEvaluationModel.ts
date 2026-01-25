@@ -3,7 +3,7 @@ import {
   type ModelParams,
   ZodModelConfig,
   type UIModelParams,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type Dispatch, type SetStateAction, useEffect } from "react";
 
 export function useEvaluationModel(

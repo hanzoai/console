@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { type Mock } from "vitest";
 
 // Mock prisma
-vi.mock("@langfuse/shared/src/db", () => ({
+vi.mock("@hanzo/shared/src/db", () => ({
   prisma: {
     project: {
       findMany: vi.fn(),
@@ -15,8 +15,8 @@ vi.mock("@langfuse/shared/src/db", () => ({
 }));
 
 // Mock Clickhouse repository functions and parseDbOrg
-vi.mock("@langfuse/shared/src/server", async () => {
-  const originalModule = await vi.importActual("@langfuse/shared/src/server");
+vi.mock("@hanzo/shared/src/server", async () => {
+  const originalModule = await vi.importActual("@hanzo/shared/src/server");
   return {
     ...originalModule,
     getTraceCountsByProjectAndDay: vi.fn(),
@@ -30,8 +30,8 @@ import {
   buildProjectToOrgMap,
   aggregateByOrg,
 } from "../ee/usageThresholds/usageAggregation";
-import { prisma } from "@langfuse/shared/src/db";
-import { type ParsedOrganization } from "@langfuse/shared";
+import { prisma } from "@hanzo/shared/src/db";
+import { type ParsedOrganization } from "@hanzo/shared";
 
 const mockProjectFindMany = prisma.project.findMany as Mock;
 

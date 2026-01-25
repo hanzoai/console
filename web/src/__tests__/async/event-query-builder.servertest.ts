@@ -1,7 +1,7 @@
 import {
   CTEQueryBuilder,
   EventsAggregationQueryBuilder,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("CTEQueryBuilder", () => {
   it("should compose multiple CTEs with type-safe references", () => {

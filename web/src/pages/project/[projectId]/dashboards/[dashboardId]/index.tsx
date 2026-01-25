@@ -5,7 +5,7 @@ import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import { TimeRangePicker } from "@/src/components/date-picker";
 import { PopoverFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { useEffect, useState, useMemo, useCallback } from "react";
-import type { ColumnDefinition, FilterState } from "@langfuse/shared";
+import type { ColumnDefinition, FilterState } from "@hanzo/shared";
 import { Button } from "@/src/components/ui/button";
 import { PlusIcon, Copy } from "lucide-react";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
