@@ -6,7 +6,7 @@ import {
   GetScoreQueryV1,
   GetScoreResponseV1,
   InternalServerError,
-  LangfuseNotFoundError } from "@hanzo/shared";
+  LangfuseNotFoundError } from "@langfuse/shared";
 import {
   logger,
   traceException,

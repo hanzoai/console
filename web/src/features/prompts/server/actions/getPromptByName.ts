@@ -7,8 +7,8 @@ import {
   PromptService,
   redis,
   recordIncrement,
-} from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
+} from "@langfuse/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
 
 type GetPromptByNameParams = {
   promptName: string;

@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   GetSessionV1Query,

@@ -15,7 +15,7 @@ import {
   redis,
   ProjectDeleteQueue,
   getEnvironmentsForProject,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { randomUUID } from "crypto";
 import { StringNoHTMLNonEmpty } from "@langfuse/shared";
 

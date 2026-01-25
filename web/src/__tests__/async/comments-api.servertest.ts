@@ -11,8 +11,8 @@ import { z } from "zod/v4";
 import {
   createObservationsCh,
   createTracesCh,
-} from "@hanzo/shared/src/server";
-import { createObservation, createTrace } from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
+import { createObservation, createTrace } from "@langfuse/shared/src/server";
 
 describe("Create and get comments", () => {
   beforeAll(async () => {

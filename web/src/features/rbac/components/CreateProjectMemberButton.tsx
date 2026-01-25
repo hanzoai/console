@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { Input } from "@/src/components/ui/input";
-import { Role } from "@hanzo/shared";
+import { Role } from "@langfuse/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import {

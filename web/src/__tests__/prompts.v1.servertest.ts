@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import { makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import { v4 as uuidv4, v4 } from "uuid";
 import { type Prompt, PromptType } from "@langfuse/shared";

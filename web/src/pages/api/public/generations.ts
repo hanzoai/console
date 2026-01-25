@@ -10,7 +10,7 @@ import {
   eventTypes,
   logger,
   processEventBatch,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { v4 } from "uuid";
 
 export default withMiddlewares({

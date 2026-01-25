@@ -9,7 +9,7 @@ import {
 } from "@/src/components/ui/drawer";
 import { CommentList } from "@/src/features/comments/CommentList";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { type CommentObjectType } from "@hanzo/shared";
+import { type CommentObjectType } from "@langfuse/shared";
 import { MessageCircleIcon, MessageCircleOff } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";

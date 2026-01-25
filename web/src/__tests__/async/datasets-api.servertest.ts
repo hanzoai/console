@@ -4,7 +4,7 @@ process.env.LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
   "true";
 process.env.LANGFUSE_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import {
   makeAPICall,
   makeZodVerifiedAPICall,

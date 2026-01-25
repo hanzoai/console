@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { type Prompt } from "@hanzo/shared";
+import { type Prompt } from "@langfuse/shared";
 import DiffViewer from "@/src/components/DiffViewer";
 import { FileDiffIcon } from "lucide-react";
 

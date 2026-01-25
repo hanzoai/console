@@ -9,7 +9,7 @@ import {
   createObservationsCh,
   createTrace,
   createTracesCh,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { randomUUID } from "crypto";
 
 describe("traces trpc", () => {

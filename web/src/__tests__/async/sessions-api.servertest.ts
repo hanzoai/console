@@ -1,11 +1,11 @@
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { v4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import {
   createTracesCh,
   createOrgProjectAndApiKey,
-} from "@hanzo/shared/src/server";
-import { createTrace } from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
+import { createTrace } from "@langfuse/shared/src/server";
 import {
   GetSessionsV1Response,
   GetSessionV1Response,

@@ -14,9 +14,9 @@ import {
   ForbiddenError,
   InternalServerError,
   InvalidRequestError,
-} from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, instrumentAsync } from "@hanzo/shared/src/server";
+} from "@langfuse/shared";
+import { prisma } from "@langfuse/shared/src/db";
+import { logger, instrumentAsync } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({

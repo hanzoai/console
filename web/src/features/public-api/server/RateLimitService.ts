@@ -7,14 +7,14 @@ import {
   type RateLimitResource,
   type RateLimitConfig,
   type Plan,
-} from "@hanzo/shared";
+} from "@langfuse/shared";
 import {
   recordIncrement,
   type ApiAccessScope,
   logger,
   createNewRedisInstance,
   redisQueueRetryOptions,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import { type NextApiResponse } from "next";
 
 // Business Logic

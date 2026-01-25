@@ -14,12 +14,12 @@ import {
   createManyDatasetItems,
 } from "@langfuse/shared/src/server";
 import { v4 } from "uuid";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import {
   createObservation,
   createTraceScore,
   createTrace,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 import {
   enrichAndMapToDatasetItemId,
   getRunItemsByRunIdOrItemId,

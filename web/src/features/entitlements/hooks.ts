@@ -4,7 +4,7 @@ import {
   type Entitlement,
   type EntitlementLimit,
 } from "@/src/features/entitlements/constants/entitlements";
-import { type Plan } from "@hanzo/shared";
+import { type Plan } from "@langfuse/shared";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 

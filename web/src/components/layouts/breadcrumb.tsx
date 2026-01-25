@@ -30,7 +30,7 @@ import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan, planLabels } from "@hanzo/shared";
+import { isCloudPlan, planLabels } from "@langfuse/shared";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";

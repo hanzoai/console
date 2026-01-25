@@ -6,7 +6,7 @@ import {
   createTRPCRouter,
   protectedProjectProcedure,
 } from "@/src/server/api/trpc";
-import { decrypt, encrypt } from "@hanzo/shared/encryption";
+import { decrypt, encrypt } from "@langfuse/shared/encryption";
 import { posthogIntegrationFormSchema } from "@/src/features/posthog-integration/types";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env.mjs";

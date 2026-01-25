@@ -10,8 +10,8 @@ import KeycloakProvider from "next-auth/providers/keycloak";
 import Auth0Provider from "next-auth/providers/auth0";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { multiTenantSsoAvailable } from "@/src/features/multi-tenant-sso/multiTenantSsoAvailable";
-import { type SsoConfig, prisma } from "@hanzo/shared/src/db";
-import { decrypt } from "@hanzo/shared/encryption";
+import { type SsoConfig, prisma } from "@langfuse/shared/src/db";
+import { decrypt } from "@langfuse/shared/encryption";
 import { SsoProviderSchema } from "./types";
 import {
   CustomSSOProvider,
@@ -19,7 +19,7 @@ import {
   JumpCloudProvider,
   logger,
   traceException,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
 
 // Local cache for SSO configurations
 let cachedSsoConfigs: {

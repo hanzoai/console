@@ -1,4 +1,4 @@
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import {
   GetDatasetsV2Query,
   GetDatasetsV2Response,

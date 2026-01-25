@@ -11,9 +11,9 @@ import { withMiddlewares } from "@/src/features/public-api/server/withMiddleware
 import {
   ForbiddenError,
   InternalServerError,
-  LangfuseNotFoundError } from "@hanzo/shared";
-import { Prisma, prisma } from "@hanzo/shared/src/db";
-import { recordIncrement, recordHistogram } from "@hanzo/shared/src/server";
+  LangfuseNotFoundError } from "@langfuse/shared";
+import { Prisma, prisma } from "@langfuse/shared/src/db";
+import { recordIncrement, recordHistogram } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

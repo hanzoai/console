@@ -1,7 +1,7 @@
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import { numberFormatter } from "@/src/utils/numbers";
-import { type Observation } from "@hanzo/shared";
+import { type Observation } from "@langfuse/shared";
 
 export const AggUsageBadge = (props: {
   observations: ObservationReturnType[];

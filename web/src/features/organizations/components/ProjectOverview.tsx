@@ -16,7 +16,7 @@ import {
   createOrganizationRoute,
   createProjectRoute,
 } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan } from "@hanzo/shared";
+import { isCloudPlan } from "@langfuse/shared";
 import { Divider } from "@tremor/react";
 import {
   BookOpen,

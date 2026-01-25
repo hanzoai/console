@@ -6,9 +6,9 @@ import {
 import { stripeClient } from "@/src/features/billing/utils/stripe";
 import { mapStripeProductIdToPlan } from "@/src/features/billing/utils/stripeProducts";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { CloudConfigSchema, parseDbOrg } from "@hanzo/shared";
-import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis, traceException } from "@hanzo/shared/src/server";
+import { CloudConfigSchema, parseDbOrg } from "@langfuse/shared";
+import { prisma } from "@langfuse/shared/src/db";
+import { logger, redis, traceException } from "@langfuse/shared/src/server";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { serverBillingAnalytics } from "@/src/features/billing/server/analytics";

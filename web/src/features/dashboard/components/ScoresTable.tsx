@@ -4,7 +4,7 @@ import {
   type ScoreDataTypeType,
   type ScoreSourceType,
   type FilterState,
-} from "@hanzo/shared";
+} from "@langfuse/shared";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { RightAlignedCell } from "./RightAlignedCell";

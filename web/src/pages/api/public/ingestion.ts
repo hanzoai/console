@@ -9,7 +9,7 @@ import {
   contextWithLangfuseProps,
 } from "@langfuse/shared/src/server";
 import { telemetry } from "@/src/features/telemetry";
-import { jsonSchema } from "@hanzo/shared";
+import { jsonSchema } from "@langfuse/shared";
 import { isPrismaException } from "@/src/utils/exceptions";
 import {
   MethodNotAllowedError,
