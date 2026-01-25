@@ -49,7 +49,7 @@ const getPromptNameHandler = async (
       errorMessage += ` with label '${label ?? PRODUCTION_LABEL}'`;
     }
 
-    throw new HanzoNotFoundError(errorMessage);
+    throw new LangfuseNotFoundError(errorMessage);
   }
 
   res.status(200).json({

@@ -469,7 +469,7 @@ interface TableBodyComponentProps<TData> {
   table: ReturnType<typeof useReactTable<TData>>;
   rowheighttw?: string;
   rowHeight?: RowHeight;
-  columns: LangfuseColumnDef<TData, any>[];
+  columns: HanzoColumnDef<TData, any>[];
   data: AsyncTableData<TData[]>;
   help?: { description: string; href: string };
   onRowClick?: (row: TData, event?: React.MouseEvent) => void;

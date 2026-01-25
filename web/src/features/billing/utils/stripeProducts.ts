@@ -16,8 +16,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'credits-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-        env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
+        env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
         ? "prod_Ru16ryEtJtEmRh" // test
         : "prod_Ru0gok2x52s57Y", // live
     name: "Credits",
@@ -29,8 +29,8 @@ export const stripeProducts: StripeProduct[] = [
   {
     id: 'premium-plan',
     stripeProductId:
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
-        env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ||
+        env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
         ? "prod_SMzWLE1hJzYfTf" // test
         : "prod_SMzWLE1hJzYfTf", // live
     name: "Premium",

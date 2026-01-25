@@ -5,73 +5,67 @@ import { api } from "@/src/utils/api";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { useRouter } from "next/router";
+import { planLabels, type Plan } from "@langfuse/shared";
 
 export const PaymentManagement = () => {
   const router = useRouter();
   const organization = useQueryOrganization();
 
   // Fetch subscription data
-  const { data: subscription } = api.cloudBilling.getSubscription.useQuery(
+  const { data: subscription } = api.cloudBilling.getSubscriptionInfo.useQuery(
     {
       orgId: organization?.id ?? "",
     },
     {
       enabled: organization !== undefined,
-    }
+    },
   );
-
-  // Fetch usage data
-  // const { data: usage } = api.cloudBilling.getUsage.useQuery(
-  //   {
-  //     orgId: organization?.id ?? "",
-  //   },
-  //   {
-  //     enabled: organization !== undefined,
-  //   }
-  // );
 
   // Fetch organization details for credits
   const { data: orgDetails } = api.organizations.getDetails.useQuery(
     { orgId: organization?.id ?? "" },
-    { enabled: !!organization }
+    { enabled: !!organization },
   );
 
-  // Fetch subscription history
-  const { data: subscriptionHistory } = api.cloudBilling.getSubscriptionHistory.useQuery(
+  // Fetch recent invoices
+  const { data: invoiceData } = api.cloudBilling.getInvoices.useQuery(
     {
       orgId: organization?.id ?? "",
       limit: 2, // Only fetch 2 recent invoices for the display
     },
     {
       enabled: organization !== undefined,
-    }
+    },
   );
 
   // Mutation for creating checkout session
-  const createCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation();
+  const createCheckoutSession =
+    api.cloudBilling.createStripeCheckoutSession.useMutation();
 
   // Update this to use useQuery
-  const { data: customerPortalUrl } = api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
-    { orgId: organization?.id ?? "" },
-    { enabled: !!organization }
-  );
+  const { data: customerPortalUrl } =
+    api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
+      { orgId: organization?.id ?? "" },
+      { enabled: !!organization },
+    );
 
   // Add this near your other hooks
-  const cancelSubscription = api.cloudBilling.cancelStripeSubscription.useMutation();
+  const cancelSubscription =
+    api.cloudBilling.cancelStripeSubscription.useMutation();
 
   const handleAddCredits = async () => {
-    const creditsProduct = stripeProducts.find(p => p.id === "credits-plan");
+    const creditsProduct = stripeProducts.find((p) => p.id === "credits-plan");
     if (!creditsProduct) {
       console.error("Credits product not found");
       return;
     }
 
-    const result = await createCheckoutSession.mutateAsync({
+    const url = await createCheckoutSession.mutateAsync({
       orgId: organization?.id ?? "",
       stripeProductId: creditsProduct.stripeProductId,
     });
 
-    if (result.url) window.location.href = result.url;
+    if (url) window.location.href = url;
   };
 
   // Update the handler to use the query result
@@ -79,11 +73,23 @@ export const PaymentManagement = () => {
     if (customerPortalUrl) window.location.href = customerPortalUrl;
   };
 
-  const currentPlan = subscription?.plan?.name || "Free Plan";
+  // Get plan from organization
+  const currentPlanKey = organization?.plan as Plan | undefined;
+  const currentPlan = currentPlanKey ? planLabels[currentPlanKey] : "Free Plan";
   const availableCredits = orgDetails?.credits || 0;
-  const nextBillingDate = subscription?.current_period_end 
-    ? new Date(subscription.current_period_end).toLocaleDateString()
+
+  // Check for active subscription
+  const hasActiveSubscription = Boolean(
+    organization?.cloudConfig?.stripe?.activeSubscriptionId,
+  );
+
+  // Format billing period end date
+  const billingPeriodEnd = subscription?.billingPeriod?.end;
+  const nextBillingDate = billingPeriodEnd
+    ? new Date(billingPeriodEnd).toLocaleDateString()
     : "N/A";
+
+  const invoices = invoiceData?.invoices || [];
 
   return (
     <div className="space-y-6">
@@ -94,13 +100,10 @@ export const PaymentManagement = () => {
             <h3 className="text-lg font-medium">Current Plan</h3>
             <h2 className="mt-2 text-2xl font-bold">{currentPlan}</h2>
             <p className="text-sm text-muted-foreground">
-              ${subscription?.price?.amount || 0}/month
+              {hasActiveSubscription ? "Active subscription" : "No active subscription"}
             </p>
           </div>
-          <Button 
-            variant="outline"
-            onClick={() => router.push("/pricing")}
-          >
+          <Button variant="outline" onClick={() => router.push("/pricing")}>
             Upgrade Plan
           </Button>
         </div>
@@ -108,17 +111,14 @@ export const PaymentManagement = () => {
           <p className="text-sm text-muted-foreground">
             Next billing date: {nextBillingDate}
           </p>
-          {subscription && (
+          {hasActiveSubscription && (
             <Button
               variant="ghost"
               className="text-red-500 hover:bg-red-50 hover:text-red-600"
               onClick={() => {
-                if (subscription?.plan?.id) {
-                  cancelSubscription.mutate({
-                    orgId: organization?.id ?? "",
-                    stripeProductId: subscription.plan.id
-                  });
-                }
+                cancelSubscription.mutate({
+                  orgId: organization?.id ?? "",
+                });
               }}
             >
               Cancel Subscription
@@ -138,9 +138,7 @@ export const PaymentManagement = () => {
         </div>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-            <span className="text-xl font-bold text-primary-foreground">
-              $
-            </span>
+            <span className="text-xl font-bold text-primary-foreground">$</span>
           </div>
           <div>
             <p className="text-2xl font-bold">${availableCredits.toFixed(2)}</p>
@@ -153,10 +151,7 @@ export const PaymentManagement = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium">Payment Method</h3>
-          <Button 
-            variant="outline"
-            onClick={handleCustomerPortal}
-          >
+          <Button variant="outline" onClick={handleCustomerPortal}>
             Manage
           </Button>
         </div>
@@ -164,7 +159,9 @@ export const PaymentManagement = () => {
           <CreditCard className="h-6 w-6" />
           <div>
             <p className="font-medium">
-              {subscription ? "Payment method on file" : "No payment method"}
+              {subscription?.hasValidPaymentMethod
+                ? "Payment method on file"
+                : "No payment method"}
             </p>
             <p className="text-sm text-muted-foreground">
               Manage your payment method in Stripe Portal
@@ -176,42 +173,55 @@ export const PaymentManagement = () => {
       {/* Recent Invoices Section */}
       <Card className="p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Recent Invoice</h3>
-          <Button 
-            variant="link"
-            onClick={handleCustomerPortal}
-          >
+          <h3 className="text-lg font-medium">Recent Invoices</h3>
+          <Button variant="link" onClick={handleCustomerPortal}>
             View All
           </Button>
         </div>
         <div className="mt-4 space-y-4">
-          {subscriptionHistory?.subscriptions.map((sub) => (
-            <div
-              key={sub.id}
-              className="flex items-center justify-between border-b pb-4 last:border-0"
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-sm">
+          {invoices.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No invoices yet</p>
+          ) : (
+            invoices.map((invoice) => (
+              <div
+                key={invoice.id}
+                className="flex items-center justify-between border-b pb-4 last:border-0"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-sm">
+                    <p className="font-medium">
+                      {invoice.number || invoice.id}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {invoice.created
+                        ? new Date(invoice.created * 1000).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {invoice.status || "Unknown"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
                   <p className="font-medium">
-                    {sub.plan.billingPeriod ? new Date(sub.plan.billingPeriod.start).toLocaleDateString() + " - " + new Date(sub.plan.billingPeriod.end).toLocaleDateString() : "N/A"}
+                    {invoice.currency?.toUpperCase()}{" "}
+                    {(invoice.breakdown.totalCents / 100).toFixed(2)}
                   </p>
-                  <p className="text-muted-foreground">
-                    {sub.plan.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground capitalize">
-                    {sub.status}
-                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (invoice.invoicePdfUrl) {
+                        window.open(invoice.invoicePdfUrl, "_blank");
+                      }
+                    }}
+                  >
+                    Download
+                  </Button>
                 </div>
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={handleCustomerPortal}
-              >
-                View Details
-              </Button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </Card>
     </div>

@@ -40,7 +40,7 @@ export type PageHeaderProps = {
   actionButtonsRight?: React.ReactNode; // Right-side actions (buttons, etc.)
   help?: { description: string; href?: string; className?: string };
   titleTooltip?: string;
-  itemType?: LangfuseItemType;
+  itemType?: HanzoItemType;
   container?: boolean;
   tabsProps?: PageTabsProps;
   className?: string;

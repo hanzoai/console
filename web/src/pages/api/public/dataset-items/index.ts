@@ -111,7 +111,7 @@ export default withMiddlewares({
           },
         });
         if (!dataset) {
-          throw new HanzoNotFoundError("Dataset not found");
+          throw new LangfuseNotFoundError("Dataset not found");
         }
         datasetId = dataset.id;
       }

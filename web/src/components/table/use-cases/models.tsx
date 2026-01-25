@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon, HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useRouter } from "next/router";
 import { PriceUnitSelector } from "@/src/features/models/components/PriceUnitSelector";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";

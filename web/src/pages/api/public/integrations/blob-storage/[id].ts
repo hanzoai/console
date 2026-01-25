@@ -7,12 +7,10 @@ import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/ha
 import {
   LangfuseNotFoundError,
   UnauthorizedError,
-  ForbiddenError,
-} from "@langfuse/shared";
+  ForbiddenError } from "@langfuse/shared";
 
 export default withMiddlewares({
-  DELETE: handleDeleteBlobStorageIntegration,
-});
+  DELETE: handleDeleteBlobStorageIntegration });
 
 async function handleDeleteBlobStorageIntegration(
   req: NextApiRequest,
@@ -41,8 +39,7 @@ async function handleDeleteBlobStorageIntegration(
   if (
     !hasEntitlementBasedOnPlan({
       plan: authCheck.scope.plan,
-      entitlement: "scheduled-blob-exports",
-    })
+      entitlement: "scheduled-blob-exports" })
   ) {
     throw new ForbiddenError(
       "scheduled-blob-exports entitlement required for this feature.",
@@ -59,10 +56,7 @@ async function handleDeleteBlobStorageIntegration(
     where: { projectId: id },
     include: {
       project: {
-        select: { orgId: true },
-      },
-    },
-  });
+        select: { orgId: true } } } });
 
   if (!integration || integration.project.orgId !== authCheck.scope.orgId) {
     throw new LangfuseNotFoundError("Blob storage integration not found");
@@ -70,10 +64,8 @@ async function handleDeleteBlobStorageIntegration(
 
   // Delete the integration
   await prisma.blobStorageIntegration.delete({
-    where: { projectId: id },
-  });
+    where: { projectId: id } });
 
   return res.status(200).json({
-    message: "Blob storage integration successfully deleted",
-  });
+    message: "Blob storage integration successfully deleted" });
 }

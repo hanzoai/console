@@ -25,7 +25,7 @@ import {
   SidePanelHeader,
   SidePanelTitle,
 } from "@/src/components/ui/side-panel";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon } from "@/src/components/HanzoLogo";
 
 export const EvalTemplateDetail = () => {
   const router = useRouter();
@@ -240,7 +240,7 @@ export function UpdateTemplate({
   if (!isCustom) {
     return (
       <div className="flex items-center gap-2">
-        <LangfuseIcon size={16} />
+        <HanzoIcon size={16} />
         <span className="text-sm font-medium text-muted-foreground">
           View only
         </span>

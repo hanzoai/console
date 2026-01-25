@@ -1,5 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef, type LangfuseColumnDef } from "@/src/components/table/types";
+import { type Row, type CellContext } from "@tanstack/react-table";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { type BatchExport } from "@langfuse/shared";
@@ -61,7 +62,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "name",
       header: "Name",
       size: 200,
-      cell: ({ row }) => {
+      cell: ({ row }: { row: Row<BatchExport> }) => {
         const name = row.getValue("name") as string;
         const { createdAt, finishedAt } = row.original;
         return (
@@ -92,7 +93,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "status",
       header: "Status",
       size: 90,
-      cell: (row) => {
+      cell: (row: CellContext<BatchExport, string>) => {
         const status = row.getValue() as string;
         return (
           <StatusBadge type={status.toLowerCase()} className="capitalize" />
@@ -104,7 +105,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "url",
       header: "Download URL",
       size: 130,
-      cell: (info) => {
+      cell: (info: CellContext<BatchExport, string | null>) => {
         const url = info.getValue() as string | null;
         if (!url) {
           return null;
@@ -130,7 +131,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "user",
       header: "Created By",
       size: 150,
-      cell: ({ row }) => {
+      cell: ({ row }: { row: Row<BatchExport> }) => {
         const user = row.getValue("user") as {
           name: string | null;
           image: string | null;
@@ -153,7 +154,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "log",
       header: "Log",
       size: 300,
-      cell: (row) => {
+      cell: (row: CellContext<BatchExport, string | null>) => {
         const log = row.getValue() as string | null;
         return log ?? null;
       },
@@ -163,7 +164,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       id: "actions",
       header: "Actions",
       size: 100,
-      cell: ({ row }) => {
+      cell: ({ row }: { row: Row<BatchExport> }) => {
         const id = row.original.id;
         const status = row.getValue("status") as string;
 

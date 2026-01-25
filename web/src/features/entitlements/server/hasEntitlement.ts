@@ -37,8 +37,14 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
     let plan: Plan;
     if (rawPlan?.toUpperCase() === "PRO") {
       plan = "cloud:pro";
-    } else if (rawPlan?.toUpperCase() === "TEAM" || rawPlan?.toUpperCase() === "DEV") {
-      plan = "cloud:dev";
+    } else if (rawPlan?.toUpperCase() === "TEAM") {
+      plan = "cloud:team";
+    } else if (rawPlan?.toUpperCase() === "ENTERPRISE") {
+      plan = "cloud:enterprise";
+    } else if (rawPlan?.toUpperCase() === "CORE") {
+      plan = "cloud:core";
+    } else if (rawPlan?.toUpperCase() === "HOBBY") {
+      plan = "cloud:hobby";
     } else {
       plan = "cloud:free";
     }

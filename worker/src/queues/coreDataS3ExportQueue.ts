@@ -13,10 +13,10 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_CORE_DATA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_CORE_DATA_UPLOAD_REGION,
+      accessKeyId: env.LANGFUSE_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.LANGFUSE_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.LANGFUSE_S3_CORE_DATA_UPLOAD_ENDPOINT,
+      region: env.LANGFUSE_S3_CORE_DATA_UPLOAD_REGION,
       forcePathStyle:
         env.LANGFUSE_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE === "true",
       awsSse: env.LANGFUSE_S3_CORE_DATA_UPLOAD_SSE,
@@ -37,7 +37,7 @@ export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
   logger.info("Starting core data S3 export");
 
   const s3Client = getS3StorageServiceClient(
-    env.HANZO_S3_CORE_DATA_UPLOAD_BUCKET,
+    env.LANGFUSE_S3_CORE_DATA_UPLOAD_BUCKET,
   );
 
   // Fetch table data
@@ -134,7 +134,7 @@ export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
       surveys,
     }).map(async ([key, value]) =>
       s3Client.uploadFile({
-        fileName: `${env.HANZO_S3_CORE_DATA_UPLOAD_PREFIX}${key}.jsonl`,
+        fileName: `${env.LANGFUSE_S3_CORE_DATA_UPLOAD_PREFIX}${key}.jsonl`,
         fileType: "application/x-ndjson",
         data: value.map((item) => JSON.stringify(item)).join("\n"),
       }),

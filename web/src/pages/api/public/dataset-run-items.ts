@@ -56,7 +56,7 @@ export default withMiddlewares({
           fetchWithInputOutput: false,
         });
         if (observationId && !observation) {
-          throw new HanzoNotFoundError("Observation not found");
+          throw new LangfuseNotFoundError("Observation not found");
         }
         finalTraceId = observation?.traceId;
       }

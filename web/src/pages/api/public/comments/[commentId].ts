@@ -23,7 +23,7 @@ export default withMiddlewares({
       });
 
       if (!comment) {
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           "Comment not found within authorized project",
         );
       }

@@ -1,11 +1,11 @@
 import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   GetSessionV1Query,
   GetSessionV1Response,
 } from "@/src/features/public-api/types/sessions";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
 import { getTracesBySessionId } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
@@ -31,7 +31,7 @@ export default withMiddlewares({
       });
 
       if (!session) {
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           "Session not found within authorized project",
         );
       }

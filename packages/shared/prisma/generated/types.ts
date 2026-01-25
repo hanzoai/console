@@ -1,8 +1,6 @@
 import type { ColumnType } from "kysely";
 export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+  T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export const ApiKeyScope = {
@@ -13,6 +11,7 @@ export type ApiKeyScope = (typeof ApiKeyScope)[keyof typeof ApiKeyScope];
 export const Role = {
   OWNER: "OWNER",
   ADMIN: "ADMIN",
+  ADMIN_BILLING: "ADMIN_BILLING",
   MEMBER: "MEMBER",
   VIEWER: "VIEWER",
   NONE: "NONE",
@@ -45,28 +44,24 @@ export const LegacyPrismaScoreSource = {
   API: "API",
   EVAL: "EVAL",
 } as const;
-export type LegacyPrismaScoreSource =
-  (typeof LegacyPrismaScoreSource)[keyof typeof LegacyPrismaScoreSource];
+export type LegacyPrismaScoreSource = (typeof LegacyPrismaScoreSource)[keyof typeof LegacyPrismaScoreSource];
 export const ScoreConfigDataType = {
   CATEGORICAL: "CATEGORICAL",
   NUMERIC: "NUMERIC",
   BOOLEAN: "BOOLEAN",
 } as const;
-export type ScoreConfigDataType =
-  (typeof ScoreConfigDataType)[keyof typeof ScoreConfigDataType];
+export type ScoreConfigDataType = (typeof ScoreConfigDataType)[keyof typeof ScoreConfigDataType];
 export const AnnotationQueueStatus = {
   PENDING: "PENDING",
   COMPLETED: "COMPLETED",
 } as const;
-export type AnnotationQueueStatus =
-  (typeof AnnotationQueueStatus)[keyof typeof AnnotationQueueStatus];
+export type AnnotationQueueStatus = (typeof AnnotationQueueStatus)[keyof typeof AnnotationQueueStatus];
 export const AnnotationQueueObjectType = {
   TRACE: "TRACE",
   OBSERVATION: "OBSERVATION",
   SESSION: "SESSION",
 } as const;
-export type AnnotationQueueObjectType =
-  (typeof AnnotationQueueObjectType)[keyof typeof AnnotationQueueObjectType];
+export type AnnotationQueueObjectType = (typeof AnnotationQueueObjectType)[keyof typeof AnnotationQueueObjectType];
 export const DatasetStatus = {
   ACTIVE: "ACTIVE",
   ARCHIVED: "ARCHIVED",
@@ -78,24 +73,20 @@ export const CommentObjectType = {
   SESSION: "SESSION",
   PROMPT: "PROMPT",
 } as const;
-export type CommentObjectType =
-  (typeof CommentObjectType)[keyof typeof CommentObjectType];
+export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType];
 export const NotificationChannel = {
   EMAIL: "EMAIL",
 } as const;
-export type NotificationChannel =
-  (typeof NotificationChannel)[keyof typeof NotificationChannel];
+export type NotificationChannel = (typeof NotificationChannel)[keyof typeof NotificationChannel];
 export const NotificationType = {
   COMMENT_MENTION: "COMMENT_MENTION",
 } as const;
-export type NotificationType =
-  (typeof NotificationType)[keyof typeof NotificationType];
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 export const AuditLogRecordType = {
   USER: "USER",
   API_KEY: "API_KEY",
 } as const;
-export type AuditLogRecordType =
-  (typeof AuditLogRecordType)[keyof typeof AuditLogRecordType];
+export type AuditLogRecordType = (typeof AuditLogRecordType)[keyof typeof AuditLogRecordType];
 export const JobType = {
   EVAL: "EVAL",
 } as const;
@@ -104,8 +95,7 @@ export const JobConfigState = {
   ACTIVE: "ACTIVE",
   INACTIVE: "INACTIVE",
 } as const;
-export type JobConfigState =
-  (typeof JobConfigState)[keyof typeof JobConfigState];
+export type JobConfigState = (typeof JobConfigState)[keyof typeof JobConfigState];
 export const JobExecutionStatus = {
   COMPLETED: "COMPLETED",
   ERROR: "ERROR",
@@ -113,8 +103,7 @@ export const JobExecutionStatus = {
   CANCELLED: "CANCELLED",
   DELAYED: "DELAYED",
 } as const;
-export type JobExecutionStatus =
-  (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
+export type JobExecutionStatus = (typeof JobExecutionStatus)[keyof typeof JobExecutionStatus];
 export const BlobStorageIntegrationFileType = {
   JSON: "JSON",
   CSV: "CSV",
@@ -127,23 +116,20 @@ export const BlobStorageIntegrationType = {
   S3_COMPATIBLE: "S3_COMPATIBLE",
   AZURE_BLOB_STORAGE: "AZURE_BLOB_STORAGE",
 } as const;
-export type BlobStorageIntegrationType =
-  (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
+export type BlobStorageIntegrationType = (typeof BlobStorageIntegrationType)[keyof typeof BlobStorageIntegrationType];
 export const BlobStorageExportMode = {
   FULL_HISTORY: "FULL_HISTORY",
   FROM_TODAY: "FROM_TODAY",
   FROM_CUSTOM_DATE: "FROM_CUSTOM_DATE",
 } as const;
-export type BlobStorageExportMode =
-  (typeof BlobStorageExportMode)[keyof typeof BlobStorageExportMode];
+export type BlobStorageExportMode = (typeof BlobStorageExportMode)[keyof typeof BlobStorageExportMode];
 export const DashboardWidgetViews = {
   TRACES: "TRACES",
   OBSERVATIONS: "OBSERVATIONS",
   SCORES_NUMERIC: "SCORES_NUMERIC",
   SCORES_CATEGORICAL: "SCORES_CATEGORICAL",
 } as const;
-export type DashboardWidgetViews =
-  (typeof DashboardWidgetViews)[keyof typeof DashboardWidgetViews];
+export type DashboardWidgetViews = (typeof DashboardWidgetViews)[keyof typeof DashboardWidgetViews];
 export const DashboardWidgetChartType = {
   LINE_TIME_SERIES: "LINE_TIME_SERIES",
   BAR_TIME_SERIES: "BAR_TIME_SERIES",
@@ -154,8 +140,7 @@ export const DashboardWidgetChartType = {
   HISTOGRAM: "HISTOGRAM",
   PIVOT_TABLE: "PIVOT_TABLE",
 } as const;
-export type DashboardWidgetChartType =
-  (typeof DashboardWidgetChartType)[keyof typeof DashboardWidgetChartType];
+export type DashboardWidgetChartType = (typeof DashboardWidgetChartType)[keyof typeof DashboardWidgetChartType];
 export const ActionType = {
   WEBHOOK: "WEBHOOK",
   SLACK: "SLACK",
@@ -168,8 +153,7 @@ export const ActionExecutionStatus = {
   PENDING: "PENDING",
   CANCELLED: "CANCELLED",
 } as const;
-export type ActionExecutionStatus =
-  (typeof ActionExecutionStatus)[keyof typeof ActionExecutionStatus];
+export type ActionExecutionStatus = (typeof ActionExecutionStatus)[keyof typeof ActionExecutionStatus];
 export const SurveyName = {
   ORG_ONBOARDING: "org_onboarding",
   USER_ONBOARDING: "user_onboarding",

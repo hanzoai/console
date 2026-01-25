@@ -1,4 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   GetObservationV1Query,
   GetObservationV1Response,
@@ -6,7 +7,6 @@ import {
 } from "@/src/features/public-api/types/observations";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   enrichObservationWithModelData,
   getObservationById,
@@ -41,7 +41,7 @@ export default withMiddlewares({
           });
 
       if (!clickhouseObservation) {
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           "Observation not found within authorized project",
         );
       }
@@ -83,7 +83,7 @@ export default withMiddlewares({
       };
 
       if (!observation) {
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           "Observation not found within authorized project",
         );
       }

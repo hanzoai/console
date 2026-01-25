@@ -17,7 +17,6 @@
 import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
-import { tracing } from "@baselime/trpc-opentelemetry-middleware";
 import { getServerAuthSession } from "@/src/server/auth";
 import { prisma, Role } from "@langfuse/shared/src/db";
 import * as z from "zod/v4";
@@ -81,20 +80,17 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { DB } from "@/src/server/db";
 import { setUpSuperjson } from "@/src/utils/superjson";
-import { addUserToSpan, getTraceById, logger } from "@hanzo/shared/src/server";
-import { initTRPC, TRPCError } from "@trpc/server";
-import { getHTTPStatusCodeFromError } from "@trpc/server/http";
-import superjson from "superjson";
-import { ZodError } from "zod/v4";
-import { setUpSuperjson } from "@/src/utils/superjson";
-import { DB } from "@/src/server/db";
 import {
+  addUserToSpan,
   getTraceById,
   logger,
-  addUserToSpan,
   contextWithLangfuseProps,
   ClickHouseResourceError,
 } from "@langfuse/shared/src/server";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { getHTTPStatusCodeFromError } from "@trpc/server/http";
+import superjson from "superjson";
+import { ZodError as _ZodError } from "zod/v4";
 
 import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 import { env } from "@/src/env.mjs";
@@ -245,6 +241,9 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 export const authenticatedProcedure = withOtelTracingProcedure
   .use(withErrorHandling)
   .use(enforceUserIsAuthed);
+
+// Alias for backwards compatibility
+export const protectedProcedure = authenticatedProcedure;
 
 export const protectedProcedureWithoutTracing = t.procedure
   .use(withErrorHandling)
@@ -462,14 +461,14 @@ const enforceTraceAccess = t.middleware(async (opts) => {
 
   const traceSession = !!trace.sessionId
     ? await ctx.prisma.traceSession.findFirst({
-      where: {
-        id: trace.sessionId,
-        projectId,
-      },
-      select: {
-        public: true,
-      },
-    })
+        where: {
+          id: trace.sessionId,
+          projectId,
+        },
+        select: {
+          public: true,
+        },
+      })
     : null;
 
   const isSessionPublic = traceSession?.public === true;

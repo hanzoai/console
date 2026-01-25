@@ -1,4 +1,4 @@
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon } from "@/src/components/HanzoLogo";
 import {
   Tooltip,
   TooltipTrigger,
@@ -11,7 +11,7 @@ function MaintainerIcon({ maintainer }: { maintainer: string }) {
   if (maintainer.includes("Ragas")) {
     return <RagasLogoIcon />;
   } else if (maintainer.includes("Langfuse")) {
-    return <LangfuseIcon size={16} />;
+    return <HanzoIcon size={16} />;
   } else {
     return <UserCircle2Icon className="h-4 w-4" />;
   }

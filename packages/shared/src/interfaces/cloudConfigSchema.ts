@@ -25,6 +25,12 @@ export const CloudConfigSchema = z.object({
 
   // custom rate limits for an organization
   rateLimitOverrides: CloudConfigRateLimit.optional(),
+
+  // credit balance for pay-as-you-go usage
+  credits: z.number().default(0).optional(),
+
+  // trial expiry date
+  trialExpiresAt: z.string().optional(),
 });
 
 export type CloudConfigSchema = z.infer<typeof CloudConfigSchema>;

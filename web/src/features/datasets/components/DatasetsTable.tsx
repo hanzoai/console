@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef, type LangfuseColumnDef } from "@/src/components/table/types";
 import { Button } from "@/src/components/ui/button";
 import {
   DropdownMenu,

@@ -19,7 +19,7 @@ export const experimentCreateQueueProcessor = async (
   try {
     await createExperimentJobClickhouse({
       event: job.data.payload,
-    } */);
+    });
     return true;
   } catch (e) {
     if (isLLMCompletionError(e) && e.isRetryable) {

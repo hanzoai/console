@@ -1,15 +1,15 @@
-// import { Button } from "@/src/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { useEffect, useState } from "react";
-// import { X } from "lucide-react";
+import { X } from "lucide-react";
 import useLocalStorage from "../useLocalStorage";
-// import Link from "next/link";
+import Link from "next/link";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
 const NOTIFICATION_TTL_MS = 14 * 24 * 60 * 60 * 1000; // two weeks

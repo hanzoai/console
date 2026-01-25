@@ -28,7 +28,7 @@ import { SidebarMenuButton } from "@/src/components/ui/sidebar";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { CloudStatusMenu } from "@/src/features/cloud-status-notification/components/CloudStatusMenu";
-import { type ProductModule } from "@/src/ee/features/ui-customization/productModuleSchema";
+import { type ProductModule } from "@/src/features/ui-customization/productModuleSchema";
 
 export enum RouteSection {
   Main = "main",
@@ -174,8 +174,8 @@ export const ROUTES: Route[] = [
     pathname: "/project/[projectId]/settings/billing",
     section: RouteSection.Secondary,
     entitlements: ["cloud-billing"],
-    organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:free",
+    organizationRbacScope: "langfuseCloudBilling:CRUD",
+    show: ({ organization }) => organization?.plan === "cloud:hobby",
   },
   {
     title: "Upgrade",
@@ -183,8 +183,8 @@ export const ROUTES: Route[] = [
     pathname: "/organization/[organizationId]/settings/billing",
     section: RouteSection.Secondary,
     entitlements: ["cloud-billing"],
-    organizationRbacScope: "hanzoCloudBilling:CRUD",
-    show: ({ organization }) => organization?.plan === "cloud:free",
+    organizationRbacScope: "langfuseCloudBilling:CRUD",
+    show: ({ organization }) => organization?.plan === "cloud:hobby",
   },
   {
     title: "Cloud Status",

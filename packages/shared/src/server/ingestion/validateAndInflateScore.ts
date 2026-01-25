@@ -8,7 +8,7 @@ import {
   CORRECTION_NAME,
 } from "../../../src";
 import { prisma } from "../../db";
-import { InvalidRequestError, LangfuseNotFoundError } from "../../errors";
+import { InvalidRequestError, HanzoNotFoundError } from "../../errors";
 import { validateDbScoreConfigSafe } from "../../features/scoreConfigs/validation";
 import { ScoreEventType } from "./types";
 

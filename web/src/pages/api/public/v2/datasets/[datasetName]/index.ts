@@ -1,4 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   GetDatasetV2Query,
   GetDatasetV2Response,
@@ -6,7 +7,6 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { LangfuseNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -25,7 +25,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset not found");
+        throw new LangfuseNotFoundError("Dataset not found");
       }
       return transformDbDatasetToAPIDataset(dataset);
     },

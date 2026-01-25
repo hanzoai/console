@@ -6,7 +6,7 @@ import {
   GetScoreResponseV2,
   InternalServerError,
   LangfuseNotFoundError,
-} from "@langfuse/shared";
+ } from "@langfuse/shared";
 import { logger, traceException } from "@langfuse/shared/src/server";
 
 export default withMiddlewares({
@@ -18,8 +18,7 @@ export default withMiddlewares({
       const scoresApiService = new ScoresApiService("v2");
       const score = await scoresApiService.getScoreById({
         projectId: auth.scope.projectId,
-        scoreId: query.scoreId,
-      });
+        scoreId: query.scoreId });
 
       if (!score) {
         throw new LangfuseNotFoundError("Score not found");
@@ -34,6 +33,4 @@ export default withMiddlewares({
       }
 
       return parsedScore.data;
-    },
-  }),
-});
+    } }) });

@@ -17,6 +17,11 @@ export const entitlements = [
   "scheduled-blob-exports",
   "prompt-protected-labels",
   "admin-api",
+  "annotation-queues",
+  "model-based-evaluations",
+  "playground",
+  "prompt-experiments",
+  "integration-posthog",
 ] as const;
 export type Entitlement = (typeof entitlements)[number];
 
@@ -58,10 +63,19 @@ export const entitlementAccess: Record<
   "cloud:free": {  // Add new free plan
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
-      "annotation-queue-count": 0,
       "organization-member-count": 2,
       "data-access-days": 30,
       "annotation-queue-count": 1,
+      "model-based-evaluations-count-evaluators": false,
+      "prompt-management-count-prompts": false,
+    },
+  },
+  "cloud:hobby": {
+    entitlements: [...cloudAllPlansEntitlements],
+    entitlementLimits: {
+      "organization-member-count": 3,
+      "data-access-days": 60,
+      "annotation-queue-count": 2,
       "model-based-evaluations-count-evaluators": false,
       "prompt-management-count-prompts": false,
     },

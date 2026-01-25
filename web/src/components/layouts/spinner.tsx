@@ -39,7 +39,7 @@ export function Spinner(props: { message: string }) {
       y: 0,
       rotate: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 260,
         damping: 20
       }

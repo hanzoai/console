@@ -16,7 +16,7 @@ const ReleaseApiRes = z.array(
 export const publicRouter = createTRPCRouter({
   checkUpdate: publicProcedure.query(async () => {
     // Skip update check on Hanzo Cloud
-    if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) return null;
+    if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) return null;
 
     let body;
     try {
@@ -47,9 +47,9 @@ export const publicRouter = createTRPCRouter({
     const hanzoRelease = releases.data.find(
       (release) => release.repo === "hanzoai/cloud",
     );
-    if (!langfuseRelease) {
+    if (!hanzoRelease) {
       logger.error(
-        "[trpc.public.checkUpdate] Release API response is invalid, does not contain langfuse/langfuse",
+        "[trpc.public.checkUpdate] Release API response is invalid, does not contain hanzoai/cloud",
       );
       return null;
     }

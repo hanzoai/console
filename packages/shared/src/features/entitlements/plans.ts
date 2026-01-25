@@ -9,6 +9,7 @@ export const cloudConfigPlans = [
 
 export const planLabels = {
   oss: "OSS",
+  "cloud:free": "Free",
   "cloud:hobby": "Hobby",
   "cloud:core": "Core",
   "cloud:pro": "Pro",

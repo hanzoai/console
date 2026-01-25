@@ -19,7 +19,7 @@ import {
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 
 const regions =
-  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
+  env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
     ? [
         {
           name: "STAGING",
@@ -27,7 +27,7 @@ const regions =
           flag: "🇪🇺",
         },
       ]
-    : env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV"
+    : env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV"
       ? [
           {
             name: "DEV",

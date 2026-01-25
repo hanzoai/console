@@ -22,11 +22,11 @@ export const sendBatchExportSuccessEmail = async ({
   userName,
   batchExportName,
 }: SendBatchExportSuccessParams) => {
-  if (!env.EMAIL_FROM_ADDRESS || !env.SMTP_CONNECTION_URL) {
-    logger.error("Missing environment variables for sending email.");
-    // return;
+  if (!env.SMTP_CONNECTION_URL) {
+    logger.error("Missing SMTP_CONNECTION_URL environment variable for sending email.");
+    return;
   }
-  env.EMAIL_FROM_ADDRESS = "nonreply@hanzo.ai";
+  const emailFromAddress = env.EMAIL_FROM_ADDRESS ?? "nonreply@hanzo.ai";
 
   try {
     const mailer = createTransport(parseConnectionUrl(env.SMTP_CONNECTION_URL));
@@ -42,7 +42,7 @@ export const sendBatchExportSuccessEmail = async ({
     await mailer.sendMail({
       to: receiverEmail,
       from: {
-        address: env.EMAIL_FROM_ADDRESS,
+        address: emailFromAddress,
         name: "HanzoCloud",
       },
       subject: "Your data export is ready",

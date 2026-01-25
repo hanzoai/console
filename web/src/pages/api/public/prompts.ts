@@ -8,14 +8,13 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
 import {
   UnauthorizedError,
-  HanzoNotFoundError,
+  LangfuseNotFoundError,
   BaseError,
   MethodNotAllowedError,
   ForbiddenError,
   GetPromptSchema,
   LegacyCreatePromptSchema,
-  PRODUCTION_LABEL,
-} from "@langfuse/shared";
+  PRODUCTION_LABEL } from "@langfuse/shared";
 import { redis, traceException, logger } from "@langfuse/shared/src/server";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { telemetry } from "@/src/features/telemetry";
@@ -67,15 +66,13 @@ export default async function handler(
         promptName,
         projectId,
         version,
-        resolve: shouldResolve,
-      });
+        resolve: shouldResolve });
 
-      if (!prompt) throw new HanzoNotFoundError("Prompt not found");
+      if (!prompt) throw new LangfuseNotFoundError("Prompt not found");
 
       return res.status(200).json({
         ...prompt,
-        isActive: prompt.labels.includes(PRODUCTION_LABEL),
-      });
+        isActive: prompt.labels.includes(PRODUCTION_LABEL) });
     }
 
     // Handle POST requests
@@ -89,13 +86,11 @@ export default async function handler(
         config: input.config ?? {}, // Config can be null in which case zod default value is not used
         projectId: authCheck.scope.projectId,
         createdBy: "API",
-        prisma: prisma,
-      });
+        prisma: prisma });
 
       return res.status(201).json({
         ...prompt,
-        isActive: prompt.labels.includes(PRODUCTION_LABEL),
-      });
+        isActive: prompt.labels.includes(PRODUCTION_LABEL) });
     }
 
     throw new MethodNotAllowedError();
@@ -106,27 +101,23 @@ export default async function handler(
     if (error instanceof BaseError) {
       return res.status(error.httpCode).json({
         error: error.name,
-        message: error.message,
-      });
+        message: error.message });
     }
 
     if (isPrismaException(error)) {
       return res.status(500).json({
-        error: "Internal Server Error",
-      });
+        error: "Internal Server Error" });
     }
 
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         message: "Invalid request data",
-        error: error.issues,
-      });
+        error: error.issues });
     }
 
     return res.status(500).json({
       message: "Invalid request data",
       error:
-        error instanceof Error ? error.message : "An unknown error occurred",
-    });
+        error instanceof Error ? error.message : "An unknown error occurred" });
   }
 }

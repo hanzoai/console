@@ -140,7 +140,7 @@ export default function ModelDetailPage() {
             {hasWriteAccess && (
               <>
                 <TestModelMatchButton projectId={projectId} variant="outline" />
-                {!isLangfuseModel ? (
+                {!isHanzoModel ? (
                   <>
                     <EditModelButton projectId={projectId} modelData={model} />
                     <DeleteModelButton

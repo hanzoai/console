@@ -35,7 +35,7 @@ const deleteMediaItemsForTraces = async (
   projectId: string,
   traceIds: string[],
 ): Promise<void> => {
-  if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
+  if (!env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
     return;
   }
 

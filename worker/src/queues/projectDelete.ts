@@ -69,7 +69,7 @@ export const projectDeleteProcessor: Processor = async (
       },
     });
     const mediaStorageClient = getS3MediaStorageClient(
-      env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+      env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
     );
     // Delete from Cloud Storage
     await mediaStorageClient.deleteFiles(

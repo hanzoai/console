@@ -24,7 +24,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
       { status: 405 },
     );
 
-  if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION || !stripeClient) {
+  if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION || !stripeClient) {
     logger.error(
       "[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud",
     );
@@ -351,7 +351,7 @@ async function handleSubscriptionChanged(
     // commnet
 
     // need to update the plan in the api keys
-    await new ApiAuthService(prisma, redis).invalidateOrgApiKeys(parsedOrg.id);
+    await new ApiAuthService(prisma, redis).invalidateCachedOrgApiKeys(parsedOrg.id);
     logger.info("[Stripe Webhook] Successfully invalidated API keys", {
       orgId: parsedOrg.id,
     });
@@ -390,17 +390,37 @@ async function handleCreditPurchase(
     return;
   }
 
-  // Update the organization's credits
+  // Get current organization to read existing cloudConfig
+  const organization = await prisma.organization.findUnique({
+    where: { id: orgId },
+  });
+
+  if (!organization) {
+    logger.error("[Stripe Webhook] Organization not found for credit purchase", { orgId });
+    return;
+  }
+
+  const parsedOrg = parseDbOrg(organization);
+  const currentCredits = parsedOrg.cloudConfig?.credits ?? 0;
   const creditsAdded = amountPaid / 100;
+
+  // Update the organization's credits in cloudConfig
   await prisma.organization.update({
     where: {
       id: orgId,
     },
     data: {
-      credits: {
-        increment: creditsAdded,
+      cloudConfig: {
+        ...parsedOrg.cloudConfig,
+        credits: currentCredits + creditsAdded,
       },
     },
+  });
+
+  logger.info("[Stripe Webhook] Credits added to organization", {
+    orgId,
+    creditsAdded,
+    newBalance: currentCredits + creditsAdded,
   });
 
   // Track analytics events

@@ -7,11 +7,11 @@ import {
   transformDbDatasetItemDomainToAPIDatasetItem,
   transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError } from "@langfuse/shared";
 import {
   createDatasetItemFilterState,
   getDatasetItems,
 } from "@langfuse/shared/src/server";
+import { LangfuseNotFoundError } from "@langfuse/shared";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -37,7 +37,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset not found");
+        throw new LangfuseNotFoundError("Dataset not found");
       }
 
       const datasetItems = await getDatasetItems({

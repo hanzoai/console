@@ -12,7 +12,7 @@ export class MeteringDataPostgresExportQueue {
   private static instance: Queue | null = null;
 
   public static getInstance(): Queue | null {
-    if (env.HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED !== "true") {
+    if (env.LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED !== "true") {
       return null;
     }
 

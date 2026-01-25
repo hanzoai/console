@@ -41,12 +41,12 @@ const EnvSchema = z.object({
   LANGFUSE_S3_EVENT_UPLOAD_BUCKET: z.string({
     error: "Langfuse requires a bucket name for S3 Event Uploads.",
   }),
-  HANZO_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
-  HANZO_S3_EVENT_UPLOAD_REGION: z.string().optional(),
-  HANZO_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
-  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: z.string().optional(),
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
   LANGFUSE_S3_EVENT_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
@@ -250,30 +250,30 @@ const EnvSchema = z.object({
     .positive()
     .default(5 * 60 * 1000), // 5 minutes
 
-  // Core data S3 upload - Hanzo Cloud
-  HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED: z
+  // Core data S3 upload - Langfuse Cloud
+  LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
-  HANZO_S3_CORE_DATA_UPLOAD_BUCKET: z.string().optional(),
-  HANZO_S3_CORE_DATA_UPLOAD_PREFIX: z.string().default(""),
-  HANZO_S3_CORE_DATA_UPLOAD_REGION: z.string().optional(),
-  HANZO_S3_CORE_DATA_UPLOAD_ENDPOINT: z.string().optional(),
-  HANZO_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  HANZO_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  HANZO_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE: z
+  LANGFUSE_S3_CORE_DATA_UPLOAD_BUCKET: z.string().optional(),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_PREFIX: z.string().default(""),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_REGION: z.string().optional(),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_ENDPOINT: z.string().optional(),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  LANGFUSE_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
   LANGFUSE_S3_CORE_DATA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
   LANGFUSE_S3_CORE_DATA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
 
   // Media upload
-  HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
-  HANZO_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
   LANGFUSE_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),

@@ -45,7 +45,7 @@ export const mediaRouter = createTRPCRouter({
         });
 
       const mediaStorageClient = getMediaStorageServiceClient(media.bucketName);
-      const ttlSeconds = env.LANGFUSE_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
+      const ttlSeconds = env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
       const urlExpiry = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
       const url = await mediaStorageClient.getSignedUrl(
@@ -147,7 +147,7 @@ export const mediaRouter = createTRPCRouter({
       const mediaStorageClient = getMediaStorageServiceClient(
         media[0].bucket_name,
       );
-      const ttlSeconds = env.LANGFUSE_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
+      const ttlSeconds = env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
       const urlExpiry = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
       // Use Promise.all as better to fail all media requests than one of them only

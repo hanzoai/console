@@ -2,11 +2,9 @@
  * Server-side Hanzo Analytics tracking for billing events
  */
 
-import { env } from "@/src/env.mjs";
-
 interface AnalyticsEvent {
   name: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   websiteId?: string;
   hostname?: string;
   language?: string;
@@ -19,19 +17,24 @@ interface AnalyticsEvent {
 /**
  * Send analytics event to Hanzo Analytics API
  */
-export async function trackServerEvent(eventName: string, eventData?: Record<string, any>) {
+export async function trackServerEvent(
+  eventName: string,
+  eventData?: Record<string, unknown>,
+) {
   // Only track if analytics is configured
-  if (!env.NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID) {
+  const siteId = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID;
+  if (!siteId) {
     return;
   }
 
-  const analyticsUrl = env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://a.hanzo.ai";
+  const analyticsUrl =
+    process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://a.hanzo.ai";
   const collectEndpoint = `${analyticsUrl}/api/send`;
 
   const payload: AnalyticsEvent = {
     name: eventName,
     data: eventData,
-    websiteId: env.NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID,
+    websiteId: siteId,
     hostname: "cloud.hanzo.ai",
     url: "/api/billing/webhook",
     title: "Billing Webhook",

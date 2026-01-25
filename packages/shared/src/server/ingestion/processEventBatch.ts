@@ -234,9 +234,9 @@ export const processEventBatch = async (
         // That way we batch updates from the same invocation into a single file and reduce
         // write operations on S3.
         const { data, key, type, eventBodyId } = sortedBatchByEventBodyId[id];
-        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
+        const bucketPath = `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
         return getS3StorageServiceClient(
-          env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+          env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
         ).uploadJson(bucketPath, data);
       }),
     );

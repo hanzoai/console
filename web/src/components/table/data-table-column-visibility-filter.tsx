@@ -10,7 +10,7 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Component, Menu, X } from "lucide-react";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import {
@@ -182,7 +182,7 @@ function GroupVisibilityHeader<TData, TValue>({
   children,
   toggleAll,
 }: {
-  column: LangfuseColumnDef<TData, TValue>;
+  column: HanzoColumnDef<TData, TValue>;
   groupTotalCount: number;
   groupVisibleCount: number;
   isOpen: boolean;

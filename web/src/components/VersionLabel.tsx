@@ -50,7 +50,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
 
   const plan = usePlan();
 
-  const selfHostedPlanLabel = !isHanzoCloud
+  const selfHostedPlanLabel = !isLangfuseCloud
     ? plan && isSelfHostedPlan(plan)
       ? // self-host plan
         // TODO: clean up to use planLabels in packages/shared/src/features/entitlements/plans.ts
@@ -67,12 +67,12 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       null;
 
   const showBackgroundMigrationStatus =
-    !isHanzoCloud &&
+    !isLangfuseCloud &&
     backgroundMigrationStatus.data &&
     backgroundMigrationStatus.data.status !== "FINISHED";
 
   const hasUpdate =
-    !isHanzoCloud && checkUpdate.data && checkUpdate.data.updateType;
+    !isLangfuseCloud && checkUpdate.data && checkUpdate.data.updateType;
 
   const color =
     checkUpdate.data?.updateType === "major"
@@ -136,7 +136,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Releases
           </Link>
         </DropdownMenuItem>
-        {!isHanzoCloud && (
+        {!isLangfuseCloud && (
           <DropdownMenuItem asChild>
             <Link href="/background-migrations">
               <ArrowUp10 size={16} className="mr-2" />
@@ -163,7 +163,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Roadmap
           </Link>
         </DropdownMenuItem>
-        {!isHanzoCloud && (
+        {!isLangfuseCloud && (
           <DropdownMenuItem asChild>
             <Link href="https://hanzo.ai/pricing-self-host" target="_blank">
               <Info size={16} className="mr-2" />

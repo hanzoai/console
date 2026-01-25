@@ -706,7 +706,7 @@ export const scoresRouter = createTRPCRouter({
         logger.warn(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
       }

@@ -80,7 +80,7 @@ describe("DataRetentionProcessingJob", () => {
           entity_type: "trace",
           entity_id: `${baseId}-trace`,
           event_id: randomUUID(),
-          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: fileName,
           created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).getTime(), // 3 days in the past
           updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).getTime(), // 3 days in the past
@@ -139,7 +139,7 @@ describe("DataRetentionProcessingJob", () => {
           entity_type: "trace",
           entity_id: `${baseId}-trace`,
           event_id: randomUUID(),
-          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: fileName,
           created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past
           updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).getTime(), // 30 days in the past

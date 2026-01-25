@@ -53,7 +53,7 @@ export class RateLimitService {
     resource: z.infer<typeof RateLimitResource>,
   ) {
     // if cloud config is not present, we don't apply rate limits and just return
-    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
       return new RateLimitHelper(undefined);
     }
 
@@ -392,18 +392,25 @@ const getPlanBasedRateLimitConfig = (
           const exhaustiveCheck: never = resource;
           throw new Error(`Unhandled resource case: ${exhaustiveCheck}`);
       }
-    case "cloud:dev":
+    case "oss":
+      // OSS has no rate limits
+      return {
+        resource,
+        points: null,
+        durationInSec: null,
+      };
+    case "cloud:free":
       switch (resource) {
         case "ingestion":
           return {
             resource: "ingestion",
-            points: 20000,
+            points: 500,
             durationInSec: 60,
           };
         case "legacy-ingestion":
           return {
-            resource: "prompts",
-            points: 400,
+            resource: "legacy-ingestion",
+            points: 50,
             durationInSec: 60,
           };
         case "prompts":
@@ -415,18 +422,36 @@ const getPlanBasedRateLimitConfig = (
         case "public-api":
           return {
             resource: "public-api",
-            points: 1000,
+            points: 20,
+            durationInSec: 60,
+          };
+        case "datasets":
+          return {
+            resource: "datasets",
+            points: 50,
             durationInSec: 60,
           };
         case "public-api-metrics":
           return {
             resource: "public-api-metrics",
-            points: 10,
-            durationInSec: 60,
+            points: 50,
+            durationInSec: 86400, // 50 requests per day
+          };
+        case "public-api-daily-metrics-legacy":
+          return {
+            resource: "public-api-daily-metrics-legacy",
+            points: 5,
+            durationInSec: 86400, // 5 requests per day
+          };
+        case "trace-delete":
+          return {
+            resource: "trace-delete",
+            points: 25,
+            durationInSec: 86400, // 25 requests per day
           };
         default:
-          const exhaustiveCheckDev: never = resource;
-          throw new Error(`Unhandled resource case: ${exhaustiveCheckDev}`);
+          const exhaustiveCheckFree: never = resource;
+          throw new Error(`Unhandled resource case: ${exhaustiveCheckFree}`);
       }
     default:
       const exhaustiveCheck: never = plan;

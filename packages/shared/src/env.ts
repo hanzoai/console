@@ -98,7 +98,7 @@ const EnvSchema = z.object({
   HANZO_LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal"])
     .optional(),
-  LANGFUSE_LOG_FORMAT: z.enum(["text", "json"]).default("text"),
+  HANZO_LOG_FORMAT: z.enum(["text", "json"]).default("text"),
   LANGFUSE_LOG_PROPAGATED_HEADERS: z
     .string()
     .optional()

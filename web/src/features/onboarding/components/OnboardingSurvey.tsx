@@ -3,7 +3,7 @@ import type { Path } from "react-hook-form";
 import { useRouter } from "next/router";
 import { Button } from "@/src/components/ui/button";
 import { Form } from "@/src/components/ui/form";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { useSurveyForm } from "../hooks/useSurveyForm";
 import { SurveyProgress } from "./SurveyProgress";
 import { SurveyStep } from "./SurveyStep";
@@ -124,7 +124,7 @@ export function OnboardingSurvey() {
   return (
     <div className="flex flex-1 flex-col py-6 sm:min-h-full sm:justify-start sm:px-6 sm:py-12 lg:px-8">
       <div className="flex items-center justify-center gap-2 sm:mx-auto sm:w-full sm:max-w-md">
-        <LangfuseIcon className="h-8 w-8" />
+        <HanzoIcon className="h-8 w-8" />
       </div>
 
       <div className="mt-6 rounded-lg bg-background px-6 py-6 shadow sm:mx-auto sm:mt-16 sm:w-full sm:max-w-[480px] sm:px-12 sm:py-10">

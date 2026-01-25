@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { UserCircle2Icon } from "lucide-react";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { DeactivateEvalConfig } from "@/src/features/evals/components/deactivate-config";
@@ -88,7 +88,7 @@ export const PeekViewEvaluatorConfigDetail = ({
           <Tooltip>
             <TooltipTrigger>
               {evalConfig.evalTemplate.projectId === null ? (
-                <LangfuseIcon size={16} />
+                <HanzoIcon size={16} />
               ) : (
                 <UserCircle2Icon className="h-4 w-4" />
               )}

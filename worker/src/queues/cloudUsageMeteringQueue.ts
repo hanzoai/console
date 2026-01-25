@@ -25,7 +25,7 @@ export const cloudUsageMeteringQueueProcessor: Processor = async (job) => {
       },
     );
     try {
-      return await handleCloudUsageMeteringJob();
+      return await handleCloudUsageMeteringJob(job);
     } catch (error) {
       logger.error(
         "[CloudUsageMeteringQueue] Error executing Cloud Usage Metering Job",

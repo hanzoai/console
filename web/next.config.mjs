@@ -5,6 +5,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import { env } from "./src/env.mjs";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { scheduleCronJob } from "./src/server/serverCron.mjs";
 
 /**
  * CSP headers
@@ -24,7 +25,7 @@ const cspHeader = `
   frame-ancestors 'none';
   connect-src 'self' https://*.langfuse.com https://*.langfuse.dev https://*.ingest.us.sentry.io https://*.sentry.io https://chat.uk.plain.com https://*.s3.amazonaws.com https://prod-uk-services-attachm-attachmentsuploadbucket2-1l2e4906o2asm.s3.eu-west-2.amazonaws.com https://login.microsoftonline.com https://login.microsoft.com https://*.microsoftonline.com https://graph.microsoft.com;
   media-src 'self' https: http://localhost:*;
-  ${env.LANGFUSE_CSP_ENFORCE_HTTPS === "true" ? "upgrade-insecure-requests; block-all-mixed-content;" : ""}
+  ${env.HANZO_CSP_ENFORCE_HTTPS === "true" ? "upgrade-insecure-requests; block-all-mixed-content;" : ""}
   ${env.SENTRY_CSP_REPORT_URI ? `report-uri ${env.SENTRY_CSP_REPORT_URI}; report-to csp-endpoint;` : ""}
 `;
 
@@ -162,7 +163,7 @@ const nextConfig = {
         })),
       },
       // Required to check authentication status from hanzo.ai
-      ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined
+      ...(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== undefined
         ? [
             {
               source: "/api/auth/session",

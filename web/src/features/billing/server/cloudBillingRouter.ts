@@ -30,7 +30,7 @@ export const cloudBillingRouter = createTRPCRouter({
         // Access checks
         throwIfNoOrganizationAccess({
           organizationId: input.orgId,
-          scope: "hanzoCloudBilling:CRUD",
+          scope: "langfuseCloudBilling:CRUD",
           session: ctx.session,
         });
         throwIfNoEntitlement({
@@ -144,7 +144,7 @@ export const cloudBillingRouter = createTRPCRouter({
           mode: checkoutMode,
           metadata: {
             orgId: input.orgId,
-            cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
+            cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? null,
             productType: price.type,
           },
         };
@@ -197,7 +197,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "hanzoCloudBilling:CRUD",
+        scope: "langfuseCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -325,7 +325,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "hanzoCloudBilling:CRUD",
+        scope: "langfuseCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -384,7 +384,7 @@ export const cloudBillingRouter = createTRPCRouter({
 
         throwIfNoOrganizationAccess({
           organizationId: input.orgId,
-          scope: "hanzoCloudBilling:CRUD",
+          scope: "langfuseCloudBilling:CRUD",
           session: ctx.session,
         });
 
@@ -419,20 +419,20 @@ export const cloudBillingRouter = createTRPCRouter({
             parsedOrg.cloudConfig.stripe.activeSubscriptionId,
           );
           if (subscription) {
+            const firstItem = subscription.items.data[0];
             const billingPeriod =
-              subscription.current_period_start &&
-              subscription.current_period_end
+              firstItem?.current_period_start &&
+              firstItem?.current_period_end
                 ? {
-                    start: new Date(subscription.current_period_start * 1000),
-                    end: new Date(subscription.current_period_end * 1000),
+                    start: new Date(firstItem.current_period_start * 1000),
+                    end: new Date(firstItem.current_period_end * 1000),
                   }
                 : null;
             try {
-              const stripeInvoice =
-                await stripeClient.invoices.retrieveUpcoming({
-                  subscription:
-                    parsedOrg.cloudConfig.stripe.activeSubscriptionId,
-                });
+              const stripeInvoice = await stripeClient.invoices.createPreview({
+                subscription:
+                  parsedOrg.cloudConfig.stripe.activeSubscriptionId,
+              });
 
               const upcomingInvoice = {
                 usdAmount: stripeInvoice.amount_due / 100,
@@ -440,16 +440,17 @@ export const cloudBillingRouter = createTRPCRouter({
               };
 
               const usageInvoiceLines = stripeInvoice.lines.data.filter(
-                (line) => Boolean(line.plan?.meter),
+                (line: any) => Boolean(line.price?.recurring?.meter),
               );
-              const usage = usageInvoiceLines.reduce((acc, line) => {
+              const usage = usageInvoiceLines.reduce((acc: number, line: any) => {
                 if (line.quantity) {
                   return acc + line.quantity;
                 }
                 return acc;
               }, 0);
 
-              const meterId = usageInvoiceLines[0]?.plan?.meter;
+              const meterId = (usageInvoiceLines[0] as any)?.price?.recurring
+                ?.meter;
               const meter = meterId
                 ? await stripeClient.billing.meters.retrieve(meterId)
                 : undefined;
@@ -566,12 +567,12 @@ export const cloudBillingRouter = createTRPCRouter({
         return {
           id: latestSubscription.id,
           status: latestSubscription.status,
-          current_period_start: new Date(
-            latestSubscription.current_period_start * 1000,
-          ),
-          current_period_end: new Date(
-            latestSubscription.current_period_end * 1000,
-          ),
+          current_period_start: firstItem?.current_period_start
+            ? new Date(firstItem.current_period_start * 1000)
+            : null,
+          current_period_end: firstItem?.current_period_end
+            ? new Date(firstItem.current_period_end * 1000)
+            : null,
           cancel_at: latestSubscription.cancel_at
             ? new Date(latestSubscription.cancel_at * 1000)
             : null,
@@ -611,7 +612,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "hanzoCloudBilling:CRUD",
+        scope: "langfuseCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -662,12 +663,12 @@ export const cloudBillingRouter = createTRPCRouter({
                 activeProductId: productId,
                 activePriceId: priceId,
                 subscriptionStatus: subscription.status,
-                currentPeriodStart: new Date(
-                  subscription.current_period_start * 1000,
-                ),
-                currentPeriodEnd: new Date(
-                  subscription.current_period_end * 1000,
-                ),
+                currentPeriodStart: subscriptionItem.current_period_start
+                  ? new Date(subscriptionItem.current_period_start * 1000)
+                  : null,
+                currentPeriodEnd: subscriptionItem.current_period_end
+                  ? new Date(subscriptionItem.current_period_end * 1000)
+                  : null,
               },
             }
           : {
@@ -676,12 +677,12 @@ export const cloudBillingRouter = createTRPCRouter({
                 activeProductId: productId,
                 activePriceId: priceId,
                 subscriptionStatus: subscription.status,
-                currentPeriodStart: new Date(
-                  subscription.current_period_start * 1000,
-                ),
-                currentPeriodEnd: new Date(
-                  subscription.current_period_end * 1000,
-                ),
+                currentPeriodStart: subscriptionItem.current_period_start
+                  ? new Date(subscriptionItem.current_period_start * 1000)
+                  : null,
+                currentPeriodEnd: subscriptionItem.current_period_end
+                  ? new Date(subscriptionItem.current_period_end * 1000)
+                  : null,
               },
             };
 
@@ -790,11 +791,10 @@ export const cloudBillingRouter = createTRPCRouter({
             const firstItem = subscription.items.data[0];
             const productId = firstItem?.price?.product as string;
             const billingPeriod =
-              subscription.current_period_start &&
-              subscription.current_period_end
+              firstItem?.current_period_start && firstItem?.current_period_end
                 ? {
-                    start: new Date(subscription.current_period_start * 1000),
-                    end: new Date(subscription.current_period_end * 1000),
+                    start: new Date(firstItem.current_period_start * 1000),
+                    end: new Date(firstItem.current_period_end * 1000),
                   }
                 : null;
             return {
@@ -925,7 +925,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "hanzoCloudBilling:CRUD",
+        scope: "langfuseCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({

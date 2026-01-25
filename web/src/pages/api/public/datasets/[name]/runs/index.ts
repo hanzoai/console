@@ -32,7 +32,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset not found");
+        throw new LangfuseNotFoundError("Dataset not found");
       }
 
       const totalItems = await prisma.datasetRuns.count({

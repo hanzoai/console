@@ -1,6 +1,6 @@
 import z from "zod/v4";
 
-export const hanzoObjects = [
+export const langfuseObjects = [
   "trace",
   "span",
   "generation",
@@ -30,9 +30,9 @@ export const variableMapping = z
     jsonSelector: z.string().nullish(),
   })
   .refine(
-    (value) => value.hanzoObject === "trace" || value.objectName !== null,
+    (value) => value.langfuseObject === "trace" || value.objectName !== null,
     {
-      message: "objectName is required for hanzoObjects other than trace",
+      message: "objectName is required for langfuseObjects other than trace",
     },
   );
 

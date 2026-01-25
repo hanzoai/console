@@ -12,11 +12,13 @@ import * as z from "zod/v4";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
+import { parseDbOrg } from "@hanzo/shared";
 import { redis } from "@langfuse/shared/src/server";
 import { createBillingServiceFromContext } from "@/src/ee/features/billing/server/stripeBillingService";
 import { isCloudBillingEnabled } from "@/src/ee/features/billing/utils/isCloudBilling";
 
 import { env } from "@/src/env.mjs";
+import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 export const organizationsRouter = createTRPCRouter({
   create: authenticatedProcedure
@@ -30,15 +32,19 @@ export const organizationsRouter = createTRPCRouter({
 
       const organization = await ctx.prisma.organization.create({
         data: {
-          expiredAt: addDaysAndRoundToNextDay(
-            Number(env.HANZO_S3_FREE_PLAN_EXPIRE) ?? 90, // default 90 day if not config in env
-          ),
           name: input.name,
           organizationMemberships: {
             create: {
               userId: ctx.session.user.id,
               role: "OWNER",
             },
+          },
+          // Store trial expiry in cloudConfig
+          cloudConfig: {
+            plan: "free",
+            trialExpiresAt: addDaysAndRoundToNextDay(
+              Number(env.HANZO_TRIAL_EXPIRE) || 90, // default 90 day if not config in env
+            ).toISOString(),
           },
         },
       });
@@ -221,11 +227,50 @@ export const organizationsRouter = createTRPCRouter({
       }
 
       // Extract credits from cloudConfig, default to 0 if not present
-      const credits = organization.credits;
+      const parsedOrg = parseDbOrg(organization);
+      const credits = parsedOrg.cloudConfig?.credits ?? 0;
 
       return {
         ...organization,
         credits: Number(credits),
       };
+    }),
+  updateCredits: protectedOrganizationProcedure
+    .input(
+      z.object({
+        orgId: z.string(),
+        credits: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoOrganizationAccess({
+        session: ctx.session,
+        organizationId: input.orgId,
+        scope: "organization:update",
+      });
+
+      // Get current organization to update cloudConfig
+      const org = await ctx.prisma.organization.findUnique({
+        where: { id: input.orgId },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+      const parsedOrg = parseDbOrg(org);
+
+      await ctx.prisma.organization.update({
+        where: { id: input.orgId },
+        data: {
+          cloudConfig: {
+            ...parsedOrg.cloudConfig,
+            credits: input.credits,
+          },
+        },
+      });
+
+      return true;
     }),
 });

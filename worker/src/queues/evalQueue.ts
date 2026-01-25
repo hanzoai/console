@@ -27,7 +27,7 @@ export const evalJobTraceCreatorQueueProcessor = async (
       event: job.data.payload,
       jobTimestamp: job.data.timestamp,
       enforcedJobTimeScope: "NEW", // we must not execute evals which are intended for existing data only.
-    } */);
+    });
     return true;
   } catch (e) {
     logger.error(
@@ -48,7 +48,7 @@ export const evalJobDatasetCreatorQueueProcessor = async (
       event: job.data.payload,
       jobTimestamp: job.data.timestamp,
       enforcedJobTimeScope: "NEW", // we must not execute evals which are intended for existing data only.
-    } */);
+    });
     return true;
   } catch (e) {
     // Handle observation-not-found errors with manual retry

@@ -121,7 +121,7 @@ if (env.QUEUE_CONSUMER_TRACE_UPSERT_QUEUE_IS_ENABLED === "true") {
       shardName as QueueName,
       evalJobTraceCreatorQueueProcessor,
       {
-        concurrency: env.LANGFUSE_TRACE_UPSERT_WORKER_CONCURRENCY,
+        concurrency: env.HANZO_TRACE_UPSERT_WORKER_CONCURRENCY,
       },
     );
   });
@@ -142,7 +142,7 @@ if (env.QUEUE_CONSUMER_CREATE_EVAL_QUEUE_IS_ENABLED === "true") {
   );
 }
 
-if (env.HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
+if (env.LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
   // Instantiate the queue to trigger scheduled jobs
   CoreDataS3ExportQueue.getInstance();
   WorkerManager.register(
@@ -156,7 +156,7 @@ if (env.HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED === "true") {
   MeteringDataPostgresExportQueue.getInstance();
   WorkerManager.register(
     QueueName.MeteringDataPostgresExportQueue,
-    async (job) => meteringDataPostgresExportProcessor.process(),
+    meteringDataPostgresExportProcessor,
     {
       limiter: {
         // Process at most `max` jobs per 30 seconds
@@ -207,7 +207,7 @@ if (env.QUEUE_CONSUMER_DATASET_DELETE_QUEUE_IS_ENABLED === "true") {
 
 if (env.QUEUE_CONSUMER_PROJECT_DELETE_QUEUE_IS_ENABLED === "true") {
   WorkerManager.register(QueueName.ProjectDelete, projectDeleteProcessor, {
-    concurrency: env.HANZO_PROJECT_DELETE_CONCURRENCY,
+    concurrency: env.LANGFUSE_PROJECT_DELETE_CONCURRENCY,
     limiter: {
       // Process at most `max` delete jobs per LANGFUSE_CLICKHOUSE_PROJECT_DELETION_CONCURRENCY_DURATION_MS (default 10 min)
       max: env.LANGFUSE_PROJECT_DELETE_CONCURRENCY,
@@ -222,7 +222,7 @@ if (env.QUEUE_CONSUMER_DATASET_RUN_ITEM_UPSERT_QUEUE_IS_ENABLED === "true") {
     QueueName.DatasetRunItemUpsert,
     evalJobDatasetCreatorQueueProcessor,
     {
-      concurrency: env.HANZO_EVAL_CREATOR_WORKER_CONCURRENCY,
+      concurrency: env.LANGFUSE_EVAL_CREATOR_WORKER_CONCURRENCY,
     },
   );
 }

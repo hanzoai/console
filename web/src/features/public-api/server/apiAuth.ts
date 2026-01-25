@@ -12,6 +12,7 @@ import {
   invalidateCachedApiKeys as invalidateCachedApiKeysShared,
   invalidateCachedOrgApiKeys as invalidateCachedOrgApiKeysShared,
   invalidateCachedProjectApiKeys as invalidateCachedProjectApiKeysShared,
+  unregisterKeyFromLLM,
 } from "@langfuse/shared/src/server";
 import {
   type PrismaClient,
@@ -338,7 +339,7 @@ export class ApiAuthService {
     hash: string,
     newApiKey: z.infer<typeof OrgEnrichedApiKey> | typeof API_KEY_NON_EXISTENT,
   ) {
-    if (!this.redis || env.HANZO_CACHE_API_KEY_ENABLED !== "true") {
+    if (!this.redis || env.LANGFUSE_CACHE_API_KEY_ENABLED !== "true") {
       return;
     }
 
@@ -347,7 +348,7 @@ export class ApiAuthService {
         this.createRedisKey(hash),
         JSON.stringify(newApiKey),
         "EX",
-        env.HANZO_CACHE_API_KEY_TTL_SECONDS, // redis API is in seconds
+        env.LANGFUSE_CACHE_API_KEY_TTL_SECONDS, // redis API is in seconds
       );
     } catch (error: unknown) {
       logger.error("Error adding key to redis", error);
@@ -363,7 +364,7 @@ export class ApiAuthService {
       const redisApiKey = await this.redis.getex(
         this.createRedisKey(hash),
         "EX",
-        env.HANZO_CACHE_API_KEY_TTL_SECONDS, // redis API is in seconds
+        env.LANGFUSE_CACHE_API_KEY_TTL_SECONDS, // redis API is in seconds
       );
 
       if (!redisApiKey) {

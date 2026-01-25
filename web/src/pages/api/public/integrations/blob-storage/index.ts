@@ -6,19 +6,16 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import {
   CreateBlobStorageIntegrationRequest,
-  type BlobStorageIntegrationResponseType,
-} from "@/src/features/public-api/types/blob-storage-integrations";
+  type BlobStorageIntegrationResponseType } from "@/src/features/public-api/types/blob-storage-integrations";
 import {
   LangfuseNotFoundError,
   UnauthorizedError,
-  ForbiddenError,
-} from "@langfuse/shared";
+  ForbiddenError } from "@langfuse/shared";
 import { encrypt } from "@langfuse/shared/encryption";
 
 export default withMiddlewares({
   GET: handleGetBlobStorageIntegrations,
-  PUT: handleUpsertBlobStorageIntegration,
-});
+  PUT: handleUpsertBlobStorageIntegration });
 
 async function handleGetBlobStorageIntegrations(
   req: NextApiRequest,
@@ -47,8 +44,7 @@ async function handleGetBlobStorageIntegrations(
   if (
     !hasEntitlementBasedOnPlan({
       plan: authCheck.scope.plan,
-      entitlement: "scheduled-blob-exports",
-    })
+      entitlement: "scheduled-blob-exports" })
   ) {
     throw new ForbiddenError(
       "scheduled-blob-exports entitlement required for this feature.",
@@ -58,15 +54,12 @@ async function handleGetBlobStorageIntegrations(
   // Get all projects for the organization
   const projects = await prisma.project.findMany({
     where: { orgId: authCheck.scope.orgId },
-    select: { id: true },
-  });
+    select: { id: true } });
 
   // Get all blob storage integrations for these projects
   const integrations = await prisma.blobStorageIntegration.findMany({
     where: {
-      projectId: { in: projects.map((p) => p.id) },
-    },
-  });
+      projectId: { in: projects.map((p) => p.id) } } });
 
   // Transform to API response format, exclude secretAccessKey
   const responseData: BlobStorageIntegrationResponseType[] = integrations.map(
@@ -88,13 +81,11 @@ async function handleGetBlobStorageIntegrations(
       nextSyncAt: integration.nextSyncAt,
       lastSyncAt: integration.lastSyncAt,
       createdAt: integration.createdAt,
-      updatedAt: integration.updatedAt,
-    }),
+      updatedAt: integration.updatedAt }),
   );
 
   return res.status(200).json({
-    data: responseData,
-  });
+    data: responseData });
 }
 
 async function handleUpsertBlobStorageIntegration(
@@ -124,8 +115,7 @@ async function handleUpsertBlobStorageIntegration(
   if (
     !hasEntitlementBasedOnPlan({
       plan: authCheck.scope.plan,
-      entitlement: "scheduled-blob-exports",
-    })
+      entitlement: "scheduled-blob-exports" })
   ) {
     throw new ForbiddenError(
       "scheduled-blob-exports entitlement required for this feature.",
@@ -138,8 +128,7 @@ async function handleUpsertBlobStorageIntegration(
   // Check if the project exists and belongs to the organization
   const project = await prisma.project.findUnique({
     where: { id: validatedData.projectId },
-    select: { id: true, orgId: true },
-  });
+    select: { id: true, orgId: true } });
   if (!project || project.orgId !== authCheck.scope.orgId) {
     throw new LangfuseNotFoundError("Project not found");
   }
@@ -161,15 +150,13 @@ async function handleUpsertBlobStorageIntegration(
     forcePathStyle: validatedData.forcePathStyle,
     fileType: validatedData.fileType,
     exportMode: validatedData.exportMode,
-    exportStartDate: validatedData.exportStartDate || null,
-  };
+    exportStartDate: validatedData.exportStartDate || null };
 
   // Upsert the integration (create or update)
   const integration = await prisma.blobStorageIntegration.upsert({
     where: { projectId: validatedData.projectId },
     update: dbData,
-    create: dbData,
-  });
+    create: dbData });
 
   // Transform to API response format, exclude secretAccessKey
   const responseData: BlobStorageIntegrationResponseType = {
@@ -190,8 +177,7 @@ async function handleUpsertBlobStorageIntegration(
     nextSyncAt: integration.nextSyncAt,
     lastSyncAt: integration.lastSyncAt,
     createdAt: integration.createdAt,
-    updatedAt: integration.updatedAt,
-  };
+    updatedAt: integration.updatedAt };
 
   return res.status(200).json(responseData);
 }

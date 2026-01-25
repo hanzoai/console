@@ -19,8 +19,8 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   currentSubscription
 }) => {
   const { mutate: createCheckoutSession } = api.cloudBilling.createStripeCheckoutSession.useMutation({
-    onSuccess: (data) => {
-      if (data.url) window.location.href = data.url;
+    onSuccess: (url) => {
+      if (url) window.location.href = url;
     },
     onError: (error) => {
       console.error("Failed to create checkout session", error);
@@ -82,7 +82,6 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
       // If already subscribed to this plan, cancel the subscription
       cancelSubscription({
         orgId,
-        stripeProductId
       });
     } else {
       console.log('Creating checkout session for product:', stripeProductId);

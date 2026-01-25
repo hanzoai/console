@@ -5,20 +5,18 @@ import {
   GetTraceV1Query,
   GetTraceV1Response,
   DeleteTraceV1Query,
-  DeleteTraceV1Response,
-} from "@/src/features/public-api/types/traces";
+  DeleteTraceV1Response } from "@/src/features/public-api/types/traces";
 import {
   filterAndValidateDbTraceScoreList,
   LangfuseNotFoundError,
-} from "@langfuse/shared";
+ } from "@langfuse/shared";
 import { prisma } from "@langfuse/shared/src/db";
 import {
   getObservationsForTrace,
   getScoresForTraces,
   getTraceById,
   traceException,
-  traceDeletionProcessor,
-} from "@langfuse/shared/src/server";
+  traceDeletionProcessor } from "@langfuse/shared/src/server";
 import Decimal from "decimal.js";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
@@ -33,8 +31,7 @@ export default withMiddlewares({
         traceId,
         projectId: auth.scope.projectId,
         clickhouseFeatureTag: "tracing-public-api",
-        preferredClickhouseService: "ReadOnly",
-      });
+        preferredClickhouseService: "ReadOnly" });
 
       if (!trace) {
         throw new LangfuseNotFoundError(
@@ -48,14 +45,12 @@ export default withMiddlewares({
           projectId: auth.scope.projectId,
           timestamp: trace?.timestamp,
           includeIO: true,
-          preferredClickhouseService: "ReadOnly",
-        }),
+          preferredClickhouseService: "ReadOnly" }),
         getScoresForTraces({
           projectId: auth.scope.projectId,
           traceIds: [traceId],
           timestamp: trace?.timestamp,
-          preferredClickhouseService: "ReadOnly",
-        }),
+          preferredClickhouseService: "ReadOnly" }),
       ]);
 
       const uniqueModels: string[] = Array.from(
@@ -71,14 +66,10 @@ export default withMiddlewares({
           ? await prisma.model.findMany({
               where: {
                 id: {
-                  in: uniqueModels,
-                },
-                OR: [{ projectId: auth.scope.projectId }, { projectId: null }],
-              },
+                  in: uniqueModels },
+                OR: [{ projectId: auth.scope.projectId }, { projectId: null }] },
               include: {
-                Price: true,
-              },
-            })
+                Price: true } })
           : [];
 
       const observationsView = observations.map((o) => {
@@ -96,8 +87,7 @@ export default withMiddlewares({
           ...o,
           inputPrice,
           outputPrice,
-          totalPrice,
-        };
+          totalPrice };
       });
 
       const outObservations = observationsView.map(transformDbToApiObservation);
@@ -105,8 +95,7 @@ export default withMiddlewares({
       // For type consistency, we validate the scores against the v1 schema which requires a traceId
       const validatedScores = filterAndValidateDbTraceScoreList({
         scores,
-        onParseError: traceException,
-      });
+        onParseError: traceException });
 
       const obsStartTimes = observations
         .map((o) => o.startTime)
@@ -138,10 +127,8 @@ export default withMiddlewares({
             (acc, obs) => acc.add(obs.calculatedTotalCost ?? new Decimal(0)),
             new Decimal(0),
           )
-          .toNumber(),
-      };
-    },
-  }),
+          .toNumber() };
+    } }),
 
   DELETE: createAuthedProjectAPIRoute({
     name: "Delete Single Trace",
@@ -157,12 +144,9 @@ export default withMiddlewares({
         action: "delete",
         projectId: auth.scope.projectId,
         apiKeyId: auth.scope.apiKeyId,
-        orgId: auth.scope.orgId,
-      });
+        orgId: auth.scope.orgId });
 
       await traceDeletionProcessor(auth.scope.projectId, [traceId]);
 
       return { message: "Trace deleted successfully" };
-    },
-  }),
-});
+    } }) });

@@ -22,6 +22,9 @@ export const HanzoCloudIcon = ({
   />
 );
 
+// Alias for backwards compatibility with LangfuseIcon imports
+export const HanzoIcon = HanzoCloudIcon;
+
 const HanzoCloudLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
   const uiCustomization = useUiCustomization();
 
@@ -99,3 +102,6 @@ export const HanzoCloudLogo = ({
     </div>
   );
 };
+
+// Alias for backwards compatibility
+export const HanzoLogo = HanzoCloudLogo;

@@ -122,7 +122,7 @@ function DatasetCompareRunsTableInternal(props: {
       getFiltersForRun,
     });
 
-  const columns: HanzoColumnDef<DatasetCompareRunRowData>[] = [
+  const columns: LangfuseColumnDef<DatasetCompareRunRowData>[] = [
     {
       accessorKey: "id",
       header: "Item id",

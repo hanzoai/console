@@ -2,7 +2,7 @@ import { env } from "@/src/env.mjs";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
 import { parseFlags } from "@/src/features/feature-flags/utils";
-import { prisma } from "@hanzo/shared/src/db";
+import { prisma } from "@langfuse/shared/src/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -11,12 +11,6 @@ import {
   type Session,
   type User,
 } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@langfuse/shared/src/db";
-import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
-import { parseFlags } from "@/src/features/feature-flags/utils";
-import { env } from "@/src/env.mjs";
-import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
 import {
   type Adapter,
   type AdapterAccount,
@@ -63,6 +57,7 @@ import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,
 } from "@/src/features/entitlements/server/getPlan";
+import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSSOBlockedDomains } from "@/src/features/auth-credentials/server/signupApiHandler";
 import { createSupportEmailHash } from "@/src/features/support-chat/createSupportEmailHash";
@@ -643,6 +638,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                       },
                     },
                   },
+                  ProjectMemberships: true,
                 },
               },
             },
@@ -681,24 +677,24 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                           membership.organization.cloudConfig,
                         );
                         return {
-                          id: orgMembership.organization.id,
-                          name: orgMembership.organization.name,
-                          role: orgMembership.role,
+                          id: membership.organization.id,
+                          name: membership.organization.name,
+                          role: membership.role,
                           metadata:
-                            (orgMembership.organization.metadata as Record<
+                            (membership.organization.metadata as Record<
                               string,
                               unknown
                             >) ?? {},
                           aiFeaturesEnabled:
-                            orgMembership.organization.aiFeaturesEnabled,
+                            membership.organization.aiFeaturesEnabled,
                           cloudConfig: parsedCloudConfig.data,
-                          projects: orgMembership.organization.projects
+                          projects: membership.organization.projects
                             .map((project) => {
                               const projectRole = resolveProjectRole({
                                 projectId: project.id,
                                 projectMemberships:
-                                  orgMembership.ProjectMemberships,
-                                orgMembershipRole: orgMembership.role,
+                                  membership.ProjectMemberships,
+                                orgMembershipRole: membership.role,
                               });
                               return {
                                 id: project.id,
@@ -781,6 +777,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               });
             if (
               isMultiTenantSsoProvider &&
+              ssoDomain &&
               ssoDomain.toLowerCase() !== userDomain.toLowerCase()
             ) {
               throw new Error(
@@ -838,7 +835,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     pages: {
       signIn: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/sign-in`,
       error: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/error`,
-      ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION
+      ...(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
         ? {
             newUser: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`,
           }
@@ -874,16 +871,16 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       createUser: async ({ user }) => {
         if (
           env.HANZO_NEW_USER_SIGNUP_WEBHOOK &&
-          env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
-          env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "STAGING" &&
-          env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "DEV"
+          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
+          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "STAGING" &&
+          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "DEV"
         ) {
           await fetch(env.HANZO_NEW_USER_SIGNUP_WEBHOOK, {
             method: "POST",
             body: JSON.stringify({
               name: user.name,
               email: user.email,
-              cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
+              cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
               userId: user.id,
               // referralSource: ...
             }),
@@ -924,7 +921,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     },
     allowDangerousEmailAccountLinking:
       env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
-    async profile(profile, tokens) {
+    async profile(profile, _tokens) {
       const dbUser = await prisma.user.upsert({
         where: { email: profile.email },
         create: {
@@ -946,8 +943,21 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           organizationMemberships: {
             include: {
               organization: {
-                include: {
-                  projects: true,
+                select: {
+                  id: true,
+                  name: true,
+                  cloudConfig: true,
+                  metadata: true,
+                  aiFeaturesEnabled: true,
+                  projects: {
+                    select: {
+                      id: true,
+                      name: true,
+                      retentionDays: true,
+                      deletedAt: true,
+                      metadata: true,
+                    },
+                  },
                 },
               },
             },
@@ -971,6 +981,12 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             name: orgMembership.organization.name,
             role: orgMembership.role,
             cloudConfig: parsedCloudConfig.data,
+            metadata: (orgMembership.organization.metadata ?? {}) as Record<
+              string,
+              unknown
+            >,
+            aiFeaturesEnabled:
+              orgMembership.organization.aiFeaturesEnabled ?? true,
             projects: orgMembership.organization.projects
               .map((project) => {
                 return {
@@ -979,6 +995,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                   role: orgMembership.role,
                   retentionDays: project.retentionDays,
                   deletedAt: project.deletedAt,
+                  metadata: (project.metadata ?? {}) as Record<string, unknown>,
                 };
               })
               .filter((project) =>

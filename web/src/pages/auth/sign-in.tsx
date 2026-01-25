@@ -31,10 +31,9 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/v4";
 import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPrivacyNotice";
-import { CloudRegionSwitch } from "@/src/features/auth/components/AuthCloudRegionSwitch";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { isAnySsoConfigured } from "@/src/ee/features/multi-tenant-sso/utils";
-import { Code, Key } from "lucide-react";
+import { Code, Key, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { captureException } from "@sentry/nextjs";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -712,25 +711,10 @@ export default function SignIn({
     }
   }
 
-  const [providerSigningIn, setProviderSigningIn] =
-    useState<NextAuthProvider | null>(null);
-
-  const handleSignIn = (provider: NextAuthProvider) => {
-    setProviderSigningIn(provider);
-    capture("sign_in:button_click", { provider });
-    signIn(provider)
-      .then(() => {
-        // do not reset loadingProvider here, as the page will reload
-      })
-      .catch((error) => {
-        console.error(error);
-        setProviderSigningIn(null);
-      });
-  };
-
   useEffect(() => {
-    handleSignIn('hanzo-iam')
-  }, [authProviders]);
+    capture("sign_in:button_click", { provider: "hanzo-iam" });
+    void signIn("hanzo-iam");
+  }, [capture]);
 
   return (
     <>
@@ -758,7 +742,7 @@ export default function SignIn({
           </div>
         )}
 
-        <CloudRegionSwitch /> */}
+        {/* CloudRegionSwitch - disabled for Hanzo */}
 
         <div className="mt-14 bg-background px-6 py-10 shadow sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
           <div className="space-y-6">

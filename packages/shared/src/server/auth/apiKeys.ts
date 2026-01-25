@@ -152,8 +152,10 @@ export async function createAndAddApiKeysToDb(p: {
     }
   });
 
-  // Register with LLM API
-  await registerKeyWithLLM(pk, sk, p.projectId, apiKey.project.orgId);
+  // Register with LLM API (only for project-scoped keys)
+  if (p.scope === "PROJECT" && apiKey.project) {
+    await registerKeyWithLLM(pk, sk, p.entityId, apiKey.project.organization?.id);
+  }
 
   return {
     id: apiKey.id,

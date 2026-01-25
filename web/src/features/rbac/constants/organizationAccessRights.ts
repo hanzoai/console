@@ -39,7 +39,7 @@ export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
     "organizationMembers:read",
     "auditLogs:read",
   ],
-  ADMIN_BILLING: ["hanzoCloudBilling:CRUD"],
+  ADMIN_BILLING: ["langfuseCloudBilling:CRUD"],
   MEMBER: ["organizationMembers:read"],
   VIEWER: [],
   NONE: [],

@@ -17,7 +17,7 @@ type SendMembershipInvitationParams = {
     Record<
       | "EMAIL_FROM_ADDRESS"
       | "SMTP_CONNECTION_URL"
-      | "NEXT_PUBLIC_HANZO_CLOUD_REGION"
+      | "NEXT_PUBLIC_LANGFUSE_CLOUD_REGION"
       | "NEXTAUTH_URL",
       string | undefined
     >
@@ -79,7 +79,7 @@ export const sendMembershipInvitationEmail = async ({
         inviteLink: inviteLink,
         userExists: userExists,
         emailFromAddress: env.EMAIL_FROM_ADDRESS,
-        langfuseCloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+        hanzoCloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
       }),
     );
 

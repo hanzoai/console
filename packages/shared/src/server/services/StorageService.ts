@@ -457,7 +457,7 @@ class S3StorageService implements StorageService {
       forcePathStyle: params.forcePathStyle,
       requestHandler: {
         httpsAgent: {
-          maxSockets: env.HANZO_S3_CONCURRENT_WRITES,
+          maxSockets: env.LANGFUSE_S3_CONCURRENT_WRITES,
         },
       },
     });

@@ -5,14 +5,12 @@ import {
   GetScoreConfigResponse,
   PutScoreConfigBody as PatchScoreConfigBody,
   PutScoreConfigQuery as PatchScoreConfigQuery,
-  PutScoreConfigResponse as PatchScoreConfigResponse,
-} from "@/src/features/public-api/types/score-configs";
+  PutScoreConfigResponse as PatchScoreConfigResponse } from "@/src/features/public-api/types/score-configs";
 import {
   InternalServerError,
   InvalidRequestError,
   LangfuseNotFoundError,
-  validateDbScoreConfigSafe,
-} from "@langfuse/shared";
+  validateDbScoreConfigSafe } from "@langfuse/shared";
 import { prisma } from "@langfuse/shared/src/db";
 import { traceException } from "@langfuse/shared/src/server";
 
@@ -25,12 +23,10 @@ export default withMiddlewares({
       const config = await prisma.scoreConfig.findUnique({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId,
-        },
-      });
+          projectId: auth.scope.projectId } });
 
       if (!config) {
-        throw new HanzoNotFoundError(
+        throw new LangfuseNotFoundError(
           "Score config not found within authorized project",
         );
       }
@@ -42,8 +38,7 @@ export default withMiddlewares({
       }
 
       return parsedConfig.data;
-    },
-  }),
+    } }),
   PATCH: createAuthedProjectAPIRoute({
     name: "Update a Score Config",
     querySchema: PatchScoreConfigQuery,
@@ -53,9 +48,7 @@ export default withMiddlewares({
       const existingConfig = await prisma.scoreConfig.findUnique({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId,
-        },
-      });
+          projectId: auth.scope.projectId } });
 
       if (!existingConfig) {
         throw new LangfuseNotFoundError(
@@ -75,14 +68,9 @@ export default withMiddlewares({
       await prisma.scoreConfig.update({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId,
-        },
+          projectId: auth.scope.projectId },
         data: {
-          ...body,
-        },
-      });
+          ...body } });
 
       return result.data;
-    },
-  }),
-});
+    } }) });

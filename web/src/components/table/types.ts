@@ -30,3 +30,9 @@ export type HanzoColumnDef<
   // Enforce hanzo group columns to have children of type 'HanzoColumnDef'
   columns?: HanzoColumnDef<TData, TValue>[];
 };
+
+// Alias for backward compatibility
+export type LangfuseColumnDef<
+  TData extends RowData,
+  TValue = unknown,
+> = HanzoColumnDef<TData, TValue>;

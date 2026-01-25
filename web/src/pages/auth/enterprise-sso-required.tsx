@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod/v4";
 import { useForm } from "react-hook-form";
-import { LangfuseIcon } from "@/src/components/LangfuseLogo";
+import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { Button } from "@/src/components/ui/button";
 import {
   Form,
@@ -143,7 +143,7 @@ export default function EnterpriseSsoRequiredPage() {
       </Head>
       <div className="flex min-h-screen-with-banner flex-col justify-center bg-background px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <LangfuseIcon className="mx-auto" />
+          <HanzoIcon className="mx-auto" />
           <h1 className="mt-6 text-center text-2xl font-bold text-primary">
             Use your Enterprise SSO
           </h1>

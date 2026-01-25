@@ -29,7 +29,7 @@ export default withMiddlewares({
         datasetItemId: datasetItemId,
       });
       if (!datasetItem) {
-        throw new HanzoNotFoundError("Dataset item not found");
+        throw new LangfuseNotFoundError("Dataset item not found");
       }
 
       const dataset = await prisma.dataset.findUnique({
