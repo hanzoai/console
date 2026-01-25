@@ -44,7 +44,7 @@ export default function SSOInitiate() {
     return (
       <>
         <Head>
-          <title>Sign-in Error | Langfuse</title>
+          <title>Sign-in Error | Hanzo Console</title>
         </Head>
         <ErrorPageWithSentry title="SSO Sign-in Failed" message={error} />
       </>
@@ -55,7 +55,7 @@ export default function SSOInitiate() {
   return (
     <>
       <Head>
-        <title>Signing in | Langfuse</title>
+        <title>Signing in | Hanzo Console</title>
       </Head>
       <Spinner message="Redirecting to your identity provider..." />
     </>

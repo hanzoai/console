@@ -10,7 +10,7 @@
  * - Proper indentation for nested dimension levels
  * - Subtotal and grand total calculations
  * - Responsive design within dashboard grid
- * - Consistent styling with Langfuse design system
+ * - Consistent styling with Hanzo design system
  * - Row limiting to prevent performance issues
  * - Interactive sorting with hierarchical behavior
  *

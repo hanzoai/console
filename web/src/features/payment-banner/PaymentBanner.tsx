@@ -121,7 +121,7 @@ export function PaymentBanner() {
           <span className="text-sm font-semibold">Billing Issue:</span>
           <span className="text-sm">
             {canManageBilling
-              ? `We have problems collecting subscription payment for your organization '${organization.name}'. Please update your payment information to continue using Langfuse.`
+              ? `We have problems collecting subscription payment for your organization '${organization.name}'. Please update your payment information to continue using Hanzo Console.`
               : `We have problems collecting subscription payment for your organization '${organization.name}'. Please notify your organization administrator to avoid service interruption.`}
           </span>
         </div>

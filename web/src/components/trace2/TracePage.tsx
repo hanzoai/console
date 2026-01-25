@@ -118,17 +118,17 @@ export function TracePage({
         asChild
         size="sm"
         variant="outline"
-        title="Back to Langfuse"
+        title="Back to Console"
         className="px-3"
       >
-        <Link href="/">Langfuse</Link>
+        <Link href="/">Console</Link>
       </Button>
     ) : (
       <Button
         asChild
         size="sm"
         variant="default"
-        title="Sign in to Langfuse"
+        title="Sign in to Hanzo Console"
         className="px-3"
       >
         <Link href={`/auth/sign-in?targetPath=${encodedTargetPath}`}>

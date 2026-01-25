@@ -161,7 +161,7 @@ const DataRegionInfo = () => (
       </DialogHeader>
       <DialogBody>
         <DialogDescription className="flex flex-col gap-2">
-          <p>Langfuse Cloud is available in three data regions:</p>
+          <p>Hanzo Console Cloud is available in three data regions:</p>
           <ul className="list-disc pl-5">
             <li>US: Oregon (AWS us-west-2)</li>
             <li>EU: Ireland (AWS eu-west-1)</li>

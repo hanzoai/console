@@ -874,7 +874,7 @@ export const InnerEvaluatorForm = (props: {
                               <VariableMappingDescription
                                 title="Object"
                                 description={
-                                  "Langfuse object to retrieve the data from."
+                                  "Hanzo object to retrieve the data from."
                                 }
                                 href={
                                   "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
@@ -937,7 +937,7 @@ export const InnerEvaluatorForm = (props: {
                                   <VariableMappingDescription
                                     title={"Object Name"}
                                     description={
-                                      "Name of the Langfuse object to retrieve the data from."
+                                      "Name of the object to retrieve the data from."
                                     }
                                     href={
                                       "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
@@ -1037,7 +1037,7 @@ export const InnerEvaluatorForm = (props: {
                               <VariableMappingDescription
                                 title={"Object Variable"}
                                 description={
-                                  "Variable on the Langfuse object to insert into the template."
+                                  "Variable on the Hanzo object to insert into the template."
                                 }
                                 href={
                                   "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"

@@ -605,7 +605,7 @@ export function CreateLLMApiKeyForm({
               <FormItem>
                 <FormLabel>Provider name</FormLabel>
                 <FormDescription>
-                  Key to identify the connection within Langfuse. Cannot contain
+                  Key to identify the connection within Hanzo. Cannot contain
                   colons.
                 </FormDescription>
                 <FormControl>
@@ -1041,7 +1041,7 @@ export function CreateLLMApiKeyForm({
                         <FormLabel>Enable default models</FormLabel>
                         <FormDescription>
                           Default models for the selected adapter will be
-                          available in Langfuse features.
+                          available in Hanzo features.
                         </FormDescription>
                       </span>
 

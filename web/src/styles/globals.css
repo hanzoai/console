@@ -59,8 +59,9 @@
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 0 0% 40%;
 
-    --primary-accent: 243 75.4% 58.6%;
-    --hover-primary-accent: 239 83.5% 66.7%;
+    /* Hanzo Brand Red #fd4444 */
+    --primary-accent: 0 98% 63%;
+    --hover-primary-accent: 0 90% 55%;
 
     --muted-green: 84 81% 44%;
     --muted-magenta: 330 90% 70%;
@@ -149,8 +150,9 @@
 
     --ring: 217.2 32.6% 17.5%;
 
-    --primary-accent: 246 55% 70%;
-    --muted-primary-accent: 239 83.5% 66.7%;
+    /* Hanzo Brand Red (dark mode variant) */
+    --primary-accent: 0 85% 65%;
+    --muted-primary-accent: 0 70% 50%;
 
     --muted-blue: 215 95% 73.1%;
     --muted-green: 142 76.7% 73.1%;
@@ -216,9 +218,14 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 
   html,

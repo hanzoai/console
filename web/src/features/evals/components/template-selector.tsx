@@ -273,7 +273,7 @@ export const TemplateSelector = ({
 
                 {filteredTemplates.langfuse.length > 0 && (
                   <InputCommandGroup
-                    heading="Langfuse managed evaluators"
+                    heading="Hanzo managed evaluators"
                     className="max-h-full min-h-0"
                   >
                     {filteredTemplates.langfuse.map(([name, templateData]) => {

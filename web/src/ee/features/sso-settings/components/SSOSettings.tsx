@@ -42,7 +42,7 @@ export const SSOSettings = () => {
       {commonContent}
       <Alert>
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Contact Langfuse Support</AlertTitle>
+        <AlertTitle>Contact Hanzo Support</AlertTitle>
         <AlertDescription className="flex flex-col gap-3">
           <p>
             To set up or change your SSO configuration, please reach out to our
