@@ -58,8 +58,8 @@ ENV NEXT_MANUAL_SIG_HANDLE true
 
 # pass public variables in build step
 ARG NEXT_PUBLIC_PLAIN_APP_ID
-ARG NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
-ENV NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+ARG NEXT_PUBLIC_HANZO_CLOUD_REGION
+ENV NEXT_PUBLIC_HANZO_CLOUD_REGION=$NEXT_PUBLIC_HANZO_CLOUD_REGION
 ARG NEXT_PUBLIC_DEMO_ORG_ID
 ENV NEXT_PUBLIC_DEMO_ORG_ID=$NEXT_PUBLIC_DEMO_ORG_ID
 ARG NEXT_PUBLIC_DEMO_PROJECT_ID
@@ -119,8 +119,8 @@ WORKDIR /app
 
 ARG NEXT_PUBLIC_BUILD_ID
 ENV BUILD_ID=$NEXT_PUBLIC_BUILD_ID
-ARG NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
-ENV NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+ARG NEXT_PUBLIC_HANZO_CLOUD_REGION
+ENV NEXT_PUBLIC_HANZO_CLOUD_REGION=$NEXT_PUBLIC_HANZO_CLOUD_REGION
 
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
@@ -140,9 +140,9 @@ RUN adduser --system --uid ${UID} nextjs
 
 RUN npm install -g --no-package-lock --no-save prisma@6.17.1
 
-# Install dd-trace only if NEXT_PUBLIC_LANGFUSE_CLOUD_REGION is configured
-ARG NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
-RUN if [ -n "$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION" ]; then \
+# Install dd-trace only if NEXT_PUBLIC_HANZO_CLOUD_REGION is configured
+ARG NEXT_PUBLIC_HANZO_CLOUD_REGION
+RUN if [ -n "$NEXT_PUBLIC_HANZO_CLOUD_REGION" ]; then \
     npm install --no-package-lock --no-save dd-trace@5.65.0; \
     fi
 
@@ -177,8 +177,8 @@ ENV PORT 3000
 # Reasoning: ENTRYPOINT is overridden by some self-hosted deployments, thus changing this is breaking
 ENTRYPOINT ["dumb-init", "--", "./web/entrypoint.sh"]
 
-# startup command - use dd-trace if NEXT_PUBLIC_LANGFUSE_CLOUD_REGION is configured
-CMD if [ -n "$NEXT_PUBLIC_LANGFUSE_CLOUD_REGION" ]; then \
+# startup command - use dd-trace if NEXT_PUBLIC_HANZO_CLOUD_REGION is configured
+CMD if [ -n "$NEXT_PUBLIC_HANZO_CLOUD_REGION" ]; then \
     node --import dd-trace/initialize.mjs ./web/server.js --keepAliveTimeout 110000; \
     else \
     node ./web/server.js --keepAliveTimeout 110000; \
