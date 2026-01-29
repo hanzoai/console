@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { type StringWrapMode } from "../types";
 
-const STORAGE_KEY = "langfuse:json-view-preferences";
+const STORAGE_KEY = "hanzo:json-view-preferences";
 
 export interface JsonViewPreferences {
   stringWrapMode: StringWrapMode;

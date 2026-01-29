@@ -11,7 +11,7 @@ import {
   createDatasetItemFilterState,
   getDatasetItems,
 } from "@hanzo/shared/src/server";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -37,7 +37,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new LangfuseNotFoundError("Dataset not found");
+        throw new HanzoNotFoundError("Dataset not found");
       }
 
       const datasetItems = await getDatasetItems({

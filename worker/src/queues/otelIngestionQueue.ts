@@ -62,7 +62,7 @@ function getSdkInfoFromResourceSpans(resourceSpans: ResourceSpan): SdkInfo {
  * Check if SDK meets version requirements for direct event writes.
  *
  * Requirements:
- * - Scope name must contain 'langfuse' (case-insensitive)
+ * - Scope name must contain 'hanzo' (case-insensitive)
  * - Python SDK: scope_version >= 3.9.0
  * - JS/JavaScript SDK: scope_version >= 4.4.0
  */
@@ -72,8 +72,8 @@ function checkSdkVersionRequirements(
 ): boolean {
   const { scopeName, scopeVersion, telemetrySdkLanguage } = sdkInfo;
 
-  // Must be a Langfuse SDK
-  if (!scopeName || !String(scopeName).toLowerCase().includes("langfuse")) {
+  // Must be a Hanzo SDK
+  if (!scopeName || !String(scopeName).toLowerCase().includes("hanzo")) {
     return false;
   }
 
@@ -138,11 +138,11 @@ export const otelIngestionQueueProcessor: Processor = async (
 
     // Download file from blob storage
     const resourceSpans = await getS3EventStorageClient(
-      env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+      env.HANZO_S3_EVENT_UPLOAD_BUCKET,
     ).download(fileKey);
 
     recordHistogram(
-      "langfuse.ingestion.s3_file_size_bytes",
+      "hanzo.ingestion.s3_file_size_bytes",
       resourceSpans.length, // At this point it's still a string.
       {
         skippedS3List: "true",
@@ -180,18 +180,18 @@ export const otelIngestionQueueProcessor: Processor = async (
       });
 
     // In the next row, we only consider observations. The traces will be recorded in processEventBatch.
-    recordIncrement("langfuse.ingestion.event", observations.length, {
+    recordIncrement("hanzo.ingestion.event", observations.length, {
       source: "otel",
     });
     // Record more stats specific to the Otel processing
-    recordDistribution("langfuse.ingestion.otel.trace_count", traces.length);
+    recordDistribution("hanzo.ingestion.otel.trace_count", traces.length);
     recordDistribution(
-      "langfuse.ingestion.otel.observation_count",
+      "hanzo.ingestion.otel.observation_count",
       observations.length,
     );
-    span?.setAttribute("langfuse.ingestion.otel.trace_count", traces.length);
+    span?.setAttribute("hanzo.ingestion.otel.trace_count", traces.length);
     span?.setAttribute(
-      "langfuse.ingestion.otel.observation_count",
+      "hanzo.ingestion.otel.observation_count",
       observations.length,
     );
 
@@ -212,7 +212,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     // 1. If the environment is `sdk-experiment`, JS SDK 4.4.0+ and python SDK 3.9.0+ will write directly to events.
     // 2. All other observations will go through the dual write until we have SDKs in place that have old trace updates
     //    deprecated and new methods in place.
-    // 3. Non-Langfuse SDK spans will go through the dual write until a yet to be determined cutoff date.
+    // 3. Non-Hanzo SDK spans will go through the dual write until a yet to be determined cutoff date.
     // Check if any observation has environment='sdk-experiment'
     const hasExperimentEnvironment = observations.some((o) => {
       const body = o.body as { environment?: string };
@@ -229,9 +229,9 @@ export const otelIngestionQueueProcessor: Processor = async (
 
     const shouldForwardToEventsTable =
       !useDirectEventWrite &&
-      env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
+      env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
       env.QUEUE_CONSUMER_EVENT_PROPAGATION_QUEUE_IS_ENABLED === "true" &&
-      env.LANGFUSE_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true";
+      env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true";
 
     // Running everything concurrently might be detrimental to the event loop, but has probably
     // the highest possible throughput. Therefore, we start with a Promise.all.
@@ -261,7 +261,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     // If inserts into the events table are enabled AND observations qualify for direct write,
     // run the dedicated processing for the otel spans and move them into the dedicated IngestionService processor.
     if (
-      env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
+      env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
       useDirectEventWrite
     ) {
       try {

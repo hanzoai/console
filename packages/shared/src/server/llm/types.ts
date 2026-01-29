@@ -301,7 +301,7 @@ export const ExperimentMetadataSchema = z
   .strict();
 export type ExperimentMetadata = z.infer<typeof ExperimentMetadataSchema>;
 
-// NOTE: Update docs page when changing this! https://langfuse.com/docs/prompt-management/features/playground#openai-playground--anthropic-playground
+// NOTE: Update docs page when changing this! https://hanzo.com/docs/prompt-management/features/playground#openai-playground--anthropic-playground
 // WARNING: The first entry in the array is chosen as the default model to add LLM API keys
 export const openAIModels = [
   "gpt-4.1",
@@ -406,7 +406,7 @@ export const isOpenAIReasoningModel = (model: OpenAIModel): boolean => {
 
 export type OpenAIModel = (typeof openAIModels)[number];
 
-// NOTE: Update docs page when changing this! https://langfuse.com/docs/prompt-management/features/playground#openai-playground--anthropic-playground
+// NOTE: Update docs page when changing this! https://hanzo.com/docs/prompt-management/features/playground#openai-playground--anthropic-playground
 // WARNING: The first entry in the array is chosen as the default model to add LLM API keys
 export const anthropicModels = [
   "claude-sonnet-4-5-20250929",
@@ -503,9 +503,9 @@ export type LLMApiKey =
     ? z.infer<typeof LLMApiKeySchema>
     : never;
 
-export enum LangfuseInternalTraceEnvironment {
-  PromptExperiments = "langfuse-prompt-experiment",
-  LLMJudge = "langfuse-llm-as-a-judge",
+export enum HanzoInternalTraceEnvironment {
+  PromptExperiments = "hanzo-prompt-experiment",
+  LLMJudge = "hanzo-llm-as-a-judge",
 }
 
 export type TraceSinkParams = {
@@ -515,7 +515,7 @@ export type TraceSinkParams = {
   targetProjectId: string;
   traceId: string;
   traceName: string;
-  // NOTE: These strings must be whitelisted in the TS SDK to allow ingestion of traces by Langfuse. Please mirror edits to this string in https://github.com/langfuse/langfuse-js/blob/main/langfuse-core/src/index.ts.
+  // NOTE: These strings must be whitelisted in the TS SDK to allow ingestion of traces by Hanzo. Please mirror edits to this string in https://github.com/hanzoai/hanzo-js/blob/main/hanzo-core/src/index.ts.
   environment: string;
   userId?: string;
   metadata?: Record<string, unknown>;

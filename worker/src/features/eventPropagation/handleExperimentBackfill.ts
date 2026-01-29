@@ -13,8 +13,8 @@ import { prisma } from "@hanzo/shared/src/db";
 import { chunk } from "lodash";
 
 const EXPERIMENT_BACKFILL_TIMESTAMP_KEY =
-  "langfuse:event-propagation:experiment-backfill:last-run";
-const EXPERIMENT_BACKFILL_LOCK_KEY = "langfuse:experiment-backfill:lock";
+  "hanzo:event-propagation:experiment-backfill:last-run";
+const EXPERIMENT_BACKFILL_LOCK_KEY = "hanzo:experiment-backfill:lock";
 const LOCK_TTL_SECONDS = 300; // 5 minutes
 
 export interface DatasetRunItem {
@@ -652,7 +652,7 @@ export async function shouldRunBackfill(lastRun: Date): Promise<boolean> {
   const now = new Date();
   const timeSinceLastRun = now.getTime() - lastRun.getTime();
 
-  if (timeSinceLastRun < env.LANGFUSE_EXPERIMENT_BACKFILL_THROTTLE_MS) {
+  if (timeSinceLastRun < env.HANZO_EXPERIMENT_BACKFILL_THROTTLE_MS) {
     logger.debug(
       "[EXPERIMENT BACKFILL] Skipping due to throttle (time threshold not met)",
     );
@@ -782,7 +782,7 @@ async function processExperimentBackfill(
   }
 
   // Step 2: Process in chunks
-  const chunkSize = env.LANGFUSE_DATASET_RUN_BACKFILL_CHUNK_SIZE;
+  const chunkSize = env.HANZO_DATASET_RUN_BACKFILL_CHUNK_SIZE;
   const chunks = chunk(allDatasetRunItems, chunkSize);
 
   logger.info(

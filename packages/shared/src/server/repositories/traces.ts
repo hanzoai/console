@@ -301,7 +301,7 @@ export const getTracesBySessionId = async (
 
   traces.forEach((trace) => {
     recordDistribution(
-      "langfuse.traces_by_session_id_age",
+      "hanzo.traces_by_session_id_age",
       new Date().getTime() - trace.timestamp.getTime(),
     );
   });
@@ -490,12 +490,12 @@ export const getTraceById = async ({
       const inputColumn = excludeInputOutput
         ? "''"
         : renderingProps.truncated
-          ? `leftUTF8(input, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT})`
+          ? `leftUTF8(input, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT})`
           : "input";
       const outputColumn = excludeInputOutput
         ? "''"
         : renderingProps.truncated
-          ? `leftUTF8(output, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT})`
+          ? `leftUTF8(output, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT})`
           : "output";
 
       const query = `
@@ -542,7 +542,7 @@ export const getTraceById = async ({
 
   res.forEach((trace) => {
     recordDistribution(
-      "langfuse.query_by_id_age",
+      "hanzo.query_by_id_age",
       new Date().getTime() - trace.timestamp.getTime(),
       {
         table: "traces",
@@ -889,7 +889,7 @@ export const deleteTraces = async (projectId: string, traceIds: string[]) => {
         query: query,
         params: input.params,
         clickhouseConfigs: {
-          request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -960,7 +960,7 @@ export const deleteTracesOlderThanDays = async (
         query: query,
         params: input.params,
         clickhouseConfigs: {
-          request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -1002,7 +1002,7 @@ export const deleteTracesByProjectId = async (
         query,
         params: input.params,
         clickhouseConfigs: {
-          request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -1292,7 +1292,7 @@ export const getTracesForBlobStorageExport = function (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 };
@@ -1354,7 +1354,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
       clickhouse_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
@@ -1367,23 +1367,23 @@ export const getTracesForAnalyticsIntegrations = async function* (
   for await (const record of records) {
     yield {
       timestamp: record.timestamp,
-      langfuse_id: record.id,
-      langfuse_trace_name: record.name,
-      langfuse_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
-      langfuse_user_url: record.user_id
+      hanzo_id: record.id,
+      hanzo_trace_name: record.name,
+      hanzo_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
+      hanzo_user_url: record.user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.user_id as string)}`
         : undefined,
-      langfuse_cost_usd: record.total_cost,
-      langfuse_count_observations: record.observation_count,
-      langfuse_session_id: record.session_id,
-      langfuse_project_id: projectId,
-      langfuse_user_id: record.user_id || null,
-      langfuse_latency: record.latency,
-      langfuse_release: record.release,
-      langfuse_version: record.version,
-      langfuse_tags: record.tags,
-      langfuse_environment: record.environment,
-      langfuse_event_version: "1.0.0",
+      hanzo_cost_usd: record.total_cost,
+      hanzo_count_observations: record.observation_count,
+      hanzo_session_id: record.session_id,
+      hanzo_project_id: projectId,
+      hanzo_user_id: record.user_id || null,
+      hanzo_latency: record.latency,
+      hanzo_release: record.release,
+      hanzo_version: record.version,
+      hanzo_tags: record.tags,
+      hanzo_environment: record.environment,
+      hanzo_event_version: "1.0.0",
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsTraceEvent;

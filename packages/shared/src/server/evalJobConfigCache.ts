@@ -10,7 +10,7 @@ import { redis } from "./";
  * database queries and queue processing.
  */
 
-const NO_JOB_CONFIG_PREFIX = "langfuse:eval:no-job-configs";
+const NO_JOB_CONFIG_PREFIX = "hanzo:eval:no-job-configs";
 
 /**
  * Check if a project has no job configurations cached in Redis.

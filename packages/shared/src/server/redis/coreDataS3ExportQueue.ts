@@ -12,7 +12,7 @@ export class CoreDataS3ExportQueue {
   private static instance: Queue | null = null;
 
   public static getInstance(): Queue | null {
-    if (env.LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED !== "true") {
+    if (env.HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED !== "true") {
       return null;
     }
 

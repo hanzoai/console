@@ -28,7 +28,7 @@ describe("LangGraph Adapter", () => {
 
     expect(
       langgraphAdapter.detect({
-        metadata: { scope: { name: "langfuse-sdk" } },
+        metadata: { scope: { name: "hanzo-sdk" } },
       }),
     ).toBe(false);
   });
@@ -160,7 +160,7 @@ describe("LangGraph Adapter", () => {
             type: "function",
             function: {
               name: "search_docs",
-              arguments: { topic: "Langfuse" },
+              arguments: { topic: "Hanzo" },
             },
           },
         ],
@@ -173,7 +173,7 @@ describe("LangGraph Adapter", () => {
     const toolCalls = result.data?.[0].tool_calls;
     expect(toolCalls?.length).toBe(1);
     expect(toolCalls?.[0].name).toBe("search_docs");
-    expect(toolCalls?.[0].arguments).toBe('{"topic":"Langfuse"}');
+    expect(toolCalls?.[0].arguments).toBe('{"topic":"Hanzo"}');
   });
 
   it("should clean up additional_kwargs with null values", () => {

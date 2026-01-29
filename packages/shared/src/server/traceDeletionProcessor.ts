@@ -6,7 +6,7 @@ import { logger } from "./logger";
 import { env } from "../env";
 
 export interface TraceDeletionProcessorOptions {
-  delayMs?: number; // Default from LANGFUSE_TRACE_DELETE_DELAY_MS env var
+  delayMs?: number; // Default from HANZO_TRACE_DELETE_DELAY_MS env var
 }
 
 export async function shouldSkipTraceDeletionFor(
@@ -14,14 +14,14 @@ export async function shouldSkipTraceDeletionFor(
   traceIds: string[],
 ): Promise<boolean> {
   // Check if project is in skip list
-  if (env.LANGFUSE_TRACE_DELETE_SKIP_PROJECT_IDS.includes(projectId)) {
+  if (env.HANZO_TRACE_DELETE_SKIP_PROJECT_IDS.includes(projectId)) {
     logger.info(
       `Skipping trace deletion for project ${projectId} (in skip list). No pending deletions created, no queue job added.`,
       {
         projectId,
         traceIds,
         traceCount: traceIds.length,
-        skipReason: "LANGFUSE_TRACE_DELETE_SKIP_PROJECT_IDS",
+        skipReason: "HANZO_TRACE_DELETE_SKIP_PROJECT_IDS",
       },
     );
 
@@ -69,7 +69,7 @@ export async function traceDeletionProcessor(
   traceIds: string[],
   options: TraceDeletionProcessorOptions = {},
 ): Promise<void> {
-  const { delayMs = env.LANGFUSE_TRACE_DELETE_DELAY_MS } = options;
+  const { delayMs = env.HANZO_TRACE_DELETE_DELAY_MS } = options;
 
   if (traceIds.length === 0) {
     logger.warn("traceDeletionProcessor called with empty traceIds array", {

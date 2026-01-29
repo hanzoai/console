@@ -35,16 +35,16 @@ describe("ProjectDeletionProcessingJob", () => {
   const orgId = "seed-org-id";
 
   const maybeEventsIt =
-    env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" ? it : it.skip;
+    env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" ? it : it.skip;
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: String(env.HANZO_S3_MEDIA_UPLOAD_BUCKET),
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -248,7 +248,7 @@ describe("ProjectDeletionProcessingJob", () => {
         projectId,
         createdAt: new Date(),
         bucketPath: fileName,
-        bucketName: String(env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET),
+        bucketName: String(env.HANZO_S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },

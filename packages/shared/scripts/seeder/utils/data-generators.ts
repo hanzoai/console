@@ -41,8 +41,8 @@ import {
  * Generates realistic test data for traces, observations, and scores.
  *
  * Use generateXxxTraces() for creating different data types:
- * - generateDatasetTrace(): For dataset experiment runs (langfuse-prompt-experiments env)
- * - generateEvaluationTraces(): For evaluation data (langfuse-evaluation env)
+ * - generateDatasetTrace(): For dataset experiment runs (hanzo-prompt-experiments env)
+ * - generateEvaluationTraces(): For evaluation data (hanzo-evaluation env)
  * - generateSyntheticTraces(): For large-scale synthetic data (default env)
  */
 export class DataGenerator {
@@ -151,8 +151,8 @@ export class DataGenerator {
       name: `dataset-run-item-${uuidv4()}`,
       input: traceInput,
       output: traceOutput,
-      environment: "langfuse-prompt-experiments",
-      metadata: { experimentType: "langfuse-prompt-experiments" },
+      environment: "hanzo-prompt-experiments",
+      metadata: { experimentType: "hanzo-prompt-experiments" },
       public: false,
       bookmarked: false,
       session_id: null,
@@ -212,7 +212,7 @@ export class DataGenerator {
         total: Math.round(totalCost * 100000) / 100000,
       },
       total_cost: Math.round(totalCost * 100000) / 100000,
-      environment: "langfuse-prompt-experiments",
+      environment: "hanzo-prompt-experiments",
     });
   }
 
@@ -237,7 +237,7 @@ export class DataGenerator {
       string_value: undefined,
       data_type: "NUMERIC",
       source: "API",
-      environment: "langfuse-prompt-experiments",
+      environment: "hanzo-prompt-experiments",
     });
   }
 
@@ -265,7 +265,7 @@ export class DataGenerator {
       string_value: undefined,
       data_type: "NUMERIC",
       source: "API",
-      environment: "langfuse-prompt-experiments",
+      environment: "hanzo-prompt-experiments",
     });
   }
 
@@ -402,7 +402,7 @@ export class DataGenerator {
                     total: this.randomInt(2, 30) / 100000,
                   }
                 : undefined,
-            environment: "langfuse-evaluation",
+            environment: "hanzo-evaluation",
           });
 
           observations.push(observation);
@@ -890,7 +890,7 @@ export class DataGenerator {
           user_id: this.randomBoolean(0.3)
             ? `user_${this.randomInt(1, 1000)}`
             : null,
-          environment: "langfuse-evaluation",
+          environment: "hanzo-evaluation",
           metadata: { purpose: "evaluation" },
           tags: this.randomBoolean(0.3) ? ["production", "ai-agent"] : [],
           public: this.randomBoolean(0.8),

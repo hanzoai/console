@@ -84,7 +84,7 @@ export const organizationsRouter = createTRPCRouter({
 
       if (
         input.aiFeaturesEnabled !== undefined &&
-        !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
+        !env.NEXT_PUBLIC_HANZO_CLOUD_REGION
       ) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",

@@ -24,7 +24,7 @@ interface ResetPasswordTemplateProps {
 }
 
 const ResetPasswordTemplate = ({ token }: ResetPasswordTemplateProps) => {
-  const previewText = "Your Langfuse reset code";
+  const previewText = "Your Hanzo reset code";
   return (
     <Html>
       <Head />
@@ -74,8 +74,8 @@ export async function sendResetPasswordVerificationRequest(
   const result = await transport.sendMail({
     to: identifier,
     from: provider.from,
-    subject: `Your Langfuse password reset code`,
-    text: `Use the following code to reset your Langfuse password: ${token}\n\nThis code will expire in 3 minutes. If you did not request a reset, you can ignore this email.`,
+    subject: `Your Hanzo password reset code`,
+    text: `Use the following code to reset your Hanzo password: ${token}\n\nThis code will expire in 3 minutes. If you did not request a reset, you can ignore this email.`,
     html: htmlTemplate,
   });
   const failed = result.rejected.concat(result.pending).filter(Boolean);

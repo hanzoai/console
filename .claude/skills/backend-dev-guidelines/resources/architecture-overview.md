@@ -1,6 +1,6 @@
-# Architecture Overview - Langfuse Backend
+# Architecture Overview - Hanzo Backend
 
-Complete guide to the layered architecture pattern used in Langfuse's Next.js 14/tRPC/Express monorepo.
+Complete guide to the layered architecture pattern used in Hanzo's Next.js 14/tRPC/Express monorepo.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ Complete guide to the layered architecture pattern used in Langfuse's Next.js 14
 
 ## Layered Architecture Pattern
 
-Langfuse uses a **three-layer architecture** with two primary entry points (tRPC and Public API) plus async processing via Worker.
+Hanzo uses a **three-layer architecture** with two primary entry points (tRPC and Public API) plus async processing via Worker.
 
 ### The Three Layers
 
@@ -298,11 +298,11 @@ The shared package provides types, utilities, and server code used by both web a
 
 | Import Path                                | Usage                 | What's Included                                                                    |
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
-| `@langfuse/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
-| `@langfuse/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@langfuse/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
-| `@langfuse/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
-| `@langfuse/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
+| `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
+| `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
+| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
+| `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
+| `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
 **Key Structure:**
 
@@ -336,10 +336,10 @@ import {
   Role,
   type Dataset,
   CloudConfigSchema,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 // 🔒 Database - Backend only
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 // 🔒 Server utilities - Backend only
 import {
@@ -351,13 +351,13 @@ import {
   StorageService,
   fetchLLMCompletion,
   filterToPrisma,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // 🔒 API keys - Backend only
-import { createAndAddApiKeysToDb } from "@langfuse/shared/src/server/auth/apiKeys";
+import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
 
 // 🔒 Encryption - Backend only
-import { encrypt, decrypt } from "@langfuse/shared/encryption";
+import { encrypt, decrypt } from "@hanzo/shared/encryption";
 ```
 
 ---
@@ -526,8 +526,8 @@ export const datasetRouter = createTRPCRouter({
 
 ```typescript
 // web/src/features/datasets/server/service.ts
-import { prisma } from "@langfuse/shared/src/db";
-import { instrumentAsync, traceException } from "@langfuse/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { instrumentAsync, traceException } from "@hanzo/shared/src/server";
 
 export async function createDataset(data: {
   name: string;
@@ -640,7 +640,7 @@ export async function processDatasetExport(
 
 ### Dual Database System
 
-Langfuse uses two databases with different purposes:
+Hanzo uses two databases with different purposes:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -689,12 +689,12 @@ Langfuse uses two databases with different purposes:
 
 ```typescript
 // PostgreSQL via Prisma
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 const dataset = await prisma.dataset.create({ data });
 
 // ClickHouse via helper functions
-import { getTracesTable } from "@langfuse/shared/src/server";
+import { getTracesTable } from "@hanzo/shared/src/server";
 
 const traces = await getTracesTable({
   projectId,
@@ -703,14 +703,14 @@ const traces = await getTracesTable({
 });
 
 // Redis via queue/cache utilities
-import { redis } from "@langfuse/shared/src/server";
+import { redis } from "@hanzo/shared/src/server";
 
 await redis.set(`cache:${key}`, value, "EX", 3600);
 ```
 
 **Repository Pattern:**
 
-Langfuse uses repositories in `packages/shared/src/server/repositories/` for complex data access patterns. Repositories provide:
+Hanzo uses repositories in `packages/shared/src/server/repositories/` for complex data access patterns. Repositories provide:
 
 - Abstraction over complex queries (traces, observations, scores, events)
 - Data converters for transforming database models to application models
@@ -771,7 +771,7 @@ export async function createDataset(ctx: TRPCContext) {
 
 ### 3. Observability with OpenTelemetry + DataDog
 
-**Langfuse uses OpenTelemetry for backend observability, with traces and logs sent to DataDog.**
+**Hanzo uses OpenTelemetry for backend observability, with traces and logs sent to DataDog.**
 
 Use structured logging and instrumentation:
 
@@ -780,7 +780,7 @@ import {
   logger,
   traceException,
   instrumentAsync,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 export async function processEvaluation(evalId: string) {
   return await instrumentAsync(

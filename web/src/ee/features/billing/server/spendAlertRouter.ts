@@ -21,7 +21,7 @@ export const spendAlertRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -53,7 +53,7 @@ export const spendAlertRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -94,7 +94,7 @@ export const spendAlertRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -150,7 +150,7 @@ export const spendAlertRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 

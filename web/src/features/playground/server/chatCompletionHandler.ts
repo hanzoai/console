@@ -18,7 +18,7 @@ import {
   LLMApiKeySchema,
   logger,
   fetchLLMCompletion,
-  contextWithLangfuseProps,
+  contextWithHanzoProps,
 } from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
@@ -27,14 +27,14 @@ export default async function chatCompletionHandler(req: NextRequest) {
     const body = validateChatCompletionBody(await req.json());
     const { userId } = await authorizeRequestOrThrow(body.projectId);
 
-    const blockedUsers = env.LANGFUSE_BLOCKED_USERIDS_CHATCOMPLETION;
+    const blockedUsers = env.HANZO_BLOCKED_USERIDS_CHATCOMPLETION;
     if (blockedUsers.has(userId)) {
       const reason = blockedUsers.get(userId);
       logger.warn("Blocked chat completion access", { userId, reason });
       throw new ForbiddenError("Access denied");
     }
 
-    const baggageCtx = contextWithLangfuseProps({
+    const baggageCtx = contextWithHanzoProps({
       userId: userId,
       projectId: body.projectId,
     });

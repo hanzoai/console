@@ -80,7 +80,7 @@ service:
       path-parameters:
         scoreId:
           type: string
-          docs: The unique langfuse identifier of a score
+          docs: The unique hanzo identifier of a score
       response: commons.Score
 
 types:

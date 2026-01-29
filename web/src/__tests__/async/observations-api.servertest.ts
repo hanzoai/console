@@ -555,7 +555,7 @@ describe("/api/public/observations API Endpoint", () => {
   };
 
   // Run tests with both implementations
-  if (env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
+  if (env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
     runTestSuite(true); // with events table
   }
   runTestSuite(false); // with observations table
@@ -887,7 +887,7 @@ describe("/api/public/observations API Endpoint", () => {
     };
 
     // Run all advanced filtering tests for both implementations
-    if (env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
+    if (env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
       runAdvancedFilterTestSuite(true); // with events table
     }
     runAdvancedFilterTestSuite(false); // with observations table

@@ -28,7 +28,7 @@ export const BillingSettings = () => {
 
   const hasAccess = useHasOrganizationAccess({
     organizationId: orgId,
-    scope: "langfuseCloudBilling:CRUD",
+    scope: "hanzoCloudBilling:CRUD",
   });
 
   const entitled = useHasEntitlement("cloud-billing");

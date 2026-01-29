@@ -8,7 +8,7 @@ import "eslint-plugin-only-warn";
 export default tseslint.config(
   // Global ignores
   {
-    name: "langfuse/ignores",
+    name: "hanzo/ignores",
     ignores: [
       "**/node_modules/",
       "**/dist/",
@@ -31,7 +31,7 @@ export default tseslint.config(
 
   // Global settings
   {
-    name: "langfuse/base/globals",
+    name: "hanzo/base/globals",
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
@@ -52,7 +52,7 @@ export default tseslint.config(
   // Note: Old library.js had no TS rules, only eslint:recommended
   // Adding parser + plugin to support custom rules, but not extending recommended
   {
-    name: "langfuse/base/typescript",
+    name: "hanzo/base/typescript",
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
     plugins: {
       "@typescript-eslint": tseslint.plugin,

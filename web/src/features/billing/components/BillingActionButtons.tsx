@@ -1,4 +1,4 @@
-// Langfuse Cloud only
+// Hanzo Cloud only
 import { useMemo } from "react";
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
@@ -33,7 +33,7 @@ export const BillingActionButtons = () => {
           Change plan (via support)
         </Button>
         <Button variant="secondary" asChild>
-          <Link href={"https://langfuse.com/pricing"} target="_blank">
+          <Link href={"https://hanzo.com/pricing"} target="_blank">
             Compare plans
           </Link>
         </Button>
@@ -61,7 +61,7 @@ export const BillingActionButtons = () => {
           </>
         )}
         <Button variant="secondary" asChild>
-          <Link href={"https://langfuse.com/pricing"} target="_blank">
+          <Link href={"https://hanzo.com/pricing"} target="_blank">
             Compare plans
           </Link>
         </Button>

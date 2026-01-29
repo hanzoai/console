@@ -395,7 +395,7 @@ export const UpsertModelFormDialog = (({
                       useful for e.g. streamed OpenAI completions. For details
                       on the supported tokenizers, see the{" "}
                       <Link
-                        href="https://langfuse.com/docs/model-usage-and-cost"
+                        href="https://hanzo.com/docs/model-usage-and-cost"
                         className="underline"
                         target="_blank"
                       >
@@ -424,7 +424,7 @@ export const UpsertModelFormDialog = (({
                         The config for the tokenizer. Required for openai. See
                         the{" "}
                         <Link
-                          href="https://langfuse.com/docs/model-usage-and-cost"
+                          href="https://hanzo.com/docs/model-usage-and-cost"
                           className="underline"
                           target="_blank"
                         >

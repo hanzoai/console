@@ -25,10 +25,10 @@ services:
 
   minio:
     image: cgr.dev/chainguard/minio
-    container_name: ${MINIO_CONTAINER_NAME:-langfuse-minio}
+    container_name: ${MINIO_CONTAINER_NAME:-hanzo-minio}
     entrypoint: sh
-    # create the 'langfuse' bucket before starting the service
-    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
+    # create the 'hanzo' bucket before starting the service
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-miniosecret}
@@ -36,7 +36,7 @@ services:
       - ${HOST_IP:-127.0.0.1}:${MINIO_API_PORT:-9090}:9000
       - ${HOST_IP:-127.0.0.1}:${MINIO_CONSOLE_PORT:-9091}:9001
     volumes:
-      - langfuse_minio_data:/data
+      - hanzo_minio_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -84,6 +84,6 @@ volumes:
     driver: local
   hanzo_azurite_data:
     driver: local
-  langfuse_minio_data:
-    name: ${MINIO_VOLUME_NAME:-langfuse_minio_data}
+  hanzo_minio_data:
+    name: ${MINIO_VOLUME_NAME:-hanzo_minio_data}
     driver: local

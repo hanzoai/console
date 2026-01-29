@@ -12,7 +12,7 @@ import { bulkUpdateOrganizations } from "../ee/usageThresholds/bulkUpdates";
 
 // Enable enforcement feature flag for tests
 vi.hoisted(() => {
-  process.env.LANGFUSE_FREE_TIER_USAGE_THRESHOLD_ENFORCEMENT_ENABLED = "true";
+  process.env.HANZO_FREE_TIER_USAGE_THRESHOLD_ENFORCEMENT_ENABLED = "true";
 });
 
 // SALT is defined in web env, not worker env

@@ -1,6 +1,6 @@
 import { logger, PromptService } from "@hanzo/shared/src/server";
 import { removeLabelsFromPreviousPromptVersions } from "@/src/features/prompts/server/utils/updatePromptLabels";
-import { InvalidRequestError, LangfuseNotFoundError } from "@hanzo/shared";
+import { InvalidRequestError, HanzoNotFoundError } from "@hanzo/shared";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
 import { redis } from "@hanzo/shared/src/server";
 import { promptChangeEventSourcing } from "@/src/features/prompts/server/promptChangeEventSourcing";
@@ -47,7 +47,7 @@ export const updatePrompt = async (params: UpdatePromptParams) => {
       )[0];
 
       if (!prompt) {
-        throw new LangfuseNotFoundError(`Prompt not found: ${promptName}`);
+        throw new HanzoNotFoundError(`Prompt not found: ${promptName}`);
       }
 
       touchedPromptIds.push(prompt.id);

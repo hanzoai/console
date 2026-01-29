@@ -15,7 +15,7 @@ import { CreateNaturalLanguageFilterCompletion } from "./validation";
 import {
   getDefaultModelParams,
   parseFiltersFromCompletion,
-  getLangfuseClient,
+  getHanzoClient,
 } from "./utils";
 import { randomBytes } from "crypto";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -33,7 +33,7 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           scope: "prompts:CUD",
         });
 
-        if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+        if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message:
@@ -41,27 +41,27 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           });
         }
 
-        if (!env.LANGFUSE_AWS_BEDROCK_MODEL) {
+        if (!env.HANZO_AWS_BEDROCK_MODEL) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message:
-              "Bedrock environment variables not configured. Please set LANGFUSE_AWS_BEDROCK_* variables.",
+              "Bedrock environment variables not configured. Please set HANZO_AWS_BEDROCK_* variables.",
           });
         }
 
         if (
-          !env.LANGFUSE_AI_FEATURES_PUBLIC_KEY ||
-          !env.LANGFUSE_AI_FEATURES_SECRET_KEY
+          !env.HANZO_AI_FEATURES_PUBLIC_KEY ||
+          !env.HANZO_AI_FEATURES_SECRET_KEY
         ) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message:
-              "Langfuse AI filters environment variables not configured. Please set LANGFUSE_AI_FEATURES_PUBLIC_KEY and LANGFUSE_AI_FEATURES_SECRET_KEY variables.",
+              "Hanzo AI filters environment variables not configured. Please set HANZO_AI_FEATURES_PUBLIC_KEY and HANZO_AI_FEATURES_SECRET_KEY variables.",
           });
         }
 
         const getEnvironment = (): string => {
-          switch (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+          switch (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
             case "US":
             case "EU":
             case "HIPAA":
@@ -73,10 +73,10 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           }
         };
 
-        const client = getLangfuseClient(
-          env.LANGFUSE_AI_FEATURES_PUBLIC_KEY as string,
-          env.LANGFUSE_AI_FEATURES_SECRET_KEY as string,
-          env.LANGFUSE_AI_FEATURES_HOST,
+        const client = getHanzoClient(
+          env.HANZO_AI_FEATURES_PUBLIC_KEY as string,
+          env.HANZO_AI_FEATURES_SECRET_KEY as string,
+          env.HANZO_AI_FEATURES_HOST,
         );
 
         const promptResponse = await client.getPrompt(
@@ -85,10 +85,10 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           { type: "chat" },
         );
 
-        if (!env.LANGFUSE_AI_FEATURES_PROJECT_ID) {
+        if (!env.HANZO_AI_FEATURES_PROJECT_ID) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Langfuse AI Features not configured.",
+            message: "Hanzo AI Features not configured.",
           });
         }
 
@@ -96,11 +96,11 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           environment: getEnvironment(),
           traceName: "natural-language-filter",
           traceId: randomBytes(16).toString("hex"),
-          targetProjectId: env.LANGFUSE_AI_FEATURES_PROJECT_ID,
+          targetProjectId: env.HANZO_AI_FEATURES_PROJECT_ID,
           userId: ctx.session.user.id,
           metadata: {
-            langfuse_user_id: ctx.session.user.id,
-            langfuse_project_id: ctx.session.projectId,
+            hanzo_user_id: ctx.session.user.id,
+            hanzo_project_id: ctx.session.projectId,
           },
           prompt: promptResponse,
         };
@@ -127,7 +127,7 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           },
           streaming: false,
           traceSinkParams,
-          shouldUseLangfuseAPIKey: true,
+          shouldUseHanzoAPIKey: true,
         });
 
         logger.info(

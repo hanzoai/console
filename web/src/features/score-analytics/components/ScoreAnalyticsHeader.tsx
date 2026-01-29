@@ -93,7 +93,7 @@ export function ScoreAnalyticsHeader({
                 improving this feature and would love to hear your feedback.
               </p>
               <a
-                href="https://langfuse.com/discussions"
+                href="https://hanzo.com/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"

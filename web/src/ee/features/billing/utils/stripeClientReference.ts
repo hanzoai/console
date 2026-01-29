@@ -20,20 +20,20 @@ import { TRPCError } from "@trpc/server";
  * Creates a Stripe client reference by combining cloud region and organization ID.
  * Used when creating new checkout sessions in stripeBillingService.ts.
  *
- * @throws {TRPCError} If not running in a Langfuse Cloud environment
+ * @throws {TRPCError} If not running in a Hanzo Cloud environment
  */
 export const createStripeClientReference = (orgId: string) => {
-  if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+  if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
     logger.error(
-      "Returning null stripeClientReference, you cannot run the checkout page outside of Langfuse Cloud",
+      "Returning null stripeClientReference, you cannot run the checkout page outside of Hanzo Cloud",
     );
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message:
-        "Cannot create stripe client reference outside of Langfuse Cloud",
+        "Cannot create stripe client reference outside of Hanzo Cloud",
     });
   }
-  return `${env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION}-${orgId}`;
+  return `${env.NEXT_PUBLIC_HANZO_CLOUD_REGION}-${orgId}`;
 };
 
 /**
@@ -46,8 +46,8 @@ export const createStripeClientReference = (orgId: string) => {
 export const isStripeClientReferenceFromCurrentCloudRegion = (
   clientReference: string,
 ) =>
-  env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
-  clientReference.startsWith(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION);
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
+  clientReference.startsWith(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
 /**
  * Extracts the organization ID from a client reference.
@@ -57,4 +57,4 @@ export const isStripeClientReferenceFromCurrentCloudRegion = (
  * @returns The extracted organization ID
  */
 export const getOrgIdFromStripeClientReference = (clientReference: string) =>
-  clientReference.replace(`${env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION}-`, "");
+  clientReference.replace(`${env.NEXT_PUBLIC_HANZO_CLOUD_REGION}-`, "");

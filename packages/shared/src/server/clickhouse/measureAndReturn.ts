@@ -11,7 +11,7 @@ const executionWrapper = async <T, Y>(
   const res = await fn(input);
   const duration = Date.now() - startTime;
   span?.setAttribute(
-    `langfuse.experiment.amts.${attributePrefix}-duration`,
+    `hanzo.experiment.amts.${attributePrefix}-duration`,
     duration,
   );
   return [res, duration];

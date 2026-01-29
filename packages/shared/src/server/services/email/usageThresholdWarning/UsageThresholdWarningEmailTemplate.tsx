@@ -44,7 +44,7 @@ export const UsageThresholdWarningEmailTemplate = ({
     <Html>
       <Head />
       <Preview>
-        Your Langfuse organization &quot;{organizationName}&quot; has reached{" "}
+        Your Hanzo organization &quot;{organizationName}&quot; has reached{" "}
         {currentUsage.toLocaleString()} events
       </Preview>
       <Tailwind>
@@ -52,10 +52,10 @@ export const UsageThresholdWarningEmailTemplate = ({
           <Container className="mx-auto my-10 w-[465px] rounded border border-solid border-[#eaeaea] p-5">
             <Section className="mt-8">
               <Img
-                src="https://static.langfuse.com/langfuse_logo_transactional_email.png"
+                src="https://static.hanzo.com/hanzo_logo_transactional_email.png"
                 width="40"
                 height="40"
-                alt="Langfuse"
+                alt="Hanzo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -136,7 +136,7 @@ export const UsageThresholdWarningEmailTemplate = ({
                 <strong>Startup Program:</strong> Eligible startups get 50% off
                 for their first year.{" "}
                 <a
-                  href="https://langfuse.com/startups"
+                  href="https://hanzo.com/startups"
                   className="text-blue-600 underline"
                 >
                   Learn more →

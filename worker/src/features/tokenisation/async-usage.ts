@@ -163,7 +163,7 @@ export function getTokenCountWorkerManager(
 ): TokenCountWorkerManager {
   if (!workerManager) {
     workerManager = new TokenCountWorkerManager(
-      poolSize ?? env.LANGFUSE_TOKEN_COUNT_WORKER_POOL_SIZE,
+      poolSize ?? env.HANZO_TOKEN_COUNT_WORKER_POOL_SIZE,
     );
   }
   return workerManager;

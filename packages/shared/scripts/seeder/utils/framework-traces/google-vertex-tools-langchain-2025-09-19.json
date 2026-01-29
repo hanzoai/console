@@ -41,7 +41,7 @@
           "service.name": "test_service"
         },
         "scope": {
-          "name": "langfuse-sdk",
+          "name": "hanzo-sdk",
           "version": "3.3.4",
           "attributes": {
             "public_key": "pk-lf-test-key-12345"

@@ -45,7 +45,7 @@ export const addToDatasetRouter = createTRPCRouter({
           offset: 0,
         };
         const observationCount =
-          env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
+          env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
             ? await getObservationsCountFromEventsTable(queryOpts)
             : await getObservationsTableCount(queryOpts);
 

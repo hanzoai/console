@@ -41,7 +41,7 @@ export default function Traces() {
   );
 
   // TODO: remove for prod go-live
-  const showBetaToggle = session?.user?.email?.endsWith("@langfuse.com");
+  const showBetaToggle = session?.user?.email?.endsWith("@hanzo.com");
 
   // Check if the user has tracing configured
   const { data: hasTracingConfigured, isLoading } =
@@ -91,7 +91,7 @@ export default function Traces() {
           help: {
             description:
               "A trace represents a single function/api invocation. Traces contain observations. See docs to learn more.",
-            href: "https://langfuse.com/docs/observability/data-model",
+            href: "https://hanzo.com/docs/observability/data-model",
           },
           actionButtonsLeft: betaToggle,
         }}
@@ -109,7 +109,7 @@ export default function Traces() {
         help: {
           description:
             "A trace represents a single function/api invocation. Traces contain observations. See docs to learn more.",
-          href: "https://langfuse.com/docs/observability/data-model",
+          href: "https://hanzo.com/docs/observability/data-model",
         },
         actionButtonsLeft: betaToggle,
         tabsProps: isBetaEnabled

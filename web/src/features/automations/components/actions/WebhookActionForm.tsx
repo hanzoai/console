@@ -185,7 +185,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
           </FormDescription>
           {Object.entries({
             ...WebhookDefaultHeaders,
-            "x-langfuse-signature": `t=<timestamp>,v1=<signature>`,
+            "x-hanzo-signature": `t=<timestamp>,v1=<signature>`,
           }).map(([key, value]) => (
             <div
               key={key}
@@ -312,7 +312,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
         <FormLabel>Webhook Secret</FormLabel>
         <FormDescription className="mb-2">
           Use this secret to verify webhook signatures for security. The secret
-          is automatically included in the x-langfuse-signature header.
+          is automatically included in the x-hanzo-signature header.
         </FormDescription>
 
         {action?.id ? (

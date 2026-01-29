@@ -23,7 +23,7 @@ export async function executeWithDatasetServiceStrategy<T>(
   if (operation === OperationType.WRITE) {
     // Either write to versioned implementation OR stateful implementation
     if (
-      env.LANGFUSE_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION === "true"
+      env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION === "true"
     ) {
       return await implementations[Implementation.VERSIONED]();
     } else {
@@ -33,7 +33,7 @@ export async function executeWithDatasetServiceStrategy<T>(
 
   // READ operation - use configured source
   if (
-    env.LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION === "true"
+    env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION === "true"
   ) {
     return implementations[Implementation.VERSIONED]();
   }

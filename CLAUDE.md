@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-Langfuse is an open-source LLM engineering platform that helps teams collaboratively develop, monitor, evaluate, and debug AI applications.
-The main feature areas are tracing, evals and prompt management. Langfuse consists of the web application (this repo), documentation, python SDK and javascript/typescript SDK.
+Hanzo is an open-source LLM engineering platform that helps teams collaboratively develop, monitor, evaluate, and debug AI applications.
+The main feature areas are tracing, evals and prompt management. Hanzo consists of the web application (this repo), documentation, python SDK and javascript/typescript SDK.
 This repo contains the web application, worker, and supporting packages but notably not the JS nor Python client SDKs.
 
 ## Repository Structure
 High level structure. There are more folders (eg for hooks etc).
 ```
-langfuse/
+hanzo/
 ├── web/                     # Next.js 14 frontend/backend application
 │   ├── src/
 │   │   ├── components/     # Reusable UI components (shadcn/ui)
@@ -178,7 +178,7 @@ pnpm run nuke              # Remove all node_modules, build files, wipe database
 ## Login for Development
 
 When running locally with seed data:
-- Username: `demo@langfuse.com`
+- Username: `demo@hanzo.com`
 - Password: `password`
 - Demo project URL: `http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a`
 

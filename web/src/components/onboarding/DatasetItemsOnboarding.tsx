@@ -144,7 +144,7 @@ export const DatasetItemsOnboarding = ({
         </Dialog>
 
         <Link
-          href="https://langfuse.com/docs/evaluation/experiments/datasets#create-items-from-production-data"
+          href="https://hanzo.com/docs/evaluation/experiments/datasets#create-items-from-production-data"
           target="_blank"
         >
           <DatasetItemEntryPointRow
@@ -162,7 +162,7 @@ export const DatasetItemsOnboarding = ({
           docPopup={{
             description:
               "Creating items from production data is supported on single trace level. Click to view docs for more details.",
-            href: "https://langfuse.com/docs/evaluation/experiments/datasets#create-items-from-production-data",
+            href: "https://hanzo.com/docs/evaluation/experiments/datasets#create-items-from-production-data",
           }}
         />
       </div>

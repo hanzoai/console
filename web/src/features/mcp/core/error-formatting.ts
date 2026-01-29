@@ -12,7 +12,7 @@ import {
   BaseError,
   UnauthorizedError,
   ForbiddenError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   InvalidRequestError,
 } from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
@@ -53,7 +53,7 @@ export function formatErrorForUser(error: unknown): McpError {
     );
   }
 
-  // Langfuse standard errors
+  // Hanzo standard errors
   if (error instanceof UnauthorizedError) {
     return new McpError(
       ErrorCode.InvalidRequest,
@@ -68,7 +68,7 @@ export function formatErrorForUser(error: unknown): McpError {
     );
   }
 
-  if (error instanceof LangfuseNotFoundError) {
+  if (error instanceof HanzoNotFoundError) {
     return new McpError(ErrorCode.InvalidRequest, error.message);
   }
 

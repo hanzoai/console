@@ -19,7 +19,7 @@
     "output": "\"Why do programmers hate nature?  \\nIt has too many bugs!\"",
     "createdAt": "2025-12-04T14:51:25.697Z",
     "updatedAt": "2025-12-04T14:51:29.610Z",
-    "metadata": "{\"environment\":\"development\",\"topic\":\"programming\",\"iterations\":1,\"evaluation\":{\"quality\":\"good\",\"feedback\":\"The joke is clever and plays on the double meaning of 'bugs' in programming and nature. It's relatable for those in the tech field, making it effective. To enhance it, consider adding a punchline that builds on the setup for an even stronger impact.\"},\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.38.0\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"3.10.5\",\"attributes\":{\"public_key\":\"pk-lf-1234567890\"}}}",
+    "metadata": "{\"environment\":\"development\",\"topic\":\"programming\",\"iterations\":1,\"evaluation\":{\"quality\":\"good\",\"feedback\":\"The joke is clever and plays on the double meaning of 'bugs' in programming and nature. It's relatable for those in the tech field, making it effective. To enhance it, consider adding a punchline that builds on the setup for an even stronger impact.\"},\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.38.0\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"hanzo-sdk\",\"version\":\"3.10.5\",\"attributes\":{\"public_key\":\"pk-lf-1234567890\"}}}",
     "scores": [],
     "latency": 7.424
   },
@@ -67,7 +67,7 @@
           "service.name": "unknown_service"
         },
         "scope": {
-          "name": "langfuse-sdk",
+          "name": "hanzo-sdk",
           "version": "3.10.5",
           "attributes": {
             "public_key": "pk-lf-1234567890"

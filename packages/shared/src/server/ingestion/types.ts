@@ -226,13 +226,13 @@ const INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE =
 
 const ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE =
   INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE +
-  " and it must not start with 'langfuse'";
+  " and it must not start with 'hanzo'";
 
 const PublicEnvironmentName = z
   .string()
   .toLowerCase()
   .max(40, "Maximum length is 40 characters")
-  .regex(/^(?!langfuse)[a-z0-9-_]+$/, ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE)
+  .regex(/^((?!hanzo))[a-z0-9-_]+$/, ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE)
   .default("default");
 
 const InternalEnvironmentName = z
@@ -792,11 +792,11 @@ export type DatasetRunItemEventType = z.infer<typeof datasetRunItemCreateEvent>;
 
 /**
  * Creates an ingestion event schema with appropriate environment validation.
- * @param isLangfuseInternal - Whether the events are being ingested by Langfuse internally (e.g. traces created for prompt experiments).
+ * @param isHanzoInternal - Whether the events are being ingested by Hanzo internally (e.g. traces created for prompt experiments).
  * @returns The ingestion event schema.
  */
-export const createIngestionEventSchema = (isLangfuseInternal = false) => {
-  return isLangfuseInternal
+export const createIngestionEventSchema = (isHanzoInternal = false) => {
+  return isHanzoInternal
     ? internalSchemas.ingestionEvent
     : publicSchemas.ingestionEvent;
 };

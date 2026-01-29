@@ -9,7 +9,7 @@ import {
 import {
   InternalServerError,
   InvalidRequestError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   validateDbScoreConfigSafe } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import { traceException } from "@hanzo/shared/src/server";
@@ -26,7 +26,7 @@ export default withMiddlewares({
           projectId: auth.scope.projectId } });
 
       if (!config) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Score config not found within authorized project",
         );
       }
@@ -51,7 +51,7 @@ export default withMiddlewares({
           projectId: auth.scope.projectId } });
 
       if (!existingConfig) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Score config not found within authorized project",
         );
       }

@@ -109,7 +109,7 @@ export function useExtractVariables({
       }
 
       let object;
-      if (mapping.langfuseObject === "trace") {
+      if (mapping.hanzoObject === "trace") {
         object = trace;
       } else if (mapping.objectName) {
         // For observations, find them in the pre-loaded trace data

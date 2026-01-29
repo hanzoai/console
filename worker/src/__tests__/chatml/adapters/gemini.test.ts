@@ -230,7 +230,7 @@ describe("geminiAdapter", () => {
                 function_response: {
                   name: "say_hello",
                   response: {
-                    greeting: "Hello Langfuse 👋",
+                    greeting: "Hello Hanzo 👋",
                   },
                 },
               },

@@ -40,7 +40,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { AuthProviderButton } from "@/src/features/auth/components/AuthProviderButton";
 import { cn } from "@/src/utils/tailwind";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
 
 const credentialAuthForm = z.object({
@@ -570,12 +570,12 @@ export default function SignIn({
   const [continueLoading, setContinueLoading] = useState<boolean>(false);
   const [lastUsedAuthMethod, setLastUsedAuthMethod] =
     useLocalStorage<NextAuthProvider | null>(
-      "langfuse_last_used_auth_method",
+      "hanzo_last_used_auth_method",
       null,
     );
 
   const capture = usePostHogClientCapture();
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isHanzoCloud } = useHanzoCloudRegion();
 
   // Count available auth methods to determine if we should show "Last used" badge
   const availableProviders = Object.entries(authProviders).filter(
@@ -729,12 +729,12 @@ export default function SignIn({
           </h2>
         </div>
 
-        {isLangfuseCloud && (
+        {isHanzoCloud && (
           <div className="-mb-4 mt-4 rounded-lg bg-card p-3 text-center text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-6">
             If you are experiencing issues signing in, please force refresh this
             page (CMD + SHIFT + R) or clear your browser cache.{" "}
             <a
-              href="mailto:support@langfuse.com"
+              href="mailto:support@hanzo.com"
               className="cursor-pointer whitespace-nowrap text-xs font-medium text-primary-accent hover:text-hover-primary-accent"
             >
               (contact us)
@@ -846,7 +846,7 @@ export default function SignIn({
                 {credentialsFormError}
                 <br />
                 Contact support if this error is unexpected.{" "}
-                {isLangfuseCloud &&
+                {isHanzoCloud &&
                   "Make sure you are using the correct cloud data region."}
               </div>
             ) : null}

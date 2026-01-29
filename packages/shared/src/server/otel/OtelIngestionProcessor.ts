@@ -20,7 +20,7 @@ import {
   UsageDetails,
 } from "../";
 
-import { LangfuseOtelSpanAttributes } from "./attributes";
+import { HanzoOtelSpanAttributes } from "./attributes";
 import { ObservationTypeMapperRegistry } from "./ObservationTypeMapper";
 import { env } from "../../env";
 import { OtelIngestionQueue } from "../redis/otelIngestionQueue";
@@ -45,7 +45,7 @@ interface CreateTraceEventParams {
   resourceAttributeMetadata: Record<string, unknown>;
   scopeSpan: any;
   scopeAttributes: Record<string, unknown>;
-  isLangfuseSDKSpans: boolean;
+  isHanzoSDKSpans: boolean;
   isRootSpan: boolean;
   hasTraceUpdates: boolean;
   parentObservationId: string | null;
@@ -62,7 +62,7 @@ interface CreateObservationEventParams {
   spanAttributeMetadata: Record<string, unknown>;
   scopeSpan: any;
   scopeAttributes: Record<string, unknown>;
-  isLangfuseSDKSpans: boolean;
+  isHanzoSDKSpans: boolean;
   startTimeISO: string;
   endTimeISO: string;
 }
@@ -96,10 +96,10 @@ const observationTypeMapper = new ObservationTypeMapperRegistry();
 
 /**
  * Processor class that encapsulates all logic for converting OpenTelemetry
- * resource spans into Langfuse ingestion events.
+ * resource spans into Hanzo ingestion events.
  *
  * Manages trace deduplication internally and provides a clean interface
- * for converting OTEL spans to Langfuse events.
+ * for converting OTEL spans to Hanzo events.
  */
 export class OtelIngestionProcessor {
   private seenTraces: Set<string> = new Set();
@@ -130,11 +130,11 @@ export class OtelIngestionProcessor {
    * into the otel-ingestion-queue.
    */
   async publishToOtelIngestionQueue(resourceSpans: ResourceSpan[]) {
-    const fileKey = `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}otel/${this.projectId}/${this.getCurrentTimePath()}/${randomUUID()}.json`;
+    const fileKey = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}otel/${this.projectId}/${this.getCurrentTimePath()}/${randomUUID()}.json`;
 
     // Upload to S3
     await getS3EventStorageClient(
-      env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+      env.HANZO_S3_EVENT_UPLOAD_BUCKET,
     ).uploadJson(fileKey, resourceSpans as Record<string, unknown>[]);
 
     // Add queue job
@@ -194,11 +194,11 @@ export class OtelIngestionProcessor {
               const scopeAttributes = this.extractScopeAttributes(scopeSpan);
               for (const span of scopeSpan?.spans ?? []) {
                 const spanAttributes = this.extractSpanAttributes(span);
-                // For LiteLLM spans, use langfuse.trace.id from attributes if provided
+                // For LiteLLM spans, use hanzo.trace.id from attributes if provided
                 const isLiteLLMSpan = scopeSpan?.scope?.name === "litellm";
                 const traceId =
-                  isLiteLLMSpan && spanAttributes["langfuse.trace.id"]
-                    ? (spanAttributes["langfuse.trace.id"] as string)
+                  isLiteLLMSpan && spanAttributes["hanzo.trace.id"]
+                    ? (spanAttributes["hanzo.trace.id"] as string)
                     : this.parseId(span.traceId);
                 const spanId = this.parseId(span.spanId);
                 const parentSpanId = span?.parentSpanId
@@ -264,7 +264,7 @@ export class OtelIngestionProcessor {
                 const eventBytes = Buffer.byteLength(stringifiedSpan, "utf8");
 
                 recordDistribution(
-                  "langfuse.ingestion.otel.event.byte_length",
+                  "hanzo.ingestion.otel.event.byte_length",
                   eventBytes,
                   {
                     source: "otel",
@@ -304,7 +304,7 @@ export class OtelIngestionProcessor {
                     resourceAttributes,
                   ),
                   version:
-                    spanAttributes?.[LangfuseOtelSpanAttributes.VERSION] ??
+                    spanAttributes?.[HanzoOtelSpanAttributes.VERSION] ??
                     resourceAttributes?.["service.version"] ??
                     null,
 
@@ -313,31 +313,31 @@ export class OtelIngestionProcessor {
 
                   level:
                     spanAttributes[
-                      LangfuseOtelSpanAttributes.OBSERVATION_LEVEL
+                      HanzoOtelSpanAttributes.OBSERVATION_LEVEL
                     ] ??
                     (span.status?.code === 2
                       ? ObservationLevel.ERROR
                       : ObservationLevel.DEFAULT),
                   statusMessage:
                     spanAttributes[
-                      LangfuseOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE
+                      HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE
                     ] ??
                     span.status?.message ??
                     null,
 
                   promptName:
                     spanAttributes?.[
-                      LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_NAME
+                      HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME
                     ] ??
-                    spanAttributes["langfuse.prompt.name"] ??
-                    this.parseLangfusePromptFromAISDK(spanAttributes)?.name ??
+                    spanAttributes["hanzo.prompt.name"] ??
+                    this.parseHanzoPromptFromAISDK(spanAttributes)?.name ??
                     null,
                   promptVersion:
                     spanAttributes?.[
-                      LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_VERSION
+                      HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION
                     ] ??
-                    spanAttributes["langfuse.prompt.version"] ??
-                    this.parseLangfusePromptFromAISDK(spanAttributes)
+                    spanAttributes["hanzo.prompt.version"] ??
+                    this.parseHanzoPromptFromAISDK(spanAttributes)
                       ?.version ??
                     null,
 
@@ -361,7 +361,7 @@ export class OtelIngestionProcessor {
                   tags: this.extractTags(spanAttributes),
                   public: this.extractPublic(spanAttributes),
                   traceName:
-                    spanAttributes?.[LangfuseOtelSpanAttributes.TRACE_NAME] ??
+                    spanAttributes?.[HanzoOtelSpanAttributes.TRACE_NAME] ??
                     null,
                   userId: this.extractUserId(spanAttributes),
                   sessionId: this.extractSessionId(spanAttributes),
@@ -403,7 +403,7 @@ export class OtelIngestionProcessor {
   }
 
   /**
-   * Process resource spans and convert them to Langfuse ingestion events.
+   * Process resource spans and convert them to Hanzo ingestion events.
    * Handles trace deduplication automatically using internal state.
    * Initializes seen traces from Redis automatically on first call.
    * Filters out shallow trace events if full trace events exist for the same traceId.
@@ -458,7 +458,7 @@ export class OtelIngestionProcessor {
             this.traceEventCounts,
           ) as (keyof typeof this.traceEventCounts)[]) {
             recordIncrement(
-              "langfuse.ingestion.otel.trace_create_event",
+              "hanzo.ingestion.otel.trace_create_event",
               this.traceEventCounts[key],
               { reason: key },
             );
@@ -604,12 +604,12 @@ export class OtelIngestionProcessor {
     const events: IngestionEventType[] = [];
 
     for (const scopeSpan of resourceSpan?.scopeSpans ?? []) {
-      const isLangfuseSDKSpans =
-        scopeSpan.scope?.name?.startsWith("langfuse-sdk") ?? false;
+      const isHanzoSDKSpans =
+        scopeSpan.scope?.name?.startsWith("hanzo-sdk") ?? false;
       const scopeAttributes = this.extractScopeAttributes(scopeSpan);
 
-      if (isLangfuseSDKSpans) {
-        recordIncrement("langfuse.otel.ingestion.langfuse_sdk_batch", 1);
+      if (isHanzoSDKSpans) {
+        recordIncrement("hanzo.otel.ingestion.hanzo_sdk_batch", 1);
       }
 
       for (const span of scopeSpan?.spans ?? []) {
@@ -618,7 +618,7 @@ export class OtelIngestionProcessor {
           scopeSpan,
           resourceAttributes,
           scopeAttributes,
-          isLangfuseSDKSpans,
+          isHanzoSDKSpans,
         );
         events.push(...spanEvents);
       }
@@ -632,16 +632,16 @@ export class OtelIngestionProcessor {
     scopeSpan: any,
     resourceAttributes: Record<string, unknown>,
     scopeAttributes: Record<string, unknown>,
-    isLangfuseSDKSpans: boolean,
+    isHanzoSDKSpans: boolean,
   ): IngestionEventType[] {
     const events: IngestionEventType[] = [];
     const attributes = this.extractSpanAttributes(span);
 
-    // For LiteLLM spans, use langfuse.trace.id from attributes if provided
+    // For LiteLLM spans, use hanzo.trace.id from attributes if provided
     const isLiteLLMSpan = scopeSpan?.scope?.name === "litellm";
     const traceId =
-      isLiteLLMSpan && attributes["langfuse.trace.id"]
-        ? (attributes["langfuse.trace.id"] as string)
+      isLiteLLMSpan && attributes["hanzo.trace.id"]
+        ? (attributes["hanzo.trace.id"] as string)
         : this.parseId(span.traceId?.data ?? span.traceId);
     const parentObservationId = span?.parentSpanId
       ? this.parseId(span.parentSpanId?.data ?? span.parentSpanId)
@@ -664,7 +664,7 @@ export class OtelIngestionProcessor {
 
     const isRootSpan =
       !parentObservationId ||
-      String(attributes[LangfuseOtelSpanAttributes.AS_ROOT]) === "true";
+      String(attributes[HanzoOtelSpanAttributes.AS_ROOT]) === "true";
 
     const hasTraceUpdates = this.hasTraceUpdates(attributes);
 
@@ -678,7 +678,7 @@ export class OtelIngestionProcessor {
         resourceAttributeMetadata,
         scopeSpan,
         scopeAttributes,
-        isLangfuseSDKSpans,
+        isHanzoSDKSpans,
         isRootSpan,
         hasTraceUpdates,
         parentObservationId,
@@ -701,7 +701,7 @@ export class OtelIngestionProcessor {
       spanAttributeMetadata,
       scopeSpan,
       scopeAttributes,
-      isLangfuseSDKSpans,
+      isHanzoSDKSpans,
       startTimeISO,
       endTimeISO,
     });
@@ -719,7 +719,7 @@ export class OtelIngestionProcessor {
       resourceAttributeMetadata,
       scopeSpan,
       scopeAttributes,
-      isLangfuseSDKSpans,
+      isHanzoSDKSpans,
       isRootSpan,
       hasTraceUpdates,
       span,
@@ -747,13 +747,13 @@ export class OtelIngestionProcessor {
       trace = {
         ...trace,
         name:
-          (attributes[LangfuseOtelSpanAttributes.TRACE_NAME] as string) ??
+          (attributes[HanzoOtelSpanAttributes.TRACE_NAME] as string) ??
           this.extractName(span.name, attributes),
         metadata: {
           ...resourceAttributeMetadata,
           ...this.extractMetadata(attributes, "trace"),
           ...this.extractMetadata(attributes, "observation"),
-          ...(isLangfuseSDKSpans ? {} : { attributes: filteredAttributes }),
+          ...(isHanzoSDKSpans ? {} : { attributes: filteredAttributes }),
           resourceAttributes,
           scope: {
             ...(scopeSpan.scope || {}),
@@ -761,12 +761,12 @@ export class OtelIngestionProcessor {
           },
         } as Record<string, string | Record<string, string | number>>,
         version:
-          (attributes?.[LangfuseOtelSpanAttributes.VERSION] as string) ??
+          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ??
           resourceAttributes?.["service.version"] ??
           null,
         release:
-          (attributes?.[LangfuseOtelSpanAttributes.RELEASE] as string) ??
-          resourceAttributes?.[LangfuseOtelSpanAttributes.RELEASE] ??
+          (attributes?.[HanzoOtelSpanAttributes.RELEASE] as string) ??
+          resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
           null,
         userId: this.extractUserId(attributes),
         sessionId: this.extractSessionId(attributes),
@@ -781,12 +781,12 @@ export class OtelIngestionProcessor {
     if (hasTraceUpdates && !isRootSpan) {
       trace = {
         ...trace,
-        name: attributes[LangfuseOtelSpanAttributes.TRACE_NAME] as string,
+        name: attributes[HanzoOtelSpanAttributes.TRACE_NAME] as string,
         metadata: {
           ...resourceAttributeMetadata,
           ...this.extractMetadata(attributes, "trace"),
           // removed to not remove trace metadata->attributes through subsequent observations
-          // ...(isLangfuseSDKSpans
+          // ...(isHanzoSDKSpans
           //   ? {}
           //   : { attributes: spanAttributesInMetadata }),
           resourceAttributes,
@@ -796,20 +796,20 @@ export class OtelIngestionProcessor {
           },
         } as Record<string, string | Record<string, string | number>>,
         version:
-          (attributes?.[LangfuseOtelSpanAttributes.VERSION] as string) ??
+          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ??
           resourceAttributes?.["service.version"] ??
           null,
         release:
-          (attributes?.[LangfuseOtelSpanAttributes.RELEASE] as string) ??
-          resourceAttributes?.[LangfuseOtelSpanAttributes.RELEASE] ??
+          (attributes?.[HanzoOtelSpanAttributes.RELEASE] as string) ??
+          resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
           null,
         userId: this.extractUserId(attributes),
         sessionId: this.extractSessionId(attributes),
         public: this.extractPublic(attributes),
         tags: this.extractTags(attributes),
         environment: this.extractEnvironment(attributes, resourceAttributes),
-        input: attributes[LangfuseOtelSpanAttributes.TRACE_INPUT],
-        output: attributes[LangfuseOtelSpanAttributes.TRACE_OUTPUT],
+        input: attributes[HanzoOtelSpanAttributes.TRACE_INPUT],
+        output: attributes[HanzoOtelSpanAttributes.TRACE_OUTPUT],
       };
     }
 
@@ -833,8 +833,8 @@ export class OtelIngestionProcessor {
     attributes?: Record<string, unknown>,
   ): boolean | undefined {
     const value =
-      attributes?.[LangfuseOtelSpanAttributes.TRACE_PUBLIC] ??
-      attributes?.["langfuse.public"];
+      attributes?.[HanzoOtelSpanAttributes.TRACE_PUBLIC] ??
+      attributes?.["hanzo.public"];
 
     if (value == null) return;
     return value === true || value === "true";
@@ -853,7 +853,7 @@ export class OtelIngestionProcessor {
       spanAttributeMetadata,
       scopeSpan,
       scopeAttributes,
-      isLangfuseSDKSpans,
+      isHanzoSDKSpans,
       startTimeISO,
       endTimeISO,
     } = params;
@@ -882,21 +882,21 @@ export class OtelIngestionProcessor {
       metadata: {
         ...resourceAttributeMetadata,
         ...spanAttributeMetadata,
-        ...(isLangfuseSDKSpans ? {} : { attributes: filteredAttributes }),
+        ...(isHanzoSDKSpans ? {} : { attributes: filteredAttributes }),
         resourceAttributes,
         scope: { ...scopeSpan.scope, attributes: scopeAttributes },
       },
       level:
-        attributes[LangfuseOtelSpanAttributes.OBSERVATION_LEVEL] ??
+        attributes[HanzoOtelSpanAttributes.OBSERVATION_LEVEL] ??
         (span.status?.code === 2
           ? ObservationLevel.ERROR
           : ObservationLevel.DEFAULT),
       statusMessage:
-        attributes[LangfuseOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE] ??
+        attributes[HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE] ??
         span.status?.message ??
         null,
       version:
-        attributes[LangfuseOtelSpanAttributes.VERSION] ??
+        attributes[HanzoOtelSpanAttributes.VERSION] ??
         resourceAttributes?.["service.version"] ??
         null,
       modelParameters: this.extractModelParameters(
@@ -905,14 +905,14 @@ export class OtelIngestionProcessor {
       ) as any,
       model: this.extractModelName(attributes),
       promptName:
-        attributes?.[LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_NAME] ??
-        attributes["langfuse.prompt.name"] ??
-        this.parseLangfusePromptFromAISDK(attributes)?.name ??
+        attributes?.[HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME] ??
+        attributes["hanzo.prompt.name"] ??
+        this.parseHanzoPromptFromAISDK(attributes)?.name ??
         null,
       promptVersion:
-        attributes?.[LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_VERSION] ??
-        attributes["langfuse.prompt.version"] ??
-        this.parseLangfusePromptFromAISDK(attributes)?.version ??
+        attributes?.[HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION] ??
+        attributes["hanzo.prompt.version"] ??
+        this.parseHanzoPromptFromAISDK(attributes)?.version ??
         null,
       usageDetails: this.extractUsageDetails(
         attributes,
@@ -954,23 +954,23 @@ export class OtelIngestionProcessor {
 
   private hasTraceUpdates(attributes: Record<string, unknown>): boolean {
     const hasExactMatchingAttributeName = [
-      LangfuseOtelSpanAttributes.TRACE_NAME,
-      LangfuseOtelSpanAttributes.TRACE_INPUT,
-      LangfuseOtelSpanAttributes.TRACE_OUTPUT,
-      LangfuseOtelSpanAttributes.TRACE_METADATA,
-      LangfuseOtelSpanAttributes.TRACE_USER_ID,
-      LangfuseOtelSpanAttributes.TRACE_SESSION_ID,
-      LangfuseOtelSpanAttributes.TRACE_PUBLIC,
-      LangfuseOtelSpanAttributes.TRACE_TAGS,
-      LangfuseOtelSpanAttributes.TRACE_COMPAT_USER_ID,
-      LangfuseOtelSpanAttributes.TRACE_COMPAT_SESSION_ID,
+      HanzoOtelSpanAttributes.TRACE_NAME,
+      HanzoOtelSpanAttributes.TRACE_INPUT,
+      HanzoOtelSpanAttributes.TRACE_OUTPUT,
+      HanzoOtelSpanAttributes.TRACE_METADATA,
+      HanzoOtelSpanAttributes.TRACE_USER_ID,
+      HanzoOtelSpanAttributes.TRACE_SESSION_ID,
+      HanzoOtelSpanAttributes.TRACE_PUBLIC,
+      HanzoOtelSpanAttributes.TRACE_TAGS,
+      HanzoOtelSpanAttributes.TRACE_COMPAT_USER_ID,
+      HanzoOtelSpanAttributes.TRACE_COMPAT_SESSION_ID,
       // OpenAI and Langchain integrations
-      `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_user_id`,
-      `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_session_id`,
-      `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_tags`,
-      `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_session_id`,
-      `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_user_id`,
-      `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_tags`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_user_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_session_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_session_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_user_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`,
       // Vercel AI SDK
       `ai.telemetry.metadata.sessionId`,
       `ai.telemetry.metadata.userId`,
@@ -981,7 +981,7 @@ export class OtelIngestionProcessor {
 
     const attributeKeys = Object.keys(attributes);
     const hasTraceMetadataKey = attributeKeys.some((key) =>
-      key.startsWith(LangfuseOtelSpanAttributes.TRACE_METADATA),
+      key.startsWith(HanzoOtelSpanAttributes.TRACE_METADATA),
     );
 
     return hasExactMatchingAttributeName || hasTraceMetadataKey;
@@ -1126,11 +1126,11 @@ export class OtelIngestionProcessor {
     // Pre-delete all potential input/output attribute keys to avoid duplicates
     // This ensures that if multiple frameworks' attributes are present, they're all filtered
     const potentialInputOutputKeys = [
-      // Langfuse SDK
-      LangfuseOtelSpanAttributes.TRACE_INPUT,
-      LangfuseOtelSpanAttributes.TRACE_OUTPUT,
-      LangfuseOtelSpanAttributes.OBSERVATION_INPUT,
-      LangfuseOtelSpanAttributes.OBSERVATION_OUTPUT,
+      // Hanzo SDK
+      HanzoOtelSpanAttributes.TRACE_INPUT,
+      HanzoOtelSpanAttributes.TRACE_OUTPUT,
+      HanzoOtelSpanAttributes.OBSERVATION_INPUT,
+      HanzoOtelSpanAttributes.OBSERVATION_OUTPUT,
       // Vercel AI SDK
       "ai.prompt.messages",
       "ai.prompt",
@@ -1204,15 +1204,15 @@ export class OtelIngestionProcessor {
     // const toolDefs = attributes["gen_ai.tool.definitions"] || attributes["model_request_parameters"]?.function_tools;
     // if (toolDefs && input && typeof input === "object") { input = { ...input, tools: toolDefs }; }
 
-    // Langfuse
+    // Hanzo
     input =
-      domain === "trace" && attributes[LangfuseOtelSpanAttributes.TRACE_INPUT]
-        ? attributes[LangfuseOtelSpanAttributes.TRACE_INPUT]
-        : attributes[LangfuseOtelSpanAttributes.OBSERVATION_INPUT];
+      domain === "trace" && attributes[HanzoOtelSpanAttributes.TRACE_INPUT]
+        ? attributes[HanzoOtelSpanAttributes.TRACE_INPUT]
+        : attributes[HanzoOtelSpanAttributes.OBSERVATION_INPUT];
     output =
-      domain === "trace" && attributes[LangfuseOtelSpanAttributes.TRACE_OUTPUT]
-        ? attributes[LangfuseOtelSpanAttributes.TRACE_OUTPUT]
-        : attributes[LangfuseOtelSpanAttributes.OBSERVATION_OUTPUT];
+      domain === "trace" && attributes[HanzoOtelSpanAttributes.TRACE_OUTPUT]
+        ? attributes[HanzoOtelSpanAttributes.TRACE_OUTPUT]
+        : attributes[HanzoOtelSpanAttributes.OBSERVATION_OUTPUT];
 
     if (input != null || output != null) {
       return { input, output, filteredAttributes };
@@ -1525,7 +1525,7 @@ export class OtelIngestionProcessor {
     resourceAttributes: Record<string, unknown>,
   ): string {
     const environmentAttributeKeys = [
-      LangfuseOtelSpanAttributes.ENVIRONMENT,
+      HanzoOtelSpanAttributes.ENVIRONMENT,
       "deployment.environment.name",
       "deployment.environment",
     ];
@@ -1590,18 +1590,18 @@ export class OtelIngestionProcessor {
 
     const metadataKeyPrefix =
       domain === "observation"
-        ? LangfuseOtelSpanAttributes.OBSERVATION_METADATA
-        : LangfuseOtelSpanAttributes.TRACE_METADATA;
+        ? HanzoOtelSpanAttributes.OBSERVATION_METADATA
+        : HanzoOtelSpanAttributes.TRACE_METADATA;
 
-    const langfuseMetadataAttribute =
-      attributes[metadataKeyPrefix] || attributes["langfuse.metadata"];
+    const hanzoMetadataAttribute =
+      attributes[metadataKeyPrefix] || attributes["hanzo.metadata"];
 
-    if (langfuseMetadataAttribute) {
+    if (hanzoMetadataAttribute) {
       try {
-        if (typeof langfuseMetadataAttribute === "string") {
-          topLevelMetadata = JSON.parse(langfuseMetadataAttribute as string);
-        } else if (typeof langfuseMetadataAttribute === "object") {
-          topLevelMetadata = langfuseMetadataAttribute as Record<
+        if (typeof hanzoMetadataAttribute === "string") {
+          topLevelMetadata = JSON.parse(hanzoMetadataAttribute as string);
+        } else if (typeof hanzoMetadataAttribute === "object") {
+          topLevelMetadata = hanzoMetadataAttribute as Record<
             string,
             unknown
           >;
@@ -1611,12 +1611,12 @@ export class OtelIngestionProcessor {
       }
     }
 
-    const langfuseMetadata: Record<string, unknown> = {};
+    const hanzoMetadata: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(attributes)) {
       for (const prefix of [
         metadataKeyPrefix,
-        "langfuse.metadata",
+        "hanzo.metadata",
         "ai.telemetry.metadata",
       ]) {
         if (
@@ -1626,11 +1626,11 @@ export class OtelIngestionProcessor {
             "ai.telemetry.metadata.userId",
             "ai.telemetry.metadata.sessionId",
             "ai.telemetry.metadata.tags",
-            "ai.telemetry.metadata.langfusePrompt",
+            "ai.telemetry.metadata.hanzoPrompt",
           ].includes(key)
         ) {
           const newKey = key.replace(`${prefix}.`, "");
-          langfuseMetadata[newKey] = value;
+          hanzoMetadata[newKey] = value;
         }
       }
     }
@@ -1642,12 +1642,12 @@ export class OtelIngestionProcessor {
         : undefined;
 
     if (tools) {
-      langfuseMetadata["tools"] = tools;
+      hanzoMetadata["tools"] = tools;
     }
 
     return {
       ...topLevelMetadata,
-      ...langfuseMetadata,
+      ...hanzoMetadata,
     };
   }
 
@@ -1655,10 +1655,10 @@ export class OtelIngestionProcessor {
     attributes: Record<string, unknown>,
   ): string | undefined {
     const userIdKeys = [
-      "langfuse.user.id",
+      "hanzo.user.id",
       "user.id",
-      `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_user_id`,
-      `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_user_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_user_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_user_id`,
       `ai.telemetry.metadata.userId`,
     ];
 
@@ -1675,11 +1675,11 @@ export class OtelIngestionProcessor {
     attributes: Record<string, unknown>,
   ): string | undefined {
     const userIdKeys = [
-      "langfuse.session.id",
+      "hanzo.session.id",
       "session.id",
       "gen_ai.conversation.id",
-      `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_session_id`,
-      `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_session_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_session_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_session_id`,
       `ai.telemetry.metadata.sessionId`,
     ];
 
@@ -1696,12 +1696,12 @@ export class OtelIngestionProcessor {
     attributes: Record<string, unknown>,
     instrumentationScopeName: string,
   ): Record<string, unknown> {
-    if (attributes[LangfuseOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS]) {
+    if (attributes[HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS]) {
       try {
         return this.sanitizeModelParams(
           JSON.parse(
             attributes[
-              LangfuseOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS
+              HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS
             ] as string,
           ),
         );
@@ -1788,7 +1788,7 @@ export class OtelIngestionProcessor {
   }
 
   private sanitizeModelParams<T>(params: T): Record<string, string> | T {
-    // Model params in Langfuse must be key value pairs where value is string
+    // Model params in Hanzo must be key value pairs where value is string
     if (typeof params === "object" && params != null)
       return Object.fromEntries(
         Object.entries(params).map((e) => [
@@ -1806,7 +1806,7 @@ export class OtelIngestionProcessor {
     attributes: Record<string, unknown>,
   ): string | undefined {
     const modelNameKeys = [
-      LangfuseOtelSpanAttributes.OBSERVATION_MODEL,
+      HanzoOtelSpanAttributes.OBSERVATION_MODEL,
       "gen_ai.response.model",
       "ai.model.id",
       "gen_ai.request.model",
@@ -1827,11 +1827,11 @@ export class OtelIngestionProcessor {
     attributes: Record<string, unknown>,
     instrumentationScopeName: string,
   ): Record<string, unknown> {
-    if (attributes[LangfuseOtelSpanAttributes.OBSERVATION_USAGE_DETAILS]) {
+    if (attributes[HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS]) {
       try {
         return JSON.parse(
           attributes[
-            LangfuseOtelSpanAttributes.OBSERVATION_USAGE_DETAILS
+            HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS
           ] as string,
         );
       } catch {
@@ -2020,11 +2020,11 @@ export class OtelIngestionProcessor {
   private extractCostDetails(
     attributes: Record<string, unknown>,
   ): Record<string, unknown> {
-    if (attributes[LangfuseOtelSpanAttributes.OBSERVATION_COST_DETAILS]) {
+    if (attributes[HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS]) {
       try {
         return JSON.parse(
           attributes[
-            LangfuseOtelSpanAttributes.OBSERVATION_COST_DETAILS
+            HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS
           ] as string,
         );
       } catch {
@@ -2044,7 +2044,7 @@ export class OtelIngestionProcessor {
   ): string | null {
     try {
       const value = attributes[
-        LangfuseOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME
+        HanzoOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME
       ] as any;
 
       if (isValidDateString(value)) return value;
@@ -2078,13 +2078,13 @@ export class OtelIngestionProcessor {
 
   private extractTags(attributes: Record<string, unknown>): string[] {
     const tagsValue =
-      attributes[LangfuseOtelSpanAttributes.TRACE_TAGS] ||
-      attributes["langfuse.tags"] ||
+      attributes[HanzoOtelSpanAttributes.TRACE_TAGS] ||
+      attributes["hanzo.tags"] ||
       attributes[
-        `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.langfuse_tags`
+        `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`
       ] ||
       attributes[
-        `${LangfuseOtelSpanAttributes.TRACE_METADATA}.langfuse_tags`
+        `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`
       ] ||
       attributes["ai.telemetry.metadata.tags"] ||
       attributes["tag.tags"];
@@ -2137,27 +2137,27 @@ export class OtelIngestionProcessor {
     experimentItemMetadataNames?: string[];
     experimentItemMetadataValues?: Array<string | null | undefined>;
   } {
-    const experimentId = attributes[LangfuseOtelSpanAttributes.EXPERIMENT_ID];
+    const experimentId = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ID];
     const experimentName =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_NAME];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_NAME];
     const experimentDescription =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_DESCRIPTION];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_DESCRIPTION];
     const experimentDatasetId =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_DATASET_ID];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_DATASET_ID];
     const experimentItemId =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_ITEM_ID];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ID];
     const experimentItemRootSpanId =
       attributes[
-        LangfuseOtelSpanAttributes.EXPERIMENT_ITEM_ROOT_OBSERVATION_ID
+        HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ROOT_OBSERVATION_ID
       ];
     const experimentItemExpectedOutput =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_ITEM_EXPECTED_OUTPUT];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_EXPECTED_OUTPUT];
     const experimentItemVersion =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_ITEM_VERSION];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_VERSION];
 
     // Extract experiment metadata
     const experimentMetadataStr =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_METADATA];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_METADATA];
     let experimentMetadata: Record<string, unknown> = {};
     if (experimentMetadataStr && typeof experimentMetadataStr === "string") {
       try {
@@ -2171,7 +2171,7 @@ export class OtelIngestionProcessor {
 
     // Extract experiment item metadata
     const experimentItemMetadataStr =
-      attributes[LangfuseOtelSpanAttributes.EXPERIMENT_ITEM_METADATA];
+      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_METADATA];
     let experimentItemMetadata: Record<string, unknown> = {};
     if (
       experimentItemMetadataStr &&
@@ -2225,10 +2225,10 @@ export class OtelIngestionProcessor {
     };
   }
 
-  private parseLangfusePromptFromAISDK(
+  private parseHanzoPromptFromAISDK(
     attributes: Record<string, unknown>,
   ): { name: string; version: number } | undefined {
-    const aiSDKPrompt = attributes["ai.telemetry.metadata.langfusePrompt"];
+    const aiSDKPrompt = attributes["ai.telemetry.metadata.hanzoPrompt"];
 
     if (!aiSDKPrompt) return;
 
@@ -2264,7 +2264,7 @@ export class OtelIngestionProcessor {
     try {
       const results = await Promise.all(
         [...traceIds].map(async (traceId) => {
-          const key = `langfuse:project:${this.projectId}:trace:${traceId}:seen`;
+          const key = `hanzo:project:${this.projectId}:trace:${traceId}:seen`;
           const TTLSeconds = 600; // 10 minutes
           const result = await redis?.set(key, "1", "EX", TTLSeconds, "NX");
 

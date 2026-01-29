@@ -1,4 +1,4 @@
-import { PrismaClient, LangfuseNotFoundError } from "@hanzo/shared";
+import { PrismaClient, HanzoNotFoundError } from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
 import { env } from "../env";
 
@@ -147,7 +147,7 @@ export class ClickhouseReadSkipCache {
       });
 
       if (!project) {
-        throw new LangfuseNotFoundError(`Project ${projectId} not found`);
+        throw new HanzoNotFoundError(`Project ${projectId} not found`);
       }
 
       const cutoffDate = new Date(

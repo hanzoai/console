@@ -9,7 +9,7 @@ export interface AdminAuthResult {
 }
 
 export interface AdminAuthOptions {
-  isAllowedOnLangfuseCloud?: boolean;
+  isAllowedOnHanzoCloud?: boolean;
 }
 
 export class AdminApiAuthService {
@@ -17,17 +17,17 @@ export class AdminApiAuthService {
     authString: string,
     options: AdminAuthOptions = {},
   ): AdminAuthResult => {
-    const { isAllowedOnLangfuseCloud = false } = options;
+    const { isAllowedOnHanzoCloud = false } = options;
 
-    // Block access on Langfuse Cloud unless explicitly allowed
+    // Block access on Hanzo Cloud unless explicitly allowed
     if (
-      !isAllowedOnLangfuseCloud &&
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== "DEV" // exclude dev and CI environments
+      !isAllowedOnHanzoCloud &&
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== "DEV" // exclude dev and CI environments
     ) {
       return {
         isAuthorized: false,
-        error: "Not accessible on Langfuse Cloud",
+        error: "Not accessible on Hanzo Cloud",
       };
     }
 
@@ -81,7 +81,7 @@ export class AdminApiAuthService {
    * Middleware function to handle admin authentication in Next.js API routes
    * @param req The Next.js API request
    * @param res The Next.js API response
-   * @param options Admin auth options. By default, blocks access on Langfuse Cloud (isAllowedOnLangfuseCloud: false)
+   * @param options Admin auth options. By default, blocks access on Hanzo Cloud (isAllowedOnHanzoCloud: false)
    * @returns true if authorized, false otherwise (and sets appropriate response)
    */
   public static handleAdminAuth(

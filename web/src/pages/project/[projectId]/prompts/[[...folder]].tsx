@@ -86,7 +86,7 @@ export default function PromptsWithFolder() {
         help: {
           description:
             "Manage and version your prompts in Hanzo Console. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
-          href: "https://langfuse.com/docs/prompt-management/get-started",
+          href: "https://hanzo.com/docs/prompt-management/get-started",
         },
         actionButtonsRight: (
           <>

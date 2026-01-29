@@ -7,7 +7,7 @@ import {
 } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import TableLink from "@/src/components/table/table-link";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { TokenUsageBadge } from "@/src/components/token-usage-badge";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { useSidebarFilterState } from "@/src/features/filters/hooks/useSidebarFilterState";
@@ -359,7 +359,7 @@ export default function SessionsTable({
     },
   ];
 
-  const columns: LangfuseColumnDef<SessionTableRow>[] = [
+  const columns: HanzoColumnDef<SessionTableRow>[] = [
     selectActionColumn,
     {
       accessorKey: "bookmarked",
@@ -808,7 +808,7 @@ export default function SessionsTable({
               help={{
                 description:
                   "A session is a collection of related traces, such as a conversation or thread. To begin, add a sessionId to the trace.",
-                href: "https://langfuse.com/docs/observability/features/sessions",
+                href: "https://hanzo.com/docs/observability/features/sessions",
               }}
               rowHeight={rowHeight}
             />

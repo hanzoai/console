@@ -30,9 +30,9 @@ interface MediaFile {
 
 const MEDIA_FILES: Record<string, MediaFile> = {
   image: {
-    name: "langfuse-logo.png",
+    name: "hanzo-logo.png",
     contentType: "image/png",
-    filePath: path.join(TEST_FILES_DIR, "langfuse-logo.png"),
+    filePath: path.join(TEST_FILES_DIR, "hanzo-logo.png"),
   },
   pdf: {
     name: "bitcoin.pdf",
@@ -80,7 +80,7 @@ function getBucketPath(
     "audio/mpeg": "mp3",
   };
   const extension = extensionMap[contentType] || "bin";
-  const prefix = env.LANGFUSE_S3_MEDIA_UPLOAD_PREFIX || "";
+  const prefix = env.HANZO_S3_MEDIA_UPLOAD_PREFIX || "";
   return `${prefix}${projectId}/${mediaId}.${extension}`;
 }
 
@@ -94,9 +94,9 @@ async function uploadAndCreateMediaRecord(
   mediaFile: MediaFile,
 ): Promise<void> {
   // Check if bucket is configured
-  if (!env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+  if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     logger.warn(
-      "[seed-media] LANGFUSE_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
+      "[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
     );
     return;
   }
@@ -144,14 +144,14 @@ async function uploadAndCreateMediaRecord(
   // Upload to storage
   try {
     const storageClient = StorageServiceFactory.getInstance({
-      bucketName: env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE,
-      awsSseKmsKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+      bucketName: env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.HANZO_S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
 
     await storageClient.uploadFile({
@@ -184,7 +184,7 @@ async function uploadAndCreateMediaRecord(
       ${projectId},
       ${sha256Hash},
       ${bucketPath},
-      ${env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET},
+      ${env.HANZO_S3_MEDIA_UPLOAD_BUCKET},
       ${mediaFile.contentType},
       ${BigInt(fileBytes.length)},
       ${new Date()},
@@ -192,7 +192,7 @@ async function uploadAndCreateMediaRecord(
     )
     ON CONFLICT ("project_id", "sha_256_hash")
     DO UPDATE SET
-      "bucket_name" = ${env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET},
+      "bucket_name" = ${env.HANZO_S3_MEDIA_UPLOAD_BUCKET},
       "bucket_path" = ${bucketPath},
       "content_type" = ${mediaFile.contentType},
       "content_length" = ${BigInt(fileBytes.length)},
@@ -223,9 +223,9 @@ export async function seedMediaTraces(projectId: string): Promise<void> {
   logger.info(`[seed-media] Seeding media traces for project ${projectId}`);
 
   // Check if bucket is configured
-  if (!env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+  if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     logger.warn(
-      "[seed-media] LANGFUSE_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
+      "[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
     );
     return;
   }

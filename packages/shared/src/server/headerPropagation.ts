@@ -2,7 +2,7 @@ import * as opentelemetry from "@opentelemetry/api";
 import type { IncomingHttpHeaders } from "http";
 import { env } from "../env";
 
-export type LangfuseContextProps = {
+export type HanzoContextProps = {
   headers?: IncomingHttpHeaders;
   userId?: string;
   projectId?: string;
@@ -13,8 +13,8 @@ export type LangfuseContextProps = {
  * the supplied props (headers, userId, projectId). Existing baggage
  * entries are preserved.
  */
-export const contextWithLangfuseProps = (
-  props: LangfuseContextProps,
+export const contextWithHanzoProps = (
+  props: HanzoContextProps,
 ): opentelemetry.Context => {
   const ctx = opentelemetry.context.active();
   let baggage =
@@ -22,35 +22,35 @@ export const contextWithLangfuseProps = (
     opentelemetry.propagation.createBaggage();
 
   if (props.headers) {
-    (env.LANGFUSE_LOG_PROPAGATED_HEADERS as string[]).forEach((name) => {
+    (env.HANZO_LOG_PROPAGATED_HEADERS as string[]).forEach((name) => {
       const value = props.headers![name];
       if (!value) return;
       const strValue = Array.isArray(value) ? JSON.stringify(value) : value;
-      baggage = baggage.setEntry(`langfuse.header.${name}`, {
+      baggage = baggage.setEntry(`hanzo.header.${name}`, {
         value: strValue,
       });
     });
 
-    // get x-langfuse-xxx headers and add them to the span
+    // get x-hanzo-xxx headers and add them to the span
     Object.keys(props.headers).forEach((name) => {
       if (
-        name.toLowerCase().startsWith("x-langfuse") ||
-        name.toLowerCase().startsWith("x_langfuse")
+        name.toLowerCase().startsWith("x-hanzo") ||
+        name.toLowerCase().startsWith("x_hanzo")
       ) {
         const value = props.headers![name];
         if (!value) return;
         const strValue = Array.isArray(value) ? JSON.stringify(value) : value;
-        baggage = baggage.setEntry(`langfuse.header.${name}`, {
+        baggage = baggage.setEntry(`hanzo.header.${name}`, {
           value: strValue,
         });
       }
     });
   }
   if (props.userId) {
-    baggage = baggage.setEntry("langfuse.user.id", { value: props.userId });
+    baggage = baggage.setEntry("hanzo.user.id", { value: props.userId });
   }
   if (props.projectId) {
-    baggage = baggage.setEntry("langfuse.project.id", {
+    baggage = baggage.setEntry("hanzo.project.id", {
       value: props.projectId,
     });
   }

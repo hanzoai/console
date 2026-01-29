@@ -4,7 +4,7 @@ import {
   createTRPCRouter,
   protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   optionalPaginationZod,
   Prisma,
  } from "@hanzo/shared";
@@ -33,7 +33,7 @@ export const queueAssignmentRouter = createTRPCRouter({
           projectId: input.projectId } });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       // Verify the users exist and have access to the project
@@ -100,7 +100,7 @@ export const queueAssignmentRouter = createTRPCRouter({
           projectId: input.projectId } });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       // Remove memberships
@@ -141,7 +141,7 @@ export const queueAssignmentRouter = createTRPCRouter({
           projectId: input.projectId } });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       const assignments = await ctx.prisma.annotationQueueAssignment.findMany({

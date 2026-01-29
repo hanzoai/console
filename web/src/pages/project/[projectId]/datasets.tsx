@@ -34,7 +34,7 @@ export default function Datasets() {
           help: {
             description:
               "Datasets in Hanzo Console are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
-            href: "https://langfuse.com/docs/evaluation/dataset-runs/datasets",
+            href: "https://hanzo.com/docs/evaluation/dataset-runs/datasets",
           },
         }}
         scrollable
@@ -51,7 +51,7 @@ export default function Datasets() {
         help: {
           description:
             "Datasets in Hanzo Console are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
-          href: "https://langfuse.com/docs/evaluation/dataset-runs/datasets",
+          href: "https://hanzo.com/docs/evaluation/dataset-runs/datasets",
         },
         actionButtonsRight: (
           <DatasetActionButton

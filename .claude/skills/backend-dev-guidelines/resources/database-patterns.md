@@ -1,6 +1,6 @@
 # Database Patterns - PostgreSQL & ClickHouse
 
-Complete guide to database access patterns in Langfuse using PostgreSQL (Prisma ORM) and ClickHouse (direct client).
+Complete guide to database access patterns in Hanzo using PostgreSQL (Prisma ORM) and ClickHouse (direct client).
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ Complete guide to database access patterns in Langfuse using PostgreSQL (Prisma 
 
 ## Database Architecture Overview
 
-Langfuse uses a **dual database architecture**:
+Hanzo uses a **dual database architecture**:
 
 | Database       | Technology        | Purpose                                                       | Access Pattern                         |
 | -------------- | ----------------- | ------------------------------------------------------------- | -------------------------------------- |
@@ -34,13 +34,13 @@ Langfuse uses a **dual database architecture**:
 ### Import Pattern
 
 ```typescript
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 // Direct access to Prisma client
 const user = await prisma.user.findUnique({ where: { id } });
 ```
 
-**Important**: Always import from `@langfuse/shared/src/db`, not `@prisma/client` directly.
+**Important**: Always import from `@hanzo/shared/src/db`, not `@prisma/client` directly.
 
 ### Common CRUD Operations
 
@@ -185,8 +185,8 @@ const traces = await prisma.trace.findMany({
 ### Import Pattern
 
 ```typescript
-import { queryClickhouse } from "@langfuse/shared/src/server/repositories/clickhouse";
-import { clickhouseClient } from "@langfuse/shared/src/server/clickhouse/client";
+import { queryClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
+import { clickhouseClient } from "@hanzo/shared/src/server/clickhouse/client";
 ```
 
 ### ClickHouse Client Singleton
@@ -194,7 +194,7 @@ import { clickhouseClient } from "@langfuse/shared/src/server/clickhouse/client"
 ClickHouse uses a singleton client manager that reuses connections:
 
 ```typescript
-import { clickhouseClient } from "@langfuse/shared/src/server/clickhouse/client";
+import { clickhouseClient } from "@hanzo/shared/src/server/clickhouse/client";
 
 // Get client (automatically reuses existing connection)
 const client = clickhouseClient();
@@ -212,7 +212,7 @@ ClickHouse queries use **raw SQL** with parameterized queries. Parameters use `{
 **Simple query:**
 
 ```typescript
-import { queryClickhouse } from "@langfuse/shared/src/server/repositories/clickhouse";
+import { queryClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
 
 // ✅ GOOD: Always filter by project_id
 const rows = await queryClickhouse<{ id: string; name: string }>({
@@ -242,7 +242,7 @@ const rows = await queryClickhouse<{ id: string; name: string }>({
 **Streaming query (for large result sets):**
 
 ```typescript
-import { queryClickhouseStream } from "@langfuse/shared/src/server/repositories/clickhouse";
+import { queryClickhouseStream } from "@hanzo/shared/src/server/repositories/clickhouse";
 
 // Stream results to avoid loading all rows in memory
 for await (const row of queryClickhouseStream<ObservationRecordReadType>({
@@ -262,7 +262,7 @@ for await (const row of queryClickhouseStream<ObservationRecordReadType>({
 **Upsert (insert) operation:**
 
 ```typescript
-import { upsertClickhouse } from "@langfuse/shared/src/server/repositories/clickhouse";
+import { upsertClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
 
 await upsertClickhouse({
   table: "traces",
@@ -289,7 +289,7 @@ await upsertClickhouse({
 **DDL/Administrative commands:**
 
 ```typescript
-import { commandClickhouse } from "@langfuse/shared/src/server/repositories/clickhouse";
+import { commandClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
 
 // Create table, alter schema, etc.
 await commandClickhouse({
@@ -314,7 +314,7 @@ await commandClickhouse({
 **Date handling:**
 
 ```typescript
-import { convertDateToClickhouseDateTime } from "@langfuse/shared/src/server/clickhouse/client";
+import { convertDateToClickhouseDateTime } from "@hanzo/shared/src/server/clickhouse/client";
 
 const params = {
   startTime: convertDateToClickhouseDateTime(new Date()),
@@ -341,7 +341,7 @@ const query = `
 ```
 
 **Why this is important:**
-- Langfuse is multi-tenant - each project's data must be isolated
+- Hanzo is multi-tenant - each project's data must be isolated
 - The `project_id` filter ensures queries only access data from the intended tenant
 - All queries on project-scoped tables (traces, observations, scores, sessions, etc.) must filter by `project_id`
 
@@ -405,7 +405,7 @@ ClickHouse queries automatically retry on network errors (socket hang up). Custo
 import {
   queryClickhouse,
   ClickHouseResourceError,
-} from "@langfuse/shared/src/server/repositories/clickhouse";
+} from "@hanzo/shared/src/server/repositories/clickhouse";
 
 try {
   const rows = await queryClickhouse({ query, params });
@@ -422,7 +422,7 @@ try {
 
 ## Repository Pattern
 
-Langfuse uses repositories in `packages/shared/src/server/repositories/` for complex data access patterns.
+Hanzo uses repositories in `packages/shared/src/server/repositories/` for complex data access patterns.
 
 ### When to Use Repositories
 
@@ -563,7 +563,7 @@ const user = await prisma.user.findUnique({
 
 ```typescript
 import { Prisma } from "@prisma/client";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 try {
   await prisma.user.create({ data: userData });
@@ -612,7 +612,7 @@ try {
 import {
   queryClickhouse,
   ClickHouseResourceError,
-} from "@langfuse/shared/src/server/repositories/clickhouse";
+} from "@hanzo/shared/src/server/repositories/clickhouse";
 
 try {
   const rows = await queryClickhouse({ query, params });
@@ -648,7 +648,7 @@ ClickHouse queries automatically retry network errors (socket hang up) with expo
 
 ```typescript
 // In packages/shared/src/env.ts
-LANGFUSE_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().positive().default(3)
+HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().positive().default(3)
 ```
 
 ---

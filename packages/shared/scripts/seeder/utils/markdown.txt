@@ -12,28 +12,28 @@
 
 ### Prerequisites
 \`\`\`bash  
-npm install @langfuse/core  
-pip install langfuse  
+npm install @hanzo/core  
+pip install hanzo  
 \`\`\`
 
 ### Quick Setup
 1. **Initialize your project**
    \`\`\`typescript  
-   import { Langfuse } from 'langfuse'  
+   import { Hanzo } from 'hanzo'  
 
-   const langfuse = new Langfuse({  
+   const hanzo = new Hanzo({  
      secretKey: process.env.LANGFUSE_SECRET_KEY,  
      publicKey: process.env.LANGFUSE_PUBLIC_KEY,  
-     baseUrl: 'https://cloud.langfuse.com'  
+     baseUrl: 'https://cloud.hanzo.com'  
    })  
    \`\`\`
 
 2. **Create your first trace**
    \`\`\`python  
-   from langfuse import Langfuse  
+   from hanzo import Hanzo  
 
-   langfuse = Langfuse()  
-   trace = langfuse.trace(name="chat-application")  
+   hanzo = Hanzo()  
+   trace = hanzo.trace(name="chat-application")  
    \`\`\`
 
 ---
@@ -74,7 +74,7 @@ graph TD
 #### Creating Traces
 \`\`\`typescript  
 // Basic trace creation  
-const trace = langfuse.trace({  
+const trace = hanzo.trace({  
   name: "user-query-processing",  
   userId: "user-123",  
   sessionId: "session-456",  
@@ -109,15 +109,15 @@ const generation = span.generation({
 #### 🔄 Async Processing
 \`\`\`python  
 import asyncio  
-from langfuse import Langfuse  
+from hanzo import Hanzo  
 
 async def process_batch():  
-    langfuse = Langfuse()  
+    hanzo = Hanzo()  
 
     tasks = []  
     for item in batch_items:  
         task = asyncio.create_task(  
-            process_item_with_tracing(langfuse, item)  
+            process_item_with_tracing(hanzo, item)  
         )  
         tasks.append(task)  
 
@@ -204,13 +204,13 @@ const traces = []
 for (let i = 0; i < data.length; i += batchSize) {  
   const batch = data.slice(i, i + batchSize)  
   const processedBatch = await Promise.all(  
-    batch.map(item => processWithLangfuse(item))  
+    batch.map(item => processWithHanzo(item))  
   )  
   traces.push(...processedBatch)  
 }  
 
 // Flush all traces at once  
-await langfuse.flushAsync()  
+await hanzo.flushAsync()  
 \`\`\`
 
 ---
@@ -221,11 +221,11 @@ await langfuse.flushAsync()
 \`\`\`python
 class MultiAgentTracer:  
     def __init__(self):  
-        self.langfuse = Langfuse()  
+        self.hanzo = Hanzo()  
 
     async def orchestrate_agents(self, task):  
         # Main orchestration trace  
-        main_trace = self.langfuse.trace(  
+        main_trace = self.hanzo.trace(  
             name="multi-agent-orchestration",  
             input={"task": task}  
         )  
@@ -253,7 +253,7 @@ class MultiAgentTracer:
 
 ## 🎉 Conclusion
 
-With proper implementation of Langfuse tracing, you can:
+With proper implementation of Hanzo tracing, you can:
 
 - ✅ **Monitor** your LLM applications in real-time
 - ✅ **Debug** issues with detailed trace information
@@ -261,6 +261,6 @@ With proper implementation of Langfuse tracing, you can:
 - ✅ **Scale** your applications with confidence
 
 ### Next Steps
-1. Review the [official documentation](https://langfuse.com/docs)
-2. Join our [Discord community](https://discord.gg/langfuse)
-3. Check out [example projects](https://github.com/langfuse/langfuse)
+1. Review the [official documentation](https://hanzo.com/docs)
+2. Join our [Discord community](https://discord.gg/hanzo)
+3. Check out [example projects](https://github.com/hanzo/hanzo)

@@ -45,7 +45,7 @@ export default withMiddlewares({
       const useEventsTable =
         query.useEventsTable !== undefined && query.useEventsTable !== null
           ? query.useEventsTable === true
-          : env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS;
+          : env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS;
 
       if (useEventsTable) {
         const [items, count] = await Promise.all([

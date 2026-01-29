@@ -1,7 +1,7 @@
 /**
  * MCP Tool: createChatPrompt
  *
- * Creates a new chat prompt version in Langfuse.
+ * Creates a new chat prompt version in Hanzo.
  * Write operation with destructive hint.
  */
 
@@ -84,7 +84,7 @@ const CreateChatPromptInputSchema = z.object({
 export const [createChatPromptTool, handleCreateChatPrompt] = defineTool({
   name: "createChatPrompt",
   description: [
-    "Create a new chat prompt version in Langfuse. Chat prompts are arrays of messages with roles and content.",
+    "Create a new chat prompt version in Hanzo. Chat prompts are arrays of messages with roles and content.",
     "",
     "Important:",
     "- Prompts are immutable - cannot modify existing versions",
@@ -103,8 +103,8 @@ export const [createChatPromptTool, handleCreateChatPrompt] = defineTool({
       async (span) => {
         // Set span attributes for observability
         span.setAttributes({
-          "langfuse.project.id": context.projectId,
-          "langfuse.org.id": context.orgId,
+          "hanzo.project.id": context.projectId,
+          "hanzo.org.id": context.orgId,
           "mcp.api_key_id": context.apiKeyId,
           "mcp.prompt_name": input.name,
           "mcp.prompt_type": "chat",

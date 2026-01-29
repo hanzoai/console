@@ -97,7 +97,7 @@ export class BatchProjectCleaner {
       traceException(deleteError);
 
       // Record DELETE failure metric
-      recordIncrement("langfuse.batch_project_cleaner.delete_failures", 1, {
+      recordIncrement("hanzo.batch_project_cleaner.delete_failures", 1, {
         table: tableName,
       });
 
@@ -125,7 +125,7 @@ export class BatchProjectCleaner {
 
       if (incompleteProjects.length > 0) {
         recordIncrement(
-          "langfuse.batch_project_cleaner.incomplete_cleanups",
+          "hanzo.batch_project_cleaner.incomplete_cleanups",
           incompleteProjects.length,
           { table: tableName },
         );
@@ -152,7 +152,7 @@ export class BatchProjectCleaner {
       where: {
         deletedAt: { not: null },
       },
-      take: env.LANGFUSE_BATCH_PROJECT_CLEANER_PROJECT_LIMIT,
+      take: env.HANZO_BATCH_PROJECT_CLEANER_PROJECT_LIMIT,
     });
   }
 
@@ -207,7 +207,7 @@ export class BatchProjectCleaner {
       query,
       params: { projectIds },
       clickhouseConfigs: {
-        request_timeout: env.LANGFUSE_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS,
+        request_timeout: env.HANZO_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS,
       },
       tags: {
         feature: "batch-project-cleaner",

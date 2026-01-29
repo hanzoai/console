@@ -1,4 +1,4 @@
-// Langfuse Cloud only
+// Hanzo Cloud only
 
 import { InfoIcon } from "lucide-react";
 import { useBillingInformation } from "./useBillingInformation";

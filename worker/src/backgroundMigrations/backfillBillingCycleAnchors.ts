@@ -29,7 +29,7 @@ export default class BackfillBillingCycleAnchors
     _args: Record<string, unknown>,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // If not in cloud environment, validation passes (will skip in run())
-    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       logger.info(
         "[Background Migration] Not in cloud environment, migration will be skipped",
       );
@@ -84,7 +84,7 @@ export default class BackfillBillingCycleAnchors
     );
 
     // Skip if not in cloud environment (graceful skip, not an error)
-    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       logger.info(
         "[Background Migration] Not in cloud environment, skipping migration",
       );

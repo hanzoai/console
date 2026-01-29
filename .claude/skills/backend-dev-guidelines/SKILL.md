@@ -1,13 +1,13 @@
 ---
 name: backend-dev-guidelines
-description: Comprehensive backend development guide for Langfuse's Next.js 14/tRPC/Express/TypeScript monorepo. Use when creating tRPC routers, public API endpoints, BullMQ queue processors, services, or working with tRPC procedures, Next.js API routes, Prisma database access, ClickHouse analytics queries, Redis queues, OpenTelemetry instrumentation, Zod v4 validation, env.mjs configuration, tenant isolation patterns, or async patterns. Covers layered architecture (tRPC procedures → services, queue processors → services), dual database system (PostgreSQL + ClickHouse), projectId filtering for multi-tenant isolation, traceException error handling, observability patterns, and testing strategies (Jest for web, vitest for worker).
+description: Comprehensive backend development guide for Hanzo's Next.js 14/tRPC/Express/TypeScript monorepo. Use when creating tRPC routers, public API endpoints, BullMQ queue processors, services, or working with tRPC procedures, Next.js API routes, Prisma database access, ClickHouse analytics queries, Redis queues, OpenTelemetry instrumentation, Zod v4 validation, env.mjs configuration, tenant isolation patterns, or async patterns. Covers layered architecture (tRPC procedures → services, queue processors → services), dual database system (PostgreSQL + ClickHouse), projectId filtering for multi-tenant isolation, traceException error handling, observability patterns, and testing strategies (Jest for web, vitest for worker).
 ---
 
 # Backend Development Guidelines
 
 ## Purpose
 
-Establish consistency and best practices across Langfuse's backend packages (web, worker, packages/shared) using Next.js 14, tRPC, BullMQ, and TypeScript patterns.
+Establish consistency and best practices across Hanzo's backend packages (web, worker, packages/shared) using Next.js 14, tRPC, BullMQ, and TypeScript patterns.
 
 ## When to Use This Skill
 
@@ -188,11 +188,11 @@ The shared package exposes specific import paths for different use cases:
 
 | Import Path                                | Maps To                           | Use For                                                         |
 | ------------------------------------------ | --------------------------------- | --------------------------------------------------------------- |
-| `@langfuse/shared`                         | `dist/src/index.js`               | General types, schemas, utilities, constants                    |
-| `@langfuse/shared/src/db`                  | `dist/src/db.js`                  | Prisma client and database types                                |
-| `@langfuse/shared/src/server`              | `dist/src/server/index.js`        | Server-side utilities (queues, auth, services, instrumentation) |
-| `@langfuse/shared/src/server/auth/apiKeys` | `dist/src/server/auth/apiKeys.js` | API key management utilities                                    |
-| `@langfuse/shared/encryption`              | `dist/src/encryption/index.js`    | Encryption and signature utilities                              |
+| `@hanzo/shared`                         | `dist/src/index.js`               | General types, schemas, utilities, constants                    |
+| `@hanzo/shared/src/db`                  | `dist/src/db.js`                  | Prisma client and database types                                |
+| `@hanzo/shared/src/server`              | `dist/src/server/index.js`        | Server-side utilities (queues, auth, services, instrumentation) |
+| `@hanzo/shared/src/server/auth/apiKeys` | `dist/src/server/auth/apiKeys.js` | API key management utilities                                    |
+| `@hanzo/shared/encryption`              | `dist/src/encryption/index.js`    | Encryption and signature utilities                              |
 
 **Usage Examples:**
 
@@ -205,11 +205,11 @@ import {
   type APIScoreV2,
   type ColumnDefinition,
   Role,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 // Database - Prisma client and types
-import { prisma, Prisma, JobExecutionStatus } from "@langfuse/shared/src/db";
-import { type DB as Database } from "@langfuse/shared";
+import { prisma, Prisma, JobExecutionStatus } from "@hanzo/shared/src/db";
+import { type DB as Database } from "@hanzo/shared";
 
 // Server utilities - queues, services, auth, instrumentation
 import {
@@ -223,13 +223,13 @@ import {
   invalidateApiKeysForProject,
   recordIncrement,
   recordHistogram,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // API key management (specific path)
-import { createAndAddApiKeysToDb } from "@langfuse/shared/src/server/auth/apiKeys";
+import { createAndAddApiKeysToDb } from "@hanzo/shared/src/server/auth/apiKeys";
 
 // Encryption utilities
-import { encrypt, decrypt, sign, verify } from "@langfuse/shared/encryption";
+import { encrypt, decrypt, sign, verify } from "@hanzo/shared/encryption";
 ```
 
 **What Goes Where:**
@@ -238,11 +238,11 @@ The shared package provides types, utilities, and server code used by both web a
 
 | Import Path                                | Usage                 | What's Included                                                                    |
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
-| `@langfuse/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
-| `@langfuse/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@langfuse/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
-| `@langfuse/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
-| `@langfuse/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
+| `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
+| `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
+| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
+| `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
+| `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
 **Naming Conventions:**
 
@@ -304,14 +304,14 @@ const validated = schema.parse(input);
 
 ```typescript
 // Services use Prisma directly for simple CRUD
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 
 const dataset = await prisma.dataset.findUnique({
   where: { id: datasetId, projectId }, // Always filter by projectId for tenant isolation
 });
 
 // Or use repositories for complex queries (traces, observations, scores)
-import { getTracesTable } from "@langfuse/shared/src/server";
+import { getTracesTable } from "@hanzo/shared/src/server";
 
 const traces = await getTracesTable({
   projectId,
@@ -322,7 +322,7 @@ const traces = await getTracesTable({
 
 ### 6. Observability: OpenTelemetry + DataDog (Not Sentry for Backend)
 
-**Langfuse uses OpenTelemetry for backend observability, with traces and logs sent to DataDog.**
+**Hanzo uses OpenTelemetry for backend observability, with traces and logs sent to DataDog.**
 
 ```typescript
 // Import observability utilities
@@ -330,7 +330,7 @@ import {
   logger,          // Winston logger with OpenTelemetry/DataDog context
   traceException,  // Record exceptions to OpenTelemetry spans
   instrumentAsync, // Create instrumented spans
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // Structured logging (includes trace_id, span_id, dd.trace_id)
 logger.info("Processing dataset", { datasetId, projectId });
@@ -464,7 +464,7 @@ import {
 import { TRPCError } from "@trpc/server";
 
 // Database
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import type { Prisma } from "@prisma/client";
 
 // ClickHouse
@@ -472,14 +472,14 @@ import {
   queryClickhouse,
   queryClickhouseStream,
   upsertClickhouse,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // Observability - OpenTelemetry + DataDog (NOT Sentry for backend)
 import {
   logger,          // Winston logger with OTEL/DataDog trace context
   traceException,  // Record exceptions to OpenTelemetry spans
   instrumentAsync, // Create instrumented spans for operations
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 // Config
 import { env } from "@/src/env.mjs"; // web
@@ -492,7 +492,7 @@ import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/cr
 
 // Queue Processing (Worker)
 import { Job } from "bullmq";
-import { QueueName, TQueueJobTypes } from "@langfuse/shared/src/server";
+import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 ```
 
 ---
@@ -513,7 +513,7 @@ import { QueueName, TQueueJobTypes } from "@langfuse/shared/src/server";
 
 ### Example Features to Reference
 
-Reference existing Langfuse features for implementation patterns:
+Reference existing Hanzo features for implementation patterns:
 - **Datasets** (`web/src/features/datasets/`) - Complete feature with tRPC router, public API, and service
 - **Prompts** (`web/src/features/prompts/`) - Feature with versioning and templates
 - **Evaluations** (`web/src/features/evals/`) - Complex feature with worker integration
@@ -570,7 +570,7 @@ Dual database architecture (PostgreSQL via Prisma + ClickHouse via direct client
 
 ### [configuration.md](resources/configuration.md)
 
-Environment variable validation with Zod, package-specific configs (web/env.mjs with t3-oss/env-nextjs, worker/env.ts, shared/env.ts), NEXT_PUBLIC_LANGFUSE_CLOUD_REGION usage, LANGFUSE_EE_LICENSE_KEY for enterprise features, best practices for env management
+Environment variable validation with Zod, package-specific configs (web/env.mjs with t3-oss/env-nextjs, worker/env.ts, shared/env.ts), NEXT_PUBLIC_HANZO_CLOUD_REGION usage, HANZO_EE_LICENSE_KEY for enterprise features, best practices for env management
 
 ### [testing-guide.md](resources/testing-guide.md)
 

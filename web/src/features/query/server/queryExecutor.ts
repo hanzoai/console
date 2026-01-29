@@ -230,7 +230,7 @@ export async function executeQuery(
 
   // Add shadow test query if optimization is OFF and shadow testing is enabled
   const shadowTestEnabled =
-    env.LANGFUSE_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST === "true";
+    env.HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST === "true";
 
   if (!enableSingleLevelOptimization && shadowTestEnabled) {
     const { query: optimizedQuery, parameters: optimizedParams } =

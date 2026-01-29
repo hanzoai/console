@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 export default tseslint.config(
   // Global ignores - include config files
   {
-    name: "langfuse/ignores",
+    name: "hanzo/ignores",
     ignores: [
       "**/node_modules/",
       "**/dist/",
@@ -34,7 +34,7 @@ export default tseslint.config(
 
   // Disable noisy turbo env var rule - project has many env vars not in turbo.json
   {
-    name: "langfuse/next/turbo-overrides",
+    name: "hanzo/next/turbo-overrides",
     rules: {
       "turbo/no-undeclared-env-vars": "off",
     },
@@ -47,7 +47,7 @@ export default tseslint.config(
   // Note: The old config had a bug (duplicate extends) that prevented TS rules from applying
   // Only adding parser + plugin + custom rules to match old behavior
   {
-    name: "langfuse/next/typescript",
+    name: "hanzo/next/typescript",
     files: ["**/*.ts", "**/*.tsx"],
     plugins: {
       "@typescript-eslint": tseslint.plugin,

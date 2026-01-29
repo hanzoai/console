@@ -53,28 +53,28 @@ async function main() {
     where: { id: seedUserId1 },
     update: {
       name: "Demo User",
-      email: "demo@langfuse.com",
+      email: "demo@hanzo.com",
       password: await hash("password", 12),
     },
     create: {
       id: seedUserId1,
       name: "Demo User",
-      email: "demo@langfuse.com",
+      email: "demo@hanzo.com",
       password: await hash("password", 12),
-      image: "https://static.langfuse.com/langfuse-dev%2Fexample-avatar.png",
+      image: "https://static.hanzo.com/hanzo-dev%2Fexample-avatar.png",
     },
   });
   const user2 = await prisma.user.upsert({
     where: { id: seedUserId2 },
     update: {
       name: "Demo User 2",
-      email: "member@langfuse.com",
+      email: "member@hanzo.com",
       password: await hash("password", 12),
     },
     create: {
       id: seedUserId2,
       name: "Demo User 2",
-      email: "member@langfuse.com",
+      email: "member@hanzo.com",
       password: await hash("password", 12),
     },
   });
@@ -211,11 +211,11 @@ async function main() {
     const org2 = await prisma.organization.upsert({
       where: { id: seedOrgIdOrg2 },
       update: {
-        name: "Langfuse Demo",
+        name: "Hanzo Demo",
       },
       create: {
         id: seedOrgIdOrg2,
-        name: "Langfuse Demo",
+        name: "Hanzo Demo",
       },
     });
     const project2 = await prisma.project.upsert({

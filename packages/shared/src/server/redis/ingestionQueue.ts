@@ -17,7 +17,7 @@ export class IngestionQueue {
 
   public static getShardNames() {
     return Array.from(
-      { length: env.LANGFUSE_INGESTION_QUEUE_SHARD_COUNT },
+      { length: env.HANZO_INGESTION_QUEUE_SHARD_COUNT },
       (_, i) => `${QueueName.IngestionQueue}${i > 0 ? `-${i}` : ""}`,
     );
   }
@@ -52,7 +52,7 @@ export class IngestionQueue {
     const shardIndex =
       IngestionQueue.getShardIndexFromShardName(shardName) ??
       (env.REDIS_CLUSTER_ENABLED === "true" && shardingKey
-        ? getShardIndex(shardingKey, env.LANGFUSE_INGESTION_QUEUE_SHARD_COUNT)
+        ? getShardIndex(shardingKey, env.HANZO_INGESTION_QUEUE_SHARD_COUNT)
         : 0);
 
     // Check if we already have an instance for this shard

@@ -5,7 +5,7 @@ import { redis } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import {
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   UnauthorizedError,
   ForbiddenError } from "@hanzo/shared";
 
@@ -59,7 +59,7 @@ async function handleDeleteBlobStorageIntegration(
         select: { orgId: true } } } });
 
   if (!integration || integration.project.orgId !== authCheck.scope.orgId) {
-    throw new LangfuseNotFoundError("Blob storage integration not found");
+    throw new HanzoNotFoundError("Blob storage integration not found");
   }
 
   // Delete the integration

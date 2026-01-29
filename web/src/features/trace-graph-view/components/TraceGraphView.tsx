@@ -15,8 +15,8 @@ import {
   transformLanggraphToGeneralized,
 } from "../buildGraphCanvasData";
 import {
-  LANGFUSE_START_NODE_NAME,
-  LANGFUSE_END_NODE_NAME,
+  HANZO_START_NODE_NAME,
+  HANZO_END_NODE_NAME,
   LANGGRAPH_START_NODE_NAME,
   LANGGRAPH_END_NODE_NAME,
 } from "../types";
@@ -125,8 +125,8 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
       if (nodeName) {
         // Don't cycle through system nodes (start/end nodes)
         const isSystemNode =
-          nodeName === LANGFUSE_START_NODE_NAME ||
-          nodeName === LANGFUSE_END_NODE_NAME ||
+          nodeName === HANZO_START_NODE_NAME ||
+          nodeName === HANZO_END_NODE_NAME ||
           nodeName === LANGGRAPH_START_NODE_NAME ||
           nodeName === LANGGRAPH_END_NODE_NAME;
 

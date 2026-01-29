@@ -11,7 +11,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { type RateLimitResource } from "@hanzo/shared";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
-import { contextWithLangfuseProps } from "@hanzo/shared/src/server";
+import { contextWithHanzoProps } from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 import { env } from "@/src/env.mjs";
 
@@ -32,10 +32,10 @@ type RouteConfig<
    *
    * Admin API key authentication requires:
    * - Authorization: Bearer <ADMIN_API_KEY>
-   * - x-langfuse-admin-api-key: <ADMIN_API_KEY> (must match exactly for redundancy)
-   * - x-langfuse-project-id: <project-id> (target project)
+   * - x-hanzo-admin-api-key: <ADMIN_API_KEY> (must match exactly for redundancy)
+   * - x-hanzo-project-id: <project-id> (target project)
    *
-   * This authentication method is ONLY available when NEXT_PUBLIC_LANGFUSE_CLOUD_REGION is not set (self-hosted).
+   * This authentication method is ONLY available when NEXT_PUBLIC_HANZO_CLOUD_REGION is not set (self-hosted).
    *
    * @default false
    */
@@ -100,9 +100,9 @@ async function verifyBasicAuth(authHeader: string | undefined): Promise<
  *
  * This function checks if the request contains valid admin API key credentials:
  * 1. Authorization header must be Bearer token format with ADMIN_API_KEY value
- * 2. x-langfuse-admin-api-key header must match ADMIN_API_KEY env var exactly (for redundancy)
- * 3. x-langfuse-project-id header must be present and specify a valid project ID
- * 4. NEXT_PUBLIC_LANGFUSE_CLOUD_REGION must NOT be set (self-hosted instances only)
+ * 2. x-hanzo-admin-api-key header must match ADMIN_API_KEY env var exactly (for redundancy)
+ * 3. x-hanzo-project-id header must be present and specify a valid project ID
+ * 4. NEXT_PUBLIC_HANZO_CLOUD_REGION must NOT be set (self-hosted instances only)
  *
  * The ADMIN_API_KEY must be set as an environment variable on the server.
  * This authentication method is intended for administrative operations on self-hosted instances.
@@ -118,17 +118,17 @@ async function verifyAdminApiKeyAuth(req: NextApiRequest): Promise<
   | null
 > {
   const authHeader = req.headers.authorization;
-  const adminApiKeyHeader = req.headers["x-langfuse-admin-api-key"];
-  const projectIdHeader = req.headers["x-langfuse-project-id"];
+  const adminApiKeyHeader = req.headers["x-hanzo-admin-api-key"];
+  const projectIdHeader = req.headers["x-hanzo-project-id"];
 
   // If not attempting admin auth, return null to proceed with regular auth
   if (!authHeader?.startsWith("Bearer ") || !adminApiKeyHeader) return null;
 
-  // Verify this is a self-hosted instance (not Langfuse Cloud)
-  if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+  // Verify this is a self-hosted instance (not Hanzo Cloud)
+  if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
     throw {
       status: 403,
-      message: "Admin API key auth is not available on Langfuse Cloud",
+      message: "Admin API key auth is not available on Hanzo Cloud",
     };
   }
 
@@ -167,7 +167,7 @@ async function verifyAdminApiKeyAuth(req: NextApiRequest): Promise<
     throw {
       status: 400,
       message:
-        "x-langfuse-project-id header is required for admin API key authentication",
+        "x-hanzo-project-id header is required for admin API key authentication",
     };
   }
 
@@ -283,7 +283,7 @@ export const createAuthedProjectAPIRoute = <
       ? routeConfig.bodySchema.parse(req.body)
       : ({} as z.infer<TBody>);
 
-    const ctx = contextWithLangfuseProps({
+    const ctx = contextWithHanzoProps({
       headers: req.headers,
       projectId: auth.scope.projectId,
     });

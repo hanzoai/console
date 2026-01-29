@@ -1113,7 +1113,7 @@ export const deleteDatasetRunItemsByProjectId = async (
     query,
     params: { projectId },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",
@@ -1146,7 +1146,7 @@ export const deleteDatasetRunItemsByDatasetId = async ({
       datasetId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",
@@ -1181,7 +1181,7 @@ export const deleteDatasetRunItemsByDatasetRunIds = async ({
       datasetId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",

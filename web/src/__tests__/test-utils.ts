@@ -15,7 +15,7 @@ import { type z } from "zod/v4";
 export const ensureTestDatabaseExists = async () => {
   // Only create test database if we're in test environment with test database URL
   if (
-    !env.DATABASE_URL.includes("langfuse_test") ||
+    !env.DATABASE_URL.includes("hanzo_test") ||
     process.env.NODE_ENV !== "test"
   ) {
     return; // Not using test database or not in test environment, skip

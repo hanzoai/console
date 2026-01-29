@@ -79,7 +79,7 @@ export function PaymentBanner() {
   const canManageBilling = hasOrganizationAccess({
     session: session.data,
     organizationId: organization.id,
-    scope: "langfuseCloudBilling:CRUD",
+    scope: "hanzoCloudBilling:CRUD",
   });
 
   // Determine severity styling

@@ -137,10 +137,10 @@ export const llmApiKeyRouter = createTRPCRouter({
         });
 
         // Validate that default credentials sentinel is only allowed for Bedrock/VertexAI in self-hosted deployments
-        const isLangfuseCloud = Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION);
+        const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
         if (input.secretKey === BEDROCK_USE_DEFAULT_CREDENTIALS) {
-          if (isLangfuseCloud || input.adapter !== LLMAdapter.Bedrock) {
+          if (isHanzoCloud || input.adapter !== LLMAdapter.Bedrock) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message:
@@ -150,7 +150,7 @@ export const llmApiKeyRouter = createTRPCRouter({
         }
 
         if (input.secretKey === VERTEXAI_USE_DEFAULT_CREDENTIALS) {
-          if (isLangfuseCloud || input.adapter !== LLMAdapter.VertexAI) {
+          if (isHanzoCloud || input.adapter !== LLMAdapter.VertexAI) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message:
@@ -160,7 +160,7 @@ export const llmApiKeyRouter = createTRPCRouter({
         }
 
         if (!env.ENCRYPTION_KEY) {
-          if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+          if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "Internal server error",
@@ -169,7 +169,7 @@ export const llmApiKeyRouter = createTRPCRouter({
             throw new TRPCError({
               code: "BAD_REQUEST",
               message:
-                "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://langfuse.com/self-hosting",
+                "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://hanzo.com/self-hosting",
             });
           }
         }
@@ -444,10 +444,10 @@ export const llmApiKeyRouter = createTRPCRouter({
         }
 
         // Validate that default credentials sentinel is only allowed for Bedrock/VertexAI in self-hosted deployments
-        const isLangfuseCloud = Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION);
+        const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
         if (input.secretKey === BEDROCK_USE_DEFAULT_CREDENTIALS) {
-          if (isLangfuseCloud || input.adapter !== LLMAdapter.Bedrock) {
+          if (isHanzoCloud || input.adapter !== LLMAdapter.Bedrock) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message:
@@ -457,7 +457,7 @@ export const llmApiKeyRouter = createTRPCRouter({
         }
 
         if (input.secretKey === VERTEXAI_USE_DEFAULT_CREDENTIALS) {
-          if (isLangfuseCloud || input.adapter !== LLMAdapter.VertexAI) {
+          if (isHanzoCloud || input.adapter !== LLMAdapter.VertexAI) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message:

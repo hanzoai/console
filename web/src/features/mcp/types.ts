@@ -1,7 +1,7 @@
 /**
  * MCP (Model Context Protocol) Server Types
  *
- * Type definitions for the Langfuse MCP server implementation.
+ * Type definitions for the Hanzo MCP server implementation.
  * Following stateless design pattern from Sentry MCP server.
  */
 

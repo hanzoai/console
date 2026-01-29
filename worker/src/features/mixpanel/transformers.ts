@@ -25,7 +25,7 @@ export const transformTraceForMixpanel = (
   projectId: string,
 ): MixpanelEvent => {
   const insertId = v5(
-    `${projectId}-${trace.langfuse_id}`,
+    `${projectId}-${trace.hanzo_id}`,
     MIXPANEL_UUID_NAMESPACE,
   );
 
@@ -34,20 +34,20 @@ export const transformTraceForMixpanel = (
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = trace;
 
   return {
-    event: "[Langfuse] Trace",
+    event: "[Hanzo] Trace",
     properties: {
       time: new Date(trace.timestamp as Date).getTime(),
-      distinct_id: trace.langfuse_user_id
-        ? (trace.langfuse_user_id as string)
+      distinct_id: trace.hanzo_user_id
+        ? (trace.hanzo_user_id as string)
         : insertId,
       $insert_id: insertId,
-      ...(trace.langfuse_user_id
-        ? { $user_id: trace.langfuse_user_id as string }
+      ...(trace.hanzo_user_id
+        ? { $user_id: trace.hanzo_user_id as string }
         : {}),
       session_id:
-        mixpanel_session_id || trace.langfuse_session_id
+        mixpanel_session_id || trace.hanzo_session_id
           ? (mixpanel_session_id as string) ||
-            (trace.langfuse_session_id as string)
+            (trace.hanzo_session_id as string)
           : undefined,
       ...otherProps,
     },
@@ -59,7 +59,7 @@ export const transformGenerationForMixpanel = (
   projectId: string,
 ): MixpanelEvent => {
   const insertId = v5(
-    `${projectId}-${generation.langfuse_id}`,
+    `${projectId}-${generation.hanzo_id}`,
     MIXPANEL_UUID_NAMESPACE,
   );
 
@@ -68,20 +68,20 @@ export const transformGenerationForMixpanel = (
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = generation;
 
   return {
-    event: "[Langfuse] Generation",
+    event: "[Hanzo] Generation",
     properties: {
       time: new Date(generation.timestamp as Date).getTime(),
-      distinct_id: generation.langfuse_user_id
-        ? (generation.langfuse_user_id as string)
+      distinct_id: generation.hanzo_user_id
+        ? (generation.hanzo_user_id as string)
         : insertId,
       $insert_id: insertId,
-      ...(generation.langfuse_user_id
-        ? { $user_id: generation.langfuse_user_id as string }
+      ...(generation.hanzo_user_id
+        ? { $user_id: generation.hanzo_user_id as string }
         : {}),
       session_id:
-        mixpanel_session_id || generation.langfuse_session_id
+        mixpanel_session_id || generation.hanzo_session_id
           ? (mixpanel_session_id as string) ||
-            (generation.langfuse_session_id as string)
+            (generation.hanzo_session_id as string)
           : undefined,
       ...otherProps,
     },
@@ -93,7 +93,7 @@ export const transformScoreForMixpanel = (
   projectId: string,
 ): MixpanelEvent => {
   const insertId = v5(
-    `${projectId}-${score.langfuse_id}`,
+    `${projectId}-${score.hanzo_id}`,
     MIXPANEL_UUID_NAMESPACE,
   );
 
@@ -102,20 +102,20 @@ export const transformScoreForMixpanel = (
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = score;
 
   return {
-    event: "[Langfuse] Score",
+    event: "[Hanzo] Score",
     properties: {
       time: new Date(score.timestamp as Date).getTime(),
-      distinct_id: score.langfuse_user_id
-        ? (score.langfuse_user_id as string)
+      distinct_id: score.hanzo_user_id
+        ? (score.hanzo_user_id as string)
         : insertId,
       $insert_id: insertId,
-      ...(score.langfuse_user_id
-        ? { $user_id: score.langfuse_user_id as string }
+      ...(score.hanzo_user_id
+        ? { $user_id: score.hanzo_user_id as string }
         : {}),
       session_id:
-        mixpanel_session_id || score.langfuse_session_id
+        mixpanel_session_id || score.hanzo_session_id
           ? (mixpanel_session_id as string) ||
-            (score.langfuse_session_id as string)
+            (score.hanzo_session_id as string)
           : undefined,
       ...otherProps,
     },

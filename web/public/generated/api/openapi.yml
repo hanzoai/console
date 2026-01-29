@@ -1552,11 +1552,11 @@ paths:
   /api/public/ingestion:
     post:
       description: >-
-        **Legacy endpoint for batch ingestion for Langfuse Observability.**
+        **Legacy endpoint for batch ingestion for Hanzo Observability.**
 
 
         -> Please use the OpenTelemetry endpoint (`/api/public/otel/v1/traces`).
-        Learn more: https://langfuse.com/integrations/native/opentelemetry
+        Learn more: https://hanzo.com/integrations/native/opentelemetry
 
 
         Within each batch, there can be multiple events.
@@ -1580,7 +1580,7 @@ paths:
         Notes:
 
         - Introduction to data model:
-        https://langfuse.com/docs/observability/data-model
+        https://hanzo.com/docs/observability/data-model
 
         - Batch sizes are limited to 3.5 MB in total. You need to adjust the
         number of events per batch accordingly.
@@ -1960,7 +1960,7 @@ paths:
   /api/public/v2/metrics:
     get:
       description: >-
-        Get metrics from the Langfuse project using a query object. V2 endpoint
+        Get metrics from the Hanzo project using a query object. V2 endpoint
         with optimized performance.
 
 
@@ -1979,7 +1979,7 @@ paths:
 
 
         For more details, see the [Metrics API
-        documentation](https://langfuse.com/docs/metrics/features/metrics-api).
+        documentation](https://hanzo.com/docs/metrics/features/metrics-api).
 
 
         ## Available Views
@@ -2259,7 +2259,7 @@ paths:
   /api/public/metrics:
     get:
       description: >-
-        Get metrics from the Langfuse project using a query object.
+        Get metrics from the Hanzo project using a query object.
 
 
         Consider using the [v2 metrics
@@ -2268,7 +2268,7 @@ paths:
 
 
         For more details, see the [Metrics API
-        documentation](https://langfuse.com/docs/metrics/features/metrics-api).
+        documentation](https://hanzo.com/docs/metrics/features/metrics-api).
       operationId: metrics_metrics
       tags:
         - Metrics
@@ -3273,7 +3273,7 @@ paths:
 
 
         This endpoint implements the OTLP/HTTP specification for trace
-        ingestion, providing native OpenTelemetry integration for Langfuse
+        ingestion, providing native OpenTelemetry integration for Hanzo
         Observability.
 
 
@@ -3297,9 +3297,9 @@ paths:
         **Documentation:**
 
         - Integration guide:
-        https://langfuse.com/integrations/native/opentelemetry
+        https://hanzo.com/integrations/native/opentelemetry
 
-        - Data model: https://langfuse.com/docs/observability/data-model
+        - Data model: https://hanzo.com/docs/observability/data-model
       operationId: opentelemetry_exportTraces
       tags:
         - Opentelemetry
@@ -3371,7 +3371,7 @@ paths:
                               stringValue: 1.0.0
                       scopeSpans:
                         - scope:
-                            name: langfuse-sdk
+                            name: hanzo-sdk
                             version: 2.60.3
                           spans:
                             - traceId: 0123456789abcdef0123456789abcdef
@@ -3381,7 +3381,7 @@ paths:
                               startTimeUnixNano: '1747872000000000000'
                               endTimeUnixNano: '1747872001000000000'
                               attributes:
-                                - key: langfuse.observation.type
+                                - key: hanzo.observation.type
                                   value:
                                     stringValue: generation
                               status: {}
@@ -5012,7 +5012,7 @@ paths:
       parameters:
         - name: configId
           in: path
-          description: The unique langfuse identifier of a score config
+          description: The unique hanzo identifier of a score config
           required: true
           schema:
             type: string
@@ -5585,7 +5585,7 @@ paths:
       parameters:
         - name: traceId
           in: path
-          description: The unique langfuse identifier of the trace to delete
+          description: The unique hanzo identifier of the trace to delete
           required: true
           schema:
             type: string
@@ -7047,7 +7047,7 @@ components:
           description: >-
             The environment from which this score originated. Can be any
             lowercase alphanumeric string with hyphens and underscores that does
-            not start with 'langfuse'.
+            not start with 'hanzo'.
       required:
         - id
         - name
@@ -7471,7 +7471,7 @@ components:
         - modelName
         - matchPattern
         - tokenizerConfig
-        - isLangfuseManaged
+        - isHanzoManaged
         - createdAt
         - prices
         - pricingTiers
@@ -9335,8 +9335,8 @@ components:
             $ref: '#/components/schemas/OtelAttribute'
           nullable: true
           description: >-
-            Span attributes including Langfuse-specific attributes
-            (langfuse.observation.*)
+            Span attributes including Hanzo-specific attributes
+            (hanzo.observation.*)
         status:
           nullable: true
           description: Span status object
@@ -9348,7 +9348,7 @@ components:
         key:
           type: string
           nullable: true
-          description: Attribute key (e.g., "service.name", "langfuse.observation.type")
+          description: Attribute key (e.g., "service.name", "hanzo.observation.type")
         value:
           $ref: '#/components/schemas/OtelAttributeValue'
           nullable: true
@@ -10309,7 +10309,7 @@ components:
           type: string
           nullable: true
           description: >-
-            Description is shown across the Langfuse UI and can be used to e.g.
+            Description is shown across the Hanzo UI and can be used to e.g.
             explain the config categories in detail, why a numeric range was
             set, or provide additional context on config name or usage
     GetScoresResponseTraceData:
@@ -10447,7 +10447,7 @@ components:
           description: >-
             The environment of the score. Can be any lowercase alphanumeric
             string with hyphens and underscores that does not start with
-            'langfuse'.
+            'hanzo'.
         queueId:
           type: string
           nullable: true
@@ -10465,7 +10465,7 @@ components:
           type: string
           nullable: true
           description: >-
-            Reference a score config on a score. The unique langfuse identifier
+            Reference a score config on a score. The unique hanzo identifier
             of a score config. When passing this field, the dataType and
             stringValue fields are automatically populated.
       required:
@@ -10477,7 +10477,7 @@ components:
       properties:
         id:
           type: string
-          description: The id of the created object in Langfuse
+          description: The id of the created object in Hanzo
       required:
         - id
     PaginatedSessions:

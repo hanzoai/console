@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { api } from "@/src/utils/api";
@@ -109,7 +109,7 @@ export function BillingInvoiceTable() {
     rows.length,
   ]);
 
-  const columns: LangfuseColumnDef<InvoiceRow>[] = [
+  const columns: HanzoColumnDef<InvoiceRow>[] = [
     {
       accessorKey: "created",
       id: "created",

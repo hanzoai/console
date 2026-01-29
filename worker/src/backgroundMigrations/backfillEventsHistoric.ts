@@ -427,7 +427,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
 
     // Conditionally filter out 'attributes' key from metadata
     const metadataExpr =
-      env.LANGFUSE_EXPERIMENT_BACKFILL_EXCLUDE_ATTRIBUTES_KEY === "true"
+      env.HANZO_EXPERIMENT_BACKFILL_EXCLUDE_ATTRIBUTES_KEY === "true"
         ? `mapFilter((k, v) -> k != 'attributes', o.metadata)`
         : `o.metadata`;
 

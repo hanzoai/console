@@ -4,14 +4,14 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { type ZodError } from "zod/v4";
 import {
   BaseError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   MethodNotAllowedError,
   UnauthorizedError,
 } from "@hanzo/shared";
 import {
   logger,
   traceException,
-  contextWithLangfuseProps,
+  contextWithHanzoProps,
   ClickHouseResourceError,
 } from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
@@ -33,12 +33,12 @@ const defaultHandler = () => {
 
 const CH_ERROR_ADVICE_FULL = [
   ClickHouseResourceError.ERROR_ADVICE_MESSAGE,
-  "See https://langfuse.com/docs/api-and-data-platform/features/public-api for more details.",
+  "See https://hanzo.com/docs/api-and-data-platform/features/public-api for more details.",
 ].join("\n");
 
 export function withMiddlewares(handlers: Handlers) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const ctx = contextWithLangfuseProps({
+    const ctx = contextWithHanzoProps({
       headers: req.headers,
     });
 
@@ -63,7 +63,7 @@ export function withMiddlewares(handlers: Handlers) {
         return await finalHandlers[method](req, res);
       } catch (error) {
         if (
-          error instanceof LangfuseNotFoundError ||
+          error instanceof HanzoNotFoundError ||
           error instanceof UnauthorizedError
         ) {
           logger.info(error);

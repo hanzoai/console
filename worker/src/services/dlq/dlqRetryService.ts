@@ -42,7 +42,7 @@ export class DlqRetryService {
 
           const dlxDelay = Date.now() - ts;
 
-          recordHistogram("langfuse.dlq_retry_delay", dlxDelay, {
+          recordHistogram("hanzo.dlq_retry_delay", dlxDelay, {
             unit: "milliseconds",
             projectId,
             queueName,

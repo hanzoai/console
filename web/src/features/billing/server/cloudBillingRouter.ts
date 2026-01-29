@@ -30,7 +30,7 @@ export const cloudBillingRouter = createTRPCRouter({
         // Access checks
         throwIfNoOrganizationAccess({
           organizationId: input.orgId,
-          scope: "langfuseCloudBilling:CRUD",
+          scope: "hanzoCloudBilling:CRUD",
           session: ctx.session,
         });
         throwIfNoEntitlement({
@@ -144,7 +144,7 @@ export const cloudBillingRouter = createTRPCRouter({
           mode: checkoutMode,
           metadata: {
             orgId: input.orgId,
-            cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? null,
+            cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? null,
             productType: price.type,
           },
         };
@@ -197,7 +197,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -325,7 +325,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -384,7 +384,7 @@ export const cloudBillingRouter = createTRPCRouter({
 
         throwIfNoOrganizationAccess({
           organizationId: input.orgId,
-          scope: "langfuseCloudBilling:CRUD",
+          scope: "hanzoCloudBilling:CRUD",
           session: ctx.session,
         });
 
@@ -612,7 +612,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -925,7 +925,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({

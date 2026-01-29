@@ -196,22 +196,22 @@ export const addUserToSpan = (
     activeSpan.setAttribute("user.email", attributes.email);
   }
   if (attributes.projectId) {
-    baggage = baggage.setEntry("langfuse.project.id", {
+    baggage = baggage.setEntry("hanzo.project.id", {
       value: attributes.projectId,
     });
-    activeSpan.setAttribute("langfuse.project.id", attributes.projectId);
+    activeSpan.setAttribute("hanzo.project.id", attributes.projectId);
   }
   if (attributes.orgId) {
-    baggage = baggage.setEntry("langfuse.org.id", {
+    baggage = baggage.setEntry("hanzo.org.id", {
       value: attributes.orgId,
     });
-    activeSpan.setAttribute("langfuse.org.id", attributes.orgId);
+    activeSpan.setAttribute("hanzo.org.id", attributes.orgId);
   }
   if (attributes.plan) {
-    baggage = baggage.setEntry("langfuse.org.plan", {
+    baggage = baggage.setEntry("hanzo.org.plan", {
       value: attributes.plan,
     });
-    activeSpan.setAttribute("langfuse.org.plan", attributes.plan);
+    activeSpan.setAttribute("hanzo.org.plan", attributes.plan);
   }
 
   return opentelemetry.propagation.setBaggage(ctx, baggage);
@@ -254,7 +254,7 @@ const flushMetricsToCloudWatch = () => {
   cloudWatchClient
     .send(
       new PutMetricDataCommand({
-        Namespace: "Langfuse",
+        Namespace: "Hanzo",
         MetricData: metricData,
       }),
     )

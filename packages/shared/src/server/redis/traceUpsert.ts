@@ -17,7 +17,7 @@ export class TraceUpsertQueue {
 
   public static getShardNames() {
     return Array.from(
-      { length: env.LANGFUSE_TRACE_UPSERT_QUEUE_SHARD_COUNT },
+      { length: env.HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT },
       (_, i) => `${QueueName.TraceUpsert}${i > 0 ? `-${i}` : ""}`,
     );
   }
@@ -54,7 +54,7 @@ export class TraceUpsertQueue {
       (env.REDIS_CLUSTER_ENABLED === "true" && shardingKey
         ? getShardIndex(
             shardingKey,
-            env.LANGFUSE_TRACE_UPSERT_QUEUE_SHARD_COUNT,
+            env.HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT,
           )
         : 0);
 
@@ -76,7 +76,7 @@ export class TraceUpsertQueue {
           defaultJobOptions: {
             removeOnComplete: 100,
             removeOnFail: 100_000,
-            attempts: env.LANGFUSE_TRACE_UPSERT_QUEUE_ATTEMPTS,
+            attempts: env.HANZO_TRACE_UPSERT_QUEUE_ATTEMPTS,
             delay: 30_000, // 30 seconds
             backoff: {
               type: "exponential",

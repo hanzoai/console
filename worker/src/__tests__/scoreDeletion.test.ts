@@ -18,12 +18,12 @@ describe("score deletion", () => {
 
   beforeAll(() => {
     eventStorageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -72,7 +72,7 @@ describe("score deletion", () => {
           entity_type: "score",
           entity_id: scoreId,
           event_id: randomUUID(),
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
           bucket_path: `${projectId}/score/${scoreId}-score.json`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),

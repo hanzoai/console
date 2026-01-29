@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import {
   singleFilter,
-  type langfuseObjects,
+  type hanzoObjects,
   TimeScopeSchema,
 } from "@hanzo/shared";
 import { wipVariableMapping } from "@hanzo/shared";
@@ -22,6 +22,6 @@ export const evalConfigFormSchema = z.object({
 
 export type EvalFormType = z.infer<typeof evalConfigFormSchema>;
 
-export type LangfuseObject = (typeof langfuseObjects)[number];
+export type HanzoObject = (typeof hanzoObjects)[number];
 
 export type VariableMapping = z.infer<typeof wipVariableMapping>;

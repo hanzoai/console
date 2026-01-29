@@ -60,7 +60,7 @@ export const ingestionQueueProcessorBuilder = (
       const clickhouseWriter = ClickhouseWriter.getInstance();
 
       if (
-        env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true" &&
+        env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true" &&
         job.data.payload.data.fileKey &&
         job.data.payload.data.fileKey
       ) {
@@ -71,8 +71,8 @@ export const ingestionQueueProcessorBuilder = (
           entity_type: getClickhouseEntityType(job.data.payload.data.type),
           entity_id: job.data.payload.data.eventBodyId,
           event_id: job.data.payload.data.fileKey,
-          bucket_name: env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
-          bucket_path: `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
+          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+          bucket_path: `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),
           event_ts: new Date().getTime(),
@@ -130,7 +130,7 @@ export const ingestionQueueProcessorBuilder = (
       }
 
       const s3Client = getS3EventStorageClient(
-        env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+        env.HANZO_S3_EVENT_UPLOAD_BUCKET,
       );
 
       logger.debug(
@@ -155,7 +155,7 @@ export const ingestionQueueProcessorBuilder = (
       const shouldSkipS3List =
         // The producer sets skipS3List to true if it's an OTel observation
         job.data.payload.data.skipS3List && job.data.payload.data.fileKey;
-      const s3Prefix = `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`;
+      const s3Prefix = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`;
 
       let totalS3DownloadSizeBytes = 0;
 
@@ -167,7 +167,7 @@ export const ingestionQueueProcessorBuilder = (
         const file = await s3Client.download(filePath);
         const fileSize = file.length;
 
-        recordHistogram("langfuse.ingestion.s3_file_size_bytes", fileSize, {
+        recordHistogram("hanzo.ingestion.s3_file_size_bytes", fileSize, {
           skippedS3List: "true",
         });
         totalS3DownloadSizeBytes += fileSize;
@@ -183,7 +183,7 @@ export const ingestionQueueProcessorBuilder = (
           const file = await s3Client.download(fileRef.file);
           const fileSize = file.length;
 
-          recordHistogram("langfuse.ingestion.s3_file_size_bytes", fileSize, {
+          recordHistogram("hanzo.ingestion.s3_file_size_bytes", fileSize, {
             skippedS3List: "false",
           });
           totalS3DownloadSizeBytes += fileSize;
@@ -192,7 +192,7 @@ export const ingestionQueueProcessorBuilder = (
           return Array.isArray(parsedFile) ? parsedFile : [parsedFile];
         };
 
-        const S3_CONCURRENT_READS = env.LANGFUSE_S3_CONCURRENT_READS;
+        const S3_CONCURRENT_READS = env.HANZO_S3_CONCURRENT_READS;
         const batches = chunk(eventFiles, S3_CONCURRENT_READS);
         for (const batch of batches) {
           const batchEvents = await Promise.all(
@@ -213,9 +213,9 @@ export const ingestionQueueProcessorBuilder = (
         "hanzo.ingestion.event.count_files",
         eventFiles.length,
       );
-      span?.setAttribute("langfuse.ingestion.event.kind", clickhouseEntityType);
+      span?.setAttribute("hanzo.ingestion.event.kind", clickhouseEntityType);
       span?.setAttribute(
-        "langfuse.ingestion.s3_all_files_size_bytes",
+        "hanzo.ingestion.s3_all_files_size_bytes",
         totalS3DownloadSizeBytes,
       );
 
@@ -242,7 +242,7 @@ export const ingestionQueueProcessorBuilder = (
               .map((e) => e.file.split("/").pop() ?? "")
               .map((key) =>
                 redis!.set(
-                  `langfuse:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${key.replace(".json", "")}`,
+                  `hanzo:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${key.replace(".json", "")}`,
                   "1",
                   "EX",
                   60 * 5, // 5 minutes
@@ -265,9 +265,9 @@ export const ingestionQueueProcessorBuilder = (
       // Use explicit flag from job payload if provided, otherwise fall back to env flags
       const forwardToEventsTable =
         job.data.payload.data.forwardToEventsTable ??
-        (env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
+        (env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
           env.QUEUE_CONSUMER_EVENT_PROPAGATION_QUEUE_IS_ENABLED === "true" &&
-          env.LANGFUSE_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true");
+          env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true");
 
       await new IngestionService(
         redis,

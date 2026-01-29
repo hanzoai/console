@@ -26,7 +26,7 @@
     <a href="https://hanzo.ai/roadmap"><strong>路线图</strong></a> ·
   </div>
   <br/>
-  <span>Langfuse 使用 <a href="https://github.com/orgs/langfuse/discussions"><strong>GitHub Discussions</strong></a> 作为支持和功能请求的平台。</span>
+  <span>Hanzo 使用 <a href="https://github.com/orgs/hanzo/discussions"><strong>GitHub Discussions</strong></a> 作为支持和功能请求的平台。</span>
   <br/>
   <span><b>我们正在招聘。</b> <a href="https://hanzo.ai/careers"><strong>加入我们</strong></a>，从事产品工程和技术市场职位。</span>
   <br/>
@@ -90,12 +90,12 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 
 ![Hanzo 概览](https://hanzo.ai/images/docs/github-readme/github-feature-overview.png)
 
-- [LLM 应用可观察性](https://langfuse.com/docs/tracing)：为你的应用插入仪表代码，并开始将追踪数据传送到 Langfuse，从而追踪 LLM 调用及应用中其他相关逻辑（如检索、嵌入或代理操作）。检查并调试复杂日志及用户会话。试试互动的 [演示](https://langfuse.com/docs/demo) 看看效果。
-- [提示管理](https://langfuse.com/docs/prompt-management/get-started) 帮助你集中管理、版本控制并协作迭代提示。得益于服务器和客户端的高效缓存，你可以在不增加延迟的情况下反复迭代提示。
+- [LLM 应用可观察性](https://hanzo.com/docs/tracing)：为你的应用插入仪表代码，并开始将追踪数据传送到 Hanzo，从而追踪 LLM 调用及应用中其他相关逻辑（如检索、嵌入或代理操作）。检查并调试复杂日志及用户会话。试试互动的 [演示](https://hanzo.com/docs/demo) 看看效果。
+- [提示管理](https://hanzo.com/docs/prompt-management/get-started) 帮助你集中管理、版本控制并协作迭代提示。得益于服务器和客户端的高效缓存，你可以在不增加延迟的情况下反复迭代提示。
 
-- [评估](https://langfuse.com/docs/evaluation/overview) 是 LLM 应用开发流程的关键组成部分，Langfuse 能够满足你的多样需求。它支持 LLM 作为"裁判"、用户反馈收集、手动标注以及通过 API/SDK 实现自定义评估流程。
+- [评估](https://hanzo.com/docs/evaluation/overview) 是 LLM 应用开发流程的关键组成部分，Hanzo 能够满足你的多样需求。它支持 LLM 作为"裁判"、用户反馈收集、手动标注以及通过 API/SDK 实现自定义评估流程。
 
-- [数据集](https://langfuse.com/docs/evaluation/dataset-runs/datasets) 为评估你的 LLM 应用提供测试集和基准。它们支持持续改进、部署前测试、结构化实验、灵活评估，并能与 LangChain、LlamaIndex 等框架无缝整合。
+- [数据集](https://hanzo.com/docs/evaluation/dataset-runs/datasets) 为评估你的 LLM 应用提供测试集和基准。它们支持持续改进、部署前测试、结构化实验、灵活评估，并能与 LangChain、LlamaIndex 等框架无缝整合。
 
 - [LLM 试玩平台](https://hanzo.ai/docs/playground) 是用于测试和迭代提示及模型配置的工具，缩短反馈周期，加速开发。当你在追踪中发现异常结果时，可以直接跳转至试玩平台进行调整。
 
@@ -122,9 +122,9 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 - [本地（docker compose）](https://hanzo.ai/self-hosting/local)：使用 Docker Compose 在你的机器上于 5 分钟内运行 Hanzo。
 
   ```bash:README.md/docker-compose
-  # 获取最新的 Langfuse 仓库副本
-  git clone https://github.com/langfuse/langfuse.git
-  cd langfuse
+  # 获取最新的 Hanzo 仓库副本
+  git clone https://github.com/hanzo/hanzo.git
+  cd hanzo
 
   # 运行 Hanzo 的 docker compose
   docker compose up
@@ -134,7 +134,7 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 
 - [虚拟机](https://hanzo.ai/self-hosting/docker-compose)：使用 Docker Compose 在单台虚拟机上部署 Hanzo。
 
-- Terraform 模板: [AWS](https://langfuse.com/self-hosting/aws)、[Azure](https://langfuse.com/self-hosting/azure)、[GCP](https://langfuse.com/self-hosting/gcp)
+- Terraform 模板: [AWS](https://hanzo.com/self-hosting/aws)、[Azure](https://hanzo.com/self-hosting/azure)、[GCP](https://hanzo.com/self-hosting/gcp)
 
 请参阅 [自托管文档](https://hanzo.ai/self-hosting) 了解更多关于架构和配置选项的信息。
 
@@ -146,38 +146,38 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 
 | 集成                                                                                 | 支持语言/平台          | 描述                                                                                                                             |
 | ------------------------------------------------------------------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| [SDK](https://langfuse.com/docs/sdk)                                                 | Python, JS/TS          | 使用 SDK 进行手动仪表化，实现全面灵活性。                                                                                        |
-| [OpenAI](https://langfuse.com/integrations/model-providers/openai-py)                | Python, JS/TS          | 通过直接替换 OpenAI SDK 实现自动仪表化。                                                                                         |
-| [Langchain](https://langfuse.com/docs/integrations/langchain)                        | Python, JS/TS          | 通过传入回调处理器至 Langchain 应用实现自动仪表化。                                                                              |
-| [LlamaIndex](https://langfuse.com/docs/integrations/llama-index/get-started)         | Python                 | 通过 LlamaIndex 回调系统实现自动仪表化。                                                                                         |
-| [Haystack](https://langfuse.com/docs/integrations/haystack)                          | Python                 | 通过 Haystack 内容追踪系统实现自动仪表化。                                                                                       |
-| [LiteLLM](https://langfuse.com/docs/integrations/litellm)                            | Python, JS/TS (仅代理) | 允许使用任何 LLM 替代 GPT。支持 Azure、OpenAI、Cohere、Anthropic、Ollama、VLLM、Sagemaker、HuggingFace、Replicate（100+ LLMs）。 |
-| [Vercel AI SDK](https://langfuse.com/docs/integrations/vercel-ai-sdk)                | JS/TS                  | 基于 TypeScript 的工具包，帮助开发者使用 React、Next.js、Vue、Svelte 和 Node.js 构建 AI 驱动的应用。                             |
-| [API](https://langfuse.com/docs/api)                                                 |                        | 直接调用公共 API。提供 OpenAPI 规格。                                                                                            |
-| [Google VertexAI 和 Gemini](https://langfuse.com/docs/integrations/google-vertex-ai) | 模型                   | 在 Google 上运行基础模型和微调模型。                                                                                             |
+| [SDK](https://hanzo.com/docs/sdk)                                                 | Python, JS/TS          | 使用 SDK 进行手动仪表化，实现全面灵活性。                                                                                        |
+| [OpenAI](https://hanzo.com/integrations/model-providers/openai-py)                | Python, JS/TS          | 通过直接替换 OpenAI SDK 实现自动仪表化。                                                                                         |
+| [Langchain](https://hanzo.com/docs/integrations/langchain)                        | Python, JS/TS          | 通过传入回调处理器至 Langchain 应用实现自动仪表化。                                                                              |
+| [LlamaIndex](https://hanzo.com/docs/integrations/llama-index/get-started)         | Python                 | 通过 LlamaIndex 回调系统实现自动仪表化。                                                                                         |
+| [Haystack](https://hanzo.com/docs/integrations/haystack)                          | Python                 | 通过 Haystack 内容追踪系统实现自动仪表化。                                                                                       |
+| [LiteLLM](https://hanzo.com/docs/integrations/litellm)                            | Python, JS/TS (仅代理) | 允许使用任何 LLM 替代 GPT。支持 Azure、OpenAI、Cohere、Anthropic、Ollama、VLLM、Sagemaker、HuggingFace、Replicate（100+ LLMs）。 |
+| [Vercel AI SDK](https://hanzo.com/docs/integrations/vercel-ai-sdk)                | JS/TS                  | 基于 TypeScript 的工具包，帮助开发者使用 React、Next.js、Vue、Svelte 和 Node.js 构建 AI 驱动的应用。                             |
+| [API](https://hanzo.com/docs/api)                                                 |                        | 直接调用公共 API。提供 OpenAPI 规格。                                                                                            |
+| [Google VertexAI 和 Gemini](https://hanzo.com/docs/integrations/google-vertex-ai) | 模型                   | 在 Google 上运行基础模型和微调模型。                                                                                             |
 
 ### 与 Hanzo 集成的软件包：
 
 | 名称                                                                    | 类型          | 描述                                                                                    |
 | ----------------------------------------------------------------------- | ------------- | --------------------------------------------------------------------------------------- |
-| [Instructor](https://langfuse.com/docs/integrations/instructor)         | 库            | 用于获取结构化 LLM 输出（JSON、Pydantic）的库。                                         |
-| [DSPy](https://langfuse.com/docs/integrations/dspy)                     | 库            | 一个系统性优化语言模型提示和权重的框架。                                                |
-| [Amazon Bedrock](https://langfuse.com/docs/integrations/amazon-bedrock) | 模型          | 在 AWS 上运行基础模型和微调模型。                                                       |
-| [Mirascope](https://langfuse.com/docs/integrations/mirascope)           | 库            | 构建 LLM 应用的 Python 工具包。                                                         |
-| [Ollama](https://langfuse.com/docs/integrations/ollama)                 | 模型（本地）  | 在你的机器上轻松运行开源 LLM。                                                          |
-| [AutoGen](https://langfuse.com/docs/integrations/autogen)               | 代理框架      | 用于构建分布式代理的开源 LLM 平台。                                                     |
-| [Flowise](https://langfuse.com/docs/integrations/flowise)               | 聊天/代理界面 | 基于 JS/TS 的无代码构建器，用于定制化 LLM 流程。                                        |
-| [Langflow](https://langfuse.com/docs/integrations/langflow)             | 聊天/代理界面 | 基于 Python 的 LangChain 用户界面，采用 react-flow 设计，提供便捷的实验与原型构建体验。 |
-| [Dify](https://langfuse.com/docs/integrations/dify)                     | 聊天/代理界面 | 带有无代码构建器的开源 LLM 应用开发平台。                                               |
-| [OpenWebUI](https://langfuse.com/docs/integrations/openwebui)           | 聊天/代理界面 | 自托管的 LLM 聊天网页界面，支持包括自托管和本地模型在内的多种 LLM 运行器。              |
-| [Promptfoo](https://langfuse.com/docs/integrations/promptfoo)           | 工具          | 开源 LLM 测试平台。                                                                     |
-| [LobeChat](https://langfuse.com/docs/integrations/lobechat)             | 聊天/代理界面 | 开源聊天机器人平台。                                                                    |
-| [Vapi](https://langfuse.com/docs/integrations/vapi)                     | 平台          | 开源语音 AI 平台。                                                                      |
-| [Inferable](https://langfuse.com/docs/integrations/other/inferable)     | 代理          | 构建分布式代理的开源 LLM 平台。                                                         |
-| [Gradio](https://langfuse.com/docs/integrations/other/gradio)           | 聊天/代理界面 | 开源 Python 库，可用于构建类似聊天 UI 的网页界面。                                      |
-| [Goose](https://langfuse.com/docs/integrations/goose)                   | 代理          | 构建分布式代理的开源 LLM 平台。                                                         |
-| [smolagents](https://langfuse.com/docs/integrations/smolagents)         | 代理          | 开源 AI 代理框架。                                                                      |
-| [CrewAI](https://langfuse.com/docs/integrations/crewai)                 | 代理          | 多代理框架，用于实现代理之间的协作与工具调用。                                          |
+| [Instructor](https://hanzo.com/docs/integrations/instructor)         | 库            | 用于获取结构化 LLM 输出（JSON、Pydantic）的库。                                         |
+| [DSPy](https://hanzo.com/docs/integrations/dspy)                     | 库            | 一个系统性优化语言模型提示和权重的框架。                                                |
+| [Amazon Bedrock](https://hanzo.com/docs/integrations/amazon-bedrock) | 模型          | 在 AWS 上运行基础模型和微调模型。                                                       |
+| [Mirascope](https://hanzo.com/docs/integrations/mirascope)           | 库            | 构建 LLM 应用的 Python 工具包。                                                         |
+| [Ollama](https://hanzo.com/docs/integrations/ollama)                 | 模型（本地）  | 在你的机器上轻松运行开源 LLM。                                                          |
+| [AutoGen](https://hanzo.com/docs/integrations/autogen)               | 代理框架      | 用于构建分布式代理的开源 LLM 平台。                                                     |
+| [Flowise](https://hanzo.com/docs/integrations/flowise)               | 聊天/代理界面 | 基于 JS/TS 的无代码构建器，用于定制化 LLM 流程。                                        |
+| [Langflow](https://hanzo.com/docs/integrations/langflow)             | 聊天/代理界面 | 基于 Python 的 LangChain 用户界面，采用 react-flow 设计，提供便捷的实验与原型构建体验。 |
+| [Dify](https://hanzo.com/docs/integrations/dify)                     | 聊天/代理界面 | 带有无代码构建器的开源 LLM 应用开发平台。                                               |
+| [OpenWebUI](https://hanzo.com/docs/integrations/openwebui)           | 聊天/代理界面 | 自托管的 LLM 聊天网页界面，支持包括自托管和本地模型在内的多种 LLM 运行器。              |
+| [Promptfoo](https://hanzo.com/docs/integrations/promptfoo)           | 工具          | 开源 LLM 测试平台。                                                                     |
+| [LobeChat](https://hanzo.com/docs/integrations/lobechat)             | 聊天/代理界面 | 开源聊天机器人平台。                                                                    |
+| [Vapi](https://hanzo.com/docs/integrations/vapi)                     | 平台          | 开源语音 AI 平台。                                                                      |
+| [Inferable](https://hanzo.com/docs/integrations/other/inferable)     | 代理          | 构建分布式代理的开源 LLM 平台。                                                         |
+| [Gradio](https://hanzo.com/docs/integrations/other/gradio)           | 聊天/代理界面 | 开源 Python 库，可用于构建类似聊天 UI 的网页界面。                                      |
+| [Goose](https://hanzo.com/docs/integrations/goose)                   | 代理          | 构建分布式代理的开源 LLM 平台。                                                         |
+| [smolagents](https://hanzo.com/docs/integrations/smolagents)         | 代理          | 开源 AI 代理框架。                                                                      |
+| [CrewAI](https://hanzo.com/docs/integrations/crewai)                 | 代理          | 多代理框架，用于实现代理之间的协作与工具调用。                                          |
 
 ## 🚀 快速入门
 
@@ -191,7 +191,7 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 
 ### 2️⃣ 记录你的第一个 LLM 调用
 
-使用 [<code>@observe()</code> 装饰器](https://langfuse.com/docs/sdk/python/decorators) 可轻松跟踪任何 Python LLM 应用。在本快速入门中，我们还使用了 Langfuse 的 [OpenAI 集成](https://langfuse.com/integrations/model-providers/openai-py) 来自动捕获所有模型参数。
+使用 [<code>@observe()</code> 装饰器](https://hanzo.com/docs/sdk/python/decorators) 可轻松跟踪任何 Python LLM 应用。在本快速入门中，我们还使用了 Hanzo 的 [OpenAI 集成](https://hanzo.com/integrations/model-providers/openai-py) 来自动捕获所有模型参数。
 
 > [!提示]
 > 不使用 OpenAI？请访问 [我们的文档](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo) 了解如何记录其他模型和框架。
@@ -199,23 +199,23 @@ Hanzo 是一个 **开源 LLM 工程** 平台。它帮助团队协作 **开发、
 安装依赖：
 
 ```bash
-pip install langfuse openai
+pip install hanzo openai
 ```
 
 配置环境变量（创建名为 **.env** 的文件）：
 
 ```bash:.env
-LANGFUSE_SECRET_KEY="sk-lf-..."
-LANGFUSE_PUBLIC_KEY="pk-lf-..."
-LANGFUSE_BASE_URL="https://cloud.langfuse.com" # 🇪🇺 欧盟区域
-# LANGFUSE_BASE_URL="https://us.cloud.langfuse.com" # 🇺🇸 美洲区域
+HANZO_SECRET_KEY="sk-lf-..."
+HANZO_PUBLIC_KEY="pk-lf-..."
+HANZO_BASE_URL="https://cloud.hanzo.com" # 🇪🇺 欧盟区域
+# HANZO_BASE_URL="https://us.cloud.hanzo.com" # 🇺🇸 美洲区域
 ```
 
 创建示例代码（文件名：**main.py**）：
 
 ```python:main.py
-from langfuse import observe
-from langfuse.openai import openai  # OpenAI 集成
+from hanzo import observe
+from hanzo.openai import openai  # OpenAI 集成
 
 @observe()
 def story():
@@ -245,14 +245,14 @@ _[Hanzo 中的公共示例追踪](https://cloud.hanzo.ai/project/cloramnkj0002jz
 
 ## ⭐️ 给我们加星
 
-![star-langfuse-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
+![star-hanzo-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
 
 ## 💭 支持
 
 查找问题答案：
 
-- 我们的 [文档](https://langfuse.com/docs) 是查找答案的最佳起点。内容全面，我们投入大量时间进行维护。你也可以通过 GitHub 提出文档修改建议。
-- [Langfuse 常见问题](https://langfuse.com/faq) 解答了最常见的问题。
+- 我们的 [文档](https://hanzo.com/docs) 是查找答案的最佳起点。内容全面，我们投入大量时间进行维护。你也可以通过 GitHub 提出文档修改建议。
+- [Hanzo 常见问题](https://hanzo.com/faq) 解答了最常见的问题。
 - 使用 "Ask AI" 立即获取问题答案。
 
 支持渠道：

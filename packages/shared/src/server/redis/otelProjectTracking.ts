@@ -6,16 +6,16 @@ const TTL_SECONDS = 86400; // 24 hours
 
 /**
  * Marks a project as using OTEL API ingestion in Redis with a 24-hour TTL.
- * Only performs the operation if LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS is enabled.
+ * Only performs the operation if HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS is enabled.
  */
 export async function markProjectAsOtelUser(projectId: string): Promise<void> {
   // Check if feature is enabled
-  if (env.LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS !== "true") {
+  if (env.HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS !== "true") {
     return;
   }
 
   try {
-    const key = `langfuse:project:${projectId}:otel:active`;
+    const key = `hanzo:project:${projectId}:otel:active`;
     await redis?.set(key, "1", "EX", TTL_SECONDS);
     recordIncrement("redis.otel_tracking.marked", 1);
   } catch (error) {
@@ -31,12 +31,12 @@ export async function markProjectAsOtelUser(projectId: string): Promise<void> {
  */
 export async function isProjectOtelUser(projectId: string): Promise<boolean> {
   // If feature is disabled, always return false
-  if (env.LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS !== "true") {
+  if (env.HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS !== "true") {
     return false;
   }
 
   try {
-    const key = `langfuse:project:${projectId}:otel:active`;
+    const key = `hanzo:project:${projectId}:otel:active`;
     const result = await redis?.get(key);
     return result === "1";
   } catch (error) {

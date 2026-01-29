@@ -158,7 +158,7 @@ export const plainRouter = createTRPCRouter({
       const currentSupportRequestContext = {
         organizationId: input.organizationId,
         projectId: input.projectId,
-        region: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+        region: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
         plan: undefined as string | undefined,
         tenantExternalId: undefined as string | undefined,
       };
@@ -295,7 +295,7 @@ export const plainRouter = createTRPCRouter({
           "",
           "Thanks,",
           "",
-          "Team Langfuse",
+          "Team Hanzo",
           "",
           "",
           "=============================================================================================",

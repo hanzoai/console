@@ -560,7 +560,7 @@ describe("experiment processing integration", () => {
     //   expect.any(String),
     //   expect.any(String),
     //   expect.objectContaining({
-    //     environment: "langfuse-prompt-experiment",
+    //     environment: "hanzo-prompt-experiment",
     //     traceName: expect.stringMatching(/^dataset-run-item-/),
     //     traceId: expect.any(String),
     //     projectId: projectId,

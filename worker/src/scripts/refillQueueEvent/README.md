@@ -26,7 +26,7 @@ Create a `.env` file in the repository root with the following content:
 REDIS_CONNECTION_STRING=redis://:myredissecret@127.0.0.1:6379
 
 # Required: Supporting services for worker initialization
-LANGFUSE_S3_EVENT_UPLOAD_BUCKET=langfuse
+HANZO_S3_EVENT_UPLOAD_BUCKET=hanzo
 CLICKHOUSE_URL=http://localhost:8123
 CLICKHOUSE_USER=clickhouse
 CLICKHOUSE_PASSWORD=clickhouse

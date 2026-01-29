@@ -6,7 +6,7 @@ import {
   redis,
   logger,
   getCurrentSpan,
-  contextWithLangfuseProps,
+  contextWithHanzoProps,
 } from "@hanzo/shared/src/server";
 import { telemetry } from "@/src/features/telemetry";
 import { jsonSchema } from "@hanzo/shared";
@@ -93,7 +93,7 @@ export default async function handler(
       );
     }
 
-    const ctx = contextWithLangfuseProps({
+    const ctx = contextWithHanzoProps({
       headers: req.headers,
       projectId: authCheck.scope.projectId,
     });

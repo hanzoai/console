@@ -90,7 +90,7 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           exportStartDate,
         } = input;
 
-        const isSelfHosted = !env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION;
+        const isSelfHosted = !env.NEXT_PUBLIC_HANZO_CLOUD_REGION;
         const canUseHostCredentials =
           isSelfHosted && type === BlobStorageIntegrationType.S3;
         const isUsingHostCredentials =
@@ -348,8 +348,8 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
 
         // Create a test file
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const testFileName = `${prefix || ""}langfuse-validation-test-${timestamp}.txt`;
-        const testContent = `Langfuse blob storage validation test
+        const testFileName = `${prefix || ""}hanzo-validation-test-${timestamp}.txt`;
+        const testContent = `Hanzo blob storage validation test
 Project ID: ${input.projectId}
 Timestamp: ${new Date().toISOString()}
 Configuration: ${type} storage

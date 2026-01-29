@@ -84,10 +84,10 @@ export const TemplateSelector = ({
     selectedTemplateIds: activeTemplates,
   });
 
-  // Group templates by name and whether they are managed by Langfuse
+  // Group templates by name and whether they are managed by Hanzo
   const groupedTemplates = evalTemplates.reduce(
     (acc, template) => {
-      const group = template.projectId ? "custom" : "langfuse";
+      const group = template.projectId ? "custom" : "hanzo";
       if (!acc[group][template.name]) {
         acc[group][template.name] = [];
       }
@@ -95,14 +95,14 @@ export const TemplateSelector = ({
       return acc;
     },
     {
-      langfuse: {} as Record<string, EvalTemplate[]>,
+      hanzo: {} as Record<string, EvalTemplate[]>,
       custom: {} as Record<string, EvalTemplate[]>,
     },
   );
 
   // Filter templates based on search
   const filteredTemplates = {
-    langfuse: Object.entries(groupedTemplates.langfuse)
+    hanzo: Object.entries(groupedTemplates.hanzo)
       .filter(([name]) => name.toLowerCase().includes(search.toLowerCase()))
       .sort(([nameA, templatesA], [nameB, templatesB]) => {
         // Get partners
@@ -122,7 +122,7 @@ export const TemplateSelector = ({
   };
 
   const hasResults =
-    filteredTemplates.langfuse.length > 0 ||
+    filteredTemplates.hanzo.length > 0 ||
     filteredTemplates.custom.length > 0;
 
   // Handle cog button click - configure template
@@ -271,12 +271,12 @@ export const TemplateSelector = ({
                   </>
                 )}
 
-                {filteredTemplates.langfuse.length > 0 && (
+                {filteredTemplates.hanzo.length > 0 && (
                   <InputCommandGroup
                     heading="Hanzo managed evaluators"
                     className="max-h-full min-h-0"
                   >
-                    {filteredTemplates.langfuse.map(([name, templateData]) => {
+                    {filteredTemplates.hanzo.map(([name, templateData]) => {
                       const latestTemplate =
                         templateData[templateData.length - 1];
                       const isActive = isTemplateActive(latestTemplate.id);
@@ -285,7 +285,7 @@ export const TemplateSelector = ({
 
                       return (
                         <InputCommandItem
-                          key={`langfuse-${name}`}
+                          key={`hanzo-${name}`}
                           onSelect={() => {
                             handleRowClick(latestTemplate.id);
                           }}

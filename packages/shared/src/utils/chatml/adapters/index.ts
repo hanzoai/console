@@ -9,7 +9,7 @@ import { pydanticAIAdapter } from "./pydantic-ai";
 import { genericAdapter } from "./generic";
 
 const adapters: ProviderAdapter[] = [
-  langgraphAdapter, // Must be before openAI (both use langfuse-sdk scope)
+  langgraphAdapter, // Must be before openAI (both use hanzo-sdk scope)
   aisdkAdapter, // Vercel AI SDK v5 (for all LLM providers like OpenAI, Bedrock, Anthropic, etc.)
   openAIAdapter, // OpenAI (Chat Completions & Responses API)
   geminiAdapter, // Gemini/VertexAI format

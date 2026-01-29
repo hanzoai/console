@@ -16,7 +16,7 @@ export const processClickhouseScoreDelete = async (
 
   try {
     await Promise.all([
-      env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
+      env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
         ? deleteIngestionEventsFromS3AndClickhouseForScores({
             projectId,
             scoreIds,

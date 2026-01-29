@@ -15,9 +15,9 @@
     "userId": "user_123",
     "sessionId": "session_abc",
     "public": true,
-    "input": "\"What is Langfuse?\"",
-    "output": "\"Langfuse is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Langfuse can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective.\"",
-    "metadata": "{\"email\":\"user@langfuse.com\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.33.1\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"3.0.0\",\"attributes\":{\"public_key\":\"pk-lf-5855d85e-3943-497e-bd10-f50ad414bcba\"}}}",
+    "input": "\"What is Hanzo?\"",
+    "output": "\"Hanzo is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Hanzo can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective.\"",
+    "metadata": "{\"email\":\"user@hanzo.com\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.33.1\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"hanzo-sdk\",\"version\":\"3.0.0\",\"attributes\":{\"public_key\":\"pk-lf-5855d85e-3943-497e-bd10-f50ad414bcba\"}}}",
     "createdAt": "2025-06-05T15:45:56.000Z",
     "updatedAt": "2025-06-05T15:45:56.029Z",
     "scores": [],
@@ -42,7 +42,7 @@
           "service.name": "unknown_service"
         },
         "scope": {
-          "name": "langfuse-sdk",
+          "name": "hanzo-sdk",
           "version": "3.0.0",
           "attributes": {
             "public_key": "pk-lf-5855d85e-3943-497e-bd10-f50ad414bcba"
@@ -100,14 +100,14 @@
           "llm.system": "openai",
           "input.value": {
             "args": [
-              "What is Langfuse?"
+              "What is Hanzo?"
             ]
           },
           "input.mime_type": "application/json",
           "llm.prompts": [
-            "What is Langfuse?"
+            "What is Hanzo?"
           ],
-          "output.value": "Langfuse is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Langfuse can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective.",
+          "output.value": "Hanzo is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Hanzo can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective.",
           "llm.token_count.prompt": "13",
           "llm.token_count.prompt_details.cache_read": "0",
           "llm.token_count.prompt_details.audio": "0",
@@ -173,10 +173,10 @@
       "totalUsage": 94,
       "input": {
         "args": [
-          "What is Langfuse?"
+          "What is Hanzo?"
         ]
       },
-      "output": "Langfuse is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Langfuse can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective."
+      "output": "Hanzo is a tool designed to help developers monitor and debug applications that utilize large language models (LLMs). It provides features for tracking and analyzing the performance of LLMs, enabling developers to gain insights into how these models are functioning within their applications. Hanzo can be particularly useful for identifying issues, optimizing performance, and ensuring that the integration of language models into applications is smooth and effective."
     }
   ]
 }

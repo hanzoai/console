@@ -101,8 +101,8 @@ export const getProjectSettingsPages = ({
                 id: organization.id,
                 ...organization.metadata,
               },
-              ...(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION && {
-                cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+              ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION && {
+                cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
               }),
             }}
           />
@@ -292,7 +292,7 @@ const Integrations = (props: { projectId: string }) => {
             </ActionButton>
             <Button asChild variant="ghost">
               <Link
-                href="https://langfuse.com/integrations/analytics/posthog"
+                href="https://hanzo.com/integrations/analytics/posthog"
                 target="_blank"
               >
                 Integration Docs ↗
@@ -317,7 +317,7 @@ const Integrations = (props: { projectId: string }) => {
             </ActionButton>
             <Button asChild variant="ghost">
               <Link
-                href="https://langfuse.com/integrations/analytics/mixpanel"
+                href="https://hanzo.com/integrations/analytics/mixpanel"
                 target="_blank"
               >
                 Integration Docs ↗
@@ -344,7 +344,7 @@ const Integrations = (props: { projectId: string }) => {
             </ActionButton>
             <Button asChild variant="ghost">
               <Link
-                href="https://langfuse.com/docs/query-traces#blob-storage"
+                href="https://hanzo.com/docs/query-traces#blob-storage"
                 target="_blank"
               >
                 Integration Docs ↗

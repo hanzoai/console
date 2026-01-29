@@ -8,7 +8,7 @@ groups:
           location: local-file-system
           path: ../../../web/public/generated/organizations-api
         config:
-          namespaceExport: Langfuse
+          namespaceExport: Hanzo
           allowCustomFetcher: true
       - name: fernapi/fern-postman
         version: 0.0.45

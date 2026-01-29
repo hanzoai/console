@@ -1,8 +1,8 @@
 import { ObservationType } from "@hanzo/shared";
 import {
   type AgentGraphDataResponse,
-  LANGFUSE_START_NODE_NAME,
-  LANGFUSE_END_NODE_NAME,
+  HANZO_START_NODE_NAME,
+  HANZO_END_NODE_NAME,
 } from "./types";
 
 function buildStepGroups(
@@ -188,7 +188,7 @@ function assignGlobalTimingSteps(
   return result;
 }
 
-function addLangfuseSystemNodes(
+function addHanzoSystemNodes(
   data: AgentGraphDataResponse[],
 ): AgentGraphDataResponse[] {
   const systemNodes: AgentGraphDataResponse[] = [];
@@ -201,9 +201,9 @@ function addLangfuseSystemNodes(
 
   // Add __start_lf__ node at step 0
   systemNodes.push({
-    id: LANGFUSE_START_NODE_NAME,
-    name: LANGFUSE_START_NODE_NAME,
-    node: LANGFUSE_START_NODE_NAME,
+    id: HANZO_START_NODE_NAME,
+    name: HANZO_START_NODE_NAME,
+    node: HANZO_START_NODE_NAME,
     step: 0,
     parentObservationId: topLevelObs?.parentObservationId || null,
     startTime: systemTimestamp,
@@ -214,9 +214,9 @@ function addLangfuseSystemNodes(
   // Add __end_lf__ node at max step + 1
   const maxStep = Math.max(...data.map((obs) => obs.step || 0));
   systemNodes.push({
-    id: LANGFUSE_END_NODE_NAME,
-    name: LANGFUSE_END_NODE_NAME,
-    node: LANGFUSE_END_NODE_NAME,
+    id: HANZO_END_NODE_NAME,
+    name: HANZO_END_NODE_NAME,
+    node: HANZO_END_NODE_NAME,
     step: maxStep + 1,
     parentObservationId: topLevelObs?.parentObservationId || null,
     startTime: systemTimestamp,
@@ -243,8 +243,8 @@ export function buildStepData(
   // Assign step numbers based on global timing analysis
   const dataWithSteps = assignGlobalTimingSteps(filteredData);
 
-  // Add Langfuse system nodes to make it consistent with LangGraph path
-  const dataWithSystemNodes = addLangfuseSystemNodes(dataWithSteps);
+  // Add Hanzo system nodes to make it consistent with LangGraph path
+  const dataWithSystemNodes = addHanzoSystemNodes(dataWithSteps);
 
   return dataWithSystemNodes;
 }

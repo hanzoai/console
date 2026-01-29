@@ -14,7 +14,7 @@ import {
   BatchActionType,
   BatchExportTableName,
   type BatchTableNames,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   paginationZod,
   Prisma,
 } from "@hanzo/shared";
@@ -125,7 +125,7 @@ export const queueItemRouter = createTRPCRouter({
         });
 
         if (!clickhouseObservation) {
-          throw new LangfuseNotFoundError("Observation not found");
+          throw new HanzoNotFoundError("Observation not found");
         }
 
         return {

@@ -29,7 +29,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -63,7 +63,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -76,7 +76,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 
@@ -107,7 +107,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -120,7 +120,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 
@@ -138,7 +138,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -151,7 +151,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 
@@ -171,7 +171,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -184,7 +184,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 
@@ -199,7 +199,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
       throwIfNoEntitlement({
@@ -212,7 +212,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 
@@ -240,7 +240,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -288,7 +288,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -339,7 +339,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -372,7 +372,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
       throwIfNoOrganizationAccess({
         organizationId: input.orgId,
-        scope: "langfuseCloudBilling:CRUD",
+        scope: "hanzoCloudBilling:CRUD",
         session: ctx.session,
       });
 
@@ -380,7 +380,7 @@ export const cloudBillingRouter = createTRPCRouter({
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message:
-            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_LANGFUSE_CLOUD_REGION to be configured.",
+            "Cloud billing is not available in this environment. This feature requires NEXT_PUBLIC_HANZO_CLOUD_REGION to be configured.",
         });
       }
 

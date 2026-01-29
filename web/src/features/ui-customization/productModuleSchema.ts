@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 
 /**
- * All available product modules in Langfuse
+ * All available product modules in Hanzo
  */
 export const PRODUCT_MODULES = [
   "dashboards",
@@ -26,10 +26,10 @@ export type ProductModule = z.infer<typeof ProductModule>;
  * Parse environment variables to determine which product modules should be visible.
  *
  * Two configuration modes:
- * - When LANGFUSE_UI_VISIBLE_PRODUCT_MODULES is set: only listed modules are visible
- * - When LANGFUSE_UI_HIDDEN_PRODUCT_MODULES is set: all modules except listed ones are visible
+ * - When HANZO_UI_VISIBLE_PRODUCT_MODULES is set: only listed modules are visible
+ * - When HANZO_UI_HIDDEN_PRODUCT_MODULES is set: all modules except listed ones are visible
  *
- * If both are set, LANGFUSE_UI_VISIBLE_PRODUCT_MODULES takes precedence.
+ * If both are set, HANZO_UI_VISIBLE_PRODUCT_MODULES takes precedence.
  * If neither is set, all modules are visible.
  */
 export function getVisibleProductModules(
@@ -39,8 +39,8 @@ export function getVisibleProductModules(
   // If both variables are set, visible list takes precedence with a warning
   if (visibleModulesEnv && hiddenModulesEnv) {
     console.warn(
-      "Both LANGFUSE_UI_VISIBLE_PRODUCT_MODULES and LANGFUSE_UI_HIDDEN_PRODUCT_MODULES are set. " +
-        "Using LANGFUSE_UI_VISIBLE_PRODUCT_MODULES as the allow list.",
+      "Both HANZO_UI_VISIBLE_PRODUCT_MODULES and HANZO_UI_HIDDEN_PRODUCT_MODULES are set. " +
+        "Using HANZO_UI_VISIBLE_PRODUCT_MODULES as the allow list.",
     );
     return parseModulesList(visibleModulesEnv);
   }

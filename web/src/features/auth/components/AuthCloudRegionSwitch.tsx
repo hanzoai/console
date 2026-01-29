@@ -16,10 +16,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 
 const regions =
-  env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "STAGING"
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
     ? [
         {
           name: "STAGING",
@@ -27,7 +27,7 @@ const regions =
           flag: "🇪🇺",
         },
       ]
-    : env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV"
+    : env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV"
       ? [
           {
             name: "DEV",
@@ -59,7 +59,7 @@ const regions =
           },
           {
             name: "HIPAA",
-            hostname: "hipaa.cloud.langfuse.com",
+            hostname: "hipaa.cloud.hanzo.com",
             flag: "⚕️",
           },
         ];
@@ -70,9 +70,9 @@ export function CloudRegionSwitch({
   isSignUpPage?: boolean;
 }) {
   const capture = usePostHogClientCapture();
-  const { isLangfuseCloud, region: cloudRegion } = useLangfuseCloudRegion();
+  const { isHanzoCloud, region: cloudRegion } = useHanzoCloudRegion();
 
-  if (!isLangfuseCloud) return null;
+  if (!isHanzoCloud) return null;
 
   const currentRegion = regions.find((region) => region.name === cloudRegion);
 
@@ -128,7 +128,7 @@ export function CloudRegionSwitch({
               The Business Associate Agreement (BAA) is only effective on the
               Cloud Pro and Teams plans.{" "}
               <a
-                href="https://langfuse.com/security/hipaa"
+                href="https://hanzo.com/security/hipaa"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-accent underline hover:text-hover-primary-accent"
@@ -182,7 +182,7 @@ const DataRegionInfo = () => (
           <p>
             Learn more about{" "}
             <a
-              href="https://langfuse.com/security/data-regions"
+              href="https://hanzo.com/security/data-regions"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-accent underline"
@@ -191,7 +191,7 @@ const DataRegionInfo = () => (
             </a>{" "}
             and{" "}
             <a
-              href="https://langfuse.com/docs/data-security-privacy"
+              href="https://hanzo.com/docs/data-security-privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-accent underline"

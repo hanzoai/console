@@ -13,7 +13,7 @@ export class CloudFreeTierUsageThresholdQueue {
 
   public static getInstance(): Queue | null {
     // Only enable in cloud deployments with Stripe configured
-    if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+    if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       return null;
     }
 

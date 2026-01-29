@@ -1796,7 +1796,7 @@ describe("/api/public/traces API Endpoint", () => {
 
     // Run test suite twice - once for each implementation
     runTestSuite(false); // old traces table
-    if (env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
+    if (env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
       runTestSuite(true); // Events table
     }
   });
@@ -2123,7 +2123,7 @@ describe("/api/public/traces API Endpoint", () => {
 
     // Run test suite twice - once for each implementation
     runTestSuite(false); // Good old traces table
-    if (env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
+    if (env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
       runTestSuite(true); // Events table
     }
   });
@@ -2224,7 +2224,7 @@ describe("/api/public/traces API Endpoint", () => {
 
     // Run for both table implementations
     runFilterTests(false);
-    if (env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
+    if (env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true") {
       runFilterTests(true);
     }
   });

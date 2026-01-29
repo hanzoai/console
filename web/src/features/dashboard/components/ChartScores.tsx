@@ -101,7 +101,7 @@ export function ChartScores(props: {
         <NoDataOrLoading
           isLoading={props.isLoading || scores.isPending}
           description="Scores evaluate LLM quality and can be created manually or using the SDK."
-          href="https://langfuse.com/docs/evaluation/overview"
+          href="https://hanzo.com/docs/evaluation/overview"
           className="h-full"
         />
       )}

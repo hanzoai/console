@@ -1,8 +1,8 @@
 /** @jest-environment node */
 // Set environment variable before any imports to ensure it's picked up by env module
-process.env.LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
+process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
   "true";
-process.env.LANGFUSE_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
+process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 import { prisma } from "@hanzo/shared/src/db";
 import {

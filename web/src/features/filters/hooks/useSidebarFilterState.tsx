@@ -299,7 +299,7 @@ export function useSidebarFilterState(
     false,
   );
 
-  // init default env filters on first load to deselect envs prefixed with "langfuse-"
+  // init default env filters on first load to deselect envs prefixed with "hanzo-"
   useEffect(() => {
     // Skip auto-applying defaults for embedded tables
     if (disableUrlPersistence) return;
@@ -319,18 +319,18 @@ export function useSidebarFilterState(
       typeof opt === "string" ? opt : opt.value,
     );
 
-    const langfuseEnvironments = environments.filter((env) =>
-      env.startsWith("langfuse-"),
+    const hanzoEnvironments = environments.filter((env) =>
+      env.startsWith("hanzo-"),
     );
 
-    // exclude langfuse- environments if there are any
-    if (langfuseEnvironments.length > 0) {
+    // exclude hanzo- environments if there are any
+    if (hanzoEnvironments.length > 0) {
       const defaultFilter: FilterState = [
         {
           column: "environment",
           type: "stringOptions",
           operator: "none of",
-          value: langfuseEnvironments,
+          value: hanzoEnvironments,
         },
       ];
 

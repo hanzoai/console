@@ -1,7 +1,7 @@
 {
-  "name": "langfuse",
+  "name": "hanzo",
   "version": "3.148.0",
-  "author": "engineering@langfuse.com",
+  "author": "engineering@hanzo.com",
   "license": "MIT",
   "private": true,
   "engines": {

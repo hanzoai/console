@@ -95,7 +95,7 @@ export class ClickHouseClientManager {
       const cloudOptions: Record<string, unknown> = {};
       if (
         ["STAGING", "EU", "US", "HIPAA"].includes(
-          env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION ?? "",
+          env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? "",
         )
       ) {
         cloudOptions.input_format_json_throw_on_bad_escape_sequence = 0;

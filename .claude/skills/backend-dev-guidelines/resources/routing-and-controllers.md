@@ -1,6 +1,6 @@
 # Routing Patterns - Next.js & tRPC
 
-Complete guide to routing and separation of concerns in Langfuse's Next.js + tRPC architecture.
+Complete guide to routing and separation of concerns in Hanzo's Next.js + tRPC architecture.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Complete guide to routing and separation of concerns in Langfuse's Next.js + tRP
 
 ## Architecture Overview
 
-Langfuse uses a **layered architecture** with clear separation of concerns:
+Hanzo uses a **layered architecture** with clear separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -89,12 +89,12 @@ tRPC routers define type-safe procedures for the internal UI. Each router groups
 ```typescript
 import { z } from "zod/v4";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { paginationZod, singleFilter, orderBy } from "@langfuse/shared";
+import { paginationZod, singleFilter, orderBy } from "@hanzo/shared";
 import {
   getScoresUiTable,
   getScoresUiCount,
   upsertScore,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 const ScoreAllOptions = z.object({
   projectId: z.string(),
@@ -271,8 +271,8 @@ import {
   GetScoresResponseV1,
   PostScoresBodyV1,
   PostScoresResponseV1,
-} from "@langfuse/shared";
-import { eventTypes, processEventBatch } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { eventTypes, processEventBatch } from "@hanzo/shared/src/server";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 
 export default withMiddlewares({
@@ -384,7 +384,7 @@ import {
   _handleGetScoresCountForPublicApi,
   type ScoreQueryType,
 } from "@/src/features/public-api/server/scores";
-import { _handleGetScoreById } from "@langfuse/shared/src/server";
+import { _handleGetScoreById } from "@hanzo/shared/src/server";
 
 export class ScoresApiService {
   constructor(private readonly apiVersion: "v1" | "v2") {}
@@ -610,7 +610,7 @@ export async function createScoreWithValidation({
   });
 
   if (!config) {
-    throw new LangfuseNotFoundError("Score config not found");
+    throw new HanzoNotFoundError("Score config not found");
   }
 
   validateConfigAgainstBody(config, scoreData);

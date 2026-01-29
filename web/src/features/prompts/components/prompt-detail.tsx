@@ -73,7 +73,7 @@ const getPythonCode = (
 hanzo = Hanzo()
 
 # Get production prompt
-prompt = langfuse.get_prompt("${name}")
+prompt = hanzo.get_prompt("${name}")
 
 # Get by label
 # You can use as many labels as you'd like to identify different deployment targets
@@ -87,20 +87,20 @@ const getJsCode = (
   name: string,
   version: number,
   labels: string[],
-) => `import { LangfuseClient } from "@langfuse/client";
+) => `import { HanzoClient } from "@hanzo/client";
 
-// Initialize the Langfuse client
-const langfuse = new LangfuseClient();
+// Initialize the Hanzo client
+const hanzo = new HanzoClient();
 
 // Get production prompt
-const prompt = await langfuse.prompt.get("${name}");
+const prompt = await hanzo.prompt.get("${name}");
 
 // Get by label
 // You can use as many labels as you'd like to identify different deployment targets
-${labels.length > 0 ? labels.map((label) => `const prompt = await langfuse.prompt.get("${name}", { label: "${label}" })`).join("\n") : ""}
+${labels.length > 0 ? labels.map((label) => `const prompt = await hanzo.prompt.get("${name}", { label: "${label}" })`).join("\n") : ""}
 
 // Get by version number, usually not recommended as it requires code changes to deploy new prompt versions
-await langfuse.prompt.get("${name}", { version: ${version} })
+await hanzo.prompt.get("${name}", { version: ${version} })
 `;
 
 export const PromptDetail = ({

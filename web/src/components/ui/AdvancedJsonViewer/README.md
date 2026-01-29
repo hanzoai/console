@@ -357,4 +357,4 @@ See `types.ts` for complete type definitions including `JSONTheme`, `SearchMatch
 
 ## License
 
-MIT - Same as parent Langfuse project
+MIT - Same as parent Hanzo project

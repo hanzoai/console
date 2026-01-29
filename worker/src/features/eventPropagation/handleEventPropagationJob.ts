@@ -13,7 +13,7 @@ import { Job } from "bullmq";
 import { env } from "../../env";
 
 const LAST_PROCESSED_PARTITION_KEY =
-  "langfuse:event-propagation:last-processed-partition";
+  "hanzo:event-propagation:last-processed-partition";
 
 /**
  * Get the last processed partition timestamp from Redis.
@@ -63,7 +63,7 @@ export const handleEventPropagationJob = async (
     job.data.id,
   );
 
-  if (env.LANGFUSE_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB === "true") {
+  if (env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB === "true") {
     logger.info(
       "[DUAL WRITE] Early exit for event propagation job due to experiment flag",
     );
@@ -97,7 +97,7 @@ export const handleEventPropagationJob = async (
     });
 
     recordGauge(
-      "langfuse.event_propagation.partition_backlog",
+      "hanzo.event_propagation.partition_backlog",
       partitions.length,
     );
 

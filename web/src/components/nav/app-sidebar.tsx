@@ -26,7 +26,7 @@ import { HanzoLogo } from "@/src/components/HanzoLogo";
 import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications";
 import { type RouteGroup } from "@/src/components/layouts/routes";
 import { ExternalLink, Grid2X2 } from "lucide-react";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 
 type AppSidebarProps = {
   navItems: {
@@ -73,7 +73,7 @@ export function AppSidebar({
 
 const DemoBadge = () => {
   const router = useRouter();
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isHanzoCloud } = useHanzoCloudRegion();
   const routerProjectId = router.query.projectId as string | undefined;
 
   if (
@@ -81,7 +81,7 @@ const DemoBadge = () => {
       env.NEXT_PUBLIC_DEMO_ORG_ID &&
       env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
       routerProjectId === env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
-      isLangfuseCloud
+      isHanzoCloud
     )
   )
     return null;
@@ -98,7 +98,7 @@ const DemoBadge = () => {
               variant="cta"
             >
               <Link
-                href="https://langfuse.com/docs/demo"
+                href="https://hanzo.com/docs/demo"
                 target="_blank"
                 rel="noopener noreferrer"
               >

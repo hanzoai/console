@@ -18,7 +18,7 @@ import {
   DatasetStatus,
   type Prisma,
 } from "@hanzo/shared";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useEffect, useState } from "react";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
@@ -141,7 +141,7 @@ export function DatasetItemsTable({
     },
   );
 
-  const columns: LangfuseColumnDef<RowData>[] = [
+  const columns: HanzoColumnDef<RowData>[] = [
     {
       accessorKey: "id",
       header: "Item id",

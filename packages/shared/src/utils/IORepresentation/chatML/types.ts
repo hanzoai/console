@@ -23,8 +23,8 @@ export const ToolCallSchema = z.object({
 });
 
 /**
- * Parsed Langfuse media reference.
- * Extracted from magic string format: @@@langfuseMedia:type=X|id=Y|source=Z@@@
+ * Parsed Hanzo media reference.
+ * Extracted from magic string format: @@@hanzoMedia:type=X|id=Y|source=Z@@@
  */
 export const ParsedMediaReferenceSchema = z.object({
   type: z.string(),
@@ -37,8 +37,8 @@ export type ParsedMediaReferenceType = z.infer<
 >;
 
 /**
- * Schema that parses Langfuse media reference magic strings.
- * Format: @@@langfuseMedia:type=image/jpeg|id=<uuid>|source=base64@@@
+ * Schema that parses Hanzo media reference magic strings.
+ * Format: @@@hanzoMedia:type=image/jpeg|id=<uuid>|source=base64@@@
  *
  * Note: This schema uses transforms that can throw errors during validation
  * if the magic string format is invalid. Always use with try-catch or safeParse.
@@ -46,14 +46,14 @@ export type ParsedMediaReferenceType = z.infer<
 export const MediaReferenceStringSchema = z
   .string()
   .transform((str, ctx) => {
-    // @@@langfuseMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
-    const magicStringPattern = /^@@@langfuseMedia:(.*)@@@$/;
+    // @@@hanzoMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
+    const magicStringPattern = /^@@@hanzoMedia:(.*)@@@$/;
 
     const match = str.match(magicStringPattern);
     if (!match) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Invalid langfuseMedia magic string format",
+        message: "Invalid hanzoMedia magic string format",
       });
       return z.NEVER;
     }
@@ -147,7 +147,7 @@ const OpenAIBase64ImageUrl = z
 
 /**
  * OpenAI image content part for vision-enabled models.
- * Supports URL, Langfuse media reference, or base64-encoded images.
+ * Supports URL, Hanzo media reference, or base64-encoded images.
  */
 const OpenAIImageContentPart = z.object({
   type: z.literal("image_url"),

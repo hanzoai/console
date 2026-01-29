@@ -12,7 +12,7 @@ import { type VisibilityState } from "@tanstack/react-table";
 import { StringParam, withDefault } from "use-query-params";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { useQueryParam } from "use-query-params";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import isEqual from "lodash/isEqual";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -31,7 +31,7 @@ interface UseTableStateProps {
   projectId: string;
   stateUpdaters: TableStateUpdaters;
   validationContext?: {
-    columns?: LangfuseColumnDef<any, any>[];
+    columns?: HanzoColumnDef<any, any>[];
     filterColumnDefinition?: ColumnDefinition[];
   };
   currentFilterState?: FilterState;

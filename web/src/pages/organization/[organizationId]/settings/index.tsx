@@ -33,7 +33,7 @@ export function useOrganizationSettingsPages(): OrganizationSettingsPage[] {
   const showOrgApiKeySettings = useHasEntitlement("admin-api");
   const showAuditLogs = useHasEntitlement("audit-logs");
   const plan = usePlan();
-  const isLangfuseCloud = isCloudPlan(plan) ?? false;
+  const isHanzoCloud = isCloudPlan(plan) ?? false;
   const isCloudBillingAvailable = useIsCloudBillingAvailable();
 
   if (!organization) return [];
@@ -43,7 +43,7 @@ export function useOrganizationSettingsPages(): OrganizationSettingsPage[] {
     showBillingSettings: showBillingSettings && isCloudBillingAvailable,
     showOrgApiKeySettings,
     showAuditLogs,
-    isLangfuseCloud,
+    isHanzoCloud,
   });
 }
 
@@ -52,13 +52,13 @@ export const getOrganizationSettingsPages = ({
   showBillingSettings,
   showOrgApiKeySettings,
   showAuditLogs,
-  isLangfuseCloud,
+  isHanzoCloud,
 }: {
   organization: { id: string; name: string; metadata: Record<string, unknown> };
   showBillingSettings: boolean;
   showOrgApiKeySettings: boolean;
   showAuditLogs: boolean;
-  isLangfuseCloud: boolean;
+  isHanzoCloud: boolean;
 }): OrganizationSettingsPage[] => [
   {
     title: "General",
@@ -75,8 +75,8 @@ export const getOrganizationSettingsPages = ({
               name: organization.name,
               id: organization.id,
               ...organization.metadata,
-              ...(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION && {
-                cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+              ...(env.NEXT_PUBLIC_HANZO_CLOUD_REGION && {
+                cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
               }),
             }}
           />
@@ -140,7 +140,7 @@ export const getOrganizationSettingsPages = ({
     slug: "sso",
     cmdKKeywords: ["sso", "login", "auth", "okta", "saml", "azure"],
     content: <SSOSettings />,
-    show: isLangfuseCloud,
+    show: isHanzoCloud,
   },
   {
     title: "Projects",

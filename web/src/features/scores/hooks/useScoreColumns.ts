@@ -5,7 +5,7 @@ import {
   type FilterCondition,
   type ScoreAggregate,
 } from "@hanzo/shared";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { ScoresTableCell } from "@/src/components/scores-table-cell";
 import { toOrderedScoresList } from "@/src/features/scores/lib/helpers";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
@@ -21,7 +21,7 @@ function createScoreColumns<T extends Record<string, any>>(
   scoreColumnKey: keyof T & string,
   displayFormat: "smart" | "aggregate",
   prefix?: string,
-): LangfuseColumnDef<T>[] {
+): HanzoColumnDef<T>[] {
   return scoreColumns.map(({ key, name, source, dataType }) => {
     // Apply prefix to both column ID/accessor and header
     const accessorKey = prefix ? `${prefix}-${key}` : key;

@@ -21,7 +21,7 @@ declare module "next-auth" {
     environment: {
       // Run-time environment variables that need to be available client-side
       enableExperimentalFeatures: boolean;
-      // Enables features that are only available under an enterprise/commercial license when self-hosting Langfuse
+      // Enables features that are only available under an enterprise/commercial license when self-hosting Hanzo
       selfHostedInstancePlan: Plan | null;
     };
   }

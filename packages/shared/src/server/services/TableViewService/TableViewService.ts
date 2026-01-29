@@ -3,7 +3,7 @@ import {
   TableViewPresetTableName,
   type TableViewPresetDomain,
 } from "../../../domain/table-view-presets";
-import { LangfuseNotFoundError } from "../../../errors";
+import { HanzoNotFoundError } from "../../../errors";
 import {
   TableViewPresetsNamesCreatorList,
   TableViewPresetsNamesCreatorListSchema,
@@ -55,7 +55,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `Saved table view preset not found for table ${input.tableName} in project ${input.projectId}`,
       );
     }
@@ -92,7 +92,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `Saved table view preset not found for table ${input.tableName} in project ${input.projectId}`,
       );
     }
@@ -170,7 +170,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `Saved table view preset not found for id ${id} in project ${projectId}`,
       );
     }

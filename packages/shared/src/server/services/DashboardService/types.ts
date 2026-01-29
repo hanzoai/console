@@ -84,7 +84,7 @@ export const DashboardDefinitionSchema = z.object({
   widgets: z.array(DashboardDefinitionWidgetSchema),
 });
 
-export const OwnerEnum = z.enum(["PROJECT", "LANGFUSE"]);
+export const OwnerEnum = z.enum(["PROJECT", "HANZO"]);
 
 // Define the dashboard domain object
 export const DashboardDomainSchema = z.object({

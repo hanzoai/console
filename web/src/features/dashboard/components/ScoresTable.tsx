@@ -238,7 +238,7 @@ export const ScoresTable = ({
         noDataProps={{
           description:
             "Scores evaluate LLM quality and can be created manually or using the SDK.",
-          href: "https://langfuse.com/docs/evaluation/overview",
+          href: "https://hanzo.com/docs/evaluation/overview",
         }}
       >
         <TotalMetric

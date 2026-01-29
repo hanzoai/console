@@ -318,7 +318,7 @@ class BillingService {
         const { org, parsedOrg } = await this.getParsedOrg(orgId);
 
         span.setAttributes({
-          "langfuse.org.id": parsedOrg.id,
+          "hanzo.org.id": parsedOrg.id,
           "stripe.operation": "get_subscription_info",
         });
 
@@ -574,8 +574,8 @@ class BillingService {
         span.setAttributes({
           "stripe.customer_id": stripeCustomerId,
           "stripe.subscription_id": stripeSubscriptionId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user.id,
         });
 
         try {
@@ -641,8 +641,8 @@ class BillingService {
 
         span.setAttributes({
           "stripe.product_id": stripeProductId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user.id,
           "stripe.operation": "checkout_create",
         });
 
@@ -676,7 +676,7 @@ class BillingService {
         const clientReferenceId = createStripeClientReference(orgId);
         const subscriptionMetadata: StripeSubscriptionMetadata = {
           orgId: orgId,
-          cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+          cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
         };
 
         const sessionConfig: Stripe.Checkout.SessionCreateParams = {
@@ -803,8 +803,8 @@ class BillingService {
         span.setAttributes({
           "stripe.subscription_id": stripeSubscriptionId,
           "stripe.new_product_id": newProductId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user.id,
           "stripe.operation": "change_plan",
         });
 
@@ -1189,9 +1189,9 @@ class BillingService {
         // Set span attributes for context
         span.setAttributes({
           "stripe.subscription_id": subscriptionId,
-          "langfuse.org.id": parsedOrg.id,
+          "hanzo.org.id": parsedOrg.id,
           "stripe.operation": "cancel_at_period_end",
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.user.id": this.ctx.session.user.id,
         });
 
         const subscription =
@@ -1288,8 +1288,8 @@ class BillingService {
 
         span.setAttributes({
           "stripe.subscription_id": subscriptionId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user.id,
           "stripe.operation": "reactivate",
         });
 
@@ -1398,8 +1398,8 @@ class BillingService {
 
         span.setAttributes({
           "stripe.subscription_id": subscriptionId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user?.id ?? "system",
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user?.id ?? "system",
           "stripe.operation": "cancel_immediately",
         });
 
@@ -1501,8 +1501,8 @@ class BillingService {
 
         span.setAttributes({
           "stripe.subscription_id": subscriptionId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user.id,
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user.id,
           "stripe.operation": "clear_schedule",
         });
 
@@ -1565,7 +1565,7 @@ class BillingService {
 
         span.setAttributes({
           "stripe.customer_id": stripeCustomerId,
-          "langfuse.org.id": parsedOrg.id,
+          "hanzo.org.id": parsedOrg.id,
           "stripe.operation": "list_invoices",
           "pagination.limit": pagination.limit,
         });
@@ -1778,7 +1778,7 @@ class BillingService {
         const { org, parsedOrg } = await this.getParsedOrgWithProjects(orgId);
 
         span.setAttributes({
-          "langfuse.org.id": parsedOrg.id,
+          "hanzo.org.id": parsedOrg.id,
           "stripe.operation": "get_usage",
         });
 
@@ -1924,8 +1924,8 @@ class BillingService {
 
         span.setAttributes({
           "stripe.subscription_id": subscriptionId,
-          "langfuse.org.id": parsedOrg.id,
-          "langfuse.user.id": this.ctx.session.user?.id ?? "system",
+          "hanzo.org.id": parsedOrg.id,
+          "hanzo.user.id": this.ctx.session.user?.id ?? "system",
           "stripe.operation": "apply_promotion",
           "stripe.promotion_code": code,
         });

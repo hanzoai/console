@@ -1,6 +1,6 @@
-# Codex Guidelines for Langfuse
+# Codex Guidelines for Hanzo
 
-Langfuse is an **open source LLM engineering** platform for developing, monitoring, evaluating and debugging AI applications. See the README for more details.
+Hanzo is an **open source LLM engineering** platform for developing, monitoring, evaluating and debugging AI applications. See the README for more details.
 
 ## Linting
 - Run `pnpm run lint` to lint all packages.

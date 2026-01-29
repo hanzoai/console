@@ -36,9 +36,9 @@ export interface WebhookValidationWhitelist {
 
 export function whitelistFromEnv(): WebhookValidationWhitelist {
   return {
-    hosts: env.LANGFUSE_WEBHOOK_WHITELISTED_HOST || [],
-    ips: env.LANGFUSE_WEBHOOK_WHITELISTED_IPS || [],
-    ip_ranges: env.LANGFUSE_WEBHOOK_WHITELISTED_IP_SEGMENTS || [],
+    hosts: env.HANZO_WEBHOOK_WHITELISTED_HOST || [],
+    ips: env.HANZO_WEBHOOK_WHITELISTED_IPS || [],
+    ip_ranges: env.HANZO_WEBHOOK_WHITELISTED_IP_SEGMENTS || [],
   };
 }
 

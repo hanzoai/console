@@ -47,7 +47,7 @@ export function DashboardWidget({
   dateRange: { from: Date; to: Date } | undefined;
   filterState: FilterState;
   onDeleteWidget: (tileId: string) => void;
-  dashboardOwner: "LANGFUSE" | "PROJECT";
+  dashboardOwner: "HANZO" | "PROJECT";
 }) {
   const router = useRouter();
   const utils = api.useUtils();
@@ -62,7 +62,7 @@ export function DashboardWidget({
   );
   const hasCUDAccess =
     useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) &&
-    dashboardOwner !== "LANGFUSE";
+    dashboardOwner !== "HANZO";
 
   const fromTimestamp = dateRange
     ? dateRange.from
@@ -250,7 +250,7 @@ export function DashboardWidget({
       <div className="flex items-center justify-between">
         <span className="truncate font-medium" title={widget.data.name}>
           {widget.data.name}{" "}
-          {dashboardOwner === "PROJECT" && widget.data.owner === "LANGFUSE"
+          {dashboardOwner === "PROJECT" && widget.data.owner === "HANZO"
             ? " ( 🪢 )"
             : null}
         </span>
@@ -269,7 +269,7 @@ export function DashboardWidget({
                 >
                   <PencilIcon size={16} />
                 </button>
-              ) : widget.data.owner === "LANGFUSE" ? (
+              ) : widget.data.owner === "HANZO" ? (
                 <button
                   onClick={handleCopy}
                   className="hidden text-muted-foreground hover:text-foreground group-hover:block"

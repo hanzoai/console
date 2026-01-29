@@ -41,13 +41,13 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.LANGFUSE_S3_EVENT_UPLOAD_SSE,
-      awsSseKmsKeyId: env.LANGFUSE_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.HANZO_S3_EVENT_UPLOAD_SSE,
+      awsSseKmsKeyId: env.HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3StorageServiceClient;
@@ -85,13 +85,13 @@ const getDelay = (delay: number | null, source: "api" | "otel") => {
  * Options for event batch processing.
  * @property delay - Delay in ms to wait before processing events in the batch.
  * @property source - Source of the events for metrics tracking (e.g., "otel", "api").
- * @property isLangfuseInternal - Whether the events are being ingested by Langfuse internally (e.g. traces created for prompt experiments).
+ * @property isHanzoInternal - Whether the events are being ingested by Hanzo internally (e.g. traces created for prompt experiments).
  * @property forwardToEventsTable - Whether to forward events to the staging events table for batch propagation. If undefined, falls back to environment flags.
  */
 type ProcessEventBatchOptions = {
   delay?: number | null;
   source?: "api" | "otel";
-  isLangfuseInternal?: boolean;
+  isHanzoInternal?: boolean;
   forwardToEventsTable?: boolean;
 };
 
@@ -120,26 +120,26 @@ export const processEventBatch = async (
   const {
     delay = null,
     source = "api",
-    isLangfuseInternal = false,
+    isHanzoInternal = false,
     forwardToEventsTable,
   } = options;
 
   // add context of api call to the span
   const currentSpan = getCurrentSpan();
-  recordIncrement("langfuse.ingestion.event", input.length, { source });
-  recordDistribution("langfuse.ingestion.event_distribution", input.length, {
+  recordIncrement("hanzo.ingestion.event", input.length, { source });
+  recordDistribution("hanzo.ingestion.event_distribution", input.length, {
     source,
   });
 
-  currentSpan?.setAttribute("langfuse.ingestion.batch_size", input.length);
+  currentSpan?.setAttribute("hanzo.ingestion.batch_size", input.length);
   currentSpan?.setAttribute(
-    "langfuse.project.id",
+    "hanzo.project.id",
     authCheck.scope.projectId ?? "",
   );
   if (authCheck.scope.orgId)
-    currentSpan?.setAttribute("langfuse.org.id", authCheck.scope.orgId);
+    currentSpan?.setAttribute("hanzo.org.id", authCheck.scope.orgId);
   if (authCheck.scope.plan)
-    currentSpan?.setAttribute("langfuse.org.plan", authCheck.scope.plan);
+    currentSpan?.setAttribute("hanzo.org.plan", authCheck.scope.plan);
 
   /**************
    * VALIDATION *
@@ -151,7 +151,7 @@ export const processEventBatch = async (
   const validationErrors: { id: string; error: unknown }[] = [];
   const authenticationErrors: { id: string; error: unknown }[] = [];
 
-  const ingestionSchema = createIngestionEventSchema(isLangfuseInternal);
+  const ingestionSchema = createIngestionEventSchema(isHanzoInternal);
   const batch: z.infer<typeof ingestionSchema>[] = input
     .flatMap((event) => {
       const parsed = ingestionSchema.safeParse(event);
@@ -234,9 +234,9 @@ export const processEventBatch = async (
         // That way we batch updates from the same invocation into a single file and reduce
         // write operations on S3.
         const { data, key, type, eventBodyId } = sortedBatchByEventBodyId[id];
-        const bucketPath = `${env.LANGFUSE_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
+        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
         return getS3StorageServiceClient(
-          env.LANGFUSE_S3_EVENT_UPLOAD_BUCKET,
+          env.HANZO_S3_EVENT_UPLOAD_BUCKET,
         ).uploadJson(bucketPath, data);
       }),
     );
@@ -276,7 +276,7 @@ export const processEventBatch = async (
   }
 
   const projectIdsToSkipS3List =
-    env.LANGFUSE_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS?.split(",") ?? [];
+    env.HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS?.split(",") ?? [];
 
   await Promise.all(
     Object.keys(sortedBatchByEventBodyId).map(async (id) => {
@@ -303,7 +303,7 @@ export const processEventBatch = async (
       });
 
       if (!isSampled) {
-        recordIncrement("langfuse.ingestion.sampling", eventData.data.length, {
+        recordIncrement("hanzo.ingestion.sampling", eventData.data.length, {
           projectId: authCheck.scope.projectId ?? "<not set>",
           sampling_decision: "out",
         });
@@ -312,7 +312,7 @@ export const processEventBatch = async (
       }
 
       if (isSamplingConfigured) {
-        recordIncrement("langfuse.ingestion.sampling", eventData.data.length, {
+        recordIncrement("hanzo.ingestion.sampling", eventData.data.length, {
           projectId: authCheck.scope.projectId ?? "<not set>",
           sampling_decision: "in",
         });

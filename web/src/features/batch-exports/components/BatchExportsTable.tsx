@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type HanzoColumnDef, type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef, type HanzoColumnDef } from "@/src/components/table/types";
 import { type Row, type CellContext } from "@tanstack/react-table";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
@@ -221,7 +221,7 @@ export function BatchExportsTable(props: { projectId: string }) {
         );
       },
     },
-  ] as LangfuseColumnDef<BatchExport>[];
+  ] as HanzoColumnDef<BatchExport>[];
 
   return (
     <>

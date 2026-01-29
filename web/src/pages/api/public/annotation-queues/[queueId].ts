@@ -5,7 +5,7 @@ import {
   GetAnnotationQueueByIdQuery,
   GetAnnotationQueueByIdResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -21,7 +21,7 @@ export default withMiddlewares({
       });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       return {

@@ -5,7 +5,7 @@ import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import TableLink from "@/src/components/table/table-link";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
@@ -34,7 +34,7 @@ type DashboardTableRow = {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  owner: "PROJECT" | "LANGFUSE";
+  owner: "PROJECT" | "HANZO";
 };
 
 function CloneDashboardButton({
@@ -196,7 +196,7 @@ export function DashboardTable() {
       header: "Owner",
       size: 80,
       cell: (row) => {
-        return row.row.original.owner === "LANGFUSE" ? (
+        return row.row.original.owner === "HANZO" ? (
           <span className="flex gap-1 px-2 py-0.5 text-xs">
             <span role="img" aria-label="Hanzo">
               🔴
@@ -279,7 +279,7 @@ export function DashboardTable() {
         );
       },
     }),
-  ] as LangfuseColumnDef<DashboardTableRow>[];
+  ] as HanzoColumnDef<DashboardTableRow>[];
 
   return (
     <DataTable

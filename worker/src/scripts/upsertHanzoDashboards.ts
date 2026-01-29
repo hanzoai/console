@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { prisma } from "@hanzo/shared/src/db";
-import langfuseDashboards from "../constants/langfuse-dashboards.json";
+import hanzoDashboards from "../constants/hanzo-dashboards.json";
 import {
   logger,
   WidgetDomainSchema,
@@ -51,22 +51,22 @@ const FileSchema = z.object({
 type ParsedWidgets = z.infer<typeof WidgetDomainSchema>[];
 type ParsedDashboards = z.infer<typeof DashboardDomainSchema>[];
 
-export const upsertLangfuseDashboards = async (force = false) => {
+export const upsertHanzoDashboards = async (force = false) => {
   const startTime = Date.now();
   try {
-    logger.debug(`Starting upsert of Langfuse dashboards (force = ${force})`);
+    logger.debug(`Starting upsert of Hanzo dashboards (force = ${force})`);
 
-    const parsed = FileSchema.parse(langfuseDashboards);
+    const parsed = FileSchema.parse(hanzoDashboards);
 
     await upsertWidgets(parsed.widgets, force);
     await upsertDashboards(parsed.dashboards, force);
 
     logger.info(
-      `Finished upserting Langfuse dashboards and widgets in ${Date.now() - startTime}ms`,
+      `Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`,
     );
   } catch (error) {
     logger.error(
-      `Error upserting Langfuse dashboards after ${Date.now() - startTime}ms: ${
+      `Error upserting Hanzo dashboards after ${Date.now() - startTime}ms: ${
         error instanceof Error ? error.message : ""
       }`,
       { error },

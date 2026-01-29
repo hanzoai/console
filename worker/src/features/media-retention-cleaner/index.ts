@@ -10,7 +10,7 @@ import {
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 
-const METRIC_PREFIX = "langfuse.media_retention_cleaner";
+const METRIC_PREFIX = "hanzo.media_retention_cleaner";
 
 interface ProjectWorkload {
   projectId: string;
@@ -136,15 +136,15 @@ export class MediaRetentionCleaner {
     workload: ProjectWorkload,
   ): Promise<void> {
     // Delete media files (S3 + PostgreSQL)
-    if (env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+    if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
       await MediaRetentionCleaner.deleteExpiredMedia(
         workload,
-        env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+        env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
       );
     }
 
     // Delete blob storage entries (S3 + ClickHouse soft delete)
-    if (env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
+    if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
       await removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
         workload.projectId,
         workload.cutoffDate,

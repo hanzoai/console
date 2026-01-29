@@ -18,7 +18,7 @@ import {
   createDatasetRunItem,
   createOrgProjectAndApiKey,
   LLMCompletionError,
-  LangfuseInternalTraceEnvironment,
+  HanzoInternalTraceEnvironment,
 } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
@@ -50,10 +50,10 @@ import { fetchLLMCompletion } from "@hanzo/shared/src/server";
 import { UnrecoverableError } from "../errors/UnrecoverableError";
 
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-// Check for both OPENAI_API_KEY and LANGFUSE_LLM_CONNECTION_OPENAI_KEY
+// Check for both OPENAI_API_KEY and HANZO_LLM_CONNECTION_OPENAI_KEY
 // to avoid interfering with llmConnections tests that use the latter
 const hasActiveKey = Boolean(
-  OPENAI_API_KEY || process.env.LANGFUSE_LLM_CONNECTION_OPENAI_KEY,
+  OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY,
 );
 if (!hasActiveKey) {
   OPENAI_API_KEY = "sk-test_not_used_as_network_mocks_are_activated";
@@ -2806,13 +2806,13 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
         const variableMapping = variableMappingList.parse([
           {
-            langfuseObject: observationType.toLowerCase(),
+            hanzoObject: observationType.toLowerCase(),
             selectedColumnId: "input",
             templateVariable: "input",
             objectName: `great-${observationType.toLowerCase()}-name`,
           },
           {
-            langfuseObject: observationType.toLowerCase(),
+            hanzoObject: observationType.toLowerCase(),
             selectedColumnId: "output",
             templateVariable: "output",
             objectName: `great-${observationType.toLowerCase()}-name`,
@@ -2931,7 +2931,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
           targetObject: "trace",
           scoreName: "test-score",
           variableMapping: JSON.parse(
-            '[{"langfuseObject":"trace","selectedColumnId":"input","templateVariable":"input"}]',
+            '[{"hanzoObject":"trace","selectedColumnId":"input","templateVariable":"input"}]',
           ),
           status: "ACTIVE",
           evalTemplateId: templateId,
@@ -2975,7 +2975,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         "Execute evaluator: test-evaluator",
       );
       expect(capturedTraceSinkParams.environment).toBe(
-        LangfuseInternalTraceEnvironment.LLMJudge,
+        HanzoInternalTraceEnvironment.LLMJudge,
       );
       expect(capturedTraceSinkParams.metadata).toMatchObject({
         job_execution_id: jobExecutionId,
@@ -2996,7 +2996,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: LangfuseInternalTraceEnvironment.LLMJudge,
+        environment: HanzoInternalTraceEnvironment.LLMJudge,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3020,7 +3020,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const payload = {
         projectId,
         traceId,
-        traceEnvironment: LangfuseInternalTraceEnvironment.LLMJudge,
+        traceEnvironment: HanzoInternalTraceEnvironment.LLMJudge,
       };
 
       // Attempt to create eval jobs
@@ -3048,7 +3048,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: LangfuseInternalTraceEnvironment.PromptExperiments,
+        environment: HanzoInternalTraceEnvironment.PromptExperiments,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3072,7 +3072,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const payload = {
         projectId,
         traceId,
-        traceEnvironment: LangfuseInternalTraceEnvironment.PromptExperiments,
+        traceEnvironment: HanzoInternalTraceEnvironment.PromptExperiments,
       };
 
       // Attempt to create eval jobs
@@ -3143,7 +3143,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: LangfuseInternalTraceEnvironment.PromptExperiments,
+        environment: HanzoInternalTraceEnvironment.PromptExperiments,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3168,7 +3168,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         projectId,
         traceId,
         datasetItemId,
-        traceEnvironment: LangfuseInternalTraceEnvironment.PromptExperiments,
+        traceEnvironment: HanzoInternalTraceEnvironment.PromptExperiments,
       };
 
       // Attempt to create eval jobs via dataset-run-item-upsert
@@ -3295,15 +3295,15 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       expect(jobs[0].job_input_trace_id).toBe(traceId);
     }, 10_000);
 
-    test("does not create eval jobs for trace-upsert with 'langfuse' environment without hyphen", async () => {
+    test("does not create eval jobs for trace-upsert with 'hanzo' environment without hyphen", async () => {
       const { projectId } = await createOrgProjectAndApiKey();
       const traceId = randomUUID();
 
-      // Create trace with "langfuse" environment (no hyphen)
+      // Create trace with "hanzo" environment (no hyphen)
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: "langfuse",
+        environment: "hanzo",
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3327,7 +3327,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const payload = {
         projectId,
         traceId,
-        traceEnvironment: "langfuse",
+        traceEnvironment: "hanzo",
       };
 
       // Attempt to create eval jobs
@@ -3337,7 +3337,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         jobTimestamp,
       });
 
-      // Verify eval jobs WERE created (only "langfuse-" prefix is blocked)
+      // Verify eval jobs WERE created (only "hanzo-" prefix is blocked)
       const jobs = await kyselyPrisma.$kysely
         .selectFrom("job_executions")
         .selectAll()

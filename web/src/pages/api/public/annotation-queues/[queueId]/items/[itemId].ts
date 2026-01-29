@@ -9,7 +9,7 @@ import {
   DeleteAnnotationQueueItemQuery,
   DeleteAnnotationQueueItemResponse,
 } from "@/src/features/public-api/types/annotation-queues";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 import { AnnotationQueueStatus } from "@hanzo/shared";
 
 export default withMiddlewares({
@@ -27,7 +27,7 @@ export default withMiddlewares({
       });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       const item = await prisma.annotationQueueItem.findUnique({
@@ -39,7 +39,7 @@ export default withMiddlewares({
       });
 
       if (!item) {
-        throw new LangfuseNotFoundError("Annotation queue item not found");
+        throw new HanzoNotFoundError("Annotation queue item not found");
       }
 
       return {
@@ -69,7 +69,7 @@ export default withMiddlewares({
       });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       // Check if the item exists
@@ -82,7 +82,7 @@ export default withMiddlewares({
       });
 
       if (!existingItem) {
-        throw new LangfuseNotFoundError("Annotation queue item not found");
+        throw new HanzoNotFoundError("Annotation queue item not found");
       }
 
       const updateData = {
@@ -128,7 +128,7 @@ export default withMiddlewares({
       });
 
       if (!queue) {
-        throw new LangfuseNotFoundError("Annotation queue not found");
+        throw new HanzoNotFoundError("Annotation queue not found");
       }
 
       // Check if the item exists
@@ -141,7 +141,7 @@ export default withMiddlewares({
       });
 
       if (!existingItem) {
-        throw new LangfuseNotFoundError("Annotation queue item not found");
+        throw new HanzoNotFoundError("Annotation queue item not found");
       }
 
       // Delete the item

@@ -1,4 +1,4 @@
-import { type HanzoColumnDef, type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef, type HanzoColumnDef } from "@/src/components/table/types";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { DatasetAggregateTableCell } from "@/src/features/datasets/components/DatasetAggregateTableCell";
 import { type DatasetCompareRunRowData } from "@/src/features/datasets/components/DatasetCompareRunsTable";
@@ -178,7 +178,7 @@ export const constructDatasetRunAggregateColumns = ({
   updateRunFilters: (runId: string, filters: FilterState) => void;
   getFiltersForRun: (runId: string) => FilterState;
   serverScoreColumns?: ScoreColumn[];
-}): LangfuseColumnDef<DatasetCompareRunRowData>[] => {
+}): HanzoColumnDef<DatasetCompareRunRowData>[] => {
   const isDataLoading = !isScoreColumnsAvailable(serverScoreColumns);
 
   return runAggregateColumnProps.map((col) => {

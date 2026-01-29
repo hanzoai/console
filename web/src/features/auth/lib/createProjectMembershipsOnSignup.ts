@@ -14,7 +14,7 @@ export async function createProjectMembershipsOnSignup(user: {
       select: { id: true },
     }));
 
-    // Langfuse Cloud: provide view-only access to the demo project, none access to the demo org
+    // Hanzo Cloud: provide view-only access to the demo project, none access to the demo org
     const demoProject =
       env.NEXT_PUBLIC_DEMO_ORG_ID && env.NEXT_PUBLIC_DEMO_PROJECT_ID
         ? ((await prisma.project.findUnique({
@@ -90,7 +90,7 @@ export async function createProjectMembershipsOnSignup(user: {
           });
         }
       } else {
-        // (2) used without LANGFUSE_DEFAULT_ORG_ID (legacy) -> create org membership for the project's org
+        // (2) used without HANZO_DEFAULT_ORG_ID (legacy) -> create org membership for the project's org
         await prisma.organizationMembership.upsert({
           where: {
             orgId_userId: { orgId: defaultProject.orgId, userId: user.id },
@@ -111,8 +111,8 @@ export async function createProjectMembershipsOnSignup(user: {
     // for conversion metric tracking in posthog: did a new user sign up?
     if (
       isNewUser &&
-      env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION &&
-      ["EU", "US"].includes(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION)
+      env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
+      ["EU", "US"].includes(env.NEXT_PUBLIC_HANZO_CLOUD_REGION)
     ) {
       try {
         const posthog = new ServerPosthog();
@@ -120,7 +120,7 @@ export async function createProjectMembershipsOnSignup(user: {
           distinctId: user.id,
           event: "cloud_signup_complete",
           properties: {
-            cloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+            cloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
             hasDemoAccess: demoProject !== undefined,
             hasDefaultOrg: defaultOrg !== undefined,
             hasDefaultProject: defaultProject !== undefined,

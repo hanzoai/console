@@ -15,7 +15,7 @@ export const StripeCustomerPortalButton = ({
 }) => {
   const hasAccess = useHasOrganizationAccess({
     organizationId: orgId,
-    scope: "langfuseCloudBilling:CRUD",
+    scope: "hanzoCloudBilling:CRUD",
   });
 
   const [loading, setLoading] = useState(false);

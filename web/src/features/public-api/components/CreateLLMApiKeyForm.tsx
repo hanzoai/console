@@ -39,7 +39,7 @@ import { DialogFooter } from "@/src/components/ui/dialog";
 import { DialogBody } from "@/src/components/ui/dialog";
 import { env } from "@/src/env.mjs";
 
-const isLangfuseCloud = Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION);
+const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
 const isCustomModelsRequired = (adapter: LLMAdapter) =>
   adapter === LLMAdapter.Azure || adapter === LLMAdapter.Bedrock;
@@ -83,7 +83,7 @@ const createFormSchema = (mode: "create" | "update") =>
 
         // In create mode, validate credentials
         // For cloud deployments, AWS credentials are required
-        if (isLangfuseCloud) {
+        if (isHanzoCloud) {
           return (
             data.awsAccessKeyId && data.awsSecretAccessKey && data.awsRegion
           );
@@ -96,7 +96,7 @@ const createFormSchema = (mode: "create" | "update") =>
         message:
           mode === "update"
             ? "AWS region is required."
-            : isLangfuseCloud
+            : isHanzoCloud
               ? "AWS credentials are required for Bedrock"
               : "AWS region is required.",
         path: ["adapter"],
@@ -140,7 +140,7 @@ const createFormSchema = (mode: "create" | "update") =>
         return !!data.secretKey;
       },
       {
-        message: isLangfuseCloud
+        message: isHanzoCloud
           ? "GCP service account JSON key is required for Vertex AI"
           : "GCP service account JSON key or Application Default Credentials is required.",
         path: ["secretKey"],
@@ -357,7 +357,7 @@ export function CreateLLMApiKeyForm({
           <FormDescription>
             Optional additional HTTP headers to include with requests towards
             LLM provider. All header values stored encrypted{" "}
-            {isLangfuseCloud ? "on our servers" : "in your database"}.
+            {isHanzoCloud ? "on our servers" : "in your database"}.
           </FormDescription>
 
           {headerFields.map((header, index) => (
@@ -450,7 +450,7 @@ export function CreateLLMApiKeyForm({
       } else {
         // In create mode, handle as before
         if (
-          !isLangfuseCloud &&
+          !isHanzoCloud &&
           (!values.awsAccessKeyId || !values.awsSecretAccessKey)
         ) {
           secretKey = BEDROCK_USE_DEFAULT_CREDENTIALS;
@@ -664,7 +664,7 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>
                       AWS Access Key ID
-                      {!isLangfuseCloud && (
+                      {!isHanzoCloud && (
                         <span className="font-normal text-muted-foreground">
                           {" "}
                           (optional)
@@ -674,7 +674,7 @@ export function CreateLLMApiKeyForm({
                     <FormDescription>
                       {mode === "update"
                         ? "Leave empty to keep existing credentials. To update, provide both Access Key ID and Secret Access Key."
-                        : isLangfuseCloud
+                        : isHanzoCloud
                           ? "These should be long-lived credentials for an AWS user with `bedrock:InvokeModel` permission."
                           : "For self-hosted deployments, AWS credentials are optional. When omitted, authentication will use the AWS SDK default credential provider chain."}
                     </FormDescription>
@@ -704,7 +704,7 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>
                       AWS Secret Access Key
-                      {!isLangfuseCloud && (
+                      {!isHanzoCloud && (
                         <span className="font-normal text-muted-foreground">
                           {" "}
                           (optional)
@@ -733,7 +733,7 @@ export function CreateLLMApiKeyForm({
                   </FormItem>
                 )}
               />
-              {!isLangfuseCloud && (
+              {!isHanzoCloud && (
                 <div className="space-y-2 border-l-2 border-blue-200 pl-4 text-sm text-muted-foreground">
                   <p>
                     <strong>Default credential provider chain:</strong> When AWS
@@ -765,7 +765,7 @@ export function CreateLLMApiKeyForm({
           ) : currentAdapter === LLMAdapter.VertexAI ? (
             <>
               {/* Vertex AI ADC option for self-hosted only, create mode only */}
-              {!isLangfuseCloud && mode === "create" && (
+              {!isHanzoCloud && mode === "create" && (
                 <FormItem>
                   <span className="row flex">
                     <span className="flex-1">
@@ -801,7 +801,7 @@ export function CreateLLMApiKeyForm({
               )}
 
               {/* Service Account Key - hidden when ADC is enabled */}
-              {(isLangfuseCloud ||
+              {(isHanzoCloud ||
                 form.watch("secretKey") !==
                   VERTEXAI_USE_DEFAULT_CREDENTIALS) && (
                 <FormField
@@ -811,7 +811,7 @@ export function CreateLLMApiKeyForm({
                     <FormItem>
                       <FormLabel>GCP Service Account Key (JSON)</FormLabel>
                       <FormDescription>
-                        {isLangfuseCloud
+                        {isHanzoCloud
                           ? "Your API keys are stored encrypted on our servers."
                           : "Your API keys are stored encrypted in your database."}
                       </FormDescription>
@@ -854,7 +854,7 @@ export function CreateLLMApiKeyForm({
               )}
 
               {/* ADC info box for self-hosted */}
-              {!isLangfuseCloud &&
+              {!isHanzoCloud &&
                 form.watch("secretKey") ===
                   VERTEXAI_USE_DEFAULT_CREDENTIALS && (
                   <div className="space-y-2 border-l-2 border-blue-200 pl-4 text-sm text-muted-foreground">
@@ -896,7 +896,7 @@ export function CreateLLMApiKeyForm({
                 <FormItem>
                   <FormLabel>API Key</FormLabel>
                   <FormDescription>
-                    {isLangfuseCloud
+                    {isHanzoCloud
                       ? "Your API keys are stored encrypted on our servers."
                       : "Your API keys are stored encrypted in your database."}
                   </FormDescription>

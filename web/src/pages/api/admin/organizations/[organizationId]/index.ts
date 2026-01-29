@@ -14,7 +14,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    // Verify admin API authentication, only allow on self-hosted (not on Langfuse Cloud)
+    // Verify admin API authentication, only allow on self-hosted (not on Hanzo Cloud)
     if (!AdminApiAuthService.handleAdminAuth(req, res)) {
       return;
     }

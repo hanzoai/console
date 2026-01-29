@@ -142,7 +142,7 @@ describe("modelMatch", () => {
         model: nonExistentModel,
       });
       const cachedValue = await redis?.get(redisKey);
-      expect(cachedValue).toBe("LANGFUSE_MODEL_MATCH_NOT_FOUND");
+      expect(cachedValue).toBe("HANZO_MODEL_MATCH_NOT_FOUND");
     });
   });
 
@@ -256,7 +256,7 @@ describe("modelMatch", () => {
       // Verify the not-found token is cached
       const redisKey = getRedisModelKey({ projectId, model: nonExistentModel });
       const cachedValue = await redis?.get(redisKey);
-      expect(cachedValue).toBe("LANGFUSE_MODEL_MATCH_NOT_FOUND");
+      expect(cachedValue).toBe("HANZO_MODEL_MATCH_NOT_FOUND");
 
       // Clear the cache for the project
       await clearModelCacheForProject(projectId);

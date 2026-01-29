@@ -246,7 +246,7 @@ export const SEED_TEXT_PROMPTS = [
     id: `prompt-parent`,
     createdBy: "user-1",
     prompt:
-      'You are a very enthusiastic Langfuse representative who loves to help people! Langfuse is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Langfuse documentation, answer the question using only that information, outputted in markdown format. Refer to the respective links of the documentation.\n      \nSTART of Langfuse Documentation\n"""\n{{context}} {{context}}\n"""\nEND of Langfuse Documentation\n      \nAnswer as markdown (including related code snippets if available), use highlights and paragraphs to structure the text. Use emojis in your answers. Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers. Only use information that is available in the context, do not make up any code that is not in the context. If you are unsure and the answer is not explicitly written in the documentation, say "Sorry, I don\'t know how to help with that." If the user is having problems using Langfuse, tell her to reach out to the founders directly via the chat widget. Make it crisp.\n\n@@@langfusePrompt:name=child-prompt|label=production@@@',
+      'You are a very enthusiastic Hanzo representative who loves to help people! Hanzo is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Hanzo documentation, answer the question using only that information, outputted in markdown format. Refer to the respective links of the documentation.\n      \nSTART of Hanzo Documentation\n"""\n{{context}} {{context}}\n"""\nEND of Hanzo Documentation\n      \nAnswer as markdown (including related code snippets if available), use highlights and paragraphs to structure the text. Use emojis in your answers. Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers. Only use information that is available in the context, do not make up any code that is not in the context. If you are unsure and the answer is not explicitly written in the documentation, say "Sorry, I don\'t know how to help with that." If the user is having problems using Hanzo, tell her to reach out to the founders directly via the chat widget. Make it crisp.\n\n@@@hanzoPrompt:name=child-prompt|label=production@@@',
     name: "parent-prompt",
     version: 1,
     labels: ["production", "latest"],
@@ -258,7 +258,7 @@ export const SEED_TEXT_PROMPTS = [
 - Refer to the respective links of the documentation
 - Be kind.
 - Include emojis where it makes sense.
-- If the users have problems using Langfuse, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.
+- If the users have problems using Hanzo, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.
 - Answer as markdown, use highlights and paragraphs to structure the text.
 - Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers.`,
     name: "child-prompt",
@@ -406,7 +406,7 @@ export const SEED_CHAT_ML_PROMPTS = [
       {
         role: "system",
         content:
-          'You are a very enthusiastic Langfuse representative who loves to help people! Langfuse is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Langfuse documentation, answer the question using only that information, outputted in markdown format.\n\nPlease follow these guidelines:\n- Refer to the respective links of the documentation and select quality examples\n- Be kind.\n- Include emojis where it makes sense.\n- If the users have problems using Langfuse, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.\n- Answer as markdown, use highlights and paragraphs to structure the text.\n- Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers.\n- Only use information that is available in the context, do not make up any code that is not in the context.\n- Always put an empji at the end of the message.',
+          'You are a very enthusiastic Hanzo representative who loves to help people! Hanzo is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Hanzo documentation, answer the question using only that information, outputted in markdown format.\n\nPlease follow these guidelines:\n- Refer to the respective links of the documentation and select quality examples\n- Be kind.\n- Include emojis where it makes sense.\n- If the users have problems using Hanzo, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.\n- Answer as markdown, use highlights and paragraphs to structure the text.\n- Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers.\n- Only use information that is available in the context, do not make up any code that is not in the context.\n- Always put an empji at the end of the message.',
       },
       {
         role: "assistant",
@@ -439,7 +439,7 @@ export const SEED_CHAT_ML_PROMPTS = [
       {
         role: "system",
         content:
-          'You are a very enthusiastic Langfuse representative who loves to help people! Langfuse is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Langfuse documentation, answer the question using only that information, outputted in markdown format.\n\nPlease follow these guidelines:\n- Refer to the respective links of the documentation and select quality examples\n- Be kind.\n- Include emojis where it makes sense.\n- If the users have problems using Langfuse, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.\n- Answer as markdown, use highlights and paragraphs to structure the text.\n- Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers.\n- Only use information that is available in the context, do not make up any code that is not in the context.\n- Always put an empji at the end of the message.',
+          'You are a very enthusiastic Hanzo representative who loves to help people! Hanzo is an open-source observability tool for developers of applications that use Large Language Models (LLMs). Given the following sections from the Hanzo documentation, answer the question using only that information, outputted in markdown format.\n\nPlease follow these guidelines:\n- Refer to the respective links of the documentation and select quality examples\n- Be kind.\n- Include emojis where it makes sense.\n- If the users have problems using Hanzo, tell them to reach out to the founders directly via the chat widget or GitHub at the end of your answer.\n- Answer as markdown, use highlights and paragraphs to structure the text.\n- Do not mention that you are "enthusiastic", the user does not need to know, will feel it from the style of your answers.\n- Only use information that is available in the context, do not make up any code that is not in the context.\n- Always put an empji at the end of the message.',
       },
       {
         type: "placeholder",
@@ -470,7 +470,7 @@ export const SEED_PROMPT_VERSIONS = [
       {
         role: "system",
         content: `## Role
-You are a Langfuse filter generator. Your sole function is to parse user queries about AI traces and output the corresponding filter array in JSON format. Map natural language to appropriate column names, operators, and values.
+You are a Hanzo filter generator. Your sole function is to parse user queries about AI traces and output the corresponding filter array in JSON format. Map natural language to appropriate column names, operators, and values.
 
 ## Available columns and their types:
 - bookmarked (boolean): Starred/bookmarked traces
@@ -708,12 +708,12 @@ export const SEED_EVALUATOR_CONFIGS = [
     ],
     variableMapping: [
       {
-        langfuseObject: "trace",
+        hanzoObject: "trace",
         selectedColumnId: "input",
         templateVariable: "input",
       },
       {
-        langfuseObject: "trace",
+        hanzoObject: "trace",
         selectedColumnId: "metadata",
         templateVariable: "output",
       },

@@ -11,7 +11,7 @@ export const organizationScopes = [
   "organization:delete",
   "organizationMembers:read",
   "organizationMembers:CUD",
-  "langfuseCloudBilling:CRUD",
+  "hanzoCloudBilling:CRUD",
   "auditLogs:read",
 ] as const;
 
@@ -27,7 +27,7 @@ export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
     "organization:delete",
     "organizationMembers:CUD",
     "organizationMembers:read",
-    "langfuseCloudBilling:CRUD",
+    "hanzoCloudBilling:CRUD",
     "auditLogs:read",
   ],
   ADMIN: [
@@ -39,7 +39,7 @@ export const organizationRoleAccessRights: Record<Role, OrganizationScope[]> = {
     "organizationMembers:read",
     "auditLogs:read",
   ],
-  ADMIN_BILLING: ["langfuseCloudBilling:CRUD"],
+  ADMIN_BILLING: ["hanzoCloudBilling:CRUD"],
   MEMBER: ["organizationMembers:read"],
   VIEWER: [],
   NONE: [],

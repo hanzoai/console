@@ -26,7 +26,7 @@ import {
   type PageProps,
 } from "@/src/pages/auth/sign-in";
 import { PasswordInput } from "@/src/components/ui/password-input";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -42,7 +42,7 @@ export default function SignIn({
   runningOnHuggingFaceSpaces,
 }: PageProps) {
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
-  const { isLangfuseCloud, region } = useLangfuseCloudRegion();
+  const { isHanzoCloud, region } = useHanzoCloudRegion();
   const router = useRouter();
   const capture = usePostHogClientCapture();
 
@@ -65,7 +65,7 @@ export default function SignIn({
   const [continueLoading, setContinueLoading] = useState<boolean>(false);
   const [lastUsedAuthMethod, setLastUsedAuthMethod] =
     useLocalStorage<NextAuthProvider | null>(
-      "langfuse_last_used_auth_method",
+      "hanzo_last_used_auth_method",
       null,
     );
 
@@ -177,7 +177,7 @@ export default function SignIn({
         password: values.password,
         callbackUrl:
           targetPath ??
-          (isLangfuseCloud && region !== "DEV"
+          (isHanzoCloud && region !== "DEV"
             ? `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`
             : `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/`),
       });
@@ -203,7 +203,7 @@ export default function SignIn({
             Create new account
           </h2>
         </div>
-        {isLangfuseCloud ? (
+        {isHanzoCloud ? (
           <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">
             No credit card required.
           </div>

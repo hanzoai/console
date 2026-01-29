@@ -59,14 +59,14 @@ export default function DashboardDetail() {
     useHasProjectAccess({
       projectId,
       scope: "dashboards:CUD",
-    }) && dashboard.data?.owner !== "LANGFUSE";
+    }) && dashboard.data?.owner !== "HANZO";
 
   // Access for cloning (independent of dashboard owner)
   const hasCloneAccess =
     useHasProjectAccess({
       projectId,
       scope: "dashboards:CUD",
-    }) && dashboard.data?.owner === "LANGFUSE";
+    }) && dashboard.data?.owner === "HANZO";
 
   // Filter state - use persistent filters from dashboard
   const [savedFilters, setSavedFilters] = useState<FilterState>([]);
@@ -401,7 +401,7 @@ export default function DashboardDetail() {
       headerProps={{
         title:
           (dashboard.data?.name || "Dashboard") +
-          (dashboard.data?.owner === "LANGFUSE"
+          (dashboard.data?.owner === "HANZO"
             ? " (Hanzo Maintained)"
             : ""),
         help: {

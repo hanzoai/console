@@ -42,7 +42,7 @@ export function SessionsOnboarding() {
           To start using sessions, you need to add a `sessionId` to your traces.
           See{" "}
           <Link
-            href="https://langfuse.com/docs/observability/features/sessions"
+            href="https://hanzo.com/docs/observability/features/sessions"
             className="underline"
           >
             documentation

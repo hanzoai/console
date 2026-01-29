@@ -1,13 +1,13 @@
 /**
  * MCP (Model Context Protocol) Server API Endpoint
  *
- * This endpoint implements the MCP protocol for Langfuse, enabling AI assistants
- * like Claude Desktop and Cursor to directly query, create, and manage Langfuse prompts.
+ * This endpoint implements the MCP protocol for Hanzo, enabling AI assistants
+ * like Claude Desktop and Cursor to directly query, create, and manage Hanzo prompts.
  *
  * Architecture:
  * - Stateless per-request pattern (fresh server instance per request)
  * - Streamable HTTP transport (2025-03-26 spec)
- * - BasicAuth using Langfuse API keys
+ * - BasicAuth using Hanzo API keys
  * - Context captured in closures (no session storage)
  *
  * Transport: Streamable HTTP (NOT the deprecated HTTP+SSE transport)

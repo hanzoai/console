@@ -1,7 +1,7 @@
-import { LangfuseOtelSpanAttributes } from "./attributes";
+import { HanzoOtelSpanAttributes } from "./attributes";
 import { type ObservationType, ObservationTypeDomain } from "../../";
 
-type LangfuseObservationType = keyof typeof ObservationType;
+type HanzoObservationType = keyof typeof ObservationType;
 
 interface ObservationTypeMapper {
   readonly name: string;
@@ -15,7 +15,7 @@ interface ObservationTypeMapper {
     attributes: Record<string, unknown>,
     resourceAttributes?: Record<string, unknown>,
     scopeData?: Record<string, unknown>,
-  ): LangfuseObservationType | null;
+  ): HanzoObservationType | null;
 }
 
 class SimpleAttributeMapper implements ObservationTypeMapper {
@@ -41,7 +41,7 @@ class SimpleAttributeMapper implements ObservationTypeMapper {
     attributes: Record<string, unknown>,
     _resourceAttributes?: Record<string, unknown>,
     _scopeData?: Record<string, unknown>,
-  ): LangfuseObservationType | null {
+  ): HanzoObservationType | null {
     const value = attributes[this.attributeKey] as string;
     const mappedType = this.mappings[value];
 
@@ -49,7 +49,7 @@ class SimpleAttributeMapper implements ObservationTypeMapper {
       mappedType &&
       ObservationTypeDomain.safeParse(mappedType.toUpperCase()).success
     ) {
-      return mappedType as LangfuseObservationType;
+      return mappedType as HanzoObservationType;
     }
 
     return null;
@@ -72,7 +72,7 @@ class CustomAttributeMapper implements ObservationTypeMapper {
       attributes: Record<string, unknown>,
       resourceAttributes?: Record<string, unknown>,
       scopeData?: Record<string, unknown>,
-    ) => LangfuseObservationType | null,
+    ) => HanzoObservationType | null,
   ) {}
 
   canMap(
@@ -87,7 +87,7 @@ class CustomAttributeMapper implements ObservationTypeMapper {
     attributes: Record<string, unknown>,
     resourceAttributes?: Record<string, unknown>,
     scopeData?: Record<string, unknown>,
-  ): LangfuseObservationType | null {
+  ): HanzoObservationType | null {
     const result = this.mapFn(attributes, resourceAttributes, scopeData);
 
     if (
@@ -153,7 +153,7 @@ export class ObservationTypeMapperRegistry {
   private readonly mappers: ObservationTypeMapper[] = [
     // Priority 0: Python SDK <= 3.3.0 override
     // If generation-like attributes are set even though observation type is span, override to 'generation'
-    // Issue: https://github.com/langfuse/langfuse/issues/8682
+    // Issue: https://github.com/hanzoai/console/issues/8682
     // Affected SDK versions: Python SDK <= 3.3.0
     new CustomAttributeMapper(
       "PythonSDKv330Override",
@@ -161,8 +161,8 @@ export class ObservationTypeMapperRegistry {
       // canMap?
       (attributes, resourceAttributes, scopeData) => {
         return (
-          attributes[LangfuseOtelSpanAttributes.OBSERVATION_TYPE] === "span" &&
-          scopeData?.name === "langfuse-sdk" &&
+          attributes[HanzoOtelSpanAttributes.OBSERVATION_TYPE] === "span" &&
+          scopeData?.name === "hanzo-sdk" &&
           resourceAttributes?.["telemetry.sdk.language"] === "python"
         );
       },
@@ -179,13 +179,13 @@ export class ObservationTypeMapperRegistry {
 
         // Check for generation-like attributes
         const generationKeys = [
-          LangfuseOtelSpanAttributes.OBSERVATION_MODEL,
-          LangfuseOtelSpanAttributes.OBSERVATION_COST_DETAILS,
-          LangfuseOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
-          LangfuseOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME,
-          LangfuseOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS,
-          LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_NAME,
-          LangfuseOtelSpanAttributes.OBSERVATION_PROMPT_VERSION,
+          HanzoOtelSpanAttributes.OBSERVATION_MODEL,
+          HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS,
+          HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS,
+          HanzoOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME,
+          HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS,
+          HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME,
+          HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION,
         ];
 
         const hasGenerationAttributes = Object.keys(attributes).some((key) =>
@@ -200,11 +200,11 @@ export class ObservationTypeMapperRegistry {
       },
     ),
 
-    // Priority 1: maps langfuse.observation.type directly
+    // Priority 1: maps hanzo.observation.type directly
     new SimpleAttributeMapper(
-      "LangfuseObservationTypeDirectMapping",
+      "HanzoObservationTypeDirectMapping",
       1,
-      LangfuseOtelSpanAttributes.OBSERVATION_TYPE,
+      HanzoOtelSpanAttributes.OBSERVATION_TYPE,
       {
         span: "SPAN",
         generation: "GENERATION",
@@ -221,7 +221,7 @@ export class ObservationTypeMapperRegistry {
 
     new SimpleAttributeMapper("OpenInference", 2, "openinference.span.kind", {
       // Format:
-      // OpenInference Value: Langfuse ObservationType
+      // OpenInference Value: Hanzo ObservationType
       CHAIN: "CHAIN",
       RETRIEVER: "RETRIEVER",
       LLM: "GENERATION",
@@ -238,7 +238,7 @@ export class ObservationTypeMapperRegistry {
       "gen_ai.operation.name",
       {
         // Format:
-        // GenAI Value: Langfuse ObservationType
+        // GenAI Value: Hanzo ObservationType
         chat: "GENERATION",
         // completion was used historically (keeping it for backward compatibility), text_completion is per spec as of 2025-12-04
         completion: "GENERATION",
@@ -261,7 +261,7 @@ export class ObservationTypeMapperRegistry {
       // CANMAP?
       (attributes) => {
         const modelKeys = [
-          LangfuseOtelSpanAttributes.OBSERVATION_MODEL,
+          HanzoOtelSpanAttributes.OBSERVATION_MODEL,
           "ai.model.id",
           "gen_ai.request.model",
           "gen_ai.response.model",
@@ -291,7 +291,7 @@ export class ObservationTypeMapperRegistry {
       (attributes) => {
         // IMPORTANT: prefixes inversely ordered by length to avoid false matches
         // AI SDK may append function ID after operation name (e.g., "ai.embed my-function")
-        const prefixMappings: Array<[string[], LangfuseObservationType]> = [
+        const prefixMappings: Array<[string[], HanzoObservationType]> = [
           [
             [
               "ai.generateText.doGenerate",
@@ -386,7 +386,7 @@ export class ObservationTypeMapperRegistry {
       7,
       (attributes, _resourceAttributes, _scopeData) => {
         const modelKeys = [
-          LangfuseOtelSpanAttributes.OBSERVATION_MODEL,
+          HanzoOtelSpanAttributes.OBSERVATION_MODEL,
           "gen_ai.request.model",
           "gen_ai.response.model",
           "llm.model_name",
@@ -413,7 +413,7 @@ export class ObservationTypeMapperRegistry {
     attributes: Record<string, unknown>,
     resourceAttributes?: Record<string, unknown>,
     scopeData?: Record<string, unknown>,
-  ): LangfuseObservationType | null {
+  ): HanzoObservationType | null {
     const sortedMappers = this.getSortedMappers();
     for (const mapper of sortedMappers) {
       if (mapper.canMap(attributes, resourceAttributes, scopeData)) {

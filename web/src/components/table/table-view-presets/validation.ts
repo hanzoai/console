@@ -1,4 +1,4 @@
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
   type FilterState,
   type ColumnDefinition,
@@ -11,7 +11,7 @@ import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-tr
  */
 export function validateOrderBy(
   orderBy: OrderByState | null,
-  columns?: LangfuseColumnDef<any, any>[],
+  columns?: HanzoColumnDef<any, any>[],
 ): OrderByState | null {
   if (!orderBy || !columns || columns.length === 0) return null;
 

@@ -70,7 +70,7 @@ export const MembershipInvitationTemplate = ({
               .
             </Text>
             <Section className="mb-4 mt-8 text-center">
-              {/* Note: inviteLink always refers to a root langfuse url and is not vulnerable to hyperlink injection attacks */}
+              {/* Note: inviteLink always refers to a root hanzo url and is not vulnerable to hyperlink injection attacks */}
               <Button
                 className="rounded bg-black px-5 py-3 text-center text-xs font-semibold text-white no-underline"
                 href={inviteLink}

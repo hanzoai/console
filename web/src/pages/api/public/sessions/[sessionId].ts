@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 import {
   GetSessionV1Query,
   GetSessionV1Response,
@@ -31,7 +31,7 @@ export default withMiddlewares({
       });
 
       if (!session) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Session not found within authorized project",
         );
       }

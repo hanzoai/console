@@ -1,6 +1,6 @@
 import z from "zod/v4";
 import { prisma } from "../../../db";
-import { ForbiddenError, LangfuseNotFoundError } from "../../../errors";
+import { ForbiddenError, HanzoNotFoundError } from "../../../errors";
 import { LLMApiKeySchema, ZodModelConfig } from "../../llm/types";
 import { testModelCall } from "../../llm/testModelCall";
 
@@ -43,7 +43,7 @@ export class DefaultEvalModelService {
     });
 
     if (!llmApiKey) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `API key for provider ${provider} in project ${projectId} not found`,
       );
     }

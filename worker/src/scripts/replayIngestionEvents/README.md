@@ -1,6 +1,6 @@
 # Replay failed ingestion events from S3
 
-In case the Langfuse or ClickHouse processing fails in any way, we can replay messages from S3 using the access logs or similar.
+In case the Hanzo or ClickHouse processing fails in any way, we can replay messages from S3 using the access logs or similar.
 
 ## 1. Retrieve events to be replayed
 
@@ -27,7 +27,7 @@ Or provide your own file. It is expected that it adheres to the following format
 ...
 ```
 
-Make sure to place the csv file as `./worker/events.csv` in the langfuse repo.
+Make sure to place the csv file as `./worker/events.csv` in the hanzo repo.
 
 ## 2. Connect to your Redis instances from your local machine
 
@@ -35,7 +35,7 @@ Create a suitable .env file in your repository root with Redis connection settin
 ```
 # Relevant
 REDIS_CONNECTION_STRING=redis://:myredissecret@127.0.0.1:6379
-LANGFUSE_S3_EVENT_UPLOAD_BUCKET=<bucket-name>
+HANZO_S3_EVENT_UPLOAD_BUCKET=<bucket-name>
 
 # Necessary for parsing the file and starting the script
 CLICKHOUSE_URL=http://localhost:8123

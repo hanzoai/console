@@ -48,10 +48,10 @@ export const env = createEnv({
     HANZO_TEAM_SLACK_WEBHOOK: z.string().url().optional(),
     HANZO_NEW_USER_SIGNUP_WEBHOOK: z.string().url().optional(),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-    LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: z.enum(["true", "false"]).optional(),
+    HANZO_ENABLE_EXPERIMENTAL_FEATURES: z.enum(["true", "false"]).optional(),
     SALT: z.string({
       required_error:
-        "A strong Salt is required to encrypt API keys securely. See: https://langfuse.com/self-hosting#deploy-the-container",
+        "A strong Salt is required to encrypt API keys securely. See: https://hanzo.com/self-hosting#deploy-the-container",
     }),
     // Add newly signed up users to default org and/or project with role
     HANZO_DEFAULT_ORG_ID: z.string().optional(),
@@ -249,9 +249,9 @@ export const env = createEnv({
       )
       .optional(),
 
-    // langfuse caching
-    LANGFUSE_CACHE_API_KEY_ENABLED: z.enum(["true", "false"]).default("true"),
-    LANGFUSE_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(300),
+    // hanzo caching
+    HANZO_CACHE_API_KEY_ENABLED: z.enum(["true", "false"]).default("true"),
+    HANZO_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(300),
 
     // Multimodal media upload to S3
     HANZO_S3_MEDIA_MAX_CONTENT_LENGTH: z.coerce
@@ -272,8 +272,8 @@ export const env = createEnv({
       .number()
       .nonnegative()
       .default(3600),
-    LANGFUSE_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
-    LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
+    HANZO_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
+    HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
 
     HANZO_ALLOWED_ORGANIZATION_CREATORS: z
       .string()
@@ -293,20 +293,20 @@ export const env = createEnv({
     SENTRY_CSP_REPORT_URI: z.string().optional(),
     HANZO_RATE_LIMITS_ENABLED: z.enum(["true", "false"]).default("true"),
 
-    LANGFUSE_INIT_ORG_ID: z.string().optional(),
-    LANGFUSE_INIT_ORG_NAME: z.string().optional(),
-    LANGFUSE_INIT_ORG_CLOUD_PLAN: z.string().optional(), // for use in CI
-    LANGFUSE_INIT_PROJECT_ID: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_NAME: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_RETENTION: z.coerce.number().int().gte(3).optional(),
-    LANGFUSE_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
-    LANGFUSE_INIT_PROJECT_SECRET_KEY: z.string().optional(),
-    LANGFUSE_INIT_USER_EMAIL: z
+    HANZO_INIT_ORG_ID: z.string().optional(),
+    HANZO_INIT_ORG_NAME: z.string().optional(),
+    HANZO_INIT_ORG_CLOUD_PLAN: z.string().optional(), // for use in CI
+    HANZO_INIT_PROJECT_ID: z.string().optional(),
+    HANZO_INIT_PROJECT_NAME: z.string().optional(),
+    HANZO_INIT_PROJECT_RETENTION: z.coerce.number().int().gte(3).optional(),
+    HANZO_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
+    HANZO_INIT_PROJECT_SECRET_KEY: z.string().optional(),
+    HANZO_INIT_USER_EMAIL: z
       .union([z.string().email(), z.string().length(0)])
       .optional(),
-    LANGFUSE_INIT_USER_NAME: z.string().optional(),
-    LANGFUSE_INIT_USER_PASSWORD: z.string().optional(),
-    LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
+    HANZO_INIT_USER_NAME: z.string().optional(),
+    HANZO_INIT_USER_PASSWORD: z.string().optional(),
+    HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
       .number()
       .positive()
       .default(50_000),
@@ -315,58 +315,58 @@ export const env = createEnv({
     PLAIN_CARDS_API_TOKEN: z.string().optional(),
 
     // UI customization - comma-separated list of visible product modules
-    LANGFUSE_UI_VISIBLE_PRODUCT_MODULES: z.string().optional(),
+    HANZO_UI_VISIBLE_PRODUCT_MODULES: z.string().optional(),
     // UI customization - comma-separated list of hidden product modules
-    LANGFUSE_UI_HIDDEN_PRODUCT_MODULES: z.string().optional(),
+    HANZO_UI_HIDDEN_PRODUCT_MODULES: z.string().optional(),
 
     SLACK_CLIENT_ID: z.string().optional(),
     SLACK_CLIENT_SECRET: z.string().optional(),
     SLACK_STATE_SECRET: z.string().optional(),
 
-    // AWS Bedrock for langfuse native AI feature such as natural language filters
-    LANGFUSE_AWS_BEDROCK_MODEL: z.string().optional(),
+    // AWS Bedrock for hanzo native AI feature such as natural language filters
+    HANZO_AWS_BEDROCK_MODEL: z.string().optional(),
 
-    // Tracing for Langfuse AI Features
-    LANGFUSE_AI_FEATURES_HOST: z.string().optional(),
+    // Tracing for Hanzo AI Features
+    HANZO_AI_FEATURES_HOST: z.string().optional(),
 
-    // Natural Langfuse Filters
-    LANGFUSE_AI_FEATURES_PUBLIC_KEY: z.string().optional(),
-    LANGFUSE_AI_FEATURES_SECRET_KEY: z.string().optional(),
-    LANGFUSE_AI_FEATURES_PROJECT_ID: z.string().optional(),
+    // Natural Hanzo Filters
+    HANZO_AI_FEATURES_PUBLIC_KEY: z.string().optional(),
+    HANZO_AI_FEATURES_SECRET_KEY: z.string().optional(),
+    HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
     // API Performance Flags
     // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
     // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
-    LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS: z
+    HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z
       .enum(["true", "false"])
       .default("false"),
     // Whether to propagate the toTimestamp restriction (including a server-side offset)
     // onto the observations CTE in GET /api/public/traces. Can be used to improve performance
     // for self-hosters that have a trace known trace duration of less than multiple hours.
-    LANGFUSE_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS: z
+    HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS: z
       .enum(["true", "false"])
       .default("false"),
 
     // Events table migration
-    LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS: z
+    HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS: z
       .enum(["true", "false"])
       .default("false"),
 
-    LANGFUSE_ENABLE_EVENTS_TABLE_FLAGS: z
+    HANZO_ENABLE_EVENTS_TABLE_FLAGS: z
       .enum(["true", "false"])
       .default("false"),
 
     // v2 APIs (events table based) - disabled by default for self-hosters
-    LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS: z
+    HANZO_ENABLE_EVENTS_TABLE_V2_APIS: z
       .enum(["true", "false"])
       .default("false"),
 
-    LANGFUSE_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST: z
+    HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST: z
       .enum(["true", "false"])
       .default("false"),
 
     // Blocked users for chat completion API (userId:reason format)
-    LANGFUSE_BLOCKED_USERIDS_CHATCOMPLETION: z
+    HANZO_BLOCKED_USERIDS_CHATCOMPLETION: z
       .string()
       .optional()
       .transform((val) => {
@@ -393,7 +393,7 @@ export const env = createEnv({
     // WARNING: Also add these to web/Dockerfile
 
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_LANGFUSE_CLOUD_REGION: z
+    NEXT_PUBLIC_HANZO_CLOUD_REGION: z
       .enum(["US", "EU", "STAGING", "DEV", "HIPAA"])
       .optional(),
     NEXT_PUBLIC_DEMO_PROJECT_ID: z.string().optional(),
@@ -405,7 +405,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
     NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
-    NEXT_PUBLIC_LANGFUSE_PLAYGROUND_STREAMING_ENABLED_DEFAULT: z
+    NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT: z
       .enum(["true", "false"])
       .optional()
       .default("true"),
@@ -428,10 +428,10 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_COOKIE_DOMAIN: process.env.NEXTAUTH_COOKIE_DOMAIN,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXT_PUBLIC_LANGFUSE_CLOUD_REGION: process.env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+    NEXT_PUBLIC_HANZO_CLOUD_REGION: process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
     NEXT_PUBLIC_SIGN_UP_DISABLED: process.env.NEXT_PUBLIC_SIGN_UP_DISABLED,
-    LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:
-      process.env.LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES,
+    HANZO_ENABLE_EXPERIMENTAL_FEATURES:
+      process.env.HANZO_ENABLE_EXPERIMENTAL_FEATURES,
     HANZO_TEAM_SLACK_WEBHOOK: process.env.HANZO_TEAM_SLACK_WEBHOOK,
     HANZO_NEW_USER_SIGNUP_WEBHOOK:
       process.env.HANZO_NEW_USER_SIGNUP_WEBHOOK,
@@ -609,9 +609,9 @@ export const env = createEnv({
       process.env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE,
     HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS:
       process.env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS,
-    LANGFUSE_S3_MEDIA_UPLOAD_SSE: process.env.LANGFUSE_S3_MEDIA_UPLOAD_SSE,
-    LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID:
-      process.env.LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+    HANZO_S3_MEDIA_UPLOAD_SSE: process.env.HANZO_S3_MEDIA_UPLOAD_SSE,
+    HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID:
+      process.env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     // Worker
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -646,21 +646,21 @@ export const env = createEnv({
       process.env.HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC,
     HANZO_UI_DEFAULT_BASE_URL_AZURE:
       process.env.HANZO_UI_DEFAULT_BASE_URL_AZURE,
-    LANGFUSE_UI_VISIBLE_PRODUCT_MODULES:
-      process.env.LANGFUSE_UI_VISIBLE_PRODUCT_MODULES,
-    LANGFUSE_UI_HIDDEN_PRODUCT_MODULES:
-      process.env.LANGFUSE_UI_HIDDEN_PRODUCT_MODULES,
+    HANZO_UI_VISIBLE_PRODUCT_MODULES:
+      process.env.HANZO_UI_VISIBLE_PRODUCT_MODULES,
+    HANZO_UI_HIDDEN_PRODUCT_MODULES:
+      process.env.HANZO_UI_HIDDEN_PRODUCT_MODULES,
     // Playground
-    NEXT_PUBLIC_LANGFUSE_PLAYGROUND_STREAMING_ENABLED_DEFAULT:
-      process.env.NEXT_PUBLIC_LANGFUSE_PLAYGROUND_STREAMING_ENABLED_DEFAULT,
+    NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT:
+      process.env.NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT,
     // EE License
     HANZO_EE_LICENSE_KEY: process.env.HANZO_EE_LICENSE_KEY,
     ADMIN_API_KEY: process.env.ADMIN_API_KEY,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
-    // langfuse caching
-    LANGFUSE_CACHE_API_KEY_ENABLED: process.env.LANGFUSE_CACHE_API_KEY_ENABLED,
-    LANGFUSE_CACHE_API_KEY_TTL_SECONDS:
-      process.env.LANGFUSE_CACHE_API_KEY_TTL_SECONDS,
+    // hanzo caching
+    HANZO_CACHE_API_KEY_ENABLED: process.env.HANZO_CACHE_API_KEY_ENABLED,
+    HANZO_CACHE_API_KEY_TTL_SECONDS:
+      process.env.HANZO_CACHE_API_KEY_TTL_SECONDS,
     HANZO_ALLOWED_ORGANIZATION_CREATORS:
       process.env.HANZO_ALLOWED_ORGANIZATION_CREATORS,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
@@ -669,58 +669,58 @@ export const env = createEnv({
     SENTRY_CSP_REPORT_URI: process.env.SENTRY_CSP_REPORT_URI,
     HANZO_RATE_LIMITS_ENABLED: process.env.HANZO_RATE_LIMITS_ENABLED,
     // provisioning
-    LANGFUSE_INIT_ORG_ID: process.env.LANGFUSE_INIT_ORG_ID,
-    LANGFUSE_INIT_ORG_NAME: process.env.LANGFUSE_INIT_ORG_NAME,
-    LANGFUSE_INIT_ORG_CLOUD_PLAN: process.env.LANGFUSE_INIT_ORG_CLOUD_PLAN,
-    LANGFUSE_INIT_PROJECT_ID: process.env.LANGFUSE_INIT_PROJECT_ID,
-    LANGFUSE_INIT_PROJECT_NAME: process.env.LANGFUSE_INIT_PROJECT_NAME,
-    LANGFUSE_INIT_PROJECT_RETENTION:
-      process.env.LANGFUSE_INIT_PROJECT_RETENTION,
-    LANGFUSE_INIT_PROJECT_PUBLIC_KEY:
-      process.env.LANGFUSE_INIT_PROJECT_PUBLIC_KEY,
-    LANGFUSE_INIT_PROJECT_SECRET_KEY:
-      process.env.LANGFUSE_INIT_PROJECT_SECRET_KEY,
-    LANGFUSE_INIT_USER_EMAIL: process.env.LANGFUSE_INIT_USER_EMAIL,
-    LANGFUSE_INIT_USER_NAME: process.env.LANGFUSE_INIT_USER_NAME,
-    LANGFUSE_INIT_USER_PASSWORD: process.env.LANGFUSE_INIT_USER_PASSWORD,
+    HANZO_INIT_ORG_ID: process.env.HANZO_INIT_ORG_ID,
+    HANZO_INIT_ORG_NAME: process.env.HANZO_INIT_ORG_NAME,
+    HANZO_INIT_ORG_CLOUD_PLAN: process.env.HANZO_INIT_ORG_CLOUD_PLAN,
+    HANZO_INIT_PROJECT_ID: process.env.HANZO_INIT_PROJECT_ID,
+    HANZO_INIT_PROJECT_NAME: process.env.HANZO_INIT_PROJECT_NAME,
+    HANZO_INIT_PROJECT_RETENTION:
+      process.env.HANZO_INIT_PROJECT_RETENTION,
+    HANZO_INIT_PROJECT_PUBLIC_KEY:
+      process.env.HANZO_INIT_PROJECT_PUBLIC_KEY,
+    HANZO_INIT_PROJECT_SECRET_KEY:
+      process.env.HANZO_INIT_PROJECT_SECRET_KEY,
+    HANZO_INIT_USER_EMAIL: process.env.HANZO_INIT_USER_EMAIL,
+    HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
+    HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
-    LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT:
-      process.env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+    HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
+      process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID,
     SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET,
     SLACK_STATE_SECRET: process.env.SLACK_STATE_SECRET,
 
-    // AWS Bedrock for langfuse native AI feature such as natural language filters
-    LANGFUSE_AWS_BEDROCK_MODEL: process.env.LANGFUSE_AWS_BEDROCK_MODEL,
+    // AWS Bedrock for hanzo native AI feature such as natural language filters
+    HANZO_AWS_BEDROCK_MODEL: process.env.HANZO_AWS_BEDROCK_MODEL,
 
-    // Langfuse Tracing AI Features
-    LANGFUSE_AI_FEATURES_HOST: process.env.LANGFUSE_AI_FEATURES_HOST,
+    // Hanzo Tracing AI Features
+    HANZO_AI_FEATURES_HOST: process.env.HANZO_AI_FEATURES_HOST,
 
     // Api Performance Flags
-    LANGFUSE_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
-      process.env.LANGFUSE_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
-    LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS:
-      process.env.LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS,
+    HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
+      process.env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
+    HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS:
+      process.env.HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS,
 
     // Natural Language Filters
-    LANGFUSE_AI_FEATURES_PUBLIC_KEY:
-      process.env.LANGFUSE_AI_FEATURES_PUBLIC_KEY,
-    LANGFUSE_AI_FEATURES_SECRET_KEY:
-      process.env.LANGFUSE_AI_FEATURES_SECRET_KEY,
-    LANGFUSE_AI_FEATURES_PROJECT_ID:
-      process.env.LANGFUSE_AI_FEATURES_PROJECT_ID,
+    HANZO_AI_FEATURES_PUBLIC_KEY:
+      process.env.HANZO_AI_FEATURES_PUBLIC_KEY,
+    HANZO_AI_FEATURES_SECRET_KEY:
+      process.env.HANZO_AI_FEATURES_SECRET_KEY,
+    HANZO_AI_FEATURES_PROJECT_ID:
+      process.env.HANZO_AI_FEATURES_PROJECT_ID,
     // Events table migration
-    LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS:
-      process.env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS,
-    LANGFUSE_ENABLE_EVENTS_TABLE_FLAGS:
-      process.env.LANGFUSE_ENABLE_EVENTS_TABLE_FLAGS,
-    LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS:
-      process.env.LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS,
-    LANGFUSE_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST:
-      process.env.LANGFUSE_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST,
-    LANGFUSE_BLOCKED_USERIDS_CHATCOMPLETION:
-      process.env.LANGFUSE_BLOCKED_USERIDS_CHATCOMPLETION,
+    HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS:
+      process.env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS,
+    HANZO_ENABLE_EVENTS_TABLE_FLAGS:
+      process.env.HANZO_ENABLE_EVENTS_TABLE_FLAGS,
+    HANZO_ENABLE_EVENTS_TABLE_V2_APIS:
+      process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS,
+    HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST:
+      process.env.HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST,
+    HANZO_BLOCKED_USERIDS_CHATCOMPLETION:
+      process.env.HANZO_BLOCKED_USERIDS_CHATCOMPLETION,
   },
   // Skip validation in Docker builds
   // DOCKER_BUILD is set in Dockerfile

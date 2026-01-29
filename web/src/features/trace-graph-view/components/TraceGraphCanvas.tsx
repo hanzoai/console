@@ -4,8 +4,8 @@ import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
 import type { GraphCanvasData } from "../types";
 import {
-  LANGFUSE_START_NODE_NAME,
-  LANGFUSE_END_NODE_NAME,
+  HANZO_START_NODE_NAME,
+  HANZO_END_NODE_NAME,
   LANGGRAPH_START_NODE_NAME,
   LANGGRAPH_END_NODE_NAME,
 } from "../types";
@@ -123,7 +123,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
 
         // Special positioning and colors for system nodes
         if (
-          node.id === LANGFUSE_START_NODE_NAME ||
+          node.id === HANZO_START_NODE_NAME ||
           node.id === LANGGRAPH_START_NODE_NAME
         ) {
           return {
@@ -141,7 +141,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
           };
         }
         if (
-          node.id === LANGFUSE_END_NODE_NAME ||
+          node.id === HANZO_END_NODE_NAME ||
           node.id === LANGGRAPH_END_NODE_NAME
         ) {
           return {
@@ -378,8 +378,8 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
 
       graphData.nodes.forEach((node) => {
         const isSystemNode =
-          node.id === LANGFUSE_START_NODE_NAME ||
-          node.id === LANGFUSE_END_NODE_NAME ||
+          node.id === HANZO_START_NODE_NAME ||
+          node.id === HANZO_END_NODE_NAME ||
           node.id === LANGGRAPH_START_NODE_NAME ||
           node.id === LANGGRAPH_END_NODE_NAME;
 

@@ -38,7 +38,7 @@ export interface RegisteredTool {
  * ```typescript
  * export const promptsFeature: McpFeatureModule = {
  *   name: "prompts",
- *   description: "Manage Langfuse prompts",
+ *   description: "Manage Hanzo prompts",
  *   tools: [
  *     { definition: getPromptTool, handler: handleGetPrompt },
  *     { definition: listPromptsTool, handler: handleListPrompts },

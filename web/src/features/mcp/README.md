@@ -1,12 +1,12 @@
-# Langfuse MCP Server
+# Hanzo MCP Server
 
-Model Context Protocol (MCP) server for Langfuse, enabling AI assistants to interact with your Langfuse prompts programmatically.
+Model Context Protocol (MCP) server for Hanzo, enabling AI assistants to interact with your Hanzo prompts programmatically.
 
 ## Quick Start (Local Development)
 
 ### Prerequisites
 
-- Langfuse instance running locally
+- Hanzo instance running locally
 - Project-scoped API key (Public Key + Secret Key)
 - Claude Code or another MCP-compatible client
 
@@ -33,7 +33,7 @@ Model Context Protocol (MCP) server for Langfuse, enabling AI assistants to inte
 3. **Add to Claude Code**
 
    ```bash
-   claude mcp add --transport http langfuse http://localhost:3000/api/public/mcp \
+   claude mcp add --transport http hanzo http://localhost:3000/api/public/mcp \
        --header "Authorization: Basic {your-base64-token}"
    ```
 
@@ -57,7 +57,7 @@ The MCP server provides 6 tools for prompt management:
 
 ### Prompt Resolution: `getPrompt` vs `getPromptUnresolved`
 
-Langfuse supports **prompt composition** where prompts can reference other prompts via dependency tags like `@@@langfusePrompt:name=xxx|label=yyy@@@`. The MCP server provides two tools for fetching prompts with different resolution behaviors:
+Hanzo supports **prompt composition** where prompts can reference other prompts via dependency tags like `@@@hanzoPrompt:name=xxx|label=yyy@@@`. The MCP server provides two tools for fetching prompts with different resolution behaviors:
 
 #### `getPrompt` (Fully Resolved)
 - **Use when**: You want the final, executable prompt ready to send to an LLM
@@ -65,18 +65,18 @@ Langfuse supports **prompt composition** where prompts can reference other promp
 - **Returns**: Final prompt content with all dependencies replaced
 - **Example**:
   ```
-  Input:  "You are helpful. @@@langfusePrompt:name=base-rules|label=production@@@"
+  Input:  "You are helpful. @@@hanzoPrompt:name=base-rules|label=production@@@"
   Output: "You are helpful. Always be kind and respectful."
   ```
 
 #### `getPromptUnresolved` (Raw)
 - **Use when**: You want to analyze prompt composition, debug dependencies, or understand the prompt structure
 - **Behavior**: Returns raw prompt content with dependency tags intact
-- **Returns**: Original prompt content with `@@@langfusePrompt:...@@@` tags preserved
+- **Returns**: Original prompt content with `@@@hanzoPrompt:...@@@` tags preserved
 - **Example**:
   ```
-  Input:  "You are helpful. @@@langfusePrompt:name=base-rules|label=production@@@"
-  Output: "You are helpful. @@@langfusePrompt:name=base-rules|label=production@@@"
+  Input:  "You are helpful. @@@hanzoPrompt:name=base-rules|label=production@@@"
+  Output: "You are helpful. @@@hanzoPrompt:name=base-rules|label=production@@@"
   ```
 
 **Use Cases for `getPromptUnresolved`**:
@@ -91,7 +91,7 @@ Langfuse supports **prompt composition** where prompts can reference other promp
 
 ### Stateless Design
 
-The Langfuse MCP server uses a **stateless per-request architecture**:
+The Hanzo MCP server uses a **stateless per-request architecture**:
 
 1. **Fresh server instance per request:** Each MCP request creates a new server instance
 2. **Context captured in closures:** Authentication context is captured in handler closures
@@ -156,11 +156,11 @@ All write operations (createTextPrompt, createChatPrompt, updatePromptLabels) au
 
 ## Authentication
 
-All clients require BasicAuth authentication using your Langfuse API keys.
+All clients require BasicAuth authentication using your Hanzo API keys.
 
 ### 1. Generate Basic Auth Token
 
-Encode your Langfuse API keys (Public Key:Secret Key) to base64:
+Encode your Hanzo API keys (Public Key:Secret Key) to base64:
 
 ```bash
 echo -n "pk-lf-your-public-key:sk-lf-your-secret-key" | base64
@@ -168,13 +168,13 @@ echo -n "pk-lf-your-public-key:sk-lf-your-secret-key" | base64
 
 This outputs your BasicAuth token (e.g., `cGstbGYt...`).
 
-### 2. Choose Your Langfuse URL
+### 2. Choose Your Hanzo URL
 
-**Langfuse Cloud:**
+**Hanzo Cloud:**
 
-- **EU Region:** `https://cloud.langfuse.com`
-- **US Region:** `https://us.langfuse.com`
-- **HIPAA:** `https://hipaa.langfuse.com`
+- **EU Region:** `https://cloud.hanzo.com`
+- **US Region:** `https://us.hanzo.com`
+- **HIPAA:** `https://hipaa.hanzo.com`
 
 **Self-Hosted:**
 
@@ -188,23 +188,23 @@ This outputs your BasicAuth token (e.g., `cGstbGYt...`).
 
 ## Claude Code
 
-Register the Langfuse MCP server:
+Register the Hanzo MCP server:
 
 ```bash
-# Langfuse Cloud (EU)
-claude mcp add --transport http langfuse https://cloud.langfuse.com/api/public/mcp \
+# Hanzo Cloud (EU)
+claude mcp add --transport http hanzo https://cloud.hanzo.com/api/public/mcp \
     --header "Authorization: Basic {your-base64-token}"
 
-# Langfuse Cloud (US)
-claude mcp add --transport http langfuse https://us.langfuse.com/api/public/mcp \
+# Hanzo Cloud (US)
+claude mcp add --transport http hanzo https://us.hanzo.com/api/public/mcp \
     --header "Authorization: Basic {your-base64-token}"
 
 # Self-Hosted (HTTPS required)
-claude mcp add --transport http langfuse https://your-domain.com/api/public/mcp \
+claude mcp add --transport http hanzo https://your-domain.com/api/public/mcp \
     --header "Authorization: Basic {your-base64-token}"
 
 # Local Development
-claude mcp add --transport http langfuse http://localhost:3000/api/public/mcp \
+claude mcp add --transport http hanzo http://localhost:3000/api/public/mcp \
     --header "Authorization: Basic {your-base64-token}"
 ```
 
@@ -218,8 +218,8 @@ Add to your Cursor MCP settings:
 {
   "mcp": {
     "servers": {
-      "langfuse": {
-        "url": "https://cloud.langfuse.com/api/public/mcp",
+      "hanzo": {
+        "url": "https://cloud.hanzo.com/api/public/mcp",
         "headers": {
           "Authorization": "Basic {your-base64-token}"
         }
@@ -229,4 +229,4 @@ Add to your Cursor MCP settings:
 }
 ```
 
-Replace `https://cloud.langfuse.com` with your Langfuse URL (see [Choose Your Langfuse URL](#2-choose-your-langfuse-url)).
+Replace `https://cloud.hanzo.com` with your Hanzo URL (see [Choose Your Hanzo URL](#2-choose-your-hanzo-url)).

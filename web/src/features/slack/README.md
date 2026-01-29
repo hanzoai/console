@@ -1,6 +1,6 @@
 # Slack Integration Setup Guide
 
-This guide walks you through setting up and testing the Langfuse Slack integration for local development.
+This guide walks you through setting up and testing the Hanzo Slack integration for local development.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ This guide walks you through setting up and testing the Langfuse Slack integrati
 ### 2. (Optional) Add App Icon
 
 1. In your Slack app settings, go to "Basic Information"
-2. Upload the Langfuse icon from `web/public/icon1024.png` as your app's avatar
+2. Upload the Hanzo icon from `web/public/icon1024.png` as your app's avatar
 3. This will make your app more recognizable in Slack
 
 ### 3. Configure Environment Variables
@@ -66,7 +66,7 @@ This starts the Next.js development server with HTTPS enabled on `https://localh
 
 ### 6. Test the Integration
 
-1. Navigate to your Langfuse project settings
+1. Navigate to your Hanzo project settings
 2. Look for the Slack integration section
 3. Click "Connect to Slack" to initiate the OAuth flow
 4. Authorize the app in your Slack workspace
@@ -94,7 +94,7 @@ The Slack integration provides:
 
 - **Real-time alerts**: Get notified about critical errors and anomalies
 - **Prompt monitoring**: Receive alerts on prompt edits and creations
-- **Direct links**: Jump from Slack messages directly to prompts in Langfuse
+- **Direct links**: Jump from Slack messages directly to prompts in Hanzo
 - **Channel configuration**: Set up different notification channels per project
 - **Test messages**: Verify your integration is working correctly
 

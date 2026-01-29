@@ -17,9 +17,9 @@ body:
       required: true
   - type: dropdown
     attributes:
-      label: Langfuse Cloud or self-hosted?
+      label: Hanzo Cloud or self-hosted?
       options:
-        - "Langfuse Cloud"
+        - "Hanzo Cloud"
         - "Self-hosted"
     validations:
       required: true

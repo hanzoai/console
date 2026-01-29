@@ -49,7 +49,7 @@ export const HanzoMediaView = ({
   if (!mediaData)
     return (
       <div className="flex items-center gap-2">
-        <span title="Invalid Hanzo Cloud Media Tag">
+        <span title="Invalid Hanzo Media Tag">
           <ImageOff className="h-4 w-4" />
         </span>
         <span className="truncate text-sm">Invalid Hanzo Media Tag</span>

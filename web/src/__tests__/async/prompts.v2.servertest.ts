@@ -626,7 +626,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       expect(body).toEqual({
-        error: "LangfuseNotFoundError",
+        error: "HanzoNotFoundError",
         message: "Prompt not found",
       });
     });
@@ -660,7 +660,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       // @ts-expect-error
-      expect(body.error).toBe("LangfuseNotFoundError");
+      expect(body.error).toBe("HanzoNotFoundError");
     });
 
     it("should fail if text prompt has message format", async () => {
@@ -688,7 +688,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(status).toBe(404);
       // @ts-expect-error
-      expect(body.error).toBe("LangfuseNotFoundError");
+      expect(body.error).toBe("HanzoNotFoundError");
     });
 
     it("should fail if previous versions have different prompt type", async () => {
@@ -759,7 +759,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       );
       expect(getResponse2.status).toBe(404);
       // @ts-expect-error
-      expect(getResponse2.body.error).toBe("LangfuseNotFoundError");
+      expect(getResponse2.body.error).toBe("HanzoNotFoundError");
     });
 
     it("should correctly handle overwriting labels", async () => {
@@ -1296,7 +1296,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       expect(body.meta.totalItems).toBe(3);
 
       // Validate pagination backwards compatibility
-      // https://github.com/langfuse/langfuse/issues/2068
+      // https://github.com/hanzoai/console/issues/2068
       expect(body.pagination?.page).toBe(1);
       expect(body.pagination?.limit).toBe(10);
       expect(body.pagination?.totalPages).toBe(1);
@@ -1647,7 +1647,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       // Create parent prompt with dependency
       const parentPromptName = "parent-prompt-" + nanoid();
-      const parentContent = `Parent prompt with dependency: @@@langfusePrompt:name=${childPromptName}|label=production@@@`;
+      const parentContent = `Parent prompt with dependency: @@@hanzoPrompt:name=${childPromptName}|label=production@@@`;
 
       await createPrompt({
         name: parentPromptName,
@@ -1669,8 +1669,8 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       expect(response.status).toBe(200);
       const body = response.body as Prompt;
-      // Should be resolved (no @@@langfusePrompt tags)
-      expect(body.prompt).not.toContain("@@@langfusePrompt");
+      // Should be resolved (no @@@hanzoPrompt tags)
+      expect(body.prompt).not.toContain("@@@hanzoPrompt");
       expect(body.prompt).toContain("I am a child prompt");
     });
 
@@ -1691,7 +1691,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       // Create parent prompt with dependency
       const parentPromptName = "parent-prompt-" + nanoid();
-      const parentContent = `Parent: @@@langfusePrompt:name=${childPromptName}|label=production@@@`;
+      const parentContent = `Parent: @@@hanzoPrompt:name=${childPromptName}|label=production@@@`;
 
       await createPrompt({
         name: parentPromptName,
@@ -1713,7 +1713,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       expect(response.status).toBe(200);
       const body = response.body as Prompt;
-      expect(body.prompt).not.toContain("@@@langfusePrompt");
+      expect(body.prompt).not.toContain("@@@hanzoPrompt");
       expect(body.prompt).toContain("Child content");
     });
 
@@ -1734,7 +1734,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       // Create parent prompt with dependency
       const parentPromptName = "parent-prompt-" + nanoid();
-      const parentContent = `Parent: @@@langfusePrompt:name=${childPromptName}|label=production@@@`;
+      const parentContent = `Parent: @@@hanzoPrompt:name=${childPromptName}|label=production@@@`;
 
       await createPrompt({
         name: parentPromptName,
@@ -1756,10 +1756,10 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       expect(response.status).toBe(200);
       const body = response.body as Prompt;
-      // Should be unresolved (keep @@@langfusePrompt tags)
-      expect(body.prompt).toContain("@@@langfusePrompt");
+      // Should be unresolved (keep @@@hanzoPrompt tags)
+      expect(body.prompt).toContain("@@@hanzoPrompt");
       expect(body.prompt).toContain(
-        `@@@langfusePrompt:name=${childPromptName}|label=production@@@`,
+        `@@@hanzoPrompt:name=${childPromptName}|label=production@@@`,
       );
       expect(body.prompt).not.toContain("Child content");
     });
@@ -1784,7 +1784,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       const chatMessages = [
         {
           role: "system",
-          content: `System: @@@langfusePrompt:name=${childPromptName}|label=production@@@`,
+          content: `System: @@@hanzoPrompt:name=${childPromptName}|label=production@@@`,
         },
         { role: "user", content: "User message" },
       ];
@@ -1813,9 +1813,9 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       expect(body.type).toBe("chat");
       // Verify the chat messages still contain unresolved tags
       const messages = body.prompt as Array<{ role: string; content: string }>;
-      expect(messages[0].content).toContain("@@@langfusePrompt");
+      expect(messages[0].content).toContain("@@@hanzoPrompt");
       expect(messages[0].content).toContain(
-        `@@@langfusePrompt:name=${childPromptName}|label=production@@@`,
+        `@@@hanzoPrompt:name=${childPromptName}|label=production@@@`,
       );
     });
 
@@ -1836,7 +1836,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       // Create parent prompt with production label
       const parentPromptName = "parent-prompt-" + nanoid();
-      const parentContent = `Parent: @@@langfusePrompt:name=${childPromptName}|label=production@@@`;
+      const parentContent = `Parent: @@@hanzoPrompt:name=${childPromptName}|label=production@@@`;
 
       await createPromptInDB({
         name: parentPromptName,
@@ -1859,7 +1859,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       expect(response.status).toBe(200);
       const body = response.body as Prompt;
       expect(body.labels).toContain("production");
-      expect(body.prompt).toContain("@@@langfusePrompt");
+      expect(body.prompt).toContain("@@@hanzoPrompt");
     });
   });
 });
@@ -2083,7 +2083,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create parent prompt with dependency
       const parentPromptContent =
-        "Parent prompt with dependency: @@@langfusePrompt:name=child-prompt|label=production@@@";
+        "Parent prompt with dependency: @@@hanzoPrompt:name=child-prompt|label=production@@@";
       const response = await makeAPICall(
         "POST",
         baseURI,
@@ -2229,7 +2229,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "intermediate",
           prompt:
-            "Intermediate with dependency: @@@langfusePrompt:name=nested-child|label=production@@@",
+            "Intermediate with dependency: @@@hanzoPrompt:name=nested-child|label=production@@@",
           type: "text",
           labels: ["production"],
         },
@@ -2243,7 +2243,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "nested-parent",
           prompt:
-            "Parent with nested dependency: @@@langfusePrompt:name=intermediate|label=production@@@",
+            "Parent with nested dependency: @@@hanzoPrompt:name=intermediate|label=production@@@",
           type: "text",
         },
         newAuth,
@@ -2283,7 +2283,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create parent prompt with version-specific dependency
       const parentPromptContent =
-        "Parent with version dependency: @@@langfusePrompt:name=version-linked-child|version=1@@@";
+        "Parent with version dependency: @@@hanzoPrompt:name=version-linked-child|version=1@@@";
 
       await makeAPICall(
         "POST",
@@ -2309,7 +2309,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       expect(responseBody.prompt).toBe(
         "Parent with version dependency: I am version 3 of the child prompt",
       );
-      expect(responseBody.prompt).not.toContain("@@@langfusePrompt");
+      expect(responseBody.prompt).not.toContain("@@@hanzoPrompt");
     });
 
     it("detects circular dependencies", async () => {
@@ -2335,7 +2335,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "circular-b",
           prompt:
-            "Prompt B with dependency: @@@langfusePrompt:name=circular-a|label=production@@@",
+            "Prompt B with dependency: @@@hanzoPrompt:name=circular-a|label=production@@@",
           type: "text",
           labels: ["production"],
         },
@@ -2348,7 +2348,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "circular-a",
           prompt:
-            "Prompt A with dependency: @@@langfusePrompt:name=circular-b|label=production@@@",
+            "Prompt A with dependency: @@@hanzoPrompt:name=circular-b|label=production@@@",
           type: "text",
           labels: ["production"],
         },
@@ -2399,7 +2399,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "level-2",
           prompt:
-            "Level 2 with dependencies: @@@langfusePrompt:name=level-3-a|label=production@@@ and @@@langfusePrompt:name=level-3-b|label=production@@@",
+            "Level 2 with dependencies: @@@hanzoPrompt:name=level-3-a|label=production@@@ and @@@hanzoPrompt:name=level-3-b|label=production@@@",
           type: "text",
           labels: ["production"],
         },
@@ -2413,7 +2413,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           name: "level-1",
           prompt:
-            "Level 1 with dependency: @@@langfusePrompt:name=level-2|label=production@@@",
+            "Level 1 with dependency: @@@hanzoPrompt:name=level-2|label=production@@@",
           type: "text",
         },
         newAuth,
@@ -2432,7 +2432,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       expect(responseBody.prompt).toBe(
         "Level 1 with dependency: Level 2 with dependencies: I am level 3 prompt A and I am level 3 prompt B",
       );
-      expect(responseBody.prompt).not.toContain("@@@langfusePrompt");
+      expect(responseBody.prompt).not.toContain("@@@hanzoPrompt");
     });
 
     it("handles multiple dependencies at the same level", async () => {
@@ -2476,7 +2476,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       );
 
       // Create parent prompt with multiple dependencies
-      const parentPromptContent = `Parent prompt with multiple dependencies: First: @@@langfusePrompt:name=child-a|label=production@@@ Second: @@@langfusePrompt:name=child-b|label=production@@@ Third: @@@langfusePrompt:name=child-c|label=production@@@`;
+      const parentPromptContent = `Parent prompt with multiple dependencies: First: @@@hanzoPrompt:name=child-a|label=production@@@ Second: @@@hanzoPrompt:name=child-b|label=production@@@ Third: @@@hanzoPrompt:name=child-c|label=production@@@`;
 
       await makeAPICall(
         "POST",
@@ -2502,7 +2502,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       expect(responseBody.prompt).toBe(
         "Parent prompt with multiple dependencies: First: I am child prompt A Second: I am child prompt B Third: I am child prompt C",
       );
-      expect(responseBody.prompt).not.toContain("@@@langfusePrompt");
+      expect(responseBody.prompt).not.toContain("@@@hanzoPrompt");
     });
 
     it("handles version-specific dependencies", async () => {
@@ -2536,7 +2536,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create parent prompt with version-specific dependency
       const parentPromptContent =
-        "Parent with version dependency: @@@langfusePrompt:name=versioned-child|version=1@@@";
+        "Parent with version dependency: @@@hanzoPrompt:name=versioned-child|version=1@@@";
 
       await makeAPICall(
         "POST",
@@ -2562,7 +2562,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       expect(responseBody.prompt).toBe(
         "Parent with version dependency: I am version 1",
       );
-      expect(responseBody.prompt).not.toContain("@@@langfusePrompt");
+      expect(responseBody.prompt).not.toContain("@@@hanzoPrompt");
     });
 
     it("resolves prompt dependencies in chat prompts correctly", async () => {
@@ -2587,7 +2587,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           role: "user",
           content:
-            "Here's some context: @@@langfusePrompt:name=chat-child-text|label=production@@@",
+            "Here's some context: @@@hanzoPrompt:name=chat-child-text|label=production@@@",
         },
       ];
 
@@ -2621,7 +2621,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         },
       ]);
       expect(JSON.stringify(responseBody.prompt)).not.toContain(
-        "@@@langfusePrompt",
+        "@@@hanzoPrompt",
       );
     });
 
@@ -2643,7 +2643,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create intermediate text prompt with dependency
       const intermediatePromptContent =
-        "Intermediate prompt with dependency: @@@langfusePrompt:name=nested-child|label=production@@@";
+        "Intermediate prompt with dependency: @@@hanzoPrompt:name=nested-child|label=production@@@";
 
       await makeAPICall(
         "POST",
@@ -2663,7 +2663,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         {
           role: "user",
           content:
-            "Here's some context: @@@langfusePrompt:name=intermediate-prompt|label=production@@@",
+            "Here's some context: @@@hanzoPrompt:name=intermediate-prompt|label=production@@@",
         },
       ];
 
@@ -2697,7 +2697,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
             "Here's some context: Intermediate prompt with dependency: I am a nested child prompt",
         },
       ]);
-      expect(JSON.stringify(parsedPrompt)).not.toContain("@@@langfusePrompt");
+      expect(JSON.stringify(parsedPrompt)).not.toContain("@@@hanzoPrompt");
     });
 
     it("should ignore invalid prompt tags", async () => {
@@ -2705,7 +2705,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create a prompt with invalid dependency tags
       const invalidTagPromptContent = JSON.stringify({
-        text: "This prompt has invalid tags: @@@langfusePrompt:invalid@@@, @@@langfusePrompt:name=missing-type@@@, @@@langfusePrompt:name=no-version-or-label@@@",
+        text: "This prompt has invalid tags: @@@hanzoPrompt:invalid@@@, @@@hanzoPrompt:name=missing-type@@@, @@@hanzoPrompt:name=no-version-or-label@@@",
       });
 
       await makeAPICall(
@@ -2732,12 +2732,12 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       const parsedPrompt = JSON.parse(responseBody.prompt as string);
 
       // The invalid tags should remain unchanged in the resolved prompt
-      expect(parsedPrompt.text).toContain("@@@langfusePrompt:invalid@@@");
+      expect(parsedPrompt.text).toContain("@@@hanzoPrompt:invalid@@@");
       expect(parsedPrompt.text).toContain(
-        "@@@langfusePrompt:name=missing-type@@@",
+        "@@@hanzoPrompt:name=missing-type@@@",
       );
       expect(parsedPrompt.text).toContain(
-        "@@@langfusePrompt:name=no-version-or-label@@@",
+        "@@@hanzoPrompt:name=no-version-or-label@@@",
       );
     });
 
@@ -2758,7 +2758,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create a prompt with duplicate dependency tags
       const duplicateTagsPromptContent =
-        "This prompt has duplicate tags: @@@langfusePrompt:name=parent-prompt|version=1@@@ and again @@@langfusePrompt:name=parent-prompt|version=1@@@";
+        "This prompt has duplicate tags: @@@hanzoPrompt:name=parent-prompt|version=1@@@ and again @@@hanzoPrompt:name=parent-prompt|version=1@@@";
 
       await makeAPICall(
         "POST",
@@ -2825,12 +2825,12 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       // Create a prompt that references all the special character prompts
       const dependencyContent = `
       Reference prompts with special chars:
-      @@@langfusePrompt:name=prompt-with-hyphens|version=1@@@
-      @@@langfusePrompt:name=prompt_with_underscores|version=1@@@
-      @@@langfusePrompt:name=prompt.with.dots|version=1@@@
-      @@@langfusePrompt:name=prompt123WithNumbers|version=1@@@
-      @@@langfusePrompt:name=prompt with spaces|version=1@@@
-      @@@langfusePrompt:name=prompt/with/slashes|version=1@@@
+      @@@hanzoPrompt:name=prompt-with-hyphens|version=1@@@
+      @@@hanzoPrompt:name=prompt_with_underscores|version=1@@@
+      @@@hanzoPrompt:name=prompt.with.dots|version=1@@@
+      @@@hanzoPrompt:name=prompt123WithNumbers|version=1@@@
+      @@@hanzoPrompt:name=prompt with spaces|version=1@@@
+      @@@hanzoPrompt:name=prompt/with/slashes|version=1@@@
     `;
 
       await makeAPICall(
@@ -2891,7 +2891,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Now try to update the prompt to include a reference to itself
       const selfReferenceContent = `This prompt references itself:
-      @@@langfusePrompt:name=self-referencing-prompt|version=1@@@
+      @@@hanzoPrompt:name=self-referencing-prompt|version=1@@@
       And that's it!`;
 
       const updateResponse = await makeAPICall(
@@ -2918,7 +2918,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Create a prompt that references a non-existent prompt
       const promptWithNonExistentDependency = `This prompt references a non-existent prompt:
-      @@@langfusePrompt:name=non-existent-prompt|version=1@@@
+      @@@hanzoPrompt:name=non-existent-prompt|version=1@@@
       End of prompt.`;
 
       // Create the prompt with the non-existent dependency
@@ -2970,7 +2970,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
       });
 
       // Create a prompt in the second project that references the prompt from the first project
-      const promptWithCrossProjectDependency = `This prompt references a prompt from another project: @@@langfusePrompt:name=cross-project-prompt|version=1@@@ End of prompt.`;
+      const promptWithCrossProjectDependency = `This prompt references a prompt from another project: @@@hanzoPrompt:name=cross-project-prompt|version=1@@@ End of prompt.`;
 
       // Create the prompt with the cross-project dependency
       const createResponse = await makeAPICall(
@@ -3006,7 +3006,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
           promptContent = "I am the deepest prompt";
         } else {
           // Each prompt depends on the one deeper than it
-          promptContent = `Level ${i} with dependency: @@@langfusePrompt:name=depth-${i + 1}|label=production@@@`;
+          promptContent = `Level ${i} with dependency: @@@hanzoPrompt:name=depth-${i + 1}|label=production@@@`;
         }
 
         const response = await makeAPICall(
@@ -3026,7 +3026,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
       // Try to create the depth-0 prompt which would exceed the max nesting depth
       const promptName = "depth-0";
-      const promptContent = `Level 0 with dependency: @@@langfusePrompt:name=depth-1|label=production@@@`;
+      const promptContent = `Level 0 with dependency: @@@hanzoPrompt:name=depth-1|label=production@@@`;
 
       const createResponse = await makeAPICall(
         "POST",
@@ -3204,7 +3204,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         data: {
           id: uuidv4(),
           name: parentName,
-          prompt: `Parent with dependency: @@@langfusePrompt:name=${childName}|version=1@@@`,
+          prompt: `Parent with dependency: @@@hanzoPrompt:name=${childName}|version=1@@@`,
           labels: ["production"],
           version: 1,
           projectId,
@@ -3289,7 +3289,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         data: {
           id: uuidv4(),
           name: parent1Name,
-          prompt: `Depends on @@@langfusePrompt:name=${childName}|version=1@@@`,
+          prompt: `Depends on @@@hanzoPrompt:name=${childName}|version=1@@@`,
           labels: ["production"],
           version: 1,
           projectId,
@@ -3312,7 +3312,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         data: {
           id: uuidv4(),
           name: parent2Name,
-          prompt: `Depends on @@@langfusePrompt:name=${childName}|label=production@@@`,
+          prompt: `Depends on @@@hanzoPrompt:name=${childName}|label=production@@@`,
           labels: ["production"],
           version: 1,
           projectId,
@@ -3335,7 +3335,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         data: {
           id: uuidv4(),
           name: parent3Name,
-          prompt: `Depends on @@@langfusePrompt:name=${childName}|label=latest@@@`,
+          prompt: `Depends on @@@hanzoPrompt:name=${childName}|label=latest@@@`,
           labels: ["production"],
           version: 1,
           projectId,
@@ -3455,7 +3455,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
   describe("Parsing prompt dependency tags", () => {
     it("should extract prompt dependency tags with version", () => {
       const content =
-        "This is a test with @@@langfusePrompt:name=test|version=1@@@ dependency";
+        "This is a test with @@@hanzoPrompt:name=test|version=1@@@ dependency";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3467,11 +3467,11 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
     });
     it("should handle prompt names with special characters", () => {
       const content = `
-        @@@langfusePrompt:name=test-with-hyphens|version=1@@@
-        @@@langfusePrompt:name=test with spaces|label=production@@@
-        @@@langfusePrompt:name=test_with_underscores|version=2@@@
-        @@@langfusePrompt:name=test.with.dots|label=staging@@@
-        @@@langfusePrompt:name=test123WithNumbers|version=3@@@
+        @@@hanzoPrompt:name=test-with-hyphens|version=1@@@
+        @@@hanzoPrompt:name=test with spaces|label=production@@@
+        @@@hanzoPrompt:name=test_with_underscores|version=2@@@
+        @@@hanzoPrompt:name=test.with.dots|label=staging@@@
+        @@@hanzoPrompt:name=test123WithNumbers|version=3@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3505,7 +3505,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should extract prompt dependency tags with label", () => {
       const content =
-        "This is a test with @@@langfusePrompt:name=test|label=production@@@ dependency";
+        "This is a test with @@@hanzoPrompt:name=test|label=production@@@ dependency";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3518,8 +3518,8 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should extract multiple prompt dependency tags", () => {
       const content = `
-        First dependency: @@@langfusePrompt:name=first|version=1@@@
-        Second dependency: @@@langfusePrompt:name=second|label=staging@@@
+        First dependency: @@@hanzoPrompt:name=first|version=1@@@
+        Second dependency: @@@hanzoPrompt:name=second|label=staging@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3538,9 +3538,9 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should ignore invalid prompt dependency tags", () => {
       const content = `
-        Valid: @@@langfusePrompt:name=valid|version=1@@@
-        Invalid: @@@langfusePrompt:version=1@@@
-        Also invalid: @@@langfusePrompt:name=invalid|something=else@@@
+        Valid: @@@hanzoPrompt:name=valid|version=1@@@
+        Invalid: @@@hanzoPrompt:version=1@@@
+        Also invalid: @@@hanzoPrompt:name=invalid|something=else@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3561,7 +3561,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should handle tags with special characters in name", () => {
       const content =
-        "Tag with special chars @@@langfusePrompt:name=test-prompt_123|version=2@@@";
+        "Tag with special chars @@@hanzoPrompt:name=test-prompt_123|version=2@@@";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3574,7 +3574,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should handle tags with special characters in label", () => {
       const content =
-        "Tag with special chars @@@langfusePrompt:name=test|label=prod-v1.0_beta@@@";
+        "Tag with special chars @@@hanzoPrompt:name=test|label=prod-v1.0_beta@@@";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3587,7 +3587,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should correctly coerce version to number", () => {
       const content =
-        "Version as string @@@langfusePrompt:name=test|version=123@@@";
+        "Version as string @@@hanzoPrompt:name=test|version=123@@@";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3601,7 +3601,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should handle tags with spaces in the content", () => {
       const content =
-        "Tag with spaces @@@langfusePrompt:name=my prompt|label=production label@@@";
+        "Tag with spaces @@@hanzoPrompt:name=my prompt|label=production label@@@";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3614,9 +3614,9 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should handle multiple tags with the same name but different versions/labels", () => {
       const content = `
-        @@@langfusePrompt:name=same|version=1@@@
-        @@@langfusePrompt:name=same|version=2@@@
-        @@@langfusePrompt:name=same|label=production@@@
+        @@@hanzoPrompt:name=same|version=1@@@
+        @@@hanzoPrompt:name=same|version=2@@@
+        @@@hanzoPrompt:name=same|label=production@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3631,7 +3631,7 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
     });
 
     it("should handle tags with the PRODUCTION_LABEL constant value", () => {
-      const content = "@@@langfusePrompt:name=test|label=production@@@";
+      const content = "@@@hanzoPrompt:name=test|label=production@@@";
       const result = parsePromptDependencyTags(content);
 
       expect(result).toHaveLength(1);
@@ -3644,10 +3644,10 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should ignore malformed tags that don't match the regex pattern", () => {
       const content = `
-        Valid: @@@langfusePrompt:name=valid|version=1@@@
-        Malformed: @@langfusePrompt:name=test|version=1@@
-        Also malformed: @@@langfusePrompt:name=test|version=1
-        And: langfusePrompt:name=test|version=1@@@
+        Valid: @@@hanzoPrompt:name=valid|version=1@@@
+        Malformed: @@hanzoPrompt:name=test|version=1@@
+        Also malformed: @@@hanzoPrompt:name=test|version=1
+        And: hanzoPrompt:name=test|version=1@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3658,11 +3658,11 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
         type: "version",
       });
     });
-    it("should not parse langfuseMedia tags as prompt dependency tags", () => {
+    it("should not parse hanzoMedia tags as prompt dependency tags", () => {
       const content = `
-        @@@langfusePrompt:name=valid|version=1@@@
-        @@@langfuseMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
-        @@@langfusePrompt:name=another|label=production@@@
+        @@@hanzoPrompt:name=valid|version=1@@@
+        @@@hanzoMedia:type=image/jpeg|id=cc48838a-3da8-4ca4-a007-2cf8df930e69|source=base64@@@
+        @@@hanzoPrompt:name=another|label=production@@@
       `;
       const result = parsePromptDependencyTags(content);
 
@@ -3681,8 +3681,8 @@ describe("PATCH api/public/v2/prompts/[promptName]/versions/[version]", () => {
 
     it("should reject tags where name is not the first parameter", () => {
       const content = `
-        Valid: @@@langfusePrompt:name=valid|version=1@@@
-        Invalid: @@@langfusePrompt:version=1|name=test@@@
+        Valid: @@@hanzoPrompt:name=valid|version=1@@@
+        Invalid: @@@hanzoPrompt:version=1|name=test@@@
       `;
       const result = parsePromptDependencyTags(content);
 

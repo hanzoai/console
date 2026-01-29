@@ -72,7 +72,7 @@ export const traceDeleteProcessor: Processor = async (
     `Batch deleting ${allTraceIds.length} traces for project ${projectId}`,
   );
 
-  const traceIdsToDelete = allTraceIds.slice(0, env.LANGFUSE_DELETE_BATCH_SIZE);
+  const traceIdsToDelete = allTraceIds.slice(0, env.HANZO_DELETE_BATCH_SIZE);
 
   // Add all trace IDs to span attributes for observability
   if (span) {

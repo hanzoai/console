@@ -54,7 +54,7 @@ export const mixpanelIntegrationRouter = createTRPCRouter({
         scope: "integrations:CRUD",
       });
       if (!env.ENCRYPTION_KEY) {
-        if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+        if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Internal server error",
@@ -63,7 +63,7 @@ export const mixpanelIntegrationRouter = createTRPCRouter({
           throw new TRPCError({
             code: "BAD_REQUEST",
             message:
-              "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://langfuse.com/self-hosting",
+              "Missing environment variable: `ENCRYPTION_KEY`. Please consult our docs: https://hanzo.com/self-hosting",
           });
         }
       }

@@ -1,16 +1,16 @@
 import { LLMAdapter } from "@hanzo/shared/src/server";
-import { Langfuse } from "langfuse";
+import { Hanzo } from "@hanzo/console";
 import { env } from "@/src/env.mjs";
 import { type FilterCondition, singleFilter } from "@hanzo/shared";
 import { z } from "zod/v4";
 
-let langfuseClient: Langfuse | null = null;
+let hanzoClient: Hanzo | null = null;
 
 export function getDefaultModelParams() {
   return {
     provider: "bedrock",
     adapter: LLMAdapter.Bedrock,
-    model: env.LANGFUSE_AWS_BEDROCK_MODEL ?? "",
+    model: env.HANZO_AWS_BEDROCK_MODEL ?? "",
     temperature: 0.1,
     maxTokens: 1000,
     topP: 0.9,
@@ -46,17 +46,17 @@ export function parseFiltersFromCompletion(
   return [];
 }
 
-export function getLangfuseClient(
+export function getHanzoClient(
   publicKey: string,
   secretKey: string,
   baseUrl?: string,
-): Langfuse {
-  if (!langfuseClient) {
-    langfuseClient = new Langfuse({
+): Hanzo {
+  if (!hanzoClient) {
+    hanzoClient = new Hanzo({
       publicKey,
       secretKey,
       baseUrl,
     });
   }
-  return langfuseClient;
+  return hanzoClient;
 }

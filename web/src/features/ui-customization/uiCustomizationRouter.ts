@@ -23,8 +23,8 @@ export const uiCustomizationRouter = createTRPCRouter({
       defaultBaseUrlAnthropic: env.HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC,
       defaultBaseUrlAzure: env.HANZO_UI_DEFAULT_BASE_URL_AZURE,
       visibleModules: getVisibleProductModules(
-        env.LANGFUSE_UI_VISIBLE_PRODUCT_MODULES,
-        env.LANGFUSE_UI_HIDDEN_PRODUCT_MODULES,
+        env.HANZO_UI_VISIBLE_PRODUCT_MODULES,
+        env.HANZO_UI_HIDDEN_PRODUCT_MODULES,
       ),
     };
   }),

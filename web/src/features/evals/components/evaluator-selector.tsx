@@ -47,10 +47,10 @@ export function EvaluatorSelector({
 }: EvaluatorSelectorProps) {
   const [search, setSearch] = useState("");
 
-  // Group templates by name and whether they are managed by Langfuse
+  // Group templates by name and whether they are managed by Hanzo
   const groupedTemplates = evalTemplates.reduce(
     (acc, template) => {
-      const group = template.projectId ? "custom" : "langfuse";
+      const group = template.projectId ? "custom" : "hanzo";
       if (!acc[group][template.name]) {
         acc[group][template.name] = [];
       }
@@ -58,7 +58,7 @@ export function EvaluatorSelector({
       return acc;
     },
     {
-      langfuse: {} as Record<string, EvalTemplate[]>,
+      hanzo: {} as Record<string, EvalTemplate[]>,
       custom: {} as Record<string, EvalTemplate[]>,
     },
   );
@@ -67,11 +67,11 @@ export function EvaluatorSelector({
   const sortByCreatedAt = (arr: EvalTemplate[]) =>
     arr.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   Object.values(groupedTemplates.custom).forEach(sortByCreatedAt);
-  Object.values(groupedTemplates.langfuse).forEach(sortByCreatedAt);
+  Object.values(groupedTemplates.hanzo).forEach(sortByCreatedAt);
 
   // Filter templates based on search
   const filteredTemplates = {
-    langfuse: Object.entries(groupedTemplates.langfuse)
+    hanzo: Object.entries(groupedTemplates.hanzo)
       .filter(([name]) => name.toLowerCase().includes(search.toLowerCase()))
       .sort(([nameA, templatesA], [nameB, templatesB]) => {
         // Get partners
@@ -92,7 +92,7 @@ export function EvaluatorSelector({
 
   // Check if we have results
   const hasResults =
-    filteredTemplates.langfuse.length > 0 ||
+    filteredTemplates.hanzo.length > 0 ||
     filteredTemplates.custom.length > 0;
 
   const { isTemplateInvalid } = useSingleTemplateValidation({
@@ -191,16 +191,16 @@ export function EvaluatorSelector({
           </>
         )}
 
-        {filteredTemplates.langfuse.length > 0 && (
+        {filteredTemplates.hanzo.length > 0 && (
           <>
             <InputCommandGroup heading="Hanzo managed evaluators">
-              {filteredTemplates.langfuse.map(([name, templateData]) => {
+              {filteredTemplates.hanzo.map(([name, templateData]) => {
                 const latestVersion = templateData[templateData.length - 1];
                 const isInvalid = isTemplateInvalid(latestVersion);
 
                 return (
                   <InputCommandItem
-                    key={`langfuse-${name}`}
+                    key={`hanzo-${name}`}
                     disabled={isInvalid}
                     onSelect={() => {
                       onTemplateSelect(

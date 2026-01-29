@@ -3,7 +3,7 @@ import { Job } from "bullmq";
 import {
   BaseError,
   BatchExportStatus,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
 } from "@hanzo/shared";
 import { kyselyPrisma } from "@hanzo/shared/src/db";
 
@@ -22,7 +22,7 @@ export const batchExportQueueProcessor = async (
 
     return true;
   } catch (e) {
-    if (e instanceof LangfuseNotFoundError) {
+    if (e instanceof HanzoNotFoundError) {
       logger.warn(
         `Batch export ${job.data.payload.batchExportId} not found. Job will be skipped.`,
       );

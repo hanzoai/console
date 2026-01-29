@@ -24,11 +24,11 @@ async function convertOtelSpanToIngestionEvent(
 }
 
 describe("OTel Resource Span Mapping", () => {
-  describe("Langfuse OTEL SDK spans", () => {
+  describe("Hanzo OTEL SDK spans", () => {
     const publicKey = "pk-lf-1234567890";
 
     it("should convert LF-OTEL spans to LF-events", async () => {
-      const langfuseOtelSpans = [
+      const hanzoOtelSpans = [
         {
           resource: {
             attributes: [
@@ -45,10 +45,10 @@ describe("OTel Resource Span Mapping", () => {
                 value: { stringValue: "1.32.0" },
               },
               {
-                key: "langfuse.environment",
+                key: "hanzo.environment",
                 value: { stringValue: "production" },
               },
-              { key: "langfuse.release", value: { stringValue: "0.0.1" } },
+              { key: "hanzo.release", value: { stringValue: "0.0.1" } },
               {
                 key: "service.name",
                 value: { stringValue: "unknown_service" },
@@ -58,7 +58,7 @@ describe("OTel Resource Span Mapping", () => {
           scopeSpans: [
             {
               scope: {
-                name: "langfuse-sdk",
+                name: "hanzo-sdk",
                 version: "2.60.3",
                 attributes: [
                   {
@@ -98,113 +98,113 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.observation.type",
+                      key: "hanzo.observation.type",
                       value: { stringValue: "generation" },
                     },
                     {
-                      key: "langfuse.observation.level",
+                      key: "hanzo.observation.level",
                       value: { stringValue: "WARNING" },
                     },
                     {
-                      key: "langfuse.observation.status_message",
+                      key: "hanzo.observation.status_message",
                       value: { stringValue: "nothing to report" },
                     },
                     {
-                      key: "langfuse.observation.input",
+                      key: "hanzo.observation.input",
                       value: {
                         stringValue: '[{"role": "user", "content": "hello"}]',
                       },
                     },
                     {
-                      key: "langfuse.observation.output",
+                      key: "hanzo.observation.output",
                       value: {
                         stringValue:
                           '{"role": "assistant", "content": "what\'s up?"}',
                       },
                     },
                     {
-                      key: "langfuse.observation.model.name",
+                      key: "hanzo.observation.model.name",
                       value: { stringValue: "gpt-4o" },
                     },
                     {
-                      key: "langfuse.observation.prompt.name",
+                      key: "hanzo.observation.prompt.name",
                       value: { stringValue: "my-prompt" },
                     },
                     {
-                      key: "langfuse.observation.prompt.version",
+                      key: "hanzo.observation.prompt.version",
                       value: { intValue: { low: 1, high: 0, unsigned: false } },
                     },
                     {
-                      key: "langfuse.observation.usage_details",
+                      key: "hanzo.observation.usage_details",
                       value: {
                         stringValue:
                           '{"input_tokens": 123, "output_tokens": 456}',
                       },
                     },
                     {
-                      key: "langfuse.observation.cost_details",
+                      key: "hanzo.observation.cost_details",
                       value: {
                         stringValue:
                           '{"input_tokens": 0.0001, "output_tokens": 0.002}',
                       },
                     },
                     {
-                      key: "langfuse.observation.completion_start_time",
+                      key: "hanzo.observation.completion_start_time",
                       value: { stringValue: '"2025-04-30T15:28:50.686390Z"' },
                     },
                     {
-                      key: "langfuse.observation.model_parameters",
+                      key: "hanzo.observation.model_parameters",
                       value: {
                         stringValue: '{"temperature": 1, "top_p": "0.2"}',
                       },
                     },
                     {
-                      key: "langfuse.observation.metadata.key1",
+                      key: "hanzo.observation.metadata.key1",
                       value: { stringValue: '"value1"' },
                     },
                     {
-                      key: "langfuse.observation.metadata.key2",
+                      key: "hanzo.observation.metadata.key2",
                       value: { stringValue: '"value2"' },
                     },
                     {
-                      key: "langfuse.trace.name",
+                      key: "hanzo.trace.name",
                       value: { stringValue: "test-trace" },
                     },
                     { key: "user.id", value: { stringValue: "my-user" } },
                     { key: "session.id", value: { stringValue: "my-session" } },
                     {
-                      key: "langfuse.version",
+                      key: "hanzo.version",
                       value: { stringValue: "trace-0.0.1" },
                     },
                     {
-                      key: "langfuse.trace.input",
+                      key: "hanzo.trace.input",
                       value: {
                         stringValue: '[{"role": "user", "content": "hello"}]',
                       },
                     },
                     {
-                      key: "langfuse.trace.output",
+                      key: "hanzo.trace.output",
                       value: {
                         stringValue:
                           '{"role": "assistant", "content": "what\'s up?"}',
                       },
                     },
                     {
-                      key: "langfuse.trace.tags",
+                      key: "hanzo.trace.tags",
                       value: {
                         arrayValue: { values: [{ stringValue: "tag2" }] },
                       },
                     },
                     {
-                      key: "langfuse.trace.public",
+                      key: "hanzo.trace.public",
                       value: { boolValue: true },
                     },
                     {
-                      key: "langfuse.trace.metadata.trace-key1",
+                      key: "hanzo.trace.metadata.trace-key1",
                       value: { stringValue: '"value1"' },
                     },
                     {
-                      key: "langfuse.trace.metadata.trace-key2",
+                      key: "hanzo.trace.metadata.trace-key2",
                       value: { stringValue: '"value2"' },
                     },
                   ],
@@ -236,17 +236,17 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.observation.type",
+                      key: "hanzo.observation.type",
                       value: { stringValue: "span" },
                     },
                     {
-                      key: "langfuse.trace.tags",
+                      key: "hanzo.trace.tags",
                       value: {
                         arrayValue: { values: [{ stringValue: "tag1" }] },
                       },
                     },
                     {
-                      key: "langfuse.trace.metadata.trace-key0",
+                      key: "hanzo.trace.metadata.trace-key0",
                       value: { stringValue: '"value1"' },
                     },
                   ],
@@ -260,7 +260,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          langfuseOtelSpans.map(
+          hanzoOtelSpans.map(
             async (span) =>
               await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
           ),
@@ -282,15 +282,15 @@ describe("OTel Resource Span Mapping", () => {
 
       const defaultMetadata = {
         resourceAttributes: {
-          "langfuse.environment": "production",
-          "langfuse.release": "0.0.1",
+          "hanzo.environment": "production",
+          "hanzo.release": "0.0.1",
           "service.name": "unknown_service",
           "telemetry.sdk.language": "python",
           "telemetry.sdk.name": "opentelemetry",
           "telemetry.sdk.version": "1.32.0",
         },
         scope: {
-          name: "langfuse-sdk",
+          name: "hanzo-sdk",
           version: "2.60.3",
         },
       };
@@ -370,7 +370,7 @@ describe("OTel Resource Span Mapping", () => {
     });
 
     it("should create a trace when as_root has been specified", async () => {
-      const langfuseOtelSpans = [
+      const hanzoOtelSpans = [
         {
           resource: {
             attributes: [
@@ -387,10 +387,10 @@ describe("OTel Resource Span Mapping", () => {
                 value: { stringValue: "1.32.0" },
               },
               {
-                key: "langfuse.environment",
+                key: "hanzo.environment",
                 value: { stringValue: "production" },
               },
-              { key: "langfuse.release", value: { stringValue: "0.0.1" } },
+              { key: "hanzo.release", value: { stringValue: "0.0.1" } },
               {
                 key: "service.name",
                 value: { stringValue: "unknown_service" },
@@ -400,7 +400,7 @@ describe("OTel Resource Span Mapping", () => {
           scopeSpans: [
             {
               scope: {
-                name: "langfuse-sdk",
+                name: "hanzo-sdk",
                 version: "2.60.3",
                 attributes: [
                   {
@@ -440,11 +440,11 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.observation.type",
+                      key: "hanzo.observation.type",
                       value: { stringValue: "span" },
                     },
                     {
-                      key: "langfuse.internal.as_root",
+                      key: "hanzo.internal.as_root",
                       value: { boolValue: true },
                     },
                   ],
@@ -458,7 +458,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          langfuseOtelSpans.map(
+          hanzoOtelSpans.map(
             async (span) =>
               await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
           ),
@@ -495,7 +495,7 @@ describe("OTel Resource Span Mapping", () => {
   });
 
   describe("Vendor Spans", () => {
-    it("should convert an OpenLit OTel Span to Langfuse Events", async () => {
+    it("should convert an OpenLit OTel Span to Hanzo Events", async () => {
       // Setup
       const resourceSpan = {
         resource: {
@@ -671,7 +671,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
@@ -679,11 +679,11 @@ describe("OTel Resource Span Mapping", () => {
       // Then
       // Will throw an error if the parsing fails
       const schema = createIngestionEventSchema();
-      const parsedEvents = langfuseEvents.map((event) => schema.parse(event));
+      const parsedEvents = hanzoEvents.map((event) => schema.parse(event));
       expect(parsedEvents).toHaveLength(2);
     });
 
-    it("should convert a TraceLoop OTel Span to Langfuse Events", async () => {
+    it("should convert a TraceLoop OTel Span to Hanzo Events", async () => {
       // Setup
       const resourceSpan = {
         resource: {
@@ -789,7 +789,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
@@ -797,11 +797,11 @@ describe("OTel Resource Span Mapping", () => {
       // Then
       // Will throw an error if the parsing fails
       const schema = createIngestionEventSchema();
-      const parsedEvents = langfuseEvents.map((event) => schema.parse(event));
+      const parsedEvents = hanzoEvents.map((event) => schema.parse(event));
       expect(parsedEvents).toHaveLength(2);
     });
 
-    it("LFE-5171: should convert a Semantic Kernel 1.55+ OTel Span with new event-based semantic conventions to Langfuse Events", async () => {
+    it("LFE-5171: should convert a Semantic Kernel 1.55+ OTel Span with new event-based semantic conventions to Hanzo Events", async () => {
       // Setup - Semantic Kernel 1.55+ uses new event names instead of deprecated gen_ai.content.prompt/completion
       const resourceSpan = {
         scopeSpans: [
@@ -909,7 +909,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
@@ -917,7 +917,7 @@ describe("OTel Resource Span Mapping", () => {
       // Then
       // Will throw an error if the parsing fails
       const schema = createIngestionEventSchema();
-      const parsedEvents = langfuseEvents.map((event) => schema.parse(event));
+      const parsedEvents = hanzoEvents.map((event) => schema.parse(event));
       expect(parsedEvents).toHaveLength(2);
 
       // Check that input contains both system and user messages
@@ -946,7 +946,7 @@ describe("OTel Resource Span Mapping", () => {
       });
     });
 
-    it("should convert a Vercel AI SDK embedding span to Langfuse embedding-create event", async () => {
+    it("should convert a Vercel AI SDK embedding span to Hanzo embedding-create event", async () => {
       const resourceSpan = {
         scopeSpans: [
           {
@@ -994,14 +994,14 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
       const schema = createIngestionEventSchema();
-      const parsedEvents = langfuseEvents.map((event) => schema.parse(event));
+      const parsedEvents = hanzoEvents.map((event) => schema.parse(event));
       expect(parsedEvents).toHaveLength(2); // trace + embedding
 
       // Should create embedding-create event, not span-create
@@ -1060,7 +1060,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
@@ -1103,19 +1103,19 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
 
         // Then
-        expect(langfuseEvents).toHaveLength(2); // Should create trace + observation
+        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
         expect(
-          langfuseEvents.some((event) => event.type === expectedEventType),
+          hanzoEvents.some((event) => event.type === expectedEventType),
         ).toBe(true);
 
         // Verify the observation has the correct type
-        const observationEvent = langfuseEvents.find(
+        const observationEvent = hanzoEvents.find(
           (event) =>
             event.type.endsWith("-create") && event.type !== "trace-create",
         );
@@ -1154,19 +1154,19 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
 
         // Then
-        expect(langfuseEvents).toHaveLength(2); // Should create trace + observation
+        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
         expect(
-          langfuseEvents.some((event) => event.type === expectedEventType),
+          hanzoEvents.some((event) => event.type === expectedEventType),
         ).toBe(true);
 
         // Verify the observation has the correct type
-        const observationEvent = langfuseEvents.find(
+        const observationEvent = hanzoEvents.find(
           (event) =>
             event.type.endsWith("-create") && event.type !== "trace-create",
         );
@@ -1209,17 +1209,17 @@ describe("OTel Resource Span Mapping", () => {
           ],
         };
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
         // Then
-        expect(langfuseEvents).toHaveLength(2); // Should create trace + observation
+        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
         expect(
-          langfuseEvents.some((event) => event.type === expectedEventType),
+          hanzoEvents.some((event) => event.type === expectedEventType),
         ).toBe(true);
         // Verify the observation has the correct type
-        const observationEvent = langfuseEvents.find(
+        const observationEvent = hanzoEvents.find(
           (event) =>
             event.type.endsWith("-create") && event.type !== "trace-create",
         );
@@ -1408,19 +1408,19 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
-      expect(langfuseEvents).toHaveLength(2);
+      expect(hanzoEvents).toHaveLength(2);
       // Should be tool-create, NOT generation-create (OpenInference takes priority)
-      expect(langfuseEvents.some((event) => event.type === "tool-create")).toBe(
+      expect(hanzoEvents.some((event) => event.type === "tool-create")).toBe(
         true,
       );
       expect(
-        langfuseEvents.some((event) => event.type === "generation-create"),
+        hanzoEvents.some((event) => event.type === "generation-create"),
       ).toBe(false);
     });
 
@@ -1448,23 +1448,23 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
-      expect(langfuseEvents).toHaveLength(2);
+      expect(hanzoEvents).toHaveLength(2);
       // Should be embedding-create, NOT generation-create (OTel GenAI takes priority over model detection)
       expect(
-        langfuseEvents.some((event) => event.type === "embedding-create"),
+        hanzoEvents.some((event) => event.type === "embedding-create"),
       ).toBe(true);
       expect(
-        langfuseEvents.some((event) => event.type === "generation-create"),
+        hanzoEvents.some((event) => event.type === "generation-create"),
       ).toBe(false);
     });
 
-    it("should trust Langfuse type over OpenInference or model detection", async () => {
+    it("should trust Hanzo type over OpenInference or model detection", async () => {
       const resourceSpan = {
         scopeSpans: [
           {
@@ -1472,9 +1472,9 @@ describe("OTel Resource Span Mapping", () => {
               {
                 ...defaultSpanProps,
                 attributes: [
-                  // Explicit Langfuse type (should always win)
+                  // Explicit Hanzo type (should always win)
                   {
-                    key: "langfuse.observation.type",
+                    key: "hanzo.observation.type",
                     value: { stringValue: "span" },
                   },
                   // OpenInference span kind
@@ -1495,22 +1495,22 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
-      expect(langfuseEvents).toHaveLength(2);
-      // Explicit Langfuse type should always win over inferred types
-      expect(langfuseEvents.some((event) => event.type === "span-create")).toBe(
+      expect(hanzoEvents).toHaveLength(2);
+      // Explicit Hanzo type should always win over inferred types
+      expect(hanzoEvents.some((event) => event.type === "span-create")).toBe(
         true,
       );
       expect(
-        langfuseEvents.some((event) => event.type === "agent-create"),
+        hanzoEvents.some((event) => event.type === "agent-create"),
       ).toBe(false);
       expect(
-        langfuseEvents.some((event) => event.type === "generation-create"),
+        hanzoEvents.some((event) => event.type === "generation-create"),
       ).toBe(false);
     });
 
@@ -1544,23 +1544,23 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
-      expect(langfuseEvents).toHaveLength(2);
+      expect(hanzoEvents).toHaveLength(2);
       // OpenInference should win over model detection
       expect(
-        langfuseEvents.some((event) => event.type === "retriever-create"),
+        hanzoEvents.some((event) => event.type === "retriever-create"),
       ).toBe(true);
       expect(
-        langfuseEvents.some((event) => event.type === "generation-create"),
+        hanzoEvents.some((event) => event.type === "generation-create"),
       ).toBe(false);
 
       // Should still extract model and usage info
-      const retrieverEvent = langfuseEvents.find(
+      const retrieverEvent = hanzoEvents.find(
         (event) => event.type === "retriever-create",
       );
       expect(retrieverEvent?.body.model).toBe("text-embedding-ada-002");
@@ -1603,12 +1603,12 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
-      const observationEvent = langfuseEvents.find(
+      const observationEvent = hanzoEvents.find(
         (event) => event.type !== "trace-create",
       );
 
@@ -1637,14 +1637,14 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const langfuseEvents = await convertOtelSpanToIngestionEvent(
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(
         resourceSpan,
         new Set(),
       );
 
       // Then
-      expect(langfuseEvents[0].body.name).toBe("right name");
-      expect(langfuseEvents[1].body.name).toBe("right name");
+      expect(hanzoEvents[0].body.name).toBe("right name");
+      expect(hanzoEvents[1].body.name).toBe("right name");
     });
 
     it.each([
@@ -1652,7 +1652,7 @@ describe("OTel Resource Span Mapping", () => {
         "should cast input_tokens from string to number",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.observation.completion_start_time",
+          otelAttributeKey: "hanzo.observation.completion_start_time",
           otelAttributeValue: {
             stringValue: "2025-09-17T22:16:28.152000+02:00",
           },
@@ -1664,7 +1664,7 @@ describe("OTel Resource Span Mapping", () => {
         "should handle non-stringified completion start time correctly",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.observation.completion_start_time",
+          otelAttributeKey: "hanzo.observation.completion_start_time",
           otelAttributeValue: {
             stringValue: "2025-10-01T08:45:26.112648Z",
           },
@@ -1676,7 +1676,7 @@ describe("OTel Resource Span Mapping", () => {
         "should handle double-stringified completion start time correctly",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.observation.completion_start_time",
+          otelAttributeKey: "hanzo.observation.completion_start_time",
           otelAttributeValue: {
             stringValue: '"2025-10-01T08:45:26.112648Z"',
           },
@@ -2192,10 +2192,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should map langfuse.metadata string to top-level metadata for trace",
+        "should map hanzo.metadata string to top-level metadata for trace",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.metadata",
+          otelAttributeKey: "hanzo.metadata",
           otelAttributeValue: {
             stringValue: '{"customer_id": "123", "experiment": "test-run-1"}',
           },
@@ -2204,10 +2204,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should map langfuse.metadata string to top-level metadata for observation",
+        "should map hanzo.metadata string to top-level metadata for observation",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.metadata",
+          otelAttributeKey: "hanzo.metadata",
           otelAttributeValue: {
             stringValue: '{"customer_id": "123", "experiment": "test-run-1"}',
           },
@@ -2216,10 +2216,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract metadata from langfuse.metadata.* keys for trace",
+        "should extract metadata from hanzo.metadata.* keys for trace",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.metadata.user_type",
+          otelAttributeKey: "hanzo.metadata.user_type",
           otelAttributeValue: {
             stringValue: "premium",
           },
@@ -2228,10 +2228,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract metadata from langfuse.metadata.* keys for observation",
+        "should extract metadata from hanzo.metadata.* keys for observation",
         {
           entity: "observation",
-          otelAttributeKey: "langfuse.metadata.user_type",
+          otelAttributeKey: "hanzo.metadata.user_type",
           otelAttributeValue: {
             stringValue: "premium",
           },
@@ -2240,10 +2240,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract tags from single string from langfuse.tags to trace",
+        "should extract tags from single string from hanzo.tags to trace",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.tags",
+          otelAttributeKey: "hanzo.tags",
           otelAttributeValue: {
             stringValue: "2",
           },
@@ -2255,7 +2255,7 @@ describe("OTel Resource Span Mapping", () => {
         "should extract array input on trace event attributes",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.tags",
+          otelAttributeKey: "hanzo.tags",
           otelAttributeValue: {
             arrayValue: {
               values: [
@@ -2273,7 +2273,7 @@ describe("OTel Resource Span Mapping", () => {
         "should extract array input tags to trace",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.tags",
+          otelAttributeKey: "hanzo.tags",
           otelAttributeValue: {
             stringValue: '["2"]',
           },
@@ -2285,7 +2285,7 @@ describe("OTel Resource Span Mapping", () => {
         "should extract array csv input tags to trace",
         {
           entity: "trace",
-          otelAttributeKey: "langfuse.tags",
+          otelAttributeKey: "hanzo.tags",
           otelAttributeValue: {
             stringValue: "2,3,4",
           },
@@ -2527,7 +2527,7 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
@@ -2588,7 +2588,7 @@ describe("OTel Resource Span Mapping", () => {
         "should extract metadata from resource attributes",
         {
           entity: "observation",
-          otelResourceAttributeKey: "langfuse.metadata",
+          otelResourceAttributeKey: "hanzo.metadata",
           otelResourceAttributeValue: {
             stringValue: '{"resource_id": "xyz", "region": "us-west-2"}',
           },
@@ -2597,10 +2597,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ],
       [
-        "should extract metadata from langfuse.metadata.* resource attributes",
+        "should extract metadata from hanzo.metadata.* resource attributes",
         {
           entity: "observation",
-          otelResourceAttributeKey: "langfuse.metadata.server_name",
+          otelResourceAttributeKey: "hanzo.metadata.server_name",
           otelResourceAttributeValue: {
             stringValue: "web-server-01",
           },
@@ -2638,14 +2638,14 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
 
         // Then
         const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? langfuseEvents[0] : langfuseEvents[1];
+          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(
           spec.entityAttributeKey // This logic allows to follow a path in the object, e.g. foo.bar.baz.
             .split(".")
@@ -2941,7 +2941,7 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const langfuseEvents = await convertOtelSpanToIngestionEvent(
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(
           resourceSpan,
           new Set(),
         );
@@ -3735,15 +3735,15 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.trace.metadata.langfuse_user_id",
+                      key: "hanzo.trace.metadata.hanzo_user_id",
                       value: { stringValue: "user-123" },
                     },
                     {
-                      key: "langfuse.trace.metadata.langfuse_session_id",
+                      key: "hanzo.trace.metadata.hanzo_session_id",
                       value: { stringValue: "session-456" },
                     },
                     {
-                      key: "langfuse.trace.metadata.langfuse_tags",
+                      key: "hanzo.trace.metadata.hanzo_tags",
                       value: { stringValue: "tag1,tag2" },
                     },
                   ],
@@ -3826,15 +3826,15 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.observation.metadata.langfuse_user_id",
+                      key: "hanzo.observation.metadata.hanzo_user_id",
                       value: { stringValue: "user-789" },
                     },
                     {
-                      key: "langfuse.observation.metadata.langfuse_session_id",
+                      key: "hanzo.observation.metadata.hanzo_session_id",
                       value: { stringValue: "session-abc" },
                     },
                     {
-                      key: "langfuse.observation.metadata.langfuse_tags",
+                      key: "hanzo.observation.metadata.hanzo_tags",
                       value: { stringValue: "tag3,tag4" },
                     },
                   ],
@@ -3917,7 +3917,7 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.trace.name",
+                      key: "hanzo.trace.name",
                       value: { stringValue: "Custom Trace Name" },
                     },
                     {
@@ -4249,7 +4249,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(spanEvents[1].body.name).toBe("root-span");
     });
 
-    it("should prioritize langfuse.session.id over gen_ai.conversation.id when both are present", async () => {
+    it("should prioritize hanzo.session.id over gen_ai.conversation.id when both are present", async () => {
       const otelSpans = [
         {
           resource: {
@@ -4293,8 +4293,8 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "langfuse.session.id",
-                      value: { stringValue: "langfuse-session-123" },
+                      key: "hanzo.session.id",
+                      value: { stringValue: "hanzo-session-123" },
                     },
                     {
                       key: "gen_ai.conversation.id",
@@ -4320,7 +4320,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const traceEvent = events.find((e) => e.type === "trace-create");
       expect(traceEvent).toBeDefined();
-      expect(traceEvent.body.sessionId).toBe("langfuse-session-123");
+      expect(traceEvent.body.sessionId).toBe("hanzo-session-123");
     });
 
     it("should prioritize session.id over gen_ai.conversation.id when both are present", async () => {
@@ -4417,7 +4417,7 @@ describe("OTel Resource Span Mapping", () => {
                   endTimeUnixNano: 2000000000,
                   attributes: [
                     {
-                      key: "langfuse.observation.type",
+                      key: "hanzo.observation.type",
                       value: { stringValue: "invalid_type" },
                     },
                   ],
@@ -4472,12 +4472,12 @@ describe("OTel Resource Span Mapping", () => {
                     endTimeUnixNano: 2000000000,
                     attributes: [
                       {
-                        key: "langfuse.observation.type",
+                        key: "hanzo.observation.type",
                         value: { stringValue: type },
                       },
                       // Add model name to trigger generation heuristic
                       {
-                        key: "langfuse.observation.model.name",
+                        key: "hanzo.observation.model.name",
                         value: { stringValue: "gpt-4" },
                       },
                       // Add other generation-like properties
@@ -4541,7 +4541,7 @@ describe("OTel Resource Span Mapping", () => {
                   attributes: [
                     // No explicit observation type
                     {
-                      key: "langfuse.observation.model.name",
+                      key: "hanzo.observation.model.name",
                       value: { stringValue: "gpt-4" },
                     },
                   ],
@@ -4829,7 +4829,7 @@ describe("OTel Resource Span Mapping", () => {
     });
 
     it("should override the observation type if it is declared as 'span' but holds generation-like attributes for python-sdk <= 3.3.0", async () => {
-      // Issue: https://github.com/langfuse/langfuse/issues/8682
+      // Issue: https://github.com/hanzoai/console/issues/8682
       const otelSpans = [
         {
           resource: {
@@ -4843,7 +4843,7 @@ describe("OTel Resource Span Mapping", () => {
           scopeSpans: [
             {
               scope: {
-                name: "langfuse-sdk",
+                name: "hanzo-sdk",
                 version: "3.3.0",
                 attributes: [
                   {
@@ -4868,11 +4868,11 @@ describe("OTel Resource Span Mapping", () => {
                   attributes: [
                     // No openinference.span.kind, no model indicators, no explicit type
                     {
-                      key: "langfuse.observation.type",
+                      key: "hanzo.observation.type",
                       value: { stringValue: "span" },
                     },
                     {
-                      key: "langfuse.observation.model.name",
+                      key: "hanzo.observation.model.name",
                       value: { stringValue: "gpt-4o" },
                     },
                   ],
@@ -4931,11 +4931,11 @@ describe("OTel Resource Span Mapping", () => {
                 endTimeUnixNano: { low: 2, high: 1 },
                 attributes: [
                   {
-                    key: "langfuse.trace.name",
+                    key: "hanzo.trace.name",
                     value: { stringValue: "Original Name" },
                   },
                   {
-                    key: "langfuse.session.id",
+                    key: "hanzo.session.id",
                     value: { stringValue: "original-session" },
                   },
                   {
@@ -4971,11 +4971,11 @@ describe("OTel Resource Span Mapping", () => {
                 endTimeUnixNano: { low: 2, high: 1 },
                 attributes: [
                   {
-                    key: "langfuse.trace.name",
+                    key: "hanzo.trace.name",
                     value: { stringValue: "Updated Name" },
                   }, // to trigger hasTraceUpdates
                   {
-                    key: "langfuse.session.id",
+                    key: "hanzo.session.id",
                     value: { stringValue: "new-session" },
                   }, // also triggers hasTraceUpdates
                   {
@@ -5321,7 +5321,7 @@ describe("OTel Resource Span Mapping", () => {
   });
 
   describe("Input/Output attribute filtering from metadata", () => {
-    it("should filter Langfuse SDK trace input/output attributes from trace metadata", async () => {
+    it("should filter Hanzo SDK trace input/output attributes from trace metadata", async () => {
       const traceId = "abcdef1234567890abcdef1234567890";
       const rootSpanId = "1234567890abcdef";
 
@@ -5355,11 +5355,11 @@ describe("OTel Resource Span Mapping", () => {
                 attributes: [
                   // Trace-level input/output (should be filtered from trace metadata.attributes)
                   {
-                    key: "langfuse.trace.input",
+                    key: "hanzo.trace.input",
                     value: { stringValue: '{"query": "hello"}' },
                   },
                   {
-                    key: "langfuse.trace.output",
+                    key: "hanzo.trace.output",
                     value: { stringValue: '{"response": "hi"}' },
                   },
                   // Custom attributes (should remain in metadata.attributes)
@@ -5392,10 +5392,10 @@ describe("OTel Resource Span Mapping", () => {
 
       // Verify trace input/output keys are NOT in metadata.attributes
       expect(
-        traceEvent?.body.metadata?.attributes?.["langfuse.trace.input"],
+        traceEvent?.body.metadata?.attributes?.["hanzo.trace.input"],
       ).toBeUndefined();
       expect(
-        traceEvent?.body.metadata?.attributes?.["langfuse.trace.output"],
+        traceEvent?.body.metadata?.attributes?.["hanzo.trace.output"],
       ).toBeUndefined();
 
       // Verify custom trace attributes ARE in metadata.attributes
@@ -5632,7 +5632,7 @@ describe("OTel Resource Span Mapping", () => {
               value: { stringValue: "1.33.1" },
             },
             {
-              key: "langfuse.environment",
+              key: "hanzo.environment",
               value: { stringValue: "production" },
             },
             {

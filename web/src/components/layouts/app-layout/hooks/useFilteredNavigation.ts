@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import type { Session, User } from "next-auth";
 import { useEntitlements } from "@/src/features/entitlements/hooks";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import {
   ROUTES,
   RouteSection,
@@ -83,7 +83,7 @@ export function useFilteredNavigation(
   const router = useRouter();
   const entitlements = useEntitlements();
   const uiCustomization = useUiCustomization();
-  const { isLangfuseCloud, region } = useLangfuseCloudRegion();
+  const { isHanzoCloud, region } = useHanzoCloudRegion();
 
   const routerProjectId = router.query.projectId as string | undefined;
   const routerOrganizationId = router.query.organizationId as
@@ -99,7 +99,7 @@ export function useFilteredNavigation(
       enableExperimentalFeatures:
         session?.environment?.enableExperimentalFeatures ?? false,
       cloudAdmin: Boolean(
-        session?.user?.admin && isLangfuseCloud && region !== "DEV",
+        session?.user?.admin && isHanzoCloud && region !== "DEV",
       ),
       entitlements,
       uiCustomization,
@@ -112,7 +112,7 @@ export function useFilteredNavigation(
       entitlements,
       uiCustomization,
       router.asPath,
-      isLangfuseCloud,
+      isHanzoCloud,
       region,
     ],
   );

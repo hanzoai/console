@@ -951,7 +951,7 @@
           "service.name": "unknown_service"
         },
         "scope": {
-          "name": "langfuse-sdk",
+          "name": "hanzo-sdk",
           "version": "3.0.1",
           "attributes": {
             "public_key": "pk-lf-5855d85e-3943-497e-bd10-f50ad414bcba"
@@ -1137,7 +1137,7 @@
           "service.name": "unknown_service"
         },
         "scope": {
-          "name": "langfuse-sdk",
+          "name": "hanzo-sdk",
           "version": "3.0.1",
           "attributes": {
             "public_key": "pk-lf-5855d85e-3943-497e-bd10-f50ad414bcba"

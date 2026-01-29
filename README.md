@@ -3,11 +3,11 @@
 <div align="center">
    <div>
       <h3>
-        <a href="https://langfuse.com/blog/2025-06-04-open-sourcing-langfuse-product">
-            <strong>Langfuse Is Doubling Down On Open Source</strong>
+        <a href="https://hanzo.com/blog/2025-06-04-open-sourcing-hanzo-product">
+            <strong>Hanzo Is Doubling Down On Open Source</strong>
          </a> <br> <br>
-         <a href="https://cloud.langfuse.com">
-            <strong>Langfuse Cloud</strong>
+         <a href="https://cloud.hanzo.com">
+            <strong>Hanzo Cloud</strong>
          </a> · 
          <a href="https://hanzo.ai/docs/deployment/self-host">
             <strong>Self Host</strong>
@@ -26,7 +26,7 @@
       <a href="https://hanzo.ai/roadmap"><strong>Roadmap</strong></a> ·
    </div>
    <br/>
-   <span>Langfuse uses <a href="https://github.com/orgs/langfuse/discussions"><strong>GitHub Discussions</strong></a>  for Support and Feature Requests.</span>
+   <span>Hanzo uses <a href="https://github.com/orgs/hanzo/discussions"><strong>GitHub Discussions</strong></a>  for Support and Feature Requests.</span>
    <br/>
    <span><b>We're hiring.</b> <a href="https://hanzo.ai/careers"><strong>Join us</strong></a> in product engineering and technical go-to-market roles.</span>
    <br/>
@@ -54,13 +54,13 @@
    <a href="https://www.linkedin.com/company/hanzo/" target="_blank">
    <img src="https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff"
       alt="follow on LinkedIn"></a>
-   <a href="https://github.com/langfuse/langfuse/graphs/commit-activity" target="_blank">
-   <img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/langfuse/langfuse?labelColor=%20%2332b583&color=%20%2312b76a"></a>
-   <a href="https://github.com/langfuse/langfuse/" target="_blank">
-   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Alangfuse%2Flangfuse%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
-   <a href="https://github.com/langfuse/langfuse/discussions/" target="_blank">
-   <img alt="Discussion posts" src="https://img.shields.io/github/discussions/langfuse/langfuse?labelColor=%20%239b8afb&color=%20%237a5af8"></a>
-   <a href="https://deepwiki.com/langfuse/langfuse" target="_blank">
+   <a href="https://github.com/hanzo/hanzo/graphs/commit-activity" target="_blank">
+   <img alt="Commits last month" src="https://img.shields.io/github/commit-activity/m/hanzo/hanzo?labelColor=%20%2332b583&color=%20%2312b76a"></a>
+   <a href="https://github.com/hanzo/hanzo/" target="_blank">
+   <img alt="Issues closed" src="https://img.shields.io/github/issues-search?query=repo%3Ahanzo%2Fhanzo%20is%3Aclosed&label=issues%20closed&labelColor=%20%237d89b0&color=%20%235d6b98"></a>
+   <a href="https://github.com/hanzo/hanzo/discussions/" target="_blank">
+   <img alt="Discussion posts" src="https://img.shields.io/github/discussions/hanzo/hanzo?labelColor=%20%239b8afb&color=%20%237a5af8"></a>
+   <a href="https://deepwiki.com/hanzo/hanzo" target="_blank">
    <img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg"></a>
 </p>
 
@@ -74,19 +74,19 @@
 Hanzo is an **open source LLM engineering** platform. It helps teams collaboratively
 **develop, monitor, evaluate,** and **debug** AI applications. Hanzo can be **self-hosted in minutes** and is **battle-tested**.
 
-[![Langfuse Overview Video](https://github.com/user-attachments/assets/925d71db-6331-445e-8f3e-727ee95d1c9f)](https://langfuse.com/watch-demo)
+[![Hanzo Overview Video](https://github.com/user-attachments/assets/925d71db-6331-445e-8f3e-727ee95d1c9f)](https://hanzo.com/watch-demo)
 
 ## ✨ Core Features
 
-<img width="4856" height="1944" alt="Langfuse Overview" src="https://github.com/user-attachments/assets/5dac68ef-d546-49fb-b06f-cfafc19282e3" />
+<img width="4856" height="1944" alt="Hanzo Overview" src="https://github.com/user-attachments/assets/5dac68ef-d546-49fb-b06f-cfafc19282e3" />
 
 - [LLM Application Observability](https://hanzo.ai/docs/tracing): Instrument your app and start ingesting traces to Hanzo, thereby tracking LLM calls and other relevant logic in your app such as retrieval, embedding, or agent actions. Inspect and debug complex logs and user sessions. Try the interactive [demo](https://hanzo.ai/docs/demo) to see this in action.
 
-- [Prompt Management](https://langfuse.com/docs/prompt-management/get-started) helps you centrally manage, version control, and collaboratively iterate on your prompts. Thanks to strong caching on server and client side, you can iterate on prompts without adding latency to your application.
+- [Prompt Management](https://hanzo.com/docs/prompt-management/get-started) helps you centrally manage, version control, and collaboratively iterate on your prompts. Thanks to strong caching on server and client side, you can iterate on prompts without adding latency to your application.
 
-- [Evaluations](https://langfuse.com/docs/evaluation/overview) are key to the LLM application development workflow, and Langfuse adapts to your needs. It supports LLM-as-a-judge, user feedback collection, manual labeling, and custom evaluation pipelines via APIs/SDKs.
+- [Evaluations](https://hanzo.com/docs/evaluation/overview) are key to the LLM application development workflow, and Hanzo adapts to your needs. It supports LLM-as-a-judge, user feedback collection, manual labeling, and custom evaluation pipelines via APIs/SDKs.
 
-- [Datasets](https://langfuse.com/docs/evaluation/dataset-runs/datasets) enable test sets and benchmarks for evaluating your LLM application. They support continuous improvement, pre-deployment testing, structured experiments, flexible evaluation, and seamless integration with frameworks like LangChain and LlamaIndex.
+- [Datasets](https://hanzo.com/docs/evaluation/dataset-runs/datasets) enable test sets and benchmarks for evaluating your LLM application. They support continuous improvement, pre-deployment testing, structured experiments, flexible evaluation, and seamless integration with frameworks like LangChain and LlamaIndex.
 
 - [LLM Playground](https://hanzo.ai/docs/playground) is a tool for testing and iterating on your prompts and model configurations, shortening the feedback loop and accelerating development. When you see a bad result in tracing, you can directly jump to the playground to iterate on it.
 
@@ -94,11 +94,11 @@ Hanzo is an **open source LLM engineering** platform. It helps teams collaborati
 
 ## 📦 Deploy Hanzo
 
-<img width="4856" height="1322" alt="Langfuse Deployment Options" src="https://github.com/user-attachments/assets/98f020c7-7a20-4264-a201-65c41a52a5d5" />
+<img width="4856" height="1322" alt="Hanzo Deployment Options" src="https://github.com/user-attachments/assets/98f020c7-7a20-4264-a201-65c41a52a5d5" />
 
 ### Hanzo Cloud
 
-Managed deployment by the Langfuse team, generous free-tier, no credit card required.
+Managed deployment by the Hanzo team, generous free-tier, no credit card required.
 
 <div align="center">
     <a href="https://cloud.hanzo.ai" target="_blank">
@@ -121,11 +121,11 @@ Run Hanzo on your own infrastructure:
   docker compose up
   ```
 
-- [VM](https://langfuse.com/self-hosting/docker-compose): Run Langfuse on a single Virtual Machine using Docker Compose.
-- [Kubernetes (Helm)](https://langfuse.com/self-hosting/kubernetes-helm): Run Langfuse on a Kubernetes cluster using Helm. This is the preferred production deployment.
-- Terraform Templates: [AWS](https://langfuse.com/self-hosting/aws), [Azure](https://langfuse.com/self-hosting/azure), [GCP](https://langfuse.com/self-hosting/gcp)
+- [VM](https://hanzo.com/self-hosting/docker-compose): Run Hanzo on a single Virtual Machine using Docker Compose.
+- [Kubernetes (Helm)](https://hanzo.com/self-hosting/kubernetes-helm): Run Hanzo on a Kubernetes cluster using Helm. This is the preferred production deployment.
+- Terraform Templates: [AWS](https://hanzo.com/self-hosting/aws), [Azure](https://hanzo.com/self-hosting/azure), [GCP](https://hanzo.com/self-hosting/gcp)
 
-See [self-hosting documentation](https://langfuse.com/self-hosting) to learn more about architecture and configuration options.
+See [self-hosting documentation](https://hanzo.com/self-hosting) to learn more about architecture and configuration options.
 
 ## 🔌 Integrations
 
@@ -135,15 +135,15 @@ See [self-hosting documentation](https://langfuse.com/self-hosting) to learn mor
 
 | Integration                                                                  | Supports                   | Description                                                                                                                                      |
 | ---------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [SDK](https://langfuse.com/docs/sdk)                                         | Python, JS/TS              | Manual instrumentation using the SDKs for full flexibility.                                                                                      |
-| [OpenAI](https://langfuse.com/integrations/model-providers/openai-py)        | Python, JS/TS              | Automated instrumentation using drop-in replacement of OpenAI SDK.                                                                               |
-| [Langchain](https://langfuse.com/docs/integrations/langchain)                | Python, JS/TS              | Automated instrumentation by passing callback handler to Langchain application.                                                                  |
-| [LlamaIndex](https://langfuse.com/docs/integrations/llama-index/get-started) | Python                     | Automated instrumentation via LlamaIndex callback system.                                                                                        |
-| [Haystack](https://langfuse.com/docs/integrations/haystack)                  | Python                     | Automated instrumentation via Haystack content tracing system.                                                                                   |
-| [LiteLLM](https://langfuse.com/docs/integrations/litellm)                    | Python, JS/TS (proxy only) | Use any LLM as a drop in replacement for GPT. Use Azure, OpenAI, Cohere, Anthropic, Ollama, VLLM, Sagemaker, HuggingFace, Replicate (100+ LLMs). |
-| [Vercel AI SDK](https://langfuse.com/docs/integrations/vercel-ai-sdk)        | JS/TS                      | TypeScript toolkit designed to help developers build AI-powered applications with React, Next.js, Vue, Svelte, Node.js.                          |
-| [Mastra](https://langfuse.com/docs/integrations/mastra)                      | JS/TS                      | Open source framework for building AI agents and multi-agent systems.                                                                            |
-| [API](https://langfuse.com/docs/api)                                         |                            | Directly call the public API. OpenAPI spec available.                                                                                            |
+| [SDK](https://hanzo.com/docs/sdk)                                         | Python, JS/TS              | Manual instrumentation using the SDKs for full flexibility.                                                                                      |
+| [OpenAI](https://hanzo.com/integrations/model-providers/openai-py)        | Python, JS/TS              | Automated instrumentation using drop-in replacement of OpenAI SDK.                                                                               |
+| [Langchain](https://hanzo.com/docs/integrations/langchain)                | Python, JS/TS              | Automated instrumentation by passing callback handler to Langchain application.                                                                  |
+| [LlamaIndex](https://hanzo.com/docs/integrations/llama-index/get-started) | Python                     | Automated instrumentation via LlamaIndex callback system.                                                                                        |
+| [Haystack](https://hanzo.com/docs/integrations/haystack)                  | Python                     | Automated instrumentation via Haystack content tracing system.                                                                                   |
+| [LiteLLM](https://hanzo.com/docs/integrations/litellm)                    | Python, JS/TS (proxy only) | Use any LLM as a drop in replacement for GPT. Use Azure, OpenAI, Cohere, Anthropic, Ollama, VLLM, Sagemaker, HuggingFace, Replicate (100+ LLMs). |
+| [Vercel AI SDK](https://hanzo.com/docs/integrations/vercel-ai-sdk)        | JS/TS                      | TypeScript toolkit designed to help developers build AI-powered applications with React, Next.js, Vue, Svelte, Node.js.                          |
+| [Mastra](https://hanzo.com/docs/integrations/mastra)                      | JS/TS                      | Open source framework for building AI agents and multi-agent systems.                                                                            |
+| [API](https://hanzo.com/docs/api)                                         |                            | Directly call the public API. OpenAPI spec available.                                                                                            |
 
 ### Packages integrated with Hanzo:
 
@@ -180,7 +180,7 @@ Instrument your app and start ingesting traces to Hanzo, thereby tracking LLM ca
 
 ### 2️⃣ Log your first LLM call
 
-The [`@observe()` decorator](https://langfuse.com/docs/sdk/python/decorators) makes it easy to trace any Python LLM application. In this quickstart we also use the Langfuse [OpenAI integration](https://langfuse.com/integrations/model-providers/openai-py) to automatically capture all model parameters.
+The [`@observe()` decorator](https://hanzo.com/docs/sdk/python/decorators) makes it easy to trace any Python LLM application. In this quickstart we also use the Hanzo [OpenAI integration](https://hanzo.com/integrations/model-providers/openai-py) to automatically capture all model parameters.
 
 > [!TIP]
 > Not using OpenAI? Visit [our documentation](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo) to learn how to log other models and frameworks.
@@ -190,15 +190,15 @@ pip install hanzo openai
 ```
 
 ```bash filename=".env"
-LANGFUSE_SECRET_KEY="sk-lf-..."
-LANGFUSE_PUBLIC_KEY="pk-lf-..."
-LANGFUSE_BASE_URL="https://cloud.langfuse.com" # 🇪🇺 EU region
-# LANGFUSE_BASE_URL="https://us.cloud.langfuse.com" # 🇺🇸 US region
+HANZO_SECRET_KEY="sk-lf-..."
+HANZO_PUBLIC_KEY="pk-lf-..."
+HANZO_BASE_URL="https://cloud.hanzo.com" # 🇪🇺 EU region
+# HANZO_BASE_URL="https://us.cloud.hanzo.com" # 🇺🇸 US region
 ```
 
-```python /@observe()/ /from langfuse.openai import openai/ filename="main.py"
-from langfuse import observe
-from langfuse.openai import openai # OpenAI integration
+```python /@observe()/ /from hanzo.openai import openai/ filename="main.py"
+from hanzo import observe
+from hanzo.openai import openai # OpenAI integration
 
 @observe()
 def story():
@@ -218,7 +218,7 @@ main()
 
 See your language model calls and other application logic in Hanzo.
 
-<img width="1787" height="674" alt="Example trace in Langfuse" src="https://github.com/user-attachments/assets/f796eb78-dfb5-4570-b236-bdb4b67d4d55" />
+<img width="1787" height="674" alt="Example trace in Hanzo" src="https://github.com/user-attachments/assets/f796eb78-dfb5-4570-b236-bdb4b67d4d55" />
 
 _[Public example trace in Hanzo](https://cloud.hanzo.ai/project/cloramnkj0002jz088vzn1ja4/traces/2cec01e3-3dc2-472f-afcf-3b968cf0c1f4?timestamp=2025-02-10T14%3A27%3A30.275Z&observation=cb5ff844-07ef-41e6-b8e2-6c64344bc13b)_
 
@@ -295,7 +295,7 @@ Top open-source Python projects that use Hanzo, ranked by stars ([Source](https:
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/170767358?s=40&v=4" width="20" height="20" alt=""> &nbsp; [kortix-ai](https://github.com/kortix-ai) / [suna](https://github.com/kortix-ai/suna)                                                                                          |  17976 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/76263028?s=40&v=4" width="20" height="20" alt=""> &nbsp; [anthropics](https://github.com/anthropics) / [courses](https://github.com/anthropics/courses)                                                                                  |  17057 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/149120496?s=40&v=4" width="20" height="20" alt=""> &nbsp; [mastra-ai](https://github.com/mastra-ai) / [mastra](https://github.com/mastra-ai/mastra)                                                                                      |  16484 |
-| <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/134601687?s=40&v=4" width="20" height="20" alt=""> &nbsp; [langfuse](https://github.com/langfuse) / [langfuse](https://github.com/langfuse/langfuse)                                                                                     |  16054 |
+| <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/134601687?s=40&v=4" width="20" height="20" alt=""> &nbsp; [hanzo](https://github.com/hanzo) / [hanzo](https://github.com/hanzo/hanzo)                                                                                     |  16054 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/7250217?s=40&v=4" width="20" height="20" alt=""> &nbsp; [Canner](https://github.com/Canner) / [WrenAI](https://github.com/Canner/WrenAI)                                                                                                 |  11868 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/137907881?s=40&v=4" width="20" height="20" alt=""> &nbsp; [promptfoo](https://github.com/promptfoo) / [promptfoo](https://github.com/promptfoo/promptfoo)                                                                                |   8350 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/193350244?s=40&v=4" width="20" height="20" alt=""> &nbsp; [The-Pocket](https://github.com/The-Pocket) / [PocketFlow](https://github.com/The-Pocket/PocketFlow)                                                                           |   8313 |
@@ -368,7 +368,7 @@ Top open-source Python projects that use Hanzo, ranked by stars ([Source](https:
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/1009716?s=40&v=4" width="20" height="20" alt=""> &nbsp; [codecentric](https://github.com/codecentric) / [c4-genai-suite](https://github.com/codecentric/c4-genai-suite)                                                                  |    152 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/196509932?s=40&v=4" width="20" height="20" alt=""> &nbsp; [XSpoonAi](https://github.com/XSpoonAi) / [spoon-core](https://github.com/XSpoonAi/spoon-core)                                                                                 |    150 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/139558948?s=40&v=4" width="20" height="20" alt=""> &nbsp; [chatchat-space](https://github.com/chatchat-space) / [LangGraph-Chatchat](https://github.com/chatchat-space/LangGraph-Chatchat)                                               |    144 |
-| <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/134601687?s=40&v=4" width="20" height="20" alt=""> &nbsp; [langfuse](https://github.com/langfuse) / [langfuse-docs](https://github.com/langfuse/langfuse-docs)                                                                           |    139 |
+| <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/134601687?s=40&v=4" width="20" height="20" alt=""> &nbsp; [hanzo](https://github.com/hanzo) / [hanzo-docs](https://github.com/hanzo/hanzo-docs)                                                                           |    139 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/44976328?s=40&v=4" width="20" height="20" alt=""> &nbsp; [piyushgarg-dev](https://github.com/piyushgarg-dev) / [genai-cohort](https://github.com/piyushgarg-dev/genai-cohort)                                                            |    135 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/105285801?s=40&v=4" width="20" height="20" alt=""> &nbsp; [i-dot-ai](https://github.com/i-dot-ai) / [redbox](https://github.com/i-dot-ai/redbox)                                                                                         |    132 |
 | <img class="avatar mr-2" src="https://avatars.githubusercontent.com/u/90423581?s=40&v=4" width="20" height="20" alt=""> &nbsp; [bmd1905](https://github.com/bmd1905) / [ChatOpsLLM](https://github.com/bmd1905/ChatOpsLLM)                                                                                     |    127 |

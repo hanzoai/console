@@ -24,10 +24,10 @@ import { cn } from "@/src/utils/tailwind";
 import { usePlan } from "@/src/features/entitlements/hooks";
 import { isSelfHostedPlan, planLabels } from "@hanzo/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 
 export const VersionLabel = ({ className }: { className?: string }) => {
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isHanzoCloud } = useHanzoCloudRegion();
 
   const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(
     undefined,
@@ -35,7 +35,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      enabled: !isLangfuseCloud, // do not check for updates on Langfuse Cloud
+      enabled: !isHanzoCloud, // do not check for updates on Hanzo Cloud
       throwOnError: false, // do not render default error message
     },
   );
@@ -44,13 +44,13 @@ export const VersionLabel = ({ className }: { className?: string }) => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: !isLangfuseCloud, // do not check for updates on Langfuse Cloud
+    enabled: !isHanzoCloud, // do not check for updates on Hanzo Cloud
     throwOnError: false, // do not render default error message
   });
 
   const plan = usePlan();
 
-  const selfHostedPlanLabel = !isLangfuseCloud
+  const selfHostedPlanLabel = !isHanzoCloud
     ? plan && isSelfHostedPlan(plan)
       ? // self-host plan
         // TODO: clean up to use planLabels in packages/shared/src/features/entitlements/plans.ts
@@ -67,12 +67,12 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       null;
 
   const showBackgroundMigrationStatus =
-    !isLangfuseCloud &&
+    !isHanzoCloud &&
     backgroundMigrationStatus.data &&
     backgroundMigrationStatus.data.status !== "FINISHED";
 
   const hasUpdate =
-    !isLangfuseCloud && checkUpdate.data && checkUpdate.data.updateType;
+    !isHanzoCloud && checkUpdate.data && checkUpdate.data.updateType;
 
   const color =
     checkUpdate.data?.updateType === "major"
@@ -112,7 +112,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
-        ) : !isLangfuseCloud ? (
+        ) : !isHanzoCloud ? (
           <>
             <DropdownMenuLabel>This is the latest release</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -136,7 +136,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Releases
           </Link>
         </DropdownMenuItem>
-        {!isLangfuseCloud && (
+        {!isHanzoCloud && (
           <DropdownMenuItem asChild>
             <Link href="/background-migrations">
               <ArrowUp10 size={16} className="mr-2" />
@@ -163,7 +163,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             Roadmap
           </Link>
         </DropdownMenuItem>
-        {!isLangfuseCloud && (
+        {!isHanzoCloud && (
           <DropdownMenuItem asChild>
             <Link href="https://hanzo.ai/pricing-self-host" target="_blank">
               <Info size={16} className="mr-2" />

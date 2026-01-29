@@ -44,9 +44,9 @@ export const Messages: React.FC<MessagesContext> = (props) => {
 const SubmitButton = () => {
   const { handleSubmit, isStreaming } = usePlaygroundContext();
   const defaultStreamingEnabled =
-    env.NEXT_PUBLIC_LANGFUSE_PLAYGROUND_STREAMING_ENABLED_DEFAULT === "true";
+    env.NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT === "true";
   const [streamingEnabled, setStreamingEnabled] = useLocalStorage(
-    "langfuse-playground-streaming",
+    "hanzo-playground-streaming",
     defaultStreamingEnabled,
   );
 

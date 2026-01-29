@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-export const PromptDependencyRegex = /@@@langfusePrompt:(.*?)@@@/g;
+export const PromptDependencyRegex = /@@@hanzoPrompt:(.*?)@@@/g;
 
 export const ParsedPromptDependencySchema = z.union([
   z.object({
@@ -23,7 +23,7 @@ export function parsePromptDependencyTags(
   const validTags: ParsedPromptDependencyTag[] = [];
 
   for (const match of new Set(matchedTags ?? [])) {
-    const innerContent = match.replace(/^@@@langfusePrompt:|@@@$/g, "");
+    const innerContent = match.replace(/^@@@hanzoPrompt:|@@@$/g, "");
     const parts = innerContent.split("|");
     const params: Record<string, string> = {};
 

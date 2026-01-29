@@ -8,7 +8,7 @@ import {
   CreateBlobStorageIntegrationRequest,
   type BlobStorageIntegrationResponseType } from "@/src/features/public-api/types/blob-storage-integrations";
 import {
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   UnauthorizedError,
   ForbiddenError } from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
@@ -130,7 +130,7 @@ async function handleUpsertBlobStorageIntegration(
     where: { id: validatedData.projectId },
     select: { id: true, orgId: true } });
   if (!project || project.orgId !== authCheck.scope.orgId) {
-    throw new LangfuseNotFoundError("Project not found");
+    throw new HanzoNotFoundError("Project not found");
   }
 
   // Prepare data for database

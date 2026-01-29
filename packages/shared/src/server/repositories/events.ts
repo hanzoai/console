@@ -1,7 +1,7 @@
 import { prisma } from "../../db";
 import { Observation, EventsObservation, ObservationType } from "../../domain";
 import { env } from "../../env";
-import { InternalServerError, LangfuseNotFoundError } from "../../errors";
+import { InternalServerError, HanzoNotFoundError } from "../../errors";
 import {
   convertDateToClickhouseDateTime,
   PreferredClickhouseService,
@@ -369,7 +369,7 @@ async function getObservationsFromEventsTableInternal<T>(
       queryBuilder
         .selectIO(
           renderingProps.truncated,
-          env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT,
+          env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT,
         )
         .selectFieldSet("metadata");
     }
@@ -464,7 +464,7 @@ export const getObservationByIdFromEventsTable = async ({
 
   mapped.forEach((observation) => {
     recordDistribution(
-      "langfuse.query_by_id_age",
+      "hanzo.query_by_id_age",
       new Date().getTime() - observation.startTime.getTime(),
       {
         table: "events",
@@ -472,7 +472,7 @@ export const getObservationByIdFromEventsTable = async ({
     );
   });
   if (mapped.length === 0) {
-    throw new LangfuseNotFoundError(`Observation with id ${id} not found`);
+    throw new HanzoNotFoundError(`Observation with id ${id} not found`);
   }
 
   if (mapped.length > 1) {
@@ -510,7 +510,7 @@ async function getObservationByIdFromEventsTableInternal({
     .when(fetchWithInputOutput, (b) =>
       b.selectIO(
         renderingProps.truncated,
-        env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT,
+        env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT,
       ),
     )
     .whereRaw("span_id = {id: String}", { id })
@@ -607,10 +607,10 @@ export const getTraceByIdFromEventsTable = async ({
   if (renderingProps.truncated) {
     queryBuilder
       .select(
-        `leftUTF8(t.input_truncated, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as input`,
+        `leftUTF8(t.input_truncated, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as input`,
       )
       .select(
-        `leftUTF8(t.output_truncated, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as output`,
+        `leftUTF8(t.output_truncated, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as output`,
       );
   } else {
     queryBuilder.selectColumns("t.input", "t.output");
@@ -649,7 +649,7 @@ export const getTraceByIdFromEventsTable = async ({
 
   res.forEach((trace) => {
     recordDistribution(
-      "langfuse.query_by_id_age",
+      "hanzo.query_by_id_age",
       new Date().getTime() - trace.timestamp.getTime(),
       {
         table: "events",
@@ -1837,7 +1837,7 @@ export const deleteEventsByTraceIds = async (
     query,
     params: { projectId, traceIds },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1897,7 +1897,7 @@ export const deleteEventsByProjectId = async (
     query,
     params: { projectId },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags,
     clickhouseSettings: {
@@ -2010,7 +2010,7 @@ export const deleteEventsOlderThanDays = async (
       cutoffDate: convertDateToClickhouseDateTime(beforeDate),
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -2050,10 +2050,10 @@ export const getObservationsBatchIOFromEventsTable = async (opts: {
   const maxTimestamp = new Date(opts.maxStartTime.getTime() + 1000); // +1 second buffer
 
   const inputSelect = truncated
-    ? `leftUTF8(e.input, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as input`
+    ? `leftUTF8(e.input, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as input`
     : `e.input as input`;
   const outputSelect = truncated
-    ? `leftUTF8(e.output, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as output`
+    ? `leftUTF8(e.output, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as output`
     : `e.output as output`;
 
   const query = `

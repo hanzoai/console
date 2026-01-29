@@ -381,7 +381,7 @@ export class SlackService {
       const result = await params.client.chat.postMessage({
         channel: params.channelId,
         blocks: params.blocks,
-        text: params.text || "Langfuse Notification",
+        text: params.text || "Hanzo Notification",
         unfurl_links: false,
         unfurl_media: false,
       });

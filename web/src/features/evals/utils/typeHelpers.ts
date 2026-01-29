@@ -16,7 +16,7 @@ export const getMaintainer = (
     if (evalTemplate.partner) {
       return `${getPartnerName(evalTemplate.partner)} maintained`;
     }
-    return "Langfuse maintained";
+    return "Hanzo maintained";
   }
   return "User maintained";
 };

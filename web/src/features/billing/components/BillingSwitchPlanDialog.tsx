@@ -1,4 +1,4 @@
-// Langfuse Cloud only
+// Hanzo Cloud only
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -77,7 +77,7 @@ export const BillingSwitchPlanDialog = ({
             <DialogTitle>Plans</DialogTitle>
             <ActionButton
               variant="secondary"
-              href="https://langfuse.com/pricing"
+              href="https://hanzo.com/pricing"
             >
               Comparison of plans ↗
             </ActionButton>
@@ -132,7 +132,7 @@ export const BillingSwitchPlanDialog = ({
                         <div className="text-sm text-muted-foreground">
                           + {product.checkout?.usagePrice},{" "}
                           <a
-                            href="https://langfuse.com/pricing#pricing-calculator"
+                            href="https://hanzo.com/pricing#pricing-calculator"
                             target="_blank"
                             rel="noreferrer"
                             className="underline"
@@ -156,7 +156,7 @@ export const BillingSwitchPlanDialog = ({
                       </ul>
                     </div>
                     <Link
-                      href="https://langfuse.com/pricing"
+                      href="https://hanzo.com/pricing"
                       target="_blank"
                       className="mt-auto block py-4 text-sm text-muted-foreground hover:text-foreground"
                     >

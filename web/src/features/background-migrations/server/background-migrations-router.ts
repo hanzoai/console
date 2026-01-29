@@ -7,18 +7,18 @@ import {
 import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env.mjs";
 
-const denyOnLangfuseCloud = () => {
-  if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+const denyOnHanzoCloud = () => {
+  if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "Background migrations are not available in Langfuse Cloud",
+      message: "Background migrations are not available in Hanzo Cloud",
     });
   }
 };
 
 export const backgroundMigrationsRouter = createTRPCRouter({
   all: authenticatedProcedure.query(async ({ ctx }) => {
-    denyOnLangfuseCloud();
+    denyOnHanzoCloud();
     const backgroundMigrations = await ctx.prisma.backgroundMigration.findMany({
       orderBy: {
         name: "asc",
@@ -28,7 +28,7 @@ export const backgroundMigrationsRouter = createTRPCRouter({
     return { migrations: backgroundMigrations };
   }),
   status: authenticatedProcedure.query(async ({ ctx }) => {
-    denyOnLangfuseCloud();
+    denyOnHanzoCloud();
     const backgroundMigrations = await ctx.prisma.backgroundMigration.findMany({
       orderBy: {
         name: "asc",
@@ -52,7 +52,7 @@ export const backgroundMigrationsRouter = createTRPCRouter({
   retry: adminProcedure
     .input(z.object({ name: z.string(), adminApiKey: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      denyOnLangfuseCloud();
+      denyOnHanzoCloud();
 
       const backgroundMigration =
         await ctx.prisma.backgroundMigration.findUnique({

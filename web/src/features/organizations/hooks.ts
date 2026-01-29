@@ -24,12 +24,12 @@ export const useOrganization = (organizationId: string | null) => {
   return organization ?? null;
 };
 
-export const useLangfuseCloudRegion = (): {
-  isLangfuseCloud: boolean;
+export const useHanzoCloudRegion = (): {
+  isHanzoCloud: boolean;
   region: string | undefined;
 } => {
   return {
-    isLangfuseCloud: Boolean(env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION),
-    region: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+    isHanzoCloud: Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION),
+    region: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
   };
 };

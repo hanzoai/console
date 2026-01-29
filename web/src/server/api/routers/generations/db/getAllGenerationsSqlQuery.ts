@@ -30,7 +30,7 @@ export async function getAllGenerations({
     limit: input.limit,
   };
   let generations =
-    env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
+    env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
       ? await getObservationsWithModelDataFromEventsTable(queryOpts)
       : await getObservationsTableWithModelData(queryOpts);
 

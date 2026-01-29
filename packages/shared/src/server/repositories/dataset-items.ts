@@ -5,7 +5,7 @@ import { datasetItemsFilterCols } from "./dataset-items-columns";
 import {
   InternalServerError,
   InvalidRequestError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
 } from "../../errors";
 import { DatasetItemValidator } from "../services/DatasetService";
 import {
@@ -57,7 +57,7 @@ async function getDatasets(props: {
   });
 
   if (datasets.length !== props.datasetIds.length)
-    throw new LangfuseNotFoundError(
+    throw new HanzoNotFoundError(
       `One or more datasets not found for project ${props.projectId}`,
     );
 
@@ -91,7 +91,7 @@ async function getDatasetByName(props: {
     },
   });
   if (!dataset) {
-    throw new LangfuseNotFoundError(
+    throw new HanzoNotFoundError(
       `Dataset ${props.datasetName} not found for project ${props.projectId}`,
     );
   }
@@ -290,7 +290,7 @@ export async function upsertDatasetItem(
       datasetItemId: props.datasetItemId,
     });
     if (!!existingItem && existingItem.datasetId !== dataset.id) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `Dataset item with id ${props.datasetItemId} not found for project ${props.projectId}`,
       );
     }
@@ -411,7 +411,7 @@ export async function upsertDatasetItem(
 /**
  * Deletes a dataset item by ID.
  *
- * @throws LangfuseNotFoundError if item doesn't exist
+ * @throws HanzoNotFoundError if item doesn't exist
  */
 export async function deleteDatasetItem(props: {
   projectId: string;
@@ -425,7 +425,7 @@ export async function deleteDatasetItem(props: {
   });
 
   if (!item) {
-    throw new LangfuseNotFoundError(
+    throw new HanzoNotFoundError(
       `Dataset item with id ${props.datasetItemId} not found for project ${props.projectId}`,
     );
   }

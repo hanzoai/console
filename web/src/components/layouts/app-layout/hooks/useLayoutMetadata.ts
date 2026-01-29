@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from "react";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import { env } from "@/src/env.mjs";
 import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
 
@@ -22,13 +22,13 @@ export function useLayoutMetadata(
   activePathName: string | undefined,
   _navigation: NavigationItem[],
 ) {
-  const { region } = useLangfuseCloudRegion();
+  const { region } = useHanzoCloudRegion();
 
   return useMemo(() => {
     const basePath = env.NEXT_PUBLIC_BASE_PATH ?? "";
 
     // Determine page title from active route
-    const title = activePathName ? `${activePathName} | Langfuse` : "Langfuse";
+    const title = activePathName ? `${activePathName} | Hanzo` : "Hanzo";
 
     // Use dev favicon in DEV region for visual distinction
     // Using SVG for modern browsers with PNG fallback specified in sizes

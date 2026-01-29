@@ -55,7 +55,7 @@ export default async function handler(
 
     if (
       !AdminApiAuthService.handleAdminAuth(req, res, {
-        isAllowedOnLangfuseCloud: true,
+        isAllowedOnHanzoCloud: true,
       })
     ) {
       return;

@@ -42,29 +42,29 @@ jobs:
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
-          # Clone langfuse-python repository
-          git clone https://github.com/langfuse/langfuse-python.git ../langfuse-python
-          cd ../langfuse-python
+          # Clone hanzo-python repository
+          git clone https://github.com/hanzo/hanzo-python.git ../hanzo-python
+          cd ../hanzo-python
 
-          git config user.name "langfuse-bot"
-          git config user.email "langfuse-bot@langfuse.com"
+          git config user.name "hanzo-bot"
+          git config user.email "hanzo-bot@hanzo.com"
           echo "$GH_ACCESS_TOKEN" | gh auth login --with-token
           gh auth setup-git
 
           # Delete existing API contents
-          rm -rf langfuse/api/*
+          rm -rf hanzo/api/*
 
           # Copy generated Python SDK files
-          cp -r ../langfuse/generated/python/* langfuse/api/
+          cp -r ../hanzo/generated/python/* hanzo/api/
 
           # Remove unnecessary integration tests created by Fern
           # (could not find the right option to prevent this in generation step)
-          rm -rf langfuse/api/tests
+          rm -rf hanzo/api/tests
 
           # Install poetry and format
           pip install poetry
           poetry install --all-extras
-          poetry run ruff format langfuse/api
+          poetry run ruff format hanzo/api
 
           # Check for changes and show diff for debugging
           if git diff --quiet; then
@@ -73,34 +73,34 @@ jobs:
           fi
 
           # Close existing api-spec-bot PRs
-          gh pr list --author langfuse-bot --state open --json number --jq '.[].number' | xargs -I {} gh pr close {}
+          gh pr list --author hanzo-bot --state open --json number --jq '.[].number' | xargs -I {} gh pr close {}
 
           # Get the GitHub username of the original commit author
-          cd ../langfuse
-          ORIGINAL_AUTHOR=$(gh api repos/langfuse/langfuse/commits/${GITHUB_SHA} --jq '.author.login')
-          cd ../langfuse-python
+          cd ../hanzo
+          ORIGINAL_AUTHOR=$(gh api repos/hanzo/hanzo/commits/${GITHUB_SHA} --jq '.author.login')
+          cd ../hanzo-python
 
           # Create new branch and push changes
           BRANCH_NAME="api-spec-bot-${GITHUB_SHA::7}"
           git checkout -b "$BRANCH_NAME"
           git add .
-          git commit -m "feat(api): update API spec from langfuse/langfuse ${GITHUB_SHA::7}"
+          git commit -m "feat(api): update API spec from hanzo/hanzo ${GITHUB_SHA::7}"
           git push origin "$BRANCH_NAME"
 
           # Create PR with original author as reviewer
-          gh pr create --title "feat(api): update API spec from langfuse/langfuse ${GITHUB_SHA::7}" --body "" --reviewer "$ORIGINAL_AUTHOR"
+          gh pr create --title "feat(api): update API spec from hanzo/hanzo ${GITHUB_SHA::7}" --body "" --reviewer "$ORIGINAL_AUTHOR"
 
       - name: Update TypeScript SDK
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
-          # Clone langfuse-js repository
-          git clone https://github.com/langfuse/langfuse-js.git ../langfuse-js
-          cd ../langfuse-js
+          # Clone hanzo-js repository
+          git clone https://github.com/hanzo/hanzo-js.git ../hanzo-js
+          cd ../hanzo-js
 
           # Configure git
-          git config user.name "langfuse-bot"
-          git config user.email "langfuse-bot@langfuse.com"
+          git config user.name "hanzo-bot"
+          git config user.email "hanzo-bot@hanzo.com"
           echo "$GH_ACCESS_TOKEN" | gh auth login --with-token
           gh auth setup-git
 
@@ -108,7 +108,7 @@ jobs:
           rm -rf packages/core/src/api/*
 
           # Copy generated TypeScript SDK files
-          cp -r ../langfuse/generated/typescript/* packages/core/src/api/
+          cp -r ../hanzo/generated/typescript/* packages/core/src/api/
 
           # Patch compilation error inducing output
           # Without this patch, the JS SDK will not build due to
@@ -131,19 +131,19 @@ jobs:
           fi
 
           # Close existing api-spec-bot PRs
-          gh pr list --author langfuse-bot --state open --json number --jq '.[].number' | xargs -I {} gh pr close {}
+          gh pr list --author hanzo-bot --state open --json number --jq '.[].number' | xargs -I {} gh pr close {}
 
           # Get the GitHub username of the original commit author
-          cd ../langfuse
-          ORIGINAL_AUTHOR=$(gh api repos/langfuse/langfuse/commits/${GITHUB_SHA} --jq '.author.login')
-          cd ../langfuse-js
+          cd ../hanzo
+          ORIGINAL_AUTHOR=$(gh api repos/hanzo/hanzo/commits/${GITHUB_SHA} --jq '.author.login')
+          cd ../hanzo-js
 
           # Create new branch and push changes
           BRANCH_NAME="api-spec-bot-${GITHUB_SHA::7}"
           git checkout -b "$BRANCH_NAME"
           git add .
-          git commit -m "feat(api): update API spec from langfuse/langfuse ${GITHUB_SHA::7}" --no-verify
+          git commit -m "feat(api): update API spec from hanzo/hanzo ${GITHUB_SHA::7}" --no-verify
           git push origin "$BRANCH_NAME"
 
           # Create PR with original author as reviewer
-          gh pr create --title "feat(api): update API spec from langfuse/langfuse ${GITHUB_SHA::7}" --body "" --reviewer "$ORIGINAL_AUTHOR"
+          gh pr create --title "feat(api): update API spec from hanzo/hanzo ${GITHUB_SHA::7}" --body "" --reviewer "$ORIGINAL_AUTHOR"

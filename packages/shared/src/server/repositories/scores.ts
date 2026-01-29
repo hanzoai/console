@@ -466,7 +466,7 @@ const getScoresForTracesInternal = async <
     );
 
     recordDistribution(
-      "langfuse.query_by_id_age",
+      "hanzo.query_by_id_age",
       new Date().getTime() - score.timestamp.getTime(),
       {
         table: "scores",
@@ -1164,7 +1164,7 @@ export const deleteScores = async (projectId: string, scoreIds: string[]) => {
       scoreIds,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1225,7 +1225,7 @@ export const deleteScoresByProjectId = async (
     query,
     params: { projectId },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags,
   });
@@ -1283,7 +1283,7 @@ export const deleteScoresOlderThanDays = async (
       cutoffDate: convertDateToClickhouseDateTime(beforeDate),
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1566,7 +1566,7 @@ export const getScoresForBlobStorageExport = function (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 
@@ -1638,7 +1638,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
       clickhouse_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
@@ -1657,33 +1657,33 @@ export const getScoresForAnalyticsIntegrations = async function* (
 
     yield {
       timestamp: record.timestamp,
-      langfuse_score_name: record.name,
-      langfuse_score_value: record.value,
-      langfuse_score_comment: record.comment,
-      langfuse_score_metadata: record.metadata,
-      langfuse_score_string_value: record.string_value,
-      langfuse_score_data_type: record.data_type,
-      langfuse_trace_name: record.trace_name,
-      langfuse_trace_id: effectiveTraceId,
-      langfuse_user_url: record.trace_user_id
+      hanzo_score_name: record.name,
+      hanzo_score_value: record.value,
+      hanzo_score_comment: record.comment,
+      hanzo_score_metadata: record.metadata,
+      hanzo_score_string_value: record.string_value,
+      hanzo_score_data_type: record.data_type,
+      hanzo_trace_name: record.trace_name,
+      hanzo_trace_id: effectiveTraceId,
+      hanzo_user_url: record.trace_user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.trace_user_id as string)}`
         : undefined,
-      langfuse_id: record.id,
-      langfuse_session_id: effectiveSessionId,
-      langfuse_project_id: projectId,
-      langfuse_user_id: record.trace_user_id || null,
-      langfuse_release: record.trace_release,
-      langfuse_tags: record.trace_tags,
-      langfuse_environment: record.environment,
-      langfuse_event_version: "1.0.0",
-      langfuse_score_entity_type: record.score_trace_id
+      hanzo_id: record.id,
+      hanzo_session_id: effectiveSessionId,
+      hanzo_project_id: projectId,
+      hanzo_user_id: record.trace_user_id || null,
+      hanzo_release: record.trace_release,
+      hanzo_tags: record.trace_tags,
+      hanzo_environment: record.environment,
+      hanzo_event_version: "1.0.0",
+      hanzo_score_entity_type: record.score_trace_id
         ? "trace"
         : record.score_session_id
           ? "session"
           : record.score_dataset_run_id
             ? "dataset_run"
             : "unknown",
-      langfuse_dataset_run_id: record.score_dataset_run_id,
+      hanzo_dataset_run_id: record.score_dataset_run_id,
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsScoreEvent;

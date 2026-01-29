@@ -13,21 +13,21 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_CORE_DATA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_CORE_DATA_UPLOAD_REGION,
+      accessKeyId: env.HANZO_S3_CORE_DATA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_CORE_DATA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_CORE_DATA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_CORE_DATA_UPLOAD_REGION,
       forcePathStyle:
-        env.LANGFUSE_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.LANGFUSE_S3_CORE_DATA_UPLOAD_SSE,
-      awsSseKmsKeyId: env.LANGFUSE_S3_CORE_DATA_UPLOAD_SSE_KMS_KEY_ID,
+        env.HANZO_S3_CORE_DATA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.HANZO_S3_CORE_DATA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.HANZO_S3_CORE_DATA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3StorageServiceClient;
 };
 
 export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
-  if (!env.LANGFUSE_S3_CORE_DATA_UPLOAD_BUCKET) {
+  if (!env.HANZO_S3_CORE_DATA_UPLOAD_BUCKET) {
     logger.error("No bucket name provided for core data S3 export");
     throw new Error(
       "Must provide HANZO_S3_CORE_DATA_UPLOAD_BUCKET to use core data S3 exports",
@@ -37,7 +37,7 @@ export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
   logger.info("Starting core data S3 export");
 
   const s3Client = getS3StorageServiceClient(
-    env.LANGFUSE_S3_CORE_DATA_UPLOAD_BUCKET,
+    env.HANZO_S3_CORE_DATA_UPLOAD_BUCKET,
   );
 
   // Fetch table data
@@ -134,7 +134,7 @@ export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
       surveys,
     }).map(async ([key, value]) =>
       s3Client.uploadFile({
-        fileName: `${env.LANGFUSE_S3_CORE_DATA_UPLOAD_PREFIX}${key}.jsonl`,
+        fileName: `${env.HANZO_S3_CORE_DATA_UPLOAD_PREFIX}${key}.jsonl`,
         fileType: "application/x-ndjson",
         data: value.map((item) => JSON.stringify(item)).join("\n"),
       }),

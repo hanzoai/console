@@ -14,7 +14,7 @@ import Header from "@/src/components/layouts/header";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import {
-  useLangfuseCloudRegion,
+  useHanzoCloudRegion,
   useQueryOrganization,
 } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
@@ -30,7 +30,7 @@ const aiFeaturesSchema = z.object({
 
 export default function AIFeatureSwitch() {
   const { update: updateSession } = useSession();
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isHanzoCloud } = useHanzoCloudRegion();
   const capture = usePostHogClientCapture();
   const organization = useQueryOrganization();
   const [isAIFeatureSwitchEnabled, setIsAIFeatureSwitchEnabled] = useState(
@@ -80,7 +80,7 @@ export default function AIFeatureSwitch() {
     });
   }
 
-  if (!isLangfuseCloud) return null;
+  if (!isHanzoCloud) return null;
 
   return (
     <div>
@@ -98,7 +98,7 @@ export default function AIFeatureSwitch() {
               will not be used for training models. Applicable HIPAA, SOC2,
               GDPR, and ISO 27001 compliance remains intact.{" "}
               <a
-                href="https://langfuse.com/security/ai-features"
+                href="https://hanzo.com/security/ai-features"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-primary hover:underline"
@@ -147,7 +147,7 @@ export default function AIFeatureSwitch() {
               <br />
               <br />{" "}
               <a
-                href="https://langfuse.com/security/ai-features"
+                href="https://hanzo.com/security/ai-features"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-primary hover:underline"

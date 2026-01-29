@@ -205,7 +205,7 @@ export const evalRouter = createTRPCRouter({
         projectId: input.projectId,
         scope: "evalJob:read",
       });
-      return env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT;
+      return env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT;
     }),
   counts: protectedProjectProcedure
     .input(z.object({ projectId: z.string() }))
@@ -806,9 +806,9 @@ export const evalRouter = createTRPCRouter({
        * - If a template already exists, we will create a new version of the template
        * - Otherwise, we will create a new template with version 1
        *
-       * Option 2: Clone a langfuse managed template
-       * - Find the langfuse managed template
-       * - Clone the langfuse managed template by creating a new project-level template from the cloned langfuse managed template
+       * Option 2: Clone a hanzo managed template
+       * - Find the hanzo managed template
+       * - Clone the hanzo managed template by creating a new project-level template from the cloned hanzo managed template
        */
 
       // find all versions of the project-level template, should return null if input.cloneSourceId is provided
@@ -830,7 +830,7 @@ export const evalRouter = createTRPCRouter({
           ? templates[0]
           : undefined;
 
-        // Create a new project-level template either by cloning a langfuse managed template or by creating a new project-level template
+        // Create a new project-level template either by cloning a hanzo managed template or by creating a new project-level template
         const evalTemplate = await tx.evalTemplate.create({
           data: {
             version: (latestTemplate?.version ?? 0) + 1,
@@ -858,14 +858,14 @@ export const evalRouter = createTRPCRouter({
          */
         if (input.referencedEvaluators === EvalReferencedEvaluators.UPDATE) {
           /**
-           * Option 2: Clone a langfuse managed template
+           * Option 2: Clone a hanzo managed template
            *
-           * - Find the langfuse managed template
-           * - Create a new project-level template from the cloned langfuse managed template
-           * - Update all job configs that had referenced the langfuse managed template to now reference the cloned project-level template
+           * - Find the hanzo managed template
+           * - Create a new project-level template from the cloned hanzo managed template
+           * - Update all job configs that had referenced the hanzo managed template to now reference the cloned project-level template
            */
           if (input.cloneSourceId) {
-            // find the langfuse managed template to clone
+            // find the hanzo managed template to clone
             const cloneSourceTemplate = await tx.evalTemplate.findUnique({
               where: {
                 id: input.cloneSourceId,
@@ -876,11 +876,11 @@ export const evalRouter = createTRPCRouter({
             if (!cloneSourceTemplate) {
               throw new TRPCError({
                 code: "NOT_FOUND",
-                message: "Langfuse managed template not found",
+                message: "Hanzo managed template not found",
               });
             }
 
-            // find all versions of the langfuse managed template
+            // find all versions of the hanzo managed template
             const cloneSourceTemplateList = await tx.evalTemplate.findMany({
               where: {
                 projectId: null,
@@ -889,7 +889,7 @@ export const evalRouter = createTRPCRouter({
             });
 
             if (Boolean(cloneSourceTemplateList.length)) {
-              // update all job configs that had referenced any version of the langfuse managed template to now reference the cloned user managed template
+              // update all job configs that had referenced any version of the hanzo managed template to now reference the cloned user managed template
               await tx.jobConfiguration.updateMany({
                 where: {
                   evalTemplateId: {

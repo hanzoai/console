@@ -9,7 +9,7 @@ export function createStripeClientReference(orgId: string): string | null {
   if (!orgId) {
     return null;
   }
-  const cloudRegion = env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION || "DEFAULT";
+  const cloudRegion = env.NEXT_PUBLIC_HANZO_CLOUD_REGION || "DEFAULT";
   return `${cloudRegion}_${orgId}`;
 }
 
@@ -52,6 +52,6 @@ export function isStripeClientReferenceFromCurrentCloudRegion(
   if (!clientReferenceId) {
     return false;
   }
-  const currentRegion = env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION || "DEFAULT";
+  const currentRegion = env.NEXT_PUBLIC_HANZO_CLOUD_REGION || "DEFAULT";
   return clientReferenceId.startsWith(`${currentRegion}_`);
 }

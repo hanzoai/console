@@ -112,7 +112,7 @@ export const GitHubDispatchActionForm: React.FC<
                 ? " Leave empty to keep existing token."
                 : ""}{" "}
               <Link
-                href="https://github.com/settings/tokens/new?scopes=repo&description=Langfuse%20Automation"
+                href="https://github.com/settings/tokens/new?scopes=repo&description=Hanzo%20Automation"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center text-primary hover:underline"

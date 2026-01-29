@@ -2230,7 +2230,7 @@ describe("automations trpc", () => {
         actionConfig: {
           type: "GITHUB_DISPATCH",
           url: "https://api.github.com/repos/owner/repo/dispatches",
-          eventType: "langfuse-prompt-created",
+          eventType: "hanzo-prompt-created",
           githubToken: "ghp_test_token_123456",
         },
       });
@@ -2248,7 +2248,7 @@ describe("automations trpc", () => {
         config: expect.objectContaining({
           type: "GITHUB_DISPATCH",
           url: "https://api.github.com/repos/owner/repo/dispatches",
-          eventType: "langfuse-prompt-created",
+          eventType: "hanzo-prompt-created",
         }),
       });
 

@@ -31,8 +31,8 @@ const DATASET_RUN_SCORE_NAMES = [
  * Orchestrates seeding operations across ClickHouse and PostgreSQL.
  *
  * Use createXxxData() for specific data types:
- * - createDatasetExperimentData(): Dataset runs in langfuse-prompt-experiments env
- * - createEvaluationData(): Evaluation data in langfuse-evaluation env
+ * - createDatasetExperimentData(): Dataset runs in hanzo-prompt-experiments env
+ * - createEvaluationData(): Evaluation data in hanzo-evaluation env
  * - createSyntheticData(): Large synthetic data in default env
  * - executeFullSeed(): All data types together
  */
@@ -529,7 +529,7 @@ export class SeederOrchestrator {
             {
               role: "assistant",
               content:
-                "I can see the Langfuse logo in the image. It appears to be a modern, clean design with distinctive branding elements. The attached PDF contains additional documentation about the Bitcoin whitepaper.",
+                "I can see the Hanzo logo in the image. It appears to be a modern, clean design with distinctive branding elements. The attached PDF contains additional documentation about the Bitcoin whitepaper.",
             },
           ]),
           metadata: {

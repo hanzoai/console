@@ -18,7 +18,7 @@ export class OtelIngestionQueue {
 
   public static getShardNames() {
     return Array.from(
-      { length: env.LANGFUSE_OTEL_INGESTION_QUEUE_SHARD_COUNT },
+      { length: env.HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT },
       (_, i) => `${QueueName.OtelIngestionQueue}${i > 0 ? `-${i}` : ""}`,
     );
   }
@@ -55,7 +55,7 @@ export class OtelIngestionQueue {
       (env.REDIS_CLUSTER_ENABLED === "true"
         ? getShardIndex(
             randomUUID(),
-            env.LANGFUSE_OTEL_INGESTION_QUEUE_SHARD_COUNT,
+            env.HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT,
           )
         : 0);
 

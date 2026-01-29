@@ -8,7 +8,7 @@ service:
   endpoints:
     metrics:
       docs: |
-        Get metrics from the Langfuse project using a query object. V2 endpoint with optimized performance.
+        Get metrics from the Hanzo project using a query object. V2 endpoint with optimized performance.
 
         ## V2 Differences
         - Supports `observations`, `scores-numeric`, and `scores-categorical` views only (traces view not supported)
@@ -16,7 +16,7 @@ service:
         - Backwards-compatible: traceName, traceRelease, traceVersion dimensions are still available on observations view
         - High cardinality dimensions are not supported and will return a 400 error (see below)
 
-        For more details, see the [Metrics API documentation](https://langfuse.com/docs/metrics/features/metrics-api).
+        For more details, see the [Metrics API documentation](https://hanzo.com/docs/metrics/features/metrics-api).
 
         ## Available Views
 

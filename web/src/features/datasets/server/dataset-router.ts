@@ -18,8 +18,8 @@ import {
   timeFilter,
   isClickhouseFilterColumn,
   optionalPaginationZod,
-  LangfuseConflictError,
-  LangfuseNotFoundError,
+  HanzoConflictError,
+  HanzoNotFoundError,
 } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
 import {
@@ -667,7 +667,7 @@ export const datasetRouter = createTRPCRouter({
         datasetId: input.datasetId,
       });
       if (!item) {
-        throw new LangfuseNotFoundError("Dataset item not found");
+        throw new HanzoNotFoundError("Dataset item not found");
       }
       return item;
     }),
@@ -999,7 +999,7 @@ export const datasetRouter = createTRPCRouter({
           error instanceof Prisma.PrismaClientKnownRequestError &&
           error.code === "P2025"
         ) {
-          throw new LangfuseConflictError(
+          throw new HanzoConflictError(
             "The dataset you are trying to delete has likely been deleted",
           );
         }

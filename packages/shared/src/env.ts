@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { removeEmptyEnvVariables } from "./utils/environment";
 
 const EnvSchema = z.object({
-  NEXT_PUBLIC_LANGFUSE_CLOUD_REGION: z.string().optional(),
+  NEXT_PUBLIC_HANZO_CLOUD_REGION: z.string().optional(),
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
@@ -45,10 +45,10 @@ const EnvSchema = z.object({
       "ENCRYPTION_KEY must be 256 bits, 64 string characters in hex format, generate via: openssl rand -hex 32",
     )
     .optional(),
-  LANGFUSE_CACHE_MODEL_MATCH_ENABLED: z.enum(["true", "false"]).default("true"),
-  LANGFUSE_CACHE_MODEL_MATCH_TTL_SECONDS: z.coerce.number().default(86400), // 24 hours
-  LANGFUSE_CACHE_PROMPT_ENABLED: z.enum(["true", "false"]).default("true"),
-  LANGFUSE_CACHE_PROMPT_TTL_SECONDS: z.coerce.number().default(300), // 5 minutes
+  HANZO_CACHE_MODEL_MATCH_ENABLED: z.enum(["true", "false"]).default("true"),
+  HANZO_CACHE_MODEL_MATCH_TTL_SECONDS: z.coerce.number().default(86400), // 24 hours
+  HANZO_CACHE_PROMPT_ENABLED: z.enum(["true", "false"]).default("true"),
+  HANZO_CACHE_PROMPT_TTL_SECONDS: z.coerce.number().default(300), // 5 minutes
   CLICKHOUSE_URL: z.string().url(),
   CLICKHOUSE_READ_ONLY_URL: z.string().url().optional(),
   CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
@@ -76,21 +76,21 @@ const EnvSchema = z.object({
     .number()
     .nonnegative()
     .default(15_000),
-  LANGFUSE_INGESTION_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
-  LANGFUSE_OTEL_INGESTION_QUEUE_SHARD_COUNT: z.coerce
+  HANZO_INGESTION_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
+  HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT: z.coerce
     .number()
     .positive()
     .default(1),
-  LANGFUSE_TRACE_UPSERT_QUEUE_SHARD_COUNT: z.coerce
+  HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT: z.coerce
     .number()
     .positive()
     .default(1),
-  LANGFUSE_TRACE_UPSERT_QUEUE_ATTEMPTS: z.coerce.number().positive().default(2),
-  LANGFUSE_TRACE_DELETE_DELAY_MS: z.coerce
+  HANZO_TRACE_UPSERT_QUEUE_ATTEMPTS: z.coerce.number().positive().default(2),
+  HANZO_TRACE_DELETE_DELAY_MS: z.coerce
     .number()
     .nonnegative()
     .default(5_000),
-  LANGFUSE_TRACE_DELETE_SKIP_PROJECT_IDS: z
+  HANZO_TRACE_DELETE_SKIP_PROJECT_IDS: z
     .string()
     .optional()
     .transform((s) => (s ? s.split(",").map((id) => id.trim()) : [])),
@@ -99,7 +99,7 @@ const EnvSchema = z.object({
     .enum(["trace", "debug", "info", "warn", "error", "fatal"])
     .optional(),
   HANZO_LOG_FORMAT: z.enum(["text", "json"]).default("text"),
-  LANGFUSE_LOG_PROPAGATED_HEADERS: z
+  HANZO_LOG_PROPAGATED_HEADERS: z
     .string()
     .optional()
     .transform((s) =>
@@ -108,68 +108,68 @@ const EnvSchema = z.object({
   ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_CONCURRENT_WRITES: z.coerce.number().positive().default(50),
-  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: z.string(), // Langfuse requires a bucket name for S3 Event Uploads.
-  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
-  LANGFUSE_S3_EVENT_UPLOAD_REGION: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
+  HANZO_S3_CONCURRENT_WRITES: z.coerce.number().positive().default(50),
+  HANZO_S3_EVENT_UPLOAD_BUCKET: z.string(), // Hanzo requires a bucket name for S3 Event Uploads.
+  HANZO_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
+  HANZO_S3_EVENT_UPLOAD_REGION: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_EVENT_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
-  LANGFUSE_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
-  LANGFUSE_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+  HANZO_S3_EVENT_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
+  HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
+  HANZO_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
-  LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
-  LANGFUSE_USE_AZURE_BLOB: z.enum(["true", "false"]).default("false"),
-  LANGFUSE_AZURE_SKIP_CONTAINER_CHECK: z
+  HANZO_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
+  HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
+  HANZO_USE_AZURE_BLOB: z.enum(["true", "false"]).default("false"),
+  HANZO_AZURE_SKIP_CONTAINER_CHECK: z
     .enum(["true", "false"])
     .default("true"),
-  LANGFUSE_USE_GOOGLE_CLOUD_STORAGE: z.enum(["true", "false"]).default("false"),
-  LANGFUSE_GOOGLE_CLOUD_STORAGE_CREDENTIALS: z.string().optional(),
+  HANZO_USE_GOOGLE_CLOUD_STORAGE: z.enum(["true", "false"]).default("false"),
+  HANZO_GOOGLE_CLOUD_STORAGE_CREDENTIALS: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
 
-  LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG: z
+  HANZO_ENABLE_BLOB_STORAGE_FILE_LOG: z
     .enum(["true", "false"])
     .default("true"),
 
-  LANGFUSE_S3_LIST_MAX_KEYS: z.coerce.number().positive().default(200),
-  LANGFUSE_S3_RATE_ERROR_SLOWDOWN_ENABLED: z
+  HANZO_S3_LIST_MAX_KEYS: z.coerce.number().positive().default(200),
+  HANZO_S3_RATE_ERROR_SLOWDOWN_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS: z.coerce
+  HANZO_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS: z.coerce
     .number()
     .positive()
     .default(3600), // 1 hour
-  LANGFUSE_S3_CORE_DATA_EXPORT_IS_ENABLED: z
+  HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
-  LANGFUSE_S3_CORE_DATA_EXPORT_SSE: z.enum(["AES256", "aws:kms"]).optional(),
-  LANGFUSE_S3_CORE_DATA_EXPORT_SSE_KMS_KEY_ID: z.string().optional(),
-  LANGFUSE_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
+  HANZO_S3_CORE_DATA_EXPORT_SSE: z.enum(["AES256", "aws:kms"]).optional(),
+  HANZO_S3_CORE_DATA_EXPORT_SSE_KMS_KEY_ID: z.string().optional(),
+  HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
     .enum(["true", "false"])
     .default("false"),
 
-  LANGFUSE_CUSTOM_SSO_EMAIL_CLAIM: z.string().default("email"),
-  LANGFUSE_CUSTOM_SSO_NAME_CLAIM: z.string().default("name"),
-  LANGFUSE_CUSTOM_SSO_SUB_CLAIM: z.string().default("sub"),
-  LANGFUSE_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES: z.coerce
+  HANZO_CUSTOM_SSO_EMAIL_CLAIM: z.string().default("email"),
+  HANZO_CUSTOM_SSO_NAME_CLAIM: z.string().default("name"),
+  HANZO_CUSTOM_SSO_SUB_CLAIM: z.string().default("sub"),
+  HANZO_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES: z.coerce
     .number()
     .default(80e6), // 80MB
-  LANGFUSE_CLICKHOUSE_DELETION_TIMEOUT_MS: z.coerce.number().default(600_000), // 10 minutes
-  LANGFUSE_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().default(3), // Maximum attempts for socket hang up errors
-  LANGFUSE_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS: z.string().optional(),
-  LANGFUSE_INGESTION_PROCESSING_SAMPLED_PROJECTS: z
+  HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS: z.coerce.number().default(600_000), // 10 minutes
+  HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().default(3), // Maximum attempts for socket hang up errors
+  HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS: z.string().optional(),
+  HANZO_INGESTION_PROCESSING_SAMPLED_PROJECTS: z
     .string()
     .optional()
     .transform((val) => {
@@ -201,19 +201,19 @@ const EnvSchema = z.object({
         return new Map<string, number>();
       }
     }),
-  LANGFUSE_WEBHOOK_WHITELISTED_IPS: z
+  HANZO_WEBHOOK_WHITELISTED_IPS: z
     .string()
     .optional()
     .transform((s) =>
       s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
     ),
-  LANGFUSE_WEBHOOK_WHITELISTED_IP_SEGMENTS: z
+  HANZO_WEBHOOK_WHITELISTED_IP_SEGMENTS: z
     .string()
     .optional()
     .transform((s) =>
       s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
     ),
-  LANGFUSE_WEBHOOK_WHITELISTED_HOST: z
+  HANZO_WEBHOOK_WHITELISTED_HOST: z
     .string()
     .optional()
     .transform((s) =>
@@ -232,54 +232,54 @@ const EnvSchema = z.object({
     ),
   HTTPS_PROXY: z.string().optional(),
 
-  LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT: z.coerce
+  HANZO_SERVER_SIDE_IO_CHAR_LIMIT: z.coerce
     .number()
     .int()
     .positive()
     .default(1_000),
 
-  LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce
+  HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce
     .number()
     .int()
     .positive()
     .default(600_000), // 10 minutes
 
-  LANGFUSE_EVENT_PROPAGATION_WORKER_GLOBAL_CONCURRENCY: z.coerce
+  HANZO_EVENT_PROPAGATION_WORKER_GLOBAL_CONCURRENCY: z.coerce
     .number()
     .positive()
     .default(10),
 
-  LANGFUSE_FETCH_LLM_COMPLETION_TIMEOUT_MS: z.coerce
+  HANZO_FETCH_LLM_COMPLETION_TIMEOUT_MS: z.coerce
     .number()
     .int()
     .positive()
     .default(120_000), // 2 minutes
 
-  LANGFUSE_AWS_BEDROCK_REGION: z.string().optional(),
+  HANZO_AWS_BEDROCK_REGION: z.string().optional(),
 
   // API Performance Flags
   // Whether to add a `FINAL` modifier to the observations CTE in GET /api/public/traces.
   // Can be used to improve performance for self-hosters that are fully on the new OTel SDKs.
-  LANGFUSE_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL: z
+  HANZO_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL: z
     .enum(["true", "false"])
     .default("false"),
   // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
   // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
-  LANGFUSE_SKIP_FINAL_FOR_OTEL_PROJECTS: z
+  HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z
     .enum(["true", "false"])
     .default("false"),
 
-  // Langfuse AI Features
-  LANGFUSE_AI_FEATURES_PUBLIC_KEY: z.string().optional(),
-  LANGFUSE_AI_FEATURES_SECRET_KEY: z.string().optional(),
-  LANGFUSE_AI_FEATURES_HOST: z.string().optional(),
-  LANGFUSE_AI_FEATURES_PROJECT_ID: z.string().optional(),
+  // Hanzo AI Features
+  HANZO_AI_FEATURES_PUBLIC_KEY: z.string().optional(),
+  HANZO_AI_FEATURES_SECRET_KEY: z.string().optional(),
+  HANZO_AI_FEATURES_HOST: z.string().optional(),
+  HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
   // Dataset Service
-  LANGFUSE_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION: z
+  HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION: z
     .enum(["true", "false"])
     .default("true"),
-  LANGFUSE_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION: z
+  HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION: z
     .enum(["true", "false"])
     .default("true"),
 });

@@ -70,7 +70,7 @@ async function buildTracesBaseQuery(
     props.projectId,
   );
   const propagateObservationsTimeBounds =
-    env.LANGFUSE_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
+    env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
 
   let filter = deriveFilters(
     props,

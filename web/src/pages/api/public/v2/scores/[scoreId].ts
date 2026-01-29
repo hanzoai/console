@@ -5,7 +5,7 @@ import {
   GetScoreQueryV2,
   GetScoreResponseV2,
   InternalServerError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
  } from "@hanzo/shared";
 import { logger, traceException } from "@hanzo/shared/src/server";
 
@@ -21,7 +21,7 @@ export default withMiddlewares({
         scoreId: query.scoreId });
 
       if (!score) {
-        throw new LangfuseNotFoundError("Score not found");
+        throw new HanzoNotFoundError("Score not found");
       }
 
       const parsedScore = GetScoreResponseV2.safeParse(score);

@@ -8,7 +8,7 @@ import {
   PostDatasetRunItemsV1Body,
   PostDatasetRunItemsV1Response,
 } from "@/src/features/public-api/types/datasets";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 import { addDatasetRunItemsToEvalQueue } from "@/src/features/evals/server/addDatasetRunItemsToEvalQueue";
 import {
   eventTypes,
@@ -43,7 +43,7 @@ export default withMiddlewares({
       });
 
       if (!datasetItem) {
-        throw new LangfuseNotFoundError("Dataset item not found");
+        throw new HanzoNotFoundError("Dataset item not found");
       }
 
       let finalTraceId = traceId;
@@ -56,13 +56,13 @@ export default withMiddlewares({
           fetchWithInputOutput: false,
         });
         if (observationId && !observation) {
-          throw new LangfuseNotFoundError("Observation not found");
+          throw new HanzoNotFoundError("Observation not found");
         }
         finalTraceId = observation?.traceId;
       }
 
       if (!finalTraceId) {
-        throw new LangfuseNotFoundError("Trace not found");
+        throw new HanzoNotFoundError("Trace not found");
       }
 
       /********************
@@ -102,7 +102,7 @@ export default withMiddlewares({
       };
       // note: currently we do not accept user defined ids for dataset run items
       const ingestionResult = await processEventBatch([event], auth, {
-        isLangfuseInternal: true,
+        isHanzoInternal: true,
       });
       if (ingestionResult.errors.length > 0) {
         const error = ingestionResult.errors[0];
@@ -168,7 +168,7 @@ export default withMiddlewares({
       });
 
       if (!datasetRun) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Dataset run not found for the given project and dataset id",
         );
       }

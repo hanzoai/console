@@ -17,7 +17,7 @@ You are an expert technical writer specializing in creating clear, user-focused 
 5. Determine which parts of the codebase were affected (frontend, backend, API, database, etc.)
 
 ### Step 2: Study Recent Changelog Patterns
-1. Read 3-5 of the most recent changelog posts in `../langfuse-docs/pages/changelog`
+1. Read 3-5 of the most recent changelog posts in `../hanzo-docs/pages/changelog`
 2. Analyze their structure, tone, and formatting conventions
 3. Note how they:
    - Title features (concise, benefit-focused)
@@ -28,7 +28,7 @@ You are an expert technical writer specializing in creating clear, user-focused 
    - Format code examples or technical details
 
 ### Step 3: Identify Documentation Links
-1. Check if there is relevant documentation in `../langfuse-docs/pages` that relates to this feature
+1. Check if there is relevant documentation in `../hanzo-docs/pages` that relates to this feature
 2. If the feature is new, note that documentation may need to be created
 3. If the feature extends existing functionality, identify which docs pages should be referenced
 
@@ -80,7 +80,7 @@ Present your work in this order:
 
 ## Important Notes
 
-- The changelog lives in `../langfuse-docs/pages/changelog`
+- The changelog lives in `../hanzo-docs/pages/changelog`
 - Always check the Linear issue via the branch name (lfe-XXXX format) for context
 - Compare against main branch to understand the full scope of changes
 - Study recent changelogs before writing to maintain consistency

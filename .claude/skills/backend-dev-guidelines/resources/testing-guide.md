@@ -1,6 +1,6 @@
 # Testing Guide - Backend Testing Strategies
 
-Complete guide to testing Langfuse backend services across web, worker, and shared packages.
+Complete guide to testing Hanzo backend services across web, worker, and shared packages.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Complete guide to testing Langfuse backend services across web, worker, and shar
 
 ## Test Types Overview
 
-Langfuse uses multiple testing strategies for different layers:
+Hanzo uses multiple testing strategies for different layers:
 
 | Test Type | Framework | Location | Purpose |
 |-----------|-----------|----------|---------|
@@ -80,8 +80,8 @@ import {
   createEvent,
   createEventsCh,
   getObservationsWithModelDataFromEventsTable,
-} from "@langfuse/shared/src/server";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 
 describe("Event Repository Tests", () => {
@@ -191,11 +191,11 @@ Test tRPC procedures with caller pattern and auth context.
 ```typescript
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
-import { prisma } from "@langfuse/shared/src/db";
-import { createOrgProjectAndApiKey } from "@langfuse/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
 import type { Session } from "next-auth";
 import { v4 } from "uuid";
-import { JobConfigState } from "@langfuse/shared";
+import { JobConfigState } from "@hanzo/shared";
 
 async function prepare() {
   const { project, org } = await createOrgProjectAndApiKey();
@@ -349,7 +349,7 @@ import {
   createScoresCh,
   createTrace,
   createTracesCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { getObservationStream } from "../features/database-read-stream/observation-stream";
 
 describe("batch export test suite", () => {

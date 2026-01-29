@@ -1,5 +1,5 @@
 ---
-description: How to manage authorization and RBAC within full-stack langfuse features
+description: How to manage authorization and RBAC within full-stack hanzo features
 globs: web/
 alwaysApply: true
 ---

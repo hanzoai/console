@@ -22,7 +22,7 @@ service:
       path-parameters:
         traceId:
           type: string
-          docs: The unique langfuse identifier of the trace to delete
+          docs: The unique hanzo identifier of the trace to delete
       response: DeleteTraceResponse
     list:
       docs: Get list of traces

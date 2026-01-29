@@ -4,7 +4,7 @@ import { EventActionSchema } from "./automations";
 
 export const WebhookDefaultHeaders = {
   "content-type": "application/json",
-  "user-agent": "Langfuse/1.0",
+  "user-agent": "Hanzo/1.0",
 };
 
 export const WebhookOutboundBaseSchema = z.object({

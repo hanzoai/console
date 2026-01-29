@@ -39,7 +39,7 @@ test.describe("Create project", () => {
 
     // Sign in
     await page.goto("/auth/sign-in");
-    await page.fill('input[name="email"]', "demo@langfuse.com");
+    await page.fill('input[name="email"]', "demo@hanzo.com");
     await page.fill('input[type="password"]', "password");
     await page.click(
       'button[data-testid="submit-email-password-sign-in-form"]',
@@ -120,7 +120,7 @@ test.describe("Create project", () => {
 
       await page.waitForTimeout(2000);
 
-      const projectUrl = await getProjectUrlForEmail("demo@langfuse.com");
+      const projectUrl = await getProjectUrlForEmail("demo@hanzo.com");
       await page.goto(projectUrl + url, { waitUntil: "networkidle" });
       await page.waitForTimeout(2000);
       await expect(page).toHaveURL(projectUrl + url);

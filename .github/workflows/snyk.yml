@@ -15,7 +15,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: langfuse/langfuse # pulled from Docker Hub
+          image: hanzo/hanzo # pulled from Docker Hub
           args: --severity-threshold=high # (any extra CLI flags, but NO --file)
 
       - name: Scan worker image with Snyk
@@ -24,5 +24,5 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: langfuse/langfuse-worker # pulled from Docker Hub
+          image: hanzo/hanzo-worker # pulled from Docker Hub
           args: --severity-threshold=high # (any extra CLI flags, but NO --file)

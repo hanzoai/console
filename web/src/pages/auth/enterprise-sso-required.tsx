@@ -191,10 +191,10 @@ export default function EnterpriseSsoRequiredPage() {
               <br />
               Contact{" "}
               <a
-                href="mailto:support@langfuse.com"
+                href="mailto:support@hanzo.com"
                 className="text-primary-accent hover:text-hover-primary-accent"
               >
-                support@langfuse.com
+                support@hanzo.com
               </a>{" "}
               if this keeps happening.
             </div>
@@ -212,10 +212,10 @@ export default function EnterpriseSsoRequiredPage() {
         <div className="mt-4 text-center text-xs text-muted-foreground">
           Need help? Contact{" "}
           <a
-            href="mailto:support@langfuse.com"
+            href="mailto:support@hanzo.com"
             className="text-primary-accent hover:text-hover-primary-accent"
           >
-            support@langfuse.com
+            support@hanzo.com
           </a>
           .
         </div>

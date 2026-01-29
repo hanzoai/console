@@ -30,7 +30,7 @@ class MutationMonitorRunner extends PeriodicRunner {
   }
 
   protected get defaultIntervalMs(): number {
-    return env.LANGFUSE_MUTATION_MONITOR_CHECK_INTERVAL_MS;
+    return env.HANZO_MUTATION_MONITOR_CHECK_INTERVAL_MS;
   }
 
   protected async execute(): Promise<void> {
@@ -46,14 +46,14 @@ class MutationMonitorRunner extends PeriodicRunner {
  * ```
  * GRANT SELECT(database, `table`, is_done) ON system.mutations TO <role>;
  * ```
- * where `role` is the role used by Langfuse to connect to ClickHouse, usually `app`.
+ * where `role` is the role used by Hanzo to connect to ClickHouse, usually `app`.
  *
  * `QUEUE_TABLE_MAPPING` below shows how mutations on various tables map to queues.
  *
- * - `LANGFUSE_MUTATION_MONITOR_ENABLED` must be set to `true` to enable this feature.
- * - `LANGFUSE_MUTATION_MONITOR_CHECK_INTERVAL_MS` defines how often to check for mutations.
- * - `LANGFUSE_DELETION_MUTATIONS_MAX_COUNT` once any table for a queue exceeds this threshold, that queue is PAUSED.
- * `- LANGFUSE_DELETION_MUTATIONS_SAFE_COUNT` once all tables for a queue are below this threshold, that queue is RESUMED.
+ * - `HANZO_MUTATION_MONITOR_ENABLED` must be set to `true` to enable this feature.
+ * - `HANZO_MUTATION_MONITOR_CHECK_INTERVAL_MS` defines how often to check for mutations.
+ * - `HANZO_DELETION_MUTATIONS_MAX_COUNT` once any table for a queue exceeds this threshold, that queue is PAUSED.
+ * `- HANZO_DELETION_MUTATIONS_SAFE_COUNT` once all tables for a queue are below this threshold, that queue is RESUMED.
  */
 export class MutationMonitor {
   private static runner = new MutationMonitorRunner();
@@ -83,15 +83,15 @@ export class MutationMonitor {
    * Start the mutation monitoring service
    */
   public static start(): void {
-    if (env.LANGFUSE_MUTATION_MONITOR_ENABLED !== "true") {
+    if (env.HANZO_MUTATION_MONITOR_ENABLED !== "true") {
       logger.info("Mutation monitor is disabled");
       return;
     }
 
     logger.info("Starting mutation monitor", {
-      checkIntervalMs: env.LANGFUSE_MUTATION_MONITOR_CHECK_INTERVAL_MS,
-      maxCount: env.LANGFUSE_DELETION_MUTATIONS_MAX_COUNT,
-      safeCount: env.LANGFUSE_DELETION_MUTATIONS_SAFE_COUNT,
+      checkIntervalMs: env.HANZO_MUTATION_MONITOR_CHECK_INTERVAL_MS,
+      maxCount: env.HANZO_DELETION_MUTATIONS_MAX_COUNT,
+      safeCount: env.HANZO_DELETION_MUTATIONS_SAFE_COUNT,
     });
     this.runner.start();
   }
@@ -209,14 +209,14 @@ export class MutationMonitor {
       logger.debug("Mutation stats", {
         mutationCounts: Object.fromEntries(mutationCounts),
         pausedQueues: Array.from(this.pausedQueues),
-        threshold: env.LANGFUSE_DELETION_MUTATIONS_MAX_COUNT,
+        threshold: env.HANZO_DELETION_MUTATIONS_MAX_COUNT,
       });
 
       const decisions = this.makeDecisions(
         mutationCounts,
         this.QUEUE_TABLE_MAPPING,
-        env.LANGFUSE_DELETION_MUTATIONS_MAX_COUNT,
-        env.LANGFUSE_DELETION_MUTATIONS_SAFE_COUNT,
+        env.HANZO_DELETION_MUTATIONS_MAX_COUNT,
+        env.HANZO_DELETION_MUTATIONS_SAFE_COUNT,
       );
 
       // Separate decisions by action
@@ -266,7 +266,7 @@ export class MutationMonitor {
 
         logger.warn(`Paused ${queueName}`, {
           reason: `tables over threshold: ${offendingTables.join(", ")}`,
-          threshold: env.LANGFUSE_DELETION_MUTATIONS_MAX_COUNT,
+          threshold: env.HANZO_DELETION_MUTATIONS_MAX_COUNT,
           mutationCounts: Object.fromEntries(mutationCounts),
         });
       } catch (error) {
@@ -300,7 +300,7 @@ export class MutationMonitor {
 
         logger.info(`Resumed ${queueName}`, {
           reason: "all tables below safe threshold",
-          safeThreshold: env.LANGFUSE_DELETION_MUTATIONS_SAFE_COUNT,
+          safeThreshold: env.HANZO_DELETION_MUTATIONS_SAFE_COUNT,
           mutationCounts: Object.fromEntries(mutationCounts),
         });
       } catch (error) {

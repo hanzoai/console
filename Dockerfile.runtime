@@ -1,0 +1,58 @@
+# Dockerfile.runtime - Runtime image for pre-built Hanzo Console
+# Requires local build first: NODE_OPTIONS="--max-old-space-size=8192" pnpm build
+
+FROM node:24-alpine
+
+# Install system dependencies
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    libc6-compat \
+    tini \
+    ca-certificates && \
+    rm -rf /var/cache/apk/*
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Create app directory
+WORKDIR /app
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+# Copy the entire standalone output with proper structure
+# The standalone build is nested under the original path
+COPY --chown=nextjs:nodejs web/.next/standalone/ ./standalone/
+
+# Copy static files to the correct location
+COPY --chown=nextjs:nodejs web/.next/static ./standalone/work/hanzo/console/web/.next/static
+COPY --chown=nextjs:nodejs web/public ./standalone/work/hanzo/console/web/public
+
+# Set working directory to where server.js is located
+WORKDIR /app/standalone/work/hanzo/console/web
+
+# Switch to nextjs user
+USER nextjs
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV HOSTNAME="0.0.0.0"
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD node -e "const http = require('http'); \
+    const req = http.request({hostname: 'localhost', port: 3001, path: '/api/public/health', method: 'GET'}, \
+    (res) => process.exit(res.statusCode === 200 ? 0 : 1)); \
+    req.on('error', () => process.exit(1)); \
+    req.end();" || exit 1
+
+# Use tini for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# Start the server
+CMD ["node", "server.js"]

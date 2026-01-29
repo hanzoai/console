@@ -15,8 +15,8 @@ export const LANGGRAPH_NODE_TAG = "langgraph_node";
 export const LANGGRAPH_STEP_TAG = "langgraph_step";
 export const LANGGRAPH_START_NODE_NAME = "__start__";
 export const LANGGRAPH_END_NODE_NAME = "__end__";
-export const LANGFUSE_START_NODE_NAME = "__start__";
-export const LANGFUSE_END_NODE_NAME = "__end__";
+export const HANZO_START_NODE_NAME = "__start__";
+export const HANZO_END_NODE_NAME = "__end__";
 
 export const LanggraphMetadataSchema = z.object({
   [LANGGRAPH_NODE_TAG]: z.string(),

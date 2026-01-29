@@ -308,7 +308,7 @@ export function UpsertScoreConfigDialog({
                           )}
                           {fields.map((category, index) => (
                             <div
-                              key={`${category.id}-langfuseObject`}
+                              key={`${category.id}-hanzoObject`}
                               className="items-top mb-2 grid grid-cols-[1fr,3fr] gap-2 text-left sm:grid-cols-[1fr,7fr]"
                             >
                               <FormField

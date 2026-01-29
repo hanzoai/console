@@ -182,7 +182,7 @@ function AnnotateHeader({
       title="Annotate"
       help={{
         description,
-        href: "https://langfuse.com/docs/evaluation/evaluation-methods/annotation",
+        href: "https://hanzo.com/docs/evaluation/evaluation-methods/annotation",
         className: "leading-relaxed",
       }}
       actionButtons={[

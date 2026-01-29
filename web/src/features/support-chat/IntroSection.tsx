@@ -17,7 +17,7 @@ import { Separator } from "@/src/components/ui/separator";
 import { usePlan } from "@/src/features/entitlements/hooks";
 import { isCloudPlan } from "@hanzo/shared";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
 type SupportType = "in-app-support" | "custom" | "community";
@@ -29,16 +29,16 @@ export function IntroSection({
   displayDensity?: "default" | "compact";
 }) {
   const uiCustomization = useUiCustomization();
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isHanzoCloud } = useHanzoCloudRegion();
   const capture = usePostHogClientCapture();
 
   // Note: We previously added an entitlement for in-app support, but removed it for now.
-  //       The issue was that on global routes e.g., https://langfuse.com/setup, the entitlement
+  //       The issue was that on global routes e.g., https://hanzo.com/setup, the entitlement
   //       hook would not have access to an org or project an therefore no plan, always returning
   //       false if asked. However on these pages, the in-app-chat should be available.
   //       Therefore we now check for whether wer are in a cloud deployment instead.
   // const hasInAppSupportEntitlement = useHasEntitlement("in-app-support");
-  const hasInAppSupportEntitlement = !!isLangfuseCloud;
+  const hasInAppSupportEntitlement = !!isHanzoCloud;
   const plan = usePlan();
 
   const supportType: SupportType = useMemo(() => {
@@ -68,7 +68,7 @@ export function IntroSection({
 
         <RainbowButton asChild>
           <a
-            href="https://langfuse.com/docs/ask-ai"
+            href="https://hanzo.com/docs/ask-ai"
             target="_blank"
             rel="noopener"
           >
@@ -91,7 +91,7 @@ export function IntroSection({
         <Button asChild variant="outline">
           <a
             href={
-              uiCustomization?.documentationHref ?? "https://langfuse.com/docs"
+              uiCustomization?.documentationHref ?? "https://hanzo.com/docs"
             }
             target="_blank"
             rel="noopener"
@@ -137,7 +137,7 @@ export function IntroSection({
               <>
                 <Button variant="outline" asChild>
                   <a
-                    href="https://langfuse.com/ideas"
+                    href="https://hanzo.com/ideas"
                     target="_blank"
                     rel="noopener"
                   >
@@ -146,7 +146,7 @@ export function IntroSection({
                 </Button>
                 <Button variant="outline" asChild>
                   <a
-                    href="https://langfuse.com/issues"
+                    href="https://hanzo.com/issues"
                     target="_blank"
                     rel="noopener"
                   >
@@ -192,7 +192,7 @@ export function IntroSection({
             </p>
             <Button variant="outline" asChild>
               <a
-                href="https://langfuse.com/gh-support"
+                href="https://hanzo.com/gh-support"
                 target="_blank"
                 rel="noopener"
               >
@@ -201,7 +201,7 @@ export function IntroSection({
             </Button>
             <Button variant="outline" asChild>
               <a
-                href="https://langfuse.com/ideas"
+                href="https://hanzo.com/ideas"
                 target="_blank"
                 rel="noopener"
               >
@@ -210,7 +210,7 @@ export function IntroSection({
             </Button>
             <Button variant="outline" asChild>
               <a
-                href="https://langfuse.com/issues"
+                href="https://hanzo.com/issues"
                 target="_blank"
                 rel="noopener"
               >
@@ -234,7 +234,7 @@ export function IntroSection({
           <div className="mt-3 grid grid-cols-1 gap-2">
             <Button asChild variant="ghost" className="justify-start px-1.5">
               <a
-                href="https://langfuse.com/gh-support"
+                href="https://hanzo.com/gh-support"
                 target="_blank"
                 rel="noopener"
               >
@@ -243,7 +243,7 @@ export function IntroSection({
             </Button>
             <Button asChild variant="ghost" className="justify-start px-1.5">
               <a
-                href="https://langfuse.com/discord"
+                href="https://hanzo.com/discord"
                 target="_blank"
                 rel="noopener"
                 className="flex items-center"
@@ -253,7 +253,7 @@ export function IntroSection({
             </Button>
             <Button asChild variant="ghost" className="justify-start px-1.5">
               <a
-                href="https://lu.ma/langfuse"
+                href="https://lu.ma/hanzo"
                 target="_blank"
                 rel="noopener"
                 className="flex items-center"
@@ -266,7 +266,7 @@ export function IntroSection({
             {showStatusPageLink && (
               <Button asChild variant="ghost" className="justify-start px-1.5">
                 <a
-                  href="https://status.langfuse.com"
+                  href="https://status.hanzo.com"
                   target="_blank"
                   rel="noopener"
                   className="flex items-center"

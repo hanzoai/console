@@ -5,7 +5,7 @@ export default [
 
   // Worker-specific ignores
   {
-    name: "langfuse/worker/ignores",
+    name: "hanzo/worker/ignores",
     ignores: ["**/*test*.*", "**/worker-thread.js"],
   },
 ];

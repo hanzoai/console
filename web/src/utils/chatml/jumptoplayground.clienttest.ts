@@ -89,7 +89,7 @@ describe("Playground Jump Full Pipeline", () => {
         "deployment.environment": "prod",
       },
       scope: {
-        name: "langfuse-sdk",
+        name: "hanzo-sdk",
         version: "3.2.3",
         attributes: {
           public_key: "pk-lf-1234567890",

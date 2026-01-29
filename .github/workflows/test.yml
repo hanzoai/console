@@ -1,4 +1,4 @@
-name: Test Cloud Service (Langfuse)
+name: Test Cloud Service (Hanzo)
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: langfuse
+          POSTGRES_USER: hanzo
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: langfuse_test
+          POSTGRES_DB: hanzo_test
         ports:
           - 5432:5432
         options: >-
@@ -61,7 +61,7 @@ jobs:
     - name: Run database migrations
       run: pnpm --filter=shared db:migrate
       env:
-        DATABASE_URL: postgresql://langfuse:password@localhost:5432/langfuse_test
+        DATABASE_URL: postgresql://hanzo:password@localhost:5432/hanzo_test
     
     - name: Run linting
       run: |
@@ -73,7 +73,7 @@ jobs:
     - name: Run web tests
       run: pnpm --filter=web test
       env:
-        DATABASE_URL: postgresql://langfuse:password@localhost:5432/langfuse_test
+        DATABASE_URL: postgresql://hanzo:password@localhost:5432/hanzo_test
         NEXTAUTH_URL: http://localhost:3000
         NEXTAUTH_SECRET: test-secret
         ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000
@@ -81,7 +81,7 @@ jobs:
     - name: Run E2E tests
       run: pnpm --filter=web test:e2e
       env:
-        DATABASE_URL: postgresql://langfuse:password@localhost:5432/langfuse_test
+        DATABASE_URL: postgresql://hanzo:password@localhost:5432/hanzo_test
         E2E_TEST_EMAIL: test@example.com
         E2E_TEST_PASSWORD: testpassword
     
@@ -98,9 +98,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: langfuse
+          POSTGRES_USER: hanzo
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: langfuse_test
+          POSTGRES_DB: hanzo_test
         ports:
           - 5432:5432
         options: >-
@@ -141,7 +141,7 @@ jobs:
     - name: Run worker tests
       run: pnpm --filter=worker test
       env:
-        DATABASE_URL: postgresql://langfuse:password@localhost:5432/langfuse_test
+        DATABASE_URL: postgresql://hanzo:password@localhost:5432/hanzo_test
         REDIS_URL: redis://localhost:6379
     
     - name: Build worker

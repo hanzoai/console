@@ -1270,27 +1270,27 @@ export class IngestionService {
             // Tracing
             newInputCount
               ? span.setAttribute(
-                  "langfuse.tokenization.input-count",
+                  "hanzo.tokenization.input-count",
                   newInputCount,
                 )
               : undefined;
             newOutputCount
               ? span.setAttribute(
-                  "langfuse.tokenization.output-count",
+                  "hanzo.tokenization.output-count",
                   newOutputCount,
                 )
               : undefined;
             newInputCount || newOutputCount
               ? span.setAttribute(
-                  "langfuse.tokenization.tokenizer",
+                  "hanzo.tokenization.tokenizer",
                   model.tokenizerId || "unknown",
                 )
               : undefined;
             newInputCount
-              ? recordIncrement("langfuse.tokenisedTokens", newInputCount)
+              ? recordIncrement("hanzo.tokenisedTokens", newInputCount)
               : undefined;
             newOutputCount
-              ? recordIncrement("langfuse.tokenisedTokens", newOutputCount)
+              ? recordIncrement("hanzo.tokenisedTokens", newOutputCount)
               : undefined;
           },
         );
@@ -1457,7 +1457,7 @@ export class IngestionService {
         this.prisma,
       ).shouldSkipClickHouseRead(params.projectId)
     ) {
-      recordIncrement("langfuse.ingestion.clickhouse_read_for_update", 1, {
+      recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
         skipped: "true",
         table: params.table,
       });

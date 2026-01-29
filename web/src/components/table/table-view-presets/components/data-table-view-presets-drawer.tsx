@@ -87,7 +87,7 @@ interface SystemPreset {
 
 const SYSTEM_PRESETS: { DEFAULT: SystemPreset } = {
   DEFAULT: {
-    id: "__langfuse_default__",
+    id: "__hanzo_default__",
     name: "My view (default)",
     isSystem: true,
   },
@@ -292,7 +292,7 @@ export function TableViewPresetsDrawer({
     } else {
       showErrorToast(
         "Failed to generate permalink",
-        "Please reach out to langfuse support and report this issue.",
+        "Please reach out to hanzo support and report this issue.",
         "WARNING",
       );
     }
@@ -327,7 +327,7 @@ export function TableViewPresetsDrawer({
               <DrawerTitle className="flex flex-row items-center gap-1">
                 Saved Table Views{" "}
                 <a
-                  href="https://github.com/orgs/langfuse/discussions/4657"
+                  href="https://github.com/orgs/hanzoai/discussions/4657"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center"
@@ -352,7 +352,7 @@ export function TableViewPresetsDrawer({
               <CommandList className="max-h-[calc(100vh-150px)]">
                 <CommandEmpty>No saved table views found</CommandEmpty>
                 <CommandGroup className="pb-0">
-                  {/* System Preset: Langfuse Default */}
+                  {/* System Preset: Hanzo Default */}
                   <CommandItem
                     key={SYSTEM_PRESETS.DEFAULT.id}
                     onSelect={() => handleSelectView(SYSTEM_PRESETS.DEFAULT.id)}

@@ -57,8 +57,8 @@ export const [listPromptsTool, handleListPrompts] = defineTool({
 
         // Set span attributes for observability
         span.setAttributes({
-          "langfuse.project.id": context.projectId,
-          "langfuse.org.id": context.orgId,
+          "hanzo.project.id": context.projectId,
+          "hanzo.org.id": context.orgId,
           "mcp.api_key_id": context.apiKeyId,
           "mcp.pagination_page": page ?? 1,
           "mcp.pagination_limit": limit ?? 50,

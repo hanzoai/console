@@ -22,7 +22,7 @@ export async function telemetry() {
     // Only run in prod
     if (process.env.NODE_ENV !== "production") return;
     // Do not run in Hanzo Cloud cloud, separate telemetry is used
-    if (env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION !== undefined) return;
+    if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined) return;
     // Check if telemetry is not disabled, except for EE
     if (
       env.TELEMETRY_ENABLED === "false" &&
@@ -266,7 +266,7 @@ async function posthogTelemetry({
         startTimeframe: startTimeframe?.toISOString(),
         endTimeframe: endTimeframe.toISOString(),
         eeLicenseKey: env.HANZO_EE_LICENSE_KEY,
-        hanzoCloudRegion: env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION,
+        hanzoCloudRegion: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
         $set: {
           environment: process.env.NODE_ENV,
           userDomains: domains,

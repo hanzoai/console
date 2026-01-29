@@ -23,13 +23,13 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.LANGFUSE_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE,
-      awsSseKmsKeyId: env.LANGFUSE_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.HANZO_S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3MediaStorageClient;
@@ -56,7 +56,7 @@ export const projectDeleteProcessor: Processor = async (
   logger.info(`Deleting ${projectId} in org ${orgId}`);
 
   // Delete media data from S3 for project
-  if (env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET) {
+  if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     logger.info(`Deleting media for ${projectId} in org ${orgId}`);
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
@@ -69,7 +69,7 @@ export const projectDeleteProcessor: Processor = async (
       },
     });
     const mediaStorageClient = getS3MediaStorageClient(
-      env.LANGFUSE_S3_MEDIA_UPLOAD_BUCKET,
+      env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
     );
     // Delete from Cloud Storage
     await mediaStorageClient.deleteFiles(
@@ -84,7 +84,7 @@ export const projectDeleteProcessor: Processor = async (
 
   // Delete project data from ClickHouse first
   await Promise.all([
-    env.LANGFUSE_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
+    env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
       ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
           projectId,
           undefined,
@@ -93,7 +93,7 @@ export const projectDeleteProcessor: Processor = async (
     deleteTracesByProjectId(projectId),
     deleteObservationsByProjectId(projectId),
     deleteScoresByProjectId(projectId),
-    env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
+    env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
       ? deleteEventsByProjectId(projectId)
       : Promise.resolve(),
   ]);

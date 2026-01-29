@@ -33,7 +33,7 @@ export class ClickhouseWriter {
 
   private constructor() {
     this.batchSize = env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE;
-    this.writeInterval = env.LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS;
+    this.writeInterval = env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS;
     this.maxAttempts = env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS;
 
     this.isIntervalFlushInProgress = false;
@@ -426,7 +426,7 @@ export class ClickhouseWriter {
           });
         } else {
           // TODO - Add to a dead letter queue in Redis rather than dropping
-          recordIncrement("langfuse.queue.clickhouse_writer.error");
+          recordIncrement("hanzo.queue.clickhouse_writer.error");
           droppedCount++;
         }
       });

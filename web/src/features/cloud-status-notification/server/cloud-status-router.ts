@@ -32,8 +32,8 @@ export const cloudStatusRouter = createTRPCRouter({
       }),
     )
     .query(async () => {
-      // Skip status check if not running on Langfuse Cloud
-      if (!env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION) {
+      // Skip status check if not running on Hanzo Cloud
+      if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
         return { status: null };
       }
 
@@ -45,9 +45,9 @@ export const cloudStatusRouter = createTRPCRouter({
       }
 
       try {
-        // incident.io widget API for status.langfuse.com
+        // incident.io widget API for status.hanzo.com
         const response = await fetch(
-          "https://status.langfuse.com/api/v1/summary",
+          "https://status.hanzo.com/api/v1/summary",
         );
 
         if (!response.ok) {

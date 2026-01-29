@@ -1,4 +1,4 @@
-import { InvalidRequestError, LangfuseNotFoundError } from "@hanzo/shared";
+import { InvalidRequestError, HanzoNotFoundError } from "@hanzo/shared";
 import { prisma, type Prompt } from "@hanzo/shared/src/db";
 import { PromptService, redis, logger } from "@hanzo/shared/src/server";
 
@@ -18,7 +18,7 @@ export const deletePrompt = async (params: DeletePromptParams) => {
   }
 
   if (promptVersions.length === 0) {
-    throw new LangfuseNotFoundError("Prompt not found");
+    throw new HanzoNotFoundError("Prompt not found");
   }
 
   // Check if other prompts depend on the specific prompt versions being deleted

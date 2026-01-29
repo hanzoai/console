@@ -26,9 +26,9 @@ groups:
       #   version: 2.20.1
       #   output:
       #     location: local-file-system
-      #     path: ../../../../langfuse-java/src/main/java/com/langfuse/client/
+      #     path: ../../../../hanzo-java/src/main/java/com/hanzo/client/
       #   config:
-      #     client-class-name: LangfuseClient
+      #     client-class-name: HanzoClient
 
       - name: fernapi/fern-typescript-node-sdk
         version: 2.12.3
@@ -36,7 +36,7 @@ groups:
           location: local-file-system
           path: ../../../generated/typescript
         config:
-          namespaceExport: LangfuseAPI
+          namespaceExport: HanzoAPI
           outputSourceFiles: true
           skipResponseValidation: true
           fetchSupport: native

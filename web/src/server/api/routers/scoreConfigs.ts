@@ -8,7 +8,7 @@ import {
 import {
   filterAndValidateDbScoreConfigList,
   InvalidRequestError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   optionalPaginationZod,
   ScoreConfigCategory,
   ScoreConfigDataType,
@@ -123,7 +123,7 @@ export const scoreConfigsRouter = createTRPCRouter({
         },
       });
       if (!existingConfig) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "No score config with this id in this project.",
         );
       }

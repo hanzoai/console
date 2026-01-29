@@ -16,7 +16,7 @@ export function SpendAlertsSection({ orgId }: SpendAlertsSectionProps) {
 
   const hasAccess = useHasOrganizationAccess({
     organizationId: orgId,
-    scope: "langfuseCloudBilling:CRUD",
+    scope: "hanzoCloudBilling:CRUD",
   });
 
   const hasEntitlement = useHasEntitlement("cloud-spend-alerts");

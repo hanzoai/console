@@ -14,7 +14,7 @@ import {
 import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 
-const METRIC_PREFIX = "langfuse.batch_data_retention_cleaner";
+const METRIC_PREFIX = "hanzo.batch_data_retention_cleaner";
 
 export const TIMESTAMP_COLUMN_MAP: Record<BatchDataRetentionTable, string> = {
   traces: "timestamp",
@@ -220,7 +220,7 @@ export class BatchDataRetentionCleaner {
     );
 
     // Step 3: Chunk projects and query ClickHouse for expired row counts
-    const chunkSize = env.LANGFUSE_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE;
+    const chunkSize = env.HANZO_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE;
     const chunks: (typeof allProjectRetentions)[] = [];
     for (let i = 0; i < allProjectRetentions.length; i += chunkSize) {
       chunks.push(allProjectRetentions.slice(i, i + chunkSize));
@@ -246,7 +246,7 @@ export class BatchDataRetentionCleaner {
 
     return withExpiredRows.slice(
       0,
-      env.LANGFUSE_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT,
+      env.HANZO_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT,
     );
   }
 
@@ -340,7 +340,7 @@ export class BatchDataRetentionCleaner {
       params,
       clickhouseConfigs: {
         request_timeout:
-          env.LANGFUSE_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
+          env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
       },
       tags: {
         feature: "batch-data-retention-cleaner",

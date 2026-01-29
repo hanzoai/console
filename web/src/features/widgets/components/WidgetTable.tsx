@@ -4,7 +4,7 @@ import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { api } from "@/src/utils/api";
 import { DataTable } from "@/src/components/table/data-table";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import TableLink from "@/src/components/table/table-link";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
@@ -33,7 +33,7 @@ type WidgetTableRow = {
   chartType: string;
   createdAt: Date;
   updatedAt: Date;
-  owner: "PROJECT" | "LANGFUSE";
+  owner: "PROJECT" | "HANZO";
 };
 
 export function DeleteWidget({
@@ -41,14 +41,14 @@ export function DeleteWidget({
   owner,
 }: {
   widgetId: string;
-  owner: "PROJECT" | "LANGFUSE";
+  owner: "PROJECT" | "HANZO";
 }) {
   const projectId = useProjectIdFromURL();
   const utils = api.useUtils();
   const [isOpen, setIsOpen] = useState(false);
   const hasAccess =
     useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) &&
-    owner !== "LANGFUSE";
+    owner !== "HANZO";
   const capture = usePostHogClientCapture();
 
   const mutDeleteWidget = api.dashboardWidgets.delete.useMutation({
@@ -224,7 +224,7 @@ export function DashboardWidgetTable() {
         );
       },
     }),
-  ] as LangfuseColumnDef<WidgetTableRow>[];
+  ] as HanzoColumnDef<WidgetTableRow>[];
 
   return (
     <DataTable

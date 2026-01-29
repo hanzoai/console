@@ -152,8 +152,8 @@
         "attributes": {
           "gen_ai.conversation.id": "6f8d2449-33ed-4c7c-82e7-5410e34ee4e6",
           "koog.node.name": "__finish__",
-          "langfuse.observation.metadata.langgraph_node": "__finish__",
-          "langfuse.observation.metadata.langgraph_step": "4"
+          "hanzo.observation.metadata.langgraph_node": "__finish__",
+          "hanzo.observation.metadata.langgraph_step": "4"
         },
         "resourceAttributes": {
           "os.arch": "aarch64",
@@ -370,8 +370,8 @@
         "attributes": {
           "gen_ai.conversation.id": "6f8d2449-33ed-4c7c-82e7-5410e34ee4e6",
           "koog.node.name": "nodeSendToolResult",
-          "langfuse.observation.metadata.langgraph_node": "nodeSendToolResult",
-          "langfuse.observation.metadata.langgraph_step": "3"
+          "hanzo.observation.metadata.langgraph_node": "nodeSendToolResult",
+          "hanzo.observation.metadata.langgraph_step": "3"
         },
         "resourceAttributes": {
           "os.arch": "aarch64",
@@ -553,8 +553,8 @@
         "attributes": {
           "gen_ai.conversation.id": "6f8d2449-33ed-4c7c-82e7-5410e34ee4e6",
           "koog.node.name": "nodeExecuteTool",
-          "langfuse.observation.metadata.langgraph_node": "nodeExecuteTool",
-          "langfuse.observation.metadata.langgraph_step": "2"
+          "hanzo.observation.metadata.langgraph_node": "nodeExecuteTool",
+          "hanzo.observation.metadata.langgraph_step": "2"
         },
         "resourceAttributes": {
           "os.arch": "aarch64",
@@ -612,8 +612,8 @@
         "attributes": {
           "gen_ai.conversation.id": "6f8d2449-33ed-4c7c-82e7-5410e34ee4e6",
           "koog.node.name": "nodeCallLLM",
-          "langfuse.observation.metadata.langgraph_node": "nodeCallLLM",
-          "langfuse.observation.metadata.langgraph_step": "1"
+          "hanzo.observation.metadata.langgraph_node": "nodeCallLLM",
+          "hanzo.observation.metadata.langgraph_step": "1"
         },
         "resourceAttributes": {
           "os.arch": "aarch64",
@@ -816,8 +816,8 @@
         "attributes": {
           "gen_ai.conversation.id": "6f8d2449-33ed-4c7c-82e7-5410e34ee4e6",
           "koog.node.name": "__start__",
-          "langfuse.observation.metadata.langgraph_node": "__start__",
-          "langfuse.observation.metadata.langgraph_step": "0"
+          "hanzo.observation.metadata.langgraph_node": "__start__",
+          "hanzo.observation.metadata.langgraph_step": "0"
         },
         "resourceAttributes": {
           "os.arch": "aarch64",

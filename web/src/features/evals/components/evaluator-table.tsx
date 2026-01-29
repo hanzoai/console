@@ -7,7 +7,7 @@ import {
   DataTableControls,
 } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
-import { type LangfuseColumnDef } from "@/src/components/table/types";
+import { type HanzoColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { InlineFilterState } from "@/src/features/filters/components/filter-builder";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
@@ -355,7 +355,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
         );
       },
     }),
-  ] as LangfuseColumnDef<EvaluatorDataRow>[];
+  ] as HanzoColumnDef<EvaluatorDataRow>[];
 
   const [columnVisibility, setColumnVisibility] =
     useColumnVisibility<EvaluatorDataRow>(

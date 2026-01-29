@@ -2829,7 +2829,7 @@ async function getClickhouseRecord<T extends TableName>(
 
   if (
     tableName === "traces" &&
-    env.LANGFUSE_EXPERIMENT_RETURN_NEW_RESULT === "true"
+    env.HANZO_EXPERIMENT_RETURN_NEW_RESULT === "true"
   ) {
     await new Promise((resolve) => setTimeout(resolve, 100));
     query = await clickhouseClient().query({

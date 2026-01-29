@@ -3,7 +3,7 @@ import type { WebhookInput } from "@hanzo/shared/src/server";
 import { env } from "../../env";
 
 /**
- * Builds Slack Block Kit messages for different Langfuse event types
+ * Builds Slack Block Kit messages for different Hanzo event types
  */
 export class SlackMessageBuilder {
   /**
@@ -94,7 +94,7 @@ export class SlackMessageBuilder {
         elements: [
           {
             type: "mrkdwn",
-            text: `🕒 ${new Date().toLocaleString()} | Langfuse`,
+            text: `🕒 ${new Date().toLocaleString()} | Hanzo`,
           },
         ],
       },
@@ -112,7 +112,7 @@ export class SlackMessageBuilder {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Langfuse Notification*\n${payload.type} event: *${payload.action}*`,
+          text: `*Hanzo Notification*\n${payload.type} event: *${payload.action}*`,
         },
       },
       {
@@ -120,7 +120,7 @@ export class SlackMessageBuilder {
         elements: [
           {
             type: "mrkdwn",
-            text: `🕒 ${new Date().toLocaleString()} | Langfuse`,
+            text: `🕒 ${new Date().toLocaleString()} | Hanzo`,
           },
         ],
       },

@@ -9,7 +9,7 @@ export function isTraceIdInSample(params: {
 }): { isSampled: boolean; isSamplingConfigured: boolean } {
   const { projectId, event } = params;
 
-  const sampledProjects = env.LANGFUSE_INGESTION_PROCESSING_SAMPLED_PROJECTS;
+  const sampledProjects = env.HANZO_INGESTION_PROCESSING_SAMPLED_PROJECTS;
 
   if (!projectId || !sampledProjects.has(projectId))
     return { isSampled: true, isSamplingConfigured: false };

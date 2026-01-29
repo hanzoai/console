@@ -1,5 +1,5 @@
 {
-  "name": "langfuse-development",
+  "name": "hanzo-development",
   "build": {
     "dockerfile": "Dockerfile"
   },

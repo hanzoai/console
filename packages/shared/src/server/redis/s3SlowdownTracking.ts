@@ -3,10 +3,10 @@ import { logger } from "../logger";
 import { traceException, recordIncrement } from "../instrumentation";
 import { env } from "../../env";
 
-const S3_SLOWDOWN_PREFIX = "langfuse:s3-slowdown";
+const S3_SLOWDOWN_PREFIX = "hanzo:s3-slowdown";
 
 function isSlowdownEnabled(): boolean {
-  return env.LANGFUSE_S3_RATE_ERROR_SLOWDOWN_ENABLED === "true";
+  return env.HANZO_S3_RATE_ERROR_SLOWDOWN_ENABLED === "true";
 }
 
 /**
@@ -39,7 +39,7 @@ export function isS3SlowDownError(err: unknown): boolean {
 export async function markProjectS3Slowdown(projectId: string): Promise<void> {
   if (!redis || !isSlowdownEnabled()) return;
 
-  const ttlSeconds = env.LANGFUSE_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS;
+  const ttlSeconds = env.HANZO_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS;
 
   try {
     const key = `${S3_SLOWDOWN_PREFIX}:${projectId}`;
@@ -48,7 +48,7 @@ export async function markProjectS3Slowdown(projectId: string): Promise<void> {
       projectId,
       ttlSeconds,
     });
-    recordIncrement("langfuse.s3_slowdown.marked", 1);
+    recordIncrement("hanzo.s3_slowdown.marked", 1);
   } catch (error) {
     logger.error("Failed to mark S3 slowdown", { projectId, error });
     traceException(error);

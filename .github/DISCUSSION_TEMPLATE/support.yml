@@ -7,9 +7,9 @@ body:
       required: true
   - type: dropdown
     attributes:
-      label: Langfuse Cloud or Self-Hosted?
+      label: Hanzo Cloud or Self-Hosted?
       options:
-        - "Langfuse Cloud"
+        - "Hanzo Cloud"
         - "Self-Hosted"
     validations:
       required: true
@@ -19,8 +19,8 @@ body:
       description: What version are you running? We may ask you to upgrade to the latest version, as many issues are continuously being fixed.
   - type: input
     attributes:
-      label: If Langfuse Cloud
-      description: Please share the link to your Langfuse project or the specific view you have a question about. This helps us resolve requests faster.
+      label: If Hanzo Cloud
+      description: Please share the link to your Hanzo project or the specific view you have a question about. This helps us resolve requests faster.
   - type: textarea
     attributes:
       label: SDK and integration versions
@@ -28,9 +28,9 @@ body:
   - type: checkboxes
     attributes:
       label: Pre-Submission Checklist
-      description: Please check for existing [issues](https://github.com/langfuse/langfuse/issues) and [discussions](https://github.com/orgs/langfuse/discussions) and ask the [Langfuse AI chatbot](https://langfuse.com/docs/ask-ai).
+      description: Please check for existing [issues](https://github.com/hanzo/hanzo/issues) and [discussions](https://github.com/orgs/hanzo/discussions) and ask the [Hanzo AI chatbot](https://hanzo.com/docs/ask-ai).
       options:
-        - label: I have checked for existing issues/discussions and consulted Langfuse AI.
+        - label: I have checked for existing issues/discussions and consulted Hanzo AI.
           required: true
     validations:
       required: true

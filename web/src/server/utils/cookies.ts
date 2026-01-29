@@ -21,7 +21,7 @@ export const getCookieName = (name: string) =>
     shouldSecureCookies() ? "__Secure-" : "",
     env.NEXT_PUBLIC_COOKIE_PREFIX ?? "",
     name,
-    env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION
-      ? `.${env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION}`
+    env.NEXT_PUBLIC_HANZO_CLOUD_REGION
+      ? `.${env.NEXT_PUBLIC_HANZO_CLOUD_REGION}`
       : "",
   ].join("");

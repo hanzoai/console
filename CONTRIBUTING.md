@@ -27,7 +27,7 @@ The maintainers are available on [Discord](https://hanzo.ai/discord) in case you
 
 ## Making a change
 
-_Before making any significant changes, please [open an issue](https://github.com/langfuse/langfuse/issues)._ Discussing your proposed changes ahead of time will make the contribution process smooth for everyone. Changes that were not discussed in an issue may be rejected.
+_Before making any significant changes, please [open an issue](https://github.com/hanzo/hanzo/issues)._ Discussing your proposed changes ahead of time will make the contribution process smooth for everyone. Changes that were not discussed in an issue may be rejected.
 
 Once we've discussed your changes and you've got your code ready, make sure that tests are passing and open your pull request.
 
@@ -37,7 +37,7 @@ A good first step is to search for open [issues](https://github.com/hanzoai/clou
 
 We recommend checking out DeepWiki to familiarize yourself with the project:
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/langfuse/langfuse)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/hanzo/hanzo)
 
 ### Technologies we use
 
@@ -65,8 +65,8 @@ See this [diagram](https://hanzo.ai/self-hosting#architecture) for an overview o
 flowchart TB
     User["UI, API, SDKs"]
     subgraph vpc["VPC"]
-        Web["Web Server<br/>(langfuse/langfuse)"]
-        Worker["Async Worker<br/>(langfuse/worker)"]
+        Web["Web Server<br/>(hanzo/hanzo)"]
+        Worker["Async Worker<br/>(hanzo/worker)"]
         Postgres["Postgres - OLTP<br/>(Transactional Data)"]
         Cache["Redis/Valkey<br/>(Cache, Queue)"]
         Clickhouse["Clickhouse - OLAP<br/>(Observability Data)"]
@@ -98,7 +98,7 @@ Full database schema: [packages/shared/prisma/schema.prisma](packages/shared/pri
 
 We built a monorepo using [pnpm](https://pnpm.io/motivation) and [turbo](https://turbo.build/repo/docs) to manage the dependencies and build process. The monorepo contains the following packages:
 
-- `web`: is the main application package providing Frontend and Backend APIs for Langfuse.
+- `web`: is the main application package providing Frontend and Backend APIs for Hanzo.
 - `worker`: contains an application for asynchronous processing of tasks.
 - `packages`:
   - `shared`: contains shared code between the above packages.
@@ -152,12 +152,12 @@ Requirements
 
    You will be asked whether you want to reset Postgres and ClickHouse. Confirm both with 'Y' and press enter.
 
-6. Open the web app in your browser to start using Langfuse:
+6. Open the web app in your browser to start using Hanzo:
    - [Sign up page, http://localhost:3000](http://localhost:3000)
    - [Demo project, http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a](http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a)
 
 7. Log in as a test user:
-   - Username: `demo@langfuse.com`
+   - Username: `demo@hanzo.com`
    - Password: `password`
 
 To get comprehensive example data, you can use the `seed` command:
@@ -220,7 +220,7 @@ On the main branch, we adhere to the best practices of [conventional commits](ht
 ## Running Unit Tests
 
 All tests run in the CI and must pass before merging.
-All tests run against a running langfuse instance and **write/delete real data from the database**.
+All tests run against a running hanzo instance and **write/delete real data from the database**.
 
 ### Test Database Setup
 
@@ -234,7 +234,7 @@ cp .env.test.example .env.test
 Then, a different PostgreSQL and Redis are used for the tests.
 The `.env.test` file only overrides the set values and falls back on `.env` for all undefined values.
 
-- **PostgreSQL**: Uses separate `langfuse_test` database for isolation
+- **PostgreSQL**: Uses separate `hanzo_test` database for isolation
 - **ClickHouse**: Uses shared `default` database for now
 - **Redis**: Uses database 1 instead of 0 for isolation (Redis data is not cleaned between tests)
 

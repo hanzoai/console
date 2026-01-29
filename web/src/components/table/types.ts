@@ -32,7 +32,7 @@ export type HanzoColumnDef<
 };
 
 // Alias for backward compatibility
-export type LangfuseColumnDef<
+export type HanzoColumnDef<
   TData extends RowData,
   TValue = unknown,
 > = HanzoColumnDef<TData, TValue>;

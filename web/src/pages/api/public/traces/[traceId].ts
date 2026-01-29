@@ -8,7 +8,7 @@ import {
   DeleteTraceV1Response } from "@/src/features/public-api/types/traces";
 import {
   filterAndValidateDbTraceScoreList,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
  } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {
@@ -34,7 +34,7 @@ export default withMiddlewares({
         preferredClickhouseService: "ReadOnly" });
 
       if (!trace) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `Trace ${traceId} not found within authorized project`,
         );
       }

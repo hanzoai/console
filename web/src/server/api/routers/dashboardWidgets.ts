@@ -17,7 +17,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { views } from "@/src/features/query";
 import { TRPCError } from "@trpc/server";
-import { LangfuseConflictError } from "@hanzo/shared";
+import { HanzoConflictError } from "@hanzo/shared";
 
 const CreateDashboardWidgetInput = z.object({
   projectId: z.string(),
@@ -226,7 +226,7 @@ export const dashboardWidgetRouter = createTRPCRouter({
         };
       } catch (error) {
         // If the widget is still referenced in dashboards, throw a CONFLICT error
-        if (error instanceof LangfuseConflictError) {
+        if (error instanceof HanzoConflictError) {
           throw new TRPCError({
             code: "CONFLICT",
             message: error.message,

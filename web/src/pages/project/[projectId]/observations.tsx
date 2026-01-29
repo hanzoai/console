@@ -27,7 +27,7 @@ export default function Generations() {
   const { isBetaEnabled, setBetaEnabled } = useObservationListBeta();
 
   // TODO: remove for prod go-live
-  const showBetaToggle = session?.user?.email?.endsWith("@langfuse.com");
+  const showBetaToggle = session?.user?.email?.endsWith("@hanzo.com");
 
   // Check if the user has tracing configured
   const { data: hasTracingConfigured, isLoading } =
@@ -75,7 +75,7 @@ export default function Generations() {
         help: {
           description:
             "An observation captures a single function call in an application. See docs to learn more.",
-          href: "https://langfuse.com/docs/observability/data-model",
+          href: "https://hanzo.com/docs/observability/data-model",
         },
         actionButtonsLeft: betaToggle,
         tabsProps: isBetaEnabled

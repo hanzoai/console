@@ -29,7 +29,7 @@ vi.mock("../../env", async (importOriginal) => {
     ...original,
     env: {
       HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE: 100,
-      LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: 5000,
+      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: 5000,
       HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS: 3,
     },
   };
@@ -69,7 +69,7 @@ describe("ClickhouseWriter", () => {
       env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE,
     );
     expect(writer.writeInterval).toBe(
-      env.LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS,
+      env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS,
     );
     expect(writer.maxAttempts).toBe(
       env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS,

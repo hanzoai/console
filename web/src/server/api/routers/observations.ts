@@ -3,7 +3,7 @@ import {
   createTRPCRouter,
   protectedGetTraceProcedure,
 } from "@/src/server/api/trpc";
-import { LangfuseNotFoundError, parseIO } from "@hanzo/shared";
+import { HanzoNotFoundError, parseIO } from "@hanzo/shared";
 import {
   getObservationById,
   getObservationByIdFromEventsTable,
@@ -35,11 +35,11 @@ export const observationsRouter = createTRPCRouter({
         },
       };
       const obs =
-        env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
+        env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true"
           ? await getObservationByIdFromEventsTable(queryOpts)
           : await getObservationById(queryOpts);
       if (!obs) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Observation not found within authorized project",
         );
       }

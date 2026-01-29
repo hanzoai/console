@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef } from "react";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { File, Image as ImageIcon, Volume2, Video } from "lucide-react";
-import { LangfuseMediaView } from "@/src/components/ui/LangfuseMediaView";
+import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
 import {
   Popover,
   PopoverContent,
@@ -111,7 +111,7 @@ function MediaPreview({ mediaItem }: { mediaItem: MediaReturnType }) {
   } else {
     // Documents: use file icon view
     return (
-      <LangfuseMediaView mediaAPIReturnValue={mediaItem} asFileIcon={true} />
+      <HanzoMediaView mediaAPIReturnValue={mediaItem} asFileIcon={true} />
     );
   }
 }

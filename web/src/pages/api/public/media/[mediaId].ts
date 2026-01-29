@@ -11,7 +11,7 @@ import { withMiddlewares } from "@/src/features/public-api/server/withMiddleware
 import {
   ForbiddenError,
   InternalServerError,
-  LangfuseNotFoundError } from "@hanzo/shared";
+  HanzoNotFoundError } from "@hanzo/shared";
 import { Prisma, prisma } from "@hanzo/shared/src/db";
 import { recordIncrement, recordHistogram } from "@hanzo/shared/src/server";
 
@@ -32,11 +32,11 @@ export default withMiddlewares({
             projectId,
             id: mediaId } } });
 
-      if (!media) throw new LangfuseNotFoundError("Media asset not found");
+      if (!media) throw new HanzoNotFoundError("Media asset not found");
       if (!media.uploadHttpStatus)
-        throw new LangfuseNotFoundError("Media not yet uploaded");
+        throw new HanzoNotFoundError("Media not yet uploaded");
       if (!(media.uploadHttpStatus === 200 || media.uploadHttpStatus === 201))
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `Media upload failed with status ${media.uploadHttpStatus}: \n ${media.uploadHttpError}`,
         );
 
@@ -102,7 +102,7 @@ export default withMiddlewares({
           /* https://www.prisma.io/docs/orm/reference/error-reference#p2025
            * An operation failed because it depends on one or more records that were required but not found.
            */
-          throw new LangfuseNotFoundError(
+          throw new HanzoNotFoundError(
             `Media asset ${mediaId} not found in project ${projectId}`,
           );
         }

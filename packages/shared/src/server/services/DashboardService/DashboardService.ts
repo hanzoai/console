@@ -1,7 +1,7 @@
 import { prisma } from "../../../db";
 import {
-  LangfuseConflictError,
-  LangfuseNotFoundError,
+  HanzoConflictError,
+  HanzoNotFoundError,
   type OrderByState,
 } from "../../../";
 import {
@@ -53,7 +53,7 @@ export class DashboardService {
     const domainDashboards = dashboards.map((dashboard) =>
       DashboardDomainSchema.parse({
         ...dashboard,
-        owner: dashboard.projectId ? "PROJECT" : "LANGFUSE",
+        owner: dashboard.projectId ? "PROJECT" : "HANZO",
       }),
     );
 
@@ -88,7 +88,7 @@ export class DashboardService {
 
     return DashboardDomainSchema.parse({
       ...newDashboard,
-      owner: newDashboard.projectId ? "PROJECT" : "LANGFUSE",
+      owner: newDashboard.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -124,7 +124,7 @@ export class DashboardService {
 
     return DashboardDomainSchema.parse({
       ...updatedDashboard,
-      owner: updatedDashboard.projectId ? "PROJECT" : "LANGFUSE",
+      owner: updatedDashboard.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -152,7 +152,7 @@ export class DashboardService {
 
     return DashboardDomainSchema.parse({
       ...updatedDashboard,
-      owner: updatedDashboard.projectId ? "PROJECT" : "LANGFUSE",
+      owner: updatedDashboard.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -178,7 +178,7 @@ export class DashboardService {
 
     return DashboardDomainSchema.parse({
       ...updatedDashboard,
-      owner: updatedDashboard.projectId ? "PROJECT" : "LANGFUSE",
+      owner: updatedDashboard.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -202,7 +202,7 @@ export class DashboardService {
 
     return DashboardDomainSchema.parse({
       ...dashboard,
-      owner: dashboard.projectId ? "PROJECT" : "LANGFUSE",
+      owner: dashboard.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -256,7 +256,7 @@ export class DashboardService {
     const domainWidgets = widgets.map((widget) =>
       WidgetDomainSchema.parse({
         ...widget,
-        owner: widget.projectId ? "PROJECT" : "LANGFUSE",
+        owner: widget.projectId ? "PROJECT" : "HANZO",
       }),
     );
 
@@ -292,12 +292,12 @@ export class DashboardService {
 
     return WidgetDomainSchema.parse({
       ...newWidget,
-      owner: newWidget.projectId ? "PROJECT" : "LANGFUSE",
+      owner: newWidget.projectId ? "PROJECT" : "HANZO",
     });
   }
 
   /**
-   * Gets a dashboard widget by ID. Look either in the current project or in the Langfuse managed widgets.
+   * Gets a dashboard widget by ID. Look either in the current project or in the Hanzo managed widgets.
    */
   public static async getWidget(
     widgetId: string,
@@ -316,7 +316,7 @@ export class DashboardService {
 
     return WidgetDomainSchema.parse({
       ...widget,
-      owner: widget.projectId ? "PROJECT" : "LANGFUSE",
+      owner: widget.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -349,7 +349,7 @@ export class DashboardService {
 
     return WidgetDomainSchema.parse({
       ...updatedWidget,
-      owner: updatedWidget.projectId ? "PROJECT" : "LANGFUSE",
+      owner: updatedWidget.projectId ? "PROJECT" : "HANZO",
     });
   }
 
@@ -381,7 +381,7 @@ export class DashboardService {
         .map((d) => `"${d.name}"`)
         .join(", ");
 
-      throw new LangfuseConflictError(
+      throw new HanzoConflictError(
         `Cannot delete widget because it is still used in the following dashboards: ${dashboardNames}. Please remove the widget from these dashboards first.`,
       );
     }
@@ -396,7 +396,7 @@ export class DashboardService {
   }
 
   /**
-   * Copies a Langfuse-owned widget into the user project, rewires the specified dashboard placement to the new widget and returns the new widget id.
+   * Copies a Hanzo-owned widget into the user project, rewires the specified dashboard placement to the new widget and returns the new widget id.
    */
   public static async copyWidgetToProject(props: {
     sourceWidgetId: string;
@@ -416,7 +416,7 @@ export class DashboardService {
     });
 
     if (!sourceWidget) {
-      throw new LangfuseNotFoundError(
+      throw new HanzoNotFoundError(
         `Source widget ${sourceWidgetId} not found`,
       );
     }
@@ -446,7 +446,7 @@ export class DashboardService {
       });
 
       if (!dashboard) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           `Dashboard ${dashboardId} not found in project ${projectId}`,
         );
       }

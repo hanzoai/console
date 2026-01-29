@@ -6,8 +6,8 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 
 /* 
-This API route is used by Langfuse Cloud to delete API keys for a project.
-We will work on admin APIs in the future. See the discussion here: https://github.com/orgs/langfuse/discussions/3243
+This API route is used by Hanzo Cloud to delete API keys for a project.
+We will work on admin APIs in the future. See the discussion here: https://github.com/orgs/hanzoai/discussions/3243
 */
 
 const DeleteApiKeySchema = z.object({
@@ -38,7 +38,7 @@ export default async function handler(
 
     if (
       !AdminApiAuthService.handleAdminAuth(req, res, {
-        isAllowedOnLangfuseCloud: true,
+        isAllowedOnHanzoCloud: true,
       })
     ) {
       return;

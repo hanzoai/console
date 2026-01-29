@@ -35,8 +35,8 @@ export default function TemplatesPage() {
       headerProps={{
         title: "LLM-as-a-Judge Evaluators",
         help: {
-          description: "View all langfuse managed and custom evaluators.",
-          href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
+          description: "View all hanzo managed and custom evaluators.",
+          href: "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         tabsProps: {
           tabs: getEvalsTabs(projectId),

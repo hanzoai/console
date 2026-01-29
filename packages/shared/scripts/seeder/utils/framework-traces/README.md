@@ -1,7 +1,7 @@
 # Framework Traces
 
 This folder contains real traces produced through framework instrumentation.
-Most of them stem from here: https://langfuse.com/integrations/frameworks/agno-agents and so on.
+Most of them stem from here: https://hanzo.com/integrations/frameworks/agno-agents and so on.
 
 ## How to add further traces
 1. Generate a trace

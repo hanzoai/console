@@ -13,7 +13,7 @@ describe("Admin API Key Authentication", () => {
 
   // Store original env value to restore after tests
   const originalAdminApiKey = env.ADMIN_API_KEY;
-  const originalCloudRegion = env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION;
+  const originalCloudRegion = env.NEXT_PUBLIC_HANZO_CLOUD_REGION;
 
   let projectId: string;
   let orgId: string;
@@ -22,13 +22,13 @@ describe("Admin API Key Authentication", () => {
   beforeAll(() => {
     // Set up env for admin API key tests
     (env as any).ADMIN_API_KEY = ADMIN_API_KEY;
-    (env as any).NEXT_PUBLIC_LANGFUSE_CLOUD_REGION = undefined;
+    (env as any).NEXT_PUBLIC_HANZO_CLOUD_REGION = undefined;
   });
 
   afterAll(() => {
     // Restore original env values
     (env as any).ADMIN_API_KEY = originalAdminApiKey;
-    (env as any).NEXT_PUBLIC_LANGFUSE_CLOUD_REGION = originalCloudRegion;
+    (env as any).NEXT_PUBLIC_HANZO_CLOUD_REGION = originalCloudRegion;
   });
 
   beforeEach(async () => {
@@ -108,8 +108,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-langfuse-admin-api-key": ADMIN_API_KEY,
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": ADMIN_API_KEY,
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
@@ -137,7 +137,7 @@ describe("Admin API Key Authentication", () => {
       expect(result.scope.apiKeyId).not.toBe("ADMIN_API_KEY");
     });
 
-    it("should fall back to basic auth when no x-langfuse-admin-api-key header", async () => {
+    it("should fall back to basic auth when no x-hanzo-admin-api-key header", async () => {
       const mockReq = {
         headers: {
           authorization: auth,
@@ -150,23 +150,23 @@ describe("Admin API Key Authentication", () => {
       expect(result.scope.projectId).toBe(projectId);
     });
 
-    it("should fail on Langfuse Cloud", async () => {
-      (env as any).NEXT_PUBLIC_LANGFUSE_CLOUD_REGION = "prod-us";
+    it("should fail on Hanzo Cloud", async () => {
+      (env as any).NEXT_PUBLIC_HANZO_CLOUD_REGION = "prod-us";
 
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-langfuse-admin-api-key": ADMIN_API_KEY,
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": ADMIN_API_KEY,
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
       await expect(verifyAuth(mockReq, true)).rejects.toEqual({
         status: 403,
-        message: "Admin API key auth is not available on Langfuse Cloud",
+        message: "Admin API key auth is not available on Hanzo Cloud",
       });
 
-      (env as any).NEXT_PUBLIC_LANGFUSE_CLOUD_REGION = undefined;
+      (env as any).NEXT_PUBLIC_HANZO_CLOUD_REGION = undefined;
     });
 
     it("should fail when ADMIN_API_KEY is not configured", async () => {
@@ -175,8 +175,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer some-key",
-          "x-langfuse-admin-api-key": "some-key",
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": "some-key",
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
@@ -192,8 +192,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer wrong-key",
-          "x-langfuse-admin-api-key": ADMIN_API_KEY,
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": ADMIN_API_KEY,
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
@@ -203,12 +203,12 @@ describe("Admin API Key Authentication", () => {
       });
     });
 
-    it("should fail with invalid x-langfuse-admin-api-key header", async () => {
+    it("should fail with invalid x-hanzo-admin-api-key header", async () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-langfuse-admin-api-key": "wrong-key",
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": "wrong-key",
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
@@ -222,8 +222,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: "Bearer different-key-1",
-          "x-langfuse-admin-api-key": "different-key-2",
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-admin-api-key": "different-key-2",
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 
@@ -233,18 +233,18 @@ describe("Admin API Key Authentication", () => {
       });
     });
 
-    it("should fail without x-langfuse-project-id header", async () => {
+    it("should fail without x-hanzo-project-id header", async () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-langfuse-admin-api-key": ADMIN_API_KEY,
+          "x-hanzo-admin-api-key": ADMIN_API_KEY,
         },
       } as NextApiRequest;
 
       await expect(verifyAuth(mockReq, true)).rejects.toEqual({
         status: 400,
         message:
-          "x-langfuse-project-id header is required for admin API key authentication",
+          "x-hanzo-project-id header is required for admin API key authentication",
       });
     });
 
@@ -252,8 +252,8 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: `Bearer ${ADMIN_API_KEY}`,
-          "x-langfuse-admin-api-key": ADMIN_API_KEY,
-          "x-langfuse-project-id": "non-existent-project",
+          "x-hanzo-admin-api-key": ADMIN_API_KEY,
+          "x-hanzo-project-id": "non-existent-project",
         },
       } as NextApiRequest;
 
@@ -267,7 +267,7 @@ describe("Admin API Key Authentication", () => {
       const mockReq = {
         headers: {
           authorization: auth,
-          "x-langfuse-project-id": projectId,
+          "x-hanzo-project-id": projectId,
         },
       } as NextApiRequest;
 

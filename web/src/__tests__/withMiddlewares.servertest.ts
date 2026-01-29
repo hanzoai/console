@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import {
   BaseError,
-  LangfuseNotFoundError,
+  HanzoNotFoundError,
   UnauthorizedError,
   ServiceUnavailableError,
 } from "@hanzo/shared";
@@ -45,7 +45,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -76,7 +76,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "GET",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -93,9 +93,9 @@ describe("withMiddlewares error handling", () => {
     });
   });
 
-  describe("LangfuseNotFoundError handling", () => {
-    it("should handle LangfuseNotFoundError and log as info", async () => {
-      const error = new LangfuseNotFoundError("Resource not found");
+  describe("HanzoNotFoundError handling", () => {
+    it("should handle HanzoNotFoundError and log as info", async () => {
+      const error = new HanzoNotFoundError("Resource not found");
 
       const handler = withMiddlewares({
         GET: async () => {
@@ -106,7 +106,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "GET",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -116,7 +116,7 @@ describe("withMiddlewares error handling", () => {
       const jsonData = JSON.parse(res._getData());
       expect(jsonData).toMatchObject({
         message: "Resource not found",
-        error: "LangfuseNotFoundError",
+        error: "HanzoNotFoundError",
       });
       // Should log as info, not error
       expect(logger.info).toHaveBeenCalledWith(error);
@@ -137,7 +137,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -165,7 +165,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -197,7 +197,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -229,7 +229,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -263,7 +263,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -298,7 +298,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "POST",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -329,7 +329,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "DELETE",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -355,7 +355,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "PATCH",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 
@@ -379,7 +379,7 @@ describe("withMiddlewares error handling", () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: "PUT",
         headers: {
-          "x-langfuse-public-key": "test-key",
+          "x-hanzo-public-key": "test-key",
         },
       });
 

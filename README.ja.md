@@ -26,7 +26,7 @@
       <a href="https://hanzo.ai/roadmap"><strong>ロードマップ</strong></a> ·
    </div>
    <br/>
-   <span>Langfuseは、サポートと機能リクエストのために <a href="https://github.com/orgs/langfuse/discussions"><strong>GitHub Discussions</strong></a> を利用しています。</span>
+   <span>Hanzoは、サポートと機能リクエストのために <a href="https://github.com/orgs/hanzo/discussions"><strong>GitHub Discussions</strong></a> を利用しています。</span>
    <br/>
    <span><b>We're hiring.</b> <a href="https://hanzo.ai/careers"><strong>チームに加わる</strong></a> （製品エンジニアリングおよびテクニカルGTMのポジション）への応募をお待ちしています。</span>
    <br/>
@@ -84,15 +84,15 @@ Hanzoは**数分でセルフホスト可能**で、**多くの実績を持つ**�
   複雑なログやユーザーセッションを解析・デバッグできます。  
   インタラクティブな[デモ](https://hanzo.ai/docs/demo)で動作を確認してください。
 
-- **[プロンプト管理](https://langfuse.com/docs/prompt-management/get-started):**  
+- **[プロンプト管理](https://hanzo.com/docs/prompt-management/get-started):**  
   プロンプトを一元管理し、バージョン管理しながら共同で改善を行えます。  
   サーバーおよびクライアント側で強力なキャッシングを行うため、アプリケーションのレイテンシを増やすことなくプロンプトの改良が可能です。
 
-- **[評価](https://langfuse.com/docs/evaluation/overview):**  
-  評価はLLMアプリケーション開発ワークフローの要であり、Langfuseは多様なニーズに対応します。  
+- **[評価](https://hanzo.com/docs/evaluation/overview):**  
+  評価はLLMアプリケーション開発ワークフローの要であり、Hanzoは多様なニーズに対応します。  
   LLMを判定者として用いる方法、ユーザーフィードバックの収集、手動によるラベリング、API/SDKを通じたカスタム評価パイプラインをサポートします。
 
-- **[データセット](https://langfuse.com/docs/evaluation/dataset-runs/datasets):**  
+- **[データセット](https://hanzo.com/docs/evaluation/dataset-runs/datasets):**  
   LLMアプリケーション評価用のテストセットやベンチマークを構築できます。  
   継続的な改善、事前デプロイテスト、構造化された実験、柔軟な評価、さらにLangChainやLlamaIndexなどとのシームレスな統合をサポートします。
 
@@ -141,7 +141,7 @@ Hanzoチームによるマネージドデプロイメント。充実した無料
 - **[VM](https://hanzo.ai/self-hosting/docker-compose):**  
   Docker Composeを使用して、単一の仮想マシン上でHanzoを実行します。
 
-- Terraform テンプレート: [AWS](https://langfuse.com/self-hosting/aws), [Azure](https://langfuse.com/self-hosting/azure), [GCP](https://langfuse.com/self-hosting/gcp)
+- Terraform テンプレート: [AWS](https://hanzo.com/self-hosting/aws), [Azure](https://hanzo.com/self-hosting/azure), [GCP](https://hanzo.com/self-hosting/gcp)
 
 [セルフホスティングのドキュメント](https://hanzo.ai/self-hosting)を参照し、アーキテクチャや設定オプションの詳細をご確認ください。
 
@@ -153,38 +153,38 @@ Hanzoチームによるマネージドデプロイメント。充実した無料
 
 | インテグレーション                                                           | 対応言語・環境             | 説明                                                                                                                                                      |
 | ---------------------------------------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [SDK](https://langfuse.com/docs/sdk)                                         | Python, JS/TS              | SDKを利用して手動でインストゥルメンテーションを実装し、完全な柔軟性を提供します。                                                                         |
-| [OpenAI](https://langfuse.com/integrations/model-providers/openai-py)        | Python, JS/TS              | OpenAI SDKのドロップイン置換による自動インストゥルメンテーションを実現します。                                                                            |
-| [Langchain](https://langfuse.com/docs/integrations/langchain)                | Python, JS/TS              | Langchainアプリケーションにコールバックハンドラーを渡すことで自動的に計測します。                                                                         |
-| [LlamaIndex](https://langfuse.com/docs/integrations/llama-index/get-started) | Python                     | LlamaIndexのコールバックシステムを介して自動的にインストゥルメントします。                                                                                |
-| [Haystack](https://langfuse.com/docs/integrations/haystack)                  | Python                     | Haystackのコンテンツトレースシステムを利用した自動インストゥルメンテーションを実現します。                                                                |
-| [LiteLLM](https://langfuse.com/docs/integrations/litellm)                    | Python, JS/TS (proxy only) | GPTのドロップイン置換として任意のLLMを使用できます。Azure、OpenAI、Cohere、Anthropic、Ollama、VLLM、Sagemaker、HuggingFace、Replicate（100+ LLM）に対応。 |
-| [Vercel AI SDK](https://langfuse.com/docs/integrations/vercel-ai-sdk)        | JS/TS                      | React、Next.js、Vue、Svelte、Node.jsを使用してAI搭載アプリケーションの構築を支援するTypeScriptツールキットです。                                          |
-| [API](https://langfuse.com/docs/api)                                         |                            | 公開APIを直接呼び出すことが可能です。OpenAPI仕様も利用できます。                                                                                          |
+| [SDK](https://hanzo.com/docs/sdk)                                         | Python, JS/TS              | SDKを利用して手動でインストゥルメンテーションを実装し、完全な柔軟性を提供します。                                                                         |
+| [OpenAI](https://hanzo.com/integrations/model-providers/openai-py)        | Python, JS/TS              | OpenAI SDKのドロップイン置換による自動インストゥルメンテーションを実現します。                                                                            |
+| [Langchain](https://hanzo.com/docs/integrations/langchain)                | Python, JS/TS              | Langchainアプリケーションにコールバックハンドラーを渡すことで自動的に計測します。                                                                         |
+| [LlamaIndex](https://hanzo.com/docs/integrations/llama-index/get-started) | Python                     | LlamaIndexのコールバックシステムを介して自動的にインストゥルメントします。                                                                                |
+| [Haystack](https://hanzo.com/docs/integrations/haystack)                  | Python                     | Haystackのコンテンツトレースシステムを利用した自動インストゥルメンテーションを実現します。                                                                |
+| [LiteLLM](https://hanzo.com/docs/integrations/litellm)                    | Python, JS/TS (proxy only) | GPTのドロップイン置換として任意のLLMを使用できます。Azure、OpenAI、Cohere、Anthropic、Ollama、VLLM、Sagemaker、HuggingFace、Replicate（100+ LLM）に対応。 |
+| [Vercel AI SDK](https://hanzo.com/docs/integrations/vercel-ai-sdk)        | JS/TS                      | React、Next.js、Vue、Svelte、Node.jsを使用してAI搭載アプリケーションの構築を支援するTypeScriptツールキットです。                                          |
+| [API](https://hanzo.com/docs/api)                                         |                            | 公開APIを直接呼び出すことが可能です。OpenAPI仕様も利用できます。                                                                                          |
 
 ### Hanzoと統合されているパッケージ:
 
 | 名前                                                                                  | タイプ                     | 説明                                                                                |
 | ------------------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------- |
-| [Instructor](https://langfuse.com/docs/integrations/instructor)                       | ライブラリ                 | 構造化されたLLM出力（JSON、Pydantic）を取得するためのライブラリ                     |
-| [DSPy](https://langfuse.com/docs/integrations/dspy)                                   | ライブラリ                 | LLMプロンプトや重み付けを体系的に最適化するためのフレームワーク                     |
-| [Mirascope](https://langfuse.com/docs/integrations/mirascope)                         | ライブラリ                 | LLMアプリケーション構築用のPythonツールキット                                       |
-| [Ollama](https://langfuse.com/docs/integrations/ollama)                               | モデル（ローカル）         | オープンソースLLMを手軽にローカルで実行するためのツール                             |
-| [Amazon Bedrock](https://langfuse.com/docs/integrations/amazon-bedrock)               | モデル                     | AWS上でファウンデーションモデルやファインチューニング済みモデルを実行               |
-| [Google VertexAI and Gemini](https://langfuse.com/docs/integrations/google-vertex-ai) | モデル                     | Google上でファウンデーションモデルやファインチューニング済みモデルを実行            |
-| [AutoGen](https://langfuse.com/docs/integrations/autogen)                             | エージェントフレームワーク | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
-| [Flowise](https://langfuse.com/docs/integrations/flowise)                             | チャット/エージェント UI   | JS/TSのノーコードビルダーで、カスタマイズ可能なLLMフローを構築                      |
-| [Langflow](https://langfuse.com/docs/integrations/langflow)                           | チャット/エージェント UI   | PythonベースのUIで、react-flowを用いてLangChainの実験やプロトタイピングを容易に実現 |
-| [Dify](https://langfuse.com/docs/integrations/dify)                                   | チャット/エージェント UI   | ノーコードでLLMアプリ開発が可能なオープンソースプラットフォーム                     |
-| [OpenWebUI](https://langfuse.com/docs/integrations/openwebui)                         | チャット/エージェント UI   | 自前ホストおよびローカルモデルに対応するLLMチャットWeb UI                           |
-| [Promptfoo](https://langfuse.com/docs/integrations/promptfoo)                         | ツール                     | オープンソースのLLMテストプラットフォーム                                           |
-| [LobeChat](https://langfuse.com/docs/integrations/lobechat)                           | チャット/エージェント UI   | オープンソースのチャットボットプラットフォーム                                      |
-| [Vapi](https://langfuse.com/docs/integrations/vapi)                                   | プラットフォーム           | オープンソースの音声AIプラットフォーム                                              |
-| [Inferable](https://langfuse.com/docs/integrations/other/inferable)                   | エージェント               | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
-| [Gradio](https://langfuse.com/docs/integrations/other/gradio)                         | チャット/エージェント UI   | チャットUIなどのWebインターフェース構築のためのオープンソースPythonライブラリ       |
-| [Goose](https://langfuse.com/docs/integrations/goose)                                 | エージェント               | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
-| [smolagents](https://langfuse.com/docs/integrations/smolagents)                       | エージェント               | オープンソースのAIエージェントフレームワーク                                        |
-| [CrewAI](https://langfuse.com/docs/integrations/crewai)                               | エージェント               | エージェントの協調とツール利用を実現するマルチエージェントフレームワーク            |
+| [Instructor](https://hanzo.com/docs/integrations/instructor)                       | ライブラリ                 | 構造化されたLLM出力（JSON、Pydantic）を取得するためのライブラリ                     |
+| [DSPy](https://hanzo.com/docs/integrations/dspy)                                   | ライブラリ                 | LLMプロンプトや重み付けを体系的に最適化するためのフレームワーク                     |
+| [Mirascope](https://hanzo.com/docs/integrations/mirascope)                         | ライブラリ                 | LLMアプリケーション構築用のPythonツールキット                                       |
+| [Ollama](https://hanzo.com/docs/integrations/ollama)                               | モデル（ローカル）         | オープンソースLLMを手軽にローカルで実行するためのツール                             |
+| [Amazon Bedrock](https://hanzo.com/docs/integrations/amazon-bedrock)               | モデル                     | AWS上でファウンデーションモデルやファインチューニング済みモデルを実行               |
+| [Google VertexAI and Gemini](https://hanzo.com/docs/integrations/google-vertex-ai) | モデル                     | Google上でファウンデーションモデルやファインチューニング済みモデルを実行            |
+| [AutoGen](https://hanzo.com/docs/integrations/autogen)                             | エージェントフレームワーク | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
+| [Flowise](https://hanzo.com/docs/integrations/flowise)                             | チャット/エージェント UI   | JS/TSのノーコードビルダーで、カスタマイズ可能なLLMフローを構築                      |
+| [Langflow](https://hanzo.com/docs/integrations/langflow)                           | チャット/エージェント UI   | PythonベースのUIで、react-flowを用いてLangChainの実験やプロトタイピングを容易に実現 |
+| [Dify](https://hanzo.com/docs/integrations/dify)                                   | チャット/エージェント UI   | ノーコードでLLMアプリ開発が可能なオープンソースプラットフォーム                     |
+| [OpenWebUI](https://hanzo.com/docs/integrations/openwebui)                         | チャット/エージェント UI   | 自前ホストおよびローカルモデルに対応するLLMチャットWeb UI                           |
+| [Promptfoo](https://hanzo.com/docs/integrations/promptfoo)                         | ツール                     | オープンソースのLLMテストプラットフォーム                                           |
+| [LobeChat](https://hanzo.com/docs/integrations/lobechat)                           | チャット/エージェント UI   | オープンソースのチャットボットプラットフォーム                                      |
+| [Vapi](https://hanzo.com/docs/integrations/vapi)                                   | プラットフォーム           | オープンソースの音声AIプラットフォーム                                              |
+| [Inferable](https://hanzo.com/docs/integrations/other/inferable)                   | エージェント               | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
+| [Gradio](https://hanzo.com/docs/integrations/other/gradio)                         | チャット/エージェント UI   | チャットUIなどのWebインターフェース構築のためのオープンソースPythonライブラリ       |
+| [Goose](https://hanzo.com/docs/integrations/goose)                                 | エージェント               | 分散型エージェント構築のためのオープンソースLLMプラットフォーム                     |
+| [smolagents](https://hanzo.com/docs/integrations/smolagents)                       | エージェント               | オープンソースのAIエージェントフレームワーク                                        |
+| [CrewAI](https://hanzo.com/docs/integrations/crewai)                               | エージェント               | エージェントの協調とツール利用を実現するマルチエージェントフレームワーク            |
 
 ## 🚀 クイックスタート
 
@@ -199,8 +199,8 @@ Hanzoチームによるマネージドデプロイメント。充実した無料
 
 ### 2️⃣ 初めてのLLM呼び出しのログ記録
 
-[`@observe()` デコレーター](https://langfuse.com/docs/sdk/python/decorators)を利用することで、任意のPython製LLMアプリケーションのトレースが簡単に行えます。  
-このクイックスタートでは、Langfuseの[OpenAI統合](https://langfuse.com/integrations/model-providers/openai-py)を使用して、全てのモデルパラメータを自動で取得します。
+[`@observe()` デコレーター](https://hanzo.com/docs/sdk/python/decorators)を利用することで、任意のPython製LLMアプリケーションのトレースが簡単に行えます。  
+このクイックスタートでは、Hanzoの[OpenAI統合](https://hanzo.com/integrations/model-providers/openai-py)を使用して、全てのモデルパラメータを自動で取得します。
 
 > [!TIP]
 > OpenAIを利用していない場合は、[こちらのドキュメント](https://hanzo.ai/docs/get-started#log-your-first-llm-call-to-hanzo)で、他のモデルやフレームワークのログ記録方法をご確認ください。
@@ -210,15 +210,15 @@ pip install hanzo openai
 ```
 
 ```bash filename=".env"
-LANGFUSE_SECRET_KEY="sk-lf-..."
-LANGFUSE_PUBLIC_KEY="pk-lf-..."
-LANGFUSE_BASE_URL="https://cloud.langfuse.com" # 🇪🇺 EUリージョン
-# LANGFUSE_BASE_URL="https://us.cloud.langfuse.com" # 🇺🇸 USリージョン
+HANZO_SECRET_KEY="sk-lf-..."
+HANZO_PUBLIC_KEY="pk-lf-..."
+HANZO_BASE_URL="https://cloud.hanzo.com" # 🇪🇺 EUリージョン
+# HANZO_BASE_URL="https://us.cloud.hanzo.com" # 🇺🇸 USリージョン
 ```
 
-```python:/@observe()/ /from langfuse.openai import openai/ filename="main.py"
-from langfuse import observe
-from langfuse.openai import openai  # OpenAI統合
+```python:/@observe()/ /from hanzo.openai import openai/ filename="main.py"
+from hanzo import observe
+from hanzo.openai import openai  # OpenAI統合
 
 @observe()
 def story():
@@ -248,7 +248,7 @@ _[Hanzoの公開トレース例](https://cloud.hanzo.ai/project/cloramnkj0002jz0
 
 ## ⭐️ Star Hanzo
 
-![star-langfuse-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
+![star-hanzo-on-github](https://github.com/user-attachments/assets/79a1d816-d229-4526-aecc-097d4a19f1ad)
 
 ## 💭 サポート
 

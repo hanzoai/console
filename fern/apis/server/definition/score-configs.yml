@@ -43,7 +43,7 @@ service:
       path-parameters:
         configId:
           type: string
-          docs: The unique langfuse identifier of a score config
+          docs: The unique hanzo identifier of a score config
       request: UpdateScoreConfigRequest
       response: commons.ScoreConfig
 
@@ -67,7 +67,7 @@ types:
         docs: Configure a maximum value for numerical scores. If not set, the maximum value defaults to +∞
       description:
         type: optional<string>
-        docs: Description is shown across the Langfuse UI and can be used to e.g. explain the config categories in detail, why a numeric range was set, or provide additional context on config name or usage
+        docs: Description is shown across the Hanzo UI and can be used to e.g. explain the config categories in detail, why a numeric range was set, or provide additional context on config name or usage
   UpdateScoreConfigRequest:
     properties:
       isArchived:

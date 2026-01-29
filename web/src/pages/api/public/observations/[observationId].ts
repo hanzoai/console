@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { LangfuseNotFoundError } from "@hanzo/shared";
+import { HanzoNotFoundError } from "@hanzo/shared";
 import {
   GetObservationV1Query,
   GetObservationV1Response,
@@ -24,7 +24,7 @@ export default withMiddlewares({
       const useEventsTable =
         query.useEventsTable !== undefined && query.useEventsTable !== null
           ? query.useEventsTable === true
-          : env.LANGFUSE_ENABLE_EVENTS_TABLE_OBSERVATIONS;
+          : env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS;
 
       const clickhouseObservation = useEventsTable
         ? await getObservationByIdFromEventsTable({
@@ -41,7 +41,7 @@ export default withMiddlewares({
           });
 
       if (!clickhouseObservation) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Observation not found within authorized project",
         );
       }
@@ -83,7 +83,7 @@ export default withMiddlewares({
       };
 
       if (!observation) {
-        throw new LangfuseNotFoundError(
+        throw new HanzoNotFoundError(
           "Observation not found within authorized project",
         );
       }

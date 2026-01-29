@@ -29,14 +29,14 @@ import { TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import startCase from "lodash/startCase";
-import { useLangfuseEnvCode } from "@/src/features/public-api/hooks/useLangfuseEnvCode";
+import { useHanzoEnvCode } from "@/src/features/public-api/hooks/useHanzoEnvCode";
 
 type ApiKeyScope = "project" | "organization";
 type ApiKeyEntity = { id: string; note: string | null };
 
 export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
   const { entityId, scope } = props;
-  const envCode = useLangfuseEnvCode();
+  const envCode = useHanzoEnvCode();
 
   if (!entityId) {
     throw new Error(
@@ -90,8 +90,8 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
           description: `Learn more about ${scope} API keys`,
           href:
             scope === "project"
-              ? "https://langfuse.com/docs/api#authentication"
-              : "https://langfuse.com/docs/api#org-scoped-routes",
+              ? "https://hanzo.com/docs/api#authentication"
+              : "https://hanzo.com/docs/api#org-scoped-routes",
         }}
         actionButtons={<CreateApiKeyButton entityId={entityId} scope={scope} />}
       />

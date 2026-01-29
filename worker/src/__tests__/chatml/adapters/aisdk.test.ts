@@ -56,7 +56,7 @@ describe("AI SDK Adapter", () => {
       expect(
         aisdkAdapter.detect({
           metadata: {
-            scope: { name: "langfuse-sdk" },
+            scope: { name: "hanzo-sdk" },
           },
         }),
       ).toBe(false);
