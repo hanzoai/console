@@ -1,5 +1,9 @@
 import { z } from "zod/v4";
-import { LLMAdapter, BedrockConfigSchema, VertexAIConfigSchema } from "@hanzo/shared";
+import {
+  LLMAdapter,
+  BedrockConfigSchema,
+  VertexAIConfigSchema,
+} from "@hanzo/shared";
 
 export const LlmApiKeySchema = z.object({
   projectId: z.string(),
@@ -23,6 +27,9 @@ export const UpdateLlmApiKey = LlmApiKeySchema.extend({
   secretKey: z
     .string()
     .optional()
-    .refine((val) => !val || val.length >= 1, "Secret key must be at least 1 character long"),
+    .refine(
+      (val) => !val || val.length >= 1,
+      "Secret key must be at least 1 character long",
+    ),
   id: z.string(),
 });

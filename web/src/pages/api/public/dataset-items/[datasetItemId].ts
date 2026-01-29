@@ -10,7 +10,10 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { HanzoNotFoundError } from "@hanzo/shared";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { deleteDatasetItem, getDatasetItemById } from "@hanzo/shared/src/server";
+import {
+  deleteDatasetItem,
+  getDatasetItemById,
+} from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({

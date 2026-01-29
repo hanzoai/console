@@ -24,7 +24,11 @@ export async function telemetry() {
     // Do not run in Hanzo Cloud cloud, separate telemetry is used
     if (env.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined) return;
     // Check if telemetry is not disabled, except for EE
-    if (env.TELEMETRY_ENABLED === "false" && env.HANZO_EE_LICENSE_KEY === undefined) return;
+    if (
+      env.TELEMETRY_ENABLED === "false" &&
+      env.HANZO_EE_LICENSE_KEY === undefined
+    )
+      return;
     // Do not run in CI
     if (process.env.CI) return;
 
@@ -161,25 +165,37 @@ async function posthogTelemetry({
     });
 
     // Count traces
-    const countTracesClickhouse = await getTraceCountsByProjectInCreationInterval({
-      start: startTimeframe ?? new Date(0),
-      end: endTimeframe,
-    });
-    const countTraces = countTracesClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countTracesClickhouse =
+      await getTraceCountsByProjectInCreationInterval({
+        start: startTimeframe ?? new Date(0),
+        end: endTimeframe,
+      });
+    const countTraces = countTracesClickhouse.reduce(
+      (acc, curr) => acc + curr.count,
+      0,
+    );
 
     // Count scores
-    const countScoresClickhouse = await getScoreCountsByProjectInCreationInterval({
-      start: startTimeframe ?? new Date(0),
-      end: endTimeframe,
-    });
-    const countScores = countScoresClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countScoresClickhouse =
+      await getScoreCountsByProjectInCreationInterval({
+        start: startTimeframe ?? new Date(0),
+        end: endTimeframe,
+      });
+    const countScores = countScoresClickhouse.reduce(
+      (acc, curr) => acc + curr.count,
+      0,
+    );
 
     // Count observations
-    const countObservationsClickhouse = await getObservationCountsByProjectInCreationInterval({
-      start: startTimeframe ?? new Date(0),
-      end: endTimeframe,
-    });
-    const countObservations = countObservationsClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countObservationsClickhouse =
+      await getObservationCountsByProjectInCreationInterval({
+        start: startTimeframe ?? new Date(0),
+        end: endTimeframe,
+      });
+    const countObservations = countObservationsClickhouse.reduce(
+      (acc, curr) => acc + curr.count,
+      0,
+    );
 
     // Count datasets
     const countDatasets = await prisma.dataset.count({
@@ -211,11 +227,15 @@ async function posthogTelemetry({
       },
     });
 
-    const countDatasetRunItemsClickhouse = await getDatasetRunItemCountsByProjectInCreationInterval({
-      start: startTimeframe ?? new Date(0),
-      end: endTimeframe,
-    });
-    const countDatasetRunItems = countDatasetRunItemsClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countDatasetRunItemsClickhouse =
+      await getDatasetRunItemCountsByProjectInCreationInterval({
+        start: startTimeframe ?? new Date(0),
+        end: endTimeframe,
+      });
+    const countDatasetRunItems = countDatasetRunItemsClickhouse.reduce(
+      (acc, curr) => acc + curr.count,
+      0,
+    );
 
     // Domains (no PII)
     const domains = await prisma.$queryRaw<Array<{ domain: string }>>`

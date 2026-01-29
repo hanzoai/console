@@ -21,7 +21,10 @@ export function NotificationSettings() {
     data: preferences,
     isLoading,
     refetch,
-  } = api.notificationPreferences.getForProject.useQuery({ projectId }, { enabled: Boolean(projectId) });
+  } = api.notificationPreferences.getForProject.useQuery(
+    { projectId },
+    { enabled: Boolean(projectId) },
+  );
 
   const updatePreference = api.notificationPreferences.update.useMutation({
     onSuccess: () => {
@@ -46,14 +49,18 @@ export function NotificationSettings() {
         <Header title="Notification Settings" />
         <Card className="mt-4">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Loading preferences...</p>
+            <p className="text-sm text-muted-foreground">
+              Loading preferences...
+            </p>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  const emailCommentMention = preferences.find((p) => p.channel === "EMAIL" && p.type === "COMMENT_MENTION");
+  const emailCommentMention = preferences.find(
+    (p) => p.channel === "EMAIL" && p.type === "COMMENT_MENTION",
+  );
 
   return (
     <div>
@@ -73,7 +80,9 @@ export function NotificationSettings() {
                 <Label htmlFor="comment-mention" className="text-base">
                   Comment Mentions
                 </Label>
-                <p className="text-sm text-muted-foreground">Receive an email when someone mentions you in a comment</p>
+                <p className="text-sm text-muted-foreground">
+                  Receive an email when someone mentions you in a comment
+                </p>
               </div>
               <Switch
                 id="comment-mention"
@@ -88,7 +97,9 @@ export function NotificationSettings() {
 
       {updatePreference.isError && (
         <div className="mt-4 rounded-lg border border-destructive bg-destructive/10 p-4">
-          <p className="text-sm text-destructive">Failed to update notification preference. Please try again.</p>
+          <p className="text-sm text-destructive">
+            Failed to update notification preference. Please try again.
+          </p>
         </div>
       )}
     </div>

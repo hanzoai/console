@@ -1,12 +1,20 @@
 // trpc/plainRouter.ts
-import { createTRPCRouter, authenticatedProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  authenticatedProcedure,
+} from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { env } from "@/src/env.mjs";
 import { VERSION } from "@/src/constants";
 import { nanoid } from "nanoid";
 
-import { MessageTypeSchema, SeveritySchema, TopicSchema, TopicGroups } from "../formConstants";
+import {
+  MessageTypeSchema,
+  SeveritySchema,
+  TopicSchema,
+  TopicGroups,
+} from "../formConstants";
 
 import { buildPlainEventSupportRequestMetadataComponents } from "../plain/events/supportRequestMetadataEvent";
 
@@ -50,13 +58,24 @@ const PrepareAttachmentUploadsInput = z.object({
         fileSizeBytes: z.number().int().positive(),
       }),
     )
-    .max(5, `Maximum 5 files allowed (each ≤ ${(PLAIN_MAX_FILE_SIZE_BYTES / (1024 * 1024)).toFixed(0)}MB)`)
-    .refine((files) => files.every((f) => f.fileSizeBytes <= PLAIN_MAX_FILE_SIZE_BYTES), {
-      message: `Each file must be ≤ ${(PLAIN_MAX_FILE_SIZE_BYTES / (1024 * 1024)).toFixed(0)}MB`,
-    })
-    .refine((files) => files.reduce((sum, f) => sum + f.fileSizeBytes, 0) <= 50 * 1024 * 1024, {
-      message: "Total attachment size must be ≤ 50MB",
-    })
+    .max(
+      5,
+      `Maximum 5 files allowed (each ≤ ${(PLAIN_MAX_FILE_SIZE_BYTES / (1024 * 1024)).toFixed(0)}MB)`,
+    )
+    .refine(
+      (files) =>
+        files.every((f) => f.fileSizeBytes <= PLAIN_MAX_FILE_SIZE_BYTES),
+      {
+        message: `Each file must be ≤ ${(PLAIN_MAX_FILE_SIZE_BYTES / (1024 * 1024)).toFixed(0)}MB`,
+      },
+    )
+    .refine(
+      (files) =>
+        files.reduce((sum, f) => sum + f.fileSizeBytes, 0) <= 50 * 1024 * 1024,
+      {
+        message: "Total attachment size must be ≤ 50MB",
+      },
+    )
     .optional()
     .default([]),
 });
@@ -105,7 +124,11 @@ export const plainRouter = createTRPCRouter({
 
       const plain = initPlain({ apiKey: env.PLAIN_API_KEY });
       const customerId = await ensureCustomer(plain, { email, fullName });
-      const uploads = await createAttachmentUploadUrls(plain, customerId, input.files);
+      const uploads = await createAttachmentUploadUrls(
+        plain,
+        customerId,
+        input.files,
+      );
 
       return {
         customerId,
@@ -122,169 +145,182 @@ export const plainRouter = createTRPCRouter({
    *  (4) Fire-and-forget: create a compact "Support request metadata" thread event
    *      using the new UI builder (Url, Organization ID, Project ID, Version, Plan, Cloud Region, Browser Metadata).
    */
-  createSupportThread: authenticatedProcedure.input(CreateSupportThreadInput).mutation(async ({ ctx, input }) => {
-    const email = ctx.session.user.email;
-    const fullName = ctx.session.user.name ?? undefined;
-    if (!email) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "User email required to create a support thread.",
-      });
-    }
-
-    const currentSupportRequestContext = {
-      organizationId: input.organizationId,
-      projectId: input.projectId,
-      region: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
-      plan: undefined as string | undefined,
-      tenantExternalId: undefined as string | undefined,
-    };
-
-    // Validate that, if organizationId is provided the user has access to it
-    if (input.organizationId) {
-      const organization = ctx.session.user.organizations.find((o) => o.id === input.organizationId);
-
-      if (!organization) {
+  createSupportThread: authenticatedProcedure
+    .input(CreateSupportThreadInput)
+    .mutation(async ({ ctx, input }) => {
+      const email = ctx.session.user.email;
+      const fullName = ctx.session.user.name ?? undefined;
+      if (!email) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Organization not found.",
+          message: "User email required to create a support thread.",
         });
       }
 
-      currentSupportRequestContext.plan = organization.plan;
+      const currentSupportRequestContext = {
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        region: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
+        plan: undefined as string | undefined,
+        tenantExternalId: undefined as string | undefined,
+      };
 
-      if (input.projectId) {
-        // Validate that, if projectId is provided the user has access to it
-        if (!organization.projects?.some((p) => p.id === input.projectId)) {
+      // Validate that, if organizationId is provided the user has access to it
+      if (input.organizationId) {
+        const organization = ctx.session.user.organizations.find(
+          (o) => o.id === input.organizationId,
+        );
+
+        if (!organization) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Project not found.",
+            message: "Organization not found.",
           });
         }
-      }
-    }
 
-    // Validate that, if organizationId is NOT provided the user has access to the project
-    if (!input.organizationId && input.projectId) {
-      const organization = deriveOrganizationFromProject(ctx.session.user as SessionUser, input.projectId);
-      if (!organization) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Organization not found.",
+        currentSupportRequestContext.plan = organization.plan;
+
+        if (input.projectId) {
+          // Validate that, if projectId is provided the user has access to it
+          if (!organization.projects?.some((p) => p.id === input.projectId)) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Project not found.",
+            });
+          }
+        }
+      }
+
+      // Validate that, if organizationId is NOT provided the user has access to the project
+      if (!input.organizationId && input.projectId) {
+        const organization = deriveOrganizationFromProject(
+          ctx.session.user as SessionUser,
+          input.projectId,
+        );
+        if (!organization) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Organization not found.",
+          });
+        }
+
+        currentSupportRequestContext.plan = organization.plan;
+        currentSupportRequestContext.organizationId = organization.id;
+      }
+
+      if (
+        currentSupportRequestContext.organizationId &&
+        currentSupportRequestContext.region
+      ) {
+        currentSupportRequestContext.tenantExternalId =
+          generateTenantExternalId(
+            currentSupportRequestContext.organizationId,
+            currentSupportRequestContext.region,
+          );
+      }
+
+      const plain = initPlain({ apiKey: env.PLAIN_API_KEY });
+
+      // (1) Ensure customer
+      const customerId = await ensureCustomer(plain, { email, fullName });
+
+      // (2) Ensure tenants/tiers and sync memberships — best-effort
+      const demoOrgId = env.NEXT_PUBLIC_DEMO_ORG_ID;
+      if (currentSupportRequestContext.region) {
+        await syncTenantsAndTiers(plain, {
+          user: ctx.session.user as SessionUser,
+          region: currentSupportRequestContext.region,
+          demoOrgId,
+        });
+        await syncCustomerTenantMemberships(plain, {
+          email,
+          customerId,
+          user: ctx.session.user as SessionUser,
+          region: currentSupportRequestContext.region,
         });
       }
 
-      currentSupportRequestContext.plan = organization.plan;
-      currentSupportRequestContext.organizationId = organization.id;
-    }
+      const { topLevel, subtype } = splitTopic(input.topic);
 
-    if (currentSupportRequestContext.organizationId && currentSupportRequestContext.region) {
-      currentSupportRequestContext.tenantExternalId = generateTenantExternalId(
-        currentSupportRequestContext.organizationId,
-        currentSupportRequestContext.region,
-      );
-    }
+      // (3) Create thread (no initial message; with fallback inside)
+      // Generate a short unique identifier to prevent Gmail from merging threads
+      const uniqueId = nanoid(5);
+      const { threadId, createdAt, status, createdWithThreadFields } =
+        await plainCreateSupportThread(plain, {
+          email,
+          title: `[${uniqueId}] ${input.messageType}: ${input.topic} • ${topLevel}/${subtype}`,
+          messageType: input.messageType,
+          severity: input.severity,
+          topicTopLevel: topLevel,
+          topicSubtype: subtype,
+          url: input.url,
+          tenantExternalId: currentSupportRequestContext.tenantExternalId,
+          integrationType: input.integrationType,
+        });
 
-    const plain = initPlain({ apiKey: env.PLAIN_API_KEY });
+      try {
+        const { title: eventTitle, components: eventComponents } =
+          buildPlainEventSupportRequestMetadataComponents({
+            userEmail: email,
+            url: input.url,
+            organizationId: currentSupportRequestContext.organizationId,
+            projectId: currentSupportRequestContext.projectId,
+            version: VERSION,
+            plan: currentSupportRequestContext.plan,
+            cloudRegion: currentSupportRequestContext.region,
+            browserMetadata: input.browserMetadata,
+          });
 
-    // (1) Ensure customer
-    const customerId = await ensureCustomer(plain, { email, fullName });
+        await createThreadEvent(plain, {
+          threadId,
+          title: eventTitle,
+          components: eventComponents,
+          externalId: `support-metadata:${threadId}`,
+        });
+      } catch {
+        // best-effort; errors are logged in helpers
+      }
 
-    // (2) Ensure tenants/tiers and sync memberships — best-effort
-    const demoOrgId = env.NEXT_PUBLIC_DEMO_ORG_ID;
-    if (currentSupportRequestContext.region) {
-      await syncTenantsAndTiers(plain, {
-        user: ctx.session.user as SessionUser,
-        region: currentSupportRequestContext.region,
-        demoOrgId,
-      });
-      await syncCustomerTenantMemberships(plain, {
-        email,
-        customerId,
-        user: ctx.session.user as SessionUser,
-        region: currentSupportRequestContext.region,
-      });
-    }
-
-    const { topLevel, subtype } = splitTopic(input.topic);
-
-    // (3) Create thread (no initial message; with fallback inside)
-    // Generate a short unique identifier to prevent Gmail from merging threads
-    const uniqueId = nanoid(5);
-    const { threadId, createdAt, status, createdWithThreadFields } = await plainCreateSupportThread(plain, {
-      email,
-      title: `[${uniqueId}] ${input.messageType}: ${input.topic} • ${topLevel}/${subtype}`,
-      messageType: input.messageType,
-      severity: input.severity,
-      topicTopLevel: topLevel,
-      topicSubtype: subtype,
-      url: input.url,
-      tenantExternalId: currentSupportRequestContext.tenantExternalId,
-      integrationType: input.integrationType,
-    });
-
-    try {
-      const { title: eventTitle, components: eventComponents } = buildPlainEventSupportRequestMetadataComponents({
-        userEmail: email,
-        url: input.url,
-        organizationId: currentSupportRequestContext.organizationId,
-        projectId: currentSupportRequestContext.projectId,
-        version: VERSION,
-        plan: currentSupportRequestContext.plan,
-        cloudRegion: currentSupportRequestContext.region,
-        browserMetadata: input.browserMetadata,
-      });
-
-      await createThreadEvent(plain, {
+      // (5) Write user email as part of first reply to trigger email
+      await replyToThread(plain, {
         threadId,
-        title: eventTitle,
-        components: eventComponents,
-        externalId: `support-metadata:${threadId}`,
+        userEmail: email,
+        originalMessage: [
+          "Hi there,",
+          "",
+          " thanks for reaching out! We've received your request and will follow up as soon as possible.",
+          "",
+          "To help us move faster, feel free to reply to this email with:",
+          "- any error messages or screenshots",
+          "- links to where you're seeing the issue (trace, page, dataset)",
+          "- steps to reproduce (if relevant)",
+          "",
+          "Thanks,",
+          "",
+          "Team Hanzo",
+          "",
+          "",
+          "=============================================================================================",
+          "",
+          "",
+          `${email} wrote:`,
+          "",
+          input.message,
+          "",
+          "=============================================================================================",
+          "",
+        ].join("\n"),
+        attachmentIds: input.attachmentIds ?? [],
+        impersonate: false,
       });
-    } catch {
-      // best-effort; errors are logged in helpers
-    }
 
-    // (5) Write user email as part of first reply to trigger email
-    await replyToThread(plain, {
-      threadId,
-      userEmail: email,
-      originalMessage: [
-        "Hi there,",
-        "",
-        " thanks for reaching out! We've received your request and will follow up as soon as possible.",
-        "",
-        "To help us move faster, feel free to reply to this email with:",
-        "- any error messages or screenshots",
-        "- links to where you're seeing the issue (trace, page, dataset)",
-        "- steps to reproduce (if relevant)",
-        "",
-        "Thanks,",
-        "",
-        "Team Hanzo",
-        "",
-        "",
-        "=============================================================================================",
-        "",
-        "",
-        `${email} wrote:`,
-        "",
-        input.message,
-        "",
-        "=============================================================================================",
-        "",
-      ].join("\n"),
-      attachmentIds: input.attachmentIds ?? [],
-      impersonate: false,
-    });
-
-    return {
-      threadId,
-      customerId,
-      status,
-      createdAt,
-      createdWithThreadFields,
-      attachmentCount: (input.attachmentIds ?? []).length,
-    };
-  }),
+      return {
+        threadId,
+        customerId,
+        status,
+        createdAt,
+        createdWithThreadFields,
+        attachmentCount: (input.attachmentIds ?? []).length,
+      };
+    }),
 });

@@ -1,7 +1,14 @@
-import { PostEventsV1Body, PostEventsV1Response } from "@/src/features/public-api/types/events";
+import {
+  PostEventsV1Body,
+  PostEventsV1Response,
+} from "@/src/features/public-api/types/events";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { eventTypes, logger, processEventBatch } from "@hanzo/shared/src/server";
+import {
+  eventTypes,
+  logger,
+  processEventBatch,
+} from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
 export default withMiddlewares({
@@ -25,7 +32,9 @@ export default withMiddlewares({
       const result = await processEventBatch([event], auth);
       if (result.errors.length > 0) {
         const error = result.errors[0];
-        res.status(error.status).json({ message: error.error ?? error.message });
+        res
+          .status(error.status)
+          .json({ message: error.error ?? error.message });
         return { id: "" }; // dummy return
       }
       if (result.successes.length !== 1) {

@@ -9,7 +9,9 @@ import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import Decimal from "decimal.js";
 
 // Helper to create mock observations
-const createMockObservation = (overrides: Partial<ObservationReturnType> = {}): ObservationReturnType => ({
+const createMockObservation = (
+  overrides: Partial<ObservationReturnType> = {},
+): ObservationReturnType => ({
   id: "mock-id",
   name: "Mock Observation",
   type: "SPAN",
@@ -244,7 +246,9 @@ describe("buildTraceUiData", () => {
         name: "Test Trace",
         latency: 2.5,
       });
-      const observations: ObservationReturnType[] = [createMockObservation({ id: "obs-1", totalCost: 0.5 })];
+      const observations: ObservationReturnType[] = [
+        createMockObservation({ id: "obs-1", totalCost: 0.5 }),
+      ];
 
       const result = buildTraceUiData(trace, observations);
       const traceNode = result.roots[0];
@@ -340,7 +344,9 @@ describe("buildTraceUiData", () => {
       expect(result.nodeMap.has("trace-trace-1")).toBe(false);
 
       // searchItems has no TRACE node
-      expect(result.searchItems.every((s) => s.node.type !== "TRACE")).toBe(true);
+      expect(result.searchItems.every((s) => s.node.type !== "TRACE")).toBe(
+        true,
+      );
     });
   });
 
@@ -802,7 +808,8 @@ describe("buildTraceUiData", () => {
           observations.push(
             createMockObservation({
               id: `obs-${i}`,
-              parentObservationId: parentIndex === null ? null : `obs-${parentIndex}`,
+              parentObservationId:
+                parentIndex === null ? null : `obs-${parentIndex}`,
               totalCost: baseCost,
               startTime: new Date(`2024-01-01T00:00:${i % 60}.${i % 1000}Z`),
             }),
@@ -842,13 +849,19 @@ describe("buildTraceUiData", () => {
         // Create leaf nodes - attach to any intermediate node
         for (let i = 0; i < leafNodeCount; i++) {
           const obsId = intermediateNodeCount + i;
-          const parentIndex = intermediateNodeCount === 0 ? null : Math.floor(Math.random() * intermediateNodeCount);
+          const parentIndex =
+            intermediateNodeCount === 0
+              ? null
+              : Math.floor(Math.random() * intermediateNodeCount);
           observations.push(
             createMockObservation({
               id: `obs-${obsId}`,
-              parentObservationId: parentIndex === null ? null : `obs-${parentIndex}`,
+              parentObservationId:
+                parentIndex === null ? null : `obs-${parentIndex}`,
               totalCost: baseCost,
-              startTime: new Date(`2024-01-01T00:00:${obsId % 60}.${obsId % 1000}Z`),
+              startTime: new Date(
+                `2024-01-01T00:00:${obsId % 60}.${obsId % 1000}Z`,
+              ),
             }),
           );
         }
@@ -1087,8 +1100,12 @@ describe("buildTraceUiData", () => {
 
         const result = buildTraceUiData(trace, observations);
 
-        expect(result.nodeMap.get("root-1")?.startTimeSinceParentStart).toBeNull();
-        expect(result.nodeMap.get("root-2")?.startTimeSinceParentStart).toBeNull();
+        expect(
+          result.nodeMap.get("root-1")?.startTimeSinceParentStart,
+        ).toBeNull();
+        expect(
+          result.nodeMap.get("root-2")?.startTimeSinceParentStart,
+        ).toBeNull();
       });
 
       it("handles TRACE root node properties correctly", () => {
@@ -1446,9 +1463,15 @@ describe("buildTraceUiData", () => {
         expect(result.nodeMap.get("root-3")?.startTimeSinceTrace).toBe(3500);
 
         // All should have null parent-relative time
-        expect(result.nodeMap.get("root-1")?.startTimeSinceParentStart).toBeNull();
-        expect(result.nodeMap.get("root-2")?.startTimeSinceParentStart).toBeNull();
-        expect(result.nodeMap.get("root-3")?.startTimeSinceParentStart).toBeNull();
+        expect(
+          result.nodeMap.get("root-1")?.startTimeSinceParentStart,
+        ).toBeNull();
+        expect(
+          result.nodeMap.get("root-2")?.startTimeSinceParentStart,
+        ).toBeNull();
+        expect(
+          result.nodeMap.get("root-3")?.startTimeSinceParentStart,
+        ).toBeNull();
       });
 
       it("handles deep nesting without stack overflow", () => {
@@ -1464,7 +1487,9 @@ describe("buildTraceUiData", () => {
             createMockObservation({
               id: `obs-${i}`,
               parentObservationId: i === 0 ? null : `obs-${i - 1}`,
-              startTime: new Date(`2024-01-01T00:00:${String(i).padStart(2, "0")}.000Z`),
+              startTime: new Date(
+                `2024-01-01T00:00:${String(i).padStart(2, "0")}.000Z`,
+              ),
             }),
           );
         }
@@ -1478,8 +1503,12 @@ describe("buildTraceUiData", () => {
 
         // Verify temporal calculations still work
         expect(result.nodeMap.get("obs-0")?.startTimeSinceTrace).toBe(0);
-        expect(result.nodeMap.get("obs-0")?.startTimeSinceParentStart).toBeNull();
-        expect(result.nodeMap.get("obs-1")?.startTimeSinceParentStart).toBe(1000);
+        expect(
+          result.nodeMap.get("obs-0")?.startTimeSinceParentStart,
+        ).toBeNull();
+        expect(result.nodeMap.get("obs-1")?.startTimeSinceParentStart).toBe(
+          1000,
+        );
       });
     });
 
@@ -1515,9 +1544,15 @@ describe("buildTraceUiData", () => {
         const result = buildTraceUiData(trace, observations);
 
         // Sequential pattern: large, increasing parent-relative times
-        expect(result.nodeMap.get("step-1")?.startTimeSinceParentStart).toBe(1000);
-        expect(result.nodeMap.get("step-2")?.startTimeSinceParentStart).toBe(3000);
-        expect(result.nodeMap.get("step-3")?.startTimeSinceParentStart).toBe(6000);
+        expect(result.nodeMap.get("step-1")?.startTimeSinceParentStart).toBe(
+          1000,
+        );
+        expect(result.nodeMap.get("step-2")?.startTimeSinceParentStart).toBe(
+          3000,
+        );
+        expect(result.nodeMap.get("step-3")?.startTimeSinceParentStart).toBe(
+          6000,
+        );
       });
 
       it("identifies parallel execution pattern", () => {
@@ -1551,9 +1586,15 @@ describe("buildTraceUiData", () => {
         const result = buildTraceUiData(trace, observations);
 
         // Parallel pattern: small, similar parent-relative times
-        expect(result.nodeMap.get("parallel-1")?.startTimeSinceParentStart).toBe(50);
-        expect(result.nodeMap.get("parallel-2")?.startTimeSinceParentStart).toBe(55);
-        expect(result.nodeMap.get("parallel-3")?.startTimeSinceParentStart).toBe(60);
+        expect(
+          result.nodeMap.get("parallel-1")?.startTimeSinceParentStart,
+        ).toBe(50);
+        expect(
+          result.nodeMap.get("parallel-2")?.startTimeSinceParentStart,
+        ).toBe(55);
+        expect(
+          result.nodeMap.get("parallel-3")?.startTimeSinceParentStart,
+        ).toBe(60);
       });
 
       it("handles mixed execution patterns", () => {
@@ -1594,12 +1635,20 @@ describe("buildTraceUiData", () => {
         const result = buildTraceUiData(trace, observations);
 
         // Immediate execution
-        expect(result.nodeMap.get("immediate")?.startTimeSinceParentStart).toBe(10);
+        expect(result.nodeMap.get("immediate")?.startTimeSinceParentStart).toBe(
+          10,
+        );
         // Delayed execution
-        expect(result.nodeMap.get("delayed")?.startTimeSinceParentStart).toBe(2000);
+        expect(result.nodeMap.get("delayed")?.startTimeSinceParentStart).toBe(
+          2000,
+        );
         // Nested parallel execution
-        expect(result.nodeMap.get("nested-1")?.startTimeSinceParentStart).toBe(90);
-        expect(result.nodeMap.get("nested-2")?.startTimeSinceParentStart).toBe(95);
+        expect(result.nodeMap.get("nested-1")?.startTimeSinceParentStart).toBe(
+          90,
+        );
+        expect(result.nodeMap.get("nested-2")?.startTimeSinceParentStart).toBe(
+          95,
+        );
 
         // Verify depths
         expect(result.nodeMap.get("root")?.depth).toBe(0);

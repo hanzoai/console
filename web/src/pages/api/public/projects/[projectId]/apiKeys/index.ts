@@ -10,7 +10,10 @@ import {
 } from "@/src/ee/features/admin-api/server/projects/projectById/apiKeys";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   await runMiddleware(req, res, cors);
 
   try {
@@ -20,7 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // CHECK AUTH
-    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(
+      prisma,
+      redis,
+    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
     if (!authCheck.validKey) {
       return res.status(401).json({
         message: authCheck.error,
@@ -28,9 +34,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if using an organization API key
-    if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
+    if (
+      authCheck.scope.accessLevel !== "organization" ||
+      !authCheck.scope.orgId
+    ) {
       return res.status(403).json({
-        message: "Invalid API key. Organization-scoped API key required for this operation.",
+        message:
+          "Invalid API key. Organization-scoped API key required for this operation.",
       });
     }
     // END CHECK AUTH
@@ -60,7 +70,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found or you don't have access to it" });
+      return res
+        .status(404)
+        .json({ message: "Project not found or you don't have access to it" });
     }
 
     // Handle different HTTP methods
@@ -68,7 +80,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case "GET":
         return await handleGetApiKeys(req, res, projectId);
       case "POST":
-        return await handleCreateApiKey(req, res, projectId, authCheck.scope.orgId);
+        return await handleCreateApiKey(
+          req,
+          res,
+          projectId,
+          authCheck.scope.orgId,
+        );
       default:
         res.status(405).json({ message: "Method Not Allowed" });
         return;

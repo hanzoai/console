@@ -78,7 +78,9 @@ export function StarTraceToggle({
         return {
           ...old,
           traces: old.traces.map((trace: any) =>
-            trace.id === traceId ? { ...trace, bookmarked: newBookmarkState.bookmarked } : trace,
+            trace.id === traceId
+              ? { ...trace, bookmarked: newBookmarkState.bookmarked }
+              : trace,
           ),
         };
       });
@@ -157,14 +159,17 @@ export function StarTraceDetailsToggle({
       });
 
       // Optimistically update to the new value
-      utils.traces.byIdWithObservationsAndScores.setData({ traceId, projectId, timestamp }, (oldQueryData) => {
-        return oldQueryData
-          ? {
-              ...oldQueryData,
-              bookmarked: newBookmarkState.bookmarked,
-            }
-          : undefined;
-      });
+      utils.traces.byIdWithObservationsAndScores.setData(
+        { traceId, projectId, timestamp },
+        (oldQueryData) => {
+          return oldQueryData
+            ? {
+                ...oldQueryData,
+                bookmarked: newBookmarkState.bookmarked,
+              }
+            : undefined;
+        },
+      );
 
       return { prevData };
     },
@@ -172,7 +177,10 @@ export function StarTraceDetailsToggle({
       setIsLoading(false);
       //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
-      utils.traces.byIdWithObservationsAndScores.setData({ traceId, projectId, timestamp }, context?.prevData);
+      utils.traces.byIdWithObservationsAndScores.setData(
+        { traceId, projectId, timestamp },
+        context?.prevData,
+      );
     },
     onSettled: () => {
       setIsLoading(false);

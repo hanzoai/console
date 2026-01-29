@@ -33,7 +33,16 @@ export default withMiddlewares({
     responseSchema: PostDatasetItemsV1Response,
     rateLimitResource: "datasets",
     fn: async ({ body, auth }) => {
-      const { datasetName, id, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, status } = body;
+      const {
+        datasetName,
+        id,
+        input,
+        expectedOutput,
+        metadata,
+        sourceTraceId,
+        sourceObservationId,
+        status,
+      } = body;
 
       try {
         const datasetItem = await upsertDatasetItem({
@@ -90,7 +99,8 @@ export default withMiddlewares({
     responseSchema: GetDatasetItemsV1Response,
     rateLimitResource: "datasets",
     fn: async ({ query, auth }) => {
-      const { datasetName, sourceTraceId, sourceObservationId, page, limit } = query;
+      const { datasetName, sourceTraceId, sourceObservationId, page, limit } =
+        query;
 
       let datasetId: string | undefined = undefined;
       if (datasetName) {

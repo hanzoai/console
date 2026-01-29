@@ -1,10 +1,24 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogBody,
+} from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { PlusIcon } from "lucide-react";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/src/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/src/components/ui/table";
 import startCase from "lodash/startCase";
 import { getChartTypeDisplayName } from "@/src/features/widgets/chart-library/utils";
 import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
@@ -57,7 +71,9 @@ export function SelectWidgetDialog({
 
   const handleAddWidget = () => {
     if (selectedWidgetId) {
-      const selectedWidget = widgets.data?.widgets.find((widget) => widget.id === selectedWidgetId);
+      const selectedWidget = widgets.data?.widgets.find(
+        (widget) => widget.id === selectedWidgetId,
+      );
       if (selectedWidget) {
         onSelectWidget(selectedWidget as WidgetItem);
         onOpenChange(false);
@@ -77,7 +93,9 @@ export function SelectWidgetDialog({
             {widgets.isPending ? (
               <div className="py-8 text-center">Loading widgets...</div>
             ) : widgets.isError ? (
-              <div className="py-8 text-center text-destructive">Error: {widgets.error.message}</div>
+              <div className="py-8 text-center text-destructive">
+                Error: {widgets.error.message}
+              </div>
             ) : widgets.data?.widgets.length === 0 ? (
               <div className="py-8 text-center text-muted-foreground">
                 No widgets found. Create a new widget to get started.
@@ -99,12 +117,23 @@ export function SelectWidgetDialog({
                       onClick={() => setSelectedWidgetId(widget.id)}
                       className={`cursor-pointer hover:bg-muted ${selectedWidgetId === widget.id ? "bg-muted" : ""}`}
                     >
-                      <TableCell className="font-medium">{widget.name}</TableCell>
-                      <TableCell className="truncate" title={widget.description}>
+                      <TableCell className="font-medium">
+                        {widget.name}
+                      </TableCell>
+                      <TableCell
+                        className="truncate"
+                        title={widget.description}
+                      >
                         {widget.description}
                       </TableCell>
-                      <TableCell>{startCase(widget.view.toLowerCase())}</TableCell>
-                      <TableCell>{getChartTypeDisplayName(widget.chartType as DashboardWidgetChartType)}</TableCell>
+                      <TableCell>
+                        {startCase(widget.view.toLowerCase())}
+                      </TableCell>
+                      <TableCell>
+                        {getChartTypeDisplayName(
+                          widget.chartType as DashboardWidgetChartType,
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

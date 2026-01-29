@@ -18,18 +18,23 @@ export const usePlan = (): Plan | undefined => {
   const organizationId = router.query.organizationId;
 
   // if on a self-hosted instance with an active license, get the plan of the self-hosted instance
-  const selfHostedInstancePlan = session.data?.environment.selfHostedInstancePlan;
+  const selfHostedInstancePlan =
+    session.data?.environment.selfHostedInstancePlan;
   if (selfHostedInstancePlan) return selfHostedInstancePlan;
 
   // if on an organization page, get the plan of the organization
   if (organizationId) {
-    const org = session.data?.user?.organizations.find((org) => org.id === organizationId);
+    const org = session.data?.user?.organizations.find(
+      (org) => org.id === organizationId,
+    );
     return org?.plan ?? "cloud:free";
   }
 
   // if on a project page, get the plan of the organization that the project belongs to
   if (projectId) {
-    const org = session.data?.user?.organizations.find((org) => org.projects.some((proj) => proj.id === projectId));
+    const org = session.data?.user?.organizations.find((org) =>
+      org.projects.some((proj) => proj.id === projectId),
+    );
     return org?.plan ?? "cloud:free";
   }
 
@@ -80,7 +85,9 @@ export const useEntitlementLimits = (): EntitlementLimits => {
  * Hook to use the entitlement limit of the current organization or self-hosted instance.
  * @returns the limit value or false if unlimited
  */
-export const useEntitlementLimit = (limit: EntitlementLimit): number | false => {
+export const useEntitlementLimit = (
+  limit: EntitlementLimit,
+): number | false => {
   const limits = useEntitlementLimits();
 
   const session = useSession();

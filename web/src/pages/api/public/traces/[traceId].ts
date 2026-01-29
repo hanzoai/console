@@ -7,7 +7,10 @@ import {
   DeleteTraceV1Query,
   DeleteTraceV1Response,
 } from "@/src/features/public-api/types/traces";
-import { filterAndValidateDbTraceScoreList, HanzoNotFoundError } from "@hanzo/shared";
+import {
+  filterAndValidateDbTraceScoreList,
+  HanzoNotFoundError,
+} from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {
   getObservationsForTrace,
@@ -34,7 +37,9 @@ export default withMiddlewares({
       });
 
       if (!trace) {
-        throw new HanzoNotFoundError(`Trace ${traceId} not found within authorized project`);
+        throw new HanzoNotFoundError(
+          `Trace ${traceId} not found within authorized project`,
+        );
       }
 
       const [observations, scores] = await Promise.all([
@@ -54,7 +59,11 @@ export default withMiddlewares({
       ]);
 
       const uniqueModels: string[] = Array.from(
-        new Set(observations.map((r) => r.internalModelId).filter((r): r is string => Boolean(r))),
+        new Set(
+          observations
+            .map((r) => r.internalModelId)
+            .filter((r): r is string => Boolean(r)),
+        ),
       );
 
       const models =
@@ -74,9 +83,15 @@ export default withMiddlewares({
 
       const observationsView = observations.map((o) => {
         const model = models.find((m) => m.id === o.internalModelId);
-        const inputPrice = model?.Price.find((p) => p.usageType === "input")?.price ?? new Decimal(0);
-        const outputPrice = model?.Price.find((p) => p.usageType === "output")?.price ?? new Decimal(0);
-        const totalPrice = model?.Price.find((p) => p.usageType === "total")?.price ?? new Decimal(0);
+        const inputPrice =
+          model?.Price.find((p) => p.usageType === "input")?.price ??
+          new Decimal(0);
+        const outputPrice =
+          model?.Price.find((p) => p.usageType === "output")?.price ??
+          new Decimal(0);
+        const totalPrice =
+          model?.Price.find((p) => p.usageType === "total")?.price ??
+          new Decimal(0);
         return {
           ...o,
           inputPrice,
@@ -93,7 +108,9 @@ export default withMiddlewares({
         onParseError: traceException,
       });
 
-      const obsStartTimes = observations.map((o) => o.startTime).sort((a, b) => a.getTime() - b.getTime());
+      const obsStartTimes = observations
+        .map((o) => o.startTime)
+        .sort((a, b) => a.getTime() - b.getTime());
       const obsEndTimes = observations
         .map((o) => o.endTime)
         .filter((t) => t)
@@ -102,9 +119,11 @@ export default withMiddlewares({
       const latencyMs =
         obsStartTimes.length > 0
           ? obsEndTimes.length > 0
-            ? (obsEndTimes[obsEndTimes.length - 1] as Date).getTime() - obsStartTimes[0]!.getTime()
+            ? (obsEndTimes[obsEndTimes.length - 1] as Date).getTime() -
+              obsStartTimes[0]!.getTime()
             : obsStartTimes.length > 1
-              ? obsStartTimes[obsStartTimes.length - 1]!.getTime() - obsStartTimes[0]!.getTime()
+              ? obsStartTimes[obsStartTimes.length - 1]!.getTime() -
+                obsStartTimes[0]!.getTime()
               : undefined
           : undefined;
       return {
@@ -115,7 +134,10 @@ export default withMiddlewares({
         observations: outObservations,
         htmlPath: `/project/${auth.scope.projectId}/traces/${traceId}`,
         totalCost: outObservations
-          .reduce((acc, obs) => acc.add(obs.calculatedTotalCost ?? new Decimal(0)), new Decimal(0))
+          .reduce(
+            (acc, obs) => acc.add(obs.calculatedTotalCost ?? new Decimal(0)),
+            new Decimal(0),
+          )
           .toNumber(),
       };
     },

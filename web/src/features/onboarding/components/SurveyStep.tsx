@@ -1,4 +1,10 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Input } from "@/src/components/ui/input";
@@ -15,7 +21,12 @@ interface SurveyStepProps {
   isLast?: boolean;
 }
 
-export function SurveyStep({ question, control, onAutoAdvance, isLast = false }: SurveyStepProps) {
+export function SurveyStep({
+  question,
+  control,
+  onAutoAdvance,
+  isLast = false,
+}: SurveyStepProps) {
   const fieldName = question.id as keyof SurveyFormData;
 
   const handleAutoAdvanceWithTimeout = (selectedValue?: string) => {
@@ -40,7 +51,9 @@ export function SurveyStep({ question, control, onAutoAdvance, isLast = false }:
         name={fieldName as Path<SurveyFormData>}
         render={({ field }) => (
           <FormItem className="flex flex-col gap-2">
-            <FormLabel className="text-xl font-semibold">{question.question}</FormLabel>
+            <FormLabel className="text-xl font-semibold">
+              {question.question}
+            </FormLabel>
             <FormControl>
               <RadioGroup
                 name={field.name}
@@ -81,12 +94,18 @@ export function SurveyStep({ question, control, onAutoAdvance, isLast = false }:
         name={fieldName as Path<SurveyFormData>}
         render={({ field }) => (
           <FormItem className="flex flex-col gap-2">
-            <FormLabel className="text-xl font-semibold">{question.question}</FormLabel>
+            <FormLabel className="text-xl font-semibold">
+              {question.question}
+            </FormLabel>
             <FormControl>
               {question.id === "referralSource" ? (
                 <Input placeholder={question.placeholder} {...field} />
               ) : (
-                <Textarea placeholder={question.placeholder} className="min-h-[170px] resize-none" {...field} />
+                <Textarea
+                  placeholder={question.placeholder}
+                  className="min-h-[170px] resize-none"
+                  {...field}
+                />
               )}
             </FormControl>
             <FormMessage />

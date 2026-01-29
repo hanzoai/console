@@ -59,7 +59,9 @@ interface PeekNavigationWithExpand extends BasePeekNavigation {
  * @param config Configuration for peek behavior. Include expandConfig to get expandPeek functionality.
  * @returns Navigation functions. Includes expandPeek when expandConfig is provided.
  */
-export function usePeekNavigation(config: PeekConfigWithExpand): PeekNavigationWithExpand;
+export function usePeekNavigation(
+  config: PeekConfigWithExpand,
+): PeekNavigationWithExpand;
 export function usePeekNavigation(config?: PeekConfig): PeekNavigation;
 export function usePeekNavigation(config?: PeekConfig | PeekConfigWithExpand) {
   const router = useRouter();

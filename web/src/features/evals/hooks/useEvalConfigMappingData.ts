@@ -27,15 +27,16 @@ export function useEvalConfigMappingData(
   const relevantTraceId = traceId ?? latestTrace.data?.traces[0]?.id;
 
   // TODO: figure out timestamp logic here
-  const traceWithObservations = api.traces.byIdWithObservationsAndScores.useQuery(
-    {
-      projectId,
-      traceId: relevantTraceId as string,
-    },
-    {
-      enabled: !!relevantTraceId && shouldFetch,
-    },
-  );
+  const traceWithObservations =
+    api.traces.byIdWithObservationsAndScores.useQuery(
+      {
+        projectId,
+        traceId: relevantTraceId as string,
+      },
+      {
+        enabled: !!relevantTraceId && shouldFetch,
+      },
+    );
 
   const observationTypeToNames = new Map<ObservationType, Set<string>>([
     ["SPAN", new Set()],

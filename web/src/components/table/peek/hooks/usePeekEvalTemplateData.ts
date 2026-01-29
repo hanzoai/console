@@ -5,7 +5,10 @@ type UsePeekEvalTemplateDataProps = {
   templateId?: string;
 };
 
-export const usePeekEvalTemplateData = ({ projectId, templateId }: UsePeekEvalTemplateDataProps) => {
+export const usePeekEvalTemplateData = ({
+  projectId,
+  templateId,
+}: UsePeekEvalTemplateDataProps) => {
   return api.evals.templateById.useQuery(
     {
       id: templateId as string,

@@ -99,10 +99,16 @@ function useLocalStorage<T>(
     };
 
     // Handler for custom events (triggered within same tab)
-    const handleCustomEvent = (e: CustomEvent<{ key: string; newValue: string }>) => {
+    const handleCustomEvent = (
+      e: CustomEvent<{ key: string; newValue: string }>,
+    ) => {
       if (e.detail.key === localStorageKey) {
         try {
-          setValue(e.detail.newValue ? (JSON.parse(e.detail.newValue) as T) : initialValue);
+          setValue(
+            e.detail.newValue
+              ? (JSON.parse(e.detail.newValue) as T)
+              : initialValue,
+          );
         } catch (error) {
           console.error("Error parsing custom event", error);
         }
@@ -111,37 +117,45 @@ function useLocalStorage<T>(
 
     // Listen for both storage events and custom events
     window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("localStorageChange", handleCustomEvent as EventListener);
+    window.addEventListener(
+      "localStorageChange",
+      handleCustomEvent as EventListener,
+    );
 
     // Cleanup listeners on unmount
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("localStorageChange", handleCustomEvent as EventListener);
+      window.removeEventListener(
+        "localStorageChange",
+        handleCustomEvent as EventListener,
+      );
     };
   }, [localStorageKey, initialValue]);
 
   // Enhanced setValue function that also notifies other tabs
-  const setValueAndNotify: React.Dispatch<React.SetStateAction<T>> = useCallback(
-    (newValue) => {
-      setValue((prev) => {
-        // Handle both direct values and updater functions
-        const resolvedValue = newValue instanceof Function ? newValue(prev) : newValue;
-        const stringified = safeLocalStorage.set(resolvedValue);
+  const setValueAndNotify: React.Dispatch<React.SetStateAction<T>> =
+    useCallback(
+      (newValue) => {
+        setValue((prev) => {
+          // Handle both direct values and updater functions
+          const resolvedValue =
+            newValue instanceof Function ? newValue(prev) : newValue;
+          const stringified = safeLocalStorage.set(resolvedValue);
 
-        // Dispatch custom event to notify other instances in the same tab
-        if (stringified) {
-          window.dispatchEvent(
-            new CustomEvent("localStorageChange", {
-              detail: { key: localStorageKey, newValue: stringified },
-            }),
-          );
-        }
+          // Dispatch custom event to notify other instances in the same tab
+          if (stringified) {
+            window.dispatchEvent(
+              new CustomEvent("localStorageChange", {
+                detail: { key: localStorageKey, newValue: stringified },
+              }),
+            );
+          }
 
-        return resolvedValue;
-      });
-    },
-    [localStorageKey, safeLocalStorage],
-  );
+          return resolvedValue;
+        });
+      },
+      [localStorageKey, safeLocalStorage],
+    );
 
   return [value, setValueAndNotify, clearValue] as const;
 }

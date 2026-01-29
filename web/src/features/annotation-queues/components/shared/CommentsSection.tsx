@@ -8,7 +8,12 @@ interface CommentsSectionProps {
   onDraftChange?: (hasDraft: boolean) => void;
 }
 
-export const CommentsSection: React.FC<CommentsSectionProps> = ({ projectId, objectId, objectType, onDraftChange }) => {
+export const CommentsSection: React.FC<CommentsSectionProps> = ({
+  projectId,
+  objectId,
+  objectType,
+  onDraftChange,
+}) => {
   return (
     <CommentList
       projectId={projectId}

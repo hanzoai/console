@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import { FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { ModelParameters } from "@/src/components/ModelParameters";
 import {
   InputCommandEmpty,
@@ -10,7 +15,11 @@ import {
   InputCommand,
   InputCommandItem,
 } from "@/src/components/ui/input-command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { ChevronDown, CheckIcon, PlusIcon, EyeIcon } from "lucide-react";
 import { CreateOrEditLLMSchemaDialog } from "@/src/features/playground/page/components/CreateOrEditLLMSchemaDialog";
 import { type LlmSchema } from "@hanzo/shared";
@@ -30,8 +39,13 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
   structuredOutputState,
 }) => {
   const { form } = formState;
-  const { promptsByName, selectedPromptName, setSelectedPromptName, selectedPromptVersion, setSelectedPromptVersion } =
-    promptModelState;
+  const {
+    promptsByName,
+    selectedPromptName,
+    setSelectedPromptName,
+    selectedPromptVersion,
+    setSelectedPromptVersion,
+  } = promptModelState;
   const {
     modelParams,
     updateModelParamValue,
@@ -40,7 +54,11 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
     providerModelCombinations,
     availableProviders,
   } = modelState;
-  const { structuredOutputEnabled, setStructuredOutputEnabled, setSelectedSchemaName } = structuredOutputState;
+  const {
+    structuredOutputEnabled,
+    setStructuredOutputEnabled,
+    setSelectedSchemaName,
+  } = structuredOutputState;
   const [open, setOpen] = useState(false);
   const [selectedSchema, setSelectedSchema] = useState<LlmSchema | null>(null);
   const [schemaPopoverOpen, setSchemaPopoverOpen] = useState(false);
@@ -58,11 +76,18 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
 
     if (checked) {
       // If turning on and schemas exist, auto-select first one
-      if (savedSchemas.data && savedSchemas.data.length > 0 && !selectedSchema) {
+      if (
+        savedSchemas.data &&
+        savedSchemas.data.length > 0 &&
+        !selectedSchema
+      ) {
         const firstSchema = savedSchemas.data[0];
         setSelectedSchema(firstSchema);
         setSelectedSchemaName(firstSchema.name);
-        form.setValue("structuredOutputSchema", firstSchema.schema as Record<string, unknown>);
+        form.setValue(
+          "structuredOutputSchema",
+          firstSchema.schema as Record<string, unknown>,
+        );
       }
     } else {
       // If turning off, clear the form field
@@ -97,33 +122,46 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] overflow-auto p-0" align="start">
+                <PopoverContent
+                  className="w-[--radix-popover-trigger-width] overflow-auto p-0"
+                  align="start"
+                >
                   <InputCommand>
-                    <InputCommandInput placeholder="Search prompts..." className="h-9" variant="bottom" />
+                    <InputCommandInput
+                      placeholder="Search prompts..."
+                      className="h-9"
+                      variant="bottom"
+                    />
                     <InputCommandList>
                       <InputCommandEmpty>No prompt found.</InputCommandEmpty>
                       <InputCommandGroup>
                         {promptsByName &&
-                          Object.entries(promptsByName).map(([name, promptData]) => (
-                            <InputCommandItem
-                              key={name}
-                              onSelect={() => {
-                                setSelectedPromptName(name);
-                                const latestVersion = promptData[0];
-                                setSelectedPromptVersion(latestVersion.version);
-                                form.setValue("promptId", latestVersion.id);
-                                form.clearErrors("promptId");
-                              }}
-                            >
-                              {name}
-                              <CheckIcon
-                                className={cn(
-                                  "ml-auto h-4 w-4",
-                                  name === selectedPromptName ? "opacity-100" : "opacity-0",
-                                )}
-                              />
-                            </InputCommandItem>
-                          ))}
+                          Object.entries(promptsByName).map(
+                            ([name, promptData]) => (
+                              <InputCommandItem
+                                key={name}
+                                onSelect={() => {
+                                  setSelectedPromptName(name);
+                                  const latestVersion = promptData[0];
+                                  setSelectedPromptVersion(
+                                    latestVersion.version,
+                                  );
+                                  form.setValue("promptId", latestVersion.id);
+                                  form.clearErrors("promptId");
+                                }}
+                              >
+                                {name}
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    name === selectedPromptName
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                              </InputCommandItem>
+                            ),
+                          )}
                       </InputCommandGroup>
                     </InputCommandList>
                   </InputCommand>
@@ -138,17 +176,27 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                     role="combobox"
                     className="w-1/3 justify-between px-2 font-normal"
                   >
-                    {selectedPromptVersion ? `Version ${selectedPromptVersion}` : "Version"}
+                    {selectedPromptVersion
+                      ? `Version ${selectedPromptVersion}`
+                      : "Version"}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <PopoverContent
+                  className="w-[--radix-popover-trigger-width] p-0"
+                  align="start"
+                >
                   <InputCommand>
-                    <InputCommandInput placeholder="Search versions..." className="h-9" />
+                    <InputCommandInput
+                      placeholder="Search versions..."
+                      className="h-9"
+                    />
                     <InputCommandList>
                       <InputCommandEmpty>No version found.</InputCommandEmpty>
                       <InputCommandGroup className="overflow-y-auto">
-                        {promptsByName && selectedPromptName && promptsByName[selectedPromptName] ? (
+                        {promptsByName &&
+                        selectedPromptName &&
+                        promptsByName[selectedPromptName] ? (
                           promptsByName[selectedPromptName].map((prompt) => (
                             <InputCommandItem
                               key={prompt.id}
@@ -159,21 +207,31 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                               }}
                             >
                               <div className="flex min-w-0 flex-1 items-center gap-2">
-                                <span className="shrink-0">Version {prompt.version}</span>
+                                <span className="shrink-0">
+                                  Version {prompt.version}
+                                </span>
                                 {prompt.labels.length > 0 && (
-                                  <TruncatedLabels labels={prompt.labels} maxVisibleLabels={2} className="min-w-0" />
+                                  <TruncatedLabels
+                                    labels={prompt.labels}
+                                    maxVisibleLabels={2}
+                                    className="min-w-0"
+                                  />
                                 )}
                               </div>
                               <CheckIcon
                                 className={cn(
                                   "ml-auto h-4 w-4 shrink-0",
-                                  prompt.version === selectedPromptVersion ? "opacity-100" : "opacity-0",
+                                  prompt.version === selectedPromptVersion
+                                    ? "opacity-100"
+                                    : "opacity-0",
                                 )}
                               />
                             </InputCommandItem>
                           ))
                         ) : (
-                          <InputCommandItem disabled>No versions available</InputCommandItem>
+                          <InputCommandItem disabled>
+                            No versions available
+                          </InputCommandItem>
                         )}
                       </InputCommandGroup>
                     </InputCommandList>
@@ -204,7 +262,10 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
               }}
             />
             {form.formState.errors.modelConfig && (
-              <p id="modelConfig" className={cn("text-sm font-medium text-destructive")}>
+              <p
+                id="modelConfig"
+                className={cn("text-sm font-medium text-destructive")}
+              >
                 {[
                   form.formState.errors.modelConfig?.model?.message,
                   form.formState.errors.modelConfig?.provider?.message,
@@ -222,14 +283,20 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
           <FormItem>
             <div className="flex items-center justify-between">
               <FormLabel>Structured output (optional)</FormLabel>
-              <Switch checked={structuredOutputEnabled} onCheckedChange={handleToggleStructuredOutput} />
+              <Switch
+                checked={structuredOutputEnabled}
+                onCheckedChange={handleToggleStructuredOutput}
+              />
             </div>
 
             {structuredOutputEnabled && (
               <>
                 {savedSchemas.data && savedSchemas.data.length > 0 ? (
                   <div className="flex items-center gap-2">
-                    <Popover open={schemaPopoverOpen} onOpenChange={setSchemaPopoverOpen}>
+                    <Popover
+                      open={schemaPopoverOpen}
+                      onOpenChange={setSchemaPopoverOpen}
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -241,11 +308,20 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                      <PopoverContent
+                        className="w-[--radix-popover-trigger-width] p-0"
+                        align="start"
+                      >
                         <InputCommand>
-                          <InputCommandInput placeholder="Search schemas..." className="h-9" variant="bottom" />
+                          <InputCommandInput
+                            placeholder="Search schemas..."
+                            className="h-9"
+                            variant="bottom"
+                          />
                           <InputCommandList>
-                            <InputCommandEmpty>No schema found.</InputCommandEmpty>
+                            <InputCommandEmpty>
+                              No schema found.
+                            </InputCommandEmpty>
                             <InputCommandGroup>
                               {savedSchemas.data.map((schema) => (
                                 <InputCommandItem
@@ -253,7 +329,9 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                                   onSelect={() => {
                                     setSelectedSchema(schema);
                                     setSelectedSchemaName(schema.name);
-                                    field.onChange(schema.schema as Record<string, unknown>);
+                                    field.onChange(
+                                      schema.schema as Record<string, unknown>,
+                                    );
                                     setSchemaPopoverOpen(false);
                                   }}
                                 >
@@ -261,7 +339,9 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                                   <CheckIcon
                                     className={cn(
                                       "ml-auto h-4 w-4",
-                                      selectedSchema?.id === schema.id ? "opacity-100" : "opacity-0",
+                                      selectedSchema?.id === schema.id
+                                        ? "opacity-100"
+                                        : "opacity-0",
                                     )}
                                   />
                                 </InputCommandItem>
@@ -279,7 +359,9 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                         onSave={(updatedSchema) => {
                           setSelectedSchema(updatedSchema);
                           setSelectedSchemaName(updatedSchema.name);
-                          field.onChange(updatedSchema.schema as Record<string, unknown>);
+                          field.onChange(
+                            updatedSchema.schema as Record<string, unknown>,
+                          );
                         }}
                         onDelete={() => {
                           setSelectedSchema(null);
@@ -299,7 +381,9 @@ export const PromptModelStep: React.FC<PromptModelStepProps> = ({
                     onSave={(newSchema) => {
                       setSelectedSchema(newSchema);
                       setSelectedSchemaName(newSchema.name);
-                      field.onChange(newSchema.schema as Record<string, unknown>);
+                      field.onChange(
+                        newSchema.schema as Record<string, unknown>,
+                      );
                       // Toggle is already ON if we're seeing this button
                       // No need to set it again
                     }}

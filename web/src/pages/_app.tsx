@@ -52,7 +52,10 @@ if (typeof window !== "undefined") {
     }
   };
 
-  Element.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
+  Element.prototype.insertBefore = function <T extends Node>(
+    newNode: T,
+    referenceNode: Node | null,
+  ): T {
     try {
       return originalInsertBefore.call(this, newNode, referenceNode) as T;
     } catch (error) {
@@ -76,7 +79,11 @@ import { ScoreCacheProvider } from "@/src/features/scores/contexts/ScoreCacheCon
 import { CorrectionCacheProvider } from "@/src/features/corrections/contexts/CorrectionCacheContext";
 
 // Check that PostHog is client-side (used to handle Next.js SSR) and that env vars are set
-if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST) {
+if (
+  typeof window !== "undefined" &&
+  process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+  process.env.NEXT_PUBLIC_POSTHOG_HOST
+) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.posthog.com",
     ui_host: "https://eu.posthog.com",
@@ -97,7 +104,10 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && proc
   });
 }
 
-const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
+const MyApp: AppType<{ session: Session | null }> = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -128,7 +138,11 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
             >
               <DetailPageListsProvider>
                 <MarkdownContextProvider>
-                  <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
+                  <ThemeProvider
+                    attribute="class"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
                     <ScoreCacheProvider>
                       <CorrectionCacheProvider>
                         <SupportDrawerProvider defaultOpen={false}>
@@ -212,7 +226,10 @@ function UserTracking() {
   return null;
 }
 
-if (process.env.NEXT_RUNTIME === "nodejs" && process.env.NEXT_MANUAL_SIG_HANDLE) {
+if (
+  process.env.NEXT_RUNTIME === "nodejs" &&
+  process.env.NEXT_MANUAL_SIG_HANDLE
+) {
   const { shutdown } = await import("@/src/utils/shutdown");
   prexit(async (signal) => {
     console.log("Signal: ", signal);

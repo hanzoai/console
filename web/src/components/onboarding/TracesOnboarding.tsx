@@ -1,5 +1,8 @@
 import React from "react";
-import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
+import {
+  SplashScreen,
+  type ValueProposition,
+} from "@/src/components/ui/splash-screen";
 import { setupTracingRoute } from "@/src/features/setup/setupRoutes";
 import { BarChart4, GitMerge, Search, Zap } from "lucide-react";
 
@@ -11,7 +14,8 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
   const valuePropositions: ValueProposition[] = [
     {
       title: "Full context capture",
-      description: "Track the complete execution flow including API calls, context, prompts, parallelism and more",
+      description:
+        "Track the complete execution flow including API calls, context, prompts, parallelism and more",
       icon: <GitMerge className="h-4 w-4" />,
     },
     {
@@ -21,7 +25,8 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
     },
     {
       title: "Basis for evaluation",
-      description: "Add evaluation scores to identify issues and track metrics over time",
+      description:
+        "Add evaluation scores to identify issues and track metrics over time",
       icon: <Search className="h-4 w-4" />,
     },
     {

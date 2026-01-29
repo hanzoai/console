@@ -12,8 +12,12 @@ const requestSchema = z.object({
   domain: z.string().min(1),
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  if (req.method !== "POST")
+    return res.status(405).json({ message: "Method not allowed" });
 
   const validBody = requestSchema.safeParse(req.body);
   if (!validBody.success) {

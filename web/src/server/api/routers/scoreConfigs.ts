@@ -1,7 +1,10 @@
 import { z } from "zod/v4";
 
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import {
   filterAndValidateDbScoreConfigList,
   InvalidRequestError,
@@ -46,103 +49,113 @@ const ScoreConfigUpdateInput = z.object({
 });
 
 export const scoreConfigsRouter = createTRPCRouter({
-  all: protectedProjectProcedure.input(ScoreConfigAllInputPaginated).query(async ({ input, ctx }) => {
-    throwIfNoProjectAccess({
-      session: ctx.session,
-      projectId: input.projectId,
-      scope: "scoreConfigs:read",
-    });
+  all: protectedProjectProcedure
+    .input(ScoreConfigAllInputPaginated)
+    .query(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "scoreConfigs:read",
+      });
 
-    const [configs, totalCount] = await Promise.all([
-      ctx.prisma.scoreConfig.findMany({
+      const [configs, totalCount] = await Promise.all([
+        ctx.prisma.scoreConfig.findMany({
+          where: {
+            projectId: input.projectId,
+          },
+          ...(input.limit !== undefined && input.page !== undefined
+            ? { take: input.limit, skip: input.page * input.limit }
+            : undefined),
+          orderBy: {
+            createdAt: "desc",
+          },
+        }),
+        ctx.prisma.scoreConfig.count({
+          where: {
+            projectId: input.projectId,
+          },
+        }),
+      ]);
+
+      return {
+        configs: filterAndValidateDbScoreConfigList(configs, traceException),
+        totalCount,
+      };
+    }),
+  create: protectedProjectProcedure
+    .input(ScoreConfigCreateInput)
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "scoreConfigs:CUD",
+      });
+
+      const config = await ctx.prisma.scoreConfig.create({
+        data: {
+          ...input,
+        },
+      });
+
+      await auditLog({
+        session: ctx.session,
+        resourceType: "scoreConfig",
+        resourceId: config.id,
+        action: "create",
+        after: config,
+      });
+
+      return validateDbScoreConfig(config);
+    }),
+  update: protectedProjectProcedure
+    .input(ScoreConfigUpdateInput)
+    .mutation(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "scoreConfigs:CUD",
+      });
+
+      const existingConfig = await ctx.prisma.scoreConfig.findFirst({
         where: {
+          id: input.id,
           projectId: input.projectId,
         },
-        ...(input.limit !== undefined && input.page !== undefined
-          ? { take: input.limit, skip: input.page * input.limit }
-          : undefined),
-        orderBy: {
-          createdAt: "desc",
-        },
-      }),
-      ctx.prisma.scoreConfig.count({
+      });
+      if (!existingConfig) {
+        throw new HanzoNotFoundError(
+          "No score config with this id in this project.",
+        );
+      }
+
+      // Merge the input with the existing config and verify schema compliance
+      const result = validateDbScoreConfigSafe({ ...existingConfig, ...input });
+
+      if (!result.success) {
+        throw new InvalidRequestError(
+          result.error.issues.map((issue) => issue.message).join(", "),
+        );
+      }
+
+      const config = await ctx.prisma.scoreConfig.update({
         where: {
+          id: input.id,
           projectId: input.projectId,
         },
-      }),
-    ]);
+        data: { ...input },
+      });
 
-    return {
-      configs: filterAndValidateDbScoreConfigList(configs, traceException),
-      totalCount,
-    };
-  }),
-  create: protectedProjectProcedure.input(ScoreConfigCreateInput).mutation(async ({ input, ctx }) => {
-    throwIfNoProjectAccess({
-      session: ctx.session,
-      projectId: input.projectId,
-      scope: "scoreConfigs:CUD",
-    });
+      await auditLog({
+        session: ctx.session,
+        resourceType: "scoreConfig",
+        resourceId: config.id,
+        action: "update",
+        before: existingConfig,
+        after: config,
+      });
 
-    const config = await ctx.prisma.scoreConfig.create({
-      data: {
-        ...input,
-      },
-    });
-
-    await auditLog({
-      session: ctx.session,
-      resourceType: "scoreConfig",
-      resourceId: config.id,
-      action: "create",
-      after: config,
-    });
-
-    return validateDbScoreConfig(config);
-  }),
-  update: protectedProjectProcedure.input(ScoreConfigUpdateInput).mutation(async ({ input, ctx }) => {
-    throwIfNoProjectAccess({
-      session: ctx.session,
-      projectId: input.projectId,
-      scope: "scoreConfigs:CUD",
-    });
-
-    const existingConfig = await ctx.prisma.scoreConfig.findFirst({
-      where: {
-        id: input.id,
-        projectId: input.projectId,
-      },
-    });
-    if (!existingConfig) {
-      throw new HanzoNotFoundError("No score config with this id in this project.");
-    }
-
-    // Merge the input with the existing config and verify schema compliance
-    const result = validateDbScoreConfigSafe({ ...existingConfig, ...input });
-
-    if (!result.success) {
-      throw new InvalidRequestError(result.error.issues.map((issue) => issue.message).join(", "));
-    }
-
-    const config = await ctx.prisma.scoreConfig.update({
-      where: {
-        id: input.id,
-        projectId: input.projectId,
-      },
-      data: { ...input },
-    });
-
-    await auditLog({
-      session: ctx.session,
-      resourceType: "scoreConfig",
-      resourceId: config.id,
-      action: "update",
-      before: existingConfig,
-      after: config,
-    });
-
-    return validateDbScoreConfig(config);
-  }),
+      return validateDbScoreConfig(config);
+    }),
   byId: protectedProjectProcedure
     .input(
       z.object({

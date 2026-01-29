@@ -11,7 +11,13 @@ import type { CommentRange } from "./utils/commentRanges";
 // JSON Value Types
 // ============================================================================
 
-export type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JSONObject
+  | JSONArray;
 
 export interface JSONObject {
   [key: string]: JSONValue;
@@ -19,7 +25,14 @@ export interface JSONObject {
 
 export interface JSONArray extends Array<JSONValue> {}
 
-export type JSONType = "string" | "number" | "boolean" | "null" | "undefined" | "object" | "array";
+export type JSONType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "null"
+  | "undefined"
+  | "object"
+  | "array";
 
 /**
  * String wrapping mode for long string values
@@ -408,7 +421,12 @@ export interface RowHeightEstimate {
 /**
  * Node type discriminator for multi-section trees
  */
-export type TreeNodeType = "meta" | "section-header" | "section-footer" | "section-spacer" | "json";
+export type TreeNodeType =
+  | "meta"
+  | "section-header"
+  | "section-footer"
+  | "section-spacer"
+  | "json";
 
 /**
  * Section definition for MultiSectionJsonViewer

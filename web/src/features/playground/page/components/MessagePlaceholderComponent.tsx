@@ -11,11 +11,18 @@ import { useNamingConflicts } from "../hooks/useNamingConflicts";
 export const MessagePlaceholderComponent: React.FC<{
   messagePlaceholder: PlaceholderMessageFillIn;
 }> = ({ messagePlaceholder }) => {
-  const { updateMessagePlaceholderValue, deleteMessagePlaceholder, promptVariables, messagePlaceholders } =
-    usePlaygroundContext();
+  const {
+    updateMessagePlaceholderValue,
+    deleteMessagePlaceholder,
+    promptVariables,
+    messagePlaceholders,
+  } = usePlaygroundContext();
   const { name, value, isUsed } = messagePlaceholder;
   const [error, setError] = useState<string | null>(null);
-  const { isPlaceholderConflicting } = useNamingConflicts(promptVariables, messagePlaceholders);
+  const { isPlaceholderConflicting } = useNamingConflicts(
+    promptVariables,
+    messagePlaceholders,
+  );
   const hasConflict = isPlaceholderConflicting(name);
 
   const handleInputChange = useCallback(
@@ -30,7 +37,10 @@ export const MessagePlaceholderComponent: React.FC<{
         }
 
         // Check that all items are objects
-        const allObjects = parsed.every((item) => typeof item === "object" && item !== null && !Array.isArray(item));
+        const allObjects = parsed.every(
+          (item) =>
+            typeof item === "object" && item !== null && !Array.isArray(item),
+        );
 
         if (!allObjects) {
           setError("All items must be objects");
@@ -55,7 +65,10 @@ export const MessagePlaceholderComponent: React.FC<{
       <div className="mb-1 flex flex-row items-center">
         <span className="flex flex-1 flex-row space-x-2 text-xs">
           <UsedIcon size={16} color={iconColor} />
-          <p className={`min-w-[90px] truncate font-mono ${hasConflict ? "text-red-500" : ""}`} title={name}>
+          <p
+            className={`min-w-[90px] truncate font-mono ${hasConflict ? "text-red-500" : ""}`}
+            title={name}
+          >
             {name ? name : "Unnamed placeholder"}
           </p>
         </span>
@@ -73,7 +86,9 @@ export const MessagePlaceholderComponent: React.FC<{
 
       <CodeMirrorEditor
         value={
-          value.length === 0 ? `[\n  {\n    "role": "",\n    "content": ""\n  }\n]` : JSON.stringify(value, null, 2)
+          value.length === 0
+            ? `[\n  {\n    "role": "",\n    "content": ""\n  }\n]`
+            : JSON.stringify(value, null, 2)
         }
         onChange={handleInputChange}
         mode="json"
@@ -85,7 +100,9 @@ export const MessagePlaceholderComponent: React.FC<{
       />
 
       {hasConflict && (
-        <p className="mt-1 text-xs text-red-500">Placeholder name conflicts with variable. Names must be unique.</p>
+        <p className="mt-1 text-xs text-red-500">
+          Placeholder name conflicts with variable. Names must be unique.
+        </p>
       )}
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>

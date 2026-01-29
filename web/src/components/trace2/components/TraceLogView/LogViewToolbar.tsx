@@ -8,11 +8,28 @@
  */
 
 import { memo, useState } from "react";
-import { FoldVertical, UnfoldVertical, Copy, Download, Check, IndentIncrease, Timer, Loader2 } from "lucide-react";
+import {
+  FoldVertical,
+  UnfoldVertical,
+  Copy,
+  Download,
+  Check,
+  IndentIncrease,
+  Timer,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Command, CommandInput } from "@/src/components/ui/command";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { cn } from "@/src/utils/tailwind";
 
 export interface LogViewToolbarProps {
@@ -92,10 +109,15 @@ export const LogViewToolbar = memo(function LogViewToolbar({
               Large Trace
             </span>
           </HoverCardTrigger>
-          <HoverCardContent align="start" className="w-72 text-sm" sideOffset={8}>
+          <HoverCardContent
+            align="start"
+            className="w-72 text-sm"
+            sideOffset={8}
+          >
             <p className="font-medium">Optimized for performance</p>
             <p className="mt-1.5 text-muted-foreground">
-              This trace has {observationCount?.toLocaleString() ?? "many"} observations. To keep things smooth:
+              This trace has {observationCount?.toLocaleString() ?? "many"}{" "}
+              observations. To keep things smooth:
             </p>
             <ul className="mt-1.5 list-inside list-disc space-y-0.5 text-muted-foreground">
               <li>Content loads as you scroll</li>
@@ -137,7 +159,13 @@ export const LogViewToolbar = memo(function LogViewToolbar({
                 )}
                 onClick={indentDisabled ? undefined : onToggleIndent}
                 disabled={indentDisabled}
-                title={indentDisabled ? undefined : indentEnabled ? "Hide indentation" : "Show indentation"}
+                title={
+                  indentDisabled
+                    ? undefined
+                    : indentEnabled
+                      ? "Hide indentation"
+                      : "Show indentation"
+                }
               >
                 <IndentIncrease className="h-3.5 w-3.5" />
               </Button>
@@ -145,7 +173,9 @@ export const LogViewToolbar = memo(function LogViewToolbar({
             {indentDisabled && (
               <HoverCardContent className="w-56 text-sm" sideOffset={8}>
                 <p className="font-medium">Indentation unavailable</p>
-                <p className="mt-1 text-muted-foreground">Disabled for deeply nested trees to maintain readability.</p>
+                <p className="mt-1 text-muted-foreground">
+                  Disabled for deeply nested trees to maintain readability.
+                </p>
               </HoverCardContent>
             )}
           </HoverCard>
@@ -156,7 +186,10 @@ export const LogViewToolbar = memo(function LogViewToolbar({
           <Button
             variant={showMilliseconds ? "default" : "ghost"}
             size="icon"
-            className={cn("h-7 w-7", showMilliseconds && "bg-primary text-primary-foreground")}
+            className={cn(
+              "h-7 w-7",
+              showMilliseconds && "bg-primary text-primary-foreground",
+            )}
             onClick={onToggleMilliseconds}
             title={showMilliseconds ? "Hide milliseconds" : "Show milliseconds"}
           >
@@ -172,7 +205,10 @@ export const LogViewToolbar = memo(function LogViewToolbar({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={cn("h-7 w-7", isVirtualized && "cursor-not-allowed opacity-50")}
+                  className={cn(
+                    "h-7 w-7",
+                    isVirtualized && "cursor-not-allowed opacity-50",
+                  )}
                   onClick={isVirtualized ? undefined : onToggleExpandAll}
                   disabled={isVirtualized}
                 >
@@ -185,7 +221,11 @@ export const LogViewToolbar = memo(function LogViewToolbar({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              {isVirtualized ? "Disabled for large traces" : allRowsExpanded ? "Collapse all" : "Expand all"}
+              {isVirtualized
+                ? "Disabled for large traces"
+                : allRowsExpanded
+                  ? "Collapse all"
+                  : "Expand all"}
             </TooltipContent>
           </Tooltip>
         )}
@@ -225,16 +265,18 @@ export const LogViewToolbar = memo(function LogViewToolbar({
               <HoverCardContent className="w-64 text-sm" sideOffset={8}>
                 <p className="font-medium">Cache-only mode</p>
                 <p className="mt-1 text-muted-foreground">
-                  For large traces, only expanded observations include full I/O data.
+                  For large traces, only expanded observations include full I/O
+                  data.
                 </p>
-                {loadedObservationCount !== undefined && observationCount !== undefined && (
-                  <p className="mt-1.5 text-muted-foreground">
-                    <span className="font-medium">
-                      {loadedObservationCount} of {observationCount}
-                    </span>{" "}
-                    observations loaded
-                  </p>
-                )}
+                {loadedObservationCount !== undefined &&
+                  observationCount !== undefined && (
+                    <p className="mt-1.5 text-muted-foreground">
+                      <span className="font-medium">
+                        {loadedObservationCount} of {observationCount}
+                      </span>{" "}
+                      observations loaded
+                    </p>
+                  )}
               </HoverCardContent>
             )}
           </HoverCard>
@@ -273,16 +315,18 @@ export const LogViewToolbar = memo(function LogViewToolbar({
               <HoverCardContent className="w-64 text-sm" sideOffset={8}>
                 <p className="font-medium">Cache-only mode</p>
                 <p className="mt-1 text-muted-foreground">
-                  For large traces, only expanded observations include full I/O data.
+                  For large traces, only expanded observations include full I/O
+                  data.
                 </p>
-                {loadedObservationCount !== undefined && observationCount !== undefined && (
-                  <p className="mt-1.5 text-muted-foreground">
-                    <span className="font-medium">
-                      {loadedObservationCount} of {observationCount}
-                    </span>{" "}
-                    observations loaded
-                  </p>
-                )}
+                {loadedObservationCount !== undefined &&
+                  observationCount !== undefined && (
+                    <p className="mt-1.5 text-muted-foreground">
+                      <span className="font-medium">
+                        {loadedObservationCount} of {observationCount}
+                      </span>{" "}
+                      observations loaded
+                    </p>
+                  )}
               </HoverCardContent>
             )}
           </HoverCard>

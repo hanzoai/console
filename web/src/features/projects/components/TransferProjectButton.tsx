@@ -23,10 +23,19 @@ import * as z from "zod/v4";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import { hasOrganizationAccess, useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
+import {
+  hasOrganizationAccess,
+  useHasOrganizationAccess,
+} from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import { useSession } from "next-auth/react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { TriangleAlert } from "lucide-react";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
@@ -48,7 +57,9 @@ export function TransferProjectButton() {
         scope: "projects:transfer_org",
       }),
     ) ?? [];
-  const confirmMessage = (organization?.name + "/" + project?.name).replaceAll(" ", "-").toLowerCase();
+  const confirmMessage = (organization?.name + "/" + project?.name)
+    .replaceAll(" ", "-")
+    .toLowerCase();
 
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
@@ -61,7 +72,8 @@ export function TransferProjectButton() {
     onSuccess: async () => {
       showSuccessToast({
         title: "Project transferred",
-        description: "The project is successfully transferred to the new organization. Redirecting...",
+        description:
+          "The project is successfully transferred to the new organization. Redirecting...",
       });
       await new Promise((resolve) => setTimeout(resolve, 5000));
       void session.update();
@@ -95,17 +107,23 @@ export function TransferProjectButton() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Transfer Project</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Transfer Project
+          </DialogTitle>
           <Alert className="mt-2">
             <TriangleAlert className="h-4 w-4" />
             <AlertTitle>Warning</AlertTitle>
             <AlertDescription>
               Transferring the project will move it to a different organization:
               <ul className="list-disc pl-4">
-                <li>Members who are not part of the new organization will lose access.</li>
                 <li>
-                  The project remains fully operational as API keys, settings, and data will remain unchanged. All
-                  features (e.g. tracing, prompt management) will continue to work without interruption.
+                  Members who are not part of the new organization will lose
+                  access.
+                </li>
+                <li>
+                  The project remains fully operational as API keys, settings,
+                  and data will remain unchanged. All features (e.g. tracing,
+                  prompt management) will continue to work without interruption.
                 </li>
               </ul>
             </AlertDescription>
@@ -121,7 +139,11 @@ export function TransferProjectButton() {
                   <FormItem>
                     <FormLabel>Select New Organization</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={transferProject.isPending}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={transferProject.isPending}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select organization" />
                         </SelectTrigger>
@@ -137,7 +159,8 @@ export function TransferProjectButton() {
                       </Select>
                     </FormControl>
                     <FormDescription>
-                      Transfer this project to another organization where you have the ability to create projects.
+                      Transfer this project to another organization where you
+                      have the ability to create projects.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -159,7 +182,12 @@ export function TransferProjectButton() {
               />
             </DialogBody>
             <DialogFooter>
-              <Button type="submit" variant="destructive" loading={transferProject.isPending} className="w-full">
+              <Button
+                type="submit"
+                variant="destructive"
+                loading={transferProject.isPending}
+                className="w-full"
+              >
                 Transfer project
               </Button>
             </DialogFooter>

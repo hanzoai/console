@@ -1,6 +1,12 @@
 import { cn } from "@/src/utils/tailwind";
 
-export default function TableIdOrName({ value, className }: { value: string; className?: string }) {
+export default function TableIdOrName({
+  value,
+  className,
+}: {
+  value: string;
+  className?: string;
+}) {
   return (
     <div
       title={value}

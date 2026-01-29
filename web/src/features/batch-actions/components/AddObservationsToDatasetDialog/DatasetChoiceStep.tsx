@@ -16,7 +16,9 @@ export function DatasetChoiceStep(props: DatasetChoiceStepProps) {
           <Database className="h-8 w-8 text-primary" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">Existing Dataset</h3>
-        <p className="text-sm text-muted-foreground">Add to a dataset that already exists</p>
+        <p className="text-sm text-muted-foreground">
+          Add to a dataset that already exists
+        </p>
       </button>
 
       {/* New Dataset Card */}
@@ -29,7 +31,9 @@ export function DatasetChoiceStep(props: DatasetChoiceStepProps) {
           <Plus className="h-8 w-8 text-primary" />
         </div>
         <h3 className="mb-2 text-lg font-semibold">New Dataset</h3>
-        <p className="text-sm text-muted-foreground">Create a new dataset for these observations</p>
+        <p className="text-sm text-muted-foreground">
+          Create a new dataset for these observations
+        </p>
       </button>
     </div>
   );

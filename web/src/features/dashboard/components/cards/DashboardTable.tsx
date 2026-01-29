@@ -19,7 +19,14 @@ type DashboardTableProps = {
   isLoading: boolean;
 };
 
-export const DashboardTable = ({ headers, rows, children, collapse, noDataProps, isLoading }: DashboardTableProps) => {
+export const DashboardTable = ({
+  headers,
+  rows,
+  children,
+  collapse,
+  noDataProps,
+  isLoading,
+}: DashboardTableProps) => {
   const [isExpanded, setExpanded] = useState(false);
   return (
     <>
@@ -45,7 +52,14 @@ export const DashboardTable = ({ headers, rows, children, collapse, noDataProps,
 
                 <tbody className="divide-y divide-accent bg-background">
                   {rows
-                    .slice(0, collapse ? (isExpanded ? collapse.expanded : collapse.collapsed) : undefined)
+                    .slice(
+                      0,
+                      collapse
+                        ? isExpanded
+                          ? collapse.expanded
+                          : collapse.collapsed
+                        : undefined,
+                    )
                     .map((row, i) => (
                       <tr key={i}>
                         {row.map((cell, j) => (
@@ -68,7 +82,11 @@ export const DashboardTable = ({ headers, rows, children, collapse, noDataProps,
               setExpanded={setExpanded}
               totalLength={rows.length}
               maxLength={collapse.collapsed}
-              expandText={rows.length > collapse.expanded ? `Show top ${collapse.expanded}` : "Show all"}
+              expandText={
+                rows.length > collapse.expanded
+                  ? `Show top ${collapse.expanded}`
+                  : "Show all"
+              }
             />
           ) : null}
         </div>

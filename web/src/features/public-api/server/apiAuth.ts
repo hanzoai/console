@@ -14,7 +14,12 @@ import {
   invalidateCachedProjectApiKeys as invalidateCachedProjectApiKeysShared,
   unregisterKeyFromLLM,
 } from "@hanzo/shared/src/server";
-import { type PrismaClient, type ApiKey, type Prisma, type ApiKeyScope } from "@hanzo/shared/src/db";
+import {
+  type PrismaClient,
+  type ApiKey,
+  type Prisma,
+  type ApiKeyScope,
+} from "@hanzo/shared/src/db";
 import { isPrismaException } from "@/src/utils/exceptions";
 import { type Redis, type Cluster } from "ioredis";
 import { getOrganizationPlanServerSide } from "@/src/features/entitlements/server/getPlan";
@@ -53,7 +58,8 @@ export class ApiAuthService {
    * @param scope - The scope of the API key (either "PROJECT" or "ORGANIZATION").
    */
   async deleteApiKey(id: string, entityId: string, scope: ApiKeyScope) {
-    const entity = scope === "PROJECT" ? { projectId: entityId } : { orgId: entityId };
+    const entity =
+      scope === "PROJECT" ? { projectId: entityId } : { orgId: entityId };
     // Make sure the API key exists and belongs to the project the user has access to
     const apiKey = await this.prisma.apiKey.findFirstOrThrow({
       where: {
@@ -70,7 +76,9 @@ export class ApiAuthService {
     try {
       await unregisterKeyFromLLM(apiKey.publicKey);
     } catch (error) {
-      logger.error(`Error unregistering key from LLM API: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `Error unregistering key from LLM API: ${error instanceof Error ? error.message : String(error)}`,
+      );
       // Continue with deletion even if LLM unregistration fails
     }
 
@@ -86,156 +94,179 @@ export class ApiAuthService {
     return true;
   }
 
-  async verifyAuthHeaderAndReturnScope(authHeader: string | undefined): Promise<AuthHeaderVerificationResult> {
-    const result: AuthHeaderVerificationResult = await instrumentAsync({ name: "api-auth-verify" }, async () => {
-      if (!authHeader) {
-        logger.debug("No authorization header");
-        return {
-          validKey: false,
-          error: "No authorization header",
-        };
-      }
-
-      try {
-        // Basic auth, full scope, needs secret key and public key
-        if (authHeader.startsWith("Basic ")) {
-          const { username: publicKey, password: secretKey } = this.extractBasicAuthCredentials(authHeader);
-
-          const salt = env.SALT;
-          const hashFromProvidedKey = createShaHash(secretKey, salt);
-
-          // fetches by redis if available, fallback to postgres
-          // api key from redis does
-          const apiKey = await this.fetchApiKeyAndAddToRedis(hashFromProvidedKey);
-
-          let finalApiKey = apiKey;
-
-          if (!apiKey || !apiKey.fastHashedSecretKey) {
-            const slowKey = await this.prisma.apiKey.findUnique({
-              where: { publicKey },
-              include: {
-                project: { include: { organization: true } },
-                organization: true,
-              },
-            });
-
-            if (!slowKey) {
-              logger.error("No key found for public key", publicKey);
-              if (this.redis) {
-                logger.info(`No key found, storing ${API_KEY_NON_EXISTENT} in redis`);
-                await this.addApiKeyToRedis(hashFromProvidedKey, API_KEY_NON_EXISTENT);
-              }
-              throw new Error("Invalid credentials");
-            }
-
-            const isValid = await verifySecretKey(secretKey, slowKey.hashedSecretKey);
-
-            if (!isValid) {
-              logger.debug(`Old key is invalid: ${publicKey}`);
-              throw new Error("Invalid credentials");
-            }
-
-            const shaKey = createShaHash(secretKey, salt);
-
-            await this.prisma.apiKey.update({
-              where: { publicKey },
-              data: {
-                fastHashedSecretKey: shaKey,
-              },
-            });
-            finalApiKey = this.convertToRedisRepresentation({
-              ...slowKey,
-              fastHashedSecretKey: shaKey,
-            });
-          }
-
-          if (!finalApiKey) {
-            logger.info("No project id found for key", publicKey);
-            throw new Error("Invalid credentials");
-          }
-
-          const plan = finalApiKey.plan;
-
-          if (!isPlan(plan)) {
-            logger.error("Invalid plan type for key", finalApiKey.plan);
-            throw new Error("Invalid credentials");
-          }
-
-          addUserToSpan({
-            projectId: finalApiKey.projectId ?? undefined,
-            orgId: finalApiKey.orgId,
-            plan,
-          });
-
-          const accessLevel = finalApiKey.scope === "ORGANIZATION" ? "organization" : "project";
-
+  async verifyAuthHeaderAndReturnScope(
+    authHeader: string | undefined,
+  ): Promise<AuthHeaderVerificationResult> {
+    const result: AuthHeaderVerificationResult = await instrumentAsync(
+      { name: "api-auth-verify" },
+      async () => {
+        if (!authHeader) {
+          logger.debug("No authorization header");
           return {
-            validKey: true,
-            scope: {
-              projectId: finalApiKey.projectId,
-              accessLevel,
-              orgId: finalApiKey.orgId,
-              plan: plan,
-              rateLimitOverrides: finalApiKey.rateLimitOverrides ?? [],
-              apiKeyId: finalApiKey.id,
-              scope: finalApiKey.scope,
-              publicKey,
-              isIngestionSuspended: finalApiKey.isIngestionSuspended,
-            },
+            validKey: false,
+            error: "No authorization header",
           };
         }
-        // Bearer auth, limited scope, only needs public key
-        if (authHeader.startsWith("Bearer ")) {
-          const publicKey = authHeader.replace("Bearer ", "");
 
-          const dbKey = await this.findDbKeyOrThrow(publicKey);
+        try {
+          // Basic auth, full scope, needs secret key and public key
+          if (authHeader.startsWith("Basic ")) {
+            const { username: publicKey, password: secretKey } =
+              this.extractBasicAuthCredentials(authHeader);
 
-          if (dbKey.scope === "ORGANIZATION") {
-            throw new Error("Unauthorized: Cannot use organization key with bearer auth");
+            const salt = env.SALT;
+            const hashFromProvidedKey = createShaHash(secretKey, salt);
+
+            // fetches by redis if available, fallback to postgres
+            // api key from redis does
+            const apiKey =
+              await this.fetchApiKeyAndAddToRedis(hashFromProvidedKey);
+
+            let finalApiKey = apiKey;
+
+            if (!apiKey || !apiKey.fastHashedSecretKey) {
+              const slowKey = await this.prisma.apiKey.findUnique({
+                where: { publicKey },
+                include: {
+                  project: { include: { organization: true } },
+                  organization: true,
+                },
+              });
+
+              if (!slowKey) {
+                logger.error("No key found for public key", publicKey);
+                if (this.redis) {
+                  logger.info(
+                    `No key found, storing ${API_KEY_NON_EXISTENT} in redis`,
+                  );
+                  await this.addApiKeyToRedis(
+                    hashFromProvidedKey,
+                    API_KEY_NON_EXISTENT,
+                  );
+                }
+                throw new Error("Invalid credentials");
+              }
+
+              const isValid = await verifySecretKey(
+                secretKey,
+                slowKey.hashedSecretKey,
+              );
+
+              if (!isValid) {
+                logger.debug(`Old key is invalid: ${publicKey}`);
+                throw new Error("Invalid credentials");
+              }
+
+              const shaKey = createShaHash(secretKey, salt);
+
+              await this.prisma.apiKey.update({
+                where: { publicKey },
+                data: {
+                  fastHashedSecretKey: shaKey,
+                },
+              });
+              finalApiKey = this.convertToRedisRepresentation({
+                ...slowKey,
+                fastHashedSecretKey: shaKey,
+              });
+            }
+
+            if (!finalApiKey) {
+              logger.info("No project id found for key", publicKey);
+              throw new Error("Invalid credentials");
+            }
+
+            const plan = finalApiKey.plan;
+
+            if (!isPlan(plan)) {
+              logger.error("Invalid plan type for key", finalApiKey.plan);
+              throw new Error("Invalid credentials");
+            }
+
+            addUserToSpan({
+              projectId: finalApiKey.projectId ?? undefined,
+              orgId: finalApiKey.orgId,
+              plan,
+            });
+
+            const accessLevel =
+              finalApiKey.scope === "ORGANIZATION" ? "organization" : "project";
+
+            return {
+              validKey: true,
+              scope: {
+                projectId: finalApiKey.projectId,
+                accessLevel,
+                orgId: finalApiKey.orgId,
+                plan: plan,
+                rateLimitOverrides: finalApiKey.rateLimitOverrides ?? [],
+                apiKeyId: finalApiKey.id,
+                scope: finalApiKey.scope,
+                publicKey,
+                isIngestionSuspended: finalApiKey.isIngestionSuspended,
+              },
+            };
           }
+          // Bearer auth, limited scope, only needs public key
+          if (authHeader.startsWith("Bearer ")) {
+            const publicKey = authHeader.replace("Bearer ", "");
 
-          const { orgId, cloudConfig, cloudFreeTierUsageThresholdState } = this.extractOrgIdAndCloudConfig(dbKey);
+            const dbKey = await this.findDbKeyOrThrow(publicKey);
 
-          addUserToSpan({
-            projectId: dbKey.projectId ?? undefined,
-            orgId,
-            plan: getOrganizationPlanServerSide(cloudConfig),
-          });
+            if (dbKey.scope === "ORGANIZATION") {
+              throw new Error(
+                "Unauthorized: Cannot use organization key with bearer auth",
+              );
+            }
 
-          return {
-            validKey: true,
-            scope: {
-              projectId: dbKey.projectId,
-              accessLevel: "scores",
+            const { orgId, cloudConfig, cloudFreeTierUsageThresholdState } =
+              this.extractOrgIdAndCloudConfig(dbKey);
+
+            addUserToSpan({
+              projectId: dbKey.projectId ?? undefined,
               orgId,
               plan: getOrganizationPlanServerSide(cloudConfig),
-              rateLimitOverrides: cloudConfig?.rateLimitOverrides ?? [],
-              apiKeyId: dbKey.id,
-              scope: dbKey.scope,
-              publicKey,
-              isIngestionSuspended: cloudFreeTierUsageThresholdState === "BLOCKED",
-            },
+            });
+
+            return {
+              validKey: true,
+              scope: {
+                projectId: dbKey.projectId,
+                accessLevel: "scores",
+                orgId,
+                plan: getOrganizationPlanServerSide(cloudConfig),
+                rateLimitOverrides: cloudConfig?.rateLimitOverrides ?? [],
+                apiKeyId: dbKey.id,
+                scope: dbKey.scope,
+                publicKey,
+                isIngestionSuspended:
+                  cloudFreeTierUsageThresholdState === "BLOCKED",
+              },
+            };
+          }
+        } catch (error: unknown) {
+          logger.info(
+            `Error verifying auth header: ${error instanceof Error ? error.message : null}`,
+            error,
+          );
+
+          if (isPrismaException(error)) {
+            throw error;
+          }
+
+          return {
+            validKey: false,
+            error:
+              (error instanceof Error ? error.message : "Authorization error") +
+              ". Confirm that you've configured the correct host.",
           };
         }
-      } catch (error: unknown) {
-        logger.info(`Error verifying auth header: ${error instanceof Error ? error.message : null}`, error);
-
-        if (isPrismaException(error)) {
-          throw error;
-        }
-
         return {
           validKey: false,
-          error:
-            (error instanceof Error ? error.message : "Authorization error") +
-            ". Confirm that you've configured the correct host.",
+          error: "Invalid authorization header",
         };
-      }
-      return {
-        validKey: false,
-        error: "Invalid authorization header",
-      };
-    });
+      },
+    );
 
     return result;
   }
@@ -296,9 +327,14 @@ export class ApiAuthService {
     // add the key to redis for future use if available, this does not throw
     // only do so if the new hashkey exists already.
     if (apiKeyAndOrganisation && apiKeyAndOrganisation.fastHashedSecretKey) {
-      await this.addApiKeyToRedis(hash, this.convertToRedisRepresentation(apiKeyAndOrganisation));
+      await this.addApiKeyToRedis(
+        hash,
+        this.convertToRedisRepresentation(apiKeyAndOrganisation),
+      );
     }
-    return apiKeyAndOrganisation ? this.convertToRedisRepresentation(apiKeyAndOrganisation) : null;
+    return apiKeyAndOrganisation
+      ? this.convertToRedisRepresentation(apiKeyAndOrganisation)
+      : null;
   }
 
   private async addApiKeyToRedis(
@@ -344,7 +380,10 @@ export class ApiAuthService {
       }
 
       if (!parsedApiKey.success) {
-        logger.error("Failed to parse API key from Redis, deleting existing key from cache", parsedApiKey.error);
+        logger.error(
+          "Failed to parse API key from Redis, deleting existing key from cache",
+          parsedApiKey.error,
+        );
         await this.redis.del(this.createRedisKey(hash));
       }
       return null;
@@ -382,19 +421,27 @@ export class ApiAuthService {
       } | null;
     },
   ) {
-    const orgId = apiKeyAndOrganisation.project?.organization.id ?? apiKeyAndOrganisation.organization?.id;
+    const orgId =
+      apiKeyAndOrganisation.project?.organization.id ??
+      apiKeyAndOrganisation.organization?.id;
     const rawCloudConfig =
-      apiKeyAndOrganisation.project?.organization.cloudConfig ?? apiKeyAndOrganisation.organization?.cloudConfig;
+      apiKeyAndOrganisation.project?.organization.cloudConfig ??
+      apiKeyAndOrganisation.organization?.cloudConfig;
     const cloudFreeTierUsageThresholdState =
-      apiKeyAndOrganisation.project?.organization.cloudFreeTierUsageThresholdState ??
+      apiKeyAndOrganisation.project?.organization
+        .cloudFreeTierUsageThresholdState ??
       apiKeyAndOrganisation.organization?.cloudFreeTierUsageThresholdState;
 
     if (!orgId) {
-      logger.error(`No organization found for key: ${apiKeyAndOrganisation.publicKey}`);
+      logger.error(
+        `No organization found for key: ${apiKeyAndOrganisation.publicKey}`,
+      );
       throw new Error("Invalid credentials: No organization found for key");
     }
 
-    const cloudConfig = rawCloudConfig ? CloudConfigSchema.parse(rawCloudConfig) : undefined;
+    const cloudConfig = rawCloudConfig
+      ? CloudConfigSchema.parse(rawCloudConfig)
+      : undefined;
 
     return {
       orgId,

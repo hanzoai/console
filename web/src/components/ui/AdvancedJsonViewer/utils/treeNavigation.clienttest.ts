@@ -3,7 +3,13 @@
  */
 
 import { buildTreeFromJSON } from "./treeStructure";
-import { getAllVisibleNodes, getNodeByIndex, findNodeIndex, getVisibleRowCount, isNodeVisible } from "./treeNavigation";
+import {
+  getAllVisibleNodes,
+  getNodeByIndex,
+  findNodeIndex,
+  getVisibleRowCount,
+  isNodeVisible,
+} from "./treeNavigation";
 import type { ExpansionState } from "../types";
 
 describe("getAllVisibleNodes - Integration Tests", () => {

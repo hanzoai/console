@@ -35,7 +35,10 @@ export class PosthogCallbackHandler extends BaseCallbackHandler {
   }
 
   private getInputLength() {
-    return this.messages.reduce((acc, message) => acc + message.content.length, 0);
+    return this.messages.reduce(
+      (acc, message) => acc + message.content.length,
+      0,
+    );
   }
 
   private getEventProperties(output: string): ChatCompletionEventProperties {

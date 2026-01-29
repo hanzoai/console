@@ -1,4 +1,9 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { useState } from "react";
 import Decimal from "decimal.js";
 import { getMaxDecimals } from "@/src/features/models/utils";
@@ -21,7 +26,9 @@ export const calculateAggregatedUsage = (
   const aggregatedDetails = Array.isArray(details)
     ? details.reduce<Details>((acc, curr) => {
         Object.entries(curr).forEach(([key, value]) => {
-          acc[key] = new Decimal(acc[key] || 0).plus(new Decimal(value || 0)).toNumber();
+          acc[key] = new Decimal(acc[key] || 0)
+            .plus(new Decimal(value || 0))
+            .toNumber();
         });
         return acc;
       }, {})
@@ -30,12 +37,20 @@ export const calculateAggregatedUsage = (
   // Sum all keys containing "input"
   const input = Object.entries(aggregatedDetails)
     .filter(([key]) => key.includes("input"))
-    .reduce((sum, [_, value]) => new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(), 0);
+    .reduce(
+      (sum, [_, value]) =>
+        new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(),
+      0,
+    );
 
   // Sum all keys containing "output"
   const output = Object.entries(aggregatedDetails)
     .filter(([key]) => key.includes("output"))
-    .reduce((sum, [_, value]) => new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(), 0);
+    .reduce(
+      (sum, [_, value]) =>
+        new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(),
+      0,
+    );
 
   // Get total or calculate from input + output
   const total = aggregatedDetails.total ?? input + output;
@@ -50,38 +65,59 @@ interface BreakdownTooltipProps {
   pricingTierName?: string;
 }
 
-export const BreakdownTooltip = ({ details, children, isCost = false, pricingTierName }: BreakdownTooltipProps) => {
+export const BreakdownTooltip = ({
+  details,
+  children,
+  isCost = false,
+  pricingTierName,
+}: BreakdownTooltipProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Aggregate details if array is provided
   const aggregatedDetails = Array.isArray(details)
     ? details.reduce<Details>((acc, curr) => {
         Object.entries(curr).forEach(([key, value]) => {
-          acc[key] = new Decimal(acc[key] || 0).plus(new Decimal(value || 0)).toNumber();
+          acc[key] = new Decimal(acc[key] || 0)
+            .plus(new Decimal(value || 0))
+            .toNumber();
         });
         return acc;
       }, {})
     : details;
 
   const formatValueWithPadding = (value: number, maxDecimals: number) => {
-    return !value ? "0" : isCost ? `$${value.toFixed(maxDecimals)}` : value.toLocaleString();
+    return !value
+      ? "0"
+      : isCost
+        ? `$${value.toFixed(maxDecimals)}`
+        : value.toLocaleString();
   };
 
-  const maxDecimals = isCost ? Math.max(...Object.values(aggregatedDetails).map((v) => getMaxDecimals(v))) : 0;
+  const maxDecimals = isCost
+    ? Math.max(
+        ...Object.values(aggregatedDetails).map((v) => getMaxDecimals(v)),
+      )
+    : 0;
 
   return (
     <TooltipProvider>
       <Tooltip open={isOpen} onOpenChange={setIsOpen}>
-        <TooltipTrigger className="flex cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+        <TooltipTrigger
+          className="flex cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {children}
         </TooltipTrigger>
         <TooltipContent className="w-64 p-4">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <span className="font-semibold">{isCost ? "Cost breakdown" : "Usage breakdown"}</span>
+              <span className="font-semibold">
+                {isCost ? "Cost breakdown" : "Usage breakdown"}
+              </span>
               {Array.isArray(details) && details.length > 0 && (
                 <span className="text-xs italic text-muted-foreground">
-                  Aggregate across {details.length} {details.length === 1 ? "generation" : "generations"}
+                  Aggregate across {details.length}{" "}
+                  {details.length === 1 ? "generation" : "generations"}
                 </span>
               )}
               {pricingTierName && (
@@ -117,9 +153,14 @@ export const BreakdownTooltip = ({ details, children, isCost = false, pricingTie
 
             {/* Total */}
             <div className="flex justify-between border-b-4 border-t border-double py-1">
-              <span className="text-xs font-semibold">{isCost ? "Total cost" : "Total usage"}</span>
+              <span className="text-xs font-semibold">
+                {isCost ? "Total cost" : "Total usage"}
+              </span>
               <span className="font-mono text-xs font-semibold">
-                {formatValueWithPadding(aggregatedDetails.total ?? 0, maxDecimals)}
+                {formatValueWithPadding(
+                  aggregatedDetails.total ?? 0,
+                  maxDecimals,
+                )}
               </span>
             </div>
           </div>
@@ -142,7 +183,8 @@ const Section = ({ title, details, filterFn, formatValue }: SectionProps) => {
     .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0));
 
   const sectionTotal = filteredEntries.reduce(
-    (sum, [_, value]) => new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(),
+    (sum, [_, value]) =>
+      new Decimal(sum).plus(new Decimal(value ?? 0)).toNumber(),
     0,
   );
 
@@ -150,10 +192,15 @@ const Section = ({ title, details, filterFn, formatValue }: SectionProps) => {
     <div className="flex flex-col gap-2">
       <div className="flex justify-between border-b pb-1">
         <span className="text-xs font-semibold">{title}</span>
-        <span className="text-right font-mono text-xs font-semibold">{formatValue(sectionTotal)}</span>
+        <span className="text-right font-mono text-xs font-semibold">
+          {formatValue(sectionTotal)}
+        </span>
       </div>
       {filteredEntries.map(([key, value]) => (
-        <div key={key} className="flex justify-between text-xs text-muted-foreground">
+        <div
+          key={key}
+          className="flex justify-between text-xs text-muted-foreground"
+        >
           <span className="mr-4">{key}</span>
           <span className="font-mono">{formatValue(value ?? 0)}</span>
         </div>
@@ -170,7 +217,10 @@ interface OtherSectionProps {
 
 const OtherSection = ({ details, isCost, formatValue }: OtherSectionProps) => {
   const otherEntries = Object.entries(details)
-    .filter(([key]) => !key.includes("input") && !key.includes("output") && key !== "total")
+    .filter(
+      ([key]) =>
+        !key.includes("input") && !key.includes("output") && key !== "total",
+    )
     .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0));
 
   if (otherEntries.length === 0) return null;
@@ -184,11 +234,18 @@ const OtherSection = ({ details, isCost, formatValue }: OtherSectionProps) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between border-b pb-2">
-        <span className="text-xs font-medium">{isCost ? "Other cost" : "Other usage"}</span>
-        <span className="text-right font-mono text-xs font-medium">{formatValue(otherTotal)}</span>
+        <span className="text-xs font-medium">
+          {isCost ? "Other cost" : "Other usage"}
+        </span>
+        <span className="text-right font-mono text-xs font-medium">
+          {formatValue(otherTotal)}
+        </span>
       </div>
       {otherEntries.map(([key, value]) => (
-        <div key={key} className="flex justify-between text-xs text-muted-foreground">
+        <div
+          key={key}
+          className="flex justify-between text-xs text-muted-foreground"
+        >
           <span className="mr-4">{key}</span>
           <span className="font-mono">{formatValue(value ?? 0)}</span>
         </div>

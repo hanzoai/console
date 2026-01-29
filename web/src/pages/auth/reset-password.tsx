@@ -9,7 +9,9 @@ type PageProps = {
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   return {
     props: {
-      passwordResetAvailable: env.SMTP_CONNECTION_URL !== undefined && env.EMAIL_FROM_ADDRESS !== undefined,
+      passwordResetAvailable:
+        env.SMTP_CONNECTION_URL !== undefined &&
+        env.EMAIL_FROM_ADDRESS !== undefined,
     },
   };
 };

@@ -29,7 +29,9 @@ interface TracePanelNavigationHeaderProps {
   shouldPulseToggle?: boolean;
 }
 
-export function TracePanelNavigationHeader(props: TracePanelNavigationHeaderProps) {
+export function TracePanelNavigationHeader(
+  props: TracePanelNavigationHeaderProps,
+) {
   if (props.isPanelCollapsed) {
     return <TracePanelNavigationHeaderCollapsed {...props} />;
   }
@@ -57,7 +59,8 @@ function TracePanelNavigationHeaderExpanded({
   onTogglePanel,
   shouldPulseToggle = false,
 }: TracePanelNavigationHeaderProps) {
-  const { searchInputValue, setSearchInputValue, setSearchQueryImmediate } = useSearch();
+  const { searchInputValue, setSearchInputValue, setSearchQueryImmediate } =
+    useSearch();
   const { expandAll, collapseAll, collapsedNodes } = useSelection();
   const { roots, trace, observations } = useTraceData();
   const { isGraphViewAvailable } = useTraceGraphData();
@@ -71,7 +74,8 @@ function TracePanelNavigationHeaderExpanded({
   };
 
   // Check if everything is collapsed (all roots collapsed)
-  const isEverythingCollapsed = roots.length > 0 && roots.every((r) => collapsedNodes.has(r.id));
+  const isEverythingCollapsed =
+    roots.length > 0 && roots.every((r) => collapsedNodes.has(r.id));
 
   // Collect all node IDs for collapse all (from all roots)
   const getAllNodeIds = useCallback((node: (typeof roots)[0]): string[] => {
@@ -157,7 +161,10 @@ function TracePanelNavigationHeaderExpanded({
             variant={isTimelineView ? "default" : "ghost"}
             size="sm"
             onClick={() => setViewMode(isTimelineView ? null : "timeline")}
-            className={cn("h-7 px-2 text-xs", isTimelineView && "bg-primary text-primary-foreground")}
+            className={cn(
+              "h-7 px-2 text-xs",
+              isTimelineView && "bg-primary text-primary-foreground",
+            )}
           >
             <span className="text-xs">Timeline</span>
           </Button>

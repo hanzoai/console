@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Switch } from "@/src/components/ui/switch";
 import { JSONSchemaEditor } from "@/src/components/JSONSchemaEditor";
 
@@ -51,8 +57,14 @@ export const DatasetSchemaInput: React.FC<DatasetSchemaInputProps> = ({
       <div className="flex items-center justify-between">
         <FormLabel>{label}</FormLabel>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">{isEnabled ? "Enabled" : "Disabled"}</span>
-          <Switch checked={isEnabled} onCheckedChange={handleToggle} disabled={disabled} />
+          <span className="text-sm text-muted-foreground">
+            {isEnabled ? "Enabled" : "Disabled"}
+          </span>
+          <Switch
+            checked={isEnabled}
+            onCheckedChange={handleToggle}
+            disabled={disabled}
+          />
         </div>
       </div>
 
@@ -60,7 +72,12 @@ export const DatasetSchemaInput: React.FC<DatasetSchemaInputProps> = ({
 
       {isEnabled && (
         <FormControl>
-          <JSONSchemaEditor value={value} onChange={onChange} disabled={disabled} className="max-h-[25vh]" />
+          <JSONSchemaEditor
+            value={value}
+            onChange={onChange}
+            disabled={disabled}
+            className="max-h-[25vh]"
+          />
         </FormControl>
       )}
 

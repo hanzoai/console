@@ -9,7 +9,9 @@ import { type ScoreColumn } from "@/src/features/scores/types";
  * @param serverColumns - Score columns from server
  * @returns Combined and deduplicated score columns, sorted alphabetically
  */
-export function useMergeScoreColumns(serverColumns: ScoreColumn[]): ScoreColumn[] {
+export function useMergeScoreColumns(
+  serverColumns: ScoreColumn[],
+): ScoreColumn[] {
   const { getColumnsMap } = useScoreCache();
 
   // Dedupe by key: combine server + cache columns, server wins conflicts
@@ -19,5 +21,7 @@ export function useMergeScoreColumns(serverColumns: ScoreColumn[]): ScoreColumn[
   serverColumns.forEach((col) => columnsMap.set(col.key, col));
 
   // Return deduplicated, sorted list
-  return Array.from(columnsMap.values()).sort((a, b) => a.key.localeCompare(b.key));
+  return Array.from(columnsMap.values()).sort((a, b) =>
+    a.key.localeCompare(b.key),
+  );
 }

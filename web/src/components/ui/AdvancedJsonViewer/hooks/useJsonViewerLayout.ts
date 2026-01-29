@@ -14,7 +14,11 @@ import { useMemo, useCallback } from "react";
 import { type JSONTheme, type StringWrapMode } from "../types";
 import type { TreeState } from "../utils/treeStructure";
 import { calculateFixedColumnWidth } from "../utils/calculateFixedColumnWidth";
-import { getVisibleDepthRange, getNodeByIndex, treeNodeToFlatRow } from "../utils/treeNavigation";
+import {
+  getVisibleDepthRange,
+  getNodeByIndex,
+  treeNodeToFlatRow,
+} from "../utils/treeNavigation";
 
 interface UseJsonViewerLayoutParams {
   tree: TreeState | null;
@@ -143,7 +147,10 @@ export function useJsonViewerLayout({
             const availableWidth = scrollableMaxWidth - leftIndent;
 
             if (availableWidth > 0) {
-              const charsPerLine = Math.max(40, Math.floor(availableWidth / charWidth));
+              const charsPerLine = Math.max(
+                40,
+                Math.floor(availableWidth / charWidth),
+              );
               const lines = Math.ceil(str.length / charsPerLine);
               return theme.lineHeight * Math.min(lines, 10);
             }
@@ -157,7 +164,15 @@ export function useJsonViewerLayout({
 
       return theme.lineHeight;
     },
-    [tree, theme.lineHeight, theme.indentSize, stringWrapMode, truncateStringsAt, charWidth, scrollableMaxWidth],
+    [
+      tree,
+      theme.lineHeight,
+      theme.indentSize,
+      stringWrapMode,
+      truncateStringsAt,
+      charWidth,
+      scrollableMaxWidth,
+    ],
   );
 
   return {

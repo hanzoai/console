@@ -1,13 +1,24 @@
 import type { TracingSearchType } from "@hanzo/shared";
-import { useQueryParam, withDefault, StringParam, ArrayParam } from "use-query-params";
+import {
+  useQueryParam,
+  withDefault,
+  StringParam,
+  ArrayParam,
+} from "use-query-params";
 
 export const useFullTextSearch = () => {
-  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
+  const [searchQuery, setSearchQuery] = useQueryParam(
+    "search",
+    withDefault(StringParam, null),
+  );
 
   // Search type can be either "id" or "metadata". Keep it untyped here and
   // cast later to the stricter `TracingSearchType[]` to avoid type mismatch
   // with the generic `ArrayParam` from `use-query-params`.
-  const [searchType, handleSearchTypeChange] = useQueryParam("searchType", withDefault(ArrayParam, ["id"]));
+  const [searchType, handleSearchTypeChange] = useQueryParam(
+    "searchType",
+    withDefault(ArrayParam, ["id"]),
+  );
 
   const setSearchType = (newSearchType: TracingSearchType[]) => {
     handleSearchTypeChange(newSearchType);

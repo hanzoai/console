@@ -39,7 +39,11 @@ const CountdownTimer: React.FC<CountdownProps> = ({ expiredAt, orgId }) => {
             },
             onError: (err) => {
               console.log("Err orrur when updating credits", err);
-              showErrorToast("Error when updating credit", err.message, "ERROR");
+              showErrorToast(
+                "Error when updating credit",
+                err.message,
+                "ERROR",
+              );
             },
           },
         );

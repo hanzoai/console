@@ -6,18 +6,27 @@ import TracesTable from "@/src/components/table/use-cases/traces";
 import Page from "@/src/components/layouts/page";
 import { api } from "@/src/utils/api";
 import { TracesOnboarding } from "@/src/components/onboarding/TracesOnboarding";
-import { getTracingTabs, TRACING_TABS } from "@/src/features/navigation/utils/tracing-tabs";
+import {
+  getTracingTabs,
+  TRACING_TABS,
+} from "@/src/features/navigation/utils/tracing-tabs";
 import { useObservationListBeta } from "@/src/features/events/hooks/useObservationListBeta";
 import ObservationsEventsTable from "@/src/features/events/components/EventsTable";
 import { Switch } from "@/src/components/ui/switch";
 import { Label } from "@/src/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 
 export default function Traces() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { data: session } = useSession();
-  const { isBetaEnabled, setBetaEnabled: setBetaEnabledRaw } = useObservationListBeta();
+  const { isBetaEnabled, setBetaEnabled: setBetaEnabledRaw } =
+    useObservationListBeta();
 
   // clear viewMode param query when beta is turned off
   const [, setQueryParams] = useQueryParams({ viewMode: StringParam });
@@ -35,18 +44,19 @@ export default function Traces() {
   const showBetaToggle = session?.user?.email?.endsWith("@hanzo.com");
 
   // Check if the user has tracing configured
-  const { data: hasTracingConfigured, isLoading } = api.traces.hasTracingConfigured.useQuery(
-    { projectId },
-    {
-      enabled: !!projectId,
-      trpc: {
-        context: {
-          skipBatch: true,
+  const { data: hasTracingConfigured, isLoading } =
+    api.traces.hasTracingConfigured.useQuery(
+      { projectId },
+      {
+        enabled: !!projectId,
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
         },
+        refetchInterval: 10_000,
       },
-      refetchInterval: 10_000,
-    },
-  );
+    );
 
   const showOnboarding = !isLoading && !hasTracingConfigured;
 
@@ -55,7 +65,11 @@ export default function Traces() {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2">
-            <Switch id="beta-toggle" checked={isBetaEnabled} onCheckedChange={setBetaEnabled} />
+            <Switch
+              id="beta-toggle"
+              checked={isBetaEnabled}
+              onCheckedChange={setBetaEnabled}
+            />
             <Label htmlFor="beta-toggle" className="cursor-pointer text-xs">
               Beta
             </Label>
@@ -106,7 +120,11 @@ export default function Traces() {
             },
       }}
     >
-      {isBetaEnabled ? <ObservationsEventsTable projectId={projectId} /> : <TracesTable projectId={projectId} />}
+      {isBetaEnabled ? (
+        <ObservationsEventsTable projectId={projectId} />
+      ) : (
+        <TracesTable projectId={projectId} />
+      )}
     </Page>
   );
 }

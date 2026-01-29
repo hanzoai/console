@@ -1,6 +1,11 @@
 import type { DatasetItemDomain } from "@hanzo/shared";
 import DiffViewer from "@/src/components/DiffViewer";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/src/components/ui/accordion";
 import { stringifyDatasetItemData } from "../utils/datasetItemUtils";
 
 type DatasetItemDiffViewProps = {
@@ -8,10 +13,17 @@ type DatasetItemDiffViewProps = {
   latestVersion: DatasetItemDomain;
 };
 
-export const DatasetItemDiffView = ({ selectedVersion, latestVersion }: DatasetItemDiffViewProps) => {
+export const DatasetItemDiffView = ({
+  selectedVersion,
+  latestVersion,
+}: DatasetItemDiffViewProps) => {
   return (
     <div className="space-y-4">
-      <Accordion type="multiple" defaultValue={["input", "output"]} className="w-full">
+      <Accordion
+        type="multiple"
+        defaultValue={["input", "output"]}
+        className="w-full"
+      >
         <AccordionItem value="input">
           <AccordionTrigger>Input</AccordionTrigger>
           <AccordionContent>
@@ -28,7 +40,9 @@ export const DatasetItemDiffView = ({ selectedVersion, latestVersion }: DatasetI
           <AccordionTrigger>Expected Output</AccordionTrigger>
           <AccordionContent>
             <DiffViewer
-              oldString={stringifyDatasetItemData(selectedVersion.expectedOutput)}
+              oldString={stringifyDatasetItemData(
+                selectedVersion.expectedOutput,
+              )}
               newString={stringifyDatasetItemData(latestVersion.expectedOutput)}
               oldLabel="Selected Version"
               newLabel="Latest Version"

@@ -23,10 +23,9 @@ export interface FlatNode<T> {
  * @param collapsedNodes - Set of node IDs that are collapsed
  * @returns Flat list of nodes with rendering metadata
  */
-export function flattenTree<T extends { id: string; children: T[]; startTime?: Date }>(
-  roots: T[],
-  collapsedNodes: Set<string>,
-): FlatNode<T>[] {
+export function flattenTree<
+  T extends { id: string; children: T[]; startTime?: Date },
+>(roots: T[], collapsedNodes: Set<string>): FlatNode<T>[] {
   if (roots.length === 0) return [];
 
   const flatList: FlatNode<T>[] = [];
@@ -69,7 +68,10 @@ export function flattenTree<T extends { id: string; children: T[]; startTime?: D
     });
 
     // If node has children and is not collapsed, add children to stack
-    if (current.node.children.length > 0 && !collapsedNodes.has(current.node.id)) {
+    if (
+      current.node.children.length > 0 &&
+      !collapsedNodes.has(current.node.id)
+    ) {
       // Sort children by startTime for consistent ordering
       const sortedChildren = [...current.node.children].sort((a, b) => {
         const aStart = a.startTime?.getTime() ?? 0;

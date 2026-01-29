@@ -52,7 +52,11 @@ export const JSONSchemaEditor: React.FC<JSONSchemaEditorProps> = ({
       const prettified = JSON.stringify(parsedJson, null, 2);
       onChange(prettified);
     } catch {
-      showErrorToast("Failed to prettify JSON", "Please verify your input is valid JSON", "WARNING");
+      showErrorToast(
+        "Failed to prettify JSON",
+        "Please verify your input is valid JSON",
+        "WARNING",
+      );
     }
   };
 
@@ -94,7 +98,9 @@ export const JSONSchemaEditor: React.FC<JSONSchemaEditorProps> = ({
             Prettify
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">Must be a valid JSON Schema object</p>
+        <p className="text-xs text-muted-foreground">
+          Must be a valid JSON Schema object
+        </p>
       </div>
     );
   }

@@ -15,9 +15,19 @@ import {
 } from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 import { prisma } from "@hanzo/shared/src/db";
-import { createObservation, createTraceScore, createTrace } from "@hanzo/shared/src/server";
-import { enrichAndMapToDatasetItemId, getRunItemsByRunIdOrItemId } from "@/src/features/datasets/server/service";
-import { aggregateScores, composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";
+import {
+  createObservation,
+  createTraceScore,
+  createTrace,
+} from "@hanzo/shared/src/server";
+import {
+  enrichAndMapToDatasetItemId,
+  getRunItemsByRunIdOrItemId,
+} from "@/src/features/datasets/server/service";
+import {
+  aggregateScores,
+  composeAggregateScoreKey,
+} from "@/src/features/scores/lib/aggregateScores";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
@@ -138,7 +148,12 @@ describe("Fetch datasets for UI presentation", () => {
       dataset_run_created_at: oneMinuteAgo.getTime(),
     });
 
-    await createDatasetRunItemsCh([datasetRunItem1, datasetRunItem2, datasetRunItem3, datasetRunItem4]);
+    await createDatasetRunItemsCh([
+      datasetRunItem1,
+      datasetRunItem2,
+      datasetRunItem3,
+      datasetRunItem4,
+    ]);
 
     const observation = createObservation({
       id: observationId,
@@ -179,7 +194,14 @@ describe("Fetch datasets for UI presentation", () => {
       start_time: new Date().getTime() - 1000 * 60 * 60, // minus 1 min
       end_time: new Date().getTime(),
     });
-    await createObservationsCh([observation, observation2, observation3, observation4, observation5, observation6]);
+    await createObservationsCh([
+      observation,
+      observation2,
+      observation3,
+      observation4,
+      observation5,
+      observation6,
+    ]);
     const score = createTraceScore({
       id: scoreId,
       observation_id: observationId,
@@ -221,7 +243,9 @@ describe("Fetch datasets for UI presentation", () => {
     // Only fetch scores for runs that have metrics (runs without dataset_run_items_rmt won't have trace scores)
     const runsWithMetricsIds = runsWithMetrics.map((run) => run.id);
     const [traceScores, runScores] = await Promise.all([
-      runsWithMetricsIds.length > 0 ? getTraceScoresForDatasetRuns(projectId, runsWithMetricsIds) : [],
+      runsWithMetricsIds.length > 0
+        ? getTraceScoresForDatasetRuns(projectId, runsWithMetricsIds)
+        : [],
       getScoresForDatasetRuns({
         projectId: projectId,
         runIds: runsWithMetrics.map((run) => run.id),
@@ -240,8 +264,12 @@ describe("Fetch datasets for UI presentation", () => {
         avgTotalCost: run.avgTotalCost ?? null,
         totalCost: run.totalCost ?? null,
         avgLatency: run.avgLatency ?? null,
-        scores: aggregateScores(traceScores.filter((s) => s.datasetRunId === run.id)),
-        runScores: aggregateScores(runScores.filter((s) => s.datasetRunId === run.id)),
+        scores: aggregateScores(
+          traceScores.filter((s) => s.datasetRunId === run.id),
+        ),
+        runScores: aggregateScores(
+          runScores.filter((s) => s.datasetRunId === run.id),
+        ),
       };
     });
 
@@ -393,7 +421,9 @@ describe("Fetch datasets for UI presentation", () => {
     // Only fetch scores for runs that have metrics (runs without dataset_run_items_rmt won't have trace scores)
     const runsWithMetricsIds = runsWithMetrics.map((run) => run.id);
     const [traceScores, runScores] = await Promise.all([
-      runsWithMetricsIds.length > 0 ? getTraceScoresForDatasetRuns(projectId, runsWithMetricsIds) : [],
+      runsWithMetricsIds.length > 0
+        ? getTraceScoresForDatasetRuns(projectId, runsWithMetricsIds)
+        : [],
       getScoresForDatasetRuns({
         projectId: projectId,
         runIds: runsWithMetrics.map((run) => run.id),
@@ -412,8 +442,12 @@ describe("Fetch datasets for UI presentation", () => {
         avgTotalCost: run.avgTotalCost ?? null,
         totalCost: run.totalCost ?? null,
         avgLatency: run.avgLatency ?? null,
-        scores: aggregateScores(traceScores.filter((s) => s.datasetRunId === run.id)),
-        runScores: aggregateScores(runScores.filter((s) => s.datasetRunId === run.id)),
+        scores: aggregateScores(
+          traceScores.filter((s) => s.datasetRunId === run.id),
+        ),
+        runScores: aggregateScores(
+          runScores.filter((s) => s.datasetRunId === run.id),
+        ),
       };
     });
 
@@ -608,7 +642,11 @@ describe("Fetch datasets for UI presentation", () => {
 
       // No scores for traceId3 to test filtering behavior
 
-      await createScoresCh([highAccuracyScore, lowAccuracyScore, highPrecisionScore]);
+      await createScoresCh([
+        highAccuracyScore,
+        lowAccuracyScore,
+        highPrecisionScore,
+      ]);
 
       // Test 1: Filter for runs with accuracy > 0.8
       const highAccuracyRuns = await getDatasetRunsTableMetricsCh({
@@ -1183,11 +1221,16 @@ describe("Fetch datasets for UI presentation", () => {
       offset: 0,
     });
 
-    const enrichedRunItems = await getRunItemsByRunIdOrItemId(projectId, runItems);
+    const enrichedRunItems = await getRunItemsByRunIdOrItemId(
+      projectId,
+      runItems,
+    );
 
     expect(enrichedRunItems).toHaveLength(2);
 
-    const firstRunItem = enrichedRunItems.find((runItem) => runItem.id === datasetRunItemId1);
+    const firstRunItem = enrichedRunItems.find(
+      (runItem) => runItem.id === datasetRunItemId1,
+    );
     expect(firstRunItem).toBeDefined();
     if (!firstRunItem) {
       throw new Error("first run item is not defined");
@@ -1199,7 +1242,9 @@ describe("Fetch datasets for UI presentation", () => {
     expect(firstRunItem.trace).toBeDefined();
     expect(firstRunItem.trace?.id).toEqual(traceId1);
 
-    const secondRunItem = enrichedRunItems.find((runItem) => runItem.id === datasetRunItemId2);
+    const secondRunItem = enrichedRunItems.find(
+      (runItem) => runItem.id === datasetRunItemId2,
+    );
     expect(secondRunItem).toBeDefined();
     if (!secondRunItem) {
       throw new Error("second run item is not defined");
@@ -1523,24 +1568,33 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Should be a record, not an array
         expect(typeof result).toBe("object");
         expect(Array.isArray(result)).toBe(false);
 
         // Should have the correct nested structure: datasetItemId -> runId -> enriched data
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining(itemIds));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining(itemIds),
+        );
 
         // Check specific dataset items have the correct run data
         // Item 0: Should have data from run1 and run2
         expect(result.get(itemIds[0])).toBeDefined();
-        expect(Object.keys(result.get(itemIds[0]) ?? {})).toEqual(expect.arrayContaining([run1Id, run2Id]));
+        expect(Object.keys(result.get(itemIds[0]) ?? {})).toEqual(
+          expect.arrayContaining([run1Id, run2Id]),
+        );
         expect(result.get(itemIds[0])?.[run3Id]).toBeUndefined(); // Not in run3
 
         // Item 1: Should have data from run1 and run3
         expect(result.get(itemIds[1])).toBeDefined();
-        expect(Object.keys(result.get(itemIds[1]) ?? {})).toEqual(expect.arrayContaining([run1Id, run3Id]));
+        expect(Object.keys(result.get(itemIds[1]) ?? {})).toEqual(
+          expect.arrayContaining([run1Id, run3Id]),
+        );
         expect(result.get(itemIds[1])?.[run2Id]).toBeUndefined(); // Not in run2
 
         // Item 2: Should have data from run1 only
@@ -1571,7 +1625,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Test enriched data for item 0, run 1 (has observation-level linkage + scores)
         const item0Run1 = result.get(itemIds[0])?.[run1Id];
@@ -1585,7 +1642,9 @@ describe("Fetch datasets for UI presentation", () => {
         expect(typeof item0Run1?.observation?.latency).toBe("number");
         expect(item0Run1?.observation?.calculatedTotalCost).toBeDefined();
         // Should calculate recursive cost (parent + 2 children: 0 + 0.005 + 0.008765 = 0.013765)
-        expect(item0Run1?.observation?.calculatedTotalCost?.toNumber()).toBeCloseTo(0.013765, 6);
+        expect(
+          item0Run1?.observation?.calculatedTotalCost?.toNumber(),
+        ).toBeCloseTo(0.013765, 6);
 
         // Should have trace data
         expect(item0Run1?.trace).toBeDefined();
@@ -1621,7 +1680,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Item 0, Run 1: Observation-level linkage (should have observation data)
         const item0Run1 = result.get(itemIds[0])?.[run1Id];
@@ -1662,7 +1724,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Trace 0: accuracy: 0.95, relevance: 0.88
         const item0Run1 = result.get(itemIds[0])?.[run1Id];
@@ -1703,7 +1768,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Test observation-level latency (should be based on observation start/end time)
         const item0Run1 = result.get(itemIds[0])?.[run1Id];
@@ -1740,7 +1808,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Test that cost fields are present and properly typed
         result.forEach((runData) => {
@@ -1750,8 +1821,13 @@ describe("Fetch datasets for UI presentation", () => {
 
             // Observation costs (if observation exists)
             if (enrichedItem?.observation) {
-              expect(enrichedItem?.observation?.calculatedTotalCost).toBeDefined();
-              expect(enrichedItem?.observation?.calculatedTotalCost?.constructor?.name).toBe("Decimal");
+              expect(
+                enrichedItem?.observation?.calculatedTotalCost,
+              ).toBeDefined();
+              expect(
+                enrichedItem?.observation?.calculatedTotalCost?.constructor
+                  ?.name,
+              ).toBe("Decimal");
             }
           });
         });
@@ -1776,7 +1852,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Should not have any data from run3 across all dataset items
         for (const datasetItemToRunData of result.values()) {
@@ -1800,7 +1879,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: [], // Empty list
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         expect(result).toEqual(new Map());
       });
@@ -1814,7 +1896,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: [nonExistentItemId],
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         expect(result).toEqual(new Map());
       });
@@ -1838,7 +1923,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: itemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         expect(result).toEqual(new Map());
       });
@@ -1860,7 +1948,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: itemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Test that timestamps are preserved
         result.forEach((runData) => {
@@ -1958,18 +2049,23 @@ describe("Fetch datasets for UI presentation", () => {
         });
 
         // Create traces
-        const traces = [...run1TraceIds, ...run2TraceIds, ...run3TraceIds].map((traceId, index) =>
-          createTrace({
-            id: traceId,
-            project_id: projectId,
-            name: `filtered-trace-${index + 1}`,
-            timestamp: new Date().getTime() - (5 - index) * 1000,
-          }),
+        const traces = [...run1TraceIds, ...run2TraceIds, ...run3TraceIds].map(
+          (traceId, index) =>
+            createTrace({
+              id: traceId,
+              project_id: projectId,
+              name: `filtered-trace-${index + 1}`,
+              timestamp: new Date().getTime() - (5 - index) * 1000,
+            }),
         );
         await createTracesCh(traces);
 
         // Create observations for latency calculations
-        const observations = [...run1TraceIds, ...run2TraceIds, ...run3TraceIds].map((traceId, index) =>
+        const observations = [
+          ...run1TraceIds,
+          ...run2TraceIds,
+          ...run3TraceIds,
+        ].map((traceId, index) =>
           createObservation({
             trace_id: traceId,
             project_id: projectId,
@@ -2076,7 +2172,13 @@ describe("Fetch datasets for UI presentation", () => {
             },
             {
               name: "sentiment",
-              values: ["positive", "neutral", "negative", "positive", "neutral"],
+              values: [
+                "positive",
+                "neutral",
+                "negative",
+                "positive",
+                "neutral",
+              ],
             },
             {
               name: "language",
@@ -2148,27 +2250,41 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Run1 has items 0,1,2,3,4 with accuracy 0.6,0.65,0.7,0.75,0.8 - filter >= 0.65 includes items 1,2,3,4
         // Run2 has items 0,1,2,3,4 with accuracy 0.75,0.8,0.85,0.9,0.95 - filter >= 0.8 includes items 1,2,3,4
         // Intersection: items that exist in BOTH runs AND meet BOTH criteria = items 1,2,3,4
         expect(Array.from(result.keys())).toHaveLength(4);
         expect(Array.from(result.keys())).toEqual(
-          expect.arrayContaining([itemIds[1], itemIds[2], itemIds[3], itemIds[4]]),
+          expect.arrayContaining([
+            itemIds[1],
+            itemIds[2],
+            itemIds[3],
+            itemIds[4],
+          ]),
         );
 
         // Verify each item has data from both runs
         result.forEach((runData) => {
           expect(Object.keys(runData)).toHaveLength(2);
-          expect(Object.keys(runData)).toEqual(expect.arrayContaining([run1Id, run2Id]));
+          expect(Object.keys(runData)).toEqual(
+            expect.arrayContaining([run1Id, run2Id]),
+          );
         });
 
         // Verify accuracy values meet filter criteria
         const item1Run1 = result.get(itemIds[1])?.[run1Id];
         const item1Run2 = result.get(itemIds[1])?.[run2Id];
-        expect((item1Run1?.scores?.[accuracyKey] as any)?.average).toBeGreaterThanOrEqual(0.65);
-        expect((item1Run2?.scores?.[accuracyKey] as any)?.average).toBeGreaterThanOrEqual(0.8);
+        expect(
+          (item1Run1?.scores?.[accuracyKey] as any)?.average,
+        ).toBeGreaterThanOrEqual(0.65);
+        expect(
+          (item1Run2?.scores?.[accuracyKey] as any)?.average,
+        ).toBeGreaterThanOrEqual(0.8);
       });
 
       it("should return empty result when intersection is empty (no items meet all run filter criteria)", async () => {
@@ -2228,7 +2344,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Run1 accuracy >= 0.8: only item 4 (accuracy 0.8)
         // Run2 accuracy >= 0.85: items 2,3,4 (accuracy 0.85, 0.9, 0.95)
@@ -2286,7 +2405,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Intersection analysis:
         // Run1 qualifies: items 1,2,3,4 (accuracy >= 0.65: 0.65, 0.7, 0.75, 0.8)
@@ -2294,12 +2416,16 @@ describe("Fetch datasets for UI presentation", () => {
         // Run3 qualifies: items 0,1,3,4 (language != "technical": excludes item 2 which is "technical")
         // Intersection: items 1,3,4 (items that exist in ALL runs AND meet ALL criteria)
         expect(Array.from(result.keys())).toHaveLength(3);
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining([itemIds[1], itemIds[3], itemIds[4]]));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining([itemIds[1], itemIds[3], itemIds[4]]),
+        );
 
         // Verify each qualifying item has data from all three runs
         result.forEach((runData) => {
           expect(Object.keys(runData)).toHaveLength(3);
-          expect(Object.keys(runData)).toEqual(expect.arrayContaining([run1Id, run2Id, run3Id]));
+          expect(Object.keys(runData)).toEqual(
+            expect.arrayContaining([run1Id, run2Id, run3Id]),
+          );
         });
       });
 
@@ -2336,18 +2462,29 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // All items exist in ALL three runs now: items 0,1,2,3,4
         expect(Array.from(result.keys())).toHaveLength(5);
         expect(Array.from(result.keys())).toEqual(
-          expect.arrayContaining([itemIds[0], itemIds[1], itemIds[2], itemIds[3], itemIds[4]]),
+          expect.arrayContaining([
+            itemIds[0],
+            itemIds[1],
+            itemIds[2],
+            itemIds[3],
+            itemIds[4],
+          ]),
         );
 
         // Verify each qualifying item has data from all three runs
         result.forEach((runData) => {
           expect(Object.keys(runData)).toHaveLength(3);
-          expect(Object.keys(runData)).toEqual(expect.arrayContaining([run1Id, run2Id, run3Id]));
+          expect(Object.keys(runData)).toEqual(
+            expect.arrayContaining([run1Id, run2Id, run3Id]),
+          );
         });
       });
 
@@ -2379,24 +2516,32 @@ describe("Fetch datasets for UI presentation", () => {
 
         // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
-        const datasetRunItemsFirstPage = await getDatasetRunItemsWithoutIOByItemIds({
-          projectId: projectId,
-          datasetId: datasetId,
-          runIds: [run1Id, run2Id, run3Id],
-          datasetItemIds: firstPageDatasetItemIds,
-        });
+        const datasetRunItemsFirstPage =
+          await getDatasetRunItemsWithoutIOByItemIds({
+            projectId: projectId,
+            datasetId: datasetId,
+            runIds: [run1Id, run2Id, run3Id],
+            datasetItemIds: firstPageDatasetItemIds,
+          });
 
         // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
-        const datasetRunItemsSecondPage = await getDatasetRunItemsWithoutIOByItemIds({
-          projectId: projectId,
-          datasetId: datasetId,
-          runIds: [run1Id, run2Id, run3Id],
-          datasetItemIds: secondPageDatasetItemIds,
-        });
+        const datasetRunItemsSecondPage =
+          await getDatasetRunItemsWithoutIOByItemIds({
+            projectId: projectId,
+            datasetId: datasetId,
+            runIds: [run1Id, run2Id, run3Id],
+            datasetItemIds: secondPageDatasetItemIds,
+          });
 
-        const firstPageResult = await enrichAndMapToDatasetItemId(projectId, datasetRunItemsFirstPage);
-        const secondPageResult = await enrichAndMapToDatasetItemId(projectId, datasetRunItemsSecondPage);
+        const firstPageResult = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItemsFirstPage,
+        );
+        const secondPageResult = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItemsSecondPage,
+        );
 
         // Check actual counts - pagination test uses all 3 runs (all have 5 items, no filters)
         expect(Array.from(firstPageResult.keys())).toHaveLength(2);
@@ -2435,11 +2580,16 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Should only return items where accuracy >= 0.7 in run1
         expect(Array.from(result.keys())).toHaveLength(3);
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining([itemIds[2], itemIds[3], itemIds[4]]));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining([itemIds[2], itemIds[3], itemIds[4]]),
+        );
 
         // Verify the returned data
         const item2Data = result.get(itemIds[2])?.[run1Id];
@@ -2495,12 +2645,17 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Run 1: Items 2, 3, 4 (accuracy >= 0.7: 0.7, 0.75, 0.8)
         // Run 2: Items 0, 1, 2, 3, 4 (accuracy >= 0.75: 0.75, 0.8, 0.85, 0.9, 0.95)
         // Intersection: items 2, 3, 4 (meet both criteria)
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining([itemIds[2], itemIds[3], itemIds[4]]));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining([itemIds[2], itemIds[3], itemIds[4]]),
+        );
 
         // Check run1 data (items 2, 3, 4)
         expect(result.get(itemIds[2])?.[run1Id]).toBeDefined();
@@ -2513,8 +2668,14 @@ describe("Fetch datasets for UI presentation", () => {
         expect(result.get(itemIds[4])?.[run2Id]).toBeDefined();
 
         // Verify accuracy values
-        expect((result.get(itemIds[2])?.[run1Id]?.scores?.[accuracyKey] as any)?.average).toBe(0.7);
-        expect((result.get(itemIds[2])?.[run2Id]?.scores?.[accuracyKey] as any)?.average).toBe(0.85);
+        expect(
+          (result.get(itemIds[2])?.[run1Id]?.scores?.[accuracyKey] as any)
+            ?.average,
+        ).toBe(0.7);
+        expect(
+          (result.get(itemIds[2])?.[run2Id]?.scores?.[accuracyKey] as any)
+            ?.average,
+        ).toBe(0.85);
       });
 
       it("should filter single run with multiple numeric filters (AND condition)", async () => {
@@ -2556,13 +2717,18 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Should only return items where accuracy >= 0.75 AND relevance >= 0.74
         // Run1 accuracy: 0.6, 0.65, 0.7, 0.75, 0.8 (items 3, 4 meet accuracy >= 0.75)
         // Run1 relevance: 0.5, 0.58, 0.66, 0.74, 0.82 (items 3, 4 meet relevance >= 0.74)
         expect(Array.from(result.keys())).toHaveLength(2);
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining([itemIds[3], itemIds[4]]));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining([itemIds[3], itemIds[4]]),
+        );
 
         // Verify both conditions are met
         const item3Data = result.get(itemIds[3])?.[run1Id];
@@ -2571,7 +2737,9 @@ describe("Fetch datasets for UI presentation", () => {
 
         const item4Data = result.get(itemIds[4])?.[run1Id];
         expect((item4Data?.scores?.[accuracyKey] as any)?.average).toBe(0.8);
-        expect((item4Data?.scores?.[relevanceKey] as any)?.average).toBeCloseTo(0.82);
+        expect((item4Data?.scores?.[relevanceKey] as any)?.average).toBeCloseTo(
+          0.82,
+        );
       });
 
       it("should filter multiple runs with multiple filters each", async () => {
@@ -2625,14 +2793,19 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Run 1: Items where accuracy >= 0.75 AND relevance >= 0.74 (items 3, 4)
         // Run 2: No filter - all items qualify (items 0, 1, 2, 3, 4)
         // Run 3: Items where language is "formal" or "casual" (items 0, 1, 3, 4)
         // Intersection: items 3, 4 (items that meet ALL criteria across ALL runs)
         expect(Array.from(result.keys())).toHaveLength(2);
-        expect(Array.from(result.keys())).toEqual(expect.arrayContaining([itemIds[3], itemIds[4]]));
+        expect(Array.from(result.keys())).toEqual(
+          expect.arrayContaining([itemIds[3], itemIds[4]]),
+        );
       });
 
       it("should filter with categorical filters", async () => {
@@ -2667,7 +2840,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Intersection logic: items must exist in ALL runs AND meet filter criteria
         // Run1: no filter → items 0,1,2,3,4 qualify
@@ -2676,7 +2852,12 @@ describe("Fetch datasets for UI presentation", () => {
         // Intersection: items 0,1,3,4 (4 items)
         expect(Array.from(result.keys())).toHaveLength(4);
         expect(Array.from(result.keys())).toEqual(
-          expect.arrayContaining([itemIds[0], itemIds[1], itemIds[3], itemIds[4]]),
+          expect.arrayContaining([
+            itemIds[0],
+            itemIds[1],
+            itemIds[3],
+            itemIds[4],
+          ]),
         );
         expect(result.get(itemIds[2])).toBeUndefined(); // Has "technical" language, excluded by run3 filter
       });
@@ -2713,7 +2894,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         expect(result).toEqual(new Map());
       });
@@ -2750,7 +2934,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         expect(result).toEqual(new Map());
       });
@@ -2779,20 +2966,31 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Should return intersection of all runs (items that exist in ALL runs)
         // Run1: 5 items (0-4), Run2: 5 items (0-4), Run3: 5 items (0-4)
         // Intersection: all items 0, 1, 2, 3, 4 (5 items)
         expect(Array.from(result.keys())).toHaveLength(5);
         expect(Array.from(result.keys())).toEqual(
-          expect.arrayContaining([itemIds[0], itemIds[1], itemIds[2], itemIds[3], itemIds[4]]),
+          expect.arrayContaining([
+            itemIds[0],
+            itemIds[1],
+            itemIds[2],
+            itemIds[3],
+            itemIds[4],
+          ]),
         );
 
         // Verify each item has data from all three runs
         result.forEach((runData) => {
           expect(Object.keys(runData)).toHaveLength(3);
-          expect(Object.keys(runData)).toEqual(expect.arrayContaining([run1Id, run2Id, run3Id]));
+          expect(Object.keys(runData)).toEqual(
+            expect.arrayContaining([run1Id, run2Id, run3Id]),
+          );
         });
       });
 
@@ -2840,7 +3038,10 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds,
         });
 
-        const result = await enrichAndMapToDatasetItemId(projectId, datasetRunItems);
+        const result = await enrichAndMapToDatasetItemId(
+          projectId,
+          datasetRunItems,
+        );
 
         // Verify that the intersection logic preserves correct data for matching items
         const item2Run1 = result.get(itemIds[2])?.[run1Id];

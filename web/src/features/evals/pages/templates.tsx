@@ -6,7 +6,10 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { Lock, Plus } from "lucide-react";
 import EvalsTemplateTable from "@/src/features/evals/components/eval-templates-table";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import { getEvalsTabs, EVALS_TABS } from "@/src/features/navigation/utils/evals-tabs";
+import {
+  getEvalsTabs,
+  EVALS_TABS,
+} from "@/src/features/navigation/utils/evals-tabs";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
 
 export default function TemplatesPage() {
@@ -48,8 +51,18 @@ export default function TemplatesPage() {
               asChild
               variant="default"
             >
-              <Link href={hasWriteAccess ? `/project/${projectId}/evals/templates/new` : "#"}>
-                {hasWriteAccess ? <Plus className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+              <Link
+                href={
+                  hasWriteAccess
+                    ? `/project/${projectId}/evals/templates/new`
+                    : "#"
+                }
+              >
+                {hasWriteAccess ? (
+                  <Plus className="mr-2 h-4 w-4" />
+                ) : (
+                  <Lock className="mr-2 h-4 w-4" />
+                )}
                 Custom Evaluator
               </Link>
             </Button>

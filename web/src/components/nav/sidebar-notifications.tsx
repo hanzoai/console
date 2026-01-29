@@ -1,5 +1,11 @@
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import useLocalStorage from "../useLocalStorage";
@@ -23,7 +29,8 @@ const notifications: SidebarNotification[] = [
   {
     id: "github-star",
     title: "Star HanzoCloud",
-    description: "See the latest releases and help grow the community on GitHub",
+    description:
+      "See the latest releases and help grow the community on GitHub",
     link: "https://github.com/hanzoai/cloud",
     linkContent: (
       // eslint-disable-next-line @next/next/no-img-element
@@ -39,9 +46,13 @@ const STORAGE_KEY = "dismissed-sidebar-notifications";
 
 export function SidebarNotifications() {
   const capture = usePostHogClientCapture();
-  const [currentNotificationIndex, setCurrentNotificationIndex] = useState<number | null>(null);
+  const [currentNotificationIndex, setCurrentNotificationIndex] = useState<
+    number | null
+  >(null);
 
-  const [dismissedNotifications, setDismissedNotifications] = useLocalStorage<string[]>(STORAGE_KEY, []);
+  const [dismissedNotifications, setDismissedNotifications] = useLocalStorage<
+    string[]
+  >(STORAGE_KEY, []);
 
   const isExpired = (notif: SidebarNotification) => {
     if (!notif.createdAt) return false;
@@ -52,10 +63,13 @@ export function SidebarNotifications() {
   // Find the oldest non-dismissed notification on mount or when dismissed list changes
   useEffect(() => {
     const firstAvailableIndex = notifications.findIndex(
-      (notif) => !dismissedNotifications.includes(notif.id) && !isExpired(notif),
+      (notif) =>
+        !dismissedNotifications.includes(notif.id) && !isExpired(notif),
     );
 
-    setCurrentNotificationIndex(firstAvailableIndex === -1 ? null : firstAvailableIndex);
+    setCurrentNotificationIndex(
+      firstAvailableIndex === -1 ? null : firstAvailableIndex,
+    );
   }, [dismissedNotifications]);
 
   const dismissNotification = (id: string) => {
@@ -86,7 +100,9 @@ export function SidebarNotifications() {
       </Button>
       <CardHeader className="px-3 pb-0 pr-6 pt-2.5">
         <CardTitle className="text-sm">{currentNotification.title}</CardTitle>
-        <CardDescription className="mt-1">{currentNotification.description}</CardDescription>
+        <CardDescription className="mt-1">
+          {currentNotification.description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="px-3 pb-2.5 pt-1.5">
         {currentNotification.link &&

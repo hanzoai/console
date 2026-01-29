@@ -2,7 +2,8 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useDebounce } from "./useDebounce";
 
-const getStorageKey = (projectId: string, formId: string) => `hanzo:form-draft:${projectId}:${formId}`;
+const getStorageKey = (projectId: string, formId: string) =>
+  `hanzo:form-draft:${projectId}:${formId}`;
 
 export interface UseFormPersistenceOptions<T extends Record<string, unknown>> {
   formId: string;

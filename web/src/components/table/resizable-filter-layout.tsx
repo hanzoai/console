@@ -2,7 +2,11 @@
 
 import { type PropsWithChildren, Children } from "react";
 import { useMediaQuery } from "react-responsive";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/src/components/ui/resizable";
 import { useDataTableControls } from "./data-table-controls";
 
 /** Resizable layout for filter sidebar and table content.
@@ -24,14 +28,18 @@ export function ResizableFilterLayout({ children }: PropsWithChildren) {
   // If there's only one child, it's the table content (no filter sidebar)
   const hasFilterSidebar = childrenArray.length > 1;
   const filterSidebar = hasFilterSidebar ? childrenArray[0] : null;
-  const tableContent = hasFilterSidebar ? childrenArray.slice(1) : childrenArray;
+  const tableContent = hasFilterSidebar
+    ? childrenArray.slice(1)
+    : childrenArray;
 
   const filterDefault = 15;
   const tableDefault = 85;
 
   // If sidebar is collapsed or doesn't exist, render only the table content
   if (!open || !filterSidebar) {
-    return <div className="flex flex-1 flex-col overflow-hidden">{tableContent}</div>;
+    return (
+      <div className="flex flex-1 flex-col overflow-hidden">{tableContent}</div>
+    );
   }
 
   const autoSaveId = tableName ? `filter-layout-${tableName}` : "filter-layout";
@@ -48,7 +56,9 @@ export function ResizableFilterLayout({ children }: PropsWithChildren) {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={tableDefault} minSize={50}>
-        <div className="flex h-full flex-col overflow-hidden">{tableContent}</div>
+        <div className="flex h-full flex-col overflow-hidden">
+          {tableContent}
+        </div>
       </ResizablePanel>
     </ResizablePanelGroup>
   );

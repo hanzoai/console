@@ -188,7 +188,9 @@ export const ValueCell = memo(
           const stringValue = String(value);
           const needsTruncation = stringValue.length > MAX_CELL_DISPLAY_CHARS;
           const displayValue =
-            needsTruncation && !isCellExpanded ? getTruncatedValue(stringValue, MAX_CELL_DISPLAY_CHARS) : stringValue;
+            needsTruncation && !isCellExpanded
+              ? getTruncatedValue(stringValue, MAX_CELL_DISPLAY_CHARS)
+              : stringValue;
 
           return {
             content: (
@@ -201,22 +203,38 @@ export const ValueCell = memo(
         }
         case "number":
           return {
-            content: <span className="text-blue-600 dark:text-blue-400">{String(value)}</span>,
+            content: (
+              <span className="text-blue-600 dark:text-blue-400">
+                {String(value)}
+              </span>
+            ),
             needsTruncation: false,
           };
         case "boolean":
           return {
-            content: <span className="text-orange-600 dark:text-orange-400">{String(value)}</span>,
+            content: (
+              <span className="text-orange-600 dark:text-orange-400">
+                {String(value)}
+              </span>
+            ),
             needsTruncation: false,
           };
         case "null":
           return {
-            content: <span className="italic text-gray-500 dark:text-gray-400">null</span>,
+            content: (
+              <span className="italic text-gray-500 dark:text-gray-400">
+                null
+              </span>
+            ),
             needsTruncation: false,
           };
         case "undefined":
           return {
-            content: <span className="text-gray-500 dark:text-gray-400">undefined</span>,
+            content: (
+              <span className="text-gray-500 dark:text-gray-400">
+                undefined
+              </span>
+            ),
             needsTruncation: false,
           };
         case "array": {
@@ -239,10 +257,16 @@ export const ValueCell = memo(
           const stringValue = String(value);
           const needsTruncation = stringValue.length > MAX_CELL_DISPLAY_CHARS;
           const displayValue =
-            needsTruncation && !isCellExpanded ? getTruncatedValue(stringValue, MAX_CELL_DISPLAY_CHARS) : stringValue;
+            needsTruncation && !isCellExpanded
+              ? getTruncatedValue(stringValue, MAX_CELL_DISPLAY_CHARS)
+              : stringValue;
 
           return {
-            content: <span className="text-gray-600 dark:text-gray-400">{displayValue}</span>,
+            content: (
+              <span className="text-gray-600 dark:text-gray-400">
+                {displayValue}
+              </span>
+            ),
             needsTruncation,
           };
         }
@@ -277,7 +301,11 @@ export const ValueCell = memo(
           title="Copy value"
           aria-label="Copy cell value"
         >
-          {showCopySuccess ? <Check className="h-2.5 w-2.5 text-green-600" /> : <Copy className="h-2.5 w-2.5" />}
+          {showCopySuccess ? (
+            <Check className="h-2.5 w-2.5 text-green-600" />
+          ) : (
+            <Copy className="h-2.5 w-2.5" />
+          )}
         </Button>
       </div>
     );

@@ -8,7 +8,9 @@ describe("heatmap-utils", () => {
   describe("generateNumericHeatmapData", () => {
     it("should generate correct cell data for a single bin", () => {
       const input = {
-        data: [{ bin_x: 0, bin_y: 0, count: 45, min1: 0, max1: 1, min2: 0, max2: 1 }],
+        data: [
+          { bin_x: 0, bin_y: 0, count: 45, min1: 0, max1: 1, min2: 0, max2: 1 },
+        ],
         nBins: 10,
       };
 
@@ -25,7 +27,9 @@ describe("heatmap-utils", () => {
 
     it("should generate correct labels for numeric bins", () => {
       const input = {
-        data: [{ bin_x: 0, bin_y: 0, count: 10, min1: 0, max1: 1, min2: 0, max2: 1 }],
+        data: [
+          { bin_x: 0, bin_y: 0, count: 10, min1: 0, max1: 1, min2: 0, max2: 1 },
+        ],
         nBins: 10,
       };
 
@@ -70,7 +74,9 @@ describe("heatmap-utils", () => {
 
     it("should format display values based on options", () => {
       const input = {
-        data: [{ bin_x: 0, bin_y: 0, count: 50, min1: 0, max1: 1, min2: 0, max2: 1 }],
+        data: [
+          { bin_x: 0, bin_y: 0, count: 50, min1: 0, max1: 1, min2: 0, max2: 1 },
+        ],
         nBins: 10,
         showCounts: true,
         showPercentages: false,
@@ -83,7 +89,9 @@ describe("heatmap-utils", () => {
 
     it("should include metadata with bin ranges", () => {
       const input = {
-        data: [{ bin_x: 0, bin_y: 0, count: 10, min1: 0, max1: 1, min2: 0, max2: 1 }],
+        data: [
+          { bin_x: 0, bin_y: 0, count: 10, min1: 0, max1: 1, min2: 0, max2: 1 },
+        ],
         nBins: 10,
       };
 
@@ -126,9 +134,13 @@ describe("heatmap-utils", () => {
 
       const result = generateConfusionMatrixData(input);
 
-      const diagonalCell = result.cells.find((c) => c.metadata?.isDiagonal === true);
+      const diagonalCell = result.cells.find(
+        (c) => c.metadata?.isDiagonal === true,
+      );
       expect(diagonalCell).toBeDefined();
-      expect(diagonalCell?.metadata?.rowCategory).toBe(diagonalCell?.metadata?.colCategory);
+      expect(diagonalCell?.metadata?.rowCategory).toBe(
+        diagonalCell?.metadata?.colCategory,
+      );
     });
 
     it("should calculate percentages for confusion matrix", () => {

@@ -4,21 +4,33 @@ import { getPromptByName } from "@/src/features/prompts/server/actions/getPrompt
 import { deletePrompt } from "@/src/features/prompts/server/actions/deletePrompt";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { authorizePromptRequestOrThrow } from "../utils/authorizePromptRequest";
-import { GetPromptByNameSchema, HanzoNotFoundError, PRODUCTION_LABEL } from "@hanzo/shared";
+import {
+  GetPromptByNameSchema,
+  HanzoNotFoundError,
+  PRODUCTION_LABEL,
+} from "@hanzo/shared";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { prisma } from "@hanzo/shared/src/db";
 
-const getPromptNameHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+const getPromptNameHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
   const authCheck = await authorizePromptRequestOrThrow(req);
 
-  const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "prompts");
+  const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(
+    authCheck.scope,
+    "prompts",
+  );
 
   if (rateLimitCheck?.isRateLimited()) {
     return rateLimitCheck.sendRestResponseIfLimited(res);
   }
 
-  const { promptName, version, label, resolve } = GetPromptByNameSchema.parse(req.query);
+  const { promptName, version, label, resolve } = GetPromptByNameSchema.parse(
+    req.query,
+  );
 
   const prompt = await getPromptByName({
     promptName: promptName,
@@ -46,10 +58,16 @@ const getPromptNameHandler = async (req: NextApiRequest, res: NextApiResponse) =
   });
 };
 
-const deletePromptNameHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+const deletePromptNameHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
   const authCheck = await authorizePromptRequestOrThrow(req);
 
-  const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "prompts");
+  const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(
+    authCheck.scope,
+    "prompts",
+  );
 
   if (rateLimitCheck?.isRateLimited()) {
     return rateLimitCheck.sendRestResponseIfLimited(res);

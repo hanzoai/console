@@ -113,7 +113,9 @@ export function JsonRowScrollable({
       />
 
       {/* Copy button (optional, on hover) */}
-      {enableCopy && <CopyButton value={row.value} theme={theme} className="mt-0.5" />}
+      {enableCopy && (
+        <CopyButton value={row.value} theme={theme} className="mt-0.5" />
+      )}
     </div>
   );
 }

@@ -9,7 +9,10 @@ import React, { useMemo } from "react";
 import { DashboardCategoricalScoreAdapter } from "@/src/features/scores/adapters";
 import { type ScoreData } from "@/src/features/scores/types";
 import { CategoricalChart } from "@/src/features/scores/components/ScoreChart";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type QueryType,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 
 export function CategoricalScoreChart(props: {
@@ -50,7 +53,8 @@ export function CategoricalScoreChart(props: {
     ],
     timeDimension: props.agg
       ? {
-          granularity: dashboardDateRangeAggregationSettings[props.agg].dateTrunc ?? "day",
+          granularity:
+            dashboardDateRangeAggregationSettings[props.agg].dateTrunc ?? "day",
         }
       : null,
     fromTimestamp: props.fromTimestamp.toISOString(),

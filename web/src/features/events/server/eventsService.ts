@@ -66,7 +66,8 @@ export async function getEventList(params: GetObservationsListParams) {
     renderingProps: { truncated: true, shouldJsonParse: false },
   };
 
-  const observations = await getObservationsWithModelDataFromEventsTable(queryOpts);
+  const observations =
+    await getObservationsWithModelDataFromEventsTable(queryOpts);
 
   return { observations };
 }
@@ -93,7 +94,9 @@ export async function getEventCount(params: GetObservationsCountParams) {
 /**
  * Get all available filter options for events table
  */
-export async function getEventFilterOptions(params: GetObservationsFilterOptionsParams) {
+export async function getEventFilterOptions(
+  params: GetObservationsFilterOptionsParams,
+) {
   const { projectId, startTimeFilter, hasParentObservation } = params;
 
   // Build filter with optional hasParentObservation for scoping filter options
@@ -178,7 +181,9 @@ export async function getEventFilterOptions(params: GetObservationsFilterOptions
         value: i.modelId as string,
         count: i.count,
       })),
-    name: name.filter((i) => i.name !== null).map((i) => ({ value: i.name as string, count: i.count })),
+    name: name
+      .filter((i) => i.name !== null)
+      .map((i) => ({ value: i.name as string, count: i.count })),
     scores_avg: numericScoreNames.map((score) => score.name),
     score_categories: categoricalScoreNames,
     promptName: promptNames
@@ -269,7 +274,9 @@ interface GetEventBatchIOParams {
 /**
  * Batch fetch input/output and metadata for multiple observations
  */
-export async function getEventBatchIO(params: GetEventBatchIOParams): Promise<Array<EventBatchIOOutput>> {
+export async function getEventBatchIO(
+  params: GetEventBatchIOParams,
+): Promise<Array<EventBatchIOOutput>> {
   return getObservationsBatchIOFromEventsTable({
     projectId: params.projectId,
     observations: params.observations,

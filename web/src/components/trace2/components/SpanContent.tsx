@@ -49,7 +49,13 @@ export function SpanContent({
   className,
 }: SpanContentProps) {
   const { mergedScores } = useTraceData();
-  const { showDuration, showCostTokens, showScores, colorCodeMetrics, showComments } = useViewPreferences();
+  const {
+    showDuration,
+    showCostTokens,
+    showScores,
+    colorCodeMetrics,
+    showComments,
+  } = useViewPreferences();
 
   // Use pre-computed cost from the TreeNode
   const totalCost = node.totalCost;
@@ -61,10 +67,14 @@ export function SpanContent({
         ? node.latency * 1000
         : undefined;
 
-  const shouldRenderDuration = showDuration && Boolean(duration || node.latency);
+  const shouldRenderDuration =
+    showDuration && Boolean(duration || node.latency);
 
   const shouldRenderCostTokens =
-    showCostTokens && Boolean(node.inputUsage || node.outputUsage || node.totalUsage || totalCost);
+    showCostTokens &&
+    Boolean(
+      node.inputUsage || node.outputUsage || node.totalUsage || totalCost,
+    );
 
   const shouldRenderAnyMetrics = shouldRenderDuration || shouldRenderCostTokens;
 
@@ -83,31 +93,40 @@ export function SpanContent({
       }}
       onMouseEnter={onHover}
       title={node.name}
-      className={cn("peer relative flex min-w-0 flex-1 items-start rounded-md py-0.5 pl-1 pr-2 text-left", className)}
+      className={cn(
+        "peer relative flex min-w-0 flex-1 items-start rounded-md py-0.5 pl-1 pr-2 text-left",
+        className,
+      )}
     >
       <div className="flex min-w-0 flex-col">
         {/* Name and badges row */}
         <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-          <span className="flex-shrink truncate text-xs">{node.name || `Unnamed ${node.type.toLowerCase()}`}</span>
+          <span className="flex-shrink truncate text-xs">
+            {node.name || `Unnamed ${node.type.toLowerCase()}`}
+          </span>
 
           <div className="flex items-center gap-x-2">
             {/* Comment count */}
-            {showComments && commentCount !== undefined && <CommentCountIcon count={commentCount} />}
+            {showComments && commentCount !== undefined && (
+              <CommentCountIcon count={commentCount} />
+            )}
 
             {/* Level badge */}
-            {node.type !== "TRACE" && node.level && node.level !== "DEFAULT" && (
-              <div className="flex">
-                <span
-                  className={cn(
-                    "rounded-sm p-0.5 text-xs",
-                    LevelColors[node.level as keyof typeof LevelColors]?.bg,
-                    LevelColors[node.level as keyof typeof LevelColors]?.text,
-                  )}
-                >
-                  {node.level}
-                </span>
-              </div>
-            )}
+            {node.type !== "TRACE" &&
+              node.level &&
+              node.level !== "DEFAULT" && (
+                <div className="flex">
+                  <span
+                    className={cn(
+                      "rounded-sm p-0.5 text-xs",
+                      LevelColors[node.level as keyof typeof LevelColors]?.bg,
+                      LevelColors[node.level as keyof typeof LevelColors]?.text,
+                    )}
+                  >
+                    {node.level}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
 
@@ -128,18 +147,26 @@ export function SpanContent({
                     colorCodeMetrics &&
                     heatMapTextColor({
                       max: parentTotalDuration,
-                      value: duration || (node.latency ? node.latency * 1000 : 0),
+                      value:
+                        duration || (node.latency ? node.latency * 1000 : 0),
                     }),
                 )}
               >
-                {formatIntervalSeconds((duration || (node.latency ? node.latency * 1000 : 0)) / 1000)}
+                {formatIntervalSeconds(
+                  (duration || (node.latency ? node.latency * 1000 : 0)) / 1000,
+                )}
               </span>
             ) : null}
 
             {/* Token counts */}
-            {shouldRenderCostTokens && (node.inputUsage || node.outputUsage || node.totalUsage) ? (
+            {shouldRenderCostTokens &&
+            (node.inputUsage || node.outputUsage || node.totalUsage) ? (
               <span className="text-xs text-muted-foreground">
-                {formatTokenCounts(node.inputUsage, node.outputUsage, node.totalUsage)}
+                {formatTokenCounts(
+                  node.inputUsage,
+                  node.outputUsage,
+                  node.totalUsage,
+                )}
               </span>
             ) : null}
 

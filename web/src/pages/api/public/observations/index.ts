@@ -70,7 +70,11 @@ export default withMiddlewares({
         getObservationsCountForPublicApi(filterProps),
       ]);
       const uniqueModels: string[] = Array.from(
-        new Set(items.map((r) => r.internalModelId).filter((r): r is string => Boolean(r))),
+        new Set(
+          items
+            .map((r) => r.internalModelId)
+            .filter((r): r is string => Boolean(r)),
+        ),
       );
 
       const models =
@@ -96,9 +100,15 @@ export default withMiddlewares({
             return {
               ...i,
               modelId: model?.id ?? null,
-              inputPrice: model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
-              outputPrice: model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
-              totalPrice: model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
+              inputPrice:
+                model?.Price?.find((m) => m.usageType === "input")?.price ??
+                null,
+              outputPrice:
+                model?.Price?.find((m) => m.usageType === "output")?.price ??
+                null,
+              totalPrice:
+                model?.Price?.find((m) => m.usageType === "total")?.price ??
+                null,
             };
           })
           .map(transformDbToApiObservation),

@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "@/src/utils/api";
-import { type views, type metricAggregations, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type views,
+  type metricAggregations,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 import { type z } from "zod/v4";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { type FilterState, type OrderByState } from "@hanzo/shared";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
-import { PencilIcon, TrashIcon, CopyIcon, GripVerticalIcon, Loader2 } from "lucide-react";
+import {
+  PencilIcon,
+  TrashIcon,
+  CopyIcon,
+  GripVerticalIcon,
+  Loader2,
+} from "lucide-react";
 import { useRouter } from "next/router";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
@@ -50,14 +60,20 @@ export function DashboardWidget({
       enabled: Boolean(projectId),
     },
   );
-  const hasCUDAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) && dashboardOwner !== "HANZO";
+  const hasCUDAccess =
+    useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) &&
+    dashboardOwner !== "HANZO";
 
-  const fromTimestamp = dateRange ? dateRange.from : new Date(new Date().getTime() - 1000);
+  const fromTimestamp = dateRange
+    ? dateRange.from
+    : new Date(new Date().getTime() - 1000);
   const toTimestamp = dateRange ? dateRange.to : new Date();
 
   // Initialize sort state for pivot tables
   const defaultSort =
-    widget.data?.chartConfig.type === "PIVOT_TABLE" ? widget.data?.chartConfig.defaultSort : undefined;
+    widget.data?.chartConfig.type === "PIVOT_TABLE"
+      ? widget.data?.chartConfig.defaultSort
+      : undefined;
 
   const [sortState, setSortState] = useState<OrderByState | null>(() => {
     return defaultSort || null;
@@ -88,9 +104,16 @@ export function DashboardWidget({
           })) ?? [],
         filters: [
           ...(widget.data?.filters ?? []),
-          ...mapLegacyUiTableFilterToView((widget.data?.view as z.infer<typeof views>) ?? "traces", filterState),
+          ...mapLegacyUiTableFilterToView(
+            (widget.data?.view as z.infer<typeof views>) ?? "traces",
+            filterState,
+          ),
         ],
-        timeDimension: isTimeSeriesChart(widget.data?.chartType ?? "LINE_TIME_SERIES") ? { granularity: "auto" } : null,
+        timeDimension: isTimeSeriesChart(
+          widget.data?.chartType ?? "LINE_TIME_SERIES",
+        )
+          ? { granularity: "auto" }
+          : null,
         fromTimestamp: fromTimestamp.toISOString(),
         toTimestamp: toTimestamp.toISOString(),
         orderBy:
@@ -126,7 +149,9 @@ export function DashboardWidget({
         // using the metric field names passed via chartConfig
         return {
           dimension:
-            widget.data.dimensions.length > 0 ? (widget.data.dimensions[0]?.field ?? "dimension") : "dimension", // Fallback for compatibility
+            widget.data.dimensions.length > 0
+              ? (widget.data.dimensions[0]?.field ?? "dimension")
+              : "dimension", // Fallback for compatibility
           metric: 0, // Placeholder - not used for pivot tables
           time_dimension: item["time_dimension"],
           // Include all original query fields for pivot table processing
@@ -142,33 +167,41 @@ export function DashboardWidget({
       const metricField = `${metric.agg}_${metric.measure}`;
       const metricValue = item[metricField];
 
-      const dimensionField = widget.data.dimensions.slice().shift()?.field ?? "none";
+      const dimensionField =
+        widget.data.dimensions.slice().shift()?.field ?? "none";
       return {
         dimension:
           item[dimensionField] !== undefined
             ? (() => {
                 const val = item[dimensionField];
                 if (typeof val === "string") return val;
-                if (val === null || val === undefined || val === "") return "n/a";
+                if (val === null || val === undefined || val === "")
+                  return "n/a";
                 if (Array.isArray(val)) return val.join(", ");
                 // Objects / numbers / booleans are stringified to avoid React key issues
                 return String(val);
               })()
             : formatMetricName(metricField),
-        metric: Array.isArray(metricValue) ? metricValue : Number(metricValue || 0),
+        metric: Array.isArray(metricValue)
+          ? metricValue
+          : Number(metricValue || 0),
         time_dimension: item["time_dimension"],
       };
     });
   }, [queryResult.data, widget.data]);
 
   const handleEdit = () => {
-    router.push(`/project/${projectId}/widgets/${placement.widgetId}?dashboardId=${dashboardId}`);
+    router.push(
+      `/project/${projectId}/widgets/${placement.widgetId}?dashboardId=${dashboardId}`,
+    );
   };
 
   const copyMutation = api.dashboardWidgets.copyToProject.useMutation({
     onSuccess: (data) => {
       utils.dashboard.getDashboard.invalidate().then(() => {
-        router.push(`/project/${projectId}/widgets/${data.widgetId}?dashboardId=${dashboardId}`);
+        router.push(
+          `/project/${projectId}/widgets/${data.widgetId}?dashboardId=${dashboardId}`,
+        );
       });
     },
     onError: (e) => {
@@ -192,7 +225,9 @@ export function DashboardWidget({
 
   if (widget.isPending) {
     return (
-      <div className={`flex items-center justify-center rounded-lg border bg-background p-4`}>
+      <div
+        className={`flex items-center justify-center rounded-lg border bg-background p-4`}
+      >
         <div className="text-muted-foreground">Loading...</div>
       </div>
     );
@@ -200,17 +235,24 @@ export function DashboardWidget({
 
   if (!widget.data) {
     return (
-      <div className={`flex items-center justify-center rounded-lg border bg-background p-4`}>
+      <div
+        className={`flex items-center justify-center rounded-lg border bg-background p-4`}
+      >
         <div className="text-muted-foreground">Widget not found</div>
       </div>
     );
   }
 
   return (
-    <div className={`group flex h-full w-full flex-col overflow-hidden rounded-lg border bg-background p-4`}>
+    <div
+      className={`group flex h-full w-full flex-col overflow-hidden rounded-lg border bg-background p-4`}
+    >
       <div className="flex items-center justify-between">
         <span className="truncate font-medium" title={widget.data.name}>
-          {widget.data.name} {dashboardOwner === "PROJECT" && widget.data.owner === "HANZO" ? " ( 🪢 )" : null}
+          {widget.data.name}{" "}
+          {dashboardOwner === "PROJECT" && widget.data.owner === "HANZO"
+            ? " ( 🪢 )"
+            : null}
         </span>
         <div className="flex space-x-2">
           {hasCUDAccess && (
@@ -247,15 +289,26 @@ export function DashboardWidget({
           )}
           {/* Download button or loading indicator - always available */}
           {queryResult.isPending ? (
-            <div className="text-muted-foreground" aria-label="Loading chart data" title="Loading...">
+            <div
+              className="text-muted-foreground"
+              aria-label="Loading chart data"
+              title="Loading..."
+            >
               <Loader2 size={16} className="animate-spin" />
             </div>
           ) : (
-            <DownloadButton data={transformedData} fileName={widget.data.name} className="hidden group-hover:block" />
+            <DownloadButton
+              data={transformedData}
+              fileName={widget.data.name}
+              className="hidden group-hover:block"
+            />
           )}
         </div>
       </div>
-      <div className="mb-4 truncate text-sm text-muted-foreground" title={widget.data.description}>
+      <div
+        className="mb-4 truncate text-sm text-muted-foreground"
+        title={widget.data.description}
+      >
         {widget.data.description}
       </div>
       <div className="min-h-0 flex-1">
@@ -263,7 +316,8 @@ export function DashboardWidget({
           chartType={widget.data.chartType}
           data={transformedData}
           rowLimit={
-            widget.data.chartConfig.type === "LINE_TIME_SERIES" || widget.data.chartConfig.type === "BAR_TIME_SERIES"
+            widget.data.chartConfig.type === "LINE_TIME_SERIES" ||
+            widget.data.chartConfig.type === "BAR_TIME_SERIES"
               ? 100
               : (widget.data.chartConfig.row_limit ?? 100)
           }
@@ -272,11 +326,17 @@ export function DashboardWidget({
             // For PIVOT_TABLE, enhance chartConfig with dimensions and metric field names
             ...(widget.data.chartType === "PIVOT_TABLE" && {
               dimensions: widget.data.dimensions.map((dim) => dim.field),
-              metrics: widget.data.metrics.map((metric) => `${metric.agg}_${metric.measure}`),
+              metrics: widget.data.metrics.map(
+                (metric) => `${metric.agg}_${metric.measure}`,
+              ),
             }),
           }}
-          sortState={widget.data.chartType === "PIVOT_TABLE" ? sortState : undefined}
-          onSortChange={widget.data.chartType === "PIVOT_TABLE" ? updateSort : undefined}
+          sortState={
+            widget.data.chartType === "PIVOT_TABLE" ? sortState : undefined
+          }
+          onSortChange={
+            widget.data.chartType === "PIVOT_TABLE" ? updateSort : undefined
+          }
           isLoading={queryResult.isPending}
         />
       </div>

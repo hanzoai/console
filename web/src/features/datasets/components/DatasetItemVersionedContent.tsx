@@ -1,6 +1,9 @@
 import { DatasetItemDiffView } from "./DatasetItemDiffView";
 import type { DatasetItemDomain } from "@hanzo/shared";
-import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
+import {
+  stringifyDatasetItemData,
+  type DatasetSchema,
+} from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
 
 type DatasetItemVersionedContentProps = {
@@ -37,9 +40,12 @@ export const DatasetItemVersionedContent = ({
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="text-muted-foreground">
-          <p className="text-lg font-medium">Item does not exist at this version</p>
+          <p className="text-lg font-medium">
+            Item does not exist at this version
+          </p>
           <p className="mt-2 text-sm">
-            This dataset item either had not been created yet or was deleted at the selected version timestamp.
+            This dataset item either had not been created yet or was deleted at
+            the selected version timestamp.
           </p>
         </div>
       </div>
@@ -58,20 +64,29 @@ export const DatasetItemVersionedContent = ({
         <div className="flex flex-col items-center justify-center p-12 text-center">
           <div className="text-muted-foreground">
             <p className="text-lg font-medium">Cannot show diff</p>
-            <p className="mt-2 text-sm">The latest version of this item does not exist (has been deleted).</p>
+            <p className="mt-2 text-sm">
+              The latest version of this item does not exist (has been deleted).
+            </p>
           </div>
         </div>
       );
     }
 
-    return <DatasetItemDiffView selectedVersion={itemAtVersion} latestVersion={latestItem} />;
+    return (
+      <DatasetItemDiffView
+        selectedVersion={itemAtVersion}
+        latestVersion={latestItem}
+      />
+    );
   }
 
   // Show normal view of selected version
   return (
     <DatasetItemFields
       inputValue={stringifyDatasetItemData(itemAtVersion.input)}
-      expectedOutputValue={stringifyDatasetItemData(itemAtVersion.expectedOutput)}
+      expectedOutputValue={stringifyDatasetItemData(
+        itemAtVersion.expectedOutput,
+      )}
       metadataValue={stringifyDatasetItemData(itemAtVersion.metadata)}
       dataset={dataset}
       editable={false}

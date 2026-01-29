@@ -22,8 +22,16 @@ import {
   type UIModelParams,
 } from "@hanzo/shared";
 import { InfoIcon, Settings2 } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 
 import { LLMApiKeyComponent } from "./LLMApiKeyComponent";
 import { FormDescription } from "@/src/components/ui/form";
@@ -34,7 +42,10 @@ export type ModelParamsContext = {
   availableProviders: string[];
   availableModels: string[];
   providerModelCombinations: string[];
-  updateModelParamValue: <Key extends keyof UIModelParams>(key: Key, value: UIModelParams[Key]["value"]) => void;
+  updateModelParamValue: <Key extends keyof UIModelParams>(
+    key: Key,
+    value: UIModelParams[Key]["value"],
+  ) => void;
   setModelParamEnabled?: (key: keyof UIModelParams, enabled: boolean) => void;
   formDisabled?: boolean;
   modelParamsDescription?: string;
@@ -60,11 +71,14 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false);
   const [modelSettingsUsed, setModelSettingsUsed] = useState(false);
 
-  const [createLlmApiKeyDialogOpen, setCreateLlmApiKeyDialogOpen] = useState(false);
+  const [createLlmApiKeyDialogOpen, setCreateLlmApiKeyDialogOpen] =
+    useState(false);
 
   useEffect(() => {
     const hasEnabledModelSetting = Object.keys(modelParams).some(
-      (key) => !["adapter", "provider", "model"].includes(key) && modelParams[key as keyof typeof modelParams].enabled,
+      (key) =>
+        !["adapter", "provider", "model"].includes(key) &&
+        modelParams[key as keyof typeof modelParams].enabled,
     );
 
     if (hasEnabledModelSetting) {
@@ -87,7 +101,10 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
           </div>
         )}
         <p className="text-xs">No LLM API key set in project. </p>
-        <CreateLLMApiKeyDialog open={createLlmApiKeyDialogOpen} setOpen={setCreateLlmApiKeyDialogOpen} />
+        <CreateLLMApiKeyDialog
+          open={createLlmApiKeyDialogOpen}
+          setOpen={setCreateLlmApiKeyDialogOpen}
+        />
       </div>
     );
   }
@@ -96,15 +113,28 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
   const SettingsButton = (
     <Popover open={modelSettingsOpen} onOpenChange={setModelSettingsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon" className="relative h-7 w-7" disabled={formDisabled}>
+        <Button
+          variant="outline"
+          size="icon"
+          className="relative h-7 w-7"
+          disabled={formDisabled}
+        >
           <Settings2 size={14} />
-          {modelSettingsUsed && <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-primary" />}
+          {modelSettingsUsed && (
+            <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-primary" />
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-4" align={layout === "compact" ? "start" : "end"} sideOffset={5}>
+      <PopoverContent
+        className="p-4"
+        align={layout === "compact" ? "start" : "end"}
+        sideOffset={5}
+      >
         <div className="mb-3">
           <h4 className="mb-1 text-sm font-medium">Model Advanced Settings</h4>
-          <p className="text-xs text-muted-foreground">Configure advanced parameters for your model.</p>
+          <p className="text-xs text-muted-foreground">
+            Configure advanced parameters for your model.
+          </p>
         </div>
         <div className="space-y-4">
           <ModelParamsSlider
@@ -182,7 +212,11 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
       <div className="flex flex-col space-y-2 pb-1 pr-1 pt-2">
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1 space-y-1">
-            <Select disabled={formDisabled} onValueChange={handleCombinedSelection} value={currentCombinedValue}>
+            <Select
+              disabled={formDisabled}
+              onValueChange={handleCombinedSelection}
+              value={currentCombinedValue}
+            >
               <SelectTrigger className="h-8">
                 <SelectValue />
               </SelectTrigger>
@@ -193,11 +227,16 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
                   </SelectItem>
                 ))}
                 <SelectSeparator />
-                <CreateLLMApiKeyDialog open={createLlmApiKeyDialogOpen} setOpen={setCreateLlmApiKeyDialogOpen} />
+                <CreateLLMApiKeyDialog
+                  open={createLlmApiKeyDialogOpen}
+                  setOpen={setCreateLlmApiKeyDialogOpen}
+                />
               </SelectContent>
             </Select>
             {modelParamsDescription ? (
-              <FormDescription className="mt-1 text-xs">{modelParamsDescription}</FormDescription>
+              <FormDescription className="mt-1 text-xs">
+                {modelParamsDescription}
+              </FormDescription>
             ) : undefined}
           </div>
           <div className="flex-shrink-0">{SettingsButton}</div>
@@ -205,8 +244,9 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
 
         {modelParams.model.value?.startsWith("o1-") ? (
           <p className="mt-1 text-xs text-dark-yellow">
-            For {modelParams.model.value}, the system message and the temperature, max_tokens and top_p setting are not
-            supported while it is in beta.{" "}
+            For {modelParams.model.value}, the system message and the
+            temperature, max_tokens and top_p setting are not supported while it
+            is in beta.{" "}
             <a
               href="https://platform.openai.com/docs/guides/reasoning/beta-limitations"
               target="_blank"
@@ -222,7 +262,9 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
 
   // Vertical layout (default) - existing behavior
   return (
-    <div className={cn("flex flex-col", !isEmbedded && "space-y-2 pb-1 pr-1 pt-2")}>
+    <div
+      className={cn("flex flex-col", !isEmbedded && "space-y-2 pb-1 pr-1 pt-2")}
+    >
       {!isEmbedded ? (
         <div className="flex items-center justify-between">
           {customHeader ? customHeader : <p className="font-semibold">Model</p>}
@@ -279,7 +321,8 @@ const ModelParamsSelect = ({
   modelParamsDescription,
   layout = "vertical",
 }: ModelParamsSelectProps) => {
-  const [createLlmApiKeyDialogOpen, setCreateLlmApiKeyDialogOpen] = useState(false);
+  const [createLlmApiKeyDialogOpen, setCreateLlmApiKeyDialogOpen] =
+    useState(false);
 
   // Compact layout - simplified, space-efficient (no individual labels)
   if (layout === "compact") {
@@ -288,7 +331,10 @@ const ModelParamsSelect = ({
         <Select
           disabled={disabled}
           onValueChange={(value) =>
-            updateModelParam(modelParamsKey, value as (typeof supportedModels)[LLMAdapter][number])
+            updateModelParam(
+              modelParamsKey,
+              value as (typeof supportedModels)[LLMAdapter][number],
+            )
           }
           value={value}
         >
@@ -302,11 +348,16 @@ const ModelParamsSelect = ({
               </SelectItem>
             ))}
             <SelectSeparator />
-            <CreateLLMApiKeyDialog open={createLlmApiKeyDialogOpen} setOpen={setCreateLlmApiKeyDialogOpen} />
+            <CreateLLMApiKeyDialog
+              open={createLlmApiKeyDialogOpen}
+              setOpen={setCreateLlmApiKeyDialogOpen}
+            />
           </SelectContent>
         </Select>
         {modelParamsDescription ? (
-          <FormDescription className="mt-1 text-xs">{modelParamsDescription}</FormDescription>
+          <FormDescription className="mt-1 text-xs">
+            {modelParamsDescription}
+          </FormDescription>
         ) : undefined}
       </div>
     );
@@ -316,13 +367,23 @@ const ModelParamsSelect = ({
   return (
     <div className="flex items-center gap-4">
       <div className="w-24 flex-shrink-0">
-        <p className={cn("text-xs font-semibold", disabled && "text-muted-foreground")}>{title}</p>
+        <p
+          className={cn(
+            "text-xs font-semibold",
+            disabled && "text-muted-foreground",
+          )}
+        >
+          {title}
+        </p>
       </div>
       <div className="flex-1">
         <Select
           disabled={disabled}
           onValueChange={(value) =>
-            updateModelParam(modelParamsKey, value as (typeof supportedModels)[LLMAdapter][number])
+            updateModelParam(
+              modelParamsKey,
+              value as (typeof supportedModels)[LLMAdapter][number],
+            )
           }
           value={value}
         >
@@ -336,11 +397,16 @@ const ModelParamsSelect = ({
               </SelectItem>
             ))}
             <SelectSeparator />
-            <CreateLLMApiKeyDialog open={createLlmApiKeyDialogOpen} setOpen={setCreateLlmApiKeyDialogOpen} />
+            <CreateLLMApiKeyDialog
+              open={createLlmApiKeyDialogOpen}
+              setOpen={setCreateLlmApiKeyDialogOpen}
+            />
           </SelectContent>
         </Select>
         {modelParamsDescription ? (
-          <FormDescription className="mt-1 text-xs">{modelParamsDescription}</FormDescription>
+          <FormDescription className="mt-1 text-xs">
+            {modelParamsDescription}
+          </FormDescription>
         ) : undefined}
       </div>
     </div>
@@ -376,7 +442,12 @@ const ModelParamsSlider = ({
   return (
     <div className="space-y-3" title={tooltip}>
       <div className="flex flex-row">
-        <p className={cn("flex-1 text-xs font-semibold", (!enabled || formDisabled) && "text-muted-foreground")}>
+        <p
+          className={cn(
+            "flex-1 text-xs font-semibold",
+            (!enabled || formDisabled) && "text-muted-foreground",
+          )}
+        >
           {title}
         </p>
         <div className="flex flex-row space-x-3">
@@ -389,7 +460,10 @@ const ModelParamsSlider = ({
             step={step}
             value={value}
             onChange={(event) => {
-              updateModelParam(modelParamsKey, Math.max(Math.min(parseFloat(event.target.value), max), min));
+              updateModelParam(
+                modelParamsKey,
+                Math.max(Math.min(parseFloat(event.target.value), max), min),
+              );
             }}
           />
           {setModelParamEnabled ? (
@@ -410,7 +484,8 @@ const ModelParamsSlider = ({
         max={max}
         step={step}
         onValueChange={(value) => {
-          if (value[0] !== undefined) updateModelParam(modelParamsKey, value[0]);
+          if (value[0] !== undefined)
+            updateModelParam(modelParamsKey, value[0]);
         }}
         value={[value]}
       />
@@ -432,7 +507,9 @@ const ProviderOptionsInput = ({
   enabled,
   formDisabled,
 }: ProviderOptionsInputProps) => {
-  const [inputValue, setInputValue] = useState<string>(value ? JSON.stringify(value, null, 2) : "{}");
+  const [inputValue, setInputValue] = useState<string>(
+    value ? JSON.stringify(value, null, 2) : "{}",
+  );
   const [error, setError] = useState<string | null>(null);
 
   return (
@@ -442,7 +519,12 @@ const ProviderOptionsInput = ({
     >
       <div className="flex flex-row">
         <div className="flex-1 flex-row space-x-1">
-          <span className={cn("text-xs font-semibold", (!enabled || formDisabled) && "text-muted-foreground")}>
+          <span
+            className={cn(
+              "text-xs font-semibold",
+              (!enabled || formDisabled) && "text-muted-foreground",
+            )}
+          >
             Additional options
           </span>
           <Tooltip>
@@ -450,8 +532,8 @@ const ProviderOptionsInput = ({
               <InfoIcon className="size-3 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent className="max-w-[200px] p-2">
-              Additional options to pass to the invocation. Please check your provider&apos;s API reference for
-              supported values.
+              Additional options to pass to the invocation. Please check your
+              provider&apos;s API reference for supported values.
             </TooltipContent>
           </Tooltip>
         </div>

@@ -37,7 +37,11 @@ export const DatasetItemIOCell = ({
   return (
     <IOTableCell
       isLoading={datasetItem.isLoading}
-      data={io === "expectedOutput" ? datasetItem.data?.expectedOutput : datasetItem.data?.input}
+      data={
+        io === "expectedOutput"
+          ? datasetItem.data?.expectedOutput
+          : datasetItem.data?.input
+      }
       singleLine={singleLine}
     />
   );
@@ -61,7 +65,9 @@ export const TraceObservationIOCell = ({
   singleLine?: boolean;
 }) => {
   // Subtract 1 day from the fromTimestamp as a buffer in case the trace happened before the run
-  const fromTimestampModified = new Date(fromTimestamp.getTime() - 24 * 60 * 60 * 1000);
+  const fromTimestampModified = new Date(
+    fromTimestamp.getTime() - 24 * 60 * 60 * 1000,
+  );
 
   // conditionally fetch the trace or observation depending on the presence of observationId
   const trace = api.traces.byId.useQuery(
@@ -89,12 +95,18 @@ export const TraceObservationIOCell = ({
 
   const isLoading = !!observationId ? observation.isLoading : trace.isLoading;
 
-  const { isSilentError } = useTrpcError(!!observationId ? observation.error : trace.error, silentHttpCodes);
+  const { isSilentError } = useTrpcError(
+    !!observationId ? observation.error : trace.error,
+    silentHttpCodes,
+  );
 
   const data = observationId === undefined ? trace.data : observation.data;
 
   return isSilentError ? (
-    <NotFoundCard itemType={!!observationId ? "observation" : "trace"} singleLine={singleLine} />
+    <NotFoundCard
+      itemType={!!observationId ? "observation" : "trace"}
+      singleLine={singleLine}
+    />
   ) : (
     <MemoizedIOTableCell
       isLoading={isLoading || !data}

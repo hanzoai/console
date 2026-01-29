@@ -26,7 +26,13 @@ export interface HeatmapSkeletonProps {
  * @param seed - Random seed for variation on each component mount
  * @returns Opacity value as number (0-1 range)
  */
-function getCellOpacity(row: number, col: number, rows: number, cols: number, seed: number): number {
+function getCellOpacity(
+  row: number,
+  col: number,
+  rows: number,
+  cols: number,
+  seed: number,
+): number {
   // Normalize to 0-1 range
   const normalizedRow = row / (rows - 1);
   const normalizedCol = col / (cols - 1);
@@ -90,7 +96,9 @@ export function HeatmapSkeleton({
 
   // Calculate cell dimensions - EXACT MATCH from Heatmap.tsx lines 99-102
   const cellWidth = "minmax(32px, 1fr)"; // Can grow wide
-  const cellHeight = cellHeightProp ? `${cellHeightProp}px` : "minmax(24px, 40px)"; // Compact vertical space
+  const cellHeight = cellHeightProp
+    ? `${cellHeightProp}px`
+    : "minmax(24px, 40px)"; // Compact vertical space
 
   // Dynamic width for row labels (average of 36-120px range)
   const rowLabelsWidth = 60;

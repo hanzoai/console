@@ -9,7 +9,11 @@ type TagCommandItemProps = {
   setSelectedTags: (value: string[]) => void;
 };
 
-const TagCommandItem = ({ value, selectedTags, setSelectedTags }: TagCommandItemProps) => {
+const TagCommandItem = ({
+  value,
+  selectedTags,
+  setSelectedTags,
+}: TagCommandItemProps) => {
   const capture = usePostHogClientCapture();
   return (
     <InputCommandItem

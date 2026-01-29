@@ -1,1 +1,4 @@
-export const availableFlags = ["templateFlag", "excludeClickhouseRead"] as const;
+export const availableFlags = [
+  "templateFlag",
+  "excludeClickhouseRead",
+] as const;

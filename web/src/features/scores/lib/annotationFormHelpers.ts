@@ -1,7 +1,17 @@
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
-import { isPresent, type ScoreConfigDataType, type ScoreConfigCategoryDomain } from "@hanzo/shared";
+import {
+  isPresent,
+  type ScoreConfigDataType,
+  type ScoreConfigCategoryDomain,
+} from "@hanzo/shared";
 
-export const resolveConfigValue = ({ name, dataType }: { name: string; dataType: ScoreConfigDataType }) => {
+export const resolveConfigValue = ({
+  name,
+  dataType,
+}: {
+  name: string;
+  dataType: ScoreConfigDataType;
+}) => {
   return `${getScoreDataTypeIcon(dataType)} ${name}`;
 };
 
@@ -14,7 +24,10 @@ export const validateNumericScore = ({
   minValue?: number | null;
   maxValue?: number | null;
 }): string | null => {
-  if ((isPresent(maxValue) && Number(value) > maxValue) || (isPresent(minValue) && Number(value) < minValue)) {
+  if (
+    (isPresent(maxValue) && Number(value) > maxValue) ||
+    (isPresent(minValue) && Number(value) < minValue)
+  ) {
     return `Not in range: [${minValue ?? "-∞"},${maxValue ?? "∞"}]`;
   }
   return null;

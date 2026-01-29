@@ -22,7 +22,8 @@ describe("mentionParser", () => {
       });
 
       it("should extract multiple mentions", () => {
-        const content = "@[Alice](user:alice123) and @[Bob](user:bob456) please review";
+        const content =
+          "@[Alice](user:alice123) and @[Bob](user:bob456) please review";
         const result = extractUniqueMentionedUserIds(content);
 
         expect(result).toEqual(["alice123", "bob456"]);
@@ -73,7 +74,8 @@ describe("mentionParser", () => {
       });
 
       it("should handle mentions in middle of long text", () => {
-        const content = "This is a long text with @[Alice](user:alice123) mentioned somewhere in the middle of it all.";
+        const content =
+          "This is a long text with @[Alice](user:alice123) mentioned somewhere in the middle of it all.";
         const result = extractUniqueMentionedUserIds(content);
 
         expect(result).toEqual(["alice123"]);
@@ -199,7 +201,10 @@ describe("mentionParser", () => {
 
       it("should enforce maximum of 50 mentions", () => {
         // Create content with 52 mentions
-        const mentions = Array.from({ length: 52 }, (_, i) => `@[User${i}](user:user${i})`).join(" ");
+        const mentions = Array.from(
+          { length: 52 },
+          (_, i) => `@[User${i}](user:user${i})`,
+        ).join(" ");
 
         const result = extractUniqueMentionedUserIds(mentions);
 
@@ -231,7 +236,8 @@ describe("mentionParser", () => {
       });
 
       it("should handle newlines in content", () => {
-        const content = "First line @[Alice](user:alice123)\nSecond line @[Bob](user:bob456)";
+        const content =
+          "First line @[Alice](user:alice123)\nSecond line @[Bob](user:bob456)";
         const result = extractUniqueMentionedUserIds(content);
 
         expect(result).toEqual(["alice123", "bob456"]);
@@ -265,7 +271,8 @@ describe("mentionParser", () => {
 
       it("should handle pathological regex patterns efficiently", () => {
         // Pattern that could cause catastrophic backtracking in poorly designed regex
-        const content = "@[" + "A".repeat(50) + "[" + "B".repeat(50) + "](user:test)";
+        const content =
+          "@[" + "A".repeat(50) + "[" + "B".repeat(50) + "](user:test)";
 
         const startTime = Date.now();
         void extractUniqueMentionedUserIds(content);
@@ -276,7 +283,10 @@ describe("mentionParser", () => {
 
       it("should handle very large input efficiently", () => {
         // Create 10KB of text with scattered mentions
-        const largeContent = "Lorem ipsum ".repeat(800) + "@[Alice](user:alice123) " + "dolor sit amet ".repeat(800);
+        const largeContent =
+          "Lorem ipsum ".repeat(800) +
+          "@[Alice](user:alice123) " +
+          "dolor sit amet ".repeat(800);
 
         const startTime = Date.now();
         const result = extractUniqueMentionedUserIds(largeContent);
@@ -302,7 +312,9 @@ describe("mentionParser", () => {
         const content = "Hey @[FakeAdmin](user:alice123), can you help?";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("Hey @[Alice Smith](user:alice123), can you help?");
+        expect(result.sanitizedContent).toBe(
+          "Hey @[Alice Smith](user:alice123), can you help?",
+        );
         expect(result.validMentionedUserIds).toEqual(["alice123"]);
       });
 
@@ -310,14 +322,18 @@ describe("mentionParser", () => {
         const content = "@[RandomName](user:bob456) please review";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("@[Bob Jones](user:bob456) please review");
+        expect(result.sanitizedContent).toBe(
+          "@[Bob Jones](user:bob456) please review",
+        );
       });
 
       it("should fall back to email when name is null", () => {
         const content = "@[SomeName](user:noname789) check this";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("@[noname@example.com](user:noname789) check this");
+        expect(result.sanitizedContent).toBe(
+          "@[noname@example.com](user:noname789) check this",
+        );
       });
 
       it("should fall back to 'User' when both name and email are null", () => {
@@ -338,10 +354,13 @@ describe("mentionParser", () => {
       });
 
       it("should handle mixed valid and invalid mentions", () => {
-        const content = "@[Alice](user:alice123) and @[Nobody](user:invalid) review";
+        const content =
+          "@[Alice](user:alice123) and @[Nobody](user:invalid) review";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123) and Nobody review");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123) and Nobody review",
+        );
         expect(result.validMentionedUserIds).toEqual(["alice123"]);
       });
 
@@ -360,14 +379,18 @@ describe("mentionParser", () => {
         const result = sanitizeMentions(content, mockMembers);
 
         // Should replace with actual user's name
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123) approved this");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123) approved this",
+        );
       });
 
       it("should prevent email impersonation", () => {
         const content = "@[support@company.com](user:alice123) says";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123) says");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123) says",
+        );
       });
 
       it("should prevent Unicode lookalike attacks", () => {
@@ -376,7 +399,9 @@ describe("mentionParser", () => {
         const result = sanitizeMentions(content, mockMembers);
 
         // Should use canonical name from DB
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123) approved");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123) approved",
+        );
       });
     });
 
@@ -406,34 +431,48 @@ describe("mentionParser", () => {
       });
 
       it("should preserve order of validMentionedUserIds", () => {
-        const content = "@[Alice](user:alice123) then @[Bob](user:bob456) then @[Alice](user:noname789)";
+        const content =
+          "@[Alice](user:alice123) then @[Bob](user:bob456) then @[Alice](user:noname789)";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.validMentionedUserIds).toEqual(["alice123", "bob456", "noname789"]);
+        expect(result.validMentionedUserIds).toEqual([
+          "alice123",
+          "bob456",
+          "noname789",
+        ]);
       });
 
       it("should deduplicate user IDs in validMentionedUserIds", () => {
-        const content = "@[Alice](user:alice123) and @[Alice Again](user:alice123)";
+        const content =
+          "@[Alice](user:alice123) and @[Alice Again](user:alice123)";
         const result = sanitizeMentions(content, mockMembers);
 
         // Should normalize both but only list user ID once
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123) and @[Alice Smith](user:alice123)");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123) and @[Alice Smith](user:alice123)",
+        );
         expect(result.validMentionedUserIds).toEqual(["alice123"]);
       });
 
       it("should handle mentions at different positions correctly", () => {
-        const content = "@[Alice](user:alice123) start, middle @[Bob](user:bob456) end @[NoName](user:noname789)";
+        const content =
+          "@[Alice](user:alice123) start, middle @[Bob](user:bob456) end @[NoName](user:noname789)";
         const result = sanitizeMentions(content, mockMembers);
 
         expect(result.sanitizedContent).toBe(
           "@[Alice Smith](user:alice123) start, middle @[Bob Jones](user:bob456) end @[noname@example.com](user:noname789)",
         );
-        expect(result.validMentionedUserIds).toEqual(["alice123", "bob456", "noname789"]);
+        expect(result.validMentionedUserIds).toEqual([
+          "alice123",
+          "bob456",
+          "noname789",
+        ]);
       });
 
       it("should correctly handle string indices when replacing multiple mentions", () => {
         // This tests that replacements don't mess up subsequent indices
-        const content = "A @[User1](user:alice123) B @[User2](user:bob456) C @[User3](user:noname789) D";
+        const content =
+          "A @[User1](user:alice123) B @[User2](user:bob456) C @[User3](user:noname789) D";
         const result = sanitizeMentions(content, mockMembers);
 
         expect(result.sanitizedContent).toBe(
@@ -445,18 +484,23 @@ describe("mentionParser", () => {
         const content = "@[Alice](user:alice123)@[Bob](user:bob456)";
         const result = sanitizeMentions(content, mockMembers);
 
-        expect(result.sanitizedContent).toBe("@[Alice Smith](user:alice123)@[Bob Jones](user:bob456)");
+        expect(result.sanitizedContent).toBe(
+          "@[Alice Smith](user:alice123)@[Bob Jones](user:bob456)",
+        );
       });
     });
 
     describe("performance", () => {
       it("should handle large project member list efficiently", () => {
         // Create 1000 mock members
-        const largeMembers: ProjectMember[] = Array.from({ length: 1000 }, (_, i) => ({
-          id: `user${i}`,
-          name: `User ${i}`,
-          email: `user${i}@example.com`,
-        }));
+        const largeMembers: ProjectMember[] = Array.from(
+          { length: 1000 },
+          (_, i) => ({
+            id: `user${i}`,
+            name: `User ${i}`,
+            email: `user${i}@example.com`,
+          }),
+        );
 
         const content = "@[Someone](user:user500) check this";
 
@@ -470,7 +514,10 @@ describe("mentionParser", () => {
 
       it("should handle many mentions efficiently", () => {
         // Create content with 50 mentions (max allowed)
-        const mentions = Array.from({ length: 50 }, (_, i) => `@[User${i}](user:alice123)`).join(" ");
+        const mentions = Array.from(
+          { length: 50 },
+          (_, i) => `@[User${i}](user:alice123)`,
+        ).join(" ");
 
         const startTime = Date.now();
         const result = sanitizeMentions(mentions, mockMembers);

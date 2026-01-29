@@ -47,8 +47,16 @@ export function selectionToPath(
 
   // Single row case: start and end in same key-value element
   if (startKeyValue === endKeyValue) {
-    let startOffset = calculateOffset(range.startContainer, range.startOffset, startKeyValue);
-    let endOffset = calculateOffset(range.endContainer, range.endOffset, startKeyValue);
+    let startOffset = calculateOffset(
+      range.startContainer,
+      range.startOffset,
+      startKeyValue,
+    );
+    let endOffset = calculateOffset(
+      range.endContainer,
+      range.endOffset,
+      startKeyValue,
+    );
 
     // Normalize: ensure start <= end (handle backwards selection)
     if (startOffset > endOffset) {
@@ -141,8 +149,16 @@ function findKeyValueElement(node: Node): HTMLElement | null {
   return null;
 }
 
-function calculateOffset(container: Node, offset: number, keyValueElement: HTMLElement): number {
-  const walker = document.createTreeWalker(keyValueElement, NodeFilter.SHOW_TEXT, null);
+function calculateOffset(
+  container: Node,
+  offset: number,
+  keyValueElement: HTMLElement,
+): number {
+  const walker = document.createTreeWalker(
+    keyValueElement,
+    NodeFilter.SHOW_TEXT,
+    null,
+  );
   let charCount = 0;
   let node = walker.nextNode();
 
@@ -162,7 +178,11 @@ function calculateOffset(container: Node, offset: number, keyValueElement: HTMLE
  */
 function getRowTextLength(keyValueElement: HTMLElement): number {
   let length = 0;
-  const walker = document.createTreeWalker(keyValueElement, NodeFilter.SHOW_TEXT, null);
+  const walker = document.createTreeWalker(
+    keyValueElement,
+    NodeFilter.SHOW_TEXT,
+    null,
+  );
   let node = walker.nextNode();
   while (node) {
     length += node.textContent?.length || 0;
@@ -175,8 +195,14 @@ function getRowTextLength(keyValueElement: HTMLElement): number {
  * Collects all row elements between startRow and endRow (inclusive).
  * Handles both forward and backward selections.
  */
-function collectRowsBetween(startRow: HTMLElement, endRow: HTMLElement, container: HTMLElement): HTMLElement[] {
-  const allRows = Array.from(container.querySelectorAll<HTMLElement>("[data-json-key-value]"));
+function collectRowsBetween(
+  startRow: HTMLElement,
+  endRow: HTMLElement,
+  container: HTMLElement,
+): HTMLElement[] {
+  const allRows = Array.from(
+    container.querySelectorAll<HTMLElement>("[data-json-key-value]"),
+  );
 
   const startIdx = allRows.indexOf(startRow);
   const endIdx = allRows.indexOf(endRow);
@@ -184,7 +210,8 @@ function collectRowsBetween(startRow: HTMLElement, endRow: HTMLElement, containe
   if (startIdx === -1 || endIdx === -1) return [];
 
   // Handle backwards selection
-  const [minIdx, maxIdx] = startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx];
+  const [minIdx, maxIdx] =
+    startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx];
 
   return allRows.slice(minIdx, maxIdx + 1);
 }

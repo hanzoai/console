@@ -5,11 +5,16 @@ import { logger, redis } from "@hanzo/shared/src/server";
 import { z } from "zod";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   await runMiddleware(req, res, cors);
 
   if (!["GET", "DELETE", "PATCH", "PUT"].includes(req.method || "")) {
-    logger.error(`Method not allowed for ${req.method} on /api/public/scim/Users/[id]`);
+    logger.error(
+      `Method not allowed for ${req.method} on /api/public/scim/Users/[id]`,
+    );
     return res.status(405).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
       detail: "Method not allowed",
@@ -18,7 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(
+    prisma,
+    redis,
+  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     return res.status(401).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
@@ -29,10 +37,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // END CHECK AUTH
 
   // Check if using an organization API key
-  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
+  if (
+    authCheck.scope.accessLevel !== "organization" ||
+    !authCheck.scope.orgId
+  ) {
     return res.status(403).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
-      detail: "Invalid API key. Organization-scoped API key required for this operation.",
+      detail:
+        "Invalid API key. Organization-scoped API key required for this operation.",
       status: 403,
     });
   }
@@ -76,7 +88,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
     }
   } catch (error) {
-    logger.error(`Error handling SCIM user ${req.query.id} for ${req.method}`, error);
+    logger.error(
+      `Error handling SCIM user ${req.query.id} for ${req.method}`,
+      error,
+    );
     return res.status(500).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
       detail: "Internal server error",
@@ -86,7 +101,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 // GET - Retrieve a specific user
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: User, orgId: string) {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User,
+  orgId: string,
+) {
   // For GET operations, verify the user is a member of the organization
   const orgMembership = await prisma.organizationMembership.findFirst({
     where: {
@@ -129,7 +149,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: User, 
 
 // PATCH - Update user details (Use only for deprovisioning for now)
 // Payload is a string like: "{\"schemas\":[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"],\"Operations\":[{\"op\":\"replace\",\"value\":{\"active\":false}}]}"
-async function handlePatch(req: NextApiRequest, res: NextApiResponse, user: User, orgId: string) {
+async function handlePatch(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User,
+  orgId: string,
+) {
   let body = req.body;
 
   // Check if body is a string and parse it
@@ -158,24 +183,33 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse, user: User
     );
     return res.status(400).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
-      detail: "Invalid request body. Must include 'schemas' with 'urn:ietf:params:scim:api:messages:2.0:PatchOp'.",
+      detail:
+        "Invalid request body. Must include 'schemas' with 'urn:ietf:params:scim:api:messages:2.0:PatchOp'.",
       status: 400,
     });
   }
 
   // Check for operations
   if (!body.Operations || !Array.isArray(body.Operations)) {
-    logger.warn("Invalid request body. Must include 'Operations' array with at least one operation.", body);
+    logger.warn(
+      "Invalid request body. Must include 'Operations' array with at least one operation.",
+      body,
+    );
     return res.status(400).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
-      detail: "Invalid request body. Must include 'Operations' array with at least one operation.",
+      detail:
+        "Invalid request body. Must include 'Operations' array with at least one operation.",
       status: 400,
     });
   }
 
   // Process each operation
   for (const op of body.Operations) {
-    if (op.op === "replace" && op.value && typeof op.value.active === "boolean") {
+    if (
+      op.op === "replace" &&
+      op.value &&
+      typeof op.value.active === "boolean"
+    ) {
       if (op.value.active) {
         // Provision the user by adding them to the organization
         await prisma.organizationMembership.upsert({
@@ -219,7 +253,12 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse, user: User
 }
 
 // PUT - Update user details
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: User, orgId: string) {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User,
+  orgId: string,
+) {
   let body = req.body;
 
   // Check if body is a string and parse it
@@ -248,7 +287,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: User, 
     );
     return res.status(400).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
-      detail: "Invalid request body. Must include 'schemas' with 'urn:ietf:params:scim:schemas:core:2.0:User'.",
+      detail:
+        "Invalid request body. Must include 'schemas' with 'urn:ietf:params:scim:schemas:core:2.0:User'.",
       status: 400,
     });
   }
@@ -259,7 +299,9 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: User, 
       // Determine role from roles array if provided
       let role: Role = "NONE";
       if (body.roles && Array.isArray(body.roles) && body.roles.length > 0) {
-        const roleSchema = z.array(z.enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"]));
+        const roleSchema = z.array(
+          z.enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"]),
+        );
         const parsedRoles = roleSchema.safeParse(body.roles);
         if (parsedRoles.success) {
           // Use the first valid role
@@ -314,7 +356,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: User, 
 }
 
 // DELETE - Remove user from organization
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: User, orgId: string) {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: User,
+  orgId: string,
+) {
   // Delete just removes the user from the organization
   await prisma.organizationMembership.deleteMany({
     where: {

@@ -5,14 +5,28 @@ import { Button } from "@/src/components/ui/button";
 import { Command as CommandPrimitive } from "cmdk";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
-type TagInputProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
+type TagInputProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Input
+> & {
   selectedTags: string[];
   setSelectedTags?: (tags: string[]) => void;
   allowTagRemoval?: boolean;
 };
 
-export const TagInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, TagInputProps>(
-  ({ className, selectedTags, setSelectedTags, allowTagRemoval = false, ...props }, ref) => {
+export const TagInput = React.forwardRef<
+  React.ElementRef<typeof CommandPrimitive.Input>,
+  TagInputProps
+>(
+  (
+    {
+      className,
+      selectedTags,
+      setSelectedTags,
+      allowTagRemoval = false,
+      ...props
+    },
+    ref,
+  ) => {
     const capture = usePostHogClientCapture();
 
     const removeTag = (tagToRemove: string) => {
@@ -25,7 +39,10 @@ export const TagInput = React.forwardRef<React.ElementRef<typeof CommandPrimitiv
     };
 
     return (
-      <div className="flex flex-wrap items-center overflow-auto rounded-lg border px-2" cmdk-input-wrapper="">
+      <div
+        className="flex flex-wrap items-center overflow-auto rounded-lg border px-2"
+        cmdk-input-wrapper=""
+      >
         {selectedTags.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-2">
             {selectedTags.map((tag: string) => (
@@ -34,7 +51,9 @@ export const TagInput = React.forwardRef<React.ElementRef<typeof CommandPrimitiv
                 variant="tertiary"
                 size="icon-sm"
                 disabled={!allowTagRemoval}
-                className={allowTagRemoval ? "cursor-pointer" : "cursor-default"}
+                className={
+                  allowTagRemoval ? "cursor-pointer" : "cursor-default"
+                }
                 onClick={allowTagRemoval ? () => removeTag(tag) : undefined}
               >
                 {tag}

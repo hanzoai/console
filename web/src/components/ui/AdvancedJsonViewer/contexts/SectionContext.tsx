@@ -21,7 +21,11 @@ export interface SectionContextProviderProps {
 /**
  * Provides section context to header/footer components
  */
-export function SectionContextProvider({ tree, onToggle, children }: SectionContextProviderProps) {
+export function SectionContextProvider({
+  tree,
+  onToggle,
+  children,
+}: SectionContextProviderProps) {
   const contextMap = useMemo(() => {
     const map: SectionContextMap = {};
     const sectionKeys = getSectionKeys(tree);
@@ -44,7 +48,11 @@ export function SectionContextProvider({ tree, onToggle, children }: SectionCont
     return map;
   }, [tree, onToggle]);
 
-  return <SectionContextMapContext.Provider value={contextMap}>{children}</SectionContextMapContext.Provider>;
+  return (
+    <SectionContextMapContext.Provider value={contextMap}>
+      {children}
+    </SectionContextMapContext.Provider>
+  );
 }
 
 /**

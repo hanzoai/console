@@ -17,14 +17,18 @@ interface AnalyticsEvent {
 /**
  * Send analytics event to Hanzo Analytics API
  */
-export async function trackServerEvent(eventName: string, eventData?: Record<string, unknown>) {
+export async function trackServerEvent(
+  eventName: string,
+  eventData?: Record<string, unknown>,
+) {
   // Only track if analytics is configured
   const siteId = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_SITE_ID;
   if (!siteId) {
     return;
   }
 
-  const analyticsUrl = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://a.hanzo.ai";
+  const analyticsUrl =
+    process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://a.hanzo.ai";
   const collectEndpoint = `${analyticsUrl}/api/send`;
 
   const payload: AnalyticsEvent = {
@@ -50,7 +54,9 @@ export async function trackServerEvent(eventName: string, eventData?: Record<str
     });
 
     if (!response.ok) {
-      console.error(`[Analytics] Failed to track event: ${response.status} ${response.statusText}`);
+      console.error(
+        `[Analytics] Failed to track event: ${response.status} ${response.statusText}`,
+      );
     }
   } catch (error) {
     console.error("[Analytics] Error tracking event:", error);
@@ -80,7 +86,11 @@ export const serverBillingAnalytics = {
     await trackServerEvent("subscription_updated", data);
   },
 
-  subscriptionDeleted: async (data: { orgId: string; planName?: string; stripeProductId?: string }) => {
+  subscriptionDeleted: async (data: {
+    orgId: string;
+    planName?: string;
+    stripeProductId?: string;
+  }) => {
     await trackServerEvent("subscription_deleted", data);
   },
 
@@ -93,7 +103,11 @@ export const serverBillingAnalytics = {
     await trackServerEvent("payment_succeeded", data);
   },
 
-  creditsAdded: async (data: { orgId: string; amount: number; credits: number }) => {
+  creditsAdded: async (data: {
+    orgId: string;
+    amount: number;
+    credits: number;
+  }) => {
     await trackServerEvent("credits_added", data);
   },
 };

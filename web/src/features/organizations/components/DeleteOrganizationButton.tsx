@@ -9,7 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { api } from "@/src/utils/api";
 import * as z from "zod/v4";
@@ -25,7 +31,8 @@ export function DeleteOrganizationButton() {
   const capture = usePostHogClientCapture();
 
   const organization = useQueryOrganization();
-  const confirmMessage = organization?.name.replaceAll(" ", "-").toLowerCase() ?? "organization";
+  const confirmMessage =
+    organization?.name.replaceAll(" ", "-").toLowerCase() ?? "organization";
 
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
@@ -75,7 +82,9 @@ export function DeleteOrganizationButton() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Delete Organization</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Delete Organization
+          </DialogTitle>
           <DialogDescription>
             {hasProjects
               ? "You can only delete an organization if it has no projects associated with it. Please delete or transfer all projects first. Deleting projects may take a few minutes."

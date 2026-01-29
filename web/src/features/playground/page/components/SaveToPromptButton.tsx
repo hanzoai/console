@@ -11,8 +11,17 @@ import {
   InputCommandItem,
   InputCommandList,
 } from "@/src/components/ui/input-command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { usePlaygroundContext } from "@/src/features/playground/page/context";
 import usePlaygroundCache from "@/src/features/playground/page/hooks/usePlaygroundCache";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -26,9 +35,12 @@ interface SaveToPromptButtonProps {
   className?: string;
 }
 
-export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ className }) => {
+export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
+  className,
+}) => {
   const [selectedPromptId, setSelectedPromptId] = useState("");
-  const { modelParams, messages, output, promptVariables } = usePlaygroundContext();
+  const { modelParams, messages, output, promptVariables } =
+    usePlaygroundContext();
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const projectId = useProjectIdFromURL();
@@ -58,7 +70,9 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
       promptVariables,
     });
 
-    await router.push(`/project/${projectId}/prompts/new?loadPlaygroundCache=true`);
+    await router.push(
+      `/project/${projectId}/prompts/new?loadPlaygroundCache=true`,
+    );
   };
 
   const handleNewPromptVersion = async () => {
@@ -71,7 +85,9 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
       promptVariables,
     });
 
-    await router.push(`/project/${projectId}/prompts/new?promptId=${selectedPromptId}&loadPlaygroundCache=true`);
+    await router.push(
+      `/project/${projectId}/prompts/new?promptId=${selectedPromptId}&loadPlaygroundCache=true`,
+    );
   };
 
   return (
@@ -80,7 +96,13 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("h-7 gap-1.5 px-2.5 text-xs @xl:hidden", className)}>
+              <Button
+                variant="outline"
+                className={cn(
+                  "h-7 gap-1.5 px-2.5 text-xs @xl:hidden",
+                  className,
+                )}
+              >
                 <Save size={14} />
                 <span className="sr-only">Save as prompt</span>
               </Button>
@@ -89,7 +111,13 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
           <TooltipContent className="text-xs">Save as prompt</TooltipContent>
         </Tooltip>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={cn("hidden h-7 gap-1.5 px-2.5 text-xs @xl:flex", className)}>
+          <Button
+            variant="outline"
+            className={cn(
+              "hidden h-7 gap-1.5 px-2.5 text-xs @xl:flex",
+              className,
+            )}
+          >
             <Save size={14} />
             <span>Save as prompt</span>
           </Button>
@@ -100,7 +128,10 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
           </Button>
           <Divider />
           <InputCommand className="min-h-[8rem]">
-            <InputCommandInput placeholder="Search chat prompts..." variant="bottom" />
+            <InputCommandInput
+              placeholder="Search chat prompts..."
+              variant="bottom"
+            />
             <InputCommandEmpty>
               No chat prompt found
               <DocPopup description="Prompts from the playground can only be saved to 'chat' prompts as they include multiple system/user messages." />
@@ -114,21 +145,36 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({ classNam
                     value={chatPrompt.name}
                     onSelect={(currentValue) => {
                       const promptId =
-                        allChatPromptNamesWithIds.find((prompt) => prompt.name === currentValue)?.id ?? "";
+                        allChatPromptNamesWithIds.find(
+                          (prompt) => prompt.name === currentValue,
+                        )?.id ?? "";
 
-                      setSelectedPromptId(promptId === selectedPromptId ? "" : promptId);
+                      setSelectedPromptId(
+                        promptId === selectedPromptId ? "" : promptId,
+                      );
                     }}
                   >
                     <Check
-                      className={cn("mr-2 h-4 w-4", selectedPromptId === chatPrompt.id ? "opacity-100" : "opacity-0")}
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedPromptId === chatPrompt.id
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
                     />
-                    <span className="overflow-hidden text-ellipsis whitespace-nowrap">{chatPrompt.name}</span>
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      {chatPrompt.name}
+                    </span>
                   </InputCommandItem>
                 ))}
               </InputCommandList>
             </InputCommandGroup>
           </InputCommand>
-          <Button className="mt-2 w-full" disabled={!Boolean(selectedPromptId)} onClick={handleNewPromptVersion}>
+          <Button
+            className="mt-2 w-full"
+            disabled={!Boolean(selectedPromptId)}
+            onClick={handleNewPromptVersion}
+          >
             Save as new prompt version
           </Button>
         </PopoverContent>

@@ -2,8 +2,18 @@ import { isPrismaException } from "@/src/utils/exceptions";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { type ZodError } from "zod/v4";
-import { BaseError, HanzoNotFoundError, MethodNotAllowedError, UnauthorizedError } from "@hanzo/shared";
-import { logger, traceException, contextWithHanzoProps, ClickHouseResourceError } from "@hanzo/shared/src/server";
+import {
+  BaseError,
+  HanzoNotFoundError,
+  MethodNotAllowedError,
+  UnauthorizedError,
+} from "@hanzo/shared";
+import {
+  logger,
+  traceException,
+  contextWithHanzoProps,
+  ClickHouseResourceError,
+} from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -11,7 +21,10 @@ import * as opentelemetry from "@opentelemetry/api";
 export const httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 export type HttpMethod = (typeof httpMethods)[number];
 type Handlers = {
-  [Method in HttpMethod]?: (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+  [Method in HttpMethod]?: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+  ) => Promise<void>;
 };
 
 const defaultHandler = () => {
@@ -49,7 +62,10 @@ export function withMiddlewares(handlers: Handlers) {
 
         return await finalHandlers[method](req, res);
       } catch (error) {
-        if (error instanceof HanzoNotFoundError || error instanceof UnauthorizedError) {
+        if (
+          error instanceof HanzoNotFoundError ||
+          error instanceof UnauthorizedError
+        ) {
           logger.info(error);
         } else {
           logger.error(error);
@@ -100,7 +116,10 @@ export function withMiddlewares(handlers: Handlers) {
         traceException(error);
         return res.status(500).json({
           message: "Internal Server Error",
-          error: error instanceof Error ? error.message : "An unknown error occurred",
+          error:
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred",
         });
       }
     });

@@ -1,7 +1,10 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
+import {
+  DataTableControlsProvider,
+  DataTableControls,
+} from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import TableLink from "@/src/components/table/table-link";
 import { type HanzoColumnDef } from "@/src/components/table/types";
@@ -9,7 +12,10 @@ import { IOTableCell } from "../../ui/IOTableCell";
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { useSidebarFilterState } from "@/src/features/filters/hooks/useSidebarFilterState";
-import { scoreFilterConfig, SCORE_COLUMN_TO_BACKEND_KEY } from "@/src/features/filters/config/scores-config";
+import {
+  scoreFilterConfig,
+  SCORE_COLUMN_TO_BACKEND_KEY,
+} from "@/src/features/filters/config/scores-config";
 import { transformFiltersForBackend } from "@/src/features/filters/lib/filter-transform";
 import { isNumericDataType } from "@/src/features/scores/lib/helpers";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
@@ -70,7 +76,10 @@ export type ScoresTableRow = {
   executionTraceId?: string;
 };
 
-function createFilterState(userFilterState: FilterState, omittedFilters: Record<string, string>[]): FilterState {
+function createFilterState(
+  userFilterState: FilterState,
+  omittedFilters: Record<string, string>[],
+): FilterState {
   return omittedFilters.reduce((filterState, { key, value }) => {
     return filterState.concat([
       {
@@ -136,22 +145,25 @@ export default function ScoresTable({
       ]
     : [];
 
-  const environmentFilterOptions = api.projects.environmentFilterOptions.useQuery(
-    {
-      projectId,
-      fromTimestamp: dateRange?.from,
-    },
-    {
-      trpc: { context: { skipBatch: true } },
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      staleTime: Infinity,
-    },
-  );
+  const environmentFilterOptions =
+    api.projects.environmentFilterOptions.useQuery(
+      {
+        projectId,
+        fromTimestamp: dateRange?.from,
+      },
+      {
+        trpc: { context: { skipBatch: true } },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+      },
+    );
 
   const environmentOptions = React.useMemo(
-    () => environmentFilterOptions.data?.map((value) => value.environment) ?? undefined,
+    () =>
+      environmentFilterOptions.data?.map((value) => value.environment) ??
+      undefined,
     [environmentFilterOptions.data],
   );
 
@@ -195,7 +207,10 @@ export default function ScoresTable({
   const filterOptions = api.scores.filterOptions.useQuery(
     {
       projectId,
-      timestampFilter: dateRangeFilter.length > 0 ? (dateRangeFilter as TimeFilter[]) : undefined,
+      timestampFilter:
+        dateRangeFilter.length > 0
+          ? (dateRangeFilter as TimeFilter[])
+          : undefined,
     },
     {
       trpc: {
@@ -252,13 +267,21 @@ export default function ScoresTable({
   const queryFilterRef = useRef(queryFilter);
   queryFilterRef.current = queryFilter;
 
-  const setFiltersWrapper = useCallback((filters: FilterState) => queryFilterRef.current?.setFilterState(filters), []);
+  const setFiltersWrapper = useCallback(
+    (filters: FilterState) => queryFilterRef.current?.setFilterState(filters),
+    [],
+  );
 
-  const filterState = createFilterState(queryFilter.filterState.concat(dateRangeFilter), [
-    ...(userId ? [{ key: "User ID", value: userId }] : []),
-    ...(traceId ? [{ key: "Trace ID", value: traceId }] : []),
-    ...(observationId ? [{ key: "Observation ID", value: observationId }] : []),
-  ]);
+  const filterState = createFilterState(
+    queryFilter.filterState.concat(dateRangeFilter),
+    [
+      ...(userId ? [{ key: "User ID", value: userId }] : []),
+      ...(traceId ? [{ key: "Trace ID", value: traceId }] : []),
+      ...(observationId
+        ? [{ key: "Observation ID", value: observationId }]
+        : []),
+    ],
+  );
 
   const backendFilterState = transformFiltersForBackend(
     filterState,
@@ -309,7 +332,9 @@ export default function ScoresTable({
       enableHiding: true,
       cell: ({ row }) => {
         const value = row.getValue("id");
-        return typeof value === "string" ? <TableIdOrName value={value} /> : undefined;
+        return typeof value === "string" ? (
+          <TableIdOrName value={value} />
+        ) : undefined;
       },
     },
     {
@@ -321,9 +346,14 @@ export default function ScoresTable({
       size: 150,
       cell: ({ row }) => {
         const value = row.getValue("traceName") as ScoresTableRow["traceName"];
-        const filter = encodeURIComponent(`name;stringOptions;;any of;${value}`);
+        const filter = encodeURIComponent(
+          `name;stringOptions;;any of;${value}`,
+        );
         return value ? (
-          <TableLink path={`/project/${projectId}/traces?filter=${value ? filter : ""}`} value={value} />
+          <TableLink
+            path={`/project/${projectId}/traces?filter=${value ? filter : ""}`}
+            value={value}
+          />
         ) : undefined;
       },
     },
@@ -338,7 +368,10 @@ export default function ScoresTable({
         const value = row.getValue("traceId");
         return typeof value === "string" ? (
           <>
-            <TableLink path={`/project/${projectId}/traces/${encodeURIComponent(value)}`} value={value} />
+            <TableLink
+              path={`/project/${projectId}/traces/${encodeURIComponent(value)}`}
+              value={value}
+            />
           </>
         ) : undefined;
       },
@@ -354,7 +387,10 @@ export default function ScoresTable({
       cell: ({ row }) => {
         const value = row.getValue("executionTraceId");
         return typeof value === "string" ? (
-          <TableLink path={`/project/${projectId}/traces/${encodeURIComponent(value)}`} value={value} />
+          <TableLink
+            path={`/project/${projectId}/traces/${encodeURIComponent(value)}`}
+            value={value}
+          />
         ) : undefined;
       },
     },
@@ -365,7 +401,9 @@ export default function ScoresTable({
       enableSorting: true,
       size: 100,
       cell: ({ row }) => {
-        const observationId = row.getValue("observationId") as ScoresTableRow["observationId"];
+        const observationId = row.getValue(
+          "observationId",
+        ) as ScoresTableRow["observationId"];
         const traceId = row.getValue("traceId") as ScoresTableRow["traceId"];
         return traceId && observationId ? (
           <TableLink
@@ -385,7 +423,10 @@ export default function ScoresTable({
       cell: ({ row }) => {
         const value = row.getValue("sessionId");
         return typeof value === "string" ? (
-          <TableLink path={`/project/${projectId}/sessions/${encodeURIComponent(value)}`} value={value} />
+          <TableLink
+            path={`/project/${projectId}/sessions/${encodeURIComponent(value)}`}
+            value={value}
+          />
         ) : undefined;
       },
     },
@@ -398,7 +439,10 @@ export default function ScoresTable({
       cell: ({ row }) => {
         const value = row.getValue("environment") as string | undefined;
         return value ? (
-          <Badge variant="secondary" className="max-w-fit truncate rounded-sm px-1 font-normal">
+          <Badge
+            variant="secondary"
+            className="max-w-fit truncate rounded-sm px-1 font-normal"
+          >
             {value}
           </Badge>
         ) : null;
@@ -419,7 +463,10 @@ export default function ScoresTable({
         const value = row.getValue("userId");
         return typeof value === "string" ? (
           <>
-            <TableLink path={`/project/${projectId}/users/${encodeURIComponent(value)}`} value={value} />
+            <TableLink
+              path={`/project/${projectId}/users/${encodeURIComponent(value)}`}
+              value={value}
+            />
           </>
         ) : undefined;
       },
@@ -480,7 +527,13 @@ export default function ScoresTable({
       },
       cell: ({ row }) => {
         const scoreId: ScoresTableRow["id"] = row.getValue("id");
-        return <ScoresMetadataCell scoreId={scoreId} projectId={projectId} singleLine={rowHeight === "s"} />;
+        return (
+          <ScoresMetadataCell
+            scoreId={scoreId}
+            projectId={projectId}
+            singleLine={rowHeight === "s"}
+          />
+        );
       },
       enableHiding: true,
     },
@@ -492,7 +545,9 @@ export default function ScoresTable({
       size: 400,
       cell: ({ row }) => {
         const value = row.getValue("comment") as ScoresTableRow["comment"];
-        return !!value && <IOTableCell data={value} singleLine={rowHeight === "s"} />;
+        return (
+          !!value && <IOTableCell data={value} singleLine={rowHeight === "s"} />
+        );
       },
     },
     {
@@ -502,11 +557,16 @@ export default function ScoresTable({
       enableHiding: true,
       size: 150,
       cell: ({ row }) => {
-        const { userId, name, image } = row.getValue("author") as ScoresTableRow["author"];
+        const { userId, name, image } = row.getValue(
+          "author",
+        ) as ScoresTableRow["author"];
         return (
           <div className="flex items-center space-x-2">
             <Avatar className="h-7 w-7">
-              <AvatarImage src={image ?? undefined} alt={name ?? "User Avatar"} />
+              <AvatarImage
+                src={image ?? undefined}
+                alt={name ?? "User Avatar"}
+              />
             </Avatar>
             <span>{name ?? userId}</span>
           </div>
@@ -528,7 +588,10 @@ export default function ScoresTable({
         const value = row.getValue("jobConfigurationId");
         return typeof value === "string" ? (
           <>
-            <TableLink path={`/project/${projectId}/evals/${value}`} value={value} />
+            <TableLink
+              path={`/project/${projectId}/evals/${value}`}
+              value={value}
+            />
           </>
         ) : undefined;
       },
@@ -544,7 +607,12 @@ export default function ScoresTable({
         const traceTags: string[] | undefined = row.getValue("traceTags");
         return (
           traceTags && (
-            <div className={cn("flex gap-x-2 gap-y-1", rowHeight !== "s" && "flex-wrap")}>
+            <div
+              className={cn(
+                "flex gap-x-2 gap-y-1",
+                rowHeight !== "s" && "flex-wrap",
+              )}
+            >
               <TagList selectedTags={traceTags} isLoading={false} viewOnly />
             </div>
           )
@@ -572,19 +640,24 @@ export default function ScoresTable({
       : []),
   ];
 
-  const columns = rawColumns.filter((c) => !!c.id && !hiddenColumns.includes(c.id));
-
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<ScoresTableRow>(
-    "scoresColumnVisibility" + localStorageSuffix,
-    columns,
+  const columns = rawColumns.filter(
+    (c) => !!c.id && !hiddenColumns.includes(c.id),
   );
+
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<ScoresTableRow>(
+      "scoresColumnVisibility" + localStorageSuffix,
+      columns,
+    );
 
   const [columnOrder, setColumnOrder] = useColumnOrder<ScoresTableRow>(
     `scoresColumnOrder${localStorageSuffix}`,
     columns,
   );
 
-  const convertToTableRow = (score: RouterOutput["scores"]["all"]["scores"][0]): ScoresTableRow => {
+  const convertToTableRow = (
+    score: RouterOutput["scores"]["all"]["scores"][0],
+  ): ScoresTableRow => {
     return {
       id: score.id,
       timestamp: score.timestamp,
@@ -651,8 +724,9 @@ export default function ScoresTable({
             controllers: viewControllers,
           }}
           actionButtons={[
-            Object.keys(selectedRows).filter((scoreId) => scores.data?.scores.map((s) => s.id).includes(scoreId))
-              .length > 0 ? (
+            Object.keys(selectedRows).filter((scoreId) =>
+              scores.data?.scores.map((s) => s.id).includes(scoreId),
+            ).length > 0 ? (
               <TableActionMenu
                 key="scores-multi-select-actions"
                 projectId={projectId}
@@ -748,5 +822,11 @@ const ScoresMetadataCell = ({
       refetchOnMount: false, // prevents refetching loops
     },
   );
-  return <IOTableCell isLoading={score.isPending} data={score.data?.metadata} singleLine={singleLine} />;
+  return (
+    <IOTableCell
+      isLoading={score.isPending}
+      data={score.data?.metadata}
+      singleLine={singleLine}
+    />
+  );
 };

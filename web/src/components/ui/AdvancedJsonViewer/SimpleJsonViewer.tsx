@@ -68,7 +68,12 @@ export const SimpleJsonViewer = memo(function SimpleJsonViewer({
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Layout calculations (widths, heights, column sizes)
-  const { maxLineNumberDigits, fixedColumnWidth, scrollableMinWidth, scrollableMaxWidth } = useJsonViewerLayout({
+  const {
+    maxLineNumberDigits,
+    fixedColumnWidth,
+    scrollableMinWidth,
+    scrollableMaxWidth,
+  } = useJsonViewerLayout({
     tree,
     expansionVersion,
     theme,
@@ -79,11 +84,18 @@ export const SimpleJsonViewer = memo(function SimpleJsonViewer({
   });
 
   // Search-related calculations
-  const { matchMap, currentMatch, currentMatchIndexInRow } = useJsonSearch(searchMatches, currentMatchIndex);
+  const { matchMap, currentMatch, currentMatchIndexInRow } = useJsonSearch(
+    searchMatches,
+    currentMatchIndex,
+  );
 
   // Scroll to match when search navigation occurs
   useEffect(() => {
-    if (scrollToIndex !== undefined && scrollToIndex >= 0 && scrollToIndex < effectiveRows.length) {
+    if (
+      scrollToIndex !== undefined &&
+      scrollToIndex >= 0 &&
+      scrollToIndex < effectiveRows.length
+    ) {
       const row = effectiveRows[scrollToIndex];
       if (row) {
         const element = rowRefs.current.get(row.id);
@@ -154,7 +166,9 @@ export const SimpleJsonViewer = memo(function SimpleJsonViewer({
                   searchMatch={searchMatch}
                   isCurrentMatch={isCurrentMatch}
                   matchCount={matchCount}
-                  currentMatchIndexInRow={isCurrentMatch ? currentMatchIndexInRow : undefined}
+                  currentMatchIndexInRow={
+                    isCurrentMatch ? currentMatchIndexInRow : undefined
+                  }
                   onToggleExpansion={onToggleExpansion}
                   stringWrapMode={stringWrapMode}
                 />
@@ -164,8 +178,12 @@ export const SimpleJsonViewer = memo(function SimpleJsonViewer({
               <div
                 style={{
                   width: "fit-content",
-                  minWidth: scrollableMinWidth ? `${scrollableMinWidth}px` : undefined,
-                  maxWidth: scrollableMaxWidth ? `${scrollableMaxWidth}px` : undefined,
+                  minWidth: scrollableMinWidth
+                    ? `${scrollableMinWidth}px`
+                    : undefined,
+                  maxWidth: scrollableMaxWidth
+                    ? `${scrollableMaxWidth}px`
+                    : undefined,
                 }}
               >
                 <JsonRowScrollable

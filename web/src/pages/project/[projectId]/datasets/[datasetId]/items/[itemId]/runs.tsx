@@ -10,8 +10,15 @@ function DatasetItemRuns() {
   const itemId = router.query.itemId as string;
 
   return (
-    <DatasetItemDetailPage withPadding={false} activeTab={DATASET_ITEM_TABS.RUNS}>
-      <DatasetRunItemsByItemTable projectId={projectId} datasetItemId={itemId} datasetId={datasetId} />
+    <DatasetItemDetailPage
+      withPadding={false}
+      activeTab={DATASET_ITEM_TABS.RUNS}
+    >
+      <DatasetRunItemsByItemTable
+        projectId={projectId}
+        datasetItemId={itemId}
+        datasetId={datasetId}
+      />
     </DatasetItemDetailPage>
   );
 }

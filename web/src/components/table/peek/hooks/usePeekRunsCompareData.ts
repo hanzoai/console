@@ -10,7 +10,9 @@ type UsePeekRunsCompareDataProps = {
 };
 
 // Ensure runs is always an array - handle case where URL param comes as string
-const safeParseUrlParamToArray = (runs?: string[] | string): string[] | undefined => {
+const safeParseUrlParamToArray = (
+  runs?: string[] | string,
+): string[] | undefined => {
   if (!runs) return undefined;
   return Array.isArray(runs) ? runs : [runs];
 };
@@ -60,7 +62,8 @@ export const usePeekRunsCompareData = ({
       datasetRunIds: parsedRuns,
     },
     {
-      enabled: !!datasetId && !!datasetItemId && !!parsedRuns && parsedRuns.length > 0,
+      enabled:
+        !!datasetId && !!datasetItemId && !!parsedRuns && parsedRuns.length > 0,
     },
   );
 

@@ -1,5 +1,13 @@
-import { InvalidRequestError, PRODUCTION_LABEL, type Prompt } from "@hanzo/shared";
-import { PromptService, redis, recordIncrement } from "@hanzo/shared/src/server";
+import {
+  InvalidRequestError,
+  PRODUCTION_LABEL,
+  type Prompt,
+} from "@hanzo/shared";
+import {
+  PromptService,
+  redis,
+  recordIncrement,
+} from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 
 type GetPromptByNameParams = {
@@ -10,10 +18,13 @@ type GetPromptByNameParams = {
   resolve?: boolean; // If false, returns raw prompt without resolving dependencies
 };
 
-export const getPromptByName = async (params: GetPromptByNameParams): Promise<Prompt | null> => {
+export const getPromptByName = async (
+  params: GetPromptByNameParams,
+): Promise<Prompt | null> => {
   const { promptName, projectId, version, label, resolve = true } = params;
 
-  if (version && label) throw new InvalidRequestError("Cannot specify both version and label");
+  if (version && label)
+    throw new InvalidRequestError("Cannot specify both version and label");
 
   // If resolve is false, fetch directly from database without resolving dependencies
   if (!resolve) {

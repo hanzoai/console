@@ -1,4 +1,8 @@
-import { createTracesCh, createTrace, getEnvironmentsForProject } from "@hanzo/shared/src/server";
+import {
+  createTracesCh,
+  createTrace,
+  getEnvironmentsForProject,
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 describe("Clickhouse Project Repository Test", () => {

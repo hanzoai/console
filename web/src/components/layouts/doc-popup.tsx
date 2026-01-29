@@ -1,4 +1,8 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { cn } from "@/src/utils/tailwind";
 import { Portal } from "@radix-ui/react-hover-card";
@@ -10,7 +14,11 @@ export type DocPopupProps = {
   className?: string;
 };
 
-export default function DocPopup({ description, href, className }: DocPopupProps) {
+export default function DocPopup({
+  description,
+  href,
+  className,
+}: DocPopupProps) {
   const capture = usePostHogClientCapture();
 
   return (
@@ -25,7 +33,10 @@ export default function DocPopup({ description, href, className }: DocPopupProps
         }
       }}
     >
-      <HoverCardTrigger className={cn("mx-1", href ? "cursor-pointer" : "cursor-default")} asChild>
+      <HoverCardTrigger
+        className={cn("mx-1", href ? "cursor-pointer" : "cursor-default")}
+        asChild
+      >
         <div
           className="inline-block whitespace-nowrap text-muted-foreground sm:pl-0"
           onClick={(e) => {
@@ -45,7 +56,12 @@ export default function DocPopup({ description, href, className }: DocPopupProps
       <Portal>
         <HoverCardContent>
           {typeof description === "string" ? (
-            <div className={cn("whitespace-break-spaces text-xs font-normal text-primary sm:pl-0", className)}>
+            <div
+              className={cn(
+                "whitespace-break-spaces text-xs font-normal text-primary sm:pl-0",
+                className,
+              )}
+            >
               {description}
             </div>
           ) : (
@@ -70,7 +86,9 @@ export function Popup({ triggerContent, description }: PopupProps) {
       </HoverCardTrigger>
       <HoverCardContent>
         {typeof description === "string" ? (
-          <div className="whitespace-break-spaces text-xs font-normal text-primary sm:pl-0">{description}</div>
+          <div className="whitespace-break-spaces text-xs font-normal text-primary sm:pl-0">
+            {description}
+          </div>
         ) : (
           description
         )}

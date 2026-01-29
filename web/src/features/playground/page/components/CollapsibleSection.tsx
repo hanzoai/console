@@ -41,8 +41,17 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     <div className={cn("space-y-1", className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={toggleExpanded} className="h-8 gap-2 px-1 hover:bg-transparent">
-          {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleExpanded}
+          className="h-8 gap-2 px-1 hover:bg-transparent"
+        >
+          {isExpanded ? (
+            <ChevronDown className="h-3 w-3" />
+          ) : (
+            <ChevronRight className="h-3 w-3" />
+          )}
           <span className="text-sm font-semibold">{title}</span>
           {badge && (
             <Badge variant="secondary" className="h-4 text-xs">
@@ -55,7 +64,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             </Badge>
           )}
         </Button>
-        {actionButton && <div className="flex items-center gap-1">{actionButton}</div>}
+        {actionButton && (
+          <div className="flex items-center gap-1">{actionButton}</div>
+        )}
       </div>
 
       {/* Content */}
@@ -65,7 +76,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             children
           ) : (
             <div className="px-2 py-1">
-              <p className="text-xs text-muted-foreground">{emptyMessage || "No items configured."}</p>
+              <p className="text-xs text-muted-foreground">
+                {emptyMessage || "No items configured."}
+              </p>
             </div>
           )}
         </div>
@@ -76,7 +89,9 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         <div className="px-2 py-0.5">
           <p className="text-xs text-muted-foreground">
             {summaryContent ||
-              (count !== undefined && count > 0 ? `${count} item${count === 1 ? "" : "s"} configured` : "Configured")}
+              (count !== undefined && count > 0
+                ? `${count} item${count === 1 ? "" : "s"} configured`
+                : "Configured")}
           </p>
         </div>
       )}

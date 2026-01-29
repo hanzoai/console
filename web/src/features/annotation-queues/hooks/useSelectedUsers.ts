@@ -6,7 +6,10 @@ interface UseSelectedUsersProps {
   selectedUserIds: string[];
 }
 
-export function useSelectedUsers({ projectId, selectedUserIds }: UseSelectedUsersProps) {
+export function useSelectedUsers({
+  projectId,
+  selectedUserIds,
+}: UseSelectedUsersProps) {
   const hasProjectMembersReadAccess = useHasProjectAccess({
     projectId: projectId,
     scope: "projectMembers:read",
@@ -22,7 +25,10 @@ export function useSelectedUsers({ projectId, selectedUserIds }: UseSelectedUser
     },
   );
 
-  const selectedUsers = allUsersForPills.data?.users.filter((user) => selectedUserIds.includes(user.id)) || [];
+  const selectedUsers =
+    allUsersForPills.data?.users.filter((user) =>
+      selectedUserIds.includes(user.id),
+    ) || [];
 
   return {
     selectedUsers,

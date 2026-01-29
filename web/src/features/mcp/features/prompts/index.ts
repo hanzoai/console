@@ -15,11 +15,23 @@
 
 import type { McpFeatureModule } from "../../server/registry";
 import { getPromptTool, handleGetPrompt } from "./tools/getPrompt";
-import { getPromptUnresolvedTool, handleGetPromptUnresolved } from "./tools/getPromptUnresolved";
+import {
+  getPromptUnresolvedTool,
+  handleGetPromptUnresolved,
+} from "./tools/getPromptUnresolved";
 import { listPromptsTool, handleListPrompts } from "./tools/listPrompts";
-import { createTextPromptTool, handleCreateTextPrompt } from "./tools/createTextPrompt";
-import { createChatPromptTool, handleCreateChatPrompt } from "./tools/createChatPrompt";
-import { updatePromptLabelsTool, handleUpdatePromptLabels } from "./tools/updatePromptLabels";
+import {
+  createTextPromptTool,
+  handleCreateTextPrompt,
+} from "./tools/createTextPrompt";
+import {
+  createChatPromptTool,
+  handleCreateChatPrompt,
+} from "./tools/createChatPrompt";
+import {
+  updatePromptLabelsTool,
+  handleUpdatePromptLabels,
+} from "./tools/updatePromptLabels";
 
 /**
  * Prompts Feature Module
@@ -29,7 +41,8 @@ import { updatePromptLabelsTool, handleUpdatePromptLabels } from "./tools/update
  */
 export const promptsFeature: McpFeatureModule = {
   name: "prompts",
-  description: "Manage Hanzo prompts - create, retrieve, and update prompt versions",
+  description:
+    "Manage Hanzo prompts - create, retrieve, and update prompt versions",
 
   tools: [
     {

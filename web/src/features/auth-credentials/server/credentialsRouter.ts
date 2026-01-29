@@ -1,5 +1,8 @@
 import { z } from "zod/v4";
-import { createTRPCRouter, protectedProcedureWithoutTracing } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedureWithoutTracing,
+} from "@/src/server/api/trpc";
 import { updateUserPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { TRPCError } from "@trpc/server";
 import { isEmailVerifiedWithinCutoff } from "@/src/features/auth-credentials/lib/credentialsUtils";
@@ -22,13 +25,17 @@ export const credentialsRouter = createTRPCRouter({
         },
       });
 
-      const emailVerificationStatus = isEmailVerifiedWithinCutoff(user?.emailVerified?.toISOString());
+      const emailVerificationStatus = isEmailVerifiedWithinCutoff(
+        user?.emailVerified?.toISOString(),
+      );
 
       if (!emailVerificationStatus.verified) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message:
-            emailVerificationStatus.reason === "not_verified" ? "Email not verified." : "Email verification expired.",
+            emailVerificationStatus.reason === "not_verified"
+              ? "Email not verified."
+              : "Email verification expired.",
         });
       }
 

@@ -1,6 +1,12 @@
 import { z } from "zod/v4";
-import { paginationMetaResponseZod, publicApiPaginationZod } from "@hanzo/shared";
-import { AnnotationQueueObjectType, AnnotationQueueStatus } from "@hanzo/shared";
+import {
+  paginationMetaResponseZod,
+  publicApiPaginationZod,
+} from "@hanzo/shared";
+import {
+  AnnotationQueueObjectType,
+  AnnotationQueueStatus,
+} from "@hanzo/shared";
 
 /**
  * Common Types
@@ -102,7 +108,10 @@ export const CreateAnnotationQueueItemBody = z
   .object({
     objectId: z.string(),
     objectType: z.enum(AnnotationQueueObjectType),
-    status: z.enum(AnnotationQueueStatus).optional().default(AnnotationQueueStatus.PENDING),
+    status: z
+      .enum(AnnotationQueueStatus)
+      .optional()
+      .default(AnnotationQueueStatus.PENDING),
   })
   .strict();
 
@@ -154,7 +163,8 @@ export const CreateAnnotationQueueAssignmentBody = z
   })
   .strict();
 
-export const CreateAnnotationQueueAssignmentResponse = AnnotationQueueAssignmentSchema;
+export const CreateAnnotationQueueAssignmentResponse =
+  AnnotationQueueAssignmentSchema;
 
 // DELETE /annotation-queues/:queueId/assignments
 export const DeleteAnnotationQueueAssignmentBody = z

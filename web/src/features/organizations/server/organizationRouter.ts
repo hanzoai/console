@@ -1,4 +1,8 @@
-import { createTRPCRouter, protectedOrganizationProcedure, authenticatedProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedOrganizationProcedure,
+  authenticatedProcedure,
+} from "@/src/server/api/trpc";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
   organizationOptionalNameSchema,
@@ -17,47 +21,49 @@ import { env } from "@/src/env.mjs";
 import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
 export const organizationsRouter = createTRPCRouter({
-  create: authenticatedProcedure.input(organizationNameSchema).mutation(async ({ input, ctx }) => {
-    if (!ctx.session.user.canCreateOrganizations)
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "You do not have permission to create organizations",
-      });
+  create: authenticatedProcedure
+    .input(organizationNameSchema)
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.session.user.canCreateOrganizations)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to create organizations",
+        });
 
-    const organization = await ctx.prisma.organization.create({
-      data: {
-        name: input.name,
-        organizationMemberships: {
-          create: {
-            userId: ctx.session.user.id,
-            role: "OWNER",
+      const organization = await ctx.prisma.organization.create({
+        data: {
+          name: input.name,
+          organizationMemberships: {
+            create: {
+              userId: ctx.session.user.id,
+              role: "OWNER",
+            },
+          },
+          // Store trial expiry in cloudConfig
+          cloudConfig: {
+            plan: "free",
+            trialExpiresAt: addDaysAndRoundToNextDay(
+              Number(env.HANZO_TRIAL_EXPIRE) || 90, // default 90 day if not config in env
+            ).toISOString(),
           },
         },
-        // Store trial expiry in cloudConfig
-        cloudConfig: {
-          plan: "free",
-          trialExpiresAt: addDaysAndRoundToNextDay(
-            Number(env.HANZO_TRIAL_EXPIRE) || 90, // default 90 day if not config in env
-          ).toISOString(),
-        },
-      },
-    });
-    await auditLog({
-      resourceType: "organization",
-      resourceId: organization.id,
-      action: "create",
-      orgId: organization.id,
-      orgRole: "OWNER",
-      userId: ctx.session.user.id,
-      after: organization,
-    });
+      });
+      await auditLog({
+        resourceType: "organization",
+        resourceId: organization.id,
+        action: "create",
+        orgId: organization.id,
+        orgRole: "OWNER",
+        userId: ctx.session.user.id,
+        after: organization,
+      });
 
-    return {
-      id: organization.id,
-      name: organization.name,
-      role: "OWNER",
-    };
-  }),
+      return {
+        id: organization.id,
+        name: organization.name,
+        role: "OWNER",
+      };
+    }),
   update: protectedOrganizationProcedure
     .input(
       organizationOptionalNameSchema
@@ -76,10 +82,14 @@ export const organizationsRouter = createTRPCRouter({
         scope: "organization:update",
       });
 
-      if (input.aiFeaturesEnabled !== undefined && !env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
+      if (
+        input.aiFeaturesEnabled !== undefined &&
+        !env.NEXT_PUBLIC_HANZO_CLOUD_REGION
+      ) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
-          message: "Natural language filtering is not available in self-hosted deployments.",
+          message:
+            "Natural language filtering is not available in self-hosted deployments.",
         });
       }
 
@@ -140,14 +150,16 @@ export const organizationsRouter = createTRPCRouter({
       if (countNonDeletedProjects > 0) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Please delete or transfer all projects before deleting the organization.",
+          message:
+            "Please delete or transfer all projects before deleting the organization.",
         });
       }
 
       if (countAllProjects > 0) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Deletion of your projects is still being processed, please try deleting the organization later",
+          message:
+            "Deletion of your projects is still being processed, please try deleting the organization later",
         });
       }
 
@@ -160,7 +172,8 @@ export const organizationsRouter = createTRPCRouter({
           // If billing cancellation fails for reasons other than no subscription, abort deletion
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to cancel Stripe subscription prior to organization deletion",
+            message:
+              "Failed to cancel Stripe subscription prior to organization deletion",
             cause: e as Error,
           });
         }
@@ -173,7 +186,9 @@ export const organizationsRouter = createTRPCRouter({
       });
 
       // the api keys contain which org they belong to, so we need to remove them from Redis
-      await new ApiAuthService(ctx.prisma, redis).invalidateCachedOrgApiKeys(input.orgId);
+      await new ApiAuthService(ctx.prisma, redis).invalidateCachedOrgApiKeys(
+        input.orgId,
+      );
 
       await auditLog({
         session: ctx.session,

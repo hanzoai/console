@@ -16,7 +16,11 @@ export const validateQueryAndExtractId = (query: unknown): string | null => {
   return validation.data.organizationId;
 };
 
-export async function handleGetApiKeys(req: NextApiRequest, res: NextApiResponse, organizationId: string) {
+export async function handleGetApiKeys(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  organizationId: string,
+) {
   const apiKeys = await prisma.apiKey.findMany({
     where: {
       orgId: organizationId,
@@ -39,7 +43,11 @@ export async function handleGetApiKeys(req: NextApiRequest, res: NextApiResponse
   return res.status(200).json({ apiKeys });
 }
 
-export async function handleCreateApiKey(req: NextApiRequest, res: NextApiResponse, organizationId: string) {
+export async function handleCreateApiKey(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  organizationId: string,
+) {
   // Validate the request body
   const createApiKeySchema = z.object({
     note: z.string().optional(),
@@ -74,7 +82,9 @@ export async function handleCreateApiKey(req: NextApiRequest, res: NextApiRespon
     apiKeyId: "ADMIN_KEY",
   });
 
-  logger.info(`Created API key ${apiKeyMeta.id} for organization ${organizationId} via admin API`);
+  logger.info(
+    `Created API key ${apiKeyMeta.id} for organization ${organizationId} via admin API`,
+  );
 
   return res.status(201).json(apiKeyMeta);
 }

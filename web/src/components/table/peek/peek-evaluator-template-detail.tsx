@@ -5,7 +5,11 @@ import { EvalTemplateForm } from "@/src/features/evals/components/template-form"
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 
-export const PeekViewEvaluatorTemplateDetail = ({ projectId }: { projectId: string }) => {
+export const PeekViewEvaluatorTemplateDetail = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
   const router = useRouter();
   const peekId = router.query.peek as string | undefined;
 

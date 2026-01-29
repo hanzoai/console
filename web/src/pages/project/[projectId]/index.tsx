@@ -32,19 +32,29 @@ import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomi
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import Page from "@/src/components/layouts/page";
 import { MultiSelect } from "@/src/features/filters/components/multi-select";
-import { convertSelectedEnvironmentsToFilter, useEnvironmentFilter } from "@/src/hooks/use-environment-filter";
+import {
+  convertSelectedEnvironmentsToFilter,
+  useEnvironmentFilter,
+} from "@/src/hooks/use-environment-filter";
 
 export default function Dashboard() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { timeRange, setTimeRange } = useDashboardDateRange();
-  const absoluteTimeRange = useMemo(() => toAbsoluteTimeRange(timeRange), [timeRange]);
+  const absoluteTimeRange = useMemo(
+    () => toAbsoluteTimeRange(timeRange),
+    [timeRange],
+  );
 
   const uiCustomization = useUiCustomization();
 
   const lookbackLimit = useEntitlementLimit("data-access-days");
 
-  const [userFilterState, setUserFilterState] = useQueryFilterState([], "dashboard", projectId);
+  const [userFilterState, setUserFilterState] = useQueryFilterState(
+    [],
+    "dashboard",
+    projectId,
+  );
 
   const traceFilterOptions = api.traces.filterOptions.useQuery(
     {
@@ -63,27 +73,30 @@ export default function Dashboard() {
     },
   );
 
-  const environmentFilterOptions = api.projects.environmentFilterOptions.useQuery(
-    {
-      projectId,
-      fromTimestamp: absoluteTimeRange?.from,
-    },
-    {
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
+  const environmentFilterOptions =
+    api.projects.environmentFilterOptions.useQuery(
+      {
+        projectId,
+        fromTimestamp: absoluteTimeRange?.from,
       },
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      staleTime: Infinity,
-    },
-  );
-  const environmentOptions: string[] = environmentFilterOptions.data?.map((value) => value.environment) || [];
+      {
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+      },
+    );
+  const environmentOptions: string[] =
+    environmentFilterOptions.data?.map((value) => value.environment) || [];
 
   // Add effect to update filter state when environments change
-  const { selectedEnvironments, setSelectedEnvironments } = useEnvironmentFilter(environmentOptions, projectId);
+  const { selectedEnvironments, setSelectedEnvironments } =
+    useEnvironmentFilter(environmentOptions, projectId);
 
   const nameOptions =
     traceFilterOptions.data?.name?.map((n) => ({
@@ -137,7 +150,9 @@ export default function Dashboard() {
     return findClosestDashboardInterval(timeRange) ?? "last7Days";
   }, [timeRange]);
 
-  const fromTimestamp = absoluteTimeRange?.from ? absoluteTimeRange.from : new Date(new Date().getTime() - 1000);
+  const fromTimestamp = absoluteTimeRange?.from
+    ? absoluteTimeRange.from
+    : new Date(new Date().getTime() - 1000);
   const toTimestamp = absoluteTimeRange?.to ? absoluteTimeRange.to : new Date();
   const timeFilter = [
     {
@@ -154,9 +169,16 @@ export default function Dashboard() {
     },
   ];
 
-  const environmentFilter = convertSelectedEnvironmentsToFilter(["environment"], selectedEnvironments);
+  const environmentFilter = convertSelectedEnvironmentsToFilter(
+    ["environment"],
+    selectedEnvironments,
+  );
 
-  const mergedFilterState: FilterState = [...userFilterState, ...timeFilter, ...environmentFilter];
+  const mergedFilterState: FilterState = [
+    ...userFilterState,
+    ...timeFilter,
+    ...environmentFilter,
+  ];
 
   return (
     <Page
@@ -174,7 +196,10 @@ export default function Dashboard() {
               disabled={
                 lookbackLimit
                   ? {
-                      before: new Date(new Date().getTime() - lookbackLimit * 24 * 60 * 60 * 1000),
+                      before: new Date(
+                        new Date().getTime() -
+                          lookbackLimit * 24 * 60 * 60 * 1000,
+                      ),
                     }
                   : undefined
               }

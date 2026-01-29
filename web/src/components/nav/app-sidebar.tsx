@@ -2,7 +2,10 @@
 
 import * as React from "react";
 import { NavMain, type NavMainItem } from "@/src/components/nav/nav-main";
-import { NavUser, type UserNavigationProps } from "@/src/components/nav/nav-user";
+import {
+  NavUser,
+  type UserNavigationProps,
+} from "@/src/components/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -37,7 +40,12 @@ type AppSidebarProps = {
   userNavProps: UserNavigationProps;
 } & React.ComponentProps<typeof Sidebar>;
 
-export function AppSidebar({ navItems, secondaryNavItems, userNavProps, ...props }: AppSidebarProps) {
+export function AppSidebar({
+  navItems,
+  secondaryNavItems,
+  userNavProps,
+  ...props
+}: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
@@ -84,8 +92,16 @@ const DemoBadge = () => {
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Use Demo App to create traces" variant="cta">
-              <Link href="https://hanzo.com/docs/demo" target="_blank" rel="noopener noreferrer">
+            <SidebarMenuButton
+              asChild
+              tooltip="Use Demo App to create traces"
+              variant="cta"
+            >
+              <Link
+                href="https://hanzo.com/docs/demo"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-4 w-4" />
                 <span>Use Demo App</span>
               </Link>

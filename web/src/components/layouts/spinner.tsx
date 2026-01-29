@@ -70,9 +70,18 @@ export function Spinner(props: { message: string }) {
             onAnimationComplete={() => setAnimationComplete(true)}
             style={{ transformOrigin: "center center" }} // Ensure proper flipping
           >
-            <svg viewBox="0 0 67 67" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+            <svg
+              viewBox="0 0 67 67"
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-full w-full"
+            >
               {/* Bottom left square (starting point) */}
-              <motion.path custom={1} variants={pathVariants} d="M22.21 67V44.6369H0V67H22.21Z" fill={fillColor} />
+              <motion.path
+                custom={1}
+                variants={pathVariants}
+                d="M22.21 67V44.6369H0V67H22.21Z"
+                fill={fillColor}
+              />
 
               {/* Bottom left accent */}
               <motion.path
@@ -91,7 +100,12 @@ export function Spinner(props: { message: string }) {
               />
 
               {/* Top left square (counter-clockwise third) */}
-              <motion.path custom={3} variants={pathVariants} d="M22.21 0H0V22.3184H22.21V0Z" fill={fillColor} />
+              <motion.path
+                custom={3}
+                variants={pathVariants}
+                d="M22.21 0H0V22.3184H22.21V0Z"
+                fill={fillColor}
+              />
 
               {/* Top right square (counter-clockwise fourth) */}
               <motion.path

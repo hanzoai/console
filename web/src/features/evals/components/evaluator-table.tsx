@@ -2,7 +2,10 @@ import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { LevelCountsDisplay } from "@/src/components/level-counts-display";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
+import {
+  DataTableControlsProvider,
+  DataTableControls,
+} from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -15,7 +18,13 @@ import { safeExtract } from "@/src/utils/map-utils";
 import { type FilterState, singleFilter } from "@hanzo/shared";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import { useQueryParams, withDefault, NumberParam, useQueryParam, StringParam } from "use-query-params";
+import {
+  useQueryParams,
+  withDefault,
+  NumberParam,
+  useQueryParam,
+  StringParam,
+} from "use-query-params";
 import { z } from "zod/v4";
 import { generateJobExecutionCounts } from "@/src/features/evals/utils/job-execution-utils";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
@@ -32,7 +41,12 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Button } from "@/src/components/ui/button";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import { EvaluatorForm } from "@/src/features/evals/components/evaluator-form";
 import { useRouter } from "next/router";
 import { DeleteEvalConfigButton } from "@/src/components/deleteButton";
@@ -73,7 +87,10 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 50),
   });
-  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
+  const [searchQuery, setSearchQuery] = useQueryParam(
+    "search",
+    withDefault(StringParam, null),
+  );
   const [editConfigId, setEditConfigId] = useState<string | null>(null);
   const utils = api.useUtils();
 
@@ -87,7 +104,12 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     target: ["trace", "dataset"],
   };
 
-  const queryFilter = useSidebarFilterState(evaluatorFilterConfig, newFilterOptions, projectId, false);
+  const queryFilter = useSidebarFilterState(
+    evaluatorFilterConfig,
+    newFilterOptions,
+    projectId,
+    false,
+  );
 
   const evaluators = api.evals.allConfigs.useQuery({
     page: paginationState.pageIndex,
@@ -114,7 +136,8 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
   const datasets = api.datasets.allDatasetMeta.useQuery({ projectId });
 
   // Fetch costs for all evaluators
-  const evaluatorIds = evaluators.data?.configs.map((config) => config.id) ?? [];
+  const evaluatorIds =
+    evaluators.data?.configs.map((config) => config.id) ?? [];
   const costs = api.evals.costByEvaluatorIds.useQuery(
     {
       projectId,
@@ -156,7 +179,12 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       size: 80,
       cell: (row) => {
         const status = row.getValue();
-        return <StatusBadge type={status.toLowerCase()} className={row.getValue() === "FINISHED" ? "pl-3" : ""} />;
+        return (
+          <StatusBadge
+            type={status.toLowerCase()}
+            className={row.getValue() === "FINISHED" ? "pl-3" : ""}
+          />
+        );
       },
     }),
     columnHelper.accessor("totalCost", {
@@ -195,7 +223,9 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/project/${projectId}/evals/${encodeURIComponent(id)}`);
+              router.push(
+                `/project/${projectId}/evals/${encodeURIComponent(id)}`,
+              );
             }}
           >
             <ExternalLinkIcon className="mr-1 h-3 w-3" />
@@ -252,7 +282,11 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
           if (filter.type === "stringOptions" && filter.column === "Dataset") {
             return {
               ...filter,
-              value: filter.value.map((datasetId) => datasets.data?.find((d) => d.id === datasetId)?.name ?? datasetId),
+              value: filter.value.map(
+                (datasetId) =>
+                  datasets.data?.find((d) => d.id === datasetId)?.name ??
+                  datasetId,
+              ),
             };
           }
           return filter;
@@ -284,7 +318,11 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0" aria-label="actions">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                aria-label="actions"
+              >
                 <span className="sr-only [position:relative]">Open menu</span>
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -319,14 +357,17 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     }),
   ] as HanzoColumnDef<EvaluatorDataRow>[];
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<EvaluatorDataRow>(
-    "evalConfigColumnVisibility",
-    columns,
-  );
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<EvaluatorDataRow>(
+      "evalConfigColumnVisibility",
+      columns,
+    );
 
   const peekNavigationProps = usePeekNavigation();
 
-  const convertToTableRow = (jobConfig: RouterOutputs["evals"]["allConfigs"]["configs"][number]): EvaluatorDataRow => {
+  const convertToTableRow = (
+    jobConfig: RouterOutputs["evals"]["allConfigs"]["configs"][number],
+  ): EvaluatorDataRow => {
     const result = generateJobExecutionCounts(jobConfig.jobExecutionsByState);
     const costData = costs.data?.[jobConfig.id];
 
@@ -395,8 +436,13 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                     "[aria-label='edit'], [aria-label='actions'], [aria-label='view-logs'], [aria-label='delete']",
                   ],
                 },
-                tableDataUpdatedAt: Math.max(evaluators.dataUpdatedAt, costs.dataUpdatedAt),
-                children: <PeekViewEvaluatorConfigDetail projectId={projectId} />,
+                tableDataUpdatedAt: Math.max(
+                  evaluators.dataUpdatedAt,
+                  costs.dataUpdatedAt,
+                ),
+                children: (
+                  <PeekViewEvaluatorConfigDetail projectId={projectId} />
+                ),
                 ...peekNavigationProps,
               }}
               data={
@@ -411,8 +457,8 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                     : {
                         isLoading: false,
                         isError: false,
-                        data: safeExtract(evaluators.data, "configs", []).map((evaluator) =>
-                          convertToTableRow(evaluator),
+                        data: safeExtract(evaluators.data, "configs", []).map(
+                          (evaluator) => convertToTableRow(evaluator),
                         ),
                       }
               }
@@ -465,7 +511,8 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                 void utils.evals.allConfigs.invalidate();
                 showSuccessToast({
                   title: "Evaluator updated successfully",
-                  description: "Changes will automatically be reflected future evaluator runs",
+                  description:
+                    "Changes will automatically be reflected future evaluator runs",
                 });
               }}
             />

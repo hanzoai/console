@@ -18,7 +18,11 @@ describe("timeline-calculations", () => {
       const nodeStart = new Date("2024-01-01T00:00:00Z");
       const totalDuration = 10; // 10 seconds
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
 
       expect(offset).toBe(0);
     });
@@ -28,7 +32,11 @@ describe("timeline-calculations", () => {
       const nodeStart = new Date("2024-01-01T00:00:10Z"); // 10 seconds later
       const totalDuration = 10;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
 
       expect(offset).toBe(SCALE_WIDTH);
     });
@@ -38,7 +46,11 @@ describe("timeline-calculations", () => {
       const nodeStart = new Date("2024-01-01T00:00:05Z"); // 5 seconds later
       const totalDuration = 10;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
 
       expect(offset).toBe(SCALE_WIDTH / 2);
     });
@@ -49,7 +61,12 @@ describe("timeline-calculations", () => {
       const totalDuration = 10;
       const customWidth = 1800;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration, customWidth);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+        customWidth,
+      );
 
       expect(offset).toBe(customWidth / 2);
     });
@@ -59,7 +76,11 @@ describe("timeline-calculations", () => {
       const nodeStart = new Date("2024-01-01T00:00:00.500Z"); // 0.5 seconds later
       const totalDuration = 1;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
 
       expect(offset).toBe(SCALE_WIDTH / 2);
     });
@@ -124,7 +145,9 @@ describe("timeline-calculations", () => {
     it("should return largest step size for very long traces", () => {
       // 10000 second trace
       const stepSize = calculateStepSize(10000);
-      expect(stepSize).toBe(PREDEFINED_STEP_SIZES[PREDEFINED_STEP_SIZES.length - 1]);
+      expect(stepSize).toBe(
+        PREDEFINED_STEP_SIZES[PREDEFINED_STEP_SIZES.length - 1],
+      );
     });
 
     it("should return smallest applicable step size", () => {
@@ -186,7 +209,11 @@ describe("timeline-calculations", () => {
       const duration = 2; // lasts 2 seconds
       const totalDuration = 10;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
       const width = calculateTimelineWidth(duration, totalDuration);
 
       // Should start at 30% of scale width
@@ -203,7 +230,11 @@ describe("timeline-calculations", () => {
       const duration = 10;
       const totalDuration = 10;
 
-      const offset = calculateTimelineOffset(nodeStart, traceStart, totalDuration);
+      const offset = calculateTimelineOffset(
+        nodeStart,
+        traceStart,
+        totalDuration,
+      );
       const width = calculateTimelineWidth(duration, totalDuration);
 
       expect(offset).toBe(0);

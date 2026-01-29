@@ -1,13 +1,19 @@
 import { useMemo } from "react";
 import { api } from "@/src/utils/api";
-import { adaptEventsToTraceFormat, type AdaptedTraceData } from "@/src/features/events/lib/eventsToTraceAdapter";
+import {
+  adaptEventsToTraceFormat,
+  type AdaptedTraceData,
+} from "@/src/features/events/lib/eventsToTraceAdapter";
 import {
   filterAndValidateDbScoreList,
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
   type ScoreDomain,
 } from "@hanzo/shared";
-import { type WithStringifiedMetadata, toDomainArrayWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
+import {
+  type WithStringifiedMetadata,
+  toDomainArrayWithStringifiedMetadata,
+} from "@/src/utils/clientSideDomainTypes";
 import { partition } from "lodash";
 
 interface UseEventsTraceDataProps {
@@ -40,7 +46,9 @@ interface UseEventsTraceDataResult {
  * 4. Fetch scores via getScoresAndCorrectionsForTraces
  * 5. Synthesize trace object from observations
  */
-export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTraceDataResult {
+export function useEventsTraceData(
+  props: UseEventsTraceDataProps,
+): UseEventsTraceDataResult {
   const { projectId, traceId, enabled = true } = props;
 
   // Step 1: Fetch all observations for this trace (without I/O for performance)
@@ -49,7 +57,9 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
   const eventsQuery = api.events.all.useQuery(
     {
       projectId,
-      filter: [{ column: "traceId", operator: "=", value: traceId, type: "string" }],
+      filter: [
+        { column: "traceId", operator: "=", value: traceId, type: "string" },
+      ],
       searchQuery: null,
       searchType: [],
       orderBy: { column: "startTime", order: "ASC" },
@@ -74,7 +84,9 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
 
   const timeRange = useMemo(() => {
     if (!eventsQuery.data?.observations?.length) return null;
-    const times = eventsQuery.data.observations.map((o) => o.startTime.getTime());
+    const times = eventsQuery.data.observations.map((o) =>
+      o.startTime.getTime(),
+    );
     return {
       min: new Date(Math.min(...times)),
       max: new Date(Math.max(...times)),
@@ -85,12 +97,15 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
   const rootIOQuery = api.events.batchIO.useQuery(
     {
       projectId,
-      observations: rootObservation ? [{ id: rootObservation.id, traceId }] : [],
+      observations: rootObservation
+        ? [{ id: rootObservation.id, traceId }]
+        : [],
       minStartTime: timeRange?.min ?? new Date(),
       maxStartTime: timeRange?.max ?? new Date(),
     },
     {
-      enabled: enabled && !!rootObservation && !!timeRange && !!eventsQuery.data,
+      enabled:
+        enabled && !!rootObservation && !!timeRange && !!eventsQuery.data,
       staleTime: 60 * 1000,
     },
   );
@@ -117,7 +132,10 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
       },
     });
 
-    const [corrections, scores] = partition(validatedScores, (s) => s.dataType === ScoreDataTypeEnum.CORRECTION);
+    const [corrections, scores] = partition(
+      validatedScores,
+      (s) => s.dataType === ScoreDataTypeEnum.CORRECTION,
+    );
 
     const scoresDomain = toDomainArrayWithStringifiedMetadata(scores);
 
@@ -127,7 +145,9 @@ export function useEventsTraceData(props: UseEventsTraceDataProps): UseEventsTra
     const adapted = adaptEventsToTraceFormat({
       events: eventsQuery.data.observations,
       traceId,
-      rootIO: rootIO ? { input: rootIO.input, output: rootIO.output } : undefined,
+      rootIO: rootIO
+        ? { input: rootIO.input, output: rootIO.output }
+        : undefined,
     });
 
     return {

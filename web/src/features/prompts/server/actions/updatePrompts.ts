@@ -107,13 +107,15 @@ export const updatePrompt = async (params: UpdatePromptParams) => {
         )}`,
       );
 
-      const { touchedPromptIds: labelsTouchedPromptIds, updates: labelUpdates } =
-        await removeLabelsFromPreviousPromptVersions({
-          prisma: tx,
-          projectId,
-          promptName,
-          labelsToRemove: [...new Set(newLabels)],
-        });
+      const {
+        touchedPromptIds: labelsTouchedPromptIds,
+        updates: labelUpdates,
+      } = await removeLabelsFromPreviousPromptVersions({
+        prisma: tx,
+        projectId,
+        promptName,
+        labelsToRemove: [...new Set(newLabels)],
+      });
 
       touchedPromptIds.push(...labelsTouchedPromptIds);
 
@@ -157,7 +159,10 @@ export const updatePrompt = async (params: UpdatePromptParams) => {
 
     await Promise.all(
       updatedPrompts.map(async (prompt) =>
-        promptChangeEventSourcing(await promptService.resolvePrompt(prompt), "updated"),
+        promptChangeEventSourcing(
+          await promptService.resolvePrompt(prompt),
+          "updated",
+        ),
       ),
     );
 

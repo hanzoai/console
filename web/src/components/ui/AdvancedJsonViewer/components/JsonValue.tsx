@@ -7,9 +7,16 @@
 
 import { type JsonValueProps } from "../types";
 import { formatValuePreview } from "../utils/jsonTypes";
-import { highlightTextWithComments, COMMENT_HIGHLIGHT_COLOR } from "../utils/highlightText";
+import {
+  highlightTextWithComments,
+  COMMENT_HIGHLIGHT_COLOR,
+} from "../utils/highlightText";
 import { TruncatedString } from "./TruncatedString";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 
 export function JsonValue({
   value,
@@ -77,7 +84,8 @@ export function JsonValue({
 
     // Mode 1: "truncate" - use TruncatedString component
     if (stringWrapMode === "truncate") {
-      const shouldTruncate = truncateStringsAt !== null && str.length > truncateStringsAt;
+      const shouldTruncate =
+        truncateStringsAt !== null && str.length > truncateStringsAt;
 
       if (shouldTruncate) {
         return (
@@ -94,7 +102,12 @@ export function JsonValue({
     }
 
     // Mode 2: "nowrap" or Mode 3: "wrap" - render with appropriate whiteSpace
-    const segments = highlightTextWithComments(str, highlightStart, highlightEnd, adjustedCommentRanges);
+    const segments = highlightTextWithComments(
+      str,
+      highlightStart,
+      highlightEnd,
+      adjustedCommentRanges,
+    );
 
     return (
       <span
@@ -128,7 +141,11 @@ export function JsonValue({
             return (
               <Tooltip key={index}>
                 <TooltipTrigger asChild>{highlightedSpan}</TooltipTrigger>
-                <TooltipContent side="top" align="start" className="max-w-xs px-2 py-1 text-xs">
+                <TooltipContent
+                  side="top"
+                  align="start"
+                  className="max-w-xs px-2 py-1 text-xs"
+                >
                   {segment.preview}
                 </TooltipContent>
               </Tooltip>
@@ -159,7 +176,12 @@ export function JsonValue({
   })();
 
   // Apply search and comment highlighting
-  const segments = highlightTextWithComments(displayValue, highlightStart, highlightEnd, adjustedCommentRanges);
+  const segments = highlightTextWithComments(
+    displayValue,
+    highlightStart,
+    highlightEnd,
+    adjustedCommentRanges,
+  );
 
   return (
     <span
@@ -187,7 +209,11 @@ export function JsonValue({
           return (
             <Tooltip key={index}>
               <TooltipTrigger asChild>{highlightedSpan}</TooltipTrigger>
-              <TooltipContent side="top" align="start" className="max-w-xs px-2 py-1 text-xs">
+              <TooltipContent
+                side="top"
+                align="start"
+                className="max-w-xs px-2 py-1 text-xs"
+              >
                 {segment.preview}
               </TooltipContent>
             </Tooltip>

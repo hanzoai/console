@@ -42,10 +42,16 @@ describe("parseJsonPrioritised", () => {
     ["invalid{json}", "invalid{json}"], // Invalid JSON string
     ['{"hello": "world"', '{"hello": "world"'], // Invalid JSON string
     ['[null, 123, "abc"]', [null, 123, "abc"]], // Mixed array
-    ['{"array": [1, 2], "nested": {"key": "value"}}', { array: [1, 2], nested: { key: "value" } }], // Complex object
+    [
+      '{"array": [1, 2], "nested": {"key": "value"}}',
+      { array: [1, 2], nested: { key: "value" } },
+    ], // Complex object
     ["1983516295378495150", "1983516295378495150"], // Large number
     ["3.4", 3.4], // Decimal number
-  ])("should parse input correctly  (%s, %s)", (input: string, expectedOutput: any) => {
-    expect(parseJsonPrioritised(input)).toEqual(expectedOutput);
-  });
+  ])(
+    "should parse input correctly  (%s, %s)",
+    (input: string, expectedOutput: any) => {
+      expect(parseJsonPrioritised(input)).toEqual(expectedOutput);
+    },
+  );
 });

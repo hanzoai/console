@@ -42,11 +42,16 @@ export function ChatMessageList({
   inputMessageCount,
 }: ChatMessageListProps) {
   // Filter messages to only those with renderable content
-  const messagesToRender = useMemo(() => messages.filter(shouldRenderMessage), [messages]);
+  const messagesToRender = useMemo(
+    () => messages.filter(shouldRenderMessage),
+    [messages],
+  );
 
   // Initialize collapsed state based on message count
   const [isCollapsed, setCollapsed] = useState<boolean | null>(
-    collapseLongHistory && messagesToRender.length > COLLAPSE_THRESHOLD ? true : null,
+    collapseLongHistory && messagesToRender.length > COLLAPSE_THRESHOLD
+      ? true
+      : null,
   );
 
   return (
@@ -59,7 +64,9 @@ export function ChatMessageList({
               ({ originalIndex }) =>
                 // Show all if not collapsed or null
                 // Show first and last N if collapsed
-                !isCollapsed || originalIndex === 0 || originalIndex > messagesToRender.length - COLLAPSE_THRESHOLD,
+                !isCollapsed ||
+                originalIndex === 0 ||
+                originalIndex > messagesToRender.length - COLLAPSE_THRESHOLD,
             )
             .map(({ message, originalIndex }) => (
               <Fragment key={originalIndex}>
@@ -73,8 +80,15 @@ export function ChatMessageList({
                 />
                 {/* Show collapse/expand button after first message */}
                 {isCollapsed !== null && originalIndex === 0 && (
-                  <Button variant="ghost" size="xs" onClick={() => setCollapsed((v) => !v)} className="underline">
-                    {isCollapsed ? `Show ${messagesToRender.length - COLLAPSE_THRESHOLD} more ...` : "Hide history"}
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setCollapsed((v) => !v)}
+                    className="underline"
+                  >
+                    {isCollapsed
+                      ? `Show ${messagesToRender.length - COLLAPSE_THRESHOLD} more ...`
+                      : "Hide history"}
                   </Button>
                 )}
               </Fragment>

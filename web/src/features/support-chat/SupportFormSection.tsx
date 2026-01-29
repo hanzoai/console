@@ -25,12 +25,22 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { RadioGroup } from "@/src/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { useMemo, useState } from "react";
 
-import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/src/components/ui/shadcn-io/dropzone";
+import {
+  Dropzone,
+  DropzoneContent,
+  DropzoneEmptyState,
+} from "@/src/components/ui/shadcn-io/dropzone";
 import { Paperclip, Loader2, Trash2 } from "lucide-react";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { PLAIN_MAX_FILE_SIZE_BYTES } from "./plain/plainConstants";
@@ -61,7 +71,8 @@ function validateFiles(files: File[] | undefined): {
     return { isValid: true };
   }
 
-  const { maxFiles, maxFileSizeBytes, maxCombinedBytes } = FILE_UPLOAD_CONSTRAINTS;
+  const { maxFiles, maxFileSizeBytes, maxCombinedBytes } =
+    FILE_UPLOAD_CONSTRAINTS;
 
   // Check file count
   if (files.length > maxFiles) {
@@ -100,17 +111,27 @@ function validateFiles(files: File[] | undefined): {
  */
 function formatFileError(error: Error): string {
   const msg = error.message.toLowerCase();
-  const { maxFiles, maxFileSizeBytes, maxCombinedBytes } = FILE_UPLOAD_CONSTRAINTS;
+  const { maxFiles, maxFileSizeBytes, maxCombinedBytes } =
+    FILE_UPLOAD_CONSTRAINTS;
   const maxMB = (maxFileSizeBytes / (1024 * 1024)).toFixed(0);
   const maxCombinedMB = (maxCombinedBytes / (1024 * 1024)).toFixed(0);
 
   // File size errors
-  if (msg.includes("larger than") || msg.includes("10485760") || msg.includes("10mb") || msg.includes("too large")) {
+  if (
+    msg.includes("larger than") ||
+    msg.includes("10485760") ||
+    msg.includes("10mb") ||
+    msg.includes("too large")
+  ) {
     return `File is too large. Maximum file size is ${maxMB}MB per file.`;
   }
 
   // File count errors
-  if (msg.includes("too many") || msg.includes("maxfiles") || msg.includes("5 files")) {
+  if (
+    msg.includes("too many") ||
+    msg.includes("maxfiles") ||
+    msg.includes("5 files")
+  ) {
     return `Too many files. Maximum ${maxFiles} files allowed.`;
   }
 
@@ -127,7 +148,13 @@ function formatFileError(error: Error): string {
   return error.message || "File upload failed. Please try again.";
 }
 
-export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: () => void }) {
+export function SupportFormSection({
+  onCancel,
+  onSuccess,
+}: {
+  onCancel: () => void;
+  onSuccess: () => void;
+}) {
   const { organization, project } = useQueryProjectOrOrganization();
 
   // Tracks whether we've already warned about a short message
@@ -135,7 +162,10 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
 
   // Local file state from Dropzone
   const [files, setFiles] = useState<File[] | undefined>(undefined);
-  const totalUploadBytes = useMemo(() => (files ?? []).reduce((sum, f) => sum + f.size, 0), [files]);
+  const totalUploadBytes = useMemo(
+    () => (files ?? []).reduce((sum, f) => sum + f.size, 0),
+    [files],
+  );
 
   // Local submit guard to avoid flicker across multiple mutations
   const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
@@ -153,7 +183,9 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
   });
 
   const selectedTopic = form.watch("topic");
-  const isProductFeatureTopic = TopicGroups["Product Features"].includes(selectedTopic as any);
+  const isProductFeatureTopic = TopicGroups["Product Features"].includes(
+    selectedTopic as any,
+  );
 
   const createSupportThread = api.plainRouter.createSupportThread.useMutation({
     onSuccess: () => {
@@ -181,14 +213,20 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
     },
   });
 
-  async function uploadToPlainS3(uploadFormUrl: string, uploadFormData: { key: string; value: string }[], file: File) {
+  async function uploadToPlainS3(
+    uploadFormUrl: string,
+    uploadFormData: { key: string; value: string }[],
+    file: File,
+  ) {
     const form = new FormData();
     uploadFormData.forEach(({ key, value }) => form.append(key, value));
     form.append("file", file, file.name);
     const res = await fetch(uploadFormUrl, { method: "POST", body: form });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      throw new Error(`Attachment upload failed (${res.status} ${res.statusText}) ${text}`);
+      throw new Error(
+        `Attachment upload failed (${res.status} ${res.statusText}) ${text}`,
+      );
     }
   }
 
@@ -230,13 +268,18 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
           files.map(async (file, idx) => {
             const plan = uploadPlans.uploads[idx];
             if (!plan) throw new Error("Missing upload plan for a file.");
-            await uploadToPlainS3(plan.uploadFormUrl, plan.uploadFormData, file);
+            await uploadToPlainS3(
+              plan.uploadFormUrl,
+              plan.uploadFormData,
+              file,
+            );
           }),
         );
       }
 
       // 3) Create thread with attachmentIds
-      const attachmentIds = uploadPlans.uploads?.map((u: any) => u.attachmentId) ?? [];
+      const attachmentIds =
+        uploadPlans.uploads?.map((u: any) => u.attachmentId) ?? [];
 
       await createSupportThread.mutateAsync({
         messageType: parsed.messageType,
@@ -265,7 +308,8 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
     }
   };
 
-  const messageIsShortAfterWarning = warnedShortOnce && (form.getValues("message") ?? "").trim().length < 50;
+  const messageIsShortAfterWarning =
+    warnedShortOnce && (form.getValues("message") ?? "").trim().length < 50;
 
   // --- Compact attachment row helpers
   const totalMB = (totalUploadBytes / (1024 * 1024)).toFixed(2);
@@ -273,13 +317,19 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
 
   return (
     <div className="mt-1 flex flex-col gap-3">
-      <div className="flex items-center gap-2 text-base font-semibold">E-Mail a Support Engineer</div>
+      <div className="flex items-center gap-2 text-base font-semibold">
+        E-Mail a Support Engineer
+      </div>
       <p className="text-sm text-muted-foreground">
-        Details speed things up. The clearer your request, the quicker you get the answer you need.
+        Details speed things up. The clearer your request, the quicker you get
+        the answer you need.
       </p>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+        >
           {/* Message Type */}
           <FormField
             control={form.control}
@@ -306,7 +356,9 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
                     ))}
                   </RadioGroup>
                 </FormControl>
-                <FormDescription className="sr-only">Choose the type of your message.</FormDescription>
+                <FormDescription className="sr-only">
+                  Choose the type of your message.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -346,13 +398,18 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
               <FormItem>
                 <FormLabel>Topic</FormLabel>
                 <FormControl>
-                  <Select value={(field.value as string | undefined) ?? undefined} onValueChange={field.onChange}>
+                  <Select
+                    value={(field.value as string | undefined) ?? undefined}
+                    onValueChange={field.onChange}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a topic" />
                     </SelectTrigger>
                     <SelectContent>
                       <div className="p-2">
-                        <div className="mb-2 text-xs font-medium text-muted-foreground">Product Features</div>
+                        <div className="mb-2 text-xs font-medium text-muted-foreground">
+                          Product Features
+                        </div>
                         {TopicGroups["Product Features"].map((t) => (
                           <SelectItem key={t} value={t}>
                             {t}
@@ -360,7 +417,9 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
                         ))}
                       </div>
                       <div className="border-t p-2">
-                        <div className="mb-2 text-xs font-medium text-muted-foreground">Operations</div>
+                        <div className="mb-2 text-xs font-medium text-muted-foreground">
+                          Operations
+                        </div>
                         {TopicGroups.Operations.map((t) => (
                           <SelectItem key={t} value={t}>
                             {t}
@@ -411,7 +470,8 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
               <FormItem>
                 <FormLabel>Message</FormLabel>
                 <div className="text-xs text-muted-foreground">
-                  We will email you at your account address. Replies may take up to one business day.
+                  We will email you at your account address. Replies may take up
+                  to one business day.
                 </div>
                 <FormControl>
                   <div className="relative w-full">
@@ -428,9 +488,14 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
                 </FormControl>
 
                 {messageIsShortAfterWarning && (
-                  <p className="mt-2 text-sm text-red-500" role="status" aria-live="polite">
-                    The message seems short — adding a bit more context can help us get you a quicker, smarter answer.
-                    You can submit again as is, or add more details.
+                  <p
+                    className="mt-2 text-sm text-red-500"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    The message seems short — adding a bit more context can help
+                    us get you a quicker, smarter answer. You can submit again
+                    as is, or add more details.
                   </p>
                 )}
 
@@ -469,14 +534,21 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
 
                 {files && files.length > 0 && (
                   <div className="p-0 text-left text-sm font-medium">
-                    <div className="mb-2 text-xs font-medium text-muted-foreground">Attached files</div>
+                    <div className="mb-2 text-xs font-medium text-muted-foreground">
+                      Attached files
+                    </div>
                     {files?.map((file) => (
-                      <div key={file.name} className="flex flex-row items-center justify-start gap-2 text-xs">
+                      <div
+                        key={file.name}
+                        className="flex flex-row items-center justify-start gap-2 text-xs"
+                      >
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon-xs"
-                          onClick={() => setFiles(files.filter((f) => f.name !== file.name))}
+                          onClick={() =>
+                            setFiles(files.filter((f) => f.name !== file.name))
+                          }
                           className="p-0"
                         >
                           <span className="sr-only">Remove file</span>
@@ -506,7 +578,11 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
               Cancel
             </Button>
 
-            <Button type="submit" disabled={isSubmittingLocal} className="w-full">
+            <Button
+              type="submit"
+              disabled={isSubmittingLocal}
+              className="w-full"
+            >
               {isSubmittingLocal ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -522,7 +598,8 @@ export function SupportFormSection({ onCancel, onSuccess }: { onCancel: () => vo
 
           {isSubmittingLocal && (
             <div className="text-xs text-muted-foreground">
-              This can take a few seconds — hang tight while we submit your request.
+              This can take a few seconds — hang tight while we submit your
+              request.
             </div>
           )}
         </form>

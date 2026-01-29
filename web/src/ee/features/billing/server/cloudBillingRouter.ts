@@ -2,7 +2,10 @@ import * as z from "zod/v4";
 
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
 
-import { createTRPCRouter, protectedOrganizationProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedOrganizationProcedure,
+} from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
@@ -32,9 +35,12 @@ export const cloudBillingRouter = createTRPCRouter({
 
       // Return null for non-cloud environments to avoid 500 errors
       if (!isCloudBillingEnabled()) {
-        logger.info("cloudBilling.getSubscriptionInfo called in non-cloud environment, returning null", {
-          orgId: input.orgId,
-        });
+        logger.info(
+          "cloudBilling.getSubscriptionInfo called in non-cloud environment, returning null",
+          {
+            orgId: input.orgId,
+          },
+        );
         return {
           cancellation: null,
           scheduledChange: null,
@@ -43,7 +49,9 @@ export const cloudBillingRouter = createTRPCRouter({
         };
       }
 
-      const res = await createBillingServiceFromContext(ctx).getSubscriptionInfo(input.orgId);
+      const res = await createBillingServiceFromContext(
+        ctx,
+      ).getSubscriptionInfo(input.orgId);
       return res;
     }),
   createStripeCheckoutSession: protectedOrganizationProcedure
@@ -75,7 +83,10 @@ export const cloudBillingRouter = createTRPCRouter({
       }
 
       const stripeBillingService = createBillingServiceFromContext(ctx);
-      const url = await stripeBillingService.createCheckoutSession(input.orgId, input.stripeProductId);
+      const url = await stripeBillingService.createCheckoutSession(
+        input.orgId,
+        input.stripeProductId,
+      );
 
       void auditLog({
         session: ctx.session,
@@ -209,7 +220,10 @@ export const cloudBillingRouter = createTRPCRouter({
 
       const stripeBillingService = createBillingServiceFromContext(ctx);
 
-      await stripeBillingService.clearPlanSwitchSchedule(input.orgId, input.opId);
+      await stripeBillingService.clearPlanSwitchSchedule(
+        input.orgId,
+        input.opId,
+      );
 
       return { ok: true } as const;
     }),
@@ -233,14 +247,19 @@ export const cloudBillingRouter = createTRPCRouter({
       });
 
       if (!isCloudBillingEnabled()) {
-        logger.info("cloudBilling.getStripeCustomerPortalUrl called in non-cloud environment, returning null", {
-          orgId: input.orgId,
-        });
+        logger.info(
+          "cloudBilling.getStripeCustomerPortalUrl called in non-cloud environment, returning null",
+          {
+            orgId: input.orgId,
+          },
+        );
         return null;
       }
 
       try {
-        return await createBillingServiceFromContext(ctx).getCustomerPortalUrl(input.orgId);
+        return await createBillingServiceFromContext(ctx).getCustomerPortalUrl(
+          input.orgId,
+        );
       } catch (error) {
         logger.error("cloudBilling.getStripeCustomerPortalUrl:error", {
           orgId: input.orgId,
@@ -278,18 +297,24 @@ export const cloudBillingRouter = createTRPCRouter({
       });
 
       if (!isCloudBillingEnabled()) {
-        logger.info("cloudBilling.getInvoices called in non-cloud environment, returning empty", {
-          orgId: input.orgId,
-        });
+        logger.info(
+          "cloudBilling.getInvoices called in non-cloud environment, returning empty",
+          {
+            orgId: input.orgId,
+          },
+        );
         return { invoices: [], hasMore: false, cursors: {} };
       }
 
       try {
-        return await createBillingServiceFromContext(ctx).getInvoices(input.orgId, {
-          limit: input.limit,
-          startingAfter: input.startingAfter,
-          endingBefore: input.endingBefore,
-        });
+        return await createBillingServiceFromContext(ctx).getInvoices(
+          input.orgId,
+          {
+            limit: input.limit,
+            startingAfter: input.startingAfter,
+            endingBefore: input.endingBefore,
+          },
+        );
       } catch (error) {
         logger.error("cloudBilling.getInvoices:error", {
           orgId: input.orgId,
@@ -326,7 +351,10 @@ export const cloudBillingRouter = createTRPCRouter({
 
       // Return null for non-cloud environments to avoid 500 errors
       if (!isCloudBillingEnabled()) {
-        logger.info("cloudBilling.getUsage called in non-cloud environment, returning null", { orgId: input.orgId });
+        logger.info(
+          "cloudBilling.getUsage called in non-cloud environment, returning null",
+          { orgId: input.orgId },
+        );
         return null;
       }
 
@@ -364,7 +392,11 @@ export const cloudBillingRouter = createTRPCRouter({
 
       const stripeBillingService = createBillingServiceFromContext(ctx);
 
-      const result = await stripeBillingService.applyPromotionCode(input.orgId, input.code, input.opId);
+      const result = await stripeBillingService.applyPromotionCode(
+        input.orgId,
+        input.code,
+        input.opId,
+      );
 
       return result;
     }),

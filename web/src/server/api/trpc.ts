@@ -107,7 +107,8 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError: error.cause instanceof z.ZodError ? error.cause.flatten() : null,
+        zodError:
+          error.cause instanceof z.ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -175,7 +176,9 @@ const withErrorHandling = t.middleware(async ({ ctx, next }) => {
       res.error = new TRPCError({
         code,
         cause: null, // do not expose stack traces
-        message: isSafeToExpose ? res.error.message : "Internal error. " + errorMessage,
+        message: isSafeToExpose
+          ? res.error.message
+          : "Internal error. " + errorMessage,
       });
       logErrorByCode(code, res.error);
     }
@@ -235,12 +238,16 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const authenticatedProcedure = withOtelTracingProcedure.use(withErrorHandling).use(enforceUserIsAuthed);
+export const authenticatedProcedure = withOtelTracingProcedure
+  .use(withErrorHandling)
+  .use(enforceUserIsAuthed);
 
 // Alias for backwards compatibility
 export const protectedProcedure = authenticatedProcedure;
 
-export const protectedProcedureWithoutTracing = t.procedure.use(withErrorHandling).use(enforceUserIsAuthed);
+export const protectedProcedureWithoutTracing = t.procedure
+  .use(withErrorHandling)
+  .use(enforceUserIsAuthed);
 
 const inputProjectSchema = z.object({
   projectId: z.string(),
@@ -267,7 +274,9 @@ const enforceUserIsAuthedAndProjectMember = t.middleware(async (opts) => {
   // check that the user is a member of this project
   const projectId = parsedInput.data.projectId;
   const sessionProject = ctx.session.user.organizations
-    .flatMap((org) => org.projects.map((project) => ({ ...project, organization: org })))
+    .flatMap((org) =>
+      org.projects.map((project) => ({ ...project, organization: org })),
+    )
     .find((project) => project.id === projectId);
 
   if (!sessionProject) {
@@ -354,7 +363,9 @@ const enforceIsAuthedAndOrgMember = t.middleware(async (opts) => {
   }
 
   const orgId = result.data.orgId;
-  const sessionOrg = ctx.session.user.organizations.find((org) => org.id === orgId);
+  const sessionOrg = ctx.session.user.organizations.find(
+    (org) => org.id === orgId,
+  );
 
   if (
     !sessionOrg
@@ -373,7 +384,8 @@ const enforceIsAuthedAndOrgMember = t.middleware(async (opts) => {
         ...ctx.session,
         user: ctx.session.user,
         orgId: orgId,
-        orgRole: ctx.session.user.admin === true ? Role.OWNER : sessionOrg!.role,
+        orgRole:
+          ctx.session.user.admin === true ? Role.OWNER : sessionOrg!.role,
       },
     },
   });
@@ -461,25 +473,36 @@ const enforceTraceAccess = t.middleware(async (opts) => {
 
   const isSessionPublic = traceSession?.public === true;
 
-  if (!trace.public && !sessionProject && !isSessionPublic && ctx.session?.user?.admin !== true) {
-    logger.error(`User ${ctx.session?.user?.id} is not a member of project ${projectId}`);
+  if (
+    !trace.public &&
+    !sessionProject &&
+    !isSessionPublic &&
+    ctx.session?.user?.admin !== true
+  ) {
+    logger.error(
+      `User ${ctx.session?.user?.id} is not a member of project ${projectId}`,
+    );
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "User is not a member of this project and this trace is not public",
+      message:
+        "User is not a member of this project and this trace is not public",
     });
   }
   return next({
     ctx: {
       session: {
         ...ctx.session,
-        projectRole: ctx.session?.user?.admin === true ? Role.OWNER : sessionProject?.role,
+        projectRole:
+          ctx.session?.user?.admin === true ? Role.OWNER : sessionProject?.role,
       },
       trace, // pass the trace to the next middleware so we do not need to fetch it again
     },
   });
 });
 
-export const protectedGetTraceProcedure = withOtelTracingProcedure.use(withErrorHandling).use(enforceTraceAccess);
+export const protectedGetTraceProcedure = withOtelTracingProcedure
+  .use(withErrorHandling)
+  .use(enforceTraceAccess);
 
 /*
  * Protect session-level getter routes.
@@ -516,7 +539,9 @@ const enforceSessionAccess = t.middleware(async (opts) => {
   });
 
   if (!session) {
-    logger.error(`Session with id ${sessionId} not found for project ${projectId}`);
+    logger.error(
+      `Session with id ${sessionId} not found for project ${projectId}`,
+    );
     throw new TRPCError({
       code: "NOT_FOUND",
       message: "Session not found",
@@ -527,11 +552,18 @@ const enforceSessionAccess = t.middleware(async (opts) => {
     .flatMap((org) => org.projects)
     .find(({ id }) => id === projectId);
 
-  if (!session.public && !userSessionProject && ctx.session?.user?.admin !== true) {
-    logger.error(`User ${ctx.session?.user?.id} is not a member of project ${projectId}`);
+  if (
+    !session.public &&
+    !userSessionProject &&
+    ctx.session?.user?.admin !== true
+  ) {
+    logger.error(
+      `User ${ctx.session?.user?.id} is not a member of project ${projectId}`,
+    );
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "User is not a member of this project and this session is not public",
+      message:
+        "User is not a member of this project and this session is not public",
     });
   }
 
@@ -539,13 +571,18 @@ const enforceSessionAccess = t.middleware(async (opts) => {
     ctx: {
       session: {
         ...ctx.session,
-        projectRole: ctx.session?.user?.admin === true ? Role.OWNER : userSessionProject?.role,
+        projectRole:
+          ctx.session?.user?.admin === true
+            ? Role.OWNER
+            : userSessionProject?.role,
       },
     },
   });
 });
 
-export const protectedGetSessionProcedure = withOtelTracingProcedure.use(withErrorHandling).use(enforceSessionAccess);
+export const protectedGetSessionProcedure = withOtelTracingProcedure
+  .use(withErrorHandling)
+  .use(enforceSessionAccess);
 
 const inputAdminSchema = z.object({
   adminApiKey: z.string(),
@@ -564,7 +601,9 @@ const enforceAdminAuth = t.middleware(async (opts) => {
     });
   }
 
-  const adminAuthResult = AdminApiAuthService.verifyAdminAuthFromAuthString(result.data.adminApiKey);
+  const adminAuthResult = AdminApiAuthService.verifyAdminAuthFromAuthString(
+    result.data.adminApiKey,
+  );
 
   if (!adminAuthResult.isAuthorized) {
     throw new TRPCError({
@@ -584,7 +623,9 @@ const enforceAdminAuth = t.middleware(async (opts) => {
  * This procedure requires a valid admin API key in the Authorization header.
  * It should be used for sensitive operations that require admin-level access.
  */
-export const adminProcedure = withOtelTracingProcedure.use(withErrorHandling).use(enforceAdminAuth);
+export const adminProcedure = withOtelTracingProcedure
+  .use(withErrorHandling)
+  .use(enforceAdminAuth);
 
 // Export context types for easier reuse
 // Base context from createTRPCContext

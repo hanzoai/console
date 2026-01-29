@@ -70,8 +70,14 @@ export function generateNumericHeatmapData({
   const cells: HeatmapCell[] = data.map((d) => {
     const percentage = total > 0 ? (d.count / total) * 100 : 0;
 
-    const xRange: [number, number] = [min2 + d.bin_x * binWidth2, min2 + (d.bin_x + 1) * binWidth2];
-    const yRange: [number, number] = [min1 + d.bin_y * binWidth1, min1 + (d.bin_y + 1) * binWidth1];
+    const xRange: [number, number] = [
+      min2 + d.bin_x * binWidth2,
+      min2 + (d.bin_x + 1) * binWidth2,
+    ];
+    const yRange: [number, number] = [
+      min1 + d.bin_y * binWidth1,
+      min1 + (d.bin_y + 1) * binWidth1,
+    ];
 
     // Format display value
     let displayValue = "";
@@ -152,8 +158,12 @@ export function generateConfusionMatrixData({
   }
 
   // Extract unique categories
-  const rowCategories = Array.from(new Set(data.map((d) => d.row_category))).sort();
-  const colCategories = Array.from(new Set(data.map((d) => d.col_category))).sort();
+  const rowCategories = Array.from(
+    new Set(data.map((d) => d.row_category)),
+  ).sort();
+  const colCategories = Array.from(
+    new Set(data.map((d) => d.col_category)),
+  ).sort();
 
   const total = data.reduce((sum, d) => sum + d.count, 0);
   const maxCount = Math.max(...data.map((d) => d.count));

@@ -8,7 +8,11 @@ import {
   InternalServerError,
   HanzoNotFoundError,
 } from "@hanzo/shared";
-import { logger, traceException, ScoreDeleteQueue } from "@hanzo/shared/src/server";
+import {
+  logger,
+  traceException,
+  ScoreDeleteQueue,
+} from "@hanzo/shared/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";

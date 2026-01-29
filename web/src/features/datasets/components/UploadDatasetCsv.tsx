@@ -1,9 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { z } from "zod/v4";
 import { parseCsvClient } from "@/src/features/datasets/lib/csv/helpers";
 import { DialogBody } from "@/src/components/ui/dialog";
-import { Dropzone, DropzoneEmptyState } from "@/src/components/ui/shadcn-io/dropzone";
+import {
+  Dropzone,
+  DropzoneEmptyState,
+} from "@/src/components/ui/shadcn-io/dropzone";
 import type { CsvPreviewResult } from "@/src/features/datasets/lib/csv/types";
 
 export const MAX_FILE_SIZE_BYTES = 1024 * 1024 * 1 * 10; // 10MB
@@ -50,7 +59,10 @@ export const UploadDatasetCsv = ({
 
       setPreview(preview);
     } catch (error) {
-      showErrorToast("Failed to parse CSV", error instanceof Error ? error.message : "Unknown error");
+      showErrorToast(
+        "Failed to parse CSV",
+        error instanceof Error ? error.message : "Unknown error",
+      );
     }
   };
 
@@ -60,7 +72,8 @@ export const UploadDatasetCsv = ({
         <CardHeader className="text-center">
           <CardTitle className="text-lg">Add items to dataset</CardTitle>
           <CardDescription>
-            Add items to dataset by uploading a file, add items manually or via our SDKs/API
+            Add items to dataset by uploading a file, add items manually or via
+            our SDKs/API
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -24,7 +24,9 @@ import { env } from "@/src/env.mjs";
  * getSafeRedirectPath("/dashboard") // Returns "/dashboard"
  * getSafeRedirectPath("//evil.com") // Returns "/" (safe default)
  */
-export function getSafeRedirectPath(targetPath: string | undefined | null): string {
+export function getSafeRedirectPath(
+  targetPath: string | undefined | null,
+): string {
   const basePath = env.NEXT_PUBLIC_BASE_PATH ?? "";
   const safeDefault = basePath ? `${basePath}/` : "/";
 

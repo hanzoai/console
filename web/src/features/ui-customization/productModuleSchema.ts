@@ -32,7 +32,10 @@ export type ProductModule = z.infer<typeof ProductModule>;
  * If both are set, HANZO_UI_VISIBLE_PRODUCT_MODULES takes precedence.
  * If neither is set, all modules are visible.
  */
-export function getVisibleProductModules(visibleModulesEnv?: string, hiddenModulesEnv?: string): ProductModule[] {
+export function getVisibleProductModules(
+  visibleModulesEnv?: string,
+  hiddenModulesEnv?: string,
+): ProductModule[] {
   // If both variables are set, visible list takes precedence with a warning
   if (visibleModulesEnv && hiddenModulesEnv) {
     console.warn(
@@ -45,7 +48,9 @@ export function getVisibleProductModules(visibleModulesEnv?: string, hiddenModul
   // Only hidden list set - return all modules except hidden ones
   if (hiddenModulesEnv) {
     const hiddenModules = parseModulesList(hiddenModulesEnv);
-    return PRODUCT_MODULES.filter((module) => !hiddenModules.includes(module as ProductModule)) as ProductModule[];
+    return PRODUCT_MODULES.filter(
+      (module) => !hiddenModules.includes(module as ProductModule),
+    ) as ProductModule[];
   }
 
   // Only visible list set - return only the visible modules
@@ -69,5 +74,7 @@ function parseModulesList(input: string): ProductModule[] {
     .split(",")
     .map((module) => module.trim())
     .filter(Boolean)
-    .filter((module) => PRODUCT_MODULES.includes(module as ProductModule)) as ProductModule[];
+    .filter((module) =>
+      PRODUCT_MODULES.includes(module as ProductModule),
+    ) as ProductModule[];
 }

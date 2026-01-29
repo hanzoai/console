@@ -39,7 +39,10 @@ type RowData = {
 };
 
 export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("annotationQueues", "s");
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
+    "annotationQueues",
+    "s",
+  );
 
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -68,7 +71,10 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const key: RowData["key"] = row.getValue("key");
         return key && "id" in key && typeof key.id === "string" ? (
-          <TableLink path={`/project/${projectId}/annotation-queues/${key.id}`} value={key.name} />
+          <TableLink
+            path={`/project/${projectId}/annotation-queues/${key.id}`}
+            value={key.name}
+          />
         ) : undefined;
       },
     },
@@ -81,7 +87,12 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const description: RowData["description"] = row.getValue("description");
         return (
-          <span className={cn("grid h-full items-center overflow-auto", rowHeight === "s" && "leading-3")}>
+          <span
+            className={cn(
+              "grid h-full items-center overflow-auto",
+              rowHeight === "s" && "leading-3",
+            )}
+          >
             {description}
           </span>
         );
@@ -108,11 +119,22 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
       enableHiding: true,
       size: 200,
       cell: ({ row }) => {
-        const scoreConfigs: RowData["scoreConfigs"] = row.getValue("scoreConfigs");
+        const scoreConfigs: RowData["scoreConfigs"] =
+          row.getValue("scoreConfigs");
 
         return (
-          <span className={cn("grid h-full items-center overflow-auto", rowHeight === "s" && "leading-3")}>
-            {scoreConfigs.map((config) => `${getScoreDataTypeIcon(config.dataType)} ${config.name}`).join(", ")}
+          <span
+            className={cn(
+              "grid h-full items-center overflow-auto",
+              rowHeight === "s" && "leading-3",
+            )}
+          >
+            {scoreConfigs
+              .map(
+                (config) =>
+                  `${getScoreDataTypeIcon(config.dataType)} ${config.name}`,
+              )
+              .join(", ")}
           </span>
         );
       },
@@ -138,7 +160,9 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
           </Button>
         ) : (
           <Button size="sm" asChild>
-            <Link href={`/project/${projectId}/annotation-queues/${key.id}/items`}>
+            <Link
+              href={`/project/${projectId}/annotation-queues/${key.id}/items`}
+            >
               <ClipboardPen className="mr-1 h-3 w-3" />
               <span className="text-xs">Process queue</span>
             </Link>
@@ -165,8 +189,15 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <div className="flex flex-col space-y-0.5">
-                <CreateOrEditAnnotationQueueButton projectId={projectId} queueId={key.id} variant="ghost" />
-                <DeleteAnnotationQueueButton projectId={projectId} queueId={key.id} />
+                <CreateOrEditAnnotationQueueButton
+                  projectId={projectId}
+                  queueId={key.id}
+                  variant="ghost"
+                />
+                <DeleteAnnotationQueueButton
+                  projectId={projectId}
+                  queueId={key.id}
+                />
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -175,7 +206,9 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
     },
   ];
 
-  const convertToTableRow = (item: RouterOutput["annotationQueues"]["all"]["queues"][number]): RowData => {
+  const convertToTableRow = (
+    item: RouterOutput["annotationQueues"]["all"]["queues"][number],
+  ): RowData => {
     return {
       key: { id: item.id, name: item.name },
       description: item.description ?? undefined,
@@ -187,9 +220,15 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
     };
   };
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<RowData>("queuesColumnVisibility", columns);
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility<RowData>(
+    "queuesColumnVisibility",
+    columns,
+  );
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<RowData>("queuesColumnOrder", columns);
+  const [columnOrder, setColumnOrder] = useColumnOrder<RowData>(
+    "queuesColumnOrder",
+    columns,
+  );
 
   return (
     <>
@@ -217,7 +256,9 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
               : {
                   isLoading: false,
                   isError: false,
-                  data: safeExtract(queues.data, "queues", []).map((t) => convertToTableRow(t)),
+                  data: safeExtract(queues.data, "queues", []).map((t) =>
+                    convertToTableRow(t),
+                  ),
                 }
         }
         pagination={{
@@ -230,7 +271,9 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
         columnOrder={columnOrder}
         onColumnOrderChange={setColumnOrder}
         rowHeight={rowHeight}
-        getRowClassName={(row) => (row.isAssigned ? "bg-primary/5 border-l-4 border-l-primary/40" : "")}
+        getRowClassName={(row) =>
+          row.isAssigned ? "bg-primary/5 border-l-4 border-l-primary/40" : ""
+        }
       />
     </>
   );

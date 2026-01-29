@@ -5,7 +5,10 @@ import {
   type AnnotationScoreDataType,
   type AnnotationScore,
 } from "@/src/features/scores/types";
-import { decomposeAggregateScoreKey, normalizeScoreName } from "@/src/features/scores/lib/aggregateScores";
+import {
+  decomposeAggregateScoreKey,
+  normalizeScoreName,
+} from "@/src/features/scores/lib/aggregateScores";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 /**
@@ -48,7 +51,9 @@ export function transformToAnnotationScores(
 
   // Otherwise, it's aggregates
   if (!traceId) {
-    throw new Error("traceId is required when transforming score aggregates to annotation scores");
+    throw new Error(
+      "traceId is required when transforming score aggregates to annotation scores",
+    );
   }
   return transformAggregates(input, configs, traceId, observationId);
 }
@@ -65,7 +70,9 @@ function transformFlatScores(
     .filter(
       (score) =>
         score.source === "ANNOTATION" &&
-        ANNOTATION_SCORE_DATA_TYPES_ARRAY.includes(score.dataType as AnnotationScoreDataType),
+        ANNOTATION_SCORE_DATA_TYPES_ARRAY.includes(
+          score.dataType as AnnotationScoreDataType,
+        ),
     )
     .map((score) => {
       const config = configs.find((c) => c.id === score.configId);
@@ -108,7 +115,9 @@ function transformAggregates(
     // Multi-value aggregates (no id) are child observation scores - skip them
     if (source !== "ANNOTATION" || !aggregate.id) return;
 
-    const config = configs.find((c) => normalizeScoreName(c.name) === name && c.dataType === dataType);
+    const config = configs.find(
+      (c) => normalizeScoreName(c.name) === name && c.dataType === dataType,
+    );
     if (!config) return;
 
     const score: AnnotationScore = {

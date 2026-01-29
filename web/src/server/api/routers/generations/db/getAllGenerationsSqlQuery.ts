@@ -1,6 +1,9 @@
 import { env } from "@/src/env.mjs";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { AGGREGATABLE_SCORE_TYPES, filterAndValidateDbScoreList } from "@hanzo/shared";
+import {
+  AGGREGATABLE_SCORE_TYPES,
+  filterAndValidateDbScoreList,
+} from "@hanzo/shared";
 import {
   getObservationsTableWithModelData,
   getObservationsWithModelDataFromEventsTable,
@@ -46,7 +49,9 @@ export async function getAllGenerations({
   });
 
   const fullGenerations = generations.map((generation) => {
-    const filteredScores = aggregateScores(validatedScores.filter((s) => s.observationId === generation.id));
+    const filteredScores = aggregateScores(
+      validatedScores.filter((s) => s.observationId === generation.id),
+    );
     return {
       ...generation,
       scores: filteredScores,

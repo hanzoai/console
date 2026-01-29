@@ -1,14 +1,22 @@
 import { useMemo } from "react";
 import { api } from "@/src/utils/api";
 import { type UseFormReturn } from "react-hook-form";
-import { extractVariables, PromptType, extractPlaceholderNames, type PromptMessage } from "@hanzo/shared";
+import {
+  extractVariables,
+  PromptType,
+  extractPlaceholderNames,
+  type PromptMessage,
+} from "@hanzo/shared";
 
 type ExperimentPromptDataProps = {
   projectId: string;
   form: UseFormReturn<any>;
 };
 
-export function useExperimentPromptData({ projectId, form }: ExperimentPromptDataProps) {
+export function useExperimentPromptData({
+  projectId,
+  form,
+}: ExperimentPromptDataProps) {
   const promptId = form.watch("promptId");
 
   const promptMeta = api.prompts.allPromptMeta.useQuery({
@@ -20,31 +28,37 @@ export function useExperimentPromptData({ projectId, form }: ExperimentPromptDat
     if (!prompt) return [];
 
     const extractedVariables = extractVariables(
-      prompt.type === PromptType.Text ? (prompt?.prompt?.toString() ?? "") : JSON.stringify(prompt?.prompt),
+      prompt.type === PromptType.Text
+        ? (prompt?.prompt?.toString() ?? "")
+        : JSON.stringify(prompt?.prompt),
     );
 
-    const promptMessages = prompt?.type === PromptType.Chat && Array.isArray(prompt.prompt) ? prompt.prompt : [];
-    const placeholderNames = extractPlaceholderNames(promptMessages as PromptMessage[]);
+    const promptMessages =
+      prompt?.type === PromptType.Chat && Array.isArray(prompt.prompt)
+        ? prompt.prompt
+        : [];
+    const placeholderNames = extractPlaceholderNames(
+      promptMessages as PromptMessage[],
+    );
 
     return [...extractedVariables, ...placeholderNames];
   }, [promptId, promptMeta.data]);
 
   const promptsByName = useMemo(
     () =>
-      promptMeta.data?.reduce<Record<string, Array<{ version: number; id: string; labels: string[] }>>>(
-        (acc, prompt) => {
-          if (!acc[prompt.name]) {
-            acc[prompt.name] = [];
-          }
-          acc[prompt.name].push({
-            version: prompt.version,
-            id: prompt.id,
-            labels: prompt.labels,
-          });
-          return acc;
-        },
-        {},
-      ),
+      promptMeta.data?.reduce<
+        Record<string, Array<{ version: number; id: string; labels: string[] }>>
+      >((acc, prompt) => {
+        if (!acc[prompt.name]) {
+          acc[prompt.name] = [];
+        }
+        acc[prompt.name].push({
+          version: prompt.version,
+          id: prompt.id,
+          labels: prompt.labels,
+        });
+        return acc;
+      }, {}),
     [promptMeta.data],
   );
 

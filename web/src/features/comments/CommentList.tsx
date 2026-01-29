@@ -1,8 +1,26 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { Button } from "@/src/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/src/components/ui/form";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { MarkdownView } from "@/src/components/ui/MarkdownViewer";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Input } from "@/src/components/ui/input";
@@ -14,7 +32,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type CommentObjectType, CreateCommentData } from "@hanzo/shared";
 import { ArrowUpToLine, LoaderCircle, Search, Trash, X } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod/v4";
 import { useMentionAutocomplete } from "@/src/features/comments/hooks/useMentionAutocomplete";
@@ -50,7 +74,8 @@ function humanizeJsonPath(path: string): string {
     .join(" › ");
 }
 
-const useIsomorphicLayoutEffect = typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 
 export function CommentList({
   projectId,
@@ -199,7 +224,12 @@ export function CommentList({
   // Scroll to bottom on initial load to show latest comments + input.
   // Skip auto-scroll if there's a highlighted comment (deeplink takes precedence).
   useIsomorphicLayoutEffect(() => {
-    if (didInitialAutoscrollRef.current || !comments.data || !commentsContainerRef.current || highlightedCommentId) {
+    if (
+      didInitialAutoscrollRef.current ||
+      !comments.data ||
+      !commentsContainerRef.current ||
+      highlightedCommentId
+    ) {
       return;
     }
 
@@ -242,7 +272,8 @@ export function CommentList({
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement ||
-        (event.target instanceof HTMLElement && event.target.getAttribute("role") === "textbox")
+        (event.target instanceof HTMLElement &&
+          event.target.getAttribute("role") === "textbox")
       ) {
         return;
       }
@@ -257,7 +288,8 @@ export function CommentList({
 
     // Use capture phase to intercept before browser default handler
     window.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
+    return () =>
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [isDrawerOpen]);
 
   const utils = api.useUtils();
@@ -288,14 +320,18 @@ export function CommentList({
   // Insert mention at cursor position
   const insertMention = useCallback(
     (userId: string, displayName: string) => {
-      if (!textareaRef.current || mentionAutocomplete.mentionStartPos === null) return;
+      if (!textareaRef.current || mentionAutocomplete.mentionStartPos === null)
+        return;
 
       const textarea = textareaRef.current;
       const currentValue = form.getValues("content");
       const cursorPos = textarea.selectionStart;
 
       // Replace from @ to cursor with mention
-      const before = currentValue.substring(0, mentionAutocomplete.mentionStartPos);
+      const before = currentValue.substring(
+        0,
+        mentionAutocomplete.mentionStartPos,
+      );
       const after = currentValue.substring(cursorPos);
       const mention = `@[${displayName}](${MENTION_USER_PREFIX}${userId}) `;
 
@@ -342,7 +378,11 @@ export function CommentList({
         ...comment,
         timestamp: getRelativeTimestampFromNow(comment.createdAt),
         strippedLower: stripMarkdown(comment.content).toLowerCase(),
-        authorLower: (comment.authorUserName || comment.authorUserId || "").toLowerCase(),
+        authorLower: (
+          comment.authorUserName ||
+          comment.authorUserId ||
+          ""
+        ).toLowerCase(),
       }))
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   }, [comments.data]);
@@ -363,7 +403,11 @@ export function CommentList({
     });
   }, [commentsWithFormattedTimestamp, searchQuery]);
 
-  if (!hasReadAccess || (!hasWriteAccess && comments.data?.length === 0) || session.status !== "authenticated")
+  if (
+    !hasReadAccess ||
+    (!hasWriteAccess && comments.data?.length === 0) ||
+    session.status !== "authenticated"
+  )
     return null;
 
   function onSubmit(values: z.infer<typeof CreateCommentData>) {
@@ -394,7 +438,9 @@ export function CommentList({
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      const newIndex = (mentionAutocomplete.selectedIndex + 1) % mentionAutocomplete.users.length;
+      const newIndex =
+        (mentionAutocomplete.selectedIndex + 1) %
+        mentionAutocomplete.users.length;
       mentionAutocomplete.setSelectedIndex(newIndex);
       return;
     } else if (event.key === "ArrowUp") {
@@ -424,14 +470,27 @@ export function CommentList({
 
   if (comments.isPending)
     return (
-      <div className={cn("flex min-h-[5rem] items-center justify-center rounded border border-dashed p-1", className)}>
+      <div
+        className={cn(
+          "flex min-h-[5rem] items-center justify-center rounded border border-dashed p-1",
+          className,
+        )}
+      >
         <LoaderCircle className="mr-1.5 h-4 w-4 animate-spin text-muted-foreground" />
-        <span className="text-sm text-muted-foreground opacity-60">Loading comments...</span>
+        <span className="text-sm text-muted-foreground opacity-60">
+          Loading comments...
+        </span>
       </div>
     );
 
   return (
-    <div className={cn(cardView && "rounded-md border", "flex h-full min-h-0 flex-col", className)}>
+    <div
+      className={cn(
+        cardView && "rounded-md border",
+        "flex h-full min-h-0 flex-col",
+        className,
+      )}
+    >
       {cardView && (
         <div className="flex-shrink-0 border-b px-2 py-1 text-sm font-medium">
           Comments ({comments.data?.length ?? 0})
@@ -465,7 +524,8 @@ export function CommentList({
                 )}
                 {!searchQuery && (
                   <kbd className="pointer-events-none absolute right-1 top-1/2 h-5 -translate-y-1/2 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-50 sm:inline-flex">
-                    {typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac") ? (
+                    {typeof navigator !== "undefined" &&
+                    navigator.platform.toLowerCase().includes("mac") ? (
                       <>
                         <span className="text-xs">⌘</span>F
                       </>
@@ -485,7 +545,10 @@ export function CommentList({
             </div>
           </div>
         )}
-        <div ref={commentsContainerRef} className="flex min-h-0 flex-1 flex-col justify-end overflow-y-auto">
+        <div
+          ref={commentsContainerRef}
+          className="flex min-h-0 flex-1 flex-col justify-end overflow-y-auto"
+        >
           <div className="max-h-full space-y-2 p-2">
             {filteredComments?.map((comment) => (
               <div
@@ -493,7 +556,9 @@ export function CommentList({
                 id={`comment-${comment.id}`}
                 className={cn(
                   "group relative grid grid-cols-[auto,1fr] gap-2.5 rounded-lg border p-3 transition-colors",
-                  highlightedCommentId === comment.id ? "border-primary-accent" : "border-border/40 hover:bg-muted/20",
+                  highlightedCommentId === comment.id
+                    ? "border-primary-accent"
+                    : "border-border/40 hover:bg-muted/20",
                 )}
               >
                 <Avatar className="h-6 w-6">
@@ -515,7 +580,9 @@ export function CommentList({
                       {comment.authorUserName ?? comment.authorUserId ?? "User"}
                     </span>
                     <span className="text-muted-foreground/50">·</span>
-                    <span className="text-muted-foreground/70">{comment.timestamp}</span>
+                    <span className="text-muted-foreground/70">
+                      {comment.timestamp}
+                    </span>
                   </div>
 
                   {/* Comment content with CSS overrides for markdown */}
@@ -537,17 +604,23 @@ export function CommentList({
                               className="pointer-events-none px-1.5 py-0 text-[10px] font-medium text-foreground"
                               style={{
                                 backgroundColor:
-                                  IO_FIELD_COLORS[comment.dataField as keyof typeof IO_FIELD_COLORS]?.[
-                                    isDark ? "dark" : "light"
-                                  ],
+                                  IO_FIELD_COLORS[
+                                    comment.dataField as keyof typeof IO_FIELD_COLORS
+                                  ]?.[isDark ? "dark" : "light"],
                               }}
                             >
                               {comment.dataField.toUpperCase()}
                             </Badge>
-                            <span className="text-muted-foreground">{humanizeJsonPath(comment.path[0])}</span>
+                            <span className="text-muted-foreground">
+                              {humanizeJsonPath(comment.path[0])}
+                            </span>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="top" align="start" className="px-2 py-1 text-xs">
+                        <TooltipContent
+                          side="top"
+                          align="start"
+                          className="px-2 py-1 text-xs"
+                        >
                           The location of the text commented on
                         </TooltipContent>
                       </Tooltip>
@@ -598,7 +671,11 @@ export function CommentList({
                       title="Delete comment"
                       loading={deleteCommentMutation.isPending}
                       onClick={() => {
-                        if (confirm("Are you sure you want to delete this comment?"))
+                        if (
+                          confirm(
+                            "Are you sure you want to delete this comment?",
+                          )
+                        )
                           deleteCommentMutation.mutateAsync({
                             commentId: comment.id,
                             projectId,
@@ -679,7 +756,9 @@ export function CommentList({
                               selectedIndex={mentionAutocomplete.selectedIndex}
                               onSelect={insertMention}
                               onClose={mentionAutocomplete.closeDropdown}
-                              onSelectedIndexChange={mentionAutocomplete.setSelectedIndex}
+                              onSelectedIndexChange={
+                                mentionAutocomplete.setSelectedIndex
+                              }
                             />
                           )}
                         </div>
@@ -704,7 +783,11 @@ export function CommentList({
                           <ArrowUpToLine className="h-3 w-3" />
                         </Button>
                       </HoverCardTrigger>
-                      <HoverCardContent side="top" align="end" className="w-auto p-2">
+                      <HoverCardContent
+                        side="top"
+                        align="end"
+                        className="w-auto p-2"
+                      >
                         <div className="flex items-center gap-2 text-sm">
                           <span>Send comment</span>
                           <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">

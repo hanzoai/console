@@ -1,8 +1,16 @@
 import { z } from "zod/v4";
 
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import { paginationZod, singleFilter } from "@hanzo/shared";
-import { getTotalUserCount, getTracesGroupedByUsers, getUserMetrics, hasAnyUser } from "@hanzo/shared/src/server";
+import {
+  getTotalUserCount,
+  getTracesGroupedByUsers,
+  getUserMetrics,
+  hasAnyUser,
+} from "@hanzo/shared/src/server";
 
 const UserFilterOptions = z.object({
   projectId: z.string(), // Required for protectedProjectProcedure
@@ -28,27 +36,33 @@ export const userRouter = createTRPCRouter({
       return await hasAnyUser(input.projectId);
     }),
 
-  all: protectedProjectProcedure.input(UserAllOptions).query(async ({ input, ctx }) => {
-    const [users, totalUsers] = await Promise.all([
-      getTracesGroupedByUsers(
-        ctx.session.projectId,
-        input.filter ?? [],
-        input.searchQuery ?? undefined,
-        input.limit,
-        input.page * input.limit,
-        undefined,
-      ),
-      getTotalUserCount(ctx.session.projectId, input.filter ?? [], input.searchQuery ?? undefined),
-    ]);
+  all: protectedProjectProcedure
+    .input(UserAllOptions)
+    .query(async ({ input, ctx }) => {
+      const [users, totalUsers] = await Promise.all([
+        getTracesGroupedByUsers(
+          ctx.session.projectId,
+          input.filter ?? [],
+          input.searchQuery ?? undefined,
+          input.limit,
+          input.page * input.limit,
+          undefined,
+        ),
+        getTotalUserCount(
+          ctx.session.projectId,
+          input.filter ?? [],
+          input.searchQuery ?? undefined,
+        ),
+      ]);
 
-    return {
-      totalUsers: totalUsers.shift()?.totalCount ?? 0,
-      users: users.map((user) => ({
-        userId: user.user,
-        totalTraces: BigInt(user.count),
-      })),
-    };
-  }),
+      return {
+        totalUsers: totalUsers.shift()?.totalCount ?? 0,
+        users: users.map((user) => ({
+          userId: user.user,
+          totalTraces: BigInt(user.count),
+        })),
+      };
+    }),
 
   metrics: protectedProjectProcedure
     .input(
@@ -62,7 +76,11 @@ export const userRouter = createTRPCRouter({
       if (input.userIds.length === 0) {
         return [];
       }
-      const metrics = await getUserMetrics(input.projectId, input.userIds, input.filter ?? []);
+      const metrics = await getUserMetrics(
+        input.projectId,
+        input.userIds,
+        input.filter ?? [],
+      );
 
       return metrics.map((metric) => ({
         userId: metric.userId,
@@ -86,7 +104,9 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const result = (await getUserMetrics(input.projectId, [input.userId], [])).shift();
+      const result = (
+        await getUserMetrics(input.projectId, [input.userId], [])
+      ).shift();
 
       return {
         userId: input.userId,

@@ -89,7 +89,9 @@ export function flattenTreeOrder(roots: TreeNode[]): FlatLogItem[] {
 
   if (isTraceRooted) {
     // Sort root children by startTime and push in reverse order
-    const sortedRootChildren = [...roots[0].children].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+    const sortedRootChildren = [...roots[0].children].sort(
+      (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+    );
 
     for (let i = sortedRootChildren.length - 1; i >= 0; i--) {
       stack.push({
@@ -101,7 +103,9 @@ export function flattenTreeOrder(roots: TreeNode[]): FlatLogItem[] {
     }
   } else {
     // Multiple observation roots - sort and push in reverse order
-    const sortedRoots = [...roots].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+    const sortedRoots = [...roots].sort(
+      (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+    );
 
     for (let i = sortedRoots.length - 1; i >= 0; i--) {
       stack.push({
@@ -127,7 +131,9 @@ export function flattenTreeOrder(roots: TreeNode[]): FlatLogItem[] {
     // If node has children, add them to stack
     if (current.node.children.length > 0) {
       // Sort children by startTime
-      const sortedChildren = [...current.node.children].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+      const sortedChildren = [...current.node.children].sort(
+        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
+      );
 
       // Push children in REVERSE order for correct DFS traversal
       for (let i = sortedChildren.length - 1; i >= 0; i--) {
@@ -155,7 +161,10 @@ export function flattenTreeOrder(roots: TreeNode[]): FlatLogItem[] {
  * @param query - Search query string
  * @returns Filtered list of items matching the query
  */
-export function filterBySearch(items: FlatLogItem[], query: string): FlatLogItem[] {
+export function filterBySearch(
+  items: FlatLogItem[],
+  query: string,
+): FlatLogItem[] {
   if (!query.trim()) {
     return items;
   }
@@ -167,6 +176,10 @@ export function filterBySearch(items: FlatLogItem[], query: string): FlatLogItem
     const type = item.node.type.toLowerCase();
     const id = item.node.id.toLowerCase();
 
-    return name.includes(lowerQuery) || type.includes(lowerQuery) || id.includes(lowerQuery);
+    return (
+      name.includes(lowerQuery) ||
+      type.includes(lowerQuery) ||
+      id.includes(lowerQuery)
+    );
   });
 }

@@ -8,7 +8,11 @@ type UsePeekDataProps = {
   timestamp?: Date;
 };
 
-export const usePeekData = ({ projectId, traceId, timestamp }: UsePeekDataProps) => {
+export const usePeekData = ({
+  projectId,
+  traceId,
+  timestamp,
+}: UsePeekDataProps) => {
   const { isBetaEnabled } = useObservationListBeta();
 
   // Old path: fetch from traces table (beta OFF)

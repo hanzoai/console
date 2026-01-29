@@ -8,7 +8,11 @@ interface ThinkingBlockProps {
   defaultExpanded?: boolean;
 }
 
-export function ThinkingBlock({ content, summary, defaultExpanded = false }: ThinkingBlockProps) {
+export function ThinkingBlock({
+  content,
+  summary,
+  defaultExpanded = false,
+}: ThinkingBlockProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const displayContent = summary || content;
 
@@ -20,12 +24,23 @@ export function ThinkingBlock({ content, summary, defaultExpanded = false }: Thi
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
       >
-        <ChevronRight className={cn("mt-0.5 h-3 w-3 flex-shrink-0 transition-transform", expanded && "rotate-90")} />
+        <ChevronRight
+          className={cn(
+            "mt-0.5 h-3 w-3 flex-shrink-0 transition-transform",
+            expanded && "rotate-90",
+          )}
+        />
         <span className="text-xs font-medium">Thinking</span>
-        {!expanded && <span className="line-clamp-1 text-xs italic">{displayContent}</span>}
+        {!expanded && (
+          <span className="line-clamp-1 text-xs italic">{displayContent}</span>
+        )}
       </button>
 
-      {expanded && <div className="ml-4 mt-1 whitespace-pre-wrap text-sm italic text-muted-foreground">{content}</div>}
+      {expanded && (
+        <div className="ml-4 mt-1 whitespace-pre-wrap text-sm italic text-muted-foreground">
+          {content}
+        </div>
+      )}
     </div>
   );
 }
@@ -36,7 +51,10 @@ interface RedactedThinkingBlockProps {
 }
 
 // redactedThinkingBlock renders redacted thinking content if flagged by Anthropic
-export function RedactedThinkingBlock({ data, defaultExpanded = false }: RedactedThinkingBlockProps) {
+export function RedactedThinkingBlock({
+  data,
+  defaultExpanded = false,
+}: RedactedThinkingBlockProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
@@ -47,9 +65,16 @@ export function RedactedThinkingBlock({ data, defaultExpanded = false }: Redacte
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
       >
-        <ChevronRight className={cn("mt-0.5 h-3 w-3 flex-shrink-0 transition-transform", expanded && "rotate-90")} />
+        <ChevronRight
+          className={cn(
+            "mt-0.5 h-3 w-3 flex-shrink-0 transition-transform",
+            expanded && "rotate-90",
+          )}
+        />
         <span className="text-xs font-medium">Thinking (redacted)</span>
-        {!expanded && <span className="text-xs italic">[Encrypted thinking data]</span>}
+        {!expanded && (
+          <span className="text-xs italic">[Encrypted thinking data]</span>
+        )}
       </button>
 
       {expanded && (

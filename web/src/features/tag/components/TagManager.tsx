@@ -3,7 +3,11 @@ import TagCreateItem from "@/src/features/tag/components/TagCreateItem";
 import { TagInput } from "@/src/features/tag/components/TagInput";
 import TagList from "@/src/features/tag/components/TagList";
 import { useTagManager } from "@/src/features/tag/hooks/useTagManager";
-import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/src/components/ui/popover";
 import { Command, CommandList, CommandGroup } from "cmdk";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -32,13 +36,22 @@ const TagManager = ({
   isTableCell = false,
   allowTagRemoval = true,
 }: TagManagerProps) => {
-  const { selectedTags, inputValue, availableTags, handleItemCreate, setInputValue, setSelectedTags } = useTagManager({
+  const {
+    selectedTags,
+    inputValue,
+    availableTags,
+    handleItemCreate,
+    setInputValue,
+    setSelectedTags,
+  } = useTagManager({
     initialTags: tags,
     allTags,
   });
   const capture = usePostHogClientCapture();
   const filteredTags = availableTags.filter(
-    (value) => value.toLowerCase().includes(inputValue.trim().toLowerCase()) && !selectedTags.includes(value),
+    (value) =>
+      value.toLowerCase().includes(inputValue.trim().toLowerCase()) &&
+      !selectedTags.includes(value),
   );
 
   const handlePopoverChange = (open: boolean) => {
@@ -53,8 +66,19 @@ const TagManager = ({
 
   if (!hasAccess) {
     return (
-      <div className={cn("flex gap-x-1 gap-y-1", !isTableCell && "flex-wrap", className)}>
-        <TagList selectedTags={selectedTags} isLoading={isLoading} viewOnly isTableCell={isTableCell} />
+      <div
+        className={cn(
+          "flex gap-x-1 gap-y-1",
+          !isTableCell && "flex-wrap",
+          className,
+        )}
+      >
+        <TagList
+          selectedTags={selectedTags}
+          isLoading={isLoading}
+          viewOnly
+          isTableCell={isTableCell}
+        />
       </div>
     );
   }
@@ -70,8 +94,18 @@ const TagManager = ({
           }
         }}
       >
-        <div className={cn("flex gap-x-1 gap-y-1", !isTableCell && "flex-wrap", className)}>
-          <TagList selectedTags={selectedTags} isLoading={isLoading} isTableCell={isTableCell} />
+        <div
+          className={cn(
+            "flex gap-x-1 gap-y-1",
+            !isTableCell && "flex-wrap",
+            className,
+          )}
+        >
+          <TagList
+            selectedTags={selectedTags}
+            isLoading={isLoading}
+            isTableCell={isTableCell}
+          />
         </div>
       </PopoverTrigger>
       <PopoverContent

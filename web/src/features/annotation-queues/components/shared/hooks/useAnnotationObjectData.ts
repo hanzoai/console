@@ -1,5 +1,8 @@
 import { api } from "@/src/utils/api";
-import { type AnnotationQueueItem, AnnotationQueueObjectType } from "@hanzo/shared";
+import {
+  type AnnotationQueueItem,
+  AnnotationQueueObjectType,
+} from "@hanzo/shared";
 
 export interface ObjectDataHook<TData> {
   data: TData | undefined;
@@ -22,7 +25,11 @@ export const useAnnotationObjectData = (
         (item.objectType === AnnotationQueueObjectType.TRACE ||
           item.objectType === AnnotationQueueObjectType.OBSERVATION),
       retry(failureCount, error) {
-        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
+        if (
+          error.data?.code === "UNAUTHORIZED" ||
+          error.data?.code === "NOT_FOUND"
+        )
+          return false;
         return failureCount < 3;
       },
     },
@@ -36,7 +43,11 @@ export const useAnnotationObjectData = (
     {
       enabled: !!item && item.objectType === AnnotationQueueObjectType.SESSION,
       retry(failureCount, error) {
-        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
+        if (
+          error.data?.code === "UNAUTHORIZED" ||
+          error.data?.code === "NOT_FOUND"
+        )
+          return false;
         return failureCount < 3;
       },
     },

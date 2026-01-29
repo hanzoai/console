@@ -2,7 +2,10 @@ import { DatasetNameSchema, InvalidRequestError, Prisma } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import { validateAllDatasetItems } from "@hanzo/shared/src/server";
 
-type DatasetJson = Prisma.InputJsonObject | Prisma.JsonValue | typeof Prisma.DbNull;
+type DatasetJson =
+  | Prisma.InputJsonObject
+  | Prisma.JsonValue
+  | typeof Prisma.DbNull;
 
 type UpsertDatasetInput = {
   name: string;
@@ -23,10 +26,18 @@ type UpdateDatasetInput = {
   expectedOutputSchema?: DatasetJson;
 };
 
-export const upsertDataset = async ({ input, projectId }: { input: UpsertDatasetInput; projectId: string }) => {
+export const upsertDataset = async ({
+  input,
+  projectId,
+}: {
+  input: UpsertDatasetInput;
+  projectId: string;
+}) => {
   const validation = DatasetNameSchema.safeParse(input.name);
   if (!validation.success) {
-    throw new InvalidRequestError("Dataset name not valid. " + validation.error.message);
+    throw new InvalidRequestError(
+      "Dataset name not valid. " + validation.error.message,
+    );
   }
 
   // Check if dataset exists (for UPDATE path)
@@ -47,11 +58,14 @@ export const upsertDataset = async ({ input, projectId }: { input: UpsertDataset
   // If updating and schemas are being set, validate all existing items
   if (existingDataset) {
     const isSettingInputSchema = input.inputSchema !== undefined;
-    const isSettingExpectedOutputSchema = input.expectedOutputSchema !== undefined;
+    const isSettingExpectedOutputSchema =
+      input.expectedOutputSchema !== undefined;
 
     if (isSettingInputSchema || isSettingExpectedOutputSchema) {
       // Determine final schemas after update
-      const finalInputSchema = isSettingInputSchema ? input.inputSchema : existingDataset.inputSchema;
+      const finalInputSchema = isSettingInputSchema
+        ? input.inputSchema
+        : existingDataset.inputSchema;
       const finalExpectedOutputSchema = isSettingExpectedOutputSchema
         ? input.expectedOutputSchema
         : existingDataset.expectedOutputSchema;
@@ -62,7 +76,10 @@ export const upsertDataset = async ({ input, projectId }: { input: UpsertDataset
           datasetId: existingDataset.id,
           projectId,
           inputSchema: finalInputSchema as Record<string, unknown> | null,
-          expectedOutputSchema: finalExpectedOutputSchema as Record<string, unknown> | null,
+          expectedOutputSchema: finalExpectedOutputSchema as Record<
+            string,
+            unknown
+          > | null,
         });
 
         if (!validationResult.isValid) {
@@ -86,7 +103,11 @@ export const upsertDataset = async ({ input, projectId }: { input: UpsertDataset
       description: input.description ?? undefined,
       metadata: input.metadata ?? undefined,
       inputSchema:
-        input.inputSchema === undefined ? undefined : input.inputSchema === null ? Prisma.DbNull : input.inputSchema,
+        input.inputSchema === undefined
+          ? undefined
+          : input.inputSchema === null
+            ? Prisma.DbNull
+            : input.inputSchema,
       expectedOutputSchema:
         input.expectedOutputSchema === undefined
           ? undefined
@@ -99,7 +120,11 @@ export const upsertDataset = async ({ input, projectId }: { input: UpsertDataset
       description: input.description ?? undefined,
       metadata: input.metadata ?? undefined,
       inputSchema:
-        input.inputSchema === undefined ? undefined : input.inputSchema === null ? Prisma.DbNull : input.inputSchema,
+        input.inputSchema === undefined
+          ? undefined
+          : input.inputSchema === null
+            ? Prisma.DbNull
+            : input.inputSchema,
       expectedOutputSchema:
         input.expectedOutputSchema === undefined
           ? undefined
@@ -110,11 +135,19 @@ export const upsertDataset = async ({ input, projectId }: { input: UpsertDataset
   });
 };
 
-export const updateDataset = async ({ input, projectId }: { input: UpdateDatasetInput; projectId: string }) => {
+export const updateDataset = async ({
+  input,
+  projectId,
+}: {
+  input: UpdateDatasetInput;
+  projectId: string;
+}) => {
   if (input.name) {
     const validation = DatasetNameSchema.safeParse(input.name);
     if (!validation.success) {
-      throw new InvalidRequestError("Dataset name not valid. " + validation.error.message);
+      throw new InvalidRequestError(
+        "Dataset name not valid. " + validation.error.message,
+      );
     }
   }
 
@@ -132,7 +165,11 @@ export const updateDataset = async ({ input, projectId }: { input: UpdateDataset
       remoteExperimentUrl: input.remoteExperimentUrl,
       remoteExperimentPayload: input.remoteExperimentPayload ?? undefined,
       inputSchema:
-        input.inputSchema === undefined ? undefined : input.inputSchema === null ? Prisma.DbNull : input.inputSchema,
+        input.inputSchema === undefined
+          ? undefined
+          : input.inputSchema === null
+            ? Prisma.DbNull
+            : input.inputSchema,
       expectedOutputSchema:
         input.expectedOutputSchema === undefined
           ? undefined

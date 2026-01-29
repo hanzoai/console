@@ -23,7 +23,11 @@ jest.mock("@hanzo/shared/src/server", () => {
 
 import { prisma } from "@hanzo/shared/src/db";
 import { nanoid } from "nanoid";
-import { createMcpTestSetup, createPromptInDb, verifyAuditLog } from "./mcp-helpers";
+import {
+  createMcpTestSetup,
+  createPromptInDb,
+  verifyAuditLog,
+} from "./mcp-helpers";
 
 // Import MCP tool handlers directly
 import { handleCreateTextPrompt } from "@/src/features/mcp/features/prompts/tools/createTextPrompt";
@@ -76,7 +80,9 @@ describe("MCP Write Tools", () => {
         message: string;
       };
 
-      expect(result.labels).toEqual(expect.arrayContaining(["production", "stable"]));
+      expect(result.labels).toEqual(
+        expect.arrayContaining(["production", "stable"]),
+      );
       expect(result.message).toContain("production");
     });
 
@@ -189,7 +195,8 @@ describe("MCP Write Tools", () => {
     });
 
     it("should use context.projectId for tenant isolation", async () => {
-      const { context: context1, projectId: projectId1 } = await createMcpTestSetup();
+      const { context: context1, projectId: projectId1 } =
+        await createMcpTestSetup();
 
       const promptName = `isolated-${nanoid()}`;
 
@@ -423,7 +430,8 @@ describe("MCP Write Tools", () => {
     });
 
     it("should use context.projectId for tenant isolation", async () => {
-      const { context: context1, projectId: projectId1 } = await createMcpTestSetup();
+      const { context: context1, projectId: projectId1 } =
+        await createMcpTestSetup();
 
       const promptName = `isolated-chat-${nanoid()}`;
 
@@ -483,7 +491,9 @@ describe("MCP Write Tools", () => {
         ),
       ).rejects.toMatchObject({
         code: -32602, // INVALID_PARAMS
-        message: expect.stringContaining("Chat prompts must have at least one message"),
+        message: expect.stringContaining(
+          "Chat prompts must have at least one message",
+        ),
       });
     });
 
@@ -605,7 +615,9 @@ describe("MCP Write Tools", () => {
         labels: string[];
       };
 
-      expect(result.labels).toEqual(expect.arrayContaining(["staging", "testing", "qa"]));
+      expect(result.labels).toEqual(
+        expect.arrayContaining(["staging", "testing", "qa"]),
+      );
     });
 
     it("should add new labels to existing labels (additive behavior)", async () => {
@@ -736,7 +748,8 @@ describe("MCP Write Tools", () => {
     });
 
     it("should use context.projectId for tenant isolation", async () => {
-      const { context: context1, projectId: projectId1 } = await createMcpTestSetup();
+      const { context: context1, projectId: projectId1 } =
+        await createMcpTestSetup();
       const { context: context2 } = await createMcpTestSetup();
 
       const promptName = `isolated-update-${nanoid()}`;

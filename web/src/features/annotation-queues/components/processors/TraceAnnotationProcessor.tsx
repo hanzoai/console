@@ -2,7 +2,11 @@ import { Trace } from "@/src/components/trace2/Trace";
 import { ObservationPreview } from "@/src/components/trace2/ObservationPreview";
 import { TracePreview } from "@/src/components/trace2/TracePreview";
 import { JsonExpansionProvider } from "@/src/components/trace2/contexts/JsonExpansionContext";
-import { type AnnotationQueueItem, AnnotationQueueObjectType, type ScoreConfigDomain } from "@hanzo/shared";
+import {
+  type AnnotationQueueItem,
+  AnnotationQueueObjectType,
+  type ScoreConfigDomain,
+} from "@hanzo/shared";
 import { useEffect, useMemo } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";
@@ -23,18 +27,18 @@ interface TraceAnnotationProcessorProps {
   projectId: string;
 }
 
-export const TraceAnnotationProcessor: React.FC<TraceAnnotationProcessorProps> = ({
-  item,
-  data,
-  view,
-  configs,
-  projectId,
-}) => {
+export const TraceAnnotationProcessor: React.FC<
+  TraceAnnotationProcessorProps
+> = ({ item, data, view, configs, projectId }) => {
   const traceId = item.parentTraceId ?? item.objectId;
 
-  const [currentObservationId, setCurrentObservationId] = useQueryParam("observation", StringParam);
+  const [currentObservationId, setCurrentObservationId] = useQueryParam(
+    "observation",
+    StringParam,
+  );
 
-  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(projectId);
+  const isAuthenticatedAndProjectMember =
+    useIsAuthenticatedAndProjectMember(projectId);
 
   const traceCommentCounts = api.comments.getCountByObjectId.useQuery(
     {
@@ -70,7 +74,10 @@ export const TraceAnnotationProcessor: React.FC<TraceAnnotationProcessorProps> =
   );
 
   useEffect(() => {
-    if (view === "showTree" && item.objectType === AnnotationQueueObjectType.OBSERVATION) {
+    if (
+      view === "showTree" &&
+      item.objectType === AnnotationQueueObjectType.OBSERVATION
+    ) {
       setCurrentObservationId(item.objectId);
     } else setCurrentObservationId(undefined);
   }, [view, item, setCurrentObservationId]);
@@ -86,7 +93,12 @@ export const TraceAnnotationProcessor: React.FC<TraceAnnotationProcessorProps> =
 
   let isValidObservationId = false;
 
-  if (currentObservationId && data.observations.some(({ id }: { id: string }) => id === currentObservationId)) {
+  if (
+    currentObservationId &&
+    data.observations.some(
+      ({ id }: { id: string }) => id === currentObservationId,
+    )
+  ) {
     isValidObservationId = true;
   }
 
@@ -151,5 +163,11 @@ export const TraceAnnotationProcessor: React.FC<TraceAnnotationProcessorProps> =
     />
   );
 
-  return <AnnotationProcessingLayout leftPanel={leftPanel} rightPanel={rightPanel} projectId={projectId} />;
+  return (
+    <AnnotationProcessingLayout
+      leftPanel={leftPanel}
+      rightPanel={rightPanel}
+      projectId={projectId}
+    />
+  );
 };

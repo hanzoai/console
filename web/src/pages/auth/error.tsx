@@ -8,5 +8,7 @@ export default function AuthError() {
     ? decodeURIComponent(String(error))
     : "An authentication error occurred. Please reach out to support.";
 
-  return <ErrorPageWithSentry title="Authentication Error" message={errorMessage} />;
+  return (
+    <ErrorPageWithSentry title="Authentication Error" message={errorMessage} />
+  );
 }

@@ -5,7 +5,11 @@ import { Calendar as CalendarIcon, X, ChevronDown } from "lucide-react";
 import { addMinutes } from "date-fns";
 import { Button } from "@/src/components/ui/button";
 import { Calendar } from "@/src/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { cn } from "@/src/utils/tailwind";
 import { type DateRange as RDPDateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -45,19 +49,39 @@ export function DatePicker({
           <Button
             variant={"outline"}
             disabled={disabled}
-            className={cn("justify-start text-left font-normal", !date && "text-muted-foreground", className)}
+            className={cn(
+              "justify-start text-left font-normal",
+              !date && "text-muted-foreground",
+              className,
+            )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, includeTimePicker ? "PPP pp" : "PPP") : <span>Pick a date</span>}
+            {date ? (
+              format(date, includeTimePicker ? "PPP pp" : "PPP")
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
-          <Calendar mode="single" selected={date} onSelect={(d) => onChange(d)} autoFocus />
-          {includeTimePicker && <TimePicker date={date} setDate={(d) => onChange(d)} />}
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(d) => onChange(d)}
+            autoFocus
+          />
+          {includeTimePicker && (
+            <TimePicker date={date} setDate={(d) => onChange(d)} />
+          )}
         </PopoverContent>
       </Popover>
       {date && clearable && (
-        <Button variant="ghost" size="icon" onClick={() => onChange(undefined)} title="reset date">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onChange(undefined)}
+          title="reset date"
+        >
           <X size={14} />
         </Button>
       )}
@@ -70,7 +94,10 @@ export type DatePickerWithRangeProps = {
   className?: string;
   selectedOption: DashboardDateRangeOptions;
   disabled?: React.ComponentProps<typeof Calendar>["disabled"];
-  setDateRangeAndOption: (option: DashboardDateRangeOptions, date?: DashboardDateRange) => void;
+  setDateRangeAndOption: (
+    option: DashboardDateRangeOptions,
+    date?: DashboardDateRange,
+  ) => void;
 };
 
 export function DatePickerWithRange({
@@ -80,7 +107,9 @@ export function DatePickerWithRange({
   setDateRangeAndOption,
   disabled,
 }: DatePickerWithRangeProps) {
-  const [internalDateRange, setInternalDateRange] = useState<RDPDateRange | undefined>(dateRange);
+  const [internalDateRange, setInternalDateRange] = useState<
+    RDPDateRange | undefined
+  >(dateRange);
 
   useEffect(() => {
     setInternalDateRange(dateRange);
@@ -101,14 +130,20 @@ export function DatePickerWithRange({
 
   const updateDashboardDateRange = (
     newRange: RDPDateRange | undefined,
-    setDateRangeAndOption: (option: DashboardDateRangeOptions, date?: DashboardDateRange) => void,
+    setDateRangeAndOption: (
+      option: DashboardDateRangeOptions,
+      date?: DashboardDateRange,
+    ) => void,
   ) => {
     if (newRange && newRange.from && newRange.to) {
       const dashboardDateRange: DashboardDateRange = {
         from: newRange.from,
         to: newRange.to,
       };
-      setDateRangeAndOption(DASHBOARD_AGGREGATION_PLACEHOLDER, dashboardDateRange);
+      setDateRangeAndOption(
+        DASHBOARD_AGGREGATION_PLACEHOLDER,
+        dashboardDateRange,
+      );
     }
   };
 
@@ -126,20 +161,30 @@ export function DatePickerWithRange({
 
   const onStartTimeSelection = (date: Date | undefined) => {
     const newDateTime = combineDateAndTime(internalDateRange?.from, date);
-    const newRange = setNewDateRange(internalDateRange, newDateTime, internalDateRange?.to);
+    const newRange = setNewDateRange(
+      internalDateRange,
+      newDateTime,
+      internalDateRange?.to,
+    );
     setInternalDateRange(newRange);
     updateDashboardDateRange(newRange, setDateRangeAndOption);
   };
 
   const onEndTimeSelection = (date: Date | undefined) => {
     const newDateTime = combineDateAndTime(internalDateRange?.to, date);
-    const newRange = setNewDateRange(internalDateRange, internalDateRange?.from, newDateTime);
+    const newRange = setNewDateRange(
+      internalDateRange,
+      internalDateRange?.from,
+      newDateTime,
+    );
     setInternalDateRange(newRange);
     updateDashboardDateRange(newRange, setDateRangeAndOption);
   };
 
   return (
-    <div className={cn("my-3 flex flex-col-reverse gap-2 md:flex-row", className)}>
+    <div
+      className={cn("my-3 flex flex-col-reverse gap-2 md:flex-row", className)}
+    >
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -191,12 +236,19 @@ export function DatePickerWithRange({
               <p className="px-1 text-sm font-medium">
                 End<span className="hidden sm:inline"> time</span>
               </p>
-              <TimePicker date={internalDateRange?.to} setDate={onEndTimeSelection} className="border-0 px-0 pt-1" />
+              <TimePicker
+                date={internalDateRange?.to}
+                setDate={onEndTimeSelection}
+                className="border-0 px-0 pt-1"
+              />
             </div>
           </div>
         </PopoverContent>
       </Popover>
-      <DashboardDateRangeDropdown selectedOption={selectedOption} setDateRangeAndOption={setDateRangeAndOption} />
+      <DashboardDateRangeDropdown
+        selectedOption={selectedOption}
+        setDateRangeAndOption={setDateRangeAndOption}
+      />
     </div>
   );
 }
@@ -217,7 +269,11 @@ export function TimeRangePicker({
   disabled,
 }: TimeRangePickerProps) {
   // Determine the range type
-  const rangeType: "named" | "custom" | null = timeRange ? ("from" in timeRange ? "custom" : "named") : null;
+  const rangeType: "named" | "custom" | null = timeRange
+    ? "from" in timeRange
+      ? "custom"
+      : "named"
+    : null;
 
   // Disable future dates by default, plus any additional disabled prop
   const calendarDisabled = React.useMemo(() => {
@@ -228,14 +284,21 @@ export function TimeRangePicker({
 
     // Always return an array when combining with additional restrictions
     const disabledArray = Array.isArray(disabled) ? disabled : [disabled];
-    return [...disabledArray, futureDisabled] as React.ComponentProps<typeof Calendar>["disabled"];
+    return [...disabledArray, futureDisabled] as React.ComponentProps<
+      typeof Calendar
+    >["disabled"];
   }, [disabled]);
-  const namedRangeValue = rangeType === "named" && timeRange && "range" in timeRange ? timeRange.range : null;
+  const namedRangeValue =
+    rangeType === "named" && timeRange && "range" in timeRange
+      ? timeRange.range
+      : null;
 
   // Convert TimeRange to DateRange for internal use
   const dateRange = timeRange && "from" in timeRange ? timeRange : undefined;
 
-  const [internalDateRange, setInternalDateRange] = useState<RDPDateRange | undefined>(dateRange);
+  const [internalDateRange, setInternalDateRange] = useState<
+    RDPDateRange | undefined
+  >(dateRange);
 
   // Update internal date range when timeRange changes
   useEffect(() => {
@@ -295,14 +358,22 @@ export function TimeRangePicker({
 
   const onStartTimeSelection = (date: Date | undefined) => {
     const newDateTime = combineDateAndTime(internalDateRange?.from, date);
-    const newRange = setNewDateRange(internalDateRange, newDateTime, internalDateRange?.to);
+    const newRange = setNewDateRange(
+      internalDateRange,
+      newDateTime,
+      internalDateRange?.to,
+    );
     setInternalDateRange(newRange);
     updateDateRange(newRange);
   };
 
   const onEndTimeSelection = (date: Date | undefined) => {
     const newDateTime = combineDateAndTime(internalDateRange?.to, date);
-    const newRange = setNewDateRange(internalDateRange, internalDateRange?.from, newDateTime);
+    const newRange = setNewDateRange(
+      internalDateRange,
+      internalDateRange?.from,
+      newDateTime,
+    );
     setInternalDateRange(newRange);
     updateDateRange(newRange);
   };
@@ -329,7 +400,11 @@ export function TimeRangePicker({
       return (
         <div className="flex items-center gap-2">
           <CalendarIcon className="h-4 w-4" />
-          <span>{dateRange ? formatDateRange(dateRange.from, dateRange.to) : "Select from calendar"}</span>
+          <span>
+            {dateRange
+              ? formatDateRange(dateRange.from, dateRange.to)
+              : "Select from calendar"}
+          </span>
         </div>
       );
     } else if (rangeType === "named") {
@@ -406,7 +481,8 @@ export function TimeRangePicker({
             /* Always show preset options dropdown */
             <div className="p-1">
               {timeRangePresets.map((presetKey) => {
-                const setting = TIME_RANGES[presetKey as keyof typeof TIME_RANGES];
+                const setting =
+                  TIME_RANGES[presetKey as keyof typeof TIME_RANGES];
                 return (
                   <div
                     key={presetKey}

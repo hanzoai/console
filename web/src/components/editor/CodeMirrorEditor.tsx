@@ -91,7 +91,8 @@ const promptLinter = linter((view) => {
         from: match.index,
         to: match.index + match[0].length,
         severity: "error",
-        message: "Variable must start with a letter and can only contain letters and underscores",
+        message:
+          "Variable must start with a letter and can only contain letters and underscores",
       });
     }
   }
@@ -187,7 +188,9 @@ export function CodeMirrorEditor({
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
 
   // used to disable linter when field is empty
-  const [linterEnabled, setLinterEnabled] = useState<boolean>(!!value && value !== "");
+  const [linterEnabled, setLinterEnabled] = useState<boolean>(
+    !!value && value !== "",
+  );
 
   return (
     <CodeMirror
@@ -233,7 +236,9 @@ export function CodeMirrorEditor({
               }),
             ]),
         ...(mode === "json" ? [json()] : []),
-        ...(mode === "json" && linterEnabled ? [linter(jsonParseLinter())] : []),
+        ...(mode === "json" && linterEnabled
+          ? [linter(jsonParseLinter())]
+          : []),
         ...(mode === "prompt" ? [promptSupport, promptLinter] : []),
         ...(lineWrapping ? [EditorView.lineWrapping] : []),
       ]}
@@ -243,7 +248,10 @@ export function CodeMirrorEditor({
         setLinterEnabled(c !== "");
       }}
       onBlur={onBlur}
-      className={cn("overflow-hidden overflow-y-auto rounded-md border text-xs", className)}
+      className={cn(
+        "overflow-hidden overflow-y-auto rounded-md border text-xs",
+        className,
+      )}
       editable={editable}
       placeholder={placeholder}
     />

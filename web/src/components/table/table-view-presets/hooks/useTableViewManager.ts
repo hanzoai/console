@@ -54,8 +54,14 @@ export function useTableViewManager({
   const capture = usePostHogClientCapture();
   const pendingFiltersRef = useRef<FilterState | null>(null);
 
-  const [storedViewId, setStoredViewId] = useSessionStorage<string | null>(`${tableName}-${projectId}-viewId`, null);
-  const [selectedViewId, setSelectedViewId] = useQueryParam("viewId", withDefault(StringParam, storedViewId));
+  const [storedViewId, setStoredViewId] = useSessionStorage<string | null>(
+    `${tableName}-${projectId}-viewId`,
+    null,
+  );
+  const [selectedViewId, setSelectedViewId] = useQueryParam(
+    "viewId",
+    withDefault(StringParam, storedViewId),
+  );
 
   // Keep track of the viewId in session storage and in the query params
   const handleSetViewId = useCallback(
@@ -73,7 +79,13 @@ export function useTableViewManager({
   );
 
   // Extract updater functions and store in refs to avoid stale closures
-  const { setOrderBy, setFilters, setColumnOrder, setColumnVisibility, setSearchQuery } = stateUpdaters;
+  const {
+    setOrderBy,
+    setFilters,
+    setColumnOrder,
+    setColumnVisibility,
+    setSearchQuery,
+  } = stateUpdaters;
 
   // Use refs to always get latest function references to avoid stale closures in applyViewState
   // for restoring view state from the saved views
@@ -127,15 +139,24 @@ export function useTableViewManager({
       let validOrderBy: OrderByState | null = null;
       let validFilters: FilterState = [];
       if (viewData.orderBy) {
-        validOrderBy = validateOrderBy(viewData.orderBy, validationContext.columns);
+        validOrderBy = validateOrderBy(
+          viewData.orderBy,
+          validationContext.columns,
+        );
       }
 
       // Validate and apply filters
       if (viewData.filters) {
-        validFilters = validateFilters(viewData.filters, validationContext.filterColumnDefinition);
+        validFilters = validateFilters(
+          viewData.filters,
+          validationContext.filterColumnDefinition,
+        );
       }
 
-      if (!isEqual(validOrderBy, viewData.orderBy) || validFilters.length !== viewData.filters.length) {
+      if (
+        !isEqual(validOrderBy, viewData.orderBy) ||
+        validFilters.length !== viewData.filters.length
+      ) {
         showErrorToast(
           "Outdated view",
           "This view is outdated. Some old filters or ordering may have been ignored. Please update your view.",
@@ -163,7 +184,8 @@ export function useTableViewManager({
 
       // Apply column order and visibility without validation since UI will handle gracefully
       if (viewData.columnOrder) setColumnOrder(viewData.columnOrder);
-      if (viewData.columnVisibility) setColumnVisibility(viewData.columnVisibility);
+      if (viewData.columnVisibility)
+        setColumnVisibility(viewData.columnVisibility);
 
       // If filters were already applied, unlock table immediately
       if (filtersAlreadyApplied) {
@@ -174,7 +196,12 @@ export function useTableViewManager({
       // This is relevant for the saved views. Because the URL lazy updates and we don't want to wait
       // for a page reload
     },
-    [setColumnOrder, setColumnVisibility, validationContext, currentFilterState],
+    [
+      setColumnOrder,
+      setColumnVisibility,
+      validationContext,
+      currentFilterState,
+    ],
   );
 
   // Handle successful view data fetch
@@ -190,7 +217,15 @@ export function useTableViewManager({
       applyViewState(viewData);
       setIsInitialized(true);
     }
-  }, [viewData, isInitialized, capture, tableName, viewId, applyViewState, setIsLoading]);
+  }, [
+    viewData,
+    isInitialized,
+    capture,
+    tableName,
+    viewId,
+    applyViewState,
+    setIsLoading,
+  ]);
 
   // Handle view data fetch error
   useEffect(() => {

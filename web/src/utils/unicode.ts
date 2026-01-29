@@ -23,7 +23,10 @@ const LOW_SURROGATE_END = 0xdfff;
  * @param input - The string to decode
  * @param greedy - If true, decodes all \uXXXX patterns (ignores backslash escaping rules)
  */
-export function decodeUnicodeEscapesOnly(input: string, greedy: boolean = false): string {
+export function decodeUnicodeEscapesOnly(
+  input: string,
+  greedy: boolean = false,
+): string {
   const n = input.length;
   const out: string[] = [];
   let i = 0;
@@ -63,7 +66,10 @@ export function decodeUnicodeEscapesOnly(input: string, greedy: boolean = false)
     if (low === -1) return null;
     if (low < LOW_SURROGATE_START || low > LOW_SURROGATE_END) return null;
 
-    const cp = ((high - HIGH_SURROGATE_START) << 10) + (low - LOW_SURROGATE_START) + 0x10000;
+    const cp =
+      ((high - HIGH_SURROGATE_START) << 10) +
+      (low - LOW_SURROGATE_START) +
+      0x10000;
     return { decoded: String.fromCodePoint(cp), consumed: 6 };
   };
 
@@ -152,7 +158,10 @@ export function decodeUnicodeEscapesOnly(input: string, greedy: boolean = false)
           }
 
           // Lone high surrogate -> leave literal \uXXXX
-          if (codeUnit >= HIGH_SURROGATE_START && codeUnit <= HIGH_SURROGATE_END) {
+          if (
+            codeUnit >= HIGH_SURROGATE_START &&
+            codeUnit <= HIGH_SURROGATE_END
+          ) {
             out.push("\\u" + input.slice(j + 1, j + 5));
             i = j + 5;
             lastEmit = i;
@@ -160,7 +169,10 @@ export function decodeUnicodeEscapesOnly(input: string, greedy: boolean = false)
           }
 
           // Low surrogate alone? leave literal (ill-formed)
-          if (codeUnit >= LOW_SURROGATE_START && codeUnit <= LOW_SURROGATE_END) {
+          if (
+            codeUnit >= LOW_SURROGATE_START &&
+            codeUnit <= LOW_SURROGATE_END
+          ) {
             out.push("\\u" + input.slice(j + 1, j + 5));
             i = j + 5;
             lastEmit = i;

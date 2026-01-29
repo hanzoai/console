@@ -5,7 +5,13 @@
 
 export const PATH_CONSTANTS = {
   withoutNavigation: ["/onboarding", "/auth/reset-password"] as const,
-  unauthenticated: ["/auth/sign-in", "/auth/sign-up", "/auth/sso-initiate", "/auth/error", "/auth/hf-spaces"] as const,
+  unauthenticated: [
+    "/auth/sign-in",
+    "/auth/sign-up",
+    "/auth/sso-initiate",
+    "/auth/error",
+    "/auth/hf-spaces",
+  ] as const,
   publishable: [
     "/project/[projectId]/sessions/[sessionId]",
     "/project/[projectId]/traces/[traceId]",
@@ -13,7 +19,11 @@ export const PATH_CONSTANTS = {
   ] as const,
 };
 
-export type LayoutType = "loading" | "unauthenticated" | "minimal" | "authenticated";
+export type LayoutType =
+  | "loading"
+  | "unauthenticated"
+  | "minimal"
+  | "authenticated";
 
 /**
  * Result of path classification
@@ -33,10 +43,17 @@ export type PathClassification = {
  * The final layout decision is made in useLayoutConfiguration based on
  * both path classification AND session state.
  */
-export function classifyPath(pathname: string, _asPath: string): PathClassification {
+export function classifyPath(
+  pathname: string,
+  _asPath: string,
+): PathClassification {
   const isPublicPath = pathname.startsWith("/public/");
-  const isWithoutNavigation = PATH_CONSTANTS.withoutNavigation.some((path) => pathname.startsWith(path));
-  const isAuthPage = PATH_CONSTANTS.unauthenticated.some((path) => pathname.startsWith(path));
+  const isWithoutNavigation = PATH_CONSTANTS.withoutNavigation.some((path) =>
+    pathname.startsWith(path),
+  );
+  const isAuthPage = PATH_CONSTANTS.unauthenticated.some((path) =>
+    pathname.startsWith(path),
+  );
   // Check if path is publishable (can be accessed without authentication)
   const isPublishable = PATH_CONSTANTS.publishable.some((path) => {
     // Case 1: Exact match (e.g., pathname === "/auth/reset-password")

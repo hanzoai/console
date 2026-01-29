@@ -31,7 +31,8 @@ export function TracePanelNavigationHiddenNotice() {
     <div className="flex flex-shrink-0 items-center justify-end gap-1 border-b px-4 py-1">
       <span className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row">
         <p>
-          {hiddenObservationsCount} hidden observations below {minObservationLevel} level.
+          {hiddenObservationsCount} hidden observations below{" "}
+          {minObservationLevel} level.
         </p>
         <p
           className="cursor-pointer underline"

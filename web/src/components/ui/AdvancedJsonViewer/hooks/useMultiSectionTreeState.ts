@@ -1,6 +1,14 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { buildMultiSectionTree, updateSpacerHeights, type SectionConfig } from "../utils/multiSectionTree";
-import { toggleNodeExpansion, exportExpansionState, applyExpansionState } from "../utils/treeExpansion";
+import {
+  buildMultiSectionTree,
+  updateSpacerHeights,
+  type SectionConfig,
+} from "../utils/multiSectionTree";
+import {
+  toggleNodeExpansion,
+  exportExpansionState,
+  applyExpansionState,
+} from "../utils/treeExpansion";
 import { searchInTree } from "../utils/searchJson";
 import { useMonospaceCharWidth } from "./useMonospaceCharWidth";
 import type { ExpansionState } from "../types";
@@ -74,7 +82,8 @@ export function useMultiSectionTreeState({
   const prevExternalStateRef = useRef<ExpansionState | null>(null);
   const prevTreeRef = useRef<typeof tree | null>(null);
   useEffect(() => {
-    const stateChanged = prevExternalStateRef.current !== externalExpansionState;
+    const stateChanged =
+      prevExternalStateRef.current !== externalExpansionState;
     const treeChanged = prevTreeRef.current !== tree;
 
     if (externalExpansionState && (stateChanged || treeChanged)) {

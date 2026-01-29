@@ -1,5 +1,8 @@
 import React from "react";
-import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
+import {
+  SplashScreen,
+  type ValueProposition,
+} from "@/src/components/ui/splash-screen";
 import { Database, Beaker, Zap, Code } from "lucide-react";
 import { DatasetActionButton } from "@/src/features/datasets/components/DatasetActionButton";
 
@@ -7,7 +10,8 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
   const valuePropositions: ValueProposition[] = [
     {
       title: "Continuous improvement",
-      description: "Create datasets from production edge cases to improve your application",
+      description:
+        "Create datasets from production edge cases to improve your application",
       icon: <Zap className="h-4 w-4" />,
     },
     {
@@ -17,7 +21,8 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
     },
     {
       title: "Structured testing",
-      description: "Run experiments on collections of inputs and expected outputs",
+      description:
+        "Run experiments on collections of inputs and expected outputs",
       icon: <Database className="h-4 w-4" />,
     },
     {
@@ -35,7 +40,14 @@ export function DatasetsOnboarding({ projectId }: { projectId: string }) {
       valuePropositions={valuePropositions}
       primaryAction={{
         label: "Create Dataset",
-        component: <DatasetActionButton variant="default" mode="create" projectId={projectId} size="lg" />,
+        component: (
+          <DatasetActionButton
+            variant="default"
+            mode="create"
+            projectId={projectId}
+            size="lg"
+          />
+        ),
       }}
       secondaryAction={{
         label: "Learn More",

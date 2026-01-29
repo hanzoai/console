@@ -53,7 +53,9 @@ export const useBillingInformation = (): UseBillingInformationResult => {
     if (!cancel) return null;
     try {
       const date =
-        typeof cancel.cancelAt === "number" && !Number.isNaN(cancel.cancelAt) ? new Date(cancel.cancelAt * 1000) : null;
+        typeof cancel.cancelAt === "number" && !Number.isNaN(cancel.cancelAt)
+          ? new Date(cancel.cancelAt * 1000)
+          : null;
       if (!date || date.getTime() <= Date.now()) return null;
       const formatted = formatLocalIsoDate(date, false, "day");
       return { isCancelled: true, date, formatted };
@@ -66,11 +68,16 @@ export const useBillingInformation = (): UseBillingInformationResult => {
     const sc = subscriptionInfo?.scheduledChange;
     if (!sc?.switchAt) return null;
     try {
-      const date = typeof sc.switchAt === "number" && !Number.isNaN(sc.switchAt) ? new Date(sc.switchAt * 1000) : null;
+      const date =
+        typeof sc.switchAt === "number" && !Number.isNaN(sc.switchAt)
+          ? new Date(sc.switchAt * 1000)
+          : null;
       if (!date || date.getTime() <= Date.now()) return null;
       const formatted = formatLocalIsoDate(date, false, "day");
       const newPlanId = sc.newProductId;
-      const product = newPlanId ? stripeProducts.find((p) => p.stripeProductId === newPlanId) : undefined;
+      const product = newPlanId
+        ? stripeProducts.find((p) => p.stripeProductId === newPlanId)
+        : undefined;
       const newPlanLabel = product ? planLabels[product.mappedPlan] : null;
       return {
         isScheduled: true,
@@ -92,8 +99,12 @@ export const useBillingInformation = (): UseBillingInformationResult => {
     planLabel,
     cancellation,
     scheduledPlanSwitch,
-    isLegacySubscription: Boolean(organization?.cloudConfig?.stripe?.isLegacySubscription),
-    hasActiveSubscription: Boolean(organization?.cloudConfig?.stripe?.activeSubscriptionId),
+    isLegacySubscription: Boolean(
+      organization?.cloudConfig?.stripe?.isLegacySubscription,
+    ),
+    hasActiveSubscription: Boolean(
+      organization?.cloudConfig?.stripe?.activeSubscriptionId,
+    ),
     hasValidPaymentMethod: subscriptionInfo?.hasValidPaymentMethod ?? false,
   };
 };

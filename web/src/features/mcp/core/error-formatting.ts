@@ -8,7 +8,13 @@
 import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod/v4";
 import { isUserInputError, isApiServerError } from "./errors";
-import { BaseError, UnauthorizedError, ForbiddenError, HanzoNotFoundError, InvalidRequestError } from "@hanzo/shared";
+import {
+  BaseError,
+  UnauthorizedError,
+  ForbiddenError,
+  HanzoNotFoundError,
+  InvalidRequestError,
+} from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
 
 /**
@@ -25,7 +31,10 @@ export function formatErrorForUser(error: unknown): McpError {
       message: error.message,
       name: error.name,
     });
-    return new McpError(ErrorCode.InternalError, "An internal server error occurred. Please try again later.");
+    return new McpError(
+      ErrorCode.InternalError,
+      "An internal server error occurred. Please try again later.",
+    );
   }
 
   // User input errors - provide helpful message
@@ -35,13 +44,21 @@ export function formatErrorForUser(error: unknown): McpError {
 
   // Zod validation errors
   if (error instanceof ZodError) {
-    const messages = error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
-    return new McpError(ErrorCode.InvalidParams, `Validation failed: ${messages.join(", ")}`);
+    const messages = error.issues.map(
+      (issue) => `${issue.path.join(".")}: ${issue.message}`,
+    );
+    return new McpError(
+      ErrorCode.InvalidParams,
+      `Validation failed: ${messages.join(", ")}`,
+    );
   }
 
   // Hanzo standard errors
   if (error instanceof UnauthorizedError) {
-    return new McpError(ErrorCode.InvalidRequest, "Authentication failed. Please check your API key.");
+    return new McpError(
+      ErrorCode.InvalidRequest,
+      "Authentication failed. Please check your API key.",
+    );
   }
 
   if (error instanceof ForbiddenError) {
@@ -70,14 +87,20 @@ export function formatErrorForUser(error: unknown): McpError {
       message: error.message,
       name: error.name,
     });
-    return new McpError(ErrorCode.InternalError, "An unexpected error occurred. Please try again later.");
+    return new McpError(
+      ErrorCode.InternalError,
+      "An unexpected error occurred. Please try again later.",
+    );
   }
 
   // Unknown error type (sanitized logging)
   logger.error("MCP Unknown Error Type", {
     errorType: typeof error,
   });
-  return new McpError(ErrorCode.InternalError, "An unexpected error occurred. Please try again later.");
+  return new McpError(
+    ErrorCode.InternalError,
+    "An unexpected error occurred. Please try again later.",
+  );
 }
 
 /**
@@ -87,7 +110,9 @@ export function formatErrorForUser(error: unknown): McpError {
  * @param fn - Function to wrap
  * @returns Wrapped function that catches and formats errors
  */
-export function wrapErrorHandling<T extends (...args: any[]) => Promise<any>>(fn: T): T {
+export function wrapErrorHandling<T extends (...args: any[]) => Promise<any>>(
+  fn: T,
+): T {
   return (async (...args: Parameters<T>) => {
     try {
       return await fn(...args);

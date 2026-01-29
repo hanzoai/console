@@ -38,8 +38,10 @@ export default withMiddlewares({
         },
       });
 
-      if (datasetRuns.length > 1) throw new ApiError("Found more than one dataset run with this name");
-      if (!datasetRuns[0]) throw new HanzoNotFoundError("Dataset run not found");
+      if (datasetRuns.length > 1)
+        throw new ApiError("Found more than one dataset run with this name");
+      if (!datasetRuns[0])
+        throw new HanzoNotFoundError("Dataset run not found");
 
       const { dataset, ...run } = datasetRuns[0];
 
@@ -82,7 +84,9 @@ export default withMiddlewares({
         throw new HanzoNotFoundError("Dataset run not found");
       }
       if (datasetRuns.length > 1) {
-        throw new ApiError("Found more than one dataset run with this name and dataset");
+        throw new ApiError(
+          "Found more than one dataset run with this name and dataset",
+        );
       }
       const datasetRun = datasetRuns[0];
 

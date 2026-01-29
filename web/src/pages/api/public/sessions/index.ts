@@ -1,5 +1,8 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { GetSessionsV1Query, GetSessionsV1Response } from "@/src/features/public-api/types/sessions";
+import {
+  GetSessionsV1Query,
+  GetSessionsV1Response,
+} from "@/src/features/public-api/types/sessions";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 
@@ -17,7 +20,11 @@ export default withMiddlewares({
           ...(fromTimestamp && { gte: new Date(fromTimestamp) }),
           ...(toTimestamp && { lt: new Date(toTimestamp) }),
         },
-        environment: environment ? (Array.isArray(environment) ? { in: environment } : environment) : undefined,
+        environment: environment
+          ? Array.isArray(environment)
+            ? { in: environment }
+            : environment
+          : undefined,
       };
 
       const [sessions, totalItems] = await Promise.all([

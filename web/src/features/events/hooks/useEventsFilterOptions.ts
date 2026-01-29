@@ -16,7 +16,9 @@ export function useEventsFilterOptions({
   // Extract start time filters for filter options query
   const startTimeFilters = useMemo(() => {
     return oldFilterState.filter(
-      (f) => (f.column === "Start Time" || f.column === "startTime") && f.type === "datetime",
+      (f) =>
+        (f.column === "Start Time" || f.column === "startTime") &&
+        f.type === "datetime",
     ) as TimeFilter[];
   }, [oldFilterState]);
 
@@ -24,7 +26,8 @@ export function useEventsFilterOptions({
   const filterOptions = api.events.filterOptions.useQuery(
     {
       projectId,
-      startTimeFilter: startTimeFilters.length > 0 ? startTimeFilters : undefined,
+      startTimeFilter:
+        startTimeFilters.length > 0 ? startTimeFilters : undefined,
       hasParentObservation,
     },
     {

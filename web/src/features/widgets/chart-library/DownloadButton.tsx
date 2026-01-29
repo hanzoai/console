@@ -14,7 +14,11 @@ export function DownloadButton({
 
   const escapeCsvValue = (value: any): string => {
     const stringValue = String(value ?? "");
-    if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
+    if (
+      stringValue.includes(",") ||
+      stringValue.includes('"') ||
+      stringValue.includes("\n")
+    ) {
       return `"${stringValue.replace(/"/g, '""')}"`;
     }
     return stringValue;
@@ -45,7 +49,12 @@ export function DownloadButton({
     }
 
     const headers = Object.keys(data[0]);
-    const csvRows = [headers.join(","), ...data.map((row) => headers.map((h) => escapeCsvValue(row[h])).join(","))];
+    const csvRows = [
+      headers.join(","),
+      ...data.map((row) =>
+        headers.map((h) => escapeCsvValue(row[h])).join(","),
+      ),
+    ];
 
     const csvContent = csvRows.join("\n");
     triggerDownload(csvContent);

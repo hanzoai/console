@@ -22,4 +22,6 @@ export const StripeSubscriptionMetadataSchema = z.object({
   cloudRegion: z.string().optional(),
 });
 
-export type StripeSubscriptionMetadata = z.infer<typeof StripeSubscriptionMetadataSchema>;
+export type StripeSubscriptionMetadata = z.infer<
+  typeof StripeSubscriptionMetadataSchema
+>;

@@ -15,10 +15,20 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ExpansionState } from "../types";
 import type { TreeState } from "../utils/treeStructure";
-import { buildTreeFromJSON, estimateNodeCount, TREE_BUILD_THRESHOLD } from "../utils/treeStructure";
-import { toggleNodeExpansion, exportExpansionState } from "../utils/treeExpansion";
+import {
+  buildTreeFromJSON,
+  estimateNodeCount,
+  TREE_BUILD_THRESHOLD,
+} from "../utils/treeStructure";
+import {
+  toggleNodeExpansion,
+  exportExpansionState,
+} from "../utils/treeExpansion";
 import { debugLog, debugError } from "../utils/debug";
-import { readFormattedExpansion, writeFormattedExpansion } from "@/src/components/trace2/contexts/JsonExpansionContext";
+import {
+  readFormattedExpansion,
+  writeFormattedExpansion,
+} from "@/src/components/trace2/contexts/JsonExpansionContext";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { useMonospaceCharWidth } from "./useMonospaceCharWidth";
 
@@ -52,12 +62,17 @@ async function buildTreeInWorker(
   config: Parameters<typeof buildTreeFromJSON>[1],
   dataSize: number,
 ): Promise<{ tree: TreeState; buildTime: number }> {
-  debugLog(`[buildTreeInWorker] Building tree with ${dataSize} nodes in Web Worker`);
+  debugLog(
+    `[buildTreeInWorker] Building tree with ${dataSize} nodes in Web Worker`,
+  );
 
   return new Promise((resolve, reject) => {
     try {
       // Create Web Worker
-      const worker = new Worker(new URL("../workers/tree-builder.worker.ts", import.meta.url), { type: "module" });
+      const worker = new Worker(
+        new URL("../workers/tree-builder.worker.ts", import.meta.url),
+        { type: "module" },
+      );
 
       // Send build request
       worker.postMessage({
@@ -69,7 +84,9 @@ async function buildTreeInWorker(
       // Handle response
       worker.onmessage = (event) => {
         if (event.data.type === "success") {
-          debugLog(`[buildTreeInWorker] Worker completed in ${event.data.buildTime.toFixed(2)}ms`);
+          debugLog(
+            `[buildTreeInWorker] Worker completed in ${event.data.buildTime.toFixed(2)}ms`,
+          );
           resolve({
             tree: event.data.tree,
             buildTime: event.data.buildTime,
@@ -89,7 +106,10 @@ async function buildTreeInWorker(
         worker.terminate();
       };
     } catch (error) {
-      debugError("[buildTreeInWorker] Failed to create worker, falling back to sync:", error);
+      debugError(
+        "[buildTreeInWorker] Failed to create worker, falling back to sync:",
+        error,
+      );
       // Fallback to sync build if worker creation fails
       const startTime = performance.now();
       const tree = buildTreeFromJSON(data, config);
@@ -132,7 +152,9 @@ export function useTreeState(
   const expansionFromStorage = useMemo(() => {
     if (!field) return initialExpansion;
 
-    debugLog(`[useTreeState] Reading expansion state from storage for field: ${field}`);
+    debugLog(
+      `[useTreeState] Reading expansion state from storage for field: ${field}`,
+    );
     return readFormattedExpansion(field);
   }, [field, initialExpansion]);
 
@@ -140,7 +162,9 @@ export function useTreeState(
   const syncTree = useMemo(() => {
     if (dataSize > TREE_BUILD_THRESHOLD) return null;
 
-    debugLog(`[useTreeState] Small dataset (${dataSize} nodes), using sync build`);
+    debugLog(
+      `[useTreeState] Small dataset (${dataSize} nodes), using sync build`,
+    );
     const startTime = performance.now();
     const tree = buildTreeFromJSON(data, {
       rootKey,
@@ -154,14 +178,32 @@ export function useTreeState(
     });
     const buildTime = performance.now() - startTime;
 
-    debugLog(`[useTreeState] Sync build completed in ${buildTime.toFixed(2)}ms`);
+    debugLog(
+      `[useTreeState] Sync build completed in ${buildTime.toFixed(2)}ms`,
+    );
 
     return { tree, buildTime };
-  }, [data, dataSize, rootKey, expandDepth, expansionFromStorage, indentSizePx, charWidth]);
+  }, [
+    data,
+    dataSize,
+    rootKey,
+    expandDepth,
+    expansionFromStorage,
+    indentSizePx,
+    charWidth,
+  ]);
 
   // For large datasets, use React Query + Web Worker
   const asyncTreeQuery = useQuery({
-    queryKey: ["tree-build", data, rootKey, expandDepth, expansionFromStorage, indentSizePx, charWidth],
+    queryKey: [
+      "tree-build",
+      data,
+      rootKey,
+      expandDepth,
+      expansionFromStorage,
+      indentSizePx,
+      charWidth,
+    ],
     queryFn: () =>
       buildTreeInWorker(
         data,
@@ -186,9 +228,13 @@ export function useTreeState(
   const treeResult = syncTree || asyncTreeQuery.data;
   const tree = treeResult?.tree ?? null;
   const buildTime = treeResult?.buildTime;
-  const isBuilding = dataSize > TREE_BUILD_THRESHOLD ? asyncTreeQuery.isLoading : false;
+  const isBuilding =
+    dataSize > TREE_BUILD_THRESHOLD ? asyncTreeQuery.isLoading : false;
   const isReady = tree !== null;
-  const buildError = dataSize > TREE_BUILD_THRESHOLD && asyncTreeQuery.error ? String(asyncTreeQuery.error) : null;
+  const buildError =
+    dataSize > TREE_BUILD_THRESHOLD && asyncTreeQuery.error
+      ? String(asyncTreeQuery.error)
+      : null;
 
   // Store tree in ref for mutation (expand/collapse)
   const treeRef = useRef<TreeState | null>(null);
@@ -201,7 +247,9 @@ export function useTreeState(
     () => {
       if (!field || !treeRef.current) return;
 
-      debugLog(`[useTreeState] Saving expansion state to storage for field: ${field}`);
+      debugLog(
+        `[useTreeState] Saving expansion state to storage for field: ${field}`,
+      );
       const state = exportExpansionState(treeRef.current);
       writeFormattedExpansion(field, state);
     },
@@ -253,7 +301,10 @@ export function useTreeState(
  * @param expansionVersion - Expansion version counter (for cache invalidation)
  * @returns getNodeByIndex function
  */
-export function useTreeRowGetter(tree: TreeState | null, expansionVersion: number) {
+export function useTreeRowGetter(
+  tree: TreeState | null,
+  expansionVersion: number,
+) {
   const getNodeByIndex = useCallback(
     (index: number) => {
       if (!tree) return null;

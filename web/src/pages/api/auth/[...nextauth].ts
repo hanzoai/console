@@ -15,7 +15,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   // the IdP's error_description which NextAuth would otherwise strip
   // Only intercept if this is an OAuth callback request (path starts with 'callback')
   const isCallbackRequest =
-    Array.isArray(req.query.nextauth) && req.query.nextauth.length > 0 && req.query.nextauth[0] === "callback";
+    Array.isArray(req.query.nextauth) &&
+    req.query.nextauth.length > 0 &&
+    req.query.nextauth[0] === "callback";
 
   if (
     isCallbackRequest &&
@@ -37,7 +39,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
 
   // Do whatever you want here, before the request is passed down to `NextAuth`
   const authOptions = await getAuthOptions();
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate",
+  );
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
 

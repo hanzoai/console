@@ -19,7 +19,8 @@ import { type TreeNode } from "../lib/types";
 
 export function TraceTree() {
   const { roots, comments } = useTraceData();
-  const { selectedNodeId, setSelectedNodeId, collapsedNodes, toggleCollapsed } = useSelection();
+  const { selectedNodeId, setSelectedNodeId, collapsedNodes, toggleCollapsed } =
+    useSelection();
   const { handleHover } = useHandlePrefetchObservation();
 
   // TODO: Extract aggregation logic to shared utility - duplicated in tree-building.ts and TraceTimeline/index.tsx
@@ -33,7 +34,11 @@ export function TraceTree() {
   );
 
   const rootTotalDuration =
-    roots.length > 0 ? Math.max(...roots.map((r) => (r.latency != null ? r.latency * 1000 : 0))) : undefined;
+    roots.length > 0
+      ? Math.max(
+          ...roots.map((r) => (r.latency != null ? r.latency * 1000 : 0)),
+        )
+      : undefined;
 
   return (
     <VirtualizedTree
@@ -42,7 +47,14 @@ export function TraceTree() {
       selectedNodeId={selectedNodeId}
       onToggleCollapse={toggleCollapsed}
       onSelectNode={setSelectedNodeId}
-      renderNode={({ node, treeMetadata, isSelected, isCollapsed, onToggleCollapse, onSelect }) => {
+      renderNode={({
+        node,
+        treeMetadata,
+        isSelected,
+        isCollapsed,
+        onToggleCollapse,
+        onSelect,
+      }) => {
         const typedNode = node as TreeNode;
 
         return (

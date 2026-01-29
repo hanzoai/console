@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
-import { type ChatMessage, type ChatMessageWithIdNoPlaceholders } from "@hanzo/shared";
+import {
+  type ChatMessage,
+  type ChatMessageWithIdNoPlaceholders,
+} from "@hanzo/shared";
 
-export function createEmptyMessage(message: ChatMessage): ChatMessageWithIdNoPlaceholders {
+export function createEmptyMessage(
+  message: ChatMessage,
+): ChatMessageWithIdNoPlaceholders {
   return {
     ...message,
     content: message.content ?? "",

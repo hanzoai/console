@@ -4,7 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod/v4";
 import Head from "next/head";
 import { Button } from "@/src/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
@@ -31,17 +38,24 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAvailable: boolean }) {
+export function ResetPasswordPage({
+  passwordResetAvailable,
+}: {
+  passwordResetAvailable: boolean;
+}) {
   const session = useSession();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [showResetPasswordEmailButton, setShowResetPasswordEmailButton] = useState(false);
+  const [showResetPasswordEmailButton, setShowResetPasswordEmailButton] =
+    useState(false);
 
   const capture = usePostHogClientCapture();
 
   const mutResetPassword = api.credentials.resetPassword.useMutation();
-  const emailVerified = isEmailVerifiedWithinCutoff(session.data?.user?.emailVerified);
+  const emailVerified = isEmailVerifiedWithinCutoff(
+    session.data?.user?.emailVerified,
+  );
 
   const form = useForm({
     resolver: zodResolver(resetPasswordSchema),
@@ -120,7 +134,10 @@ export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAva
         <div className="mt-10 bg-background px-6 py-10 shadow sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-12">
           <div className="space-y-6">
             <Form {...form}>
-              <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <form
+                className="space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
                 <FormField
                   control={form.control}
                   name="email"
@@ -156,7 +173,10 @@ export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAva
                         <FormItem>
                           <FormLabel>New Password</FormLabel>
                           <FormControl>
-                            <PasswordInput autoComplete="new-password" {...field} />
+                            <PasswordInput
+                              autoComplete="new-password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -169,7 +189,10 @@ export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAva
                         <FormItem>
                           <FormLabel>Confirm New Password</FormLabel>
                           <FormControl>
-                            <PasswordInput autoComplete="new-password" {...field} />
+                            <PasswordInput
+                              autoComplete="new-password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -184,29 +207,44 @@ export function ResetPasswordPage({ passwordResetAvailable }: { passwordResetAva
                       className="w-full"
                       disabled={mutResetPassword.isPending}
                       loading={mutResetPassword.isPending}
-                      variant={showResetPasswordEmailButton ? "secondary" : "default"}
+                      variant={
+                        showResetPasswordEmailButton ? "secondary" : "default"
+                      }
                     >
                       Update Password
                     </Button>
                   ) : (
-                    <RequestResetPasswordEmailButton email={form.watch("email")} className="w-full" />
+                    <RequestResetPasswordEmailButton
+                      email={form.watch("email")}
+                      className="w-full"
+                    />
                   )}
                 </div>
               </form>
             </Form>
-            {formError ? <div className="text-center text-sm font-medium text-destructive">{formError}</div> : null}
+            {formError ? (
+              <div className="text-center text-sm font-medium text-destructive">
+                {formError}
+              </div>
+            ) : null}
             {isSuccess && (
-              <div className="text-center text-sm font-medium">Password successfully updated. Redirecting ...</div>
+              <div className="text-center text-sm font-medium">
+                Password successfully updated. Redirecting ...
+              </div>
             )}
             {showResetPasswordEmailButton && (
-              <RequestResetPasswordEmailButton email={form.getValues("email")} className="w-full" />
+              <RequestResetPasswordEmailButton
+                email={form.getValues("email")}
+                className="w-full"
+              />
             )}
           </div>
         </div>
         {session.status !== "authenticated" && (
           <div className="mx-auto mt-10 max-w-lg text-center text-xs text-muted-foreground">
-            You will only receive an email if an account with this email exists and you have signed up with email and
-            password. If you used an authentication provider like Google, Gitlab, Okta, or GitHub, please{" "}
+            You will only receive an email if an account with this email exists
+            and you have signed up with email and password. If you used an
+            authentication provider like Google, Gitlab, Okta, or GitHub, please{" "}
             <Link href="/auth/sign-in" className="underline">
               sign in
             </Link>

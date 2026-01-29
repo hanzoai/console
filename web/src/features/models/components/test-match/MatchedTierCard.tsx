@@ -1,4 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
 import { useMemo } from "react";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
@@ -21,7 +26,12 @@ export function MatchedTierCard({ tier }: MatchedTierCardProps) {
   const { priceUnit, priceUnitMultiplier } = usePriceUnitMultiplier();
 
   const maxDecimals = useMemo(
-    () => Math.max(...Object.values(tier.prices).map((price) => getMaxDecimals(price, priceUnitMultiplier))),
+    () =>
+      Math.max(
+        ...Object.values(tier.prices).map((price) =>
+          getMaxDecimals(price, priceUnitMultiplier),
+        ),
+      ),
     [tier.prices, priceUnitMultiplier],
   );
 
@@ -40,17 +50,29 @@ export function MatchedTierCard({ tier }: MatchedTierCardProps) {
               Default
             </Badge>
           )}
-          <span className="text-xs text-muted-foreground">Priority: {tier.priority}</span>
+          <span className="text-xs text-muted-foreground">
+            Priority: {tier.priority}
+          </span>
         </div>
 
         <div>
-          <div className="mb-2 text-xs font-medium text-muted-foreground">Prices (per {priceUnit}):</div>
+          <div className="mb-2 text-xs font-medium text-muted-foreground">
+            Prices (per {priceUnit}):
+          </div>
           <div className="space-y-1.5">
             {Object.entries(tier.prices).map(([usageType, price]) => (
-              <div key={usageType} className="flex items-center justify-between rounded bg-muted/50 px-3 py-1.5">
-                <span className="font-mono text-xs text-muted-foreground">{usageType}:</span>
+              <div
+                key={usageType}
+                className="flex items-center justify-between rounded bg-muted/50 px-3 py-1.5"
+              >
+                <span className="font-mono text-xs text-muted-foreground">
+                  {usageType}:
+                </span>
                 <span className="font-mono text-sm font-semibold">
-                  ${new Decimal(price).mul(priceUnitMultiplier).toFixed(maxDecimals)}
+                  $
+                  {new Decimal(price)
+                    .mul(priceUnitMultiplier)
+                    .toFixed(maxDecimals)}
                 </span>
               </div>
             ))}

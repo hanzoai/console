@@ -3,7 +3,10 @@ import { useCallback, useLayoutEffect, useRef } from "react";
 type ScrollTarget = Window | Element;
 
 function isWindow(target: ScrollTarget): target is Window {
-  return (target as Window).scrollBy !== undefined && (target as Window).document !== undefined;
+  return (
+    (target as Window).scrollBy !== undefined &&
+    (target as Window).document !== undefined
+  );
 }
 
 function getComputedOverflowY(node: Element): string {
@@ -56,7 +59,15 @@ export function usePreserveRelativeScroll<T extends Element = Element>(
       didUserScrollRef.current = true;
     };
     const keydownHandler = (e: KeyboardEvent) => {
-      const keys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
+      const keys = [
+        "ArrowUp",
+        "ArrowDown",
+        "PageUp",
+        "PageDown",
+        "Home",
+        "End",
+        " ",
+      ];
       if (keys.includes(e.key)) cancel();
     };
     window.addEventListener("wheel", cancel, { passive: true, once: true });
@@ -135,7 +146,9 @@ export function usePreserveRelativeScroll<T extends Element = Element>(
     if (!element || !element.getBoundingClientRect) return;
     const rect = element.getBoundingClientRect();
     beforeTopRef.current = rect.top;
-    targetRef.current = options?.getScrollTarget?.(element) ?? findNearestScrollContainer(element);
+    targetRef.current =
+      options?.getScrollTarget?.(element) ??
+      findNearestScrollContainer(element);
     didUserScrollRef.current = false;
     attachScrollListener();
   }, [attachScrollListener, enabled, options]);

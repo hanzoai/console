@@ -1,7 +1,11 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { type HanzoColumnDef } from "@/src/components/table/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
@@ -27,8 +31,16 @@ export type InvitesTableRow = {
   };
 };
 
-export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; projectId?: string }) {
-  const paginationKey = projectId ? `projectInvites_${projectId}_pagination` : `orgInvites_${orgId}_pagination`;
+export function MembershipInvitesPage({
+  orgId,
+  projectId,
+}: {
+  orgId: string;
+  projectId?: string;
+}) {
+  const paginationKey = projectId
+    ? `projectInvites_${projectId}_pagination`
+    : `orgInvites_${orgId}_pagination`;
 
   const hasOrgViewAccess = useHasOrganizationAccess({
     organizationId: orgId,
@@ -40,10 +52,13 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
       scope: "projectMembers:read",
     }) || hasOrgViewAccess;
 
-  const [paginationState, setPaginationState] = useSessionStorage(paginationKey, {
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const [paginationState, setPaginationState] = useSessionStorage(
+    paginationKey,
+    {
+      pageIndex: 0,
+      pageSize: 10,
+    },
+  );
 
   const invites = projectId
     ? api.members.allInvitesFromProject.useQuery(
@@ -114,12 +129,17 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
       id: "invitedByUser",
       header: "Invited By",
       cell: ({ row }) => {
-        const invitedByUser = row.getValue("invitedByUser") as InvitesTableRow["invitedByUser"];
+        const invitedByUser = row.getValue(
+          "invitedByUser",
+        ) as InvitesTableRow["invitedByUser"];
         const { name, image } = invitedByUser || {};
         return (
           <div className="flex items-center space-x-2">
             <Avatar className="h-7 w-7">
-              <AvatarImage src={image ?? undefined} alt={name ?? "User Avatar"} />
+              <AvatarImage
+                src={image ?? undefined}
+                alt={name ?? "User Avatar"}
+              />
               <AvatarFallback>
                 {name
                   ? name
@@ -145,7 +165,9 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
           <div className="flex space-x-2">
             <button
               onClick={() => {
-                if (confirm("Are you sure you want to cancel this invitation?")) {
+                if (
+                  confirm("Are you sure you want to cancel this invitation?")
+                ) {
                   mutDeleteInvite.mutate({ inviteId, orgId });
                 }
               }}
@@ -168,7 +190,10 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
       email: invite.email,
       createdAt: invite.createdAt,
       orgRole: invite.orgRole,
-      projectRole: invite.projectId === projectId ? (invite.projectRole ?? undefined) : undefined,
+      projectRole:
+        invite.projectId === projectId
+          ? (invite.projectRole ?? undefined)
+          : undefined,
       invitedByUser: invite.invitedByUser,
     };
   };
@@ -199,7 +224,9 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
               : {
                   isLoading: false,
                   isError: false,
-                  data: safeExtract(invites.data, "invitations", []).map((i) => convertToTableRow(i)),
+                  data: safeExtract(invites.data, "invitations", []).map((i) =>
+                    convertToTableRow(i),
+                  ),
                 }
         }
         pagination={{

@@ -6,10 +6,21 @@
  */
 
 import { useRef, useState, useEffect } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { type JSONTheme } from "../types";
-import { highlightTextWithComments, COMMENT_HIGHLIGHT_COLOR } from "../utils/highlightText";
+import {
+  highlightTextWithComments,
+  COMMENT_HIGHLIGHT_COLOR,
+} from "../utils/highlightText";
 import { type CommentRange } from "../utils/commentRanges";
 
 interface TruncatedStringProps {
@@ -34,7 +45,9 @@ export function TruncatedString({
   // but rely on CSS ellipsis for actual visual truncation
   const displayValue = isTruncated ? value.slice(0, maxLength * 2) : value;
   const triggerRef = useRef<HTMLSpanElement>(null);
-  const [triggerWidth, setTriggerWidth] = useState<number | undefined>(undefined);
+  const [triggerWidth, setTriggerWidth] = useState<number | undefined>(
+    undefined,
+  );
 
   // Measure trigger element width
   useEffect(() => {
@@ -44,7 +57,12 @@ export function TruncatedString({
   }, [isTruncated]);
 
   // Apply highlighting to display value
-  const segments = highlightTextWithComments(displayValue, highlightStart, highlightEnd, commentRanges);
+  const segments = highlightTextWithComments(
+    displayValue,
+    highlightStart,
+    highlightEnd,
+    commentRanges,
+  );
 
   if (!isTruncated) {
     // No truncation needed, just render normally
@@ -74,7 +92,11 @@ export function TruncatedString({
             return (
               <Tooltip key={index}>
                 <TooltipTrigger asChild>{highlightedSpan}</TooltipTrigger>
-                <TooltipContent side="top" align="start" className="max-w-xs px-2 py-1 text-xs">
+                <TooltipContent
+                  side="top"
+                  align="start"
+                  className="max-w-xs px-2 py-1 text-xs"
+                >
                   {segment.preview}
                 </TooltipContent>
               </Tooltip>

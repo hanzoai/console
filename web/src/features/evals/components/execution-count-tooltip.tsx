@@ -9,7 +9,11 @@ type ExecutionCountTooltipProps = {
   filter: EvalFormType["filter"];
 };
 
-export const ExecutionCountTooltip = ({ projectId, item, filter }: ExecutionCountTooltipProps) => {
+export const ExecutionCountTooltip = ({
+  projectId,
+  item,
+  filter,
+}: ExecutionCountTooltipProps) => {
   const globalConfig = api.evals.globalJobConfigs.useQuery({
     projectId,
   });
@@ -29,7 +33,9 @@ export const ExecutionCountTooltip = ({ projectId, item, filter }: ExecutionCoun
           <span className="inline-block font-mono">...</span>
         ) : (
           compactNumberFormatter(
-            !globalConfig.data || (totalCount && totalCount < globalConfig.data) ? totalCount : globalConfig.data,
+            !globalConfig.data || (totalCount && totalCount < globalConfig.data)
+              ? totalCount
+              : globalConfig.data,
           )
         )}
         {isTraceTarget ? " traces" : " dataset run items"})

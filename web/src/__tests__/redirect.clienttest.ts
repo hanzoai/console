@@ -39,13 +39,21 @@ describe("getSafeRedirectPath", () => {
     });
 
     it("should allow paths with query parameters", () => {
-      expect(getSafeRedirectPath("/dashboard?tab=overview")).toBe("/dashboard?tab=overview");
-      expect(getSafeRedirectPath("/project/123?view=traces")).toBe("/project/123?view=traces");
+      expect(getSafeRedirectPath("/dashboard?tab=overview")).toBe(
+        "/dashboard?tab=overview",
+      );
+      expect(getSafeRedirectPath("/project/123?view=traces")).toBe(
+        "/project/123?view=traces",
+      );
     });
 
     it("should allow paths with hash fragments", () => {
-      expect(getSafeRedirectPath("/dashboard#section")).toBe("/dashboard#section");
-      expect(getSafeRedirectPath("/settings#profile")).toBe("/settings#profile");
+      expect(getSafeRedirectPath("/dashboard#section")).toBe(
+        "/dashboard#section",
+      );
+      expect(getSafeRedirectPath("/settings#profile")).toBe(
+        "/settings#profile",
+      );
     });
 
     it("should trim whitespace from paths", () => {
@@ -76,7 +84,9 @@ describe("getSafeRedirectPath", () => {
       });
 
       it("should block data: URIs", () => {
-        expect(getSafeRedirectPath("data:text/html,<script>alert(1)</script>")).toBe("/");
+        expect(
+          getSafeRedirectPath("data:text/html,<script>alert(1)</script>"),
+        ).toBe("/");
         expect(getSafeRedirectPath("data:text/plain,test")).toBe("/");
       });
 
@@ -104,7 +114,9 @@ describe("getSafeRedirectPath", () => {
 
       it("should handle URL-encoded attack attempts", () => {
         // %2F%2F = //
-        expect(getSafeRedirectPath(decodeURIComponent("%2F%2Fevil.com"))).toBe("/");
+        expect(getSafeRedirectPath(decodeURIComponent("%2F%2Fevil.com"))).toBe(
+          "/",
+        );
         // Note: The function receives already-decoded input in real usage
         // since router.query.targetPath is already decoded by Next.js
       });
@@ -141,11 +153,15 @@ describe("getSafeRedirectPath", () => {
     });
 
     it("should prepend basePath to paths with query parameters", () => {
-      expect(getSafeRedirectPath("/dashboard?tab=overview")).toBe("/my-app/dashboard?tab=overview");
+      expect(getSafeRedirectPath("/dashboard?tab=overview")).toBe(
+        "/my-app/dashboard?tab=overview",
+      );
     });
 
     it("should prepend basePath to paths with hash fragments", () => {
-      expect(getSafeRedirectPath("/dashboard#section")).toBe("/my-app/dashboard#section");
+      expect(getSafeRedirectPath("/dashboard#section")).toBe(
+        "/my-app/dashboard#section",
+      );
     });
 
     it("should return basePath for blocked URLs", () => {
@@ -159,15 +175,25 @@ describe("getSafeRedirectPath", () => {
       // Scenario: path already includes basePath (e.g., from asPath in Next.js router)
       expect(getSafeRedirectPath("/my-app")).toBe("/my-app");
       expect(getSafeRedirectPath("/my-app/")).toBe("/my-app/");
-      expect(getSafeRedirectPath("/my-app/dashboard")).toBe("/my-app/dashboard");
-      expect(getSafeRedirectPath("/my-app/project/123")).toBe("/my-app/project/123");
-      expect(getSafeRedirectPath("/my-app/dashboard?tab=overview")).toBe("/my-app/dashboard?tab=overview");
-      expect(getSafeRedirectPath("/my-app/dashboard#section")).toBe("/my-app/dashboard#section");
+      expect(getSafeRedirectPath("/my-app/dashboard")).toBe(
+        "/my-app/dashboard",
+      );
+      expect(getSafeRedirectPath("/my-app/project/123")).toBe(
+        "/my-app/project/123",
+      );
+      expect(getSafeRedirectPath("/my-app/dashboard?tab=overview")).toBe(
+        "/my-app/dashboard?tab=overview",
+      );
+      expect(getSafeRedirectPath("/my-app/dashboard#section")).toBe(
+        "/my-app/dashboard#section",
+      );
     });
 
     it("should handle edge case where basePath appears in path but not at start", () => {
       // Path contains basePath but doesn't start with it - should still prepend
-      expect(getSafeRedirectPath("/some/my-app/path")).toBe("/my-app/some/my-app/path");
+      expect(getSafeRedirectPath("/some/my-app/path")).toBe(
+        "/my-app/some/my-app/path",
+      );
     });
   });
 
@@ -182,14 +208,24 @@ describe("getSafeRedirectPath", () => {
     });
 
     it("should handle paths with special characters", () => {
-      expect(getSafeRedirectPath("/path/with spaces")).toBe("/path/with spaces");
-      expect(getSafeRedirectPath("/path/with-dashes")).toBe("/path/with-dashes");
-      expect(getSafeRedirectPath("/path/with_underscores")).toBe("/path/with_underscores");
+      expect(getSafeRedirectPath("/path/with spaces")).toBe(
+        "/path/with spaces",
+      );
+      expect(getSafeRedirectPath("/path/with-dashes")).toBe(
+        "/path/with-dashes",
+      );
+      expect(getSafeRedirectPath("/path/with_underscores")).toBe(
+        "/path/with_underscores",
+      );
     });
 
     it("should handle paths with encoded characters", () => {
-      expect(getSafeRedirectPath("/path%20with%20spaces")).toBe("/path%20with%20spaces");
-      expect(getSafeRedirectPath("/path%2Fwith%2Fencoded")).toBe("/path%2Fwith%2Fencoded");
+      expect(getSafeRedirectPath("/path%20with%20spaces")).toBe(
+        "/path%20with%20spaces",
+      );
+      expect(getSafeRedirectPath("/path%2Fwith%2Fencoded")).toBe(
+        "/path%2Fwith%2Fencoded",
+      );
     });
 
     it("should handle non-string input gracefully", () => {
@@ -241,8 +277,12 @@ describe("stripBasePath", () => {
     });
 
     it("handles query strings and hashes", () => {
-      expect(stripBasePath("/apps/project/123?foo=bar")).toBe("/project/123?foo=bar");
-      expect(stripBasePath("/apps/dashboard#section")).toBe("/dashboard#section");
+      expect(stripBasePath("/apps/project/123?foo=bar")).toBe(
+        "/project/123?foo=bar",
+      );
+      expect(stripBasePath("/apps/dashboard#section")).toBe(
+        "/dashboard#section",
+      );
       expect(stripBasePath("/apps/?foo=bar#top")).toBe("/?foo=bar#top");
     });
 

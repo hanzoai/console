@@ -3,7 +3,8 @@ import * as DOMPurify from "dompurify";
 // Create test cases
 describe("should sanitize dom", () => {
   it("should sanitize urls", () => {
-    const dirty = "http://www.some.site/page.html?default=<script>alert(document.cookie)</script>";
+    const dirty =
+      "http://www.some.site/page.html?default=<script>alert(document.cookie)</script>";
     const cleam = DOMPurify.sanitize(dirty);
 
     expect(cleam).toBe("http://www.some.site/page.html?default=");

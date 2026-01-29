@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { api } from "@/src/utils/api";
 import type { IntervalConfig } from "@/src/utils/date-range-utils";
-import { fillTimeSeriesGaps, fillCategoricalTimeSeriesGaps } from "@/src/utils/fill-time-series-gaps";
+import {
+  fillTimeSeriesGaps,
+  fillCategoricalTimeSeriesGaps,
+} from "@/src/utils/fill-time-series-gaps";
 import {
   extractCategories,
   fillDistributionBins,
@@ -16,7 +19,12 @@ import {
 
 export type DataType = "NUMERIC" | "CATEGORICAL" | "BOOLEAN";
 
-export type ObjectType = "all" | "trace" | "session" | "observation" | "dataset_run";
+export type ObjectType =
+  | "all"
+  | "trace"
+  | "session"
+  | "observation"
+  | "dataset_run";
 
 /**
  * Parsed score identifier
@@ -278,21 +286,29 @@ export function useScoreAnalyticsQuery(
 
     const distribution1Individual = categories
       ? fillDistributionBins(apiData.distribution1Individual, categories)
-      : apiData.distribution1Individual.slice().sort((a, b) => a.binIndex - b.binIndex);
+      : apiData.distribution1Individual
+          .slice()
+          .sort((a, b) => a.binIndex - b.binIndex);
 
     // Use score2Categories for score2Individual (not score1 categories)
     const distribution2Individual = score2Categories
       ? fillDistributionBins(apiData.distribution2Individual, score2Categories)
-      : apiData.distribution2Individual.slice().sort((a, b) => a.binIndex - b.binIndex);
+      : apiData.distribution2Individual
+          .slice()
+          .sort((a, b) => a.binIndex - b.binIndex);
 
     const distribution1Matched = categories
       ? fillDistributionBins(apiData.distribution1Matched, categories)
-      : apiData.distribution1Matched.slice().sort((a, b) => a.binIndex - b.binIndex);
+      : apiData.distribution1Matched
+          .slice()
+          .sort((a, b) => a.binIndex - b.binIndex);
 
     // Use score2Categories for score2Matched (not score1 categories)
     const distribution2Matched = score2Categories
       ? fillDistributionBins(apiData.distribution2Matched, score2Categories)
-      : apiData.distribution2Matched.slice().sort((a, b) => a.binIndex - b.binIndex);
+      : apiData.distribution2Matched
+          .slice()
+          .sort((a, b) => a.binIndex - b.binIndex);
 
     // ========================================================================
     // 3. Generate bin labels (numeric only)
@@ -333,7 +349,11 @@ export function useScoreAnalyticsQuery(
       }
       // Fallback: Calculate bounds from statistics when heatmap is empty
       // This handles the case when matchedCount = 0 (no paired observations)
-      else if (apiData.statistics && apiData.statistics.mean1 !== null && apiData.statistics.std1 !== null) {
+      else if (
+        apiData.statistics &&
+        apiData.statistics.mean1 !== null &&
+        apiData.statistics.std1 !== null
+      ) {
         // For score1 individual
         const mean1 = apiData.statistics.mean1;
         const std1 = apiData.statistics.std1;
@@ -344,7 +364,10 @@ export function useScoreAnalyticsQuery(
         });
 
         // For score2 individual (if available)
-        if (apiData.statistics.mean2 !== null && apiData.statistics.std2 !== null) {
+        if (
+          apiData.statistics.mean2 !== null &&
+          apiData.statistics.std2 !== null
+        ) {
           const mean2 = apiData.statistics.mean2;
           const std2 = apiData.statistics.std2;
           binLabelsIndividual2 = generateBinLabels({
@@ -408,7 +431,12 @@ export function useScoreAnalyticsQuery(
     // ========================================================================
     // 6. Fill time series gaps
     // ========================================================================
-    const numericTimeSeries = fillTimeSeriesGaps(apiData.timeSeries, fromTimestamp, toTimestamp, interval);
+    const numericTimeSeries = fillTimeSeriesGaps(
+      apiData.timeSeries,
+      fromTimestamp,
+      toTimestamp,
+      interval,
+    );
 
     const numericTimeSeriesMatched = fillTimeSeriesGaps(
       apiData.timeSeriesMatched,
@@ -489,12 +517,17 @@ export function useScoreAnalyticsQuery(
 
     // Build score name prefixes (include source if scores have same name but different sources)
     const score1Prefix =
-      mode === "two" && score1.name === score2?.name && score1.source !== score2?.source
+      mode === "two" &&
+      score1.name === score2?.name &&
+      score1.source !== score2?.source
         ? `${score1.name} (${score1.source})`
         : score1.name;
 
     const score2Prefix =
-      mode === "two" && score2 && score1.name === score2.name && score1.source !== score2.source
+      mode === "two" &&
+      score2 &&
+      score1.name === score2.name &&
+      score1.source !== score2.source
         ? `${score2.name} (${score2.source})`
         : (score2?.name ?? "");
 
@@ -502,16 +535,28 @@ export function useScoreAnalyticsQuery(
     const categoricalAll =
       mode === "two"
         ? [
-            ...namespaceCategoricalTimeSeries(categoricalTimeSeries1, score1Prefix),
-            ...namespaceCategoricalTimeSeries(categoricalTimeSeries2, score2Prefix),
+            ...namespaceCategoricalTimeSeries(
+              categoricalTimeSeries1,
+              score1Prefix,
+            ),
+            ...namespaceCategoricalTimeSeries(
+              categoricalTimeSeries2,
+              score2Prefix,
+            ),
           ]
         : categoricalTimeSeries1; // Single score mode: no namespacing needed
 
     const categoricalAllMatched =
       mode === "two"
         ? [
-            ...namespaceCategoricalTimeSeries(categoricalTimeSeries1Matched, score1Prefix),
-            ...namespaceCategoricalTimeSeries(categoricalTimeSeries2Matched, score2Prefix),
+            ...namespaceCategoricalTimeSeries(
+              categoricalTimeSeries1Matched,
+              score1Prefix,
+            ),
+            ...namespaceCategoricalTimeSeries(
+              categoricalTimeSeries2Matched,
+              score2Prefix,
+            ),
           ]
         : categoricalTimeSeries1Matched; // Single score mode: no namespacing needed
 
@@ -541,8 +586,10 @@ export function useScoreAnalyticsQuery(
           mode === "two"
             ? {
                 matchedCount: apiData.counts.matchedCount,
-                pearsonCorrelation: apiData.statistics?.pearsonCorrelation ?? null,
-                spearmanCorrelation: apiData.statistics?.spearmanCorrelation ?? null,
+                pearsonCorrelation:
+                  apiData.statistics?.pearsonCorrelation ?? null,
+                spearmanCorrelation:
+                  apiData.statistics?.spearmanCorrelation ?? null,
                 mae: apiData.statistics?.mae ?? null,
                 rmse: apiData.statistics?.rmse ?? null,
                 confusionMatrix: apiData.confusionMatrix,

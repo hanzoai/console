@@ -1,7 +1,11 @@
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { Label } from "@/src/components/ui/label";
 
-export function VariableMappingDescription(p: { title: string; description: string; href: string }) {
+export function VariableMappingDescription(p: {
+  title: string;
+  description: string;
+  href: string;
+}) {
   return (
     <div className="flex w-1/2 items-center">
       <Label className="muted-foreground text-sm font-light">{p.title}</Label>
@@ -27,8 +31,9 @@ export function TimeScopeDescription(props: {
         : props.timeScope?.includes("NEW")
           ? "all future"
           : "all existing"}{" "}
-      {props.target === "trace" ? "traces" : "dataset run items"} that match these filters. Please note that it might
-      take a while for your data to be evaluated.
+      {props.target === "trace" ? "traces" : "dataset run items"} that match
+      these filters. Please note that it might take a while for your data to be
+      evaluated.
     </span>
   );
 }

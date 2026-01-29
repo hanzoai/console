@@ -2,7 +2,13 @@ import React from "react";
 import { PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +49,10 @@ export const AddLabelForm = (props: {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="my-3 flex flex-row space-x-2 align-top">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="my-3 flex flex-row space-x-2 align-top"
+      >
         <FormField
           control={form.control}
           name="newLabel"

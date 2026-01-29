@@ -141,7 +141,9 @@ describe("Slack Integration", () => {
           isConnected: false,
           teamId: null,
           teamName: null,
-          installUrl: expect.stringContaining(`/api/public/slack/install?projectId=${project.id}`),
+          installUrl: expect.stringContaining(
+            `/api/public/slack/install?projectId=${project.id}`,
+          ),
         });
 
         // 🔒 Ensure no sensitive data is present
@@ -172,7 +174,8 @@ describe("Slack Integration", () => {
           isConnected: false,
           teamId: "T123456",
           teamName: "Test Team",
-          error: "Integration is invalid. Please reconnect your Slack workspace.",
+          error:
+            "Integration is invalid. Please reconnect your Slack workspace.",
         });
 
         // 🔒 CRITICAL: Ensure no bot token is exposed even for invalid integrations
@@ -226,13 +229,15 @@ describe("Slack Integration", () => {
       it("should throw NOT_FOUND for missing integration", async () => {
         const { caller, project } = await prepare();
 
-        await expect(caller.slack.getChannels({ projectId: project.id })).rejects.toThrow(
-          "Slack integration not found",
-        );
+        await expect(
+          caller.slack.getChannels({ projectId: project.id }),
+        ).rejects.toThrow("Slack integration not found");
       });
 
       it("should handle Slack API failures gracefully", async () => {
-        mockSlackService.getChannels.mockRejectedValue(new Error("Slack API error"));
+        mockSlackService.getChannels.mockRejectedValue(
+          new Error("Slack API error"),
+        );
 
         const { caller, project } = await prepare();
 
@@ -247,7 +252,9 @@ describe("Slack Integration", () => {
           },
         });
 
-        await expect(caller.slack.getChannels({ projectId: project.id })).rejects.toThrow(
+        await expect(
+          caller.slack.getChannels({ projectId: project.id }),
+        ).rejects.toThrow(
           "Failed to fetch channels. Please check your Slack connection and try again.",
         );
       });
@@ -376,7 +383,9 @@ describe("Slack Integration", () => {
         });
 
         // Verify SlackService was called
-        expect(mockSlackService.deleteIntegration).toHaveBeenCalledWith(project.id);
+        expect(mockSlackService.deleteIntegration).toHaveBeenCalledWith(
+          project.id,
+        );
 
         // Verify audit log was created
         const auditLog = await prisma.auditLog.findFirst({
@@ -389,7 +398,9 @@ describe("Slack Integration", () => {
         });
 
         expect(auditLog).toBeDefined();
-        const beforeData = auditLog?.before ? JSON.parse(auditLog.before) : null;
+        const beforeData = auditLog?.before
+          ? JSON.parse(auditLog.before)
+          : null;
         expect(beforeData).toMatchObject({
           projectId: project.id,
           teamId: "T123456",
@@ -405,7 +416,9 @@ describe("Slack Integration", () => {
       it("should handle missing integration gracefully", async () => {
         const { caller, project } = await prepare();
 
-        await expect(caller.slack.disconnect({ projectId: project.id })).rejects.toThrow("Slack integration not found");
+        await expect(
+          caller.slack.disconnect({ projectId: project.id }),
+        ).rejects.toThrow("Slack integration not found");
       });
     });
   });
@@ -415,13 +428,16 @@ describe("Slack Integration", () => {
       const { project } = await prepare();
 
       // Make request without any session/auth
-      const response = await fetch(`http://localhost:3000/api/public/slack/install?projectId=${project.id}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
+      const response = await fetch(
+        `http://localhost:3000/api/public/slack/install?projectId=${project.id}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          // No cookies/session - simulating unauthenticated request
         },
-        // No cookies/session - simulating unauthenticated request
-      });
+      );
 
       expect(response.status).toBe(401);
 
@@ -432,12 +448,15 @@ describe("Slack Integration", () => {
     });
 
     it("should reject requests without projectId with 400", async () => {
-      const response = await fetch(`http://localhost:3000/api/public/slack/install`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
+      const response = await fetch(
+        `http://localhost:3000/api/public/slack/install`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
         },
-      });
+      );
 
       expect(response.status).toBe(400);
 
@@ -543,7 +562,9 @@ describe("Slack Integration", () => {
       const secretToken = "xoxb-secret-error-token-999";
 
       // Mock SlackService to throw error containing token
-      mockSlackService.getChannels.mockRejectedValue(new Error(`Authentication failed for token ${secretToken}`));
+      mockSlackService.getChannels.mockRejectedValue(
+        new Error(`Authentication failed for token ${secretToken}`),
+      );
 
       const { caller, project } = await prepare();
 
@@ -562,7 +583,8 @@ describe("Slack Integration", () => {
         await caller.slack.getChannels({ projectId: project.id });
         throw new Error("Expected error to be thrown");
       } catch (error) {
-        const errorMessage = error instanceof TRPCError ? error.message : String(error);
+        const errorMessage =
+          error instanceof TRPCError ? error.message : String(error);
 
         // 🔒 CRITICAL: Error messages should not contain raw tokens
         expect(errorMessage).not.toContain(secretToken);

@@ -1,10 +1,16 @@
 /** @jest-environment node */
 
-import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
+import {
+  makeZodVerifiedAPICall,
+  makeAPICall,
+} from "@/src/__tests__/test-utils";
 import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
+import {
+  createAndAddApiKeysToDb,
+  createBasicAuthHeader,
+} from "@hanzo/shared/src/server";
 import { decrypt } from "@hanzo/shared/encryption";
 
 // Schemas based on Fern schema definition
@@ -179,7 +185,9 @@ describe("Blob Storage Integrations API", () => {
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data.length).toBe(1);
 
-      const integration = response.body.data.find((i) => i.id === testIntegrationId);
+      const integration = response.body.data.find(
+        (i) => i.id === testIntegrationId,
+      );
       expect(integration).toBeDefined();
       expect(integration?.projectId).toBe(testProject1Id);
       expect(integration?.type).toBe("S3");
@@ -219,7 +227,9 @@ describe("Blob Storage Integrations API", () => {
         createBasicAuthHeader(projectApiKey.publicKey, projectApiKey.secretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
 
       // Clean up
       await prisma.apiKey.delete({ where: { id: projectApiKey.id } });
@@ -429,7 +439,9 @@ describe("Blob Storage Integrations API", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.type).toBe("AZURE_BLOB_STORAGE");
-      expect(response.body.endpoint).toBe("https://myaccount.blob.core.windows.net");
+      expect(response.body.endpoint).toBe(
+        "https://myaccount.blob.core.windows.net",
+      );
     });
 
     it("should handle export modes with dates", async () => {
@@ -532,9 +544,11 @@ describe("Blob Storage Integrations API", () => {
       expect(response.body.message).toBeDefined();
 
       // Verify it was deleted from database
-      const deletedIntegration = await prisma.blobStorageIntegration.findUnique({
-        where: { projectId: testIntegrationId },
-      });
+      const deletedIntegration = await prisma.blobStorageIntegration.findUnique(
+        {
+          where: { projectId: testIntegrationId },
+        },
+      );
       expect(deletedIntegration).toBeNull();
     });
 

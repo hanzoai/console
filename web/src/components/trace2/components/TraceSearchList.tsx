@@ -43,8 +43,14 @@ export function TraceSearchList() {
       <div className="flex h-full flex-col items-center justify-center p-8 text-center">
         <div className="space-y-4">
           <p className="text-muted-foreground">No results found</p>
-          <p className="text-sm text-muted-foreground">Try searching by type, title, or id</p>
-          <Button variant="outline" size="sm" onClick={() => setSearchInputValue("")}>
+          <p className="text-sm text-muted-foreground">
+            Try searching by type, title, or id
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSearchInputValue("")}
+          >
             <XIcon className="mr-2 h-4 w-4" />
             Clear search
           </Button>

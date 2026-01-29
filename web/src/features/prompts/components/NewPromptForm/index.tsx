@@ -13,7 +13,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 import { Textarea } from "@/src/components/ui/textarea";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
@@ -75,8 +80,14 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
 
   const defaultValues = {
     type: initialPromptVariant?.type ?? PromptType.Text,
-    chatPrompt: initialPromptVariant?.type === PromptType.Chat ? initialPromptVariant?.prompt : [],
-    textPrompt: initialPromptVariant?.type === PromptType.Text ? initialPromptVariant?.prompt : "",
+    chatPrompt:
+      initialPromptVariant?.type === PromptType.Chat
+        ? initialPromptVariant?.prompt
+        : [],
+    textPrompt:
+      initialPromptVariant?.type === PromptType.Text
+        ? initialPromptVariant?.prompt
+        : "",
     name: initialPrompt?.name ?? (folderPath ? `${folderPath}/` : ""),
     config: JSON.stringify(initialPrompt?.config?.valueOf(), null, 2) || "{}",
     isActive: !Boolean(initialPrompt),
@@ -92,7 +103,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
   const currentName = form.watch("name");
   const currentType = form.watch("type");
   const currentExtractedVariables = extractVariables(
-    currentType === PromptType.Text ? form.watch("textPrompt") : JSON.stringify(form.watch("chatPrompt"), null, 2),
+    currentType === PromptType.Text
+      ? form.watch("textPrompt")
+      : JSON.stringify(form.watch("chatPrompt"), null, 2),
   ).filter(getIsCharOrUnderscore);
 
   const createPromptMutation = api.prompts.create.useMutation({
@@ -114,12 +127,15 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
   ).data?.name;
 
   function onSubmit(values: NewPromptFormSchemaType) {
-    capture(initialPrompt ? "prompts:update_form_submit" : "prompts:new_form_submit", {
-      type: values.type,
-      active: values.isActive,
-      hasConfig: values.config !== "{}",
-      countVariables: currentExtractedVariables.length,
-    });
+    capture(
+      initialPrompt ? "prompts:update_form_submit" : "prompts:new_form_submit",
+      {
+        type: values.type,
+        active: values.isActive,
+        hasConfig: values.config !== "{}",
+        countVariables: currentExtractedVariables.length,
+      },
+    );
 
     if (!projectId) throw Error("Project ID is not defined.");
 
@@ -154,7 +170,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
         onFormSuccess?.();
         form.reset();
         if ("name" in newPrompt) {
-          void router.push(`/project/${projectId}/prompts/${encodeURIComponent(newPrompt.name)}`);
+          void router.push(
+            `/project/${projectId}/prompts/${encodeURIComponent(newPrompt.name)}`,
+          );
         }
       })
       .catch((error) => {
@@ -181,7 +199,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
     form,
   });
 
-  const formId = initialPrompt ? `prompt-edit:${initialPrompt.id}` : "prompt-new";
+  const formId = initialPrompt
+    ? `prompt-edit:${initialPrompt.id}`
+    : "prompt-new";
 
   const { hadDraft, clearDraft } = useFormPersistence({
     formId,
@@ -190,7 +210,11 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
     enabled: Boolean(projectId) && !shouldLoadPlaygroundCache,
     onDraftRestored: (draft) => {
       // Restore chat messages if present
-      if (draft.chatPrompt && Array.isArray(draft.chatPrompt) && draft.chatPrompt.length > 0) {
+      if (
+        draft.chatPrompt &&
+        Array.isArray(draft.chatPrompt) &&
+        draft.chatPrompt.length > 0
+      ) {
         setInitialMessages(draft.chatPrompt);
       }
     },
@@ -198,7 +222,10 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+      >
         {/* Prompt name field - text vs. chat only for new prompts */}
         {!initialPrompt ? (
           <FormField
@@ -212,7 +239,8 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormDescription>
-                      Use slashes &apos;/&apos; in prompt names to organize them into{" "}
+                      Use slashes &apos;/&apos; in prompt names to organize them
+                      into{" "}
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
@@ -228,7 +256,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                     {/* Custom form message to include a link to the already existing prompt */}
                     {form.getFieldState("name").error ? (
                       <div className="flex flex-row space-x-1 text-sm font-medium text-destructive">
-                        <p className="text-sm font-medium text-destructive">{errorMessage}</p>
+                        <p className="text-sm font-medium text-destructive">
+                          {errorMessage}
+                        </p>
                         {errorMessage?.includes("already exist") ? (
                           <Link
                             href={`/project/${projectId}/prompts/${currentName.trim()}`}
@@ -252,10 +282,12 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
           <FormItem>
             <FormLabel>Prompt</FormLabel>
             <FormDescription>
-              Define your prompt template. You can use <code className="text-xs">{"{{variable}}"}</code> to insert
+              Define your prompt template. You can use{" "}
+              <code className="text-xs">{"{{variable}}"}</code> to insert
               variables into your prompt.
-              <b className="font-semibold"> Note:</b> Variables must be alphabetical characters or underscores. You can
-              also link other text prompts using the plus button.
+              <b className="font-semibold"> Note:</b> Variables must be
+              alphabetical characters or underscores. You can also link other
+              text prompts using the plus button.
             </FormDescription>
             <Tabs
               value={form.watch("type")}
@@ -266,14 +298,20 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
               {!initialPrompt ? (
                 <TabsList className="flex w-full">
                   <TabsTrigger
-                    disabled={Boolean(initialPromptVariant) && initialPromptVariant?.type !== PromptType.Text}
+                    disabled={
+                      Boolean(initialPromptVariant) &&
+                      initialPromptVariant?.type !== PromptType.Text
+                    }
                     className="flex-1"
                     value={PromptType.Text}
                   >
                     {capitalize(PromptType.Text)}
                   </TabsTrigger>
                   <TabsTrigger
-                    disabled={Boolean(initialPromptVariant) && initialPromptVariant?.type !== PromptType.Chat}
+                    disabled={
+                      Boolean(initialPromptVariant) &&
+                      initialPromptVariant?.type !== PromptType.Chat
+                    }
                     className="flex-1"
                     value={PromptType.Chat}
                   >
@@ -282,7 +320,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                 </TabsList>
               ) : null}
               {hadDraft && (
-                <p className={`mb-1 text-right text-xs text-muted-foreground ${initialPrompt ? "-mt-2" : "mt-1"}`}>
+                <p
+                  className={`mb-1 text-right text-xs text-muted-foreground ${initialPrompt ? "-mt-2" : "mt-1"}`}
+                >
                   Draft restored.{" "}
                   <button
                     type="button"
@@ -290,7 +330,11 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                     onClick={() => {
                       clearDraft();
                       form.reset(defaultValues);
-                      setInitialMessages(initialPrompt?.type === PromptType.Chat ? initialPrompt.prompt : []);
+                      setInitialMessages(
+                        initialPrompt?.type === PromptType.Chat
+                          ? initialPrompt.prompt
+                          : [],
+                      );
                     }}
                   >
                     Discard
@@ -322,7 +366,11 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
                   name="chatPrompt"
                   render={({ field }) => (
                     <>
-                      <PromptChatMessages {...field} initialMessages={initialMessages} projectId={projectId} />
+                      <PromptChatMessages
+                        {...field}
+                        initialMessages={initialMessages}
+                        projectId={projectId}
+                      />
                       <FormMessage />
                     </>
                   )}
@@ -341,8 +389,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
             <FormItem>
               <FormLabel>Config</FormLabel>
               <FormDescription>
-                Arbitrary JSON configuration that is available on the prompt. Use this to track LLM parameters, function
-                definitions, or any other metadata.
+                Arbitrary JSON configuration that is available on the prompt.
+                Use this to track LLM parameters, function definitions, or any
+                other metadata.
               </FormDescription>
               <CodeMirrorEditor
                 value={field.value}
@@ -365,7 +414,10 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
             <FormItem>
               <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-3">
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>Set the &quot;production&quot; label</FormLabel>
@@ -382,8 +434,8 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
             <FormItem className="relative">
               <FormLabel>Commit message</FormLabel>
               <FormDescription>
-                Provide information about the changes made in this version. Helps maintain a clear history of prompt
-                iterations.
+                Provide information about the changes made in this version.
+                Helps maintain a clear history of prompt iterations.
               </FormDescription>
               <FormControl>
                 <Textarea
@@ -405,7 +457,11 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
               isLoading={createPromptMutation.isPending}
               onConfirm={form.handleSubmit(onSubmit)}
             >
-              <Button disabled={!form.formState.isValid} variant="secondary" className="w-full">
+              <Button
+                disabled={!form.formState.isValid}
+                variant="secondary"
+                className="w-full"
+              >
                 Review changes
               </Button>
             </ReviewPromptDialog>
@@ -424,7 +480,9 @@ export const NewPromptForm: React.FC<NewPromptFormProps> = (props) => {
             type="submit"
             loading={createPromptMutation.isPending}
             className="w-full"
-            disabled={Boolean(!initialPrompt && form.formState.errors.name?.message)} // Disable button if prompt name already exists. Check is dynamic and not part of zod schema
+            disabled={Boolean(
+              !initialPrompt && form.formState.errors.name?.message,
+            )} // Disable button if prompt name already exists. Check is dynamic and not part of zod schema
           >
             Create prompt
           </Button>

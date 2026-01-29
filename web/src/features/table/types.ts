@@ -17,7 +17,13 @@ type BaseTableAction = {
 export type CreateTableAction = BaseTableAction & {
   type: BatchActionType.Create;
   targetLabel: string;
-  execute: ({ projectId, targetId }: { projectId: string; targetId: string }) => Promise<void>;
+  execute: ({
+    projectId,
+    targetId,
+  }: {
+    projectId: string;
+    targetId: string;
+  }) => Promise<void>;
 };
 
 type DeleteTableAction = BaseTableAction & {
@@ -31,4 +37,7 @@ export type CustomDialogTableAction = BaseTableAction & {
   // No execute or targetLabel - dialog handles everything
 };
 
-export type TableAction = CreateTableAction | DeleteTableAction | CustomDialogTableAction;
+export type TableAction =
+  | CreateTableAction
+  | DeleteTableAction
+  | CustomDialogTableAction;

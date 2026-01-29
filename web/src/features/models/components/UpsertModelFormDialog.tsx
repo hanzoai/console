@@ -24,8 +24,18 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { type FormUpsertModel, FormUpsertModelSchema, type GetModelResult } from "@/src/features/models/validation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
+import {
+  type FormUpsertModel,
+  FormUpsertModelSchema,
+  type GetModelResult,
+} from "@/src/features/models/validation";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +63,10 @@ type UpsertModelDialogProps =
       className?: string;
     };
 
-export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialogProps) => {
+export const UpsertModelFormDialog = (({
+  children,
+  ...props
+}: UpsertModelDialogProps) => {
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
@@ -84,7 +97,9 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
       // CREATE: Start with 1 default tier
       return {
         modelName: props.prefilledModelData?.modelName ?? "",
-        matchPattern: props.prefilledModelData?.modelName ? `(?i)^(${props.prefilledModelData?.modelName})$` : "",
+        matchPattern: props.prefilledModelData?.modelName
+          ? `(?i)^(${props.prefilledModelData?.modelName})$`
+          : "",
         tokenizerId: null,
         tokenizerConfig: null,
         pricingTiers: [
@@ -119,7 +134,10 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
 
   // Watch default tier prices for syncing
   const defaultTierIndex = fields.findIndex((f) => f.isDefault);
-  const defaultTierPrices = defaultTierIndex !== -1 ? form.watch(`pricingTiers.${defaultTierIndex}.prices`) : undefined;
+  const defaultTierPrices =
+    defaultTierIndex !== -1
+      ? form.watch(`pricingTiers.${defaultTierIndex}.prices`)
+      : undefined;
 
   // Compute keys signature - memoized to prevent unnecessary updates
   const defaultKeysSignature = useMemo(() => {
@@ -140,7 +158,8 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
 
   // Sync usage keys from default tier to all non-default tiers
   useEffect(() => {
-    if (!defaultTierPrices || defaultTierIndex === -1 || !defaultKeysSignature) return;
+    if (!defaultTierPrices || defaultTierIndex === -1 || !defaultKeysSignature)
+      return;
 
     const defaultKeys = defaultKeysSignature.split(",");
 
@@ -152,7 +171,8 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
 
       // Only update if keys don't match
       const keysMatch =
-        defaultKeys.length === currentKeys.length && defaultKeys.every((key, i) => key === currentKeys[i]);
+        defaultKeys.length === currentKeys.length &&
+        defaultKeys.every((key, i) => key === currentKeys[i]);
 
       if (!keysMatch) {
         const newPrices: Record<string, number> = {};
@@ -170,7 +190,9 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
 
     if (
       modelName &&
-      (!matchPattern || matchPattern === `(?i)^(${modelName.slice(0, -1)})$` || matchPattern === `(?i)^(${modelName})$`)
+      (!matchPattern ||
+        matchPattern === `(?i)^(${modelName.slice(0, -1)})$` ||
+        matchPattern === `(?i)^(${modelName})$`)
     ) {
       form.setValue("matchPattern", getRegexString(modelName));
     }
@@ -185,7 +207,9 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
         title: `Model ${props.action === "edit" ? "updated" : "created"}`,
         description: `The model '${upsertedModel.modelName}' has been successfully ${props.action === "edit" ? "updated" : "created"}. New generations will use these model prices.`,
       });
-      router.push(`/project/${props.projectId}/settings/models/${upsertedModel.id}`);
+      router.push(
+        `/project/${props.projectId}/settings/models/${upsertedModel.id}`,
+      );
     },
     onError: (error) => setFormError(error.message),
   });
@@ -196,22 +220,25 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
     // Transform FormPricingTier[] -> PricingTierInput[] (remove id field and filter prices)
     const pricingTiers = values.pricingTiers.map(({ id: _id, ...tier }) => ({
       ...tier,
-      prices: Object.fromEntries(Object.entries(tier.prices).filter(([_, value]) => value != null)) as Record<
-        string,
-        number
-      >,
+      prices: Object.fromEntries(
+        Object.entries(tier.prices).filter(([_, value]) => value != null),
+      ) as Record<string, number>,
     }));
 
     await upsertModelMutation
       .mutateAsync({
         modelId: props.action === "edit" ? props.modelData.id : null,
         projectId: props.projectId,
-        modelName: props.action === "edit" ? props.modelData.modelName : values.modelName,
+        modelName:
+          props.action === "edit"
+            ? props.modelData.modelName
+            : values.modelName,
         matchPattern: values.matchPattern,
         pricingTiers,
         tokenizerId: values.tokenizerId,
         tokenizerConfig:
-          values.tokenizerConfig && typeof JSON.parse(values.tokenizerConfig) === "object"
+          values.tokenizerConfig &&
+          typeof JSON.parse(values.tokenizerConfig) === "object"
             ? (JSON.parse(values.tokenizerConfig) as Record<string, number>)
             : undefined,
       })
@@ -255,22 +282,37 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
         asChild
         onClick={() => setOpen(true)}
         className={props.className}
-        title={props.action === "create" ? "Create model definition" : "Edit model definition"}
+        title={
+          props.action === "create"
+            ? "Create model definition"
+            : "Edit model definition"
+        }
       >
         {children}
       </DialogTrigger>
       <DialogContent size="lg">
         <DialogHeader>
           <DialogTitle>
-            {props.action === "create" ? "Create Model" : props.action === "clone" ? "Clone Model" : "Edit Model"}
+            {props.action === "create"
+              ? "Create Model"
+              : props.action === "clone"
+                ? "Clone Model"
+                : "Edit Model"}
           </DialogTitle>
-          {props.action === "edit" && <DialogDescription>{props.modelData.modelName}</DialogDescription>}
+          {props.action === "edit" && (
+            <DialogDescription>{props.modelData.modelName}</DialogDescription>
+          )}
           {props.action === "create" && (
-            <DialogDescription>Create a new model configuration to track generation costs.</DialogDescription>
+            <DialogDescription>
+              Create a new model configuration to track generation costs.
+            </DialogDescription>
           )}
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col overflow-hidden">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-1 flex-col overflow-hidden"
+          >
             <DialogBody className="space-y-6">
               <FormField
                 control={form.control}
@@ -280,8 +322,9 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                   <FormItem>
                     <FormLabel>Model Name</FormLabel>
                     <FormDescription>
-                      The name of the model. This will be used to reference the model in the API. You can track price
-                      changes of models by using the same name and match pattern.
+                      The name of the model. This will be used to reference the
+                      model in the API. You can track price changes of models by
+                      using the same name and match pattern.
                     </FormDescription>
                     <FormControl>
                       <Input {...field} />
@@ -297,9 +340,10 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                   <FormItem>
                     <FormLabel>Match pattern</FormLabel>
                     <FormDescription>
-                      Regular expression (Postgres syntax) to match ingested generations (model attribute) to this model
-                      definition. For an exact, case-insensitive match to a model name, use the expression:
-                      (?i)^(modelname)$
+                      Regular expression (Postgres syntax) to match ingested
+                      generations (model attribute) to this model definition.
+                      For an exact, case-insensitive match to a model name, use
+                      the expression: (?i)^(modelname)$
                     </FormDescription>
                     <FormControl>
                       <Input {...field} />
@@ -310,7 +354,12 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
               />
 
               {/* PRICING SECTION */}
-              <PricingSection fields={fields} form={form} remove={remove} addTier={addTier} />
+              <PricingSection
+                fields={fields}
+                form={form}
+                remove={remove}
+                addTier={addTier}
+              />
 
               <FormField
                 control={form.control}
@@ -341,10 +390,15 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      Optionally, Hanzo can tokenize the input and output of a generation if no unit counts are
-                      ingested. This is useful for e.g. streamed OpenAI completions. For details on the supported
-                      tokenizers, see the{" "}
-                      <Link href="https://hanzo.com/docs/model-usage-and-cost" className="underline" target="_blank">
+                      Optionally, Hanzo can tokenize the input and output of a
+                      generation if no unit counts are ingested. This is useful
+                      for e.g. streamed OpenAI completions. For details on the
+                      supported tokenizers, see the{" "}
+                      <Link
+                        href="https://hanzo.com/docs/model-usage-and-cost"
+                        className="underline"
+                        target="_blank"
+                      >
                         docs
                       </Link>
                       .
@@ -367,8 +421,13 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                         minHeight="none"
                       />
                       <FormDescription>
-                        The config for the tokenizer. Required for openai. See the{" "}
-                        <Link href="https://hanzo.com/docs/model-usage-and-cost" className="underline" target="_blank">
+                        The config for the tokenizer. Required for openai. See
+                        the{" "}
+                        <Link
+                          href="https://hanzo.com/docs/model-usage-and-cost"
+                          className="underline"
+                          target="_blank"
+                        >
                           docs
                         </Link>{" "}
                         for details.
@@ -381,7 +440,11 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
             </DialogBody>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
                 Cancel
               </Button>
 

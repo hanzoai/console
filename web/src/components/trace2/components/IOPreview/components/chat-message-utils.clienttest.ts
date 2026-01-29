@@ -12,34 +12,47 @@ import {
 
 // Helper to create test messages - only includes fields that are explicitly passed
 // This is important because hasAdditionalData checks Object.keys()
-const createMessage = (fields: Partial<ChatMlMessage>): ChatMlMessage => fields as ChatMlMessage;
+const createMessage = (fields: Partial<ChatMlMessage>): ChatMlMessage =>
+  fields as ChatMlMessage;
 
 describe("chat-message-utils", () => {
   describe("getMessageTitle", () => {
     it("returns name when present", () => {
-      expect(getMessageTitle(createMessage({ role: "user", name: "John" }))).toBe("John");
+      expect(
+        getMessageTitle(createMessage({ role: "user", name: "John" })),
+      ).toBe("John");
     });
 
     it("returns role when name is not present", () => {
-      expect(getMessageTitle(createMessage({ role: "assistant" }))).toBe("assistant");
+      expect(getMessageTitle(createMessage({ role: "assistant" }))).toBe(
+        "assistant",
+      );
     });
 
     it("returns empty string when neither name nor role present", () => {
-      expect(getMessageTitle(createMessage({ role: undefined, name: undefined }))).toBe("");
+      expect(
+        getMessageTitle(createMessage({ role: undefined, name: undefined })),
+      ).toBe("");
     });
   });
 
   describe("hasRenderableContent", () => {
     it("returns true when content is non-empty string", () => {
-      expect(hasRenderableContent(createMessage({ role: "user", content: "Hello" }))).toBe(true);
+      expect(
+        hasRenderableContent(createMessage({ role: "user", content: "Hello" })),
+      ).toBe(true);
     });
 
     it("returns false when content is empty string", () => {
-      expect(hasRenderableContent(createMessage({ role: "user", content: "" }))).toBe(false);
+      expect(
+        hasRenderableContent(createMessage({ role: "user", content: "" })),
+      ).toBe(false);
     });
 
     it("returns false when content is null", () => {
-      expect(hasRenderableContent(createMessage({ role: "user", content: null }))).toBe(false);
+      expect(
+        hasRenderableContent(createMessage({ role: "user", content: null })),
+      ).toBe(false);
     });
 
     it("returns true when audio is present", () => {
@@ -64,7 +77,9 @@ describe("chat-message-utils", () => {
 
   describe("hasAdditionalData", () => {
     it("returns false when only role and content present", () => {
-      expect(hasAdditionalData(createMessage({ role: "user", content: "Hello" }))).toBe(false);
+      expect(
+        hasAdditionalData(createMessage({ role: "user", content: "Hello" })),
+      ).toBe(false);
     });
 
     it("returns true when tool_calls present", () => {
@@ -106,11 +121,17 @@ describe("chat-message-utils", () => {
     });
 
     it("returns false when json field is not present", () => {
-      expect(hasPassthroughJson(createMessage({ role: "user", content: "" }))).toBe(false);
+      expect(
+        hasPassthroughJson(createMessage({ role: "user", content: "" })),
+      ).toBe(false);
     });
 
     it("returns false when json is null", () => {
-      expect(hasPassthroughJson(createMessage({ role: "user", content: "", json: null as any }))).toBe(false);
+      expect(
+        hasPassthroughJson(
+          createMessage({ role: "user", content: "", json: null as any }),
+        ),
+      ).toBe(false);
     });
   });
 
@@ -128,7 +149,9 @@ describe("chat-message-utils", () => {
     });
 
     it("returns false for non-placeholder", () => {
-      expect(isPlaceholderMessage(createMessage({ role: "user", content: "" }))).toBe(false);
+      expect(
+        isPlaceholderMessage(createMessage({ role: "user", content: "" })),
+      ).toBe(false);
     });
   });
 
@@ -201,7 +224,9 @@ describe("chat-message-utils", () => {
 
   describe("shouldRenderMessage", () => {
     it("returns true for message with content", () => {
-      expect(shouldRenderMessage(createMessage({ role: "user", content: "Hello" }))).toBe(true);
+      expect(
+        shouldRenderMessage(createMessage({ role: "user", content: "Hello" })),
+      ).toBe(true);
     });
 
     it("returns true for placeholder message", () => {
@@ -229,7 +254,9 @@ describe("chat-message-utils", () => {
     });
 
     it("returns false for empty message", () => {
-      expect(shouldRenderMessage(createMessage({ role: "user", content: "" }))).toBe(false);
+      expect(
+        shouldRenderMessage(createMessage({ role: "user", content: "" })),
+      ).toBe(false);
     });
   });
 

@@ -5,7 +5,14 @@
  * to avoid unnecessary re-renders of unrelated components.
  */
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 
 interface SearchContextValue {
   searchQuery: string;

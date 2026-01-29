@@ -12,7 +12,9 @@ interface UseTextSelectionOptions {
  * Finds the section key (input/output/metadata) from the DOM by looking for
  * the closest ancestor with [data-section-key] attribute.
  */
-function detectSectionFromDOM(node: Node): "input" | "output" | "metadata" | null {
+function detectSectionFromDOM(
+  node: Node,
+): "input" | "output" | "metadata" | null {
   let current: Node | null = node;
   while (current && current !== document.body) {
     if (current instanceof HTMLElement && current.dataset.sectionKey) {
@@ -26,7 +28,11 @@ function detectSectionFromDOM(node: Node): "input" | "output" | "metadata" | nul
   return null;
 }
 
-export function useTextSelection({ containerRef, dataField, enabled = true }: UseTextSelectionOptions) {
+export function useTextSelection({
+  containerRef,
+  dataField,
+  enabled = true,
+}: UseTextSelectionOptions) {
   const context = useInlineCommentSelectionOptional();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -54,12 +60,17 @@ export function useTextSelection({ containerRef, dataField, enabled = true }: Us
       }
 
       // Determine dataField - use prop if provided, otherwise detect from DOM
-      const effectiveDataField = dataField ?? detectSectionFromDOM(range.startContainer);
+      const effectiveDataField =
+        dataField ?? detectSectionFromDOM(range.startContainer);
       if (!effectiveDataField) {
         return;
       }
 
-      const result = selectionToPath(selection, containerRef.current, effectiveDataField);
+      const result = selectionToPath(
+        selection,
+        containerRef.current,
+        effectiveDataField,
+      );
       if (result) {
         // Get the position of the selection START (not the full bounding box)
         // This gives us where to position the comment bubble

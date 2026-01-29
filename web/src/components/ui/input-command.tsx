@@ -28,7 +28,10 @@ InputCommand.displayName = CommandPrimitive.displayName;
 
 interface InputCommandDialogProps extends DialogProps {}
 
-const InputCommandDialog = ({ children, ...props }: InputCommandDialogProps) => {
+const InputCommandDialog = ({
+  children,
+  ...props
+}: InputCommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0 shadow-lg">
@@ -86,7 +89,13 @@ InputCommandList.displayName = CommandPrimitive.List.displayName;
 const InputCommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
->((props, ref) => <CommandPrimitive.Empty ref={ref} className="py-6 text-center text-sm" {...props} />);
+>((props, ref) => (
+  <CommandPrimitive.Empty
+    ref={ref}
+    className="py-6 text-center text-sm"
+    {...props}
+  />
+));
 
 InputCommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
@@ -134,9 +143,18 @@ const InputCommandItem = React.forwardRef<
 
 InputCommandItem.displayName = CommandPrimitive.Item.displayName;
 
-const InputCommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const InputCommandShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
-    <span className={cn("ml-auto text-xs tracking-widest text-slate-500 dark:text-slate-400", className)} {...props} />
+    <span
+      className={cn(
+        "ml-auto text-xs tracking-widest text-slate-500 dark:text-slate-400",
+        className,
+      )}
+      {...props}
+    />
   );
 };
 InputCommandShortcut.displayName = "CommandShortcut";

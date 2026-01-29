@@ -50,7 +50,15 @@ export const events = {
     "update_name",
     "search_views",
   ],
-  score: ["create", "update", "delete", "update_form_open", "create_form_open", "update_comment", "delete_comment"],
+  score: [
+    "create",
+    "update",
+    "delete",
+    "update_form_open",
+    "create_form_open",
+    "update_comment",
+    "delete_comment",
+  ],
   score_configs: [
     "create_form_submit",
     "update_form_submit",
@@ -59,7 +67,12 @@ export const events = {
     "archive_form_submit",
   ],
   models: ["delete_button_click", "new_form_submit", "new_form_open"],
-  prompts: ["new_form_submit", "new_form_open", "update_form_open", "update_form_submit"],
+  prompts: [
+    "new_form_submit",
+    "new_form_open",
+    "update_form_open",
+    "update_form_submit",
+  ],
   prompt_detail: [
     "test_in_playground_button_click",
     "add_label_submit",
@@ -88,11 +101,19 @@ export const events = {
     "delete_form_open",
     "delete_template_button_click",
   ],
-  integrations: ["posthog_form_submitted", "blob_storage_form_submitted", "mixpanel_form_submitted"],
+  integrations: [
+    "posthog_form_submitted",
+    "blob_storage_form_submitted",
+    "mixpanel_form_submitted",
+  ],
   sign_in: ["cloud_region_switch", "button_click"],
   sign_up: ["button_click"],
   auth: ["reset_password_email_requested", "update_password_form_submit"],
-  playground: ["execute_button_click", "save_to_new_prompt_button_click", "save_to_prompt_version_button_click"],
+  playground: [
+    "execute_button_click",
+    "save_to_new_prompt_button_click",
+    "save_to_prompt_version_button_click",
+  ],
   dashboard: [
     "clone_dashboard",
     "chart_tab_switch",
@@ -139,7 +160,12 @@ export const events = {
     "compare_run_removed",
   ],
   notification: ["click_link", "dismiss_notification"],
-  tag: ["add_existing_tag", "remove_tag", "modal_open", "create_new_button_click"],
+  tag: [
+    "add_existing_tag",
+    "remove_tag",
+    "modal_open",
+    "create_new_button_click",
+  ],
   onboarding: ["code_example_tab_switch", "tracing_check_active"],
   user_settings: ["theme_changed"],
   project_settings: [
@@ -170,7 +196,12 @@ export const events = {
   ],
   help_popup: ["opened", "href_clicked"],
   navigate_detail_pages: ["button_click_prev_or_next"],
-  support_chat: ["initiated", "opened", "message_sent", "community_hours_click"], // also used on landing page for consistency
+  support_chat: [
+    "initiated",
+    "opened",
+    "message_sent",
+    "community_hours_click",
+  ], // also used on landing page for consistency
   cmd_k_menu: ["opened", "search_entered", "navigated"],
   spend_alert: ["created", "updated", "deleted"],
 } as const;

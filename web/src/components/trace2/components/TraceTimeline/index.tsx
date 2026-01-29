@@ -16,8 +16,15 @@ import { TimelineRow } from "./TimelineRow";
 
 export function TraceTimeline() {
   const { roots, serverScores: scores, comments } = useTraceData();
-  const { collapsedNodes, toggleCollapsed, selectedNodeId, setSelectedNodeId } = useSelection();
-  const { showDuration, showCostTokens, showScores, showComments, colorCodeMetrics } = useViewPreferences();
+  const { collapsedNodes, toggleCollapsed, selectedNodeId, setSelectedNodeId } =
+    useSelection();
+  const {
+    showDuration,
+    showCostTokens,
+    showScores,
+    showComments,
+    colorCodeMetrics,
+  } = useViewPreferences();
   const { handleHover } = useHandlePrefetchObservation();
 
   const timeIndexRef = useRef<HTMLDivElement>(null);
@@ -43,14 +50,24 @@ export function TraceTimeline() {
 
   // Flatten tree with pre-computed timeline metrics
   const flattenedItems = useMemo(() => {
-    return flattenTreeWithTimelineMetrics(roots, collapsedNodes, traceStartTime, traceDuration, SCALE_WIDTH);
+    return flattenTreeWithTimelineMetrics(
+      roots,
+      collapsedNodes,
+      traceStartTime,
+      traceDuration,
+      SCALE_WIDTH,
+    );
   }, [roots, collapsedNodes, traceStartTime, traceDuration]);
 
   // Calculate content width (max offset + max width)
   const contentWidth = useMemo(() => {
     if (flattenedItems.length === 0) return SCALE_WIDTH;
 
-    const maxEnd = Math.max(...flattenedItems.map((item) => item.metrics.startOffset + item.metrics.itemWidth));
+    const maxEnd = Math.max(
+      ...flattenedItems.map(
+        (item) => item.metrics.startOffset + item.metrics.itemWidth,
+      ),
+    );
 
     return Math.max(SCALE_WIDTH, maxEnd + 50); // Add padding
   }, [flattenedItems]);
@@ -68,8 +85,14 @@ export function TraceTimeline() {
   const hasScrolledRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (selectedNodeId && !hasScrolledRef.current && selectedNodeId === initialNodeIdRef.current) {
-      const index = flattenedItems.findIndex((item) => item.node.id === selectedNodeId);
+    if (
+      selectedNodeId &&
+      !hasScrolledRef.current &&
+      selectedNodeId === initialNodeIdRef.current
+    ) {
+      const index = flattenedItems.findIndex(
+        (item) => item.node.id === selectedNodeId,
+      );
 
       if (index !== -1) {
         // Use behavior: "auto" for instant scroll on initial load to prevent
@@ -113,14 +136,26 @@ export function TraceTimeline() {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       {/* Sticky time scale header */}
-      <div ref={timeIndexRef} className="overflow-x-auto overflow-y-hidden" onScroll={handleTimeIndexScroll}>
+      <div
+        ref={timeIndexRef}
+        className="overflow-x-auto overflow-y-hidden"
+        onScroll={handleTimeIndexScroll}
+      >
         <div style={{ width: `${contentWidth}px` }}>
-          <TimelineScale traceDuration={traceDuration} scaleWidth={SCALE_WIDTH} stepSize={stepSize} />
+          <TimelineScale
+            traceDuration={traceDuration}
+            scaleWidth={SCALE_WIDTH}
+            stepSize={stepSize}
+          />
         </div>
       </div>
 
       {/* Main scrollable content with virtualized rows */}
-      <div ref={contentRef} className="flex-1 overflow-auto" onScroll={handleContentScroll}>
+      <div
+        ref={contentRef}
+        className="flex-1 overflow-auto"
+        onScroll={handleContentScroll}
+      >
         <div
           style={{
             height: `${rowVirtualizer.getTotalSize()}px`,

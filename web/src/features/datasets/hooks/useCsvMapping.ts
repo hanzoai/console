@@ -43,11 +43,16 @@ export function useCsvMapping({
   expectedOutputSchemaKeys?: string[];
 }): CsvMapping & CsvMappingActions {
   const hasInputSchema = inputSchemaKeys && inputSchemaKeys.length > 0;
-  const hasExpectedSchema = expectedOutputSchemaKeys && expectedOutputSchemaKeys.length > 0;
+  const hasExpectedSchema =
+    expectedOutputSchemaKeys && expectedOutputSchemaKeys.length > 0;
 
   const [mapping, setMapping] = useState<CsvMapping>(() => ({
-    input: hasInputSchema ? createSchemaField(inputSchemaKeys) : createFreeformField(),
-    expectedOutput: hasExpectedSchema ? createSchemaField(expectedOutputSchemaKeys) : createFreeformField(),
+    input: hasInputSchema
+      ? createSchemaField(inputSchemaKeys)
+      : createFreeformField(),
+    expectedOutput: hasExpectedSchema
+      ? createSchemaField(expectedOutputSchemaKeys)
+      : createFreeformField(),
     metadata: [],
   }));
 
@@ -57,7 +62,8 @@ export function useCsvMapping({
 
     const isInitialized =
       (isFreeformField(mapping.input) && mapping.input.columns.length > 0) ||
-      (isFreeformField(mapping.expectedOutput) && mapping.expectedOutput.columns.length > 0) ||
+      (isFreeformField(mapping.expectedOutput) &&
+        mapping.expectedOutput.columns.length > 0) ||
       mapping.metadata.length > 0;
 
     if (!hasInputSchema && !hasExpectedSchema && !isInitialized) {
@@ -65,9 +71,15 @@ export function useCsvMapping({
       const defaultExpected = findDefaultColumn(preview.columns, "Expected", 1);
       const defaultMetadata = findDefaultColumn(preview.columns, "Metadata", 2);
 
-      const inputColumn = defaultInput ? preview.columns.find((c) => c.name === defaultInput) : undefined;
-      const expectedColumn = defaultExpected ? preview.columns.find((c) => c.name === defaultExpected) : undefined;
-      const metadataColumn = defaultMetadata ? preview.columns.find((c) => c.name === defaultMetadata) : undefined;
+      const inputColumn = defaultInput
+        ? preview.columns.find((c) => c.name === defaultInput)
+        : undefined;
+      const expectedColumn = defaultExpected
+        ? preview.columns.find((c) => c.name === defaultExpected)
+        : undefined;
+      const metadataColumn = defaultMetadata
+        ? preview.columns.find((c) => c.name === defaultMetadata)
+        : undefined;
 
       setMapping((prev) => ({
         input: isFreeformField(prev.input)
@@ -104,7 +116,9 @@ export function useCsvMapping({
           input: {
             type: FieldMappingType.SCHEMA,
             entries: prev.input.entries.map((entry) =>
-              entry.key === key ? { ...entry, columns: [...entry.columns, column] } : entry,
+              entry.key === key
+                ? { ...entry, columns: [...entry.columns, column] }
+                : entry,
             ),
           },
         };
@@ -113,7 +127,10 @@ export function useCsvMapping({
     });
   };
 
-  const addColumnToExpectedOutput = (column: CsvColumnPreview, key?: string) => {
+  const addColumnToExpectedOutput = (
+    column: CsvColumnPreview,
+    key?: string,
+  ) => {
     setMapping((prev) => {
       if (isFreeformField(prev.expectedOutput)) {
         return {
@@ -129,7 +146,9 @@ export function useCsvMapping({
           expectedOutput: {
             type: FieldMappingType.SCHEMA,
             entries: prev.expectedOutput.entries.map((entry) =>
-              entry.key === key ? { ...entry, columns: [...entry.columns, column] } : entry,
+              entry.key === key
+                ? { ...entry, columns: [...entry.columns, column] }
+                : entry,
             ),
           },
         };
@@ -182,7 +201,9 @@ export function useCsvMapping({
           ...prev,
           expectedOutput: {
             type: FieldMappingType.FREEFORM,
-            columns: prev.expectedOutput.columns.filter((c) => c.name !== columnName),
+            columns: prev.expectedOutput.columns.filter(
+              (c) => c.name !== columnName,
+            ),
           },
         };
       } else if (key) {
@@ -227,10 +248,14 @@ export function useCsvMapping({
             })),
           };
 
-      const newExpectedOutput: FieldMapping = isFreeformField(prev.expectedOutput)
+      const newExpectedOutput: FieldMapping = isFreeformField(
+        prev.expectedOutput,
+      )
         ? {
             type: FieldMappingType.FREEFORM,
-            columns: prev.expectedOutput.columns.filter((c) => c.name !== columnName),
+            columns: prev.expectedOutput.columns.filter(
+              (c) => c.name !== columnName,
+            ),
           }
         : {
             type: FieldMappingType.SCHEMA,
@@ -262,8 +287,12 @@ export function useCsvMapping({
 
   const reset = () => {
     setMapping({
-      input: hasInputSchema ? createSchemaField(inputSchemaKeys!) : createFreeformField(),
-      expectedOutput: hasExpectedSchema ? createSchemaField(expectedOutputSchemaKeys!) : createFreeformField(),
+      input: hasInputSchema
+        ? createSchemaField(inputSchemaKeys!)
+        : createFreeformField(),
+      expectedOutput: hasExpectedSchema
+        ? createSchemaField(expectedOutputSchemaKeys!)
+        : createFreeformField(),
       metadata: [],
     });
   };

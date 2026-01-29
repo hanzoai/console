@@ -1,6 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { DataTable } from "@/src/components/table/data-table";
-import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
+import {
+  DataTableControlsProvider,
+  DataTableControls,
+} from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import TableLink from "@/src/components/table/table-link";
 import { type HanzoColumnDef } from "@/src/components/table/types";
@@ -75,7 +78,8 @@ export function PromptTable() {
     setPaginationAndFolderState,
   } = useFolderPagination();
 
-  const { searchQuery, searchType, setSearchQuery, setSearchType } = useFullTextSearch();
+  const { searchQuery, searchType, setSearchQuery, setSearchType } =
+    useFullTextSearch();
 
   // Reset pagination when search query changes
   useEffect(() => {
@@ -106,10 +110,14 @@ export function PromptTable() {
   const promptMetrics = api.prompts.metrics.useQuery(
     {
       projectId: projectId as string,
-      promptNames: prompts.data?.prompts.map((p) => buildFullPath(currentFolderPath, p.name)) ?? [],
+      promptNames:
+        prompts.data?.prompts.map((p) =>
+          buildFullPath(currentFolderPath, p.name),
+        ) ?? [],
     },
     {
-      enabled: Boolean(projectId) && prompts.data && prompts.data.totalCount > 0,
+      enabled:
+        Boolean(projectId) && prompts.data && prompts.data.totalCount > 0,
       trpc: {
         context: {
           skipBatch: true,
@@ -247,7 +255,12 @@ export function PromptTable() {
         const rowData = row.row.original;
 
         if (rowData.type === "folder") {
-          return <FolderBreadcrumbLink name={name} onClick={() => navigateToFolder(rowData.fullPath)} />;
+          return (
+            <FolderBreadcrumbLink
+              name={name}
+              onClick={() => navigateToFolder(rowData.fullPath)}
+            />
+          );
         }
 
         return name ? (
@@ -297,7 +310,9 @@ export function PromptTable() {
 
         const numberOfObservations = row.getValue();
         const promptPath = row.row.original.fullPath;
-        const filter = encodeURIComponent(`promptName;stringOptions;;any of;${promptPath}`);
+        const filter = encodeURIComponent(
+          `promptName;stringOptions;;any of;${promptPath}`,
+        );
         if (!promptMetrics.isSuccess) {
           return <Skeleton className="h-3 w-1/2" />;
         }
@@ -359,7 +374,10 @@ export function PromptTable() {
       <div className="flex h-full w-full flex-col">
         {/* Toolbar spanning full width */}
         {currentFolderPath && (
-          <FolderBreadcrumb currentFolderPath={currentFolderPath} navigateToFolder={navigateToFolder} />
+          <FolderBreadcrumb
+            currentFolderPath={currentFolderPath}
+            navigateToFolder={navigateToFolder}
+          />
         )}
         <DataTableToolbar
           columns={promptColumns}

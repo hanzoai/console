@@ -2,9 +2,15 @@ import { withMiddlewares } from "@/src/features/public-api/server/withMiddleware
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { env } from "@/src/env.mjs";
 import { logger } from "@hanzo/shared/src/server";
-import { GetMetricsV2Query, GetMetricsV2Response } from "@/src/features/public-api/types/metrics";
+import {
+  GetMetricsV2Query,
+  GetMetricsV2Response,
+} from "@/src/features/public-api/types/metrics";
 import { InvalidRequestError, NotImplementedError } from "@hanzo/shared";
-import { executeQuery, validateQuery } from "@/src/features/query/server/queryExecutor";
+import {
+  executeQuery,
+  validateQuery,
+} from "@/src/features/query/server/queryExecutor";
 
 const DEFAULT_ROW_LIMIT = 100;
 
@@ -16,7 +22,9 @@ export default withMiddlewares({
     responseSchema: GetMetricsV2Response,
     fn: async ({ query, auth }) => {
       if (env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS !== "true") {
-        throw new NotImplementedError("v2 APIs are currently in beta and only available on Hanzo Cloud");
+        throw new NotImplementedError(
+          "v2 APIs are currently in beta and only available on Hanzo Cloud",
+        );
       }
 
       try {

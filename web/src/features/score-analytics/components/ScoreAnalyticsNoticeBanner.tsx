@@ -27,7 +27,8 @@ export function ScoreAnalyticsNoticeBanner() {
 
   // State 1: Estimating (loading)
   if (isEstimating || (estimate && isLoading)) {
-    const showLargeDataset = estimate && estimate.estimatedMatchedCount > 100_000;
+    const showLargeDataset =
+      estimate && estimate.estimatedMatchedCount > 100_000;
 
     // Only show banner if:
     // 1. Delay has passed, OR
@@ -42,7 +43,9 @@ export function ScoreAnalyticsNoticeBanner() {
           <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
           <div className="flex-1 space-y-1">
             <div className="text-sm font-medium">
-              {showLargeDataset ? "Processing large dataset..." : "Loading analytics..."}
+              {showLargeDataset
+                ? "Processing large dataset..."
+                : "Loading analytics..."}
             </div>
             {estimate && (
               <div className="text-sm text-muted-foreground">
@@ -50,7 +53,9 @@ export function ScoreAnalyticsNoticeBanner() {
                   ? `Analyzing ~${estimate.score1Count.toLocaleString()} scores`
                   : `Analyzing ~${estimate.score1Count.toLocaleString()} (Score 1) and ~${estimate.score2Count.toLocaleString()} (Score 2) scores`}
                 {estimate.willSample && " • Sampling will be applied"}
-                {estimate.estimatedQueryTime && <> • Est. time: {estimate.estimatedQueryTime}</>}
+                {estimate.estimatedQueryTime && (
+                  <> • Est. time: {estimate.estimatedQueryTime}</>
+                )}
               </div>
             )}
           </div>
@@ -68,7 +73,10 @@ export function ScoreAnalyticsNoticeBanner() {
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-2 text-sm font-medium">
               Sampled Data
-              <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} mode={data.metadata.mode} />
+              <SamplingDetailsHoverCard
+                samplingMetadata={data.samplingMetadata}
+                mode={data.metadata.mode}
+              />
             </div>
             <div className="text-sm text-muted-foreground">
               {data.metadata.mode === "single"

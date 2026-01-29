@@ -23,12 +23,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { Input } from "@/src/components/ui/input";
 import { Role } from "@hanzo/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { useHasEntitlement, useEntitlementLimit } from "@/src/features/entitlements/hooks";
+import {
+  useHasEntitlement,
+  useEntitlementLimit,
+} from "@/src/features/entitlements/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { RoleSelectItem } from "@/src/features/rbac/components/RoleSelectItem";
 import { ActionButton } from "@/src/components/ActionButton";
@@ -39,7 +47,10 @@ const formSchema = z.object({
   projectRole: z.enum(Role),
 });
 
-export function CreateProjectMemberButton(props: { orgId: string; project?: { id: string; name: string } }) {
+export function CreateProjectMemberButton(props: {
+  orgId: string;
+  project?: { id: string; name: string };
+}) {
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const hasOrgAccess = useHasOrganizationAccess({
@@ -72,7 +83,8 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
     },
   ).data?.totalCount;
   const hasProjectRoleEntitlement = useHasEntitlement("rbac-project-roles");
-  const hasOnlySingleProjectAccess = !hasOrgAccess && hasProjectAccess && hasProjectRoleEntitlement;
+  const hasOnlySingleProjectAccess =
+    !hasOrgAccess && hasProjectAccess && hasProjectRoleEntitlement;
 
   const utils = api.useUtils();
   const mutCreateProjectMember = api.members.create.useMutation({
@@ -110,7 +122,8 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
         orgRole: values.orgRole,
         //optional
         projectId: props.project?.id,
-        projectRole: values.projectRole === Role.NONE ? undefined : values.projectRole,
+        projectRole:
+          values.projectRole === Role.NONE ? undefined : values.projectRole,
       })
       .then(() => {
         form.reset();
@@ -133,12 +146,17 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
             limitValue={(orgMemberCount ?? 0) + (inviteCount ?? 0)}
             icon={<PlusIcon className="h-5 w-5" aria-hidden="true" />}
           >
-            {hasOnlySingleProjectAccess ? "Add project member" : "Add new member"}
+            {hasOnlySingleProjectAccess
+              ? "Add project member"
+              : "Add new member"}
           </ActionButton>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add new member to the {hasOnlySingleProjectAccess ? "project" : "organization"}</DialogTitle>
+            <DialogTitle>
+              Add new member to the{" "}
+              {hasOnlySingleProjectAccess ? "project" : "organization"}
+            </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -165,7 +183,11 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
                         <FormLabel>Organization Role</FormLabel>
                         <Select
                           defaultValue={field.value}
-                          onValueChange={(value) => field.onChange(value as (typeof Role)[keyof typeof Role])}
+                          onValueChange={(value) =>
+                            field.onChange(
+                              value as (typeof Role)[keyof typeof Role],
+                            )
+                          }
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -192,7 +214,11 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
                         <FormLabel>Project Role</FormLabel>
                         <Select
                           defaultValue={field.value}
-                          onValueChange={(value) => field.onChange(value as (typeof Role)[keyof typeof Role])}
+                          onValueChange={(value) =>
+                            field.onChange(
+                              value as (typeof Role)[keyof typeof Role],
+                            )
+                          }
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -201,16 +227,24 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
                           </FormControl>
                           <SelectContent>
                             {Object.values(Role)
-                              .filter((role) => !hasOnlySingleProjectAccess || role !== Role.NONE)
+                              .filter(
+                                (role) =>
+                                  !hasOnlySingleProjectAccess ||
+                                  role !== Role.NONE,
+                              )
                               .map((role) => (
-                                <RoleSelectItem role={role} key={role} isProjectRole />
+                                <RoleSelectItem
+                                  role={role}
+                                  key={role}
+                                  isProjectRole
+                                />
                               ))}
                           </SelectContent>
                         </Select>
                         {!hasOnlySingleProjectAccess && (
                           <FormDescription>
-                            This project role will override the default role for this current project (
-                            {props.project!.name}).
+                            This project role will override the default role for
+                            this current project ({props.project!.name}).
                           </FormDescription>
                         )}
                         <FormMessage />
@@ -220,7 +254,11 @@ export function CreateProjectMemberButton(props: { orgId: string; project?: { id
                 )}
               </DialogBody>
               <DialogFooter>
-                <Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={form.formState.isSubmitting}
+                >
                   Grant access
                 </Button>
                 <FormMessage />

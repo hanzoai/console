@@ -148,9 +148,15 @@ export function JsonPathInput({
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={cn("overflow-hidden rounded-md border text-sm", displayError && "border-destructive", className)}
+        className={cn(
+          "overflow-hidden rounded-md border text-sm",
+          displayError && "border-destructive",
+          className,
+        )}
       />
-      {displayError && <p className="text-xs text-destructive">{displayError}</p>}
+      {displayError && (
+        <p className="text-xs text-destructive">{displayError}</p>
+      )}
     </div>
   );
 }

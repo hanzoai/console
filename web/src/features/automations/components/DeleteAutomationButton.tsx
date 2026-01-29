@@ -3,7 +3,11 @@ import { Button } from "@/src/components/ui/button";
 import { Trash } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
 interface DeleteAutomationButtonProps {
@@ -26,31 +30,43 @@ export const DeleteAutomationButton: React.FC<DeleteAutomationButtonProps> = ({
     scope: "automations:CUD",
   });
 
-  const deleteAutomationMutation = api.automations.deleteAutomation.useMutation({
-    onSuccess: () => {
-      showSuccessToast({
-        title: "Automation deleted",
-        description: "The automation has been deleted successfully.",
-      });
+  const deleteAutomationMutation = api.automations.deleteAutomation.useMutation(
+    {
+      onSuccess: () => {
+        showSuccessToast({
+          title: "Automation deleted",
+          description: "The automation has been deleted successfully.",
+        });
 
-      if (onSuccess) {
-        onSuccess();
-      }
+        if (onSuccess) {
+          onSuccess();
+        }
 
-      void utils.automations.invalidate();
+        void utils.automations.invalidate();
+      },
     },
-  });
+  );
 
   return (
     <Popover open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
       <PopoverTrigger asChild>
         {variant === "icon" ? (
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={!hasAccess}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            disabled={!hasAccess}
+          >
             <Trash className="h-4 w-4" />
             <span className="sr-only">Delete</span>
           </Button>
         ) : (
-          <Button type="button" variant="outline" className="flex items-center border-light-red" disabled={!hasAccess}>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center border-light-red"
+            disabled={!hasAccess}
+          >
             <span className="text-dark-red">Delete</span>
           </Button>
         )}
@@ -58,7 +74,8 @@ export const DeleteAutomationButton: React.FC<DeleteAutomationButtonProps> = ({
       <PopoverContent>
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 text-sm">
-          This action permanently deletes this automation and execution history. This cannot be undone.
+          This action permanently deletes this automation and execution history.
+          This cannot be undone.
         </p>
         <div className="flex justify-end space-x-4">
           <Button

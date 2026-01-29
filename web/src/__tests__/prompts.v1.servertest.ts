@@ -30,7 +30,11 @@ describe("/api/public/prompts API Endpoint", () => {
       },
     });
 
-    const fetchedObservations = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=1", undefined);
+    const fetchedObservations = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=1",
+      undefined,
+    );
 
     expect(fetchedObservations.status).toBe(200);
 
@@ -114,7 +118,11 @@ describe("/api/public/prompts API Endpoint", () => {
       },
     });
 
-    const fetchedObservations = await makeAPICall("GET", "/api/public/prompts?name=prompt-name", undefined);
+    const fetchedObservations = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name",
+      undefined,
+    );
 
     expect(fetchedObservations.status).toBe(404);
   });
@@ -157,7 +165,11 @@ describe("/api/public/prompts API Endpoint", () => {
       },
     });
 
-    const fetchedObservations = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=1", undefined);
+    const fetchedObservations = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=1",
+      undefined,
+    );
 
     expect(fetchedObservations.status).toBe(200);
 
@@ -218,7 +230,11 @@ describe("/api/public/prompts API Endpoint", () => {
     });
 
     // Expect the second prompt to be fetched
-    const fetchedProductionPrompt = await makeAPICall("GET", "/api/public/prompts?name=prompt-name", undefined);
+    const fetchedProductionPrompt = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name",
+      undefined,
+    );
 
     expect(fetchedProductionPrompt.status).toBe(200);
 
@@ -308,7 +324,11 @@ describe("/api/public/prompts API Endpoint", () => {
     });
 
     // Expect the second prompt to be fetched as default production prompt
-    const fetchedProductionPrompt = await makeAPICall("GET", "/api/public/prompts?name=prompt-name", undefined);
+    const fetchedProductionPrompt = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name",
+      undefined,
+    );
     expect(fetchedProductionPrompt.status).toBe(200);
     if (!isPrompt(fetchedProductionPrompt.body)) {
       throw new Error("Expected body to be a prompt");
@@ -318,7 +338,11 @@ describe("/api/public/prompts API Endpoint", () => {
     expect(fetchedProductionPrompt.body.labels).toEqual(["production"]); // Only production label should be present
 
     // Expect the first prompt to have only development label
-    const fetchedFirstPrompt = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=1", undefined);
+    const fetchedFirstPrompt = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=1",
+      undefined,
+    );
 
     expect(fetchedFirstPrompt.status).toBe(200);
     if (!isPrompt(fetchedFirstPrompt.body)) {
@@ -330,7 +354,11 @@ describe("/api/public/prompts API Endpoint", () => {
     expect(fetchedFirstPrompt.body.labels).toEqual(["development"]);
 
     // Expect the third prompt to have only staging label
-    const fetchedThirdPrompt = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=3", undefined);
+    const fetchedThirdPrompt = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=3",
+      undefined,
+    );
 
     expect(fetchedThirdPrompt.status).toBe(200);
     if (!isPrompt(fetchedThirdPrompt.body)) {
@@ -353,7 +381,11 @@ describe("/api/public/prompts API Endpoint", () => {
       },
     });
 
-    const fetchedObservations = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=1", undefined);
+    const fetchedObservations = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=1",
+      undefined,
+    );
 
     expect(fetchedObservations.status).toBe(200);
 
@@ -505,7 +537,11 @@ describe("/api/public/prompts API Endpoint", () => {
       projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
     });
 
-    const fetchedObservations = await makeAPICall("GET", "/api/public/prompts?name=prompt-name&version=1", undefined);
+    const fetchedObservations = await makeAPICall(
+      "GET",
+      "/api/public/prompts?name=prompt-name&version=1",
+      undefined,
+    );
 
     expect(fetchedObservations.status).toBe(200);
 
@@ -539,7 +575,11 @@ describe("/api/public/prompts API Endpoint", () => {
 
     expect(response.status).toBe(201);
 
-    const { body: fetchedPrompt } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
+    const { body: fetchedPrompt } = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}`,
+      undefined,
+    );
 
     const validatedPrompt = validatePrompt(fetchedPrompt);
 
@@ -565,7 +605,11 @@ describe("/api/public/prompts API Endpoint", () => {
 
     expect(response.status).toBe(400);
 
-    const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
+    const { body, status } = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}`,
+      undefined,
+    );
     expect(status).toBe(404);
     expect(body).toEqual({
       error: "HanzoNotFoundError",
@@ -589,7 +633,11 @@ describe("/api/public/prompts API Endpoint", () => {
 
     expect(response.status).toBe(400);
 
-    const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
+    const { body, status } = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}`,
+      undefined,
+    );
     expect(status).toBe(404);
     expect(body).toEqual({
       error: "HanzoNotFoundError",
@@ -608,7 +656,11 @@ describe("/api/public/prompts API Endpoint", () => {
 
     expect(response.status).toBe(400);
 
-    const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
+    const { body, status } = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}`,
+      undefined,
+    );
     expect(status).toBe(404);
     expect(body).toEqual({
       error: "HanzoNotFoundError",
@@ -646,11 +698,16 @@ describe("/api/public/prompts API Endpoint", () => {
     expect(postResponse2.status).toBe(400);
     expect(postResponse2.body).toEqual({
       error: "InvalidRequestError",
-      message: "Previous versions have different prompt type. Create a new prompt with a different name.",
+      message:
+        "Previous versions have different prompt type. Create a new prompt with a different name.",
     });
 
     // Check if the prompt is still the chat prompt
-    const getResponse1 = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
+    const getResponse1 = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}`,
+      undefined,
+    );
     expect(getResponse1.status).toBe(200);
 
     const validatedPrompt = validatePrompt(getResponse1.body);
@@ -665,7 +722,11 @@ describe("/api/public/prompts API Endpoint", () => {
     expect(validatedPrompt.config).toEqual({});
 
     // Check that the text prompt has not been created
-    const getResponse2 = await makeAPICall("GET", `/api/public/prompts?name=${promptName}&version=2`, undefined);
+    const getResponse2 = await makeAPICall(
+      "GET",
+      `/api/public/prompts?name=${promptName}&version=2`,
+      undefined,
+    );
     expect(getResponse2.status).toBe(404);
     expect(getResponse2.body).toEqual({
       error: "HanzoNotFoundError",
@@ -692,9 +753,14 @@ const isPrompt = (x: unknown): x is PromptWithIsActive => {
   );
 };
 
-const validatePrompt = (obj: Record<string, unknown>): LegacyValidatedPrompt => {
+const validatePrompt = (
+  obj: Record<string, unknown>,
+): LegacyValidatedPrompt => {
   Object.keys(obj).forEach((key) => {
-    obj[key] = key === "createdAt" || key === "updatedAt" ? new Date(obj[key] as string) : obj[key];
+    obj[key] =
+      key === "createdAt" || key === "updatedAt"
+        ? new Date(obj[key] as string)
+        : obj[key];
   });
 
   return LegacyPromptSchema.parse(obj);

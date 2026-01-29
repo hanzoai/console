@@ -36,7 +36,8 @@ export function SearchBar({
 }: SearchBarProps) {
   const [internalQuery, setInternalQuery] = useState("");
 
-  const isControlled = controlledValue !== undefined && onValueChange !== undefined;
+  const isControlled =
+    controlledValue !== undefined && onValueChange !== undefined;
   const query = isControlled ? controlledValue : internalQuery;
 
   // Debounced search (only when uncontrolled)
@@ -104,8 +105,13 @@ export function SearchBar({
 
         {/* Match counter */}
         {showControls && (
-          <span className="min-w-[70px] whitespace-nowrap text-right text-xs text-muted-foreground" aria-live="polite">
-            {hasMatches ? `${currentIndex + 1} of ${matches.length}` : "No matches"}
+          <span
+            className="min-w-[70px] whitespace-nowrap text-right text-xs text-muted-foreground"
+            aria-live="polite"
+          >
+            {hasMatches
+              ? `${currentIndex + 1} of ${matches.length}`
+              : "No matches"}
           </span>
         )}
       </div>

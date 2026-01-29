@@ -31,7 +31,9 @@ const cleanUpConsoleEventListeners = (page: Page) => {
 };
 
 test.describe("Create project", () => {
-  test("Sign in, create an organization, create a project", async ({ page }) => {
+  test("Sign in, create an organization, create a project", async ({
+    page,
+  }) => {
     test.setTimeout(60000);
     // const errors = await checkConsoleErrors(page);
 
@@ -39,7 +41,9 @@ test.describe("Create project", () => {
     await page.goto("/auth/sign-in");
     await page.fill('input[name="email"]', "demo@hanzo.com");
     await page.fill('input[type="password"]', "password");
-    await page.click('button[data-testid="submit-email-password-sign-in-form"]');
+    await page.click(
+      'button[data-testid="submit-email-password-sign-in-form"]',
+    );
     await page.waitForTimeout(2000);
     await expect(page).toHaveURL("/");
 
@@ -65,11 +69,16 @@ test.describe("Create project", () => {
     // Skip add new members step
     await page.isVisible('[data-testid="btn-skip-add-members"]');
     await page.click('[data-testid="btn-skip-add-members"]');
-    expect(page.url()).toContain("/organization/" + organizationId + "/setup?orgstep=create-project");
+    expect(page.url()).toContain(
+      "/organization/" + organizationId + "/setup?orgstep=create-project",
+    );
 
     // Create project
     await expect(page.locator("data-testid=new-project-form")).toBeVisible();
-    await page.fill('[data-testid="new-project-name-input"]', "e2e test project");
+    await page.fill(
+      '[data-testid="new-project-name-input"]',
+      "e2e test project",
+    );
     await page.click('button[type="submit"]');
     await page.waitForTimeout(5000);
     expect(page.url()).toContain("/project/");
@@ -103,7 +112,9 @@ test.describe("Create project", () => {
     { title: "Tracing", url: "/observations", subTitle: "Observations" },
     { title: "Scores", url: "/scores" },
   ].forEach(({ title, url, subTitle }) => {
-    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({ page }) => {
+    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({
+      page,
+    }) => {
       // const errors = await checkConsoleErrors(page);
       await signin(page);
 
@@ -137,7 +148,9 @@ const signin = async (page: Page) => {
 };
 
 const checkPageHeaderTitle = async (page: Page, title: string) => {
-  const pageHeaderTitle = await page.locator('[data-testid="page-header-title"]').textContent();
+  const pageHeaderTitle = await page
+    .locator('[data-testid="page-header-title"]')
+    .textContent();
   expect(pageHeaderTitle).toContain(title);
 };
 

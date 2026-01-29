@@ -18,7 +18,14 @@ import {
  * Objects
  */
 
-const APIModelUsageUnit = z.enum(["TOKENS", "CHARACTERS", "MILLISECONDS", "SECONDS", "REQUESTS", "IMAGES"]);
+const APIModelUsageUnit = z.enum([
+  "TOKENS",
+  "CHARACTERS",
+  "MILLISECONDS",
+  "SECONDS",
+  "REQUESTS",
+  "IMAGES",
+]);
 
 /**
  * API Pricing Tier Definition (response)
@@ -149,14 +156,18 @@ export const PostModelsV1Body = z
     pricingTiers: z.array(PricingTierInputSchema).nullish(),
   })
   .superRefine((data, ctx) => {
-    const hasFlatPrices = data.inputPrice != null || data.outputPrice != null || data.totalPrice != null;
+    const hasFlatPrices =
+      data.inputPrice != null ||
+      data.outputPrice != null ||
+      data.totalPrice != null;
     const hasTiers = data.pricingTiers && data.pricingTiers.length > 0;
 
     // Validation 1: Must provide either flat prices OR pricing tiers (not both, not neither)
     if (hasFlatPrices && hasTiers) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers, not both",
+        message:
+          "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers, not both",
       });
       return;
     }
@@ -164,7 +175,8 @@ export const PostModelsV1Body = z
     if (!hasFlatPrices && !hasTiers) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers",
+        message:
+          "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers",
       });
       return;
     }
@@ -175,7 +187,8 @@ export const PostModelsV1Body = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["totalPrice"],
-          message: "If input and/or output price is set, total price must be null",
+          message:
+            "If input and/or output price is set, total price must be null",
         });
       }
     }

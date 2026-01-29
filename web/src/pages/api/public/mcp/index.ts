@@ -57,12 +57,18 @@ import "@/src/features/mcp/server/bootstrap";
  * @param req - Next.js API request
  * @param res - Next.js API response
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     // CORS headers for MCP clients (must be set before authentication)
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Mcp-Session-Id, Last-Event-ID");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, Accept, Mcp-Session-Id, Last-Event-ID",
+    );
     res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id");
 
     // Handle preflight OPTIONS request (before authentication)
@@ -72,24 +78,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Authenticate request using BasicAuth (Public Key:Secret Key)
-    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(
+      prisma,
+      redis,
+    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
 
     if (!authCheck.validKey) {
       throw new UnauthorizedError(authCheck.error);
     }
 
     // MCP requires project-scoped access (no Bearer auth, no org-level keys)
-    if (authCheck.scope.accessLevel !== "project" || !authCheck.scope.projectId) {
-      throw new ForbiddenError("Access denied: MCP requires project-scoped API keys with BasicAuth");
+    if (
+      authCheck.scope.accessLevel !== "project" ||
+      !authCheck.scope.projectId
+    ) {
+      throw new ForbiddenError(
+        "Access denied: MCP requires project-scoped API keys with BasicAuth",
+      );
     }
 
     // Check if ingestion is suspended due to usage limits
     if (authCheck.scope.isIngestionSuspended) {
-      throw new ForbiddenError("Access suspended: Usage threshold exceeded. Please upgrade your plan.");
+      throw new ForbiddenError(
+        "Access suspended: Usage threshold exceeded. Please upgrade your plan.",
+      );
     }
 
     // Rate limit MCP requests
-    const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "public-api");
+    const rateLimitCheck =
+      await RateLimitService.getInstance().rateLimitRequest(
+        authCheck.scope,
+        "public-api",
+      );
 
     if (rateLimitCheck?.isRateLimited()) {
       return rateLimitCheck.sendRestResponseIfLimited(res);

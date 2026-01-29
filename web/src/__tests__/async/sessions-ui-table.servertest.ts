@@ -297,7 +297,9 @@ describe("trpc.sessions", () => {
     const session1 = sessions.find((s) => s.session_id === sessionId1);
     expect(session1).toBeDefined();
     expect(session1?.trace_count).toBe(2);
-    expect(session1?.user_ids).toEqual(expect.arrayContaining(["user1", "user2"]));
+    expect(session1?.user_ids).toEqual(
+      expect.arrayContaining(["user1", "user2"]),
+    );
     expect(session1?.trace_tags).toEqual(["doe", "john"]);
     expect(session1?.total_observations).toEqual(4);
 

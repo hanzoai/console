@@ -5,7 +5,12 @@
  * Zero dependencies - simple string matching with optional regex support.
  */
 
-import type { FlatJSONRow, SearchMatch, SearchOptions, ExpansionState } from "../types";
+import type {
+  FlatJSONRow,
+  SearchMatch,
+  SearchOptions,
+  ExpansionState,
+} from "../types";
 import type { TreeState } from "./treeStructure";
 import { expandToNode } from "./treeExpansion";
 
@@ -17,7 +22,11 @@ import { expandToNode } from "./treeExpansion";
  * @param options - Search options (case sensitivity, regex, etc.)
  * @returns Array of search matches with positions
  */
-export function searchInRows(rows: FlatJSONRow[], query: string, options: SearchOptions = {}): SearchMatch[] {
+export function searchInRows(
+  rows: FlatJSONRow[],
+  query: string,
+  options: SearchOptions = {},
+): SearchMatch[] {
   if (!query || query.trim() === "") return [];
 
   const { caseSensitive = false, useRegex = false } = options;
@@ -41,7 +50,12 @@ export function searchInRows(rows: FlatJSONRow[], query: string, options: Search
   rows.forEach((row, index) => {
     // Search in key
     const keyStr = String(row.key);
-    const keyMatches = findMatchesInString(keyStr, searchQuery, regex, caseSensitive);
+    const keyMatches = findMatchesInString(
+      keyStr,
+      searchQuery,
+      regex,
+      caseSensitive,
+    );
 
     keyMatches.forEach((match) => {
       matches.push({
@@ -57,7 +71,12 @@ export function searchInRows(rows: FlatJSONRow[], query: string, options: Search
     // Search in value (only for primitive values)
     if (!row.isExpandable) {
       const valueStr = String(row.value);
-      const valueMatches = findMatchesInString(valueStr, searchQuery, regex, caseSensitive);
+      const valueMatches = findMatchesInString(
+        valueStr,
+        searchQuery,
+        regex,
+        caseSensitive,
+      );
 
       valueMatches.forEach((match) => {
         matches.push({
@@ -126,7 +145,10 @@ function findMatchesInString(
  * @param rows - All flattened rows
  * @returns Array of path strings to expand
  */
-export function getPathsToExpand(match: SearchMatch, rows: FlatJSONRow[]): string[] {
+export function getPathsToExpand(
+  match: SearchMatch,
+  rows: FlatJSONRow[],
+): string[] {
   const row = rows[match.rowIndex];
   if (!row) return [];
 
@@ -149,7 +171,10 @@ export function getPathsToExpand(match: SearchMatch, rows: FlatJSONRow[]): strin
  * @param currentState - Current expansion state
  * @returns New expansion state with ancestors expanded
  */
-function expandAncestors(path: string, currentState: ExpansionState): ExpansionState {
+function expandAncestors(
+  path: string,
+  currentState: ExpansionState,
+): ExpansionState {
   // Can't modify boolean state
   if (typeof currentState === "boolean") {
     return currentState;
@@ -175,7 +200,11 @@ function expandAncestors(path: string, currentState: ExpansionState): ExpansionS
  * @param currentState - Current expansion state
  * @returns New expansion state with ancestors expanded
  */
-export function expandToMatch(match: SearchMatch, rows: FlatJSONRow[], currentState: ExpansionState): ExpansionState {
+export function expandToMatch(
+  match: SearchMatch,
+  rows: FlatJSONRow[],
+  currentState: ExpansionState,
+): ExpansionState {
   const row = rows[match.rowIndex];
   if (!row) return currentState;
 
@@ -185,7 +214,10 @@ export function expandToMatch(match: SearchMatch, rows: FlatJSONRow[], currentSt
 /**
  * Get the next match index (circular)
  */
-export function getNextMatchIndex(currentIndex: number, totalMatches: number): number {
+export function getNextMatchIndex(
+  currentIndex: number,
+  totalMatches: number,
+): number {
   if (totalMatches === 0) return 0;
   return (currentIndex + 1) % totalMatches;
 }
@@ -193,7 +225,10 @@ export function getNextMatchIndex(currentIndex: number, totalMatches: number): n
 /**
  * Get the previous match index (circular)
  */
-export function getPreviousMatchIndex(currentIndex: number, totalMatches: number): number {
+export function getPreviousMatchIndex(
+  currentIndex: number,
+  totalMatches: number,
+): number {
   if (totalMatches === 0) return 0;
   return (currentIndex - 1 + totalMatches) % totalMatches;
 }
@@ -202,7 +237,10 @@ export function getPreviousMatchIndex(currentIndex: number, totalMatches: number
  * Filter matches to only those in visible rows
  * Useful when some rows are collapsed
  */
-export function filterVisibleMatches(matches: SearchMatch[], visibleRowIndices: Set<number>): SearchMatch[] {
+export function filterVisibleMatches(
+  matches: SearchMatch[],
+  visibleRowIndices: Set<number>,
+): SearchMatch[] {
   return matches.filter((match) => visibleRowIndices.has(match.rowIndex));
 }
 
@@ -210,7 +248,9 @@ export function filterVisibleMatches(matches: SearchMatch[], visibleRowIndices: 
  * Group matches by row
  * Useful for showing "3 matches in this row" indicators
  */
-export function groupMatchesByRow(matches: SearchMatch[]): Map<string, SearchMatch[]> {
+export function groupMatchesByRow(
+  matches: SearchMatch[],
+): Map<string, SearchMatch[]> {
   const grouped = new Map<string, SearchMatch[]>();
 
   matches.forEach((match) => {
@@ -230,7 +270,10 @@ export function groupMatchesByRow(matches: SearchMatch[]): Map<string, SearchMat
  * @param matches - All search matches
  * @returns 1-based index within the row, or undefined
  */
-export function getCurrentMatchIndexInRow(currentMatchIndex: number, matches: SearchMatch[]): number | undefined {
+export function getCurrentMatchIndexInRow(
+  currentMatchIndex: number,
+  matches: SearchMatch[],
+): number | undefined {
   const currentMatch = matches[currentMatchIndex];
   if (!currentMatch) return undefined;
 
@@ -279,7 +322,10 @@ export function getSearchStats(matches: SearchMatch[]): SearchStats {
  * @param matches - All search matches
  * @returns Map of rowId -> count of matches in this row and its descendants
  */
-export function getMatchCountsPerRow(rows: FlatJSONRow[], matches: SearchMatch[]): Map<string, number> {
+export function getMatchCountsPerRow(
+  rows: FlatJSONRow[],
+  matches: SearchMatch[],
+): Map<string, number> {
   const counts = new Map<string, number>();
 
   // Initialize all rows with 0
@@ -313,7 +359,11 @@ export interface TextSegment {
   isHighlight: boolean;
 }
 
-export function highlightText(text: string, highlightStart?: number, highlightEnd?: number): TextSegment[] {
+export function highlightText(
+  text: string,
+  highlightStart?: number,
+  highlightEnd?: number,
+): TextSegment[] {
   if (
     highlightStart === undefined ||
     highlightEnd === undefined ||
@@ -370,7 +420,11 @@ export function highlightText(text: string, highlightStart?: number, highlightEn
  * @param options - Search options
  * @returns Array of search matches
  */
-export function searchInTree(tree: TreeState, query: string, options: SearchOptions = {}): SearchMatch[] {
+export function searchInTree(
+  tree: TreeState,
+  query: string,
+  options: SearchOptions = {},
+): SearchMatch[] {
   if (!query || query.trim() === "") return [];
 
   const { caseSensitive = false, useRegex = false } = options;
@@ -393,7 +447,12 @@ export function searchInTree(tree: TreeState, query: string, options: SearchOpti
   tree.allNodes.forEach((node, index) => {
     // Search in key
     const keyStr = String(node.key);
-    const keyMatches = findMatchesInString(keyStr, searchQuery, regex, caseSensitive);
+    const keyMatches = findMatchesInString(
+      keyStr,
+      searchQuery,
+      regex,
+      caseSensitive,
+    );
 
     keyMatches.forEach((match) => {
       matches.push({
@@ -409,7 +468,12 @@ export function searchInTree(tree: TreeState, query: string, options: SearchOpti
     // Search in value (only for primitive values)
     if (!node.isExpandable) {
       const valueStr = String(node.value);
-      const valueMatches = findMatchesInString(valueStr, searchQuery, regex, caseSensitive);
+      const valueMatches = findMatchesInString(
+        valueStr,
+        searchQuery,
+        regex,
+        caseSensitive,
+      );
 
       valueMatches.forEach((match) => {
         matches.push({
@@ -436,7 +500,10 @@ export function searchInTree(tree: TreeState, query: string, options: SearchOpti
  * @param match - Search match to reveal
  * @returns Updated tree state
  */
-export function expandToMatch_Tree(tree: TreeState, match: SearchMatch): TreeState {
+export function expandToMatch_Tree(
+  tree: TreeState,
+  match: SearchMatch,
+): TreeState {
   // Get node from match
   const node = tree.nodeMap.get(match.rowId);
   if (!node) return tree;
@@ -455,7 +522,10 @@ export function expandToMatch_Tree(tree: TreeState, match: SearchMatch): TreeSta
  * @param matches - Search matches
  * @returns Map of nodeId -> match count
  */
-export function getMatchCountsPerNode(tree: TreeState, matches: SearchMatch[]): Map<string, number> {
+export function getMatchCountsPerNode(
+  tree: TreeState,
+  matches: SearchMatch[],
+): Map<string, number> {
   const counts = new Map<string, number>();
 
   // Initialize all nodes with 0

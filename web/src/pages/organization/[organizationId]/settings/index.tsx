@@ -86,7 +86,8 @@ export const getOrganizationSettingsPages = ({
           items={[
             {
               title: "Delete this organization",
-              description: "Once you delete an organization, there is no going back. Please be certain.",
+              description:
+                "Once you delete an organization, there is no going back. Please be certain.",
               button: <DeleteOrganizationButton />,
             },
           ]}
@@ -162,7 +163,10 @@ const OrgSettingsPage = () => {
         title: "Organization Settings",
       }}
     >
-      <PagedSettingsContainer activeSlug={page as string | undefined} pages={pages} />
+      <PagedSettingsContainer
+        activeSlug={page as string | undefined}
+        pages={pages}
+      />
     </ContainerPage>
   );
 };

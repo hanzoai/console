@@ -29,7 +29,9 @@ test("Successfully sign up & able to go to homepage", async ({ page }) => {
   await expect(page).toHaveURL("/");
 });
 
-test("Successfully sign up & able to go to homepage with uppercase email", async ({ page }) => {
+test("Successfully sign up & able to go to homepage with uppercase email", async ({
+  page,
+}) => {
   await page.goto("auth/sign-up");
   await page.fill('input[name="name"]', "demo lang");
   await page.fill('input[name="email"]', "A" + randomEmailAddress());
@@ -47,7 +49,9 @@ test("Signup input validation", async ({ page }) => {
   await page.click('button[data-testid="submit-email-password-sign-up-form"]');
   await page.waitForTimeout(2000);
   await expect(page.getByText("Invalid email")).toBeVisible();
-  await expect(page.getByText("Password must be at least 8 characters long.")).toBeVisible();
+  await expect(
+    page.getByText("Password must be at least 8 characters long."),
+  ).toBeVisible();
   await page.click('button[data-testid="submit-email-password-sign-up-form"]');
   await page.waitForTimeout(2000);
   // don't see get started page
@@ -55,9 +59,12 @@ test("Signup input validation", async ({ page }) => {
 });
 
 // random email address to be used in tests
-const randomEmailAddress = () => Math.random().toString(36).substring(2, 11) + "@example.com";
+const randomEmailAddress = () =>
+  Math.random().toString(36).substring(2, 11) + "@example.com";
 
-test("Unauthenticated user should be redirected to target URL after login", async ({ page }) => {
+test("Unauthenticated user should be redirected to target URL after login", async ({
+  page,
+}) => {
   await page.goto("/auth/sign-in");
   await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");
@@ -67,7 +74,8 @@ test("Unauthenticated user should be redirected to target URL after login", asyn
   await page.waitForTimeout(2000);
 
   // project id and prompt from seed.ts
-  const promptUrl = "/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a/prompts/summary-prompt";
+  const promptUrl =
+    "/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a/prompts/summary-prompt";
 
   await page.getByRole("button", { name: /Demo User/ }).click();
 
@@ -90,9 +98,13 @@ test("Unauthenticated user should be redirected to target URL after login", asyn
   await expect(page).toHaveURL(promptUrl);
 });
 
-test("Unauthenticated user should not be redirected to non-relative URLs after login", async ({ page }) => {
+test("Unauthenticated user should not be redirected to non-relative URLs after login", async ({
+  page,
+}) => {
   const nonRelativeUrl = "https://example.com";
-  await page.goto(`/auth/sign-in?targetPath=${encodeURIComponent(nonRelativeUrl)}`);
+  await page.goto(
+    `/auth/sign-in?targetPath=${encodeURIComponent(nonRelativeUrl)}`,
+  );
 
   await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");
@@ -108,9 +120,13 @@ test("Unauthenticated user should not be redirected to non-relative URLs after l
   await expect(page.getByRole("button", { name: /Demo User/ })).toBeVisible();
 });
 
-test("Unauthenticated user should be redirected to relative URL after login", async ({ page }) => {
+test("Unauthenticated user should be redirected to relative URL after login", async ({
+  page,
+}) => {
   const relativeUrl = "/setup";
-  await page.goto(`/auth/sign-in?targetPath=${encodeURIComponent(relativeUrl)}`);
+  await page.goto(
+    `/auth/sign-in?targetPath=${encodeURIComponent(relativeUrl)}`,
+  );
 
   await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");

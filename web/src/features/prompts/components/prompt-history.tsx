@@ -29,7 +29,11 @@ const PromptHistoryTraceNode = (props: {
 
   // Add useEffect for scroll into view behavior
   useEffect(() => {
-    if (props.currentPromptVersion && currentPromptRef.current && props.currentPromptVersion === prompt.version) {
+    if (
+      props.currentPromptVersion &&
+      currentPromptRef.current &&
+      props.currentPromptVersion === prompt.version
+    ) {
       currentPromptRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -60,11 +64,16 @@ const PromptHistoryTraceNode = (props: {
         onMouseLeave={() => setIsHovered(false)}
         onClick={(e) => {
           const target = e.target as HTMLElement;
-          if (target.closest('[role="button"]') || target.closest('[data-version-trigger="true"]')) {
+          if (
+            target.closest('[role="button"]') ||
+            target.closest('[data-version-trigger="true"]')
+          ) {
             return;
           }
 
-          props.index === 0 ? props.setCurrentPromptVersion(undefined) : props.setCurrentPromptVersion(prompt.version);
+          props.index === 0
+            ? props.setCurrentPromptVersion(undefined)
+            : props.setCurrentPromptVersion(prompt.version);
         }}
       >
         <div
@@ -136,12 +145,16 @@ const PromptHistoryTraceNode = (props: {
                 </div>
               )}
               <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
-                {prompt.createdAt.toLocaleString()} by {prompt.creator || prompt.createdBy}
+                {prompt.createdAt.toLocaleString()} by{" "}
+                {prompt.creator || prompt.createdBy}
               </div>
             </div>
             <div className="flex flex-row justify-end space-x-1">
-              {(isHovered || props.currentPromptVersion === prompt.version || isPromptDiffOpen) &&
-                (props.currentPrompt && props.currentPromptVersion !== prompt.version ? (
+              {(isHovered ||
+                props.currentPromptVersion === prompt.version ||
+                isPromptDiffOpen) &&
+                (props.currentPrompt &&
+                props.currentPromptVersion !== prompt.version ? (
                   <PromptVersionDiffDialog
                     isOpen={isPromptDiffOpen}
                     setIsOpen={(open) => {
@@ -168,7 +181,9 @@ export const PromptHistoryNode = (props: {
 }) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
-  const currentPrompt = props.prompts.find((p) => p.version === props.currentPromptVersion);
+  const currentPrompt = props.prompts.find(
+    (p) => p.version === props.currentPromptVersion,
+  );
 
   return (
     <Timeline>

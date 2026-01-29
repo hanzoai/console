@@ -5,7 +5,13 @@ import { env } from "@/src/env.mjs";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { PlusIcon } from "lucide-react";
 
-export const HanzoCloudIcon = ({ size = 32, className }: { size?: number; className?: string }) => (
+export const HanzoCloudIcon = ({
+  size = 32,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) => (
   // eslint-disable-next-line @next/next/no-img-element
   <img
     src={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon.svg`}
@@ -44,7 +50,10 @@ const HanzoCloudLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
             size === "sm" ? "max-h-4 max-w-14" : "max-h-5 max-w-16",
           )}
         />
-        <PlusIcon size={size === "sm" ? 8 : 12} className="group-data-[collapsible=icon]:hidden" />
+        <PlusIcon
+          size={size === "sm" ? 8 : 12}
+          className="group-data-[collapsible=icon]:hidden"
+        />
         <HanzoCloudIcon size={size === "sm" ? 16 : 20} />
       </div>
     );
@@ -75,13 +84,20 @@ export const HanzoCloudLogo = ({
   version?: boolean;
 }) => {
   return (
-    <div className={cn("-mt-2 ml-1 flex flex-wrap gap-4 lg:flex-col lg:items-start", className)}>
+    <div
+      className={cn(
+        "-mt-2 ml-1 flex flex-wrap gap-4 lg:flex-col lg:items-start",
+        className,
+      )}
+    >
       {/* Hanzo Cloud Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center">
           <HanzoCloudLogotypeOrCustomized size={size} />
         </Link>
-        {version && <VersionLabel className="ml-2 group-data-[collapsible=icon]:hidden" />}
+        {version && (
+          <VersionLabel className="ml-2 group-data-[collapsible=icon]:hidden" />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,8 @@
 import { useMemo } from "react";
-import { type ScoreTarget, type AnnotationScore } from "@/src/features/scores/types";
+import {
+  type ScoreTarget,
+  type AnnotationScore,
+} from "@/src/features/scores/types";
 import { useScoreCache } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { mergeAnnotationScoresWithCache } from "@/src/features/scores/lib/mergeScoresWithCache";
 import { filterScoresByTarget } from "@/src/features/scores/lib/filterScoresByTarget";
@@ -48,7 +51,12 @@ export function useMergedAnnotationScores(
   }, [filteredServerScores, isDeleted]);
 
   return useMemo(
-    () => mergeAnnotationScoresWithCache(filteredServerScores, cachedScores, deletedIds),
+    () =>
+      mergeAnnotationScoresWithCache(
+        filteredServerScores,
+        cachedScores,
+        deletedIds,
+      ),
     [filteredServerScores, cachedScores, deletedIds],
   );
 }

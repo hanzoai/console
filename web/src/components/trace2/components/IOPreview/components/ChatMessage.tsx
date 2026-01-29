@@ -2,7 +2,10 @@ import { useState } from "react";
 import { cn } from "@/src/utils/tailwind";
 import { Button } from "@/src/components/ui/button";
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
-import { MarkdownJsonView, MarkdownJsonViewHeader } from "@/src/components/ui/MarkdownJsonView";
+import {
+  MarkdownJsonView,
+  MarkdownJsonViewHeader,
+} from "@/src/components/ui/MarkdownJsonView";
 import { ToolCallInvocationsView } from "@/src/components/trace2/components/ToolCallInvocationsView";
 import { ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
@@ -62,7 +65,9 @@ export function ChatMessage({
       variant="ghost"
       size="icon-xs"
       onClick={() => setShowTableView((v) => !v)}
-      title={showTableView ? "Show formatted view" : "Show passthrough JSON data"}
+      title={
+        showTableView ? "Show formatted view" : "Show passthrough JSON data"
+      }
       className="-mr-2 hover:bg-border"
     >
       {showTableView ? (
@@ -126,7 +131,12 @@ export function ChatMessage({
   }
 
   // Tool-call-only message (no content, no thinking)
-  if (!hasContent && !hasThinkingContent(message) && !hasRedactedThinkingContent(message) && toolCalls.length > 0) {
+  if (
+    !hasContent &&
+    !hasThinkingContent(message) &&
+    !hasRedactedThinkingContent(message) &&
+    toolCalls.length > 0
+  ) {
     return (
       <div className={cn("transition-colors hover:bg-muted")}>
         <MarkdownJsonViewHeader
@@ -138,22 +148,35 @@ export function ChatMessage({
           }}
           controlButtons={passthroughToggleButton}
         />
-        <ToolCallInvocationsView message={message} toolCallNumbers={toolCallNumbers} />
+        <ToolCallInvocationsView
+          message={message}
+          toolCallNumbers={toolCallNumbers}
+        />
       </div>
     );
   }
 
   // Content message (with optional tool calls and thinking)
-  if (hasContent || hasThinkingContent(message) || hasRedactedThinkingContent(message)) {
+  if (
+    hasContent ||
+    hasThinkingContent(message) ||
+    hasRedactedThinkingContent(message)
+  ) {
     // Thinking blocks to render after header
     const thinkingBlocks = (
       <>
         {hasThinkingContent(message) &&
           message.thinking?.map((t, i) => (
-            <ThinkingBlock key={`thinking-${i}`} content={t.content} summary={t.summary} />
+            <ThinkingBlock
+              key={`thinking-${i}`}
+              content={t.content}
+              summary={t.summary}
+            />
           ))}
         {hasRedactedThinkingContent(message) &&
-          message.redacted_thinking?.map((t, i) => <RedactedThinkingBlock key={`redacted-${i}`} data={t.data} />)}
+          message.redacted_thinking?.map((t, i) => (
+            <RedactedThinkingBlock key={`redacted-${i}`} data={t.data} />
+          ))}
       </>
     );
 
@@ -174,7 +197,10 @@ export function ChatMessage({
           />
           {toolCalls.length > 0 && (
             <div className="mt-2">
-              <ToolCallInvocationsView message={message} toolCallNumbers={toolCallNumbers} />
+              <ToolCallInvocationsView
+                message={message}
+                toolCallNumbers={toolCallNumbers}
+              />
             </div>
           )}
         </div>
@@ -191,7 +217,10 @@ export function ChatMessage({
           />
           {toolCalls.length > 0 && (
             <div className="mt-2">
-              <ToolCallInvocationsView message={message} toolCallNumbers={toolCallNumbers} />
+              <ToolCallInvocationsView
+                message={message}
+                toolCallNumbers={toolCallNumbers}
+              />
             </div>
           )}
         </div>

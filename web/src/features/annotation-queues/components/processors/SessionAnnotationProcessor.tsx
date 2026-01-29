@@ -1,4 +1,7 @@
-import { type AnnotationQueueItem, type ScoreConfigDomain } from "@hanzo/shared";
+import {
+  type AnnotationQueueItem,
+  type ScoreConfigDomain,
+} from "@hanzo/shared";
 import { AnnotationDrawerSection } from "../shared/AnnotationDrawerSection";
 import { AnnotationProcessingLayout } from "../shared/AnnotationProcessingLayout";
 import { SessionIO } from "@/src/components/session";
@@ -24,12 +27,9 @@ interface SessionAnnotationProcessorProps {
 // some projects have thousands of traces in a session, paginate to avoid rendering all at once
 const PAGE_SIZE = 10;
 
-export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProps> = ({
-  item,
-  data,
-  configs,
-  projectId,
-}) => {
+export const SessionAnnotationProcessor: React.FC<
+  SessionAnnotationProcessorProps
+> = ({ item, data, configs, projectId }) => {
   const [visibleTraces, setVisibleTraces] = useState(PAGE_SIZE);
   const [currentTraceIndex, setCurrentTraceIndex] = useState(1);
 
@@ -41,7 +41,9 @@ export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProp
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            const index = parseInt(entry.target.getAttribute("data-trace-index") || "0");
+            const index = parseInt(
+              entry.target.getAttribute("data-trace-index") || "0",
+            );
             setCurrentTraceIndex(index + 1);
           }
         });
@@ -71,7 +73,9 @@ export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProp
             <span className="mb-0 ml-1 line-clamp-2 min-w-0 break-all font-medium md:break-normal md:break-words">
               {item.objectId}
             </span>
-            <CopyIdsPopover idItems={[{ id: item.objectId, name: "Session ID" }]} />
+            <CopyIdsPopover
+              idItems={[{ id: item.objectId, name: "Session ID" }]}
+            />
           </div>
           {data?.traces && (
             <div className="flex items-center">
@@ -84,8 +88,12 @@ export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProp
         <div className="mb-4 mt-2 grid w-full min-w-0 items-center justify-between px-4">
           <div className="flex min-w-0 max-w-full flex-shrink flex-col">
             <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
-              {data.environment && <Badge variant="tertiary">Env: {data.environment}</Badge>}
-              <Badge variant="outline">Total traces: {data?.traces.length}</Badge>
+              {data.environment && (
+                <Badge variant="tertiary">Env: {data.environment}</Badge>
+              )}
+              <Badge variant="outline">
+                Total traces: {data?.traces.length}
+              </Badge>
             </div>
           </div>
         </div>
@@ -95,24 +103,39 @@ export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProp
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">
-          {data?.traces.slice(0, visibleTraces).map((trace: any, index: number) => (
-            <Card
-              className="group mb-2 grid gap-2 border-border p-2 shadow-none hover:border-ring"
-              key={trace.id}
-              data-trace-index={index}
-            >
-              <div className="-mt-1 p-1 pt-0 opacity-50 transition-opacity group-hover:opacity-100">
-                <Link href={`/project/${projectId}/traces/${trace.id}`} className="text-xs hover:underline">
-                  Trace: {trace.name} ({trace.id})&nbsp;↗
-                </Link>
-                <div className="text-xs text-muted-foreground">{trace.timestamp.toLocaleString()}</div>
-              </div>
-              <SessionIO traceId={trace.id} projectId={projectId} timestamp={trace.timestamp} showCorrections />
-            </Card>
-          ))}
+          {data?.traces
+            .slice(0, visibleTraces)
+            .map((trace: any, index: number) => (
+              <Card
+                className="group mb-2 grid gap-2 border-border p-2 shadow-none hover:border-ring"
+                key={trace.id}
+                data-trace-index={index}
+              >
+                <div className="-mt-1 p-1 pt-0 opacity-50 transition-opacity group-hover:opacity-100">
+                  <Link
+                    href={`/project/${projectId}/traces/${trace.id}`}
+                    className="text-xs hover:underline"
+                  >
+                    Trace: {trace.name} ({trace.id})&nbsp;↗
+                  </Link>
+                  <div className="text-xs text-muted-foreground">
+                    {trace.timestamp.toLocaleString()}
+                  </div>
+                </div>
+                <SessionIO
+                  traceId={trace.id}
+                  projectId={projectId}
+                  timestamp={trace.timestamp}
+                  showCorrections
+                />
+              </Card>
+            ))}
           {data?.traces && data.traces.length > visibleTraces && (
             <div className="flex justify-center py-4">
-              <Button onClick={() => setVisibleTraces((prev) => prev + PAGE_SIZE)} variant="ghost">
+              <Button
+                onClick={() => setVisibleTraces((prev) => prev + PAGE_SIZE)}
+                variant="ghost"
+              >
                 {`Load ${Math.min(data.traces.length - visibleTraces, PAGE_SIZE)} More`}
               </Button>
             </div>
@@ -135,5 +158,11 @@ export const SessionAnnotationProcessor: React.FC<SessionAnnotationProcessorProp
     />
   );
 
-  return <AnnotationProcessingLayout leftPanel={leftPanel} rightPanel={rightPanel} projectId={projectId} />;
+  return (
+    <AnnotationProcessingLayout
+      leftPanel={leftPanel}
+      rightPanel={rightPanel}
+      projectId={projectId}
+    />
+  );
 };

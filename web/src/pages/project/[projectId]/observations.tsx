@@ -5,12 +5,20 @@ import ObservationsTable from "@/src/components/table/use-cases/observations";
 import Page from "@/src/components/layouts/page";
 import { api } from "@/src/utils/api";
 import { TracesOnboarding } from "@/src/components/onboarding/TracesOnboarding";
-import { getTracingTabs, TRACING_TABS } from "@/src/features/navigation/utils/tracing-tabs";
+import {
+  getTracingTabs,
+  TRACING_TABS,
+} from "@/src/features/navigation/utils/tracing-tabs";
 import { useObservationListBeta } from "@/src/features/events/hooks/useObservationListBeta";
 import ObservationsEventsTable from "@/src/features/events/components/EventsTable";
 import { Switch } from "@/src/components/ui/switch";
 import { Label } from "@/src/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 
 export default function Generations() {
   const router = useRouter();
@@ -22,18 +30,19 @@ export default function Generations() {
   const showBetaToggle = session?.user?.email?.endsWith("@hanzo.com");
 
   // Check if the user has tracing configured
-  const { data: hasTracingConfigured, isLoading } = api.traces.hasTracingConfigured.useQuery(
-    { projectId },
-    {
-      enabled: !!projectId,
-      trpc: {
-        context: {
-          skipBatch: true,
+  const { data: hasTracingConfigured, isLoading } =
+    api.traces.hasTracingConfigured.useQuery(
+      { projectId },
+      {
+        enabled: !!projectId,
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
         },
+        refetchInterval: 10_000,
       },
-      refetchInterval: 10_000,
-    },
-  );
+    );
 
   const showOnboarding = !isLoading && !hasTracingConfigured;
 
@@ -42,7 +51,11 @@ export default function Generations() {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2">
-            <Switch id="beta-toggle" checked={isBetaEnabled} onCheckedChange={setBetaEnabled} />
+            <Switch
+              id="beta-toggle"
+              checked={isBetaEnabled}
+              onCheckedChange={setBetaEnabled}
+            />
             <Label htmlFor="beta-toggle" className="cursor-pointer text-xs">
               Beta
             </Label>
@@ -60,7 +73,8 @@ export default function Generations() {
       headerProps={{
         title: "Tracing",
         help: {
-          description: "An observation captures a single function call in an application. See docs to learn more.",
+          description:
+            "An observation captures a single function call in an application. See docs to learn more.",
           href: "https://hanzo.com/docs/observability/data-model",
         },
         actionButtonsLeft: betaToggle,

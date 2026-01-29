@@ -15,7 +15,11 @@ interface NoDataProps {
   className?: string;
 }
 
-const NoData = ({ noDataText = "No data", children, className }: NoDataProps) => {
+const NoData = ({
+  noDataText = "No data",
+  children,
+  className,
+}: NoDataProps) => {
   return (
     <div
       className={cn(
@@ -29,11 +33,19 @@ const NoData = ({ noDataText = "No data", children, className }: NoDataProps) =>
   );
 };
 
-export function NoDataOrLoading({ isLoading, description, href, className }: NoDataOrLoadingProps) {
+export function NoDataOrLoading({
+  isLoading,
+  description,
+  href,
+  className,
+}: NoDataOrLoadingProps) {
   if (isLoading) {
     return (
       <div
-        className={cn("flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-tremor-default", className)}
+        className={cn(
+          "flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-tremor-default",
+          className,
+        )}
       >
         <Skeleton className="h-full w-full" />
       </div>

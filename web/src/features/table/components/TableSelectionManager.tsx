@@ -1,5 +1,9 @@
 import { Checkbox } from "@/src/components/ui/checkbox";
-import { type Table, type Row, type RowSelectionState } from "@tanstack/react-table";
+import {
+  type Table,
+  type Row,
+  type RowSelectionState,
+} from "@tanstack/react-table";
 import { useSelectAll } from "@/src/features/table/hooks/useSelectAll";
 
 interface TableSelectionManagerProps {
@@ -8,7 +12,11 @@ interface TableSelectionManagerProps {
   setSelectedRows: (rows: RowSelectionState) => void;
 }
 
-export function TableSelectionManager<TData>({ projectId, tableName, setSelectedRows }: TableSelectionManagerProps) {
+export function TableSelectionManager<TData>({
+  projectId,
+  tableName,
+  setSelectedRows,
+}: TableSelectionManagerProps) {
   const { setSelectAll } = useSelectAll(projectId, tableName);
 
   return {
@@ -22,7 +30,11 @@ export function TableSelectionManager<TData>({ projectId, tableName, setSelected
         <div className="flex h-full items-center">
           <Checkbox
             checked={
-              table.getIsAllPageRowsSelected() ? true : table.getIsSomePageRowsSelected() ? "indeterminate" : false
+              table.getIsAllPageRowsSelected()
+                ? true
+                : table.getIsSomePageRowsSelected()
+                  ? "indeterminate"
+                  : false
             }
             onCheckedChange={(value) => {
               table.toggleAllPageRowsSelected(!!value);

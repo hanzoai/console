@@ -4,7 +4,13 @@
  * Critical functionality: path manipulation for tree navigation
  */
 
-import { joinPath, splitPath, getParentPath, isAncestorPath, getAncestorPaths } from "./pathUtils";
+import {
+  joinPath,
+  splitPath,
+  getParentPath,
+  isAncestorPath,
+  getAncestorPaths,
+} from "./pathUtils";
 
 describe("pathUtils", () => {
   describe("joinPath and splitPath", () => {
@@ -98,7 +104,9 @@ describe("pathUtils", () => {
     });
 
     it("should return false for descendants", () => {
-      expect(isAncestorPath("user.settings.theme", "user.settings")).toBe(false);
+      expect(isAncestorPath("user.settings.theme", "user.settings")).toBe(
+        false,
+      );
     });
 
     it("should handle array indices", () => {

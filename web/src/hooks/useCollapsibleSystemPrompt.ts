@@ -72,7 +72,9 @@ export function useCollapsibleSystemPrompt({
     const hasMore = lines.length > 4;
     const tooLong = preview.length > COLLAPSE_CHAR_THRESHOLD;
 
-    return tooLong ? preview.slice(0, COLLAPSE_CHAR_THRESHOLD) + "..." : preview + (hasMore ? "\n..." : "");
+    return tooLong
+      ? preview.slice(0, COLLAPSE_CHAR_THRESHOLD) + "..."
+      : preview + (hasMore ? "\n..." : "");
   }, [shouldBeCollapsible, content]);
 
   return {

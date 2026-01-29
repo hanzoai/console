@@ -1,13 +1,27 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/src/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/src/components/ui/command";
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";
 import type { DatasetSelectStepProps } from "./types";
 
-export function DatasetSelectStep({ projectId, dataset, onDatasetSelect }: DatasetSelectStepProps) {
+export function DatasetSelectStep({
+  projectId,
+  dataset,
+  onDatasetSelect,
+}: DatasetSelectStepProps) {
   const [open, setOpen] = useState(false);
 
   // Fetch all datasets
@@ -19,7 +33,9 @@ export function DatasetSelectStep({ projectId, dataset, onDatasetSelect }: Datas
     <div className="space-y-6 p-6">
       <div>
         <h3 className="text-lg font-medium">Select Dataset</h3>
-        <p className="text-sm text-muted-foreground">Choose an existing dataset to add your observations to</p>
+        <p className="text-sm text-muted-foreground">
+          Choose an existing dataset to add your observations to
+        </p>
       </div>
 
       <Popover open={open} onOpenChange={setOpen}>
@@ -50,7 +66,12 @@ export function DatasetSelectStep({ projectId, dataset, onDatasetSelect }: Datas
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center">
-                    <Check className={cn("mr-2 h-4 w-4", dataset.id === d.id ? "opacity-100" : "opacity-0")} />
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        dataset.id === d.id ? "opacity-100" : "opacity-0",
+                      )}
+                    />
                     <span>{d.name}</span>
                   </div>
                 </CommandItem>

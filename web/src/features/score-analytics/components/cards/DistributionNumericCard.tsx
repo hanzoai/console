@@ -1,5 +1,11 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
@@ -75,7 +81,9 @@ export function DistributionNumericCard() {
         distribution1Data: distribution.score1,
         distribution2Data: undefined,
         description: `${statistics.score1.total.toLocaleString()} observations${
-          statistics.score1.mean !== null ? ` | Average: ${statistics.score1.mean.toFixed(3)}` : ""
+          statistics.score1.mean !== null
+            ? ` | Average: ${statistics.score1.mean.toFixed(3)}`
+            : ""
         }`,
       };
     }
@@ -87,7 +95,8 @@ export function DistributionNumericCard() {
         // This handles the case where backend might return empty array for individual distributions
         // when there are no matching pairs between scores
         const score1Data =
-          distribution.score1Individual && distribution.score1Individual.length > 0
+          distribution.score1Individual &&
+          distribution.score1Individual.length > 0
             ? distribution.score1Individual
             : distribution.score1;
         return {
@@ -98,7 +107,8 @@ export function DistributionNumericCard() {
       case "score2":
         // Use individual distribution if available and non-empty, fallback to global distribution
         const score2Data =
-          distribution.score2Individual && distribution.score2Individual.length > 0
+          distribution.score2Individual &&
+          distribution.score2Individual.length > 0
             ? distribution.score2Individual
             : distribution.score2;
         return {
@@ -181,7 +191,10 @@ export function DistributionNumericCard() {
   };
 
   // Build full tab labels for title attribute (hover tooltip)
-  const score1FullLabel = score1.name === score2?.name ? `${score1.source} · ${score1.name}` : score1.name;
+  const score1FullLabel =
+    score1.name === score2?.name
+      ? `${score1.source} · ${score1.name}`
+      : score1.name;
 
   const score2FullLabel = score2
     ? score2.name === score1.name
@@ -198,19 +211,33 @@ export function DistributionNumericCard() {
               <CardTitle className="flex items-center gap-2">
                 Distribution
                 {data.samplingMetadata.isSampled && (
-                  <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} showLabel />
+                  <SamplingDetailsHoverCard
+                    samplingMetadata={data.samplingMetadata}
+                    showLabel
+                  />
                 )}
               </CardTitle>
               <CardDescription>{description}</CardDescription>
             </div>
           </div>
           {showTabs && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DistributionTab)}>
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as DistributionTab)}
+            >
               <TabsList className="h-7">
-                <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score1"
+                  title={score1FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score1FullLabel)}
                 </TabsTrigger>
-                <TabsTrigger value="score2" title={score2FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score2"
+                  title={score2FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score2FullLabel)}
                 </TabsTrigger>
                 <TabsTrigger value="all" className="h-5 px-2 text-xs">
@@ -229,7 +256,9 @@ export function DistributionNumericCard() {
           <ScoreDistributionNumericChart
             distribution1={distribution1Data ?? []}
             distribution2={
-              activeTab === "score1" || activeTab === "score2" ? undefined : (distribution2Data ?? undefined)
+              activeTab === "score1" || activeTab === "score2"
+                ? undefined
+                : (distribution2Data ?? undefined)
             }
             binLabels={selectedBinLabels}
             score1Name={

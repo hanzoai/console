@@ -1,7 +1,11 @@
 import { useState } from "react";
 
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { type GetModelResult } from "@/src/features/models/validation";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -45,7 +49,9 @@ export const DeleteModelButton = ({
       </PopoverTrigger>
       <PopoverContent>
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
-        <p className="mb-3 text-sm">This action permanently deletes this model definition.</p>
+        <p className="mb-3 text-sm">
+          This action permanently deletes this model definition.
+        </p>
         <div className="flex justify-end space-x-4">
           <Button
             type="button"

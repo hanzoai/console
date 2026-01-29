@@ -5,7 +5,10 @@ type UsePeekEvalConfigDataProps = {
   jobConfigurationId?: string;
 };
 
-export const usePeekEvalConfigData = ({ projectId, jobConfigurationId }: UsePeekEvalConfigDataProps) => {
+export const usePeekEvalConfigData = ({
+  projectId,
+  jobConfigurationId,
+}: UsePeekEvalConfigDataProps) => {
   return api.evals.configById.useQuery(
     {
       id: jobConfigurationId as string,

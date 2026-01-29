@@ -26,7 +26,8 @@ const errorTitleMap = {
 } as const;
 
 const getErrorTitleAndHttpCode = (error: TRPCClientError<any>) => {
-  const httpStatus: number = typeof error.data?.httpStatus === "number" ? error.data.httpStatus : 500;
+  const httpStatus: number =
+    typeof error.data?.httpStatus === "number" ? error.data.httpStatus : 500;
 
   if (httpStatus in httpStatusOverride) {
     return {
@@ -72,6 +73,10 @@ export const trpcErrorToast = (error: unknown) => {
       path,
     );
   } else {
-    showErrorToast("Unexpected Error", "An unexpected error occurred.", "ERROR");
+    showErrorToast(
+      "Unexpected Error",
+      "An unexpected error occurred.",
+      "ERROR",
+    );
   }
 };

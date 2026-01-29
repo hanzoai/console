@@ -1,5 +1,10 @@
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
-import { type ScoreDomain, type TraceDomain, AnnotationQueueObjectType, isGenerationLike } from "@hanzo/shared";
+import {
+  type ScoreDomain,
+  type TraceDomain,
+  AnnotationQueueObjectType,
+  isGenerationLike,
+} from "@hanzo/shared";
 import { AggUsageBadge } from "@/src/components/token-usage-badge";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
@@ -17,7 +22,12 @@ import { useMemo, useState, useEffect } from "react";
 import { usdFormatter } from "@/src/utils/numbers";
 import { useIsAuthenticatedAndProjectMember } from "@/src/features/auth/hooks";
 import type Decimal from "decimal.js";
-import { TabsBar, TabsBarContent, TabsBarList, TabsBarTrigger } from "@/src/components/ui/tabs-bar";
+import {
+  TabsBar,
+  TabsBarContent,
+  TabsBarList,
+  TabsBarTrigger,
+} from "@/src/components/ui/tabs-bar";
 import { BreakdownTooltip } from "@/src/components/trace2/components/_shared/BreakdownToolTip";
 import { ExternalLinkIcon, InfoIcon } from "lucide-react";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
@@ -34,7 +44,12 @@ import { useParsedTrace } from "@/src/hooks/useParsedTrace";
 import { useJsonBetaToggle } from "@/src/components/trace2/hooks/useJsonBetaToggle";
 import { TraceDataProvider } from "@/src/components/trace2/contexts/TraceDataContext";
 import { ViewPreferencesProvider } from "@/src/components/trace2/contexts/ViewPreferencesContext";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { getMostRecentCorrection } from "@/src/features/corrections/utils/getMostRecentCorrection";
 import TagList from "@/src/features/tag/components/TagList";
 import {
@@ -75,18 +90,24 @@ export const TracePreview = ({
   showCommentButton?: boolean;
   precomputedCost: Decimal | undefined;
 }) => {
-  const [selectedTab, setSelectedTab] = useQueryParam("view", withDefault(StringParam, "preview"));
-  const [currentView, setCurrentView] = useLocalStorage<"pretty" | "json" | "json-beta">(
-    "jsonViewPreference",
-    "pretty",
+  const [selectedTab, setSelectedTab] = useQueryParam(
+    "view",
+    withDefault(StringParam, "preview"),
   );
-  const { jsonBetaEnabled, selectedViewTab, handleViewTabChange, handleBetaToggle } = useJsonBetaToggle(
-    currentView,
-    setCurrentView,
-  );
+  const [currentView, setCurrentView] = useLocalStorage<
+    "pretty" | "json" | "json-beta"
+  >("jsonViewPreference", "pretty");
+  const {
+    jsonBetaEnabled,
+    selectedViewTab,
+    handleViewTabChange,
+    handleBetaToggle,
+  } = useJsonBetaToggle(currentView, setCurrentView);
 
   const [isPrettyViewAvailable, setIsPrettyViewAvailable] = useState(false);
-  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(trace.projectId);
+  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(
+    trace.projectId,
+  );
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const { peek } = router.query;
@@ -114,28 +135,35 @@ export const TracePreview = ({
     },
   );
 
-  const traceCorrections = corrections.filter((c) => c.traceId === trace.id && c.observationId === null);
+  const traceCorrections = corrections.filter(
+    (c) => c.traceId === trace.id && c.observationId === null,
+  );
 
   const outputCorrection = getMostRecentCorrection(traceCorrections);
 
   // Parse trace I/O in background (Web Worker)
-  const { parsedInput, parsedOutput, parsedMetadata, isParsing } = useParsedTrace({
-    traceId: trace.id,
-    input: trace.input,
-    output: trace.output,
-    metadata: trace.metadata,
-  });
+  const { parsedInput, parsedOutput, parsedMetadata, isParsing } =
+    useParsedTrace({
+      traceId: trace.id,
+      input: trace.input,
+      output: trace.output,
+      metadata: trace.metadata,
+    });
 
   const totalCost = precomputedCost;
 
   const usageDetails = useMemo(
-    () => observations.filter((o) => isGenerationLike(o.type)).map((o) => o.usageDetails),
+    () =>
+      observations
+        .filter((o) => isGenerationLike(o.type))
+        .map((o) => o.usageDetails),
     [observations],
   );
 
   // For performance reasons, we preemptively disable the log view if there are too many observations.
   const isLogViewDisabled = observations.length > LOG_VIEW_DISABLED_THRESHOLD;
-  const requiresConfirmation = observations.length > LOG_VIEW_CONFIRMATION_THRESHOLD && !isLogViewDisabled;
+  const requiresConfirmation =
+    observations.length > LOG_VIEW_CONFIRMATION_THRESHOLD && !isLogViewDisabled;
   const showLogViewTab = observations.length > 0;
 
   const [hasLogViewConfirmed, setHasLogViewConfirmed] = useState(false);
@@ -227,7 +255,11 @@ export const TracePreview = ({
         <div className="grid w-full min-w-0 items-center justify-between px-2">
           <div className="flex min-w-0 max-w-full flex-shrink flex-col">
             <div className="mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-1">
-              <LocalIsoDate date={trace.timestamp} accuracy="millisecond" className="text-sm" />
+              <LocalIsoDate
+                date={trace.timestamp}
+                accuracy="millisecond"
+                className="text-sm"
+              />
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
               {trace.sessionId ? (
@@ -252,14 +284,22 @@ export const TracePreview = ({
                   </Badge>
                 </Link>
               ) : null}
-              {trace.environment ? <Badge variant="tertiary">Env: {trace.environment}</Badge> : null}
+              {trace.environment ? (
+                <Badge variant="tertiary">Env: {trace.environment}</Badge>
+              ) : null}
 
               {viewType === "detailed" && (
                 <>
-                  {!!trace.latency && <Badge variant="tertiary">Latency: {formatIntervalSeconds(trace.latency)}</Badge>}
+                  {!!trace.latency && (
+                    <Badge variant="tertiary">
+                      Latency: {formatIntervalSeconds(trace.latency)}
+                    </Badge>
+                  )}
                   {totalCost && (
                     <BreakdownTooltip
-                      details={observations.filter((o) => isGenerationLike(o.type)).map((o) => o.costDetails)}
+                      details={observations
+                        .filter((o) => isGenerationLike(o.type))
+                        .map((o) => o.costDetails)}
                       isCost
                     >
                       <Badge variant="tertiary">
@@ -280,8 +320,12 @@ export const TracePreview = ({
                     </BreakdownTooltip>
                   )}
 
-                  {!!trace.release && <Badge variant="tertiary">Release: {trace.release}</Badge>}
-                  {!!trace.version && <Badge variant="tertiary">Version: {trace.version}</Badge>}
+                  {!!trace.release && (
+                    <Badge variant="tertiary">Release: {trace.release}</Badge>
+                  )}
+                  {!!trace.version && (
+                    <Badge variant="tertiary">Version: {trace.version}</Badge>
+                  )}
                 </>
               )}
             </div>
@@ -289,11 +333,21 @@ export const TracePreview = ({
         </div>
 
         <TabsBar
-          value={selectedTab === "log" ? "log" : selectedTab.includes("preview") ? "preview" : "scores"}
+          value={
+            selectedTab === "log"
+              ? "log"
+              : selectedTab.includes("preview")
+                ? "preview"
+                : "scores"
+          }
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
           onValueChange={(value) => {
             // on tab click, is confirmation is needed?
-            if (value === "log" && requiresConfirmation && !hasLogViewConfirmed) {
+            if (
+              value === "log" &&
+              requiresConfirmation &&
+              !hasLogViewConfirmed
+            ) {
               setShowLogViewDialog(true);
               return;
             }
@@ -321,7 +375,9 @@ export const TracePreview = ({
                     </Tooltip>
                   </TabsBarTrigger>
                 )}
-                {showScoresTab && <TabsBarTrigger value="scores">Scores</TabsBarTrigger>}
+                {showScoresTab && (
+                  <TabsBarTrigger value="scores">Scores</TabsBarTrigger>
+                )}
                 {selectedTab.includes("preview") && isPrettyViewAvailable && (
                   <>
                     <Tabs
@@ -333,18 +389,30 @@ export const TracePreview = ({
                       }}
                     >
                       <TabsList className="h-fit py-0.5">
-                        <TabsTrigger value="pretty" className="h-fit px-1 text-xs">
+                        <TabsTrigger
+                          value="pretty"
+                          className="h-fit px-1 text-xs"
+                        >
                           Formatted
                         </TabsTrigger>
-                        <TabsTrigger value="json" className="h-fit px-1 text-xs">
+                        <TabsTrigger
+                          value="json"
+                          className="h-fit px-1 text-xs"
+                        >
                           JSON
                         </TabsTrigger>
                       </TabsList>
                     </Tabs>
                     {selectedViewTab === "json" && (
                       <div className="mr-1 flex items-center gap-1.5">
-                        <Switch size="sm" checked={jsonBetaEnabled} onCheckedChange={handleBetaToggle} />
-                        <span className="text-xs text-muted-foreground">Beta</span>
+                        <Switch
+                          size="sm"
+                          checked={jsonBetaEnabled}
+                          onCheckedChange={handleBetaToggle}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          Beta
+                        </span>
                       </div>
                     )}
                   </>
@@ -357,18 +425,30 @@ export const TracePreview = ({
                       onValueChange={handleViewTabChange}
                     >
                       <TabsList className="h-fit py-0.5">
-                        <TabsTrigger value="pretty" className="h-fit px-1 text-xs">
+                        <TabsTrigger
+                          value="pretty"
+                          className="h-fit px-1 text-xs"
+                        >
                           Formatted
                         </TabsTrigger>
-                        <TabsTrigger value="json" className="h-fit px-1 text-xs">
+                        <TabsTrigger
+                          value="json"
+                          className="h-fit px-1 text-xs"
+                        >
                           JSON
                         </TabsTrigger>
                       </TabsList>
                     </Tabs>
                     {selectedViewTab === "json" && (
                       <div className="mr-1 flex items-center gap-1.5">
-                        <Switch size="sm" checked={jsonBetaEnabled} onCheckedChange={handleBetaToggle} />
-                        <span className="text-xs text-muted-foreground">Beta</span>
+                        <Switch
+                          size="sm"
+                          checked={jsonBetaEnabled}
+                          onCheckedChange={handleBetaToggle}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          Beta
+                        </span>
                       </div>
                     )}
                   </>
@@ -377,7 +457,10 @@ export const TracePreview = ({
             </TooltipProvider>
           )}
           {/* show preview always if not detailed view */}
-          <TabsBarContent value="preview" className="mt-0 flex max-h-full min-h-0 w-full flex-1 pr-2">
+          <TabsBarContent
+            value="preview"
+            className="mt-0 flex max-h-full min-h-0 w-full flex-1 pr-2"
+          >
             <div
               className={`mb-2 flex max-h-full min-h-0 w-full flex-col gap-2 overflow-y-auto ${
                 currentView === "json-beta" ? "" : "pb-4"
@@ -398,15 +481,25 @@ export const TracePreview = ({
                 inputExpansionState={formattedExpansion.input}
                 outputExpansionState={formattedExpansion.output}
                 onInputExpansionChange={(expansion) =>
-                  setFormattedFieldExpansion("input", expansion as Record<string, boolean>)
+                  setFormattedFieldExpansion(
+                    "input",
+                    expansion as Record<string, boolean>,
+                  )
                 }
                 onOutputExpansionChange={(expansion) =>
-                  setFormattedFieldExpansion("output", expansion as Record<string, boolean>)
+                  setFormattedFieldExpansion(
+                    "output",
+                    expansion as Record<string, boolean>,
+                  )
                 }
                 jsonInputExpanded={jsonExpansion.input}
                 jsonOutputExpanded={jsonExpansion.output}
-                onJsonInputExpandedChange={(expanded) => setJsonFieldExpansion("input", expanded)}
-                onJsonOutputExpandedChange={(expanded) => setJsonFieldExpansion("output", expanded)}
+                onJsonInputExpandedChange={(expanded) =>
+                  setJsonFieldExpansion("input", expanded)
+                }
+                onJsonOutputExpandedChange={(expanded) =>
+                  setJsonFieldExpansion("output", expanded)
+                }
                 advancedJsonExpansionState={advancedJsonExpansion}
                 onAdvancedJsonExpansionChange={setAdvancedJsonExpansion}
                 projectId={trace.projectId}
@@ -428,11 +521,18 @@ export const TracePreview = ({
                   key={trace.id + "-metadata"}
                   title="Metadata"
                   json={trace.metadata}
-                  media={traceMedia.data?.filter((m) => m.field === "metadata") ?? []}
-                  currentView={currentView === "json-beta" ? "pretty" : currentView}
+                  media={
+                    traceMedia.data?.filter((m) => m.field === "metadata") ?? []
+                  }
+                  currentView={
+                    currentView === "json-beta" ? "pretty" : currentView
+                  }
                   externalExpansionState={formattedExpansion.metadata}
                   onExternalExpansionChange={(expansion) =>
-                    setFormattedFieldExpansion("metadata", expansion as Record<string, boolean>)
+                    setFormattedFieldExpansion(
+                      "metadata",
+                      expansion as Record<string, boolean>,
+                    )
                   }
                 />
               </div>
@@ -447,7 +547,11 @@ export const TracePreview = ({
               comments={commentCounts ?? new Map()}
             >
               <ViewPreferencesProvider>
-                <TraceLogView traceId={trace.id} projectId={trace.projectId} currentView={currentView} />
+                <TraceLogView
+                  traceId={trace.id}
+                  projectId={trace.projectId}
+                  currentView={currentView}
+                />
               </ViewPreferencesProvider>
             </TraceDataProvider>
           </TabsBarContent>
@@ -476,13 +580,17 @@ export const TracePreview = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Sluggish Performance Warning</AlertDialogTitle>
             <AlertDialogDescription>
-              This trace has {observations.length} observations. The log view may be slow to load and interact with. Do
-              you want to continue?
+              This trace has {observations.length} observations. The log view
+              may be slow to load and interact with. Do you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowLogViewDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmLogView}>Show Log View</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowLogViewDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmLogView}>
+              Show Log View
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

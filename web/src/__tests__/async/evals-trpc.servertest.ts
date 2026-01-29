@@ -234,7 +234,9 @@ describe("evals trpc", () => {
             timeScope: ["NEW"],
           },
         }),
-      ).rejects.toThrow("The evaluator ran on existing traces already. This cannot be changed anymore.");
+      ).rejects.toThrow(
+        "The evaluator ran on existing traces already. This cannot be changed anymore.",
+      );
     });
 
     it("when the evaluator ran on existing traces, it cannot be deactivated", async () => {
@@ -263,7 +265,9 @@ describe("evals trpc", () => {
             status: "INACTIVE",
           },
         }),
-      ).rejects.toThrow("The evaluator is running on existing traces only and cannot be deactivated.");
+      ).rejects.toThrow(
+        "The evaluator is running on existing traces only and cannot be deactivated.",
+      );
     });
 
     it("when the evaluator ran on existing traces, it can be deactivated if it should also run on new traces", async () => {

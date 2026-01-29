@@ -103,9 +103,14 @@ export function getContrastColor(oklchColor: string): "black" | "white" {
  * @param chromaMultiplier - How much to multiply chroma by (default: 2.5)
  * @returns OKLCH color string with increased chroma
  */
-export function getHoverColor(oklchColor: string, chromaMultiplier: number = 2.5): string {
+export function getHoverColor(
+  oklchColor: string,
+  chromaMultiplier: number = 2.5,
+): string {
   // Parse OKLCH color
-  const match = oklchColor.match(/oklch\((\d+\.?\d*)%\s+(\d+\.?\d*)\s+(\d+\.?\d*)\)/);
+  const match = oklchColor.match(
+    /oklch\((\d+\.?\d*)%\s+(\d+\.?\d*)\s+(\d+\.?\d*)\)/,
+  );
   if (!match) return oklchColor;
 
   const lightness = parseFloat(match[1]);
@@ -201,7 +206,10 @@ export function getTwoScoreColors(): {
  * @param hasActiveHover - Whether any bar is currently being hovered
  * @returns Opacity value (0-1)
  */
-export function getBarChartHoverOpacity(isHovered: boolean, hasActiveHover: boolean): number {
+export function getBarChartHoverOpacity(
+  isHovered: boolean,
+  hasActiveHover: boolean,
+): number {
   if (!hasActiveHover) {
     // No hover active - all bars at full opacity
     return 1;
@@ -341,7 +349,10 @@ function mixColorsInOklab(
   maxPercentage: number = 1.0,
 ): string {
   // Clamp percentage to [min, max] range
-  const clampedPercentage = Math.max(minPercentage, Math.min(maxPercentage, percentage));
+  const clampedPercentage = Math.max(
+    minPercentage,
+    Math.min(maxPercentage, percentage),
+  );
 
   // Mix in OKLAB space
   // chroma.mix(a, b, ratio) where ratio=0 gives 'a', ratio=1 gives 'b'
@@ -373,9 +384,18 @@ export function getMonochromeScale(
   for (let i = 0; i < steps; i++) {
     // Linearly interpolate from max (darker) to min (lighter)
     // First color has maxPercentage, last color has minPercentage
-    const percentage = maxPercentage - ((maxPercentage - minPercentage) * i) / (steps - 1);
+    const percentage =
+      maxPercentage - ((maxPercentage - minPercentage) * i) / (steps - 1);
 
-    colors.push(mixColorsInOklab(baseHex, mixColor, percentage, minPercentage, maxPercentage));
+    colors.push(
+      mixColorsInOklab(
+        baseHex,
+        mixColor,
+        percentage,
+        minPercentage,
+        maxPercentage,
+      ),
+    );
   }
 
   return colors;
@@ -399,7 +419,8 @@ export function getScoreCategoryColors(
   categories: string[],
   options?: { reverse?: boolean },
 ): Record<string, string> {
-  const baseColor = scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
+  const baseColor =
+    scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
 
   // Sort categories alphabetically for stable color assignment
   // This ensures the same category always gets the same color
@@ -428,8 +449,11 @@ export function getScoreCategoryColors(
  * @param scoreNumber - Which score (1 or 2)
  * @returns Record with 'True' and 'False' keys
  */
-export function getScoreBooleanColors(scoreNumber: 1 | 2): Record<string, string> {
-  const baseColor = scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
+export function getScoreBooleanColors(
+  scoreNumber: 1 | 2,
+): Record<string, string> {
+  const baseColor =
+    scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
 
   // Generate 2-step scale: darker for True (80%), lighter for False (30%)
   // More contrast than before for better distinction
@@ -449,7 +473,8 @@ export function getScoreBooleanColors(scoreNumber: 1 | 2): Record<string, string
  * @returns Hex color string
  */
 export function getScoreNumericColor(scoreNumber: 1 | 2): string {
-  const baseColor = scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
+  const baseColor =
+    scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
   // Use darkest color from monochrome scale (100% base color)
   return mixColorsInOklab(extractHslToHex(baseColor), "white", 1.0, 0.1, 1.0);
 }
@@ -465,13 +490,19 @@ export function getScoreNumericColor(scoreNumber: 1 | 2): string {
  * @param max - Maximum value in the heatmap range
  * @returns Hex color string or 'transparent' for zero values
  */
-export function getHeatmapCellColor(scoreNumber: 1 | 2, value: number, min: number, max: number): string {
+export function getHeatmapCellColor(
+  scoreNumber: 1 | 2,
+  value: number,
+  min: number,
+  max: number,
+): string {
   // Special case: empty cells (value = 0) should be transparent
   if (value === 0) {
     return "transparent";
   }
 
-  const baseColor = scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
+  const baseColor =
+    scoreNumber === 1 ? SCORE_BASE_COLORS.score1 : SCORE_BASE_COLORS.score2;
   const baseHex = extractHslToHex(baseColor);
 
   // Handle edge cases
@@ -528,9 +559,20 @@ export interface BuildColorMappingsParams {
  * @param params - Configuration for building color mappings
  * @returns Record mapping category/value names to hex colors
  */
-export function buildColorMappings(params: BuildColorMappingsParams): Record<string, string> {
+export function buildColorMappings(
+  params: BuildColorMappingsParams,
+): Record<string, string> {
   const mappings: Record<string, string> = {};
-  const { dataType, mode, score1Name, score2Name, score1Source, score2Source, categories, score2Categories } = params;
+  const {
+    dataType,
+    mode,
+    score1Name,
+    score2Name,
+    score1Source,
+    score2Source,
+    categories,
+    score2Categories,
+  } = params;
 
   // Build score name prefixes for namespaced categories in "all" and "allMatched" tabs
   const score1Prefix =
@@ -539,7 +581,10 @@ export function buildColorMappings(params: BuildColorMappingsParams): Record<str
       : score1Name;
 
   const score2Prefix =
-    mode === "two" && score2Name && score1Name === score2Name && score1Source !== score2Source
+    mode === "two" &&
+    score2Name &&
+    score1Name === score2Name &&
+    score1Source !== score2Source
       ? `${score2Name} (${score2Source})`
       : (score2Name ?? "");
 

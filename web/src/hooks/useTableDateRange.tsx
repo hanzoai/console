@@ -35,7 +35,11 @@ export function useTableDateRange(
   });
 
   return useMemo(() => {
-    const timeRange = rangeFromString(queryParams.dateRange, TABLE_AGGREGATION_OPTIONS, fallbackAggregation);
+    const timeRange = rangeFromString(
+      queryParams.dateRange,
+      TABLE_AGGREGATION_OPTIONS,
+      fallbackAggregation,
+    );
 
     const setTimeRange = (timeRange: TimeRange) => {
       const newParam = rangeToString(timeRange);
@@ -48,5 +52,10 @@ export function useTableDateRange(
       timeRange,
       setTimeRange,
     };
-  }, [queryParams.dateRange, fallbackAggregation, setQueryParams, setStoredDateRange]);
+  }, [
+    queryParams.dateRange,
+    fallbackAggregation,
+    setQueryParams,
+    setStoredDateRange,
+  ]);
 }

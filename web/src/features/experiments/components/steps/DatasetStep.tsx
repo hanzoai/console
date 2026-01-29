@@ -1,16 +1,46 @@
 import React from "react";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Info, CircleCheck } from "lucide-react";
 import { type DatasetStepProps } from "@/src/features/experiments/types/stepProps";
 import { StepHeader } from "@/src/features/experiments/components/shared/StepHeader";
 
-export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetState, promptInfo }) => {
+export const DatasetStep: React.FC<DatasetStepProps> = ({
+  formState,
+  datasetState,
+  promptInfo,
+}) => {
   const { form } = formState;
-  const { datasets, selectedDatasetId, expectedColumnsForDataset: expectedColumns, validationResult } = datasetState;
+  const {
+    datasets,
+    selectedDatasetId,
+    expectedColumnsForDataset: expectedColumns,
+    validationResult,
+  } = datasetState;
   const { selectedPromptName, selectedPromptVersion } = promptInfo;
 
   return (
@@ -27,7 +57,11 @@ export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetStat
           <FormItem>
             <FormLabel>Dataset</FormLabel>
             <div className="flex items-center gap-2">
-              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+              >
                 <FormControl>
                   <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Select a dataset" />
@@ -51,9 +85,12 @@ export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetStat
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <div className="space-y-2">
-                      <h4 className="font-medium leading-none">Expected Dataset Structure</h4>
+                      <h4 className="font-medium leading-none">
+                        Expected Dataset Structure
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Based on prompt {selectedPromptName} v{selectedPromptVersion}
+                        Based on prompt {selectedPromptName} v
+                        {selectedPromptVersion}
                       </p>
                       <div className="space-y-1 pt-2">
                         <p className="text-sm font-medium">Input variables:</p>
@@ -65,7 +102,8 @@ export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetStat
                         <p className="text-sm font-medium">Expected output:</p>
                         <ul className="list-inside list-disc text-sm">
                           <li>
-                            {expectedColumns.outputVariableName} ({expectedColumns.outputVariableType})
+                            {expectedColumns.outputVariableName} (
+                            {expectedColumns.outputVariableType})
                           </li>
                         </ul>
                       </div>
@@ -88,7 +126,9 @@ export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetStat
                   <span>Invalid configuration</span>
                   <Info className="h-4 w-4" />
                 </CardTitle>
-                <CardDescription className="text-foreground">{validationResult?.message}</CardDescription>
+                <CardDescription className="text-foreground">
+                  {validationResult?.message}
+                </CardDescription>
               </CardHeader>
             </Card>
           )}
@@ -100,16 +140,22 @@ export const DatasetStep: React.FC<DatasetStepProps> = ({ formState, datasetStat
                   <CircleCheck className="h-4 w-4" />
                 </CardTitle>
                 <div className="text-sm">
-                  Matches between dataset items and prompt variables/placeholders
+                  Matches between dataset items and prompt
+                  variables/placeholders
                   <ul className="my-2 ml-2 list-inside list-disc">
-                    {Object.entries(validationResult.variablesMap ?? {}).map(([variable, count]) => (
-                      <li key={variable}>
-                        <strong>{variable}:</strong> {count} /{" "}
-                        {validationResult?.isValid ? validationResult.totalItems : "unknown"}
-                      </li>
-                    ))}
+                    {Object.entries(validationResult.variablesMap ?? {}).map(
+                      ([variable, count]) => (
+                        <li key={variable}>
+                          <strong>{variable}:</strong> {count} /{" "}
+                          {validationResult?.isValid
+                            ? validationResult.totalItems
+                            : "unknown"}
+                        </li>
+                      ),
+                    )}
                   </ul>
-                  Items missing all required variables and placeholders will be excluded from the dataset run.
+                  Items missing all required variables and placeholders will be
+                  excluded from the dataset run.
                 </div>
               </CardHeader>
             </Card>

@@ -21,7 +21,14 @@
 
 import React, { useMemo, useCallback, useState, useEffect } from "react";
 import { cn } from "@/src/utils/tailwind";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/src/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/src/components/ui/table";
 import {
   transformToPivotTable,
   extractDimensionValues,
@@ -107,11 +114,26 @@ const SortableHeader: React.FC<{
   );
 
   return (
-    <TableHead className={cn("group/header cursor-pointer select-none p-1", className)} onClick={handleClick}>
-      <div className={cn("flex select-none items-center", rightAlign ? "justify-end" : "justify-start")}>
+    <TableHead
+      className={cn("group/header cursor-pointer select-none p-1", className)}
+      onClick={handleClick}
+    >
+      <div
+        className={cn(
+          "flex select-none items-center",
+          rightAlign ? "justify-end" : "justify-start",
+        )}
+      >
         <span className="truncate">{label}</span>
         {isSorted && (
-          <span className="ml-1" title={sortDirection === "ASC" ? "Sorted ascending" : "Sort by this column"}>
+          <span
+            className="ml-1"
+            title={
+              sortDirection === "ASC"
+                ? "Sorted ascending"
+                : "Sort by this column"
+            }
+          >
             {sortDirection === "ASC" ? "▲" : "▼"}
           </span>
         )}
@@ -151,7 +173,8 @@ const PivotTableRowComponent: React.FC<{
         )}
         style={{
           // Fallback for levels beyond 2 using inline styles
-          paddingLeft: row.level > 2 ? `${row.level * 1.5 + 0.5}rem` : undefined,
+          paddingLeft:
+            row.level > 2 ? `${row.level * 1.5 + 0.5}rem` : undefined,
         }}
       >
         {row.label}
@@ -161,7 +184,10 @@ const PivotTableRowComponent: React.FC<{
       {metrics.map((metric) => (
         <TableCell
           key={metric}
-          className={cn("p-2 text-right align-middle tabular-nums", (row.isSubtotal || row.isTotal) && "font-semibold")}
+          className={cn(
+            "p-2 text-right align-middle tabular-nums",
+            (row.isSubtotal || row.isTotal) && "font-semibold",
+          )}
         >
           {formatMetricValue(row.values[metric])}
         </TableCell>
@@ -206,7 +232,13 @@ function formatColumnHeader(metricName: string): string {
  * @param sortState - Current sort state
  * @param onSortChange - Callback for sort state changes
  */
-export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState, onSortChange, isLoading = false }) => {
+export const PivotTable: React.FC<PivotTableProps> = ({
+  data,
+  config,
+  sortState,
+  onSortChange,
+  isLoading = false,
+}) => {
   // Transform chart data into pivot table structure
   const pivotTableRows = useMemo(() => {
     if (!data || data.length === 0) {
@@ -230,7 +262,10 @@ export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState,
       const row: DatabaseRow = { ...rowData };
 
       // Use utility functions to ensure proper extraction and parsing
-      const dimensionValues = extractDimensionValues(row, pivotConfig.dimensions);
+      const dimensionValues = extractDimensionValues(
+        row,
+        pivotConfig.dimensions,
+      );
       const metricValues = extractMetricValues(row, pivotConfig.metrics);
 
       // Combine dimension and metric values into the final row
@@ -249,7 +284,9 @@ export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState,
         if (typeof point.metric === "number") {
           result.metric = point.metric;
         } else if (Array.isArray(point.metric)) {
-          result.metric = point.metric.flat().reduce((sum, val) => sum + val, 0);
+          result.metric = point.metric
+            .flat()
+            .reduce((sum, val) => sum + val, 0);
         }
       }
 
@@ -289,7 +326,11 @@ export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState,
   const handleSort = useCallback(
     (column: string) => {
       if (!onSortChange) return;
-      const nextSort = getNextSortState(config?.defaultSort || null, sortState || null, column);
+      const nextSort = getNextSortState(
+        config?.defaultSort || null,
+        sortState || null,
+        column,
+      );
       onSortChange(nextSort);
     },
     [sortState, onSortChange, config?.defaultSort],
@@ -329,7 +370,9 @@ export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState,
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <p className="text-sm text-muted-foreground">Unable to process data for pivot table</p>
+          <p className="text-sm text-muted-foreground">
+            Unable to process data for pivot table
+          </p>
         </div>
       </div>
     );

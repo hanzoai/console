@@ -1,12 +1,16 @@
 import React from "react";
-import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
+import {
+  SplashScreen,
+  type ValueProposition,
+} from "@/src/components/ui/splash-screen";
 import { FileText, GitBranch, Zap, BarChart4 } from "lucide-react";
 
 export function PromptsOnboarding({ projectId }: { projectId: string }) {
   const valuePropositions: ValueProposition[] = [
     {
       title: "Decoupled from code",
-      description: "Deploy new prompts without application redeployment, making updates faster and easier",
+      description:
+        "Deploy new prompts without application redeployment, making updates faster and easier",
       icon: <FileText className="h-4 w-4" />,
     },
     {
@@ -17,12 +21,14 @@ export function PromptsOnboarding({ projectId }: { projectId: string }) {
     },
     {
       title: "Performance optimized",
-      description: "Client-side caching prevents latency or availability issues for your applications",
+      description:
+        "Client-side caching prevents latency or availability issues for your applications",
       icon: <Zap className="h-4 w-4" />,
     },
     {
       title: "Compare metrics",
-      description: "Track latency, cost, and evaluation metrics across different prompt versions",
+      description:
+        "Track latency, cost, and evaluation metrics across different prompt versions",
       icon: <BarChart4 className="h-4 w-4" />,
     },
   ];

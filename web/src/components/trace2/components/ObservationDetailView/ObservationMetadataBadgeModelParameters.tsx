@@ -6,13 +6,23 @@
 import { type JsonNested } from "@hanzo/shared";
 import { Badge } from "@/src/components/ui/badge";
 
-export function ModelParametersBadges({ modelParameters }: { modelParameters: JsonNested | null | undefined }) {
+export function ModelParametersBadges({
+  modelParameters,
+}: {
+  modelParameters: JsonNested | null | undefined;
+}) {
   // Only render if modelParameters is an object (not array, primitive, or null)
-  if (!modelParameters || typeof modelParameters !== "object" || Array.isArray(modelParameters)) {
+  if (
+    !modelParameters ||
+    typeof modelParameters !== "object" ||
+    Array.isArray(modelParameters)
+  ) {
     return null;
   }
 
-  const entries = Object.entries(modelParameters).filter(([_, value]) => value !== null);
+  const entries = Object.entries(modelParameters).filter(
+    ([_, value]) => value !== null,
+  );
 
   if (entries.length === 0) return null;
 
@@ -20,11 +30,16 @@ export function ModelParametersBadges({ modelParameters }: { modelParameters: Js
     <>
       {entries.map(([key, value]) => {
         const valueString =
-          Object.prototype.toString.call(value) === "[object Object]" ? JSON.stringify(value) : value?.toString();
+          Object.prototype.toString.call(value) === "[object Object]"
+            ? JSON.stringify(value)
+            : value?.toString();
 
         return (
           <Badge variant="tertiary" key={key} className="max-w-md">
-            <span className="overflow-hidden text-ellipsis whitespace-nowrap" title={valueString}>
+            <span
+              className="overflow-hidden text-ellipsis whitespace-nowrap"
+              title={valueString}
+            >
               {key}: {valueString}
             </span>
           </Badge>

@@ -25,7 +25,11 @@ type TestModelMatchDialogProps = {
 
 export type { TestModelMatchDialogProps };
 
-export function TestModelMatchDialog({ projectId, open, onOpenChange }: TestModelMatchDialogProps) {
+export function TestModelMatchDialog({
+  projectId,
+  open,
+  onOpenChange,
+}: TestModelMatchDialogProps) {
   const [modelName, setModelName] = useState("");
   const [usageDetails, setUsageDetails] = useState<Record<string, number>>({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -67,7 +71,8 @@ export function TestModelMatchDialog({ projectId, open, onOpenChange }: TestMode
           <DialogHeader>
             <DialogTitle>Test Model Match</DialogTitle>
             <DialogDescription className="mt-1">
-              Test which model and pricing tier your ingestion data would match against.
+              Test which model and pricing tier your ingestion data would match
+              against.
             </DialogDescription>
           </DialogHeader>
 
@@ -78,7 +83,9 @@ export function TestModelMatchDialog({ projectId, open, onOpenChange }: TestMode
                 {/* Model Name Input */}
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Model Name *</div>
-                  <div className="text-sm text-muted-foreground">The model name on your generations.</div>
+                  <div className="text-sm text-muted-foreground">
+                    The model name on your generations.
+                  </div>
                   <Input
                     placeholder="e.g. gpt-4-turbo"
                     value={modelName}
@@ -89,15 +96,27 @@ export function TestModelMatchDialog({ projectId, open, onOpenChange }: TestMode
                 </div>
 
                 {/* Usage Details Editor */}
-                <UsageDetailsEditor usageDetails={usageDetails} onChange={setUsageDetails} />
+                <UsageDetailsEditor
+                  usageDetails={usageDetails}
+                  onChange={setUsageDetails}
+                />
               </div>
 
               {/* Buttons at bottom of left column */}
               <div className="flex gap-2 border-t pt-4">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  className="flex-1"
+                >
                   Close
                 </Button>
-                <Button type="submit" disabled={!modelName.trim() || isLoading} className="flex-1">
+                <Button
+                  type="submit"
+                  disabled={!modelName.trim() || isLoading}
+                  className="flex-1"
+                >
                   Test Match
                 </Button>
               </div>

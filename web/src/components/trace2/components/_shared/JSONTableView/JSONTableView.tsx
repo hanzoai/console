@@ -41,11 +41,15 @@ export function JSONTableView<T>({
   className,
 }: JSONTableViewProps<T>) {
   // Internal expand state (uncontrolled mode)
-  const [internalExpandedKeys, setInternalExpandedKeys] = useState<Set<string>>(new Set());
+  const [internalExpandedKeys, setInternalExpandedKeys] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Determine if controlled or uncontrolled
   const isControlled = controlledExpandedKeys !== undefined;
-  const expandedKeys = isControlled ? controlledExpandedKeys : internalExpandedKeys;
+  const expandedKeys = isControlled
+    ? controlledExpandedKeys
+    : internalExpandedKeys;
 
   // Refs for scroll containers
   const parentRef = useRef<HTMLDivElement>(null);
@@ -93,7 +97,10 @@ export function JSONTableView<T>({
     getScrollElement: () => parentRef.current,
     estimateSize,
     overscan: overscan,
-    measureElement: typeof window !== "undefined" ? (element) => element.getBoundingClientRect().height : undefined,
+    measureElement:
+      typeof window !== "undefined"
+        ? (element) => element.getBoundingClientRect().height
+        : undefined,
     enabled: virtualized,
   });
 
@@ -138,7 +145,9 @@ export function JSONTableView<T>({
     if (!virtualized || !onVisibleItemsChange) return;
 
     const virtualItems = rowVirtualizer.getVirtualItems();
-    const visibleItems = virtualItems.map((vi) => items[vi.index]).filter((item): item is T => item !== undefined);
+    const visibleItems = virtualItems
+      .map((vi) => items[vi.index])
+      .filter((item): item is T => item !== undefined);
 
     if (visibleItems.length > 0) {
       onVisibleItemsChange(visibleItems);
@@ -150,14 +159,20 @@ export function JSONTableView<T>({
   const hasExpandIcon = expandable;
 
   return (
-    <div className={cn("flex h-full w-full flex-col overflow-hidden", className)}>
+    <div
+      className={cn("flex h-full w-full flex-col overflow-hidden", className)}
+    >
       {/* Sticky header showing topmost visible item */}
       {hasItems && stickyHeaderContent && (
-        <div className="flex-shrink-0">{stickyHeaderContent(topmostItem, topmostIndex)}</div>
+        <div className="flex-shrink-0">
+          {stickyHeaderContent(topmostItem, topmostIndex)}
+        </div>
       )}
 
       {/* Table header with column labels */}
-      {hasItems && <JSONTableViewHeader columns={columns} hasExpandIcon={hasExpandIcon} />}
+      {hasItems && (
+        <JSONTableViewHeader columns={columns} hasExpandIcon={hasExpandIcon} />
+      )}
 
       {/* Virtualized list */}
       {hasItems && virtualized && (

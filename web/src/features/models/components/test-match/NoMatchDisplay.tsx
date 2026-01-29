@@ -1,4 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
 type NoMatchDisplayProps = {
@@ -17,7 +22,10 @@ export function NoMatchDisplay({ modelName }: NoMatchDisplayProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm">No model configuration matches &quot;{modelName}&quot; in this project.</p>
+        <p className="text-sm">
+          No model configuration matches &quot;{modelName}&quot; in this
+          project.
+        </p>
 
         <div>
           <p className="mb-2 text-sm font-medium">Suggestions:</p>

@@ -63,7 +63,10 @@ describe("Tree Structure Building", () => {
     });
 
     it("should handle empty object", () => {
-      const tree = buildTreeFromJSON({}, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        {},
+        { rootKey: "root", initialExpansion: true },
+      );
 
       expect(tree.rootNode.type).toBe("object");
       expect(tree.rootNode.isExpandable).toBe(true);
@@ -221,7 +224,10 @@ describe("Tree Structure Building", () => {
 
   describe("Absolute Line Numbers", () => {
     it("should assign root as line 1", () => {
-      const tree = buildTreeFromJSON({ a: 1 }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { a: 1 },
+        { rootKey: "root", initialExpansion: true },
+      );
       expect(tree.rootNode.absoluteLineNumber).toBe(1);
     });
 
@@ -289,7 +295,9 @@ describe("Tree Structure Building", () => {
 
       // Check that allNodes array has increasing line numbers
       for (let i = 1; i < tree.allNodes.length; i++) {
-        expect(tree.allNodes[i]!.absoluteLineNumber).toBeGreaterThan(tree.allNodes[i - 1]!.absoluteLineNumber);
+        expect(tree.allNodes[i]!.absoluteLineNumber).toBeGreaterThan(
+          tree.allNodes[i - 1]!.absoluteLineNumber,
+        );
       }
     });
 
@@ -307,11 +315,19 @@ describe("Tree Structure Building", () => {
       // Pre-order: root(1), [0](2), id(3), name(4), [1](5), id(6), name(7)
       expect(tree.rootNode.absoluteLineNumber).toBe(1);
       expect(tree.rootNode.children[0]?.absoluteLineNumber).toBe(2);
-      expect(tree.rootNode.children[0]?.children[0]?.absoluteLineNumber).toBe(3);
-      expect(tree.rootNode.children[0]?.children[1]?.absoluteLineNumber).toBe(4);
+      expect(tree.rootNode.children[0]?.children[0]?.absoluteLineNumber).toBe(
+        3,
+      );
+      expect(tree.rootNode.children[0]?.children[1]?.absoluteLineNumber).toBe(
+        4,
+      );
       expect(tree.rootNode.children[1]?.absoluteLineNumber).toBe(5);
-      expect(tree.rootNode.children[1]?.children[0]?.absoluteLineNumber).toBe(6);
-      expect(tree.rootNode.children[1]?.children[1]?.absoluteLineNumber).toBe(7);
+      expect(tree.rootNode.children[1]?.children[0]?.absoluteLineNumber).toBe(
+        6,
+      );
+      expect(tree.rootNode.children[1]?.children[1]?.absoluteLineNumber).toBe(
+        7,
+      );
     });
   });
 
@@ -359,7 +375,9 @@ describe("Tree Structure Building", () => {
 
       // Verify line numbers increase
       for (let i = 1; i < nodesByIndex.length; i++) {
-        expect(nodesByIndex[i]!.absoluteLineNumber).toBeGreaterThan(nodesByIndex[i - 1]!.absoluteLineNumber);
+        expect(nodesByIndex[i]!.absoluteLineNumber).toBeGreaterThan(
+          nodesByIndex[i - 1]!.absoluteLineNumber,
+        );
       }
     });
   });

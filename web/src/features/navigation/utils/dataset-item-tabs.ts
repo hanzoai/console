@@ -3,7 +3,8 @@ export const DATASET_ITEM_TABS = {
   RUNS: "runs",
 } as const;
 
-export type DatasetItemTab = (typeof DATASET_ITEM_TABS)[keyof typeof DATASET_ITEM_TABS];
+export type DatasetItemTab =
+  (typeof DATASET_ITEM_TABS)[keyof typeof DATASET_ITEM_TABS];
 
 export const getDatasetItemTabs = ({
   projectId,

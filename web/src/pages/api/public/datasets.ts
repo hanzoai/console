@@ -10,7 +10,10 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { upsertDataset } from "@/src/features/datasets/server/actions/createDataset";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/shared/src/server";
+import {
+  createDatasetItemFilterState,
+  getDatasetItems,
+} from "@hanzo/shared/src/server";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({
@@ -19,7 +22,8 @@ export default withMiddlewares({
     responseSchema: PostDatasetsV1Response,
     rateLimitResource: "datasets",
     fn: async ({ body, auth }) => {
-      const { name, description, metadata, inputSchema, expectedOutputSchema } = body;
+      const { name, description, metadata, inputSchema, expectedOutputSchema } =
+        body;
 
       const dataset = await upsertDataset({
         input: {
@@ -99,7 +103,10 @@ export default withMiddlewares({
       // create Map of dataset id to dataset item ids
       const datasetItemIdsMap = new Map<string, string[]>();
       for (const item of datasetItems) {
-        datasetItemIdsMap.set(item.datasetId, [...(datasetItemIdsMap.get(item.datasetId) || []), item.id]);
+        datasetItemIdsMap.set(item.datasetId, [
+          ...(datasetItemIdsMap.get(item.datasetId) || []),
+          item.id,
+        ]);
       }
 
       const totalItems = await prisma.dataset.count({

@@ -1,12 +1,24 @@
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/src/components/ui/dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { CreateLLMApiKeyForm } from "@/src/features/public-api/components/CreateLLMApiKeyForm";
 
-export function CreateLLMApiKeyDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+export function CreateLLMApiKeyDialog({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const projectId = useProjectIdFromURL();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -34,7 +46,11 @@ export function CreateLLMApiKeyDialog({ open, setOpen }: { open: boolean; setOpe
           <DialogTitle>New LLM Connection</DialogTitle>
         </DialogHeader>
         {open && (
-          <CreateLLMApiKeyForm projectId={projectId} onSuccess={() => setOpen(false)} customization={uiCustomization} />
+          <CreateLLMApiKeyForm
+            projectId={projectId}
+            onSuccess={() => setOpen(false)}
+            customization={uiCustomization}
+          />
         )}
       </DialogContent>
     </Dialog>

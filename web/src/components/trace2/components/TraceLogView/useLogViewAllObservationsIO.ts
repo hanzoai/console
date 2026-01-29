@@ -40,7 +40,12 @@ export interface ObservationIOData {
  * Build the tRPC query key for an observation.
  * Must match the format used by api.observations.byId.useQuery
  */
-export function getObservationQueryKey(observationId: string, traceId: string, projectId: string, startTime: Date) {
+export function getObservationQueryKey(
+  observationId: string,
+  traceId: string,
+  projectId: string,
+  startTime: Date,
+) {
   return [
     ["observations", "byId"],
     {
@@ -58,14 +63,20 @@ export function getObservationQueryKey(observationId: string, traceId: string, p
  * @param params - Items array, traceId, projectId
  * @returns loadAllData function, loading state, data, and error state
  */
-export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLogViewAllObservationsIOParams) {
+export function useLogViewAllObservationsIO({
+  items,
+  traceId,
+  projectId,
+}: UseLogViewAllObservationsIOParams) {
   const utils = api.useUtils();
   const queryClient = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [data, setData] = useState<ObservationIOData[] | null>(null);
-  const [failedObservationIds, setFailedObservationIds] = useState<string[]>([]);
+  const [failedObservationIds, setFailedObservationIds] = useState<string[]>(
+    [],
+  );
 
   /**
    * Build download data from tree structure + any cached observation I/O.
@@ -85,7 +96,12 @@ export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLo
         };
 
         // Check if we have cached I/O data for this observation
-        const queryKey = getObservationQueryKey(item.node.id, traceId, projectId, item.node.startTime);
+        const queryKey = getObservationQueryKey(
+          item.node.id,
+          traceId,
+          projectId,
+          item.node.startTime,
+        );
         const cachedData = queryClient.getQueryData(queryKey) as
           | { input?: unknown; output?: unknown; metadata?: unknown }
           | undefined;
@@ -97,7 +113,10 @@ export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLo
           if (cachedData.output !== null && cachedData.output !== undefined) {
             baseData.output = cachedData.output;
           }
-          if (cachedData.metadata !== null && cachedData.metadata !== undefined) {
+          if (
+            cachedData.metadata !== null &&
+            cachedData.metadata !== undefined
+          ) {
             baseData.metadata = cachedData.metadata;
           }
         }
@@ -118,14 +137,21 @@ export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLo
     setFailedObservationIds([]);
 
     try {
-      const observationItems = items.filter((item) => item.node.type !== "TRACE");
+      const observationItems = items.filter(
+        (item) => item.node.type !== "TRACE",
+      );
 
       // Separate cached vs uncached items
       const cachedResults: ObservationIOData[] = [];
       const uncachedItems: FlatLogItem[] = [];
 
       for (const item of observationItems) {
-        const queryKey = getObservationQueryKey(item.node.id, traceId, projectId, item.node.startTime);
+        const queryKey = getObservationQueryKey(
+          item.node.id,
+          traceId,
+          projectId,
+          item.node.startTime,
+        );
         const cachedData = queryClient.getQueryData(queryKey) as
           | { input?: unknown; output?: unknown; metadata?: unknown }
           | undefined;
@@ -146,7 +172,10 @@ export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLo
           if (cachedData.output !== null && cachedData.output !== undefined) {
             baseData.output = cachedData.output;
           }
-          if (cachedData.metadata !== null && cachedData.metadata !== undefined) {
+          if (
+            cachedData.metadata !== null &&
+            cachedData.metadata !== undefined
+          ) {
             baseData.metadata = cachedData.metadata;
           }
           cachedResults.push(baseData);
@@ -214,8 +243,12 @@ export function useLogViewAllObservationsIO({ items, traceId, projectId }: UseLo
       const allResults = [...cachedResults, ...fetchedResults];
 
       // Sort to maintain original item order
-      const idOrder = new Map(observationItems.map((item, i) => [item.node.id, i]));
-      allResults.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+      const idOrder = new Map(
+        observationItems.map((item, i) => [item.node.id, i]),
+      );
+      allResults.sort(
+        (a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0),
+      );
 
       setData(allResults);
       setFailedObservationIds(failures);

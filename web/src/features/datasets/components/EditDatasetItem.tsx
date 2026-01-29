@@ -3,7 +3,14 @@ import * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useState, useMemo } from "react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Button } from "@/src/components/ui/button";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { CodeMirrorEditor } from "@/src/components/editor";
@@ -24,7 +31,8 @@ const formSchema = z.object({
       }
     },
     {
-      message: "Invalid input. Please provide a JSON object or double-quoted string.",
+      message:
+        "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   expectedOutput: z.string().refine(
@@ -38,7 +46,8 @@ const formSchema = z.object({
       }
     },
     {
-      message: "Invalid input. Please provide a JSON object or double-quoted string.",
+      message:
+        "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   metadata: z.string().refine(
@@ -52,7 +61,8 @@ const formSchema = z.object({
       }
     },
     {
-      message: "Invalid input. Please provide a JSON object or double-quoted string.",
+      message:
+        "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
 });
@@ -84,9 +94,15 @@ export const EditDatasetItem = ({
   useEffect(() => {
     if (datasetItem) {
       form.reset({
-        input: datasetItem.input ? JSON.stringify(datasetItem.input, null, 2) : "",
-        expectedOutput: datasetItem.expectedOutput ? JSON.stringify(datasetItem.expectedOutput, null, 2) : "",
-        metadata: datasetItem.metadata ? JSON.stringify(datasetItem.metadata, null, 2) : "",
+        input: datasetItem.input
+          ? JSON.stringify(datasetItem.input, null, 2)
+          : "",
+        expectedOutput: datasetItem.expectedOutput
+          ? JSON.stringify(datasetItem.expectedOutput, null, 2)
+          : "",
+        metadata: datasetItem.metadata
+          ? JSON.stringify(datasetItem.metadata, null, 2)
+          : "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +123,8 @@ export const EditDatasetItem = ({
   // Track if fields have been touched or modified
   const { touchedFields, dirtyFields } = form.formState;
   const hasInteractedWithInput = touchedFields.input || dirtyFields.input;
-  const hasInteractedWithExpectedOutput = touchedFields.expectedOutput || dirtyFields.expectedOutput;
+  const hasInteractedWithExpectedOutput =
+    touchedFields.expectedOutput || dirtyFields.expectedOutput;
 
   // Create dataset array for validation hook
   const datasets = useMemo(() => {
@@ -116,11 +133,17 @@ export const EditDatasetItem = ({
   }, [dataset]);
 
   // Validate against dataset schemas
-  const validation = useDatasetItemValidation(inputValue, expectedOutputValue, datasets);
+  const validation = useDatasetItemValidation(
+    inputValue,
+    expectedOutputValue,
+    datasets,
+  );
 
   // Filter validation errors by field
   const inputErrors = validation.errors.filter((e) => e.field === "input");
-  const expectedOutputErrors = validation.errors.filter((e) => e.field === "expectedOutput");
+  const expectedOutputErrors = validation.errors.filter(
+    (e) => e.field === "expectedOutput",
+  );
 
   const updateDatasetItemMutation = api.datasets.updateDatasetItem.useMutation({
     onSuccess: () => utils.datasets.invalidate(),
@@ -157,7 +180,11 @@ export const EditDatasetItem = ({
             <Button
               type="submit"
               loading={updateDatasetItemMutation.isPending}
-              disabled={!hasChanges || !hasAccess || (validation.hasSchemas && !validation.isValid)}
+              disabled={
+                !hasChanges ||
+                !hasAccess ||
+                (validation.hasSchemas && !validation.isValid)
+              }
               variant={hasChanges ? "default" : "ghost"}
             >
               {hasChanges ? "Save changes" : "Saved"}
@@ -174,7 +201,11 @@ export const EditDatasetItem = ({
                       <div className="flex items-center gap-2">
                         <FormLabel>Input</FormLabel>
                         {dataset?.inputSchema && (
-                          <DatasetSchemaHoverCard schema={dataset.inputSchema} schemaType="input" showLabel />
+                          <DatasetSchemaHoverCard
+                            schema={dataset.inputSchema}
+                            schemaType="input"
+                            showLabel
+                          />
                         )}
                       </div>
                       <FormControl>
@@ -190,9 +221,14 @@ export const EditDatasetItem = ({
                         />
                       </FormControl>
                       <FormMessage />
-                      {validation.hasSchemas && inputErrors.length > 0 && hasInteractedWithInput && (
-                        <DatasetItemFieldSchemaErrors errors={inputErrors} showDatasetName={false} />
-                      )}
+                      {validation.hasSchemas &&
+                        inputErrors.length > 0 &&
+                        hasInteractedWithInput && (
+                          <DatasetItemFieldSchemaErrors
+                            errors={inputErrors}
+                            showDatasetName={false}
+                          />
+                        )}
                     </FormItem>
                   )}
                 />
@@ -224,9 +260,14 @@ export const EditDatasetItem = ({
                         />
                       </FormControl>
                       <FormMessage />
-                      {validation.hasSchemas && expectedOutputErrors.length > 0 && hasInteractedWithExpectedOutput && (
-                        <DatasetItemFieldSchemaErrors errors={expectedOutputErrors} showDatasetName={false} />
-                      )}
+                      {validation.hasSchemas &&
+                        expectedOutputErrors.length > 0 &&
+                        hasInteractedWithExpectedOutput && (
+                          <DatasetItemFieldSchemaErrors
+                            errors={expectedOutputErrors}
+                            showDatasetName={false}
+                          />
+                        )}
                     </FormItem>
                   )}
                 />

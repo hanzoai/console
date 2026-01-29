@@ -1,9 +1,14 @@
 import { usdFormatter } from "@/src/utils/numbers";
-import { type DatasetRunItemByRunRowData, type DatasetRunItemByItemRowData } from "./types";
+import {
+  type DatasetRunItemByRunRowData,
+  type DatasetRunItemByItemRowData,
+} from "./types";
 import { type EnrichedDatasetRunItem } from "@hanzo/shared/src/server";
 import { isPresent } from "@hanzo/shared";
 
-export const convertRunItemToItemsByItemUiTableRow = (item: EnrichedDatasetRunItem): DatasetRunItemByItemRowData => {
+export const convertRunItemToItemsByItemUiTableRow = (
+  item: EnrichedDatasetRunItem,
+): DatasetRunItemByItemRowData => {
   return {
     id: item.id,
     runAt: item.createdAt,
@@ -24,7 +29,9 @@ export const convertRunItemToItemsByItemUiTableRow = (item: EnrichedDatasetRunIt
   };
 };
 
-export const convertRunItemToItemsByRunUiTableRow = (item: EnrichedDatasetRunItem): DatasetRunItemByRunRowData => {
+export const convertRunItemToItemsByRunUiTableRow = (
+  item: EnrichedDatasetRunItem,
+): DatasetRunItemByRunRowData => {
   return {
     id: item.id,
     runAt: item.createdAt,

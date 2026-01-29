@@ -7,7 +7,10 @@ export type TableRowOptions = {
 };
 
 // extends tanstack ColumnDef to include additional properties
-type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<TData, TValue> & {
+type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<
+  TData,
+  TValue
+> & {
   defaultHidden?: boolean;
   headerTooltip?: {
     description: string;
@@ -18,7 +21,10 @@ type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<TDat
 };
 
 // limits types of defined tanstack ColumnDef properties to specific subset of tanstack type union
-export type HanzoColumnDef<TData extends RowData, TValue = unknown> = ExtendedColumnDef<TData, TValue> & {
+export type HanzoColumnDef<
+  TData extends RowData,
+  TValue = unknown,
+> = ExtendedColumnDef<TData, TValue> & {
   // Enforce hanzo columns to be of type 'AccessorKeyColumnDefBase' with 'accessorKey' property of type string
   accessorKey: string;
   // Enforce hanzo group columns to have children of type 'HanzoColumnDef'

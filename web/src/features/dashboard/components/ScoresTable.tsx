@@ -1,6 +1,10 @@
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { DashboardTable } from "@/src/features/dashboard/components/cards/DashboardTable";
-import { type ScoreDataTypeType, type ScoreSourceType, type FilterState } from "@hanzo/shared";
+import {
+  type ScoreDataTypeType,
+  type ScoreSourceType,
+  type FilterState,
+} from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { RightAlignedCell } from "./RightAlignedCell";
@@ -8,11 +12,18 @@ import { LeftAlignedCell } from "@/src/features/dashboard/components/LeftAligned
 import { TotalMetric } from "./TotalMetric";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
-import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";
+import {
+  isBooleanDataType,
+  isCategoricalDataType,
+  isNumericDataType,
+} from "@/src/features/scores/lib/helpers";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 
-const dropValuesForCategoricalScores = (value: number, scoreDataType: ScoreDataTypeType): string => {
+const dropValuesForCategoricalScores = (
+  value: number,
+  scoreDataType: ScoreDataTypeType,
+): string => {
   if (isCategoricalDataType(scoreDataType)) return "-";
   if (isBooleanDataType(scoreDataType) || isNumericDataType(scoreDataType)) {
     return compactNumberFormatter(value);
@@ -21,8 +32,15 @@ const dropValuesForCategoricalScores = (value: number, scoreDataType: ScoreDataT
 };
 
 const scoreNameSourceDataTypeMatch =
-  (scoreName: string, scoreSource: ScoreSourceType, scoreDataType: ScoreDataTypeType) => (item: DatabaseRow) =>
-    item.scoreName === scoreName && item.scoreSource === scoreSource && item.scoreDataType === scoreDataType;
+  (
+    scoreName: string,
+    scoreSource: ScoreSourceType,
+    scoreDataType: ScoreDataTypeType,
+  ) =>
+  (item: DatabaseRow) =>
+    item.scoreName === scoreName &&
+    item.scoreSource === scoreSource &&
+    item.scoreDataType === scoreDataType;
 
 export const ScoresTable = ({
   className,
@@ -35,7 +53,10 @@ export const ScoresTable = ({
   globalFilterState: FilterState;
   isLoading?: boolean;
 }) => {
-  const localFilters = createTracesTimeFilter(globalFilterState, "scoreTimestamp");
+  const localFilters = createTracesTimeFilter(
+    globalFilterState,
+    "scoreTimestamp",
+  );
 
   const metrics = api.dashboard.chart.useQuery(
     {
@@ -127,7 +148,8 @@ export const ScoresTable = ({
   }
 
   const joinRequestData = () => {
-    if (!metrics.data || !zeroValueScores.data || !oneValueScores.data) return [];
+    if (!metrics.data || !zeroValueScores.data || !oneValueScores.data)
+      return [];
 
     return metrics.data.map((metric) => {
       const scoreName = metric.scoreName as string;
@@ -147,21 +169,33 @@ export const ScoresTable = ({
         scoreDataType,
         countScoreId: metric.countScoreId ? metric.countScoreId : 0,
         avgValue: metric.avgValue ? (metric.avgValue as number) : 0,
-        zeroValueScore: zeroValueScore?.countScoreId ? zeroValueScore.countScoreId : 0,
-        oneValueScore: oneValueScore?.countScoreId ? (oneValueScore.countScoreId as number) : 0,
+        zeroValueScore: zeroValueScore?.countScoreId
+          ? zeroValueScore.countScoreId
+          : 0,
+        oneValueScore: oneValueScore?.countScoreId
+          ? (oneValueScore.countScoreId as number)
+          : 0,
       };
     });
   };
 
   const data = joinRequestData();
 
-  const totalScores = data.reduce((acc, curr) => acc + (curr.countScoreId as number), 0);
+  const totalScores = data.reduce(
+    (acc, curr) => acc + (curr.countScoreId as number),
+    0,
+  );
 
   return (
     <DashboardCard
       className={className}
       title="Scores"
-      isLoading={isLoading || metrics.isPending || zeroValueScores.isPending || oneValueScores.isPending}
+      isLoading={
+        isLoading ||
+        metrics.isPending ||
+        zeroValueScores.isPending ||
+        oneValueScores.isPending
+      }
     >
       <DashboardTable
         headers={[
@@ -175,21 +209,35 @@ export const ScoresTable = ({
           <LeftAlignedCell
             key={`${i}-name`}
           >{`${getScoreDataTypeIcon(item.scoreDataType)} ${item.scoreName} (${item.scoreSource.toLowerCase()})`}</LeftAlignedCell>,
-          <RightAlignedCell key={`${i}-count`}>{compactNumberFormatter(item.countScoreId as number)}</RightAlignedCell>,
+          <RightAlignedCell key={`${i}-count`}>
+            {compactNumberFormatter(item.countScoreId as number)}
+          </RightAlignedCell>,
           <RightAlignedCell key={`${i}-average`}>
             {dropValuesForCategoricalScores(item.avgValue, item.scoreDataType)}
           </RightAlignedCell>,
           <RightAlignedCell key={`${i}-zero`}>
-            {dropValuesForCategoricalScores(item.zeroValueScore as number, item.scoreDataType)}
+            {dropValuesForCategoricalScores(
+              item.zeroValueScore as number,
+              item.scoreDataType,
+            )}
           </RightAlignedCell>,
           <RightAlignedCell key={`${i}-one`}>
-            {dropValuesForCategoricalScores(item.oneValueScore, item.scoreDataType)}
+            {dropValuesForCategoricalScores(
+              item.oneValueScore,
+              item.scoreDataType,
+            )}
           </RightAlignedCell>,
         ])}
         collapse={{ collapsed: 5, expanded: 20 }}
-        isLoading={isLoading || metrics.isPending || zeroValueScores.isPending || oneValueScores.isPending}
+        isLoading={
+          isLoading ||
+          metrics.isPending ||
+          zeroValueScores.isPending ||
+          oneValueScores.isPending
+        }
         noDataProps={{
-          description: "Scores evaluate LLM quality and can be created manually or using the SDK.",
+          description:
+            "Scores evaluate LLM quality and can be created manually or using the SDK.",
           href: "https://hanzo.com/docs/evaluation/overview",
         }}
       >

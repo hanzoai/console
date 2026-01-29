@@ -6,7 +6,12 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 
 import { cn } from "@/src/utils/tailwind";
-import { Dialog, DialogBody, DialogContent, DialogHeader } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogHeader,
+} from "@/src/components/ui/dialog";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -32,7 +37,10 @@ const CommandDialog = ({
 }) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg" closeOnInteractionOutside>
+      <DialogContent
+        className="overflow-hidden p-0 shadow-lg"
+        closeOnInteractionOutside
+      >
         <DialogHeader className="sr-only p-0">
           <DialogTitle>Search</DialogTitle>
         </DialogHeader>
@@ -55,7 +63,13 @@ const CommandInput = React.forwardRef<
     showBorder?: boolean;
   }
 >(({ className, showBorder = true, ...props }, ref) => (
-  <div className={cn("relative flex items-center p-1", showBorder && "border-b", "cmdk-input-wrapper")}>
+  <div
+    className={cn(
+      "relative flex items-center p-1",
+      showBorder && "border-b",
+      "cmdk-input-wrapper",
+    )}
+  >
     <Search className="absolute left-2 top-1/2 mr-2 h-3.5 w-3.5 shrink-0 -translate-y-1/2 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
@@ -86,7 +100,13 @@ CommandList.displayName = CommandPrimitive.List.displayName;
 const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
->((props, ref) => <CommandPrimitive.Empty ref={ref} className="py-6 text-center text-sm" {...props} />);
+>((props, ref) => (
+  <CommandPrimitive.Empty
+    ref={ref}
+    className="py-6 text-center text-sm"
+    {...props}
+  />
+));
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
@@ -110,7 +130,11 @@ const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <CommandPrimitive.Separator ref={ref} className={cn("-mx-1 h-px bg-border", className)} {...props} />
+  <CommandPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 h-px bg-border", className)}
+    {...props}
+  />
 ));
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
@@ -130,8 +154,19 @@ const CommandItem = React.forwardRef<
 
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
-  return <span className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)} {...props} />;
+const CommandShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
+  return (
+    <span
+      className={cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
+  );
 };
 CommandShortcut.displayName = "CommandShortcut";
 

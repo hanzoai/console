@@ -1,5 +1,10 @@
 import { Button } from "@/src/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/src/components/ui/sheet";
 import { Expand, ExternalLink } from "lucide-react";
 import { Separator } from "@/src/components/ui/separator";
 import { ItemBadge, type HanzoItemType } from "@/src/components/ItemBadge";
@@ -9,7 +14,10 @@ import { cn } from "@/src/utils/tailwind";
 import { memo } from "react";
 import { useRouter } from "next/router";
 
-type PeekViewItemType = Extract<HanzoItemType, "TRACE" | "DATASET_ITEM" | "RUNNING_EVALUATOR" | "EVALUATOR">;
+type PeekViewItemType = Extract<
+  HanzoItemType,
+  "TRACE" | "DATASET_ITEM" | "RUNNING_EVALUATOR" | "EVALUATOR"
+>;
 
 /**
  * Options to control peek event behavior.
@@ -103,18 +111,30 @@ function TablePeekViewComponent(props: TablePeekViewProps) {
         <SheetHeader className="flex min-h-11 flex-row flex-nowrap items-center justify-between bg-header px-2 py-1">
           <SheetTitle className="!mt-0 ml-2 flex min-w-0 flex-row items-center gap-2">
             <ItemBadge type={peekView.itemType} showLabel />
-            <span className="truncate text-sm font-medium focus:outline-none" tabIndex={0}>
-              {peekView.customTitlePrefix ? `${peekView.customTitlePrefix} ${itemId}` : itemId}
+            <span
+              className="truncate text-sm font-medium focus:outline-none"
+              tabIndex={0}
+            >
+              {peekView.customTitlePrefix
+                ? `${peekView.customTitlePrefix} ${itemId}`
+                : itemId}
             </span>
           </SheetTitle>
-          <div className={cn("!mt-0 flex flex-shrink-0 flex-row items-center gap-2", !canExpand && "mr-8")}>
-            {itemId && peekView.detailNavigationKey && peekView.resolveDetailNavigationPath && (
-              <DetailPageNav
-                currentId={itemId}
-                path={peekView.resolveDetailNavigationPath}
-                listKey={peekView.detailNavigationKey}
-              />
+          <div
+            className={cn(
+              "!mt-0 flex flex-shrink-0 flex-row items-center gap-2",
+              !canExpand && "mr-8",
             )}
+          >
+            {itemId &&
+              peekView.detailNavigationKey &&
+              peekView.resolveDetailNavigationPath && (
+                <DetailPageNav
+                  currentId={itemId}
+                  path={peekView.resolveDetailNavigationPath}
+                  listKey={peekView.detailNavigationKey}
+                />
+              )}
             {canExpand && (
               <div className="!mt-0 mr-8 flex h-full flex-row items-center gap-1 border-l">
                 <Button

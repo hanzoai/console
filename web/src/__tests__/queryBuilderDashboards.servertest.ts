@@ -1,5 +1,10 @@
 import { randomUUID } from "crypto";
-import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/shared/src/server";
+import {
+  createTrace,
+  createTracesCh,
+  createObservation,
+  createObservationsCh,
+} from "@hanzo/shared/src/server";
 import { type QueryType } from "@/src/features/query/types";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 
@@ -174,7 +179,8 @@ describe("selfServeDashboards", () => {
 
     // Count by environment
     traces.forEach((trace) => {
-      stats.environmentCounts[trace.environment] = (stats.environmentCounts[trace.environment] || 0) + 1;
+      stats.environmentCounts[trace.environment] =
+        (stats.environmentCounts[trace.environment] || 0) + 1;
     });
     stats.productionTraces = stats.environmentCounts["production"] || 0;
     stats.developmentTraces = stats.environmentCounts["development"] || 0;
@@ -182,12 +188,14 @@ describe("selfServeDashboards", () => {
 
     // Count traces by name
     traces.forEach((trace) => {
-      stats.traceCounts[trace.name || ""] = (stats.traceCounts[trace.name || ""] || 0) + 1;
+      stats.traceCounts[trace.name || ""] =
+        (stats.traceCounts[trace.name || ""] || 0) + 1;
     });
 
     // Count recent production traces (within the last hour)
     stats.recentProductionTraces = traces.filter(
-      (t) => t.environment === "production" && t.timestamp >= oneHourAgo.getTime(),
+      (t) =>
+        t.environment === "production" && t.timestamp >= oneHourAgo.getTime(),
     ).length;
   });
 
@@ -206,7 +214,10 @@ describe("selfServeDashboards", () => {
       };
 
       // Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // Assert that the result matches the expected count from sample data
       expect(queryBuilderResult).toHaveLength(1);
@@ -234,11 +245,16 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result for production environment
-      const prodQueryBuilderResult = await executeQuery(projectId, prodQueryBuilderQuery);
+      const prodQueryBuilderResult = await executeQuery(
+        projectId,
+        prodQueryBuilderQuery,
+      );
 
       // 3. Assert that the result matches the expected count for production traces
       expect(prodQueryBuilderResult).toHaveLength(1);
-      expect(Number(prodQueryBuilderResult[0].count_count)).toBe(stats.productionTraces);
+      expect(Number(prodQueryBuilderResult[0].count_count)).toBe(
+        stats.productionTraces,
+      );
 
       // 4. Define a query with filter for development environment
       const devQueryBuilderQuery: QueryType = {
@@ -254,11 +270,16 @@ describe("selfServeDashboards", () => {
       };
 
       // 5. Get result for development environment
-      const devQueryBuilderResult = await executeQuery(projectId, devQueryBuilderQuery);
+      const devQueryBuilderResult = await executeQuery(
+        projectId,
+        devQueryBuilderQuery,
+      );
 
       // 6. Assert that the result matches the expected count for development traces
       expect(devQueryBuilderResult).toHaveLength(1);
-      expect(Number(devQueryBuilderResult[0].count_count)).toBe(stats.developmentTraces);
+      expect(Number(devQueryBuilderResult[0].count_count)).toBe(
+        stats.developmentTraces,
+      );
     });
 
     it("should handle multiple filter conditions", async () => {
@@ -288,11 +309,16 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Assert that the result matches the expected count for recent production traces
       expect(queryBuilderResult).toHaveLength(1);
-      expect(Number(queryBuilderResult[0].count_count)).toBe(stats.recentProductionTraces);
+      expect(Number(queryBuilderResult[0].count_count)).toBe(
+        stats.recentProductionTraces,
+      );
     });
   });
 
@@ -311,18 +337,27 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results match the expected trace counts by name
       Object.keys(stats.traceCounts).forEach((traceName) => {
-        const resultRow = queryBuilderResult.find((row: any) => row.name === traceName);
+        const resultRow = queryBuilderResult.find(
+          (row: any) => row.name === traceName,
+        );
 
         expect(resultRow).toBeDefined();
-        expect(Number(resultRow?.count_count)).toBe(stats.traceCounts[traceName]);
+        expect(Number(resultRow?.count_count)).toBe(
+          stats.traceCounts[traceName],
+        );
       });
 
       // 4. Verify result set has the expected number of rows
-      expect(queryBuilderResult.length).toBe(Object.keys(stats.traceCounts).length);
+      expect(queryBuilderResult.length).toBe(
+        Object.keys(stats.traceCounts).length,
+      );
     });
 
     it("should filter traces by environment when grouping by name", async () => {
@@ -346,7 +381,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       // Get only traces with production environment
@@ -357,7 +395,9 @@ describe("selfServeDashboards", () => {
 
       // Check each production trace name is present
       productionTraceNames.forEach((traceName) => {
-        const resultRow = queryBuilderResult.find((row: any) => row.name === traceName);
+        const resultRow = queryBuilderResult.find(
+          (row: any) => row.name === traceName,
+        );
 
         expect(resultRow).toBeDefined();
         // Verify the count matches what we expect based on our sample data
@@ -389,20 +429,29 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
 
       // Expected models based on our test data
-      const expectedModels = ["gpt-4-turbo", "text-embedding-ada-002", "claude-3-opus"];
+      const expectedModels = [
+        "gpt-4-turbo",
+        "text-embedding-ada-002",
+        "claude-3-opus",
+      ];
 
       // Verify we have the expected number of models
       expect(queryBuilderResult.length).toBe(expectedModels.length);
 
       // Verify each model is present with cost and token metrics
       expectedModels.forEach((modelName) => {
-        const modelRow = queryBuilderResult.find((row: any) => row.providedModelName === modelName);
+        const modelRow = queryBuilderResult.find(
+          (row: any) => row.providedModelName === modelName,
+        );
 
         expect(modelRow).toBeDefined();
         expect(modelRow.sum_totalCost).toBeDefined();
@@ -437,7 +486,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult.length).toBe(2);
@@ -472,7 +524,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       // Production models should only include gpt-4-turbo and text-embedding-ada-002
@@ -484,7 +539,9 @@ describe("selfServeDashboards", () => {
 
       // Verify each production model is present
       productionModels.forEach((modelName) => {
-        const modelRow = queryBuilderResult.find((row: any) => row.providedModelName === modelName);
+        const modelRow = queryBuilderResult.find(
+          (row: any) => row.providedModelName === modelName,
+        );
 
         expect(modelRow).toBeDefined();
         expect(modelRow.sum_totalCost).toBeGreaterThan(500);
@@ -510,7 +567,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       // Result should have multiple rows (one per hour in the time range)
@@ -535,7 +595,9 @@ describe("selfServeDashboards", () => {
       expect(recentHours.length).toBeGreaterThan(0);
 
       // At least one of the recent hours should have a non-zero count
-      const hasNonZeroCount = recentHours.some((row: any) => Number(row.count_count) > 0);
+      const hasNonZeroCount = recentHours.some(
+        (row: any) => Number(row.count_count) > 0,
+      );
       expect(hasNonZeroCount).toBe(true);
     });
   });
@@ -560,7 +622,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
@@ -579,7 +644,11 @@ describe("selfServeDashboards", () => {
 
       // Verify that the hours where we created observations have non-zero costs/tokens
       // Our test data has observations at specific times
-      const expectedModels = ["gpt-4-turbo", "text-embedding-ada-002", "claude-3-opus"];
+      const expectedModels = [
+        "gpt-4-turbo",
+        "text-embedding-ada-002",
+        "claude-3-opus",
+      ];
 
       // Filter for recent hours where we created observations
       const recentObservations = queryBuilderResult.filter(
@@ -594,7 +663,8 @@ describe("selfServeDashboards", () => {
 
       // At least one of the recent observations should have non-zero cost/tokens
       const hasNonZeroValues = recentObservations.some(
-        (row: any) => Number(row.sum_totalCost) > 0 && Number(row.sum_totalTokens) > 0,
+        (row: any) =>
+          Number(row.sum_totalCost) > 0 && Number(row.sum_totalTokens) > 0,
       );
       expect(hasNonZeroValues).toBe(true);
     });
@@ -615,7 +685,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
@@ -626,7 +699,9 @@ describe("selfServeDashboards", () => {
 
       // Check that we have results for the expected users
       expectedUsers.forEach((userId) => {
-        const userRow = queryBuilderResult.find((row: any) => row.userId === userId);
+        const userRow = queryBuilderResult.find(
+          (row: any) => row.userId === userId,
+        );
 
         // We might not have observations for all users, so we'll just check
         // that the structure is correct for the ones we do have
@@ -636,7 +711,9 @@ describe("selfServeDashboards", () => {
       });
 
       // At least one user should have a non-zero cost
-      const hasNonZeroCost = queryBuilderResult.some((row: any) => Number(row.sum_totalCost) > 0);
+      const hasNonZeroCost = queryBuilderResult.some(
+        (row: any) => Number(row.sum_totalCost) > 0,
+      );
       expect(hasNonZeroCost).toBe(true);
     });
   });
@@ -656,17 +733,29 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
 
       // Based on our sample data, we should have traces for users A through F
-      const expectedUsers = ["user-A", "user-B", "user-C", "user-D", "user-E", "user-F"];
+      const expectedUsers = [
+        "user-A",
+        "user-B",
+        "user-C",
+        "user-D",
+        "user-E",
+        "user-F",
+      ];
 
       // Check that we have results for all expected users
       expectedUsers.forEach((userId) => {
-        const userRow = queryBuilderResult.find((row: any) => row.userId === userId);
+        const userRow = queryBuilderResult.find(
+          (row: any) => row.userId === userId,
+        );
 
         expect(userRow).toBeDefined();
         expect(userRow.count_count).toBeDefined();
@@ -677,7 +766,10 @@ describe("selfServeDashboards", () => {
       });
 
       // Verify the total number of traces across all users matches our expected total
-      const totalTraces = queryBuilderResult.reduce((sum, row) => sum + Number(row.count_count), 0);
+      const totalTraces = queryBuilderResult.reduce(
+        (sum, row) => sum + Number(row.count_count),
+        0,
+      );
       expect(totalTraces).toBe(stats.totalTraces);
     });
   });
@@ -702,17 +794,26 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
 
       // Based on our sample data, we should have observations for these models
-      const expectedModels = ["gpt-4-turbo", "text-embedding-ada-002", "claude-3-opus"];
+      const expectedModels = [
+        "gpt-4-turbo",
+        "text-embedding-ada-002",
+        "claude-3-opus",
+      ];
 
       // Check that we have results for the expected models
       expectedModels.forEach((modelName) => {
-        const modelRow = queryBuilderResult.find((row: any) => row.name === modelName);
+        const modelRow = queryBuilderResult.find(
+          (row: any) => row.name === modelName,
+        );
 
         // We might not have latency data for all models, so we'll just check
         // that the structure is correct for the ones we do have
@@ -729,9 +830,15 @@ describe("selfServeDashboards", () => {
           expect(Number(modelRow.p99_latency)).toBeGreaterThan(0);
 
           // Percentiles should be in ascending order
-          expect(Number(modelRow.p50_latency)).toBeLessThanOrEqual(Number(modelRow.p90_latency));
-          expect(Number(modelRow.p90_latency)).toBeLessThanOrEqual(Number(modelRow.p95_latency));
-          expect(Number(modelRow.p95_latency)).toBeLessThanOrEqual(Number(modelRow.p99_latency));
+          expect(Number(modelRow.p50_latency)).toBeLessThanOrEqual(
+            Number(modelRow.p90_latency),
+          );
+          expect(Number(modelRow.p90_latency)).toBeLessThanOrEqual(
+            Number(modelRow.p95_latency),
+          );
+          expect(Number(modelRow.p95_latency)).toBeLessThanOrEqual(
+            Number(modelRow.p99_latency),
+          );
         }
       });
     });
@@ -757,17 +864,27 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
 
       // Based on our sample data, we should have traces with these names
-      const expectedTraceNames = ["chat-completion", "embeddings", "summarize", "qa-bot"];
+      const expectedTraceNames = [
+        "chat-completion",
+        "embeddings",
+        "summarize",
+        "qa-bot",
+      ];
 
       // Check that we have results for the expected trace names
       expectedTraceNames.forEach((traceName) => {
-        const traceRow = queryBuilderResult.find((row: any) => row.name === traceName);
+        const traceRow = queryBuilderResult.find(
+          (row: any) => row.name === traceName,
+        );
 
         // We might not have latency data for all trace types, so we'll just check
         // that the structure is correct for the ones we do have
@@ -780,9 +897,15 @@ describe("selfServeDashboards", () => {
           // If we have latency data, it should be valid
           if (Number(traceRow.p50_latency) > 0) {
             // Percentiles should be in ascending order
-            expect(Number(traceRow.p50_latency)).toBeLessThanOrEqual(Number(traceRow.p90_latency));
-            expect(Number(traceRow.p90_latency)).toBeLessThanOrEqual(Number(traceRow.p95_latency));
-            expect(Number(traceRow.p95_latency)).toBeLessThanOrEqual(Number(traceRow.p99_latency));
+            expect(Number(traceRow.p50_latency)).toBeLessThanOrEqual(
+              Number(traceRow.p90_latency),
+            );
+            expect(Number(traceRow.p90_latency)).toBeLessThanOrEqual(
+              Number(traceRow.p95_latency),
+            );
+            expect(Number(traceRow.p95_latency)).toBeLessThanOrEqual(
+              Number(traceRow.p99_latency),
+            );
           }
         }
       });
@@ -812,7 +935,10 @@ describe("selfServeDashboards", () => {
       };
 
       // 2. Get result using the query builder
-      const queryBuilderResult = await executeQuery(projectId, queryBuilderQuery);
+      const queryBuilderResult = await executeQuery(
+        projectId,
+        queryBuilderQuery,
+      );
 
       // 3. Verify results
       expect(queryBuilderResult).toBeDefined();
@@ -833,7 +959,11 @@ describe("selfServeDashboards", () => {
 
       // Verify that the hours where we created observations have valid latency data
       // Our test data has observations at specific times
-      const expectedModels = ["gpt-4-turbo", "text-embedding-ada-002", "claude-3-opus"];
+      const expectedModels = [
+        "gpt-4-turbo",
+        "text-embedding-ada-002",
+        "claude-3-opus",
+      ];
 
       // Filter for recent hours where we created observations
       const recentObservations = queryBuilderResult.filter(
@@ -857,10 +987,18 @@ describe("selfServeDashboards", () => {
         // For rows with latency data, verify percentiles are in ascending order
         recentObservations.forEach((row) => {
           if (Number(row.p50_latency) > 0) {
-            expect(Number(row.p50_latency)).toBeLessThanOrEqual(Number(row.p75_latency));
-            expect(Number(row.p75_latency)).toBeLessThanOrEqual(Number(row.p90_latency));
-            expect(Number(row.p90_latency)).toBeLessThanOrEqual(Number(row.p95_latency));
-            expect(Number(row.p95_latency)).toBeLessThanOrEqual(Number(row.p99_latency));
+            expect(Number(row.p50_latency)).toBeLessThanOrEqual(
+              Number(row.p75_latency),
+            );
+            expect(Number(row.p75_latency)).toBeLessThanOrEqual(
+              Number(row.p90_latency),
+            );
+            expect(Number(row.p90_latency)).toBeLessThanOrEqual(
+              Number(row.p95_latency),
+            );
+            expect(Number(row.p95_latency)).toBeLessThanOrEqual(
+              Number(row.p99_latency),
+            );
           }
         });
       }

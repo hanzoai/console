@@ -19,12 +19,21 @@ export const TopicGroups = {
     "Set Up SSO",
     "Slack Connect Channel",
   ],
-  "Product Features": ["Observability", "Prompt Management", "Evaluation", "Platform", "Other"],
+  "Product Features": [
+    "Observability",
+    "Prompt Management",
+    "Evaluation",
+    "Platform",
+    "Other",
+  ],
 } as const;
 
 export type TopicGroup = keyof typeof TopicGroups;
 
-export const ALL_TOPICS = [...TopicGroups.Operations, ...TopicGroups["Product Features"]] as const;
+export const ALL_TOPICS = [
+  ...TopicGroups.Operations,
+  ...TopicGroups["Product Features"],
+] as const;
 
 export const TopicSchema = z.enum(ALL_TOPICS);
 export type Topic = z.infer<typeof TopicSchema>;
@@ -61,7 +70,10 @@ export const SupportFormSchema = z.object({
     .union([TopicSchema, z.literal("")])
     .refine((val) => val !== "", { message: "Please select a topic." })
     .transform((val) => val as z.infer<typeof TopicSchema>),
-  message: z.string().trim().min(1, "Please provide a description of your issue."),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Please provide a description of your issue."),
 });
 export type SupportFormValues = z.infer<typeof SupportFormSchema>;
 

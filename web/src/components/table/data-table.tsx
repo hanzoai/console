@@ -1,6 +1,11 @@
 "use client";
 import { type OrderByState } from "@hanzo/shared";
-import React, { useState, useMemo, useCallback, type CSSProperties } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  type CSSProperties,
+} from "react";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { DataTablePagination } from "@/src/components/table/data-table-pagination";
 import {
@@ -10,7 +15,14 @@ import {
 } from "@/src/components/table/data-table-row-height-switch";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { type ModelTableRow } from "@/src/components/table/use-cases/models";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/src/components/ui/table";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { cn } from "@/src/utils/tailwind";
 import {
@@ -28,7 +40,10 @@ import {
   type VisibilityState,
   type Row,
 } from "@tanstack/react-table";
-import { type DataTablePeekViewProps, TablePeekView } from "@/src/components/table/peek";
+import {
+  type DataTablePeekViewProps,
+  TablePeekView,
+} from "@/src/components/table/peek";
 import isEqual from "lodash/isEqual";
 import { useRouter } from "next/router";
 import { useColumnSizing } from "@/src/components/table/hooks/useColumnSizing";
@@ -83,13 +98,23 @@ function insertArrayAfterKey(array: string[], toInsert: Map<string, string[]>) {
   }, []);
 }
 
-function isValidCssVariableName({ name, includesHyphens = true }: { name: string; includesHyphens?: boolean }) {
-  const regex = includesHyphens ? /^--(?![0-9])([a-zA-Z][a-zA-Z0-9-_]*)$/ : /^(?![0-9])([a-zA-Z][a-zA-Z0-9-_]*)$/;
+function isValidCssVariableName({
+  name,
+  includesHyphens = true,
+}: {
+  name: string;
+  includesHyphens?: boolean;
+}) {
+  const regex = includesHyphens
+    ? /^--(?![0-9])([a-zA-Z][a-zA-Z0-9-_]*)$/
+    : /^(?![0-9])([a-zA-Z][a-zA-Z0-9-_]*)$/;
   return regex.test(name);
 }
 
 // These are the important styles to make sticky column pinning work!
-const getCommonPinningStyles = <TData,>(column: Column<TData>): CSSProperties => {
+const getCommonPinningStyles = <TData,>(
+  column: Column<TData>,
+): CSSProperties => {
   const isPinned = column.getIsPinned();
 
   return {
@@ -105,10 +130,15 @@ const getCommonPinningStyles = <TData,>(column: Column<TData>): CSSProperties =>
 // Get additional CSS classes for pinned columns
 const getPinningClasses = <TData,>(column: Column<TData>): string => {
   const isPinned = column.getIsPinned();
-  const isLastLeftPinnedColumn = isPinned === "left" && column.getIsLastColumn("left");
-  const isFirstRightPinnedColumn = isPinned === "right" && column.getIsFirstColumn("right");
+  const isLastLeftPinnedColumn =
+    isPinned === "left" && column.getIsLastColumn("left");
+  const isFirstRightPinnedColumn =
+    isPinned === "right" && column.getIsFirstColumn("right");
 
-  return cn(isLastLeftPinnedColumn && "border-r border-border", isFirstRightPinnedColumn && "border-l border-border");
+  return cn(
+    isLastLeftPinnedColumn && "border-r border-border",
+    isFirstRightPinnedColumn && "border-l border-border",
+  );
 };
 
 export function DataTable<TData extends object, TValue>({
@@ -154,7 +184,9 @@ export function DataTable<TData extends object, TValue>({
   // Infer column pinning state from column properties
   const columnPinning = useMemo<ColumnPinningState>(
     () => ({
-      left: columns.filter((col) => col.isPinnedLeft).map((col) => col.id || col.accessorKey),
+      left: columns
+        .filter((col) => col.isPinnedLeft)
+        .map((col) => col.id || col.accessorKey),
       right: [],
     }),
     [columns],
@@ -169,9 +201,12 @@ export function DataTable<TData extends object, TValue>({
     getCoreRowModel: getCoreRowModel(),
     manualPagination: pagination !== undefined,
     pageCount:
-      pagination?.totalCount === null || pagination?.state.pageSize === undefined
+      pagination?.totalCount === null ||
+      pagination?.state.pageSize === undefined
         ? -1
-        : Math.ceil(Number(pagination?.totalCount) / pagination?.state.pageSize),
+        : Math.ceil(
+            Number(pagination?.totalCount) / pagination?.state.pageSize,
+          ),
     onPaginationChange: pagination?.onChange,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: onColumnVisibilityChange,
@@ -186,7 +221,9 @@ export function DataTable<TData extends object, TValue>({
       columnFilters,
       pagination: pagination?.state,
       columnVisibility,
-      columnOrder: columnOrder ? insertArrayAfterKey(columnOrder, flattedColumnsByGroup) : undefined,
+      columnOrder: columnOrder
+        ? insertArrayAfterKey(columnOrder, flattedColumnsByGroup)
+        : undefined,
       rowSelection,
       columnSizing,
       columnPinning,
@@ -209,7 +246,8 @@ export function DataTable<TData extends object, TValue>({
 
       // If the table handler didn't prevent default, handle peek view
       if (peekView && !event?.defaultPrevented) {
-        const rowId = "id" in row && typeof row.id === "string" ? row.id : undefined;
+        const rowId =
+          "id" in row && typeof row.id === "string" ? row.id : undefined;
         peekView.openPeek?.(rowId, row);
       }
     },
@@ -240,18 +278,29 @@ export function DataTable<TData extends object, TValue>({
     columnVisibility,
   ]);
 
-  const tableHeaders = shouldRenderGroupHeaders ? table.getHeaderGroups() : [table.getHeaderGroups().slice(-1)[0]];
+  const tableHeaders = shouldRenderGroupHeaders
+    ? table.getHeaderGroups()
+    : [table.getHeaderGroups().slice(-1)[0]];
 
   return (
     <>
-      <div className={cn("flex w-full max-w-full flex-1 flex-col overflow-auto", className)}>
-        <div className={cn("relative min-h-full w-full overflow-auto border-t")} style={{ ...columnSizeVars }}>
+      <div
+        className={cn(
+          "flex w-full max-w-full flex-1 flex-col overflow-auto",
+          className,
+        )}
+      >
+        <div
+          className={cn("relative min-h-full w-full overflow-auto border-t")}
+          style={{ ...columnSizeVars }}
+        >
           <Table>
             <TableHeader className="sticky top-0 z-20">
               {tableHeaders.map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
-                    const columnDef = header.column.columnDef as HanzoColumnDef<ModelTableRow>;
+                    const columnDef = header.column
+                      .columnDef as HanzoColumnDef<ModelTableRow>;
                     const sortingEnabled = columnDef.enableSorting;
                     // if the header id does not translate to a valid css variable name, default to 150px as width
                     // may only happen for dynamic columns, as column names are user defined
@@ -313,15 +362,22 @@ export function DataTable<TData extends object, TValue>({
                         {header.isPlaceholder ? null : (
                           <div className="flex select-none items-center">
                             <span className="truncate">
-                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                             </span>
                             {columnDef.headerTooltip && (
                               <DocPopup
-                                description={columnDef.headerTooltip.description}
+                                description={
+                                  columnDef.headerTooltip.description
+                                }
                                 href={columnDef.headerTooltip.href}
                               />
                             )}
-                            {orderBy?.column === columnDef.id ? renderOrderingIndicator(orderBy) : null}
+                            {orderBy?.column === columnDef.id
+                              ? renderOrderingIndicator(orderBy)
+                              : null}
 
                             <div
                               onClick={(e) => {
@@ -333,7 +389,8 @@ export function DataTable<TData extends object, TValue>({
                               onTouchStart={header.getResizeHandler()}
                               className={cn(
                                 "absolute right-0 top-0 h-full w-1.5 cursor-col-resize touch-none select-none bg-secondary opacity-0 group-hover:opacity-100",
-                                header.column.getIsResizing() && "bg-primary-accent opacity-100",
+                                header.column.getIsResizing() &&
+                                  "bg-primary-accent opacity-100",
                               )}
                             />
                           </div>
@@ -344,7 +401,8 @@ export function DataTable<TData extends object, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            {table.getState().columnSizingInfo.isResizingColumn || !!peekView ? (
+            {table.getState().columnSizingInfo.isResizingColumn ||
+            !!peekView ? (
               <MemoizedTableBody
                 table={table}
                 rowheighttw={rowheighttw}
@@ -379,7 +437,9 @@ export function DataTable<TData extends object, TValue>({
       {peekView && <TablePeekView peekView={peekView} />}
       {!hidePagination && pagination !== undefined ? (
         <div
-          className={cn("sticky bottom-0 z-10 flex w-full justify-end border-t bg-background py-2 pr-2 font-medium")}
+          className={cn(
+            "sticky bottom-0 z-10 flex w-full justify-end border-t bg-background py-2 pr-2 font-medium",
+          )}
         >
           <DataTablePagination
             table={table}
@@ -471,13 +531,21 @@ function TableBodyComponent<TData>({
     <TableBody>
       {data.isLoading || !data.data ? (
         <TableRow className="h-svh">
-          <TableCell colSpan={columns.length} className="content-start border-b text-center">
+          <TableCell
+            colSpan={columns.length}
+            className="content-start border-b text-center"
+          >
             Loading...
           </TableCell>
         </TableRow>
       ) : table.getRowModel().rows.length ? (
         table.getRowModel().rows.map((row) => (
-          <TableRowComponent key={row.id} row={row} onRowClick={onRowClick} getRowClassName={getRowClassName}>
+          <TableRowComponent
+            key={row.id}
+            row={row}
+            onRowClick={onRowClick}
+            getRowClassName={getRowClassName}
+          >
             {row.getVisibleCells().map((cell) => {
               const cellValue = cell.getValue();
               const isStringCell = typeof cellValue === "string";
@@ -506,11 +574,17 @@ function TableBodyComponent<TData>({
                   >
                     {isStringCell && isSmallRowHeight ? (
                       <div className="min-w-0 truncate leading-none">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </div>
                     ) : isStringCell && !isSmallRowHeight ? (
                       <div className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden text-ellipsis">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </div>
                     ) : (
                       flexRender(cell.column.columnDef.cell, cell.getContext())
@@ -525,7 +599,10 @@ function TableBodyComponent<TData>({
         <TableRow className="hover:bg-transparent">
           <TableCell colSpan={columns.length} className="h-24">
             <div className="pointer-events-none absolute left-[50%] flex -translate-y-1/2 items-center justify-center">
-              No results. {help && <DocPopup description={help.description} href={help.href} />}
+              No results.{" "}
+              {help && (
+                <DocPopup description={help.description} href={help.href} />
+              )}
             </div>
           </TableCell>
         </TableRow>
@@ -551,10 +628,14 @@ function TableBodyComponent<TData>({
 //
 // See: https://tanstack.com/table/v8/docs/guide/column-sizing#advanced-column-resizing-performance
 const MemoizedTableBody = React.memo(TableBodyComponent, (prev, next) => {
-  if (!prev.tableSnapshot || !next.tableSnapshot) return !prev.tableSnapshot && !next.tableSnapshot;
+  if (!prev.tableSnapshot || !next.tableSnapshot)
+    return !prev.tableSnapshot && !next.tableSnapshot;
 
   // Check reference equality first (faster)
-  if (prev.tableSnapshot.tableDataUpdatedAt !== next.tableSnapshot.tableDataUpdatedAt) {
+  if (
+    prev.tableSnapshot.tableDataUpdatedAt !==
+    next.tableSnapshot.tableDataUpdatedAt
+  ) {
     return false;
   }
   if (prev.table.options.data !== next.table.options.data) return false;
@@ -563,9 +644,19 @@ const MemoizedTableBody = React.memo(TableBodyComponent, (prev, next) => {
   if (prev.rowHeight !== next.rowHeight) return false;
 
   // Then do more expensive deep equality checks
-  if (!isEqual(prev.tableSnapshot.rowSelection, next.tableSnapshot.rowSelection)) return false;
-  if (!isEqual(prev.tableSnapshot.columnVisibility, next.tableSnapshot.columnVisibility)) return false;
-  if (!isEqual(prev.tableSnapshot.columnOrder, next.tableSnapshot.columnOrder)) return false;
+  if (
+    !isEqual(prev.tableSnapshot.rowSelection, next.tableSnapshot.rowSelection)
+  )
+    return false;
+  if (
+    !isEqual(
+      prev.tableSnapshot.columnVisibility,
+      next.tableSnapshot.columnVisibility,
+    )
+  )
+    return false;
+  if (!isEqual(prev.tableSnapshot.columnOrder, next.tableSnapshot.columnOrder))
+    return false;
 
   // If all checks pass, components are equal
   return true;

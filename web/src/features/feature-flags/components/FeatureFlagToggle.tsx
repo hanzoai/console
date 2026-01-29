@@ -1,14 +1,20 @@
 import { type Flag } from "@/src/features/feature-flags/types";
 import { type SessionContextValue, useSession } from "next-auth/react";
 
-const isAdminOrExperimentalFeatures = (session: SessionContextValue): boolean => {
-  const enableExperimentalFeatures = session.data?.environment?.enableExperimentalFeatures ?? false;
+const isAdminOrExperimentalFeatures = (
+  session: SessionContextValue,
+): boolean => {
+  const enableExperimentalFeatures =
+    session.data?.environment?.enableExperimentalFeatures ?? false;
   const isAdmin = session.data?.user?.admin ?? false;
 
   return enableExperimentalFeatures || isAdmin;
 };
 
-const isWhitelistedForFeature = (session: SessionContextValue, featureFlag: Flag): boolean => {
+const isWhitelistedForFeature = (
+  session: SessionContextValue,
+  featureFlag: Flag,
+): boolean => {
   const flags = session.data?.user?.featureFlags;
   return flags !== undefined && flags[featureFlag];
 };
@@ -29,5 +35,7 @@ export const FeatureFlagToggle = (props: {
     return props.whenLoading ?? <div>Loading ...</div>;
   }
 
-  return isEnabled ? (props.whenEnabled ?? <></>) : (props.whenDisabled ?? <></>);
+  return isEnabled
+    ? (props.whenEnabled ?? <></>)
+    : (props.whenDisabled ?? <></>);
 };

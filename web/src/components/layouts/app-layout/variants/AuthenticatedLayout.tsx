@@ -10,7 +10,10 @@ import { SidebarProvider, SidebarInset } from "@/src/components/ui/sidebar";
 import { AppSidebar } from "@/src/components/nav/app-sidebar";
 import { CommandMenu } from "@/src/features/command-k-menu/CommandMenu";
 import { Toaster } from "@/src/components/ui/sonner";
-import { PaymentBanner, PaymentBannerProvider } from "@/src/features/payment-banner";
+import {
+  PaymentBanner,
+  PaymentBannerProvider,
+} from "@/src/features/payment-banner";
 import { ResizableContent } from "../components/ResizableContent";
 import { ThemeToggle } from "@/src/features/theming/ThemeToggle";
 import type { Session } from "next-auth";
@@ -49,7 +52,13 @@ type AuthenticatedLayoutProps = PropsWithChildren<{
  * - Toast notifications
  * - Dynamic page metadata
  */
-export function AuthenticatedLayout({ children, session, navigation, metadata, onSignOut }: AuthenticatedLayoutProps) {
+export function AuthenticatedLayout({
+  children,
+  session,
+  navigation,
+  metadata,
+  onSignOut,
+}: AuthenticatedLayoutProps) {
   // Safe assertion: AuthenticatedLayout is only rendered after auth checks pass
   // in AppLayout, which guarantees session.user exists at this point
   const user = session.user;
@@ -77,7 +86,12 @@ export function AuthenticatedLayout({ children, session, navigation, metadata, o
       <Head>
         <title>{metadata.title}</title>
         <link rel="icon" type="image/svg+xml" href={metadata.faviconPath} />
-        <link rel="icon" type="image/png" sizes="256x256" href={metadata.favicon256Path} />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="256x256"
+          href={metadata.favicon256Path}
+        />
         <link rel="apple-touch-icon" href={metadata.appleTouchIconPath} />
       </Head>
 

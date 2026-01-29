@@ -29,7 +29,12 @@ export const BaseTabTimeseriesChart = (props: BaseTabTimeseriesChartProps) => {
         metric={props.data[selectedIndex]?.totalMetric}
         description={props.data[selectedIndex]?.metricDescription}
       />
-      <TabGroup className="mt-4" index={selectedIndex} onIndexChange={(i) => setSelectedIndex(i)} defaultIndex={0}>
+      <TabGroup
+        className="mt-4"
+        index={selectedIndex}
+        onIndexChange={(i) => setSelectedIndex(i)}
+        defaultIndex={0}
+      >
         <TabList className="h-8">
           {props.data.map((data, index) => (
             <Tab tabIndex={index} key={index}>
@@ -40,7 +45,12 @@ export const BaseTabTimeseriesChart = (props: BaseTabTimeseriesChartProps) => {
         <TabPanels>
           {props.data.map((data, index) => (
             <TabPanel key={index}>
-              <BaseTimeSeriesChart agg={props.agg} data={data.data} showLegend={true} valueFormatter={data.formatter} />
+              <BaseTimeSeriesChart
+                agg={props.agg}
+                data={data.data}
+                showLegend={true}
+                valueFormatter={data.formatter}
+              />
             </TabPanel>
           ))}
         </TabPanels>

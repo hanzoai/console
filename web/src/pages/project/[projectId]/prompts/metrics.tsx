@@ -17,9 +17,15 @@ import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrde
 import Page from "@/src/components/layouts/page";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { TruncatedLabels } from "@/src/components/TruncatedLabels";
-import { getPromptTabs, PROMPT_TABS } from "@/src/features/navigation/utils/prompt-tabs";
+import {
+  getPromptTabs,
+  PROMPT_TABS,
+} from "@/src/features/navigation/utils/prompt-tabs";
 import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
-import { scoreFilters, addPrefixToScoreKeys } from "@/src/features/scores/lib/scoreColumns";
+import {
+  scoreFilters,
+  addPrefixToScoreKeys,
+} from "@/src/features/scores/lib/scoreColumns";
 
 export type PromptVersionTableRow = {
   version: number;
@@ -51,12 +57,16 @@ function joinPromptCoreAndMetricData(
 
   const { promptVersions } = promptCoreData;
 
-  if (!promptMetricsData) return { status: "success", combinedData: promptVersions };
+  if (!promptMetricsData)
+    return { status: "success", combinedData: promptVersions };
 
-  const promptMetricsMap = promptMetricsData.reduce((acc, metric: PromptMetric) => {
-    acc.set(metric.id, metric);
-    return acc;
-  }, new Map<string, PromptMetric>());
+  const promptMetricsMap = promptMetricsData.reduce(
+    (acc, metric: PromptMetric) => {
+      acc.set(metric.id, metric);
+      return acc;
+    },
+    new Map<string, PromptMetric>(),
+  );
 
   const combinedData = promptVersions.map((coreData) => {
     const metric = promptMetricsMap.get(coreData.id);
@@ -69,11 +79,16 @@ function joinPromptCoreAndMetricData(
   return { status: "success", combinedData };
 }
 
-export default function PromptVersionTable({ promptName: promptNameProp }: { promptName?: string } = {}) {
+export default function PromptVersionTable({
+  promptName: promptNameProp,
+}: { promptName?: string } = {}) {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const promptName =
-    promptNameProp || (router.query.promptName ? decodeURIComponent(router.query.promptName as string) : "");
+    promptNameProp ||
+    (router.query.promptName
+      ? decodeURIComponent(router.query.promptName as string)
+      : "");
 
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -83,7 +98,10 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
     column: "startTime",
     order: "DESC",
   });
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("promptVersion", "s");
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
+    "promptVersion",
+    "s",
+  );
 
   const promptVersions = api.prompts.allVersions.useQuery(
     {
@@ -95,7 +113,9 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
     { enabled: Boolean(projectId) },
   );
 
-  const promptIds = promptVersions.isSuccess ? promptVersions.data?.promptVersions.map((prompt) => prompt.id) : [];
+  const promptIds = promptVersions.isSuccess
+    ? promptVersions.data?.promptVersions.map((prompt) => prompt.id)
+    : [];
 
   const promptMetrics = api.prompts.versionMetrics.useQuery(
     {
@@ -112,20 +132,23 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
     },
   );
 
-  const { scoreColumns: traceScoreColumns, isLoading: isTraceColumnLoading } = useScoreColumns<PromptVersionTableRow>({
-    scoreColumnKey: "traceScores",
-    projectId: projectId,
-    filter: scoreFilters.forTraces(),
-    prefix: "Trace",
-  });
-
-  const { scoreColumns: generationScoreColumns, isLoading: isGenerationColumnLoading } =
+  const { scoreColumns: traceScoreColumns, isLoading: isTraceColumnLoading } =
     useScoreColumns<PromptVersionTableRow>({
-      scoreColumnKey: "generationScores",
+      scoreColumnKey: "traceScores",
       projectId: projectId,
-      filter: scoreFilters.forObservations(),
-      prefix: "Generation",
+      filter: scoreFilters.forTraces(),
+      prefix: "Trace",
     });
+
+  const {
+    scoreColumns: generationScoreColumns,
+    isLoading: isGenerationColumnLoading,
+  } = useScoreColumns<PromptVersionTableRow>({
+    scoreColumnKey: "generationScores",
+    projectId: projectId,
+    filter: scoreFilters.forObservations(),
+    prefix: "Generation",
+  });
 
   const columns: HanzoColumnDef<PromptVersionTableRow>[] = [
     {
@@ -171,7 +194,8 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       header: "Median latency",
       size: 140,
       cell: ({ row }) => {
-        const latency: number | undefined | null = row.getValue("medianLatency");
+        const latency: number | undefined | null =
+          row.getValue("medianLatency");
         if (!promptMetrics.isSuccess) {
           return <Skeleton className="h-3 w-1/2" />;
         }
@@ -190,7 +214,8 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       size: 160,
       enableHiding: true,
       cell: ({ row }) => {
-        const value: number | undefined | null = row.getValue("medianInputTokens");
+        const value: number | undefined | null =
+          row.getValue("medianInputTokens");
         if (!promptMetrics.isSuccess) {
           return <Skeleton className="h-3 w-1/2" />;
         }
@@ -205,7 +230,8 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       size: 170,
       enableHiding: true,
       cell: ({ row }) => {
-        const value: number | undefined | null = row.getValue("medianOutputTokens");
+        const value: number | undefined | null =
+          row.getValue("medianOutputTokens");
         if (!promptMetrics.isSuccess) {
           return <Skeleton className="h-3 w-1/2" />;
         }
@@ -234,11 +260,14 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       size: 150,
       enableHiding: true,
       cell: ({ row }) => {
-        const value: bigint | undefined | null = row.getValue("generationCount");
+        const value: bigint | undefined | null =
+          row.getValue("generationCount");
         if (!promptMetrics.isSuccess) {
           return <Skeleton className="h-3 w-1/2" />;
         }
-        return value === undefined || value === null ? null : <span>{numberFormatter(value, 0)}</span>;
+        return value === undefined || value === null ? null : (
+          <span>{numberFormatter(value, 0)}</span>
+        );
       },
     },
     {
@@ -248,7 +277,9 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       enableHiding: true,
       columns: traceScoreColumns,
       cell: () => {
-        return isTraceColumnLoading ? <Skeleton className="h-3 w-1/2"></Skeleton> : null;
+        return isTraceColumnLoading ? (
+          <Skeleton className="h-3 w-1/2"></Skeleton>
+        ) : null;
       },
     },
     {
@@ -258,7 +289,9 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
       enableHiding: true,
       columns: generationScoreColumns,
       cell: () => {
-        return isGenerationColumnLoading ? <Skeleton className="h-3 w-1/2"></Skeleton> : null;
+        return isGenerationColumnLoading ? (
+          <Skeleton className="h-3 w-1/2"></Skeleton>
+        ) : null;
       },
     },
     {
@@ -301,16 +334,23 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
     },
   ];
 
-  const [columnVisibility, setColumnVisibilityState] = useColumnVisibility<PromptVersionTableRow>(
-    `promptVersionsColumnVisibility-${projectId}`,
+  const [columnVisibility, setColumnVisibilityState] =
+    useColumnVisibility<PromptVersionTableRow>(
+      `promptVersionsColumnVisibility-${projectId}`,
+      columns,
+    );
+
+  const [columnOrder, setColumnOrder] = useColumnOrder<PromptVersionTableRow>(
+    "promptVersionsColumnOrder",
     columns,
   );
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<PromptVersionTableRow>("promptVersionsColumnOrder", columns);
-
   const totalCount = promptVersions?.data?.totalCount ?? null;
 
-  const { combinedData } = joinPromptCoreAndMetricData(promptVersions.data, promptMetrics.data);
+  const { combinedData } = joinPromptCoreAndMetricData(
+    promptVersions.data,
+    promptMetrics.data,
+  );
 
   const rows: PromptVersionTableRow[] =
     promptVersions.isSuccess && !!combinedData
@@ -323,10 +363,18 @@ export default function PromptVersionTable({ promptName: promptNameProp }: { pro
             medianOutputTokens: prompt.medianOutputTokens,
             medianCost: prompt.medianTotalCost,
             generationCount: prompt.observationCount,
-            traceScores: addPrefixToScoreKeys(prompt.traceScores ?? {}, "Trace"),
-            generationScores: addPrefixToScoreKeys(prompt.observationScores ?? {}, "Generation"),
-            lastUsed: prompt.lastUsed?.toLocaleString() ?? "No linked generation yet",
-            firstUsed: prompt.firstUsed?.toLocaleString() ?? "No linked generation yet",
+            traceScores: addPrefixToScoreKeys(
+              prompt.traceScores ?? {},
+              "Trace",
+            ),
+            generationScores: addPrefixToScoreKeys(
+              prompt.observationScores ?? {},
+              "Generation",
+            ),
+            lastUsed:
+              prompt.lastUsed?.toLocaleString() ?? "No linked generation yet",
+            firstUsed:
+              prompt.firstUsed?.toLocaleString() ?? "No linked generation yet",
           };
         })
       : [];

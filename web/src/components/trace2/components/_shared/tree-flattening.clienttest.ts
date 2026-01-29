@@ -576,7 +576,12 @@ describe("flattenTree", () => {
 
       // root, child1 (collapsed), child2, gc3
       expect(result).toHaveLength(4);
-      expect(result.map((n) => n.node.id)).toEqual(["root", "child1", "child2", "gc3"]);
+      expect(result.map((n) => n.node.id)).toEqual([
+        "root",
+        "child1",
+        "child2",
+        "gc3",
+      ]);
     });
 
     it("should handle wide tree (many siblings)", () => {
@@ -608,7 +613,10 @@ describe("flattenTree", () => {
 
   describe.skip("Performance Tests", () => {
     // Helper to generate tree structures at scale
-    const generateTree = (count: number, structure: "flat" | "deep" | "balanced" | "realistic"): TestNode => {
+    const generateTree = (
+      count: number,
+      structure: "flat" | "deep" | "balanced" | "realistic",
+    ): TestNode => {
       if (structure === "flat") {
         // All nodes at root level
         const children: TestNode[] = [];
@@ -632,7 +640,9 @@ describe("flattenTree", () => {
           id: `node-${count - 1}`,
           name: `Node ${count - 1}`,
           children: [],
-          startTime: new Date(`2024-01-01T00:00:${(count - 1) % 60}.${(count - 1) % 1000}Z`),
+          startTime: new Date(
+            `2024-01-01T00:00:${(count - 1) % 60}.${(count - 1) % 1000}Z`,
+          ),
         };
 
         for (let i = count - 2; i >= 0; i--) {
@@ -731,7 +741,9 @@ describe("flattenTree", () => {
       if (collapsedPercent > 0) {
         // Collect all node IDs via flattening first
         const allFlattened = flattenTree([tree], new Set());
-        const collapseCount = Math.floor(allFlattened.length * (collapsedPercent / 100));
+        const collapseCount = Math.floor(
+          allFlattened.length * (collapsedPercent / 100),
+        );
         for (let i = 0; i < collapseCount; i++) {
           const nodeIndex = Math.floor(Math.random() * allFlattened.length);
           collapsedNodes.add(allFlattened[nodeIndex].node.id);
@@ -747,8 +759,11 @@ describe("flattenTree", () => {
       expect(result[0].node.id).toBeDefined();
 
       // Log performance metrics
-      const collapsedSuffix = collapsedPercent > 0 ? `, ${collapsedPercent}% collapsed` : "";
-      console.log(`${scale.toLocaleString()} nodes (${structure}${collapsedSuffix}): ${duration}ms`);
+      const collapsedSuffix =
+        collapsedPercent > 0 ? `, ${collapsedPercent}% collapsed` : "";
+      console.log(
+        `${scale.toLocaleString()} nodes (${structure}${collapsedSuffix}): ${duration}ms`,
+      );
 
       // Assert threshold
       expect(duration).toBeLessThan(threshold);

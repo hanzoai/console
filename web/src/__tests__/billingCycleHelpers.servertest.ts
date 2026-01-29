@@ -44,10 +44,14 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // March 15th reference → cycle starts March 15
-    expect(getBillingCycleStart(org, new Date("2024-03-20T10:00:00Z"))).toEqual(new Date("2024-03-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-03-20T10:00:00Z"))).toEqual(
+      new Date("2024-03-15T00:00:00Z"),
+    );
 
     // February 10th reference → cycle starts January 15 (previous month)
-    expect(getBillingCycleStart(org, new Date("2024-02-10T10:00:00Z"))).toEqual(new Date("2024-01-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-10T10:00:00Z"))).toEqual(
+      new Date("2024-01-15T00:00:00Z"),
+    );
   });
 
   it("handles anchor on 31st → adjusts to last day of month", () => {
@@ -58,13 +62,19 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // February (29 days in 2024, leap year) - reference after cycle day → Feb 29
-    expect(getBillingCycleStart(org, new Date("2024-03-05T10:00:00Z"))).toEqual(new Date("2024-02-29T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-03-05T10:00:00Z"))).toEqual(
+      new Date("2024-02-29T00:00:00Z"),
+    );
 
     // April (30 days) - reference after cycle day → April 30
-    expect(getBillingCycleStart(org, new Date("2024-05-05T10:00:00Z"))).toEqual(new Date("2024-04-30T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-05-05T10:00:00Z"))).toEqual(
+      new Date("2024-04-30T00:00:00Z"),
+    );
 
     // March (31 days) - reference after cycle day → March 31
-    expect(getBillingCycleStart(org, new Date("2024-04-05T10:00:00Z"))).toEqual(new Date("2024-03-31T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-04-05T10:00:00Z"))).toEqual(
+      new Date("2024-03-31T00:00:00Z"),
+    );
   });
 
   it("handles leap year February correctly", () => {
@@ -75,7 +85,9 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // 2024 is leap year - reference after Feb 29 → Feb 29
-    expect(getBillingCycleStart(org, new Date("2024-03-01T10:00:00Z"))).toEqual(new Date("2024-02-29T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-03-01T10:00:00Z"))).toEqual(
+      new Date("2024-02-29T00:00:00Z"),
+    );
 
     // 2025 is not leap year - reference after Feb 28 → Feb 28
     const org2025 = {
@@ -83,7 +95,9 @@ describe("getBillingCycleStart", () => {
       cloudBillingCycleAnchor: new Date("2025-01-31T00:00:00Z"),
     } as Organization;
 
-    expect(getBillingCycleStart(org2025, new Date("2025-03-01T10:00:00Z"))).toEqual(new Date("2025-02-28T00:00:00Z"));
+    expect(
+      getBillingCycleStart(org2025, new Date("2025-03-01T10:00:00Z")),
+    ).toEqual(new Date("2025-02-28T00:00:00Z"));
   });
 
   it("handles reference date before cycle start in current month", () => {
@@ -94,13 +108,19 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // Feb 10 (before Feb 15) → goes back to Jan 15
-    expect(getBillingCycleStart(org, new Date("2024-02-10T10:00:00Z"))).toEqual(new Date("2024-01-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-10T10:00:00Z"))).toEqual(
+      new Date("2024-01-15T00:00:00Z"),
+    );
 
     // Feb 15 exactly → stays at Feb 15
-    expect(getBillingCycleStart(org, new Date("2024-02-15T00:00:00Z"))).toEqual(new Date("2024-02-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-15T00:00:00Z"))).toEqual(
+      new Date("2024-02-15T00:00:00Z"),
+    );
 
     // Feb 20 (after Feb 15) → stays at Feb 15
-    expect(getBillingCycleStart(org, new Date("2024-02-20T10:00:00Z"))).toEqual(new Date("2024-02-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-20T10:00:00Z"))).toEqual(
+      new Date("2024-02-15T00:00:00Z"),
+    );
   });
 
   it("handles month boundaries with 31st anchor across year transition", () => {
@@ -111,10 +131,14 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // Jan 2024 - reference after Jan 31 → Jan 31
-    expect(getBillingCycleStart(org, new Date("2024-02-05T10:00:00Z"))).toEqual(new Date("2024-01-31T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-05T10:00:00Z"))).toEqual(
+      new Date("2024-01-31T00:00:00Z"),
+    );
 
     // Feb 2024 (leap year) - reference after Feb 29 → Feb 29
-    expect(getBillingCycleStart(org, new Date("2024-03-01T10:00:00Z"))).toEqual(new Date("2024-02-29T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-03-01T10:00:00Z"))).toEqual(
+      new Date("2024-02-29T00:00:00Z"),
+    );
   });
 
   it("handles year crossover with December anchor", () => {
@@ -125,13 +149,19 @@ describe("getBillingCycleStart", () => {
     } as Organization;
 
     // Jan 10 (before Jan 15) → goes back to Dec 15 previous year
-    expect(getBillingCycleStart(org, new Date("2024-01-10T10:00:00Z"))).toEqual(new Date("2023-12-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-01-10T10:00:00Z"))).toEqual(
+      new Date("2023-12-15T00:00:00Z"),
+    );
 
     // Jan 15 exactly → Jan 15 current year
-    expect(getBillingCycleStart(org, new Date("2024-01-15T00:00:00Z"))).toEqual(new Date("2024-01-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-01-15T00:00:00Z"))).toEqual(
+      new Date("2024-01-15T00:00:00Z"),
+    );
 
     // Jan 20 (after Jan 15) → Jan 15 current year
-    expect(getBillingCycleStart(org, new Date("2024-01-20T10:00:00Z"))).toEqual(new Date("2024-01-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-01-20T10:00:00Z"))).toEqual(
+      new Date("2024-01-15T00:00:00Z"),
+    );
   });
 
   it("uses createdAt as fallback when cloudBillingCycleAnchor is null", () => {
@@ -141,7 +171,9 @@ describe("getBillingCycleStart", () => {
       createdAt: new Date("2024-01-15T10:30:00Z"),
     } as Organization;
 
-    expect(getBillingCycleStart(org, new Date("2024-02-20T10:00:00Z"))).toEqual(new Date("2024-02-15T00:00:00Z"));
+    expect(getBillingCycleStart(org, new Date("2024-02-20T10:00:00Z"))).toEqual(
+      new Date("2024-02-15T00:00:00Z"),
+    );
   });
 });
 
@@ -154,10 +186,14 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Jan 20 reference → next cycle is Feb 15
-    expect(getBillingCycleEnd(org, new Date("2024-01-20T10:00:00Z"))).toEqual(new Date("2024-02-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-01-20T10:00:00Z"))).toEqual(
+      new Date("2024-02-15T00:00:00Z"),
+    );
 
     // Feb 20 reference → next cycle is March 15
-    expect(getBillingCycleEnd(org, new Date("2024-02-20T10:00:00Z"))).toEqual(new Date("2024-03-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-02-20T10:00:00Z"))).toEqual(
+      new Date("2024-03-15T00:00:00Z"),
+    );
   });
 
   it("handles 31st anchor → adjusts to last day of shorter months", () => {
@@ -168,13 +204,19 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Jan 15 reference (before first cycle) → next cycle is Jan 31
-    expect(getBillingCycleEnd(org, new Date("2024-01-15T10:00:00Z"))).toEqual(new Date("2024-01-31T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-01-15T10:00:00Z"))).toEqual(
+      new Date("2024-01-31T00:00:00Z"),
+    );
 
     // March 15 reference (in Feb-Mar cycle) → next cycle is March 31
-    expect(getBillingCycleEnd(org, new Date("2024-03-15T10:00:00Z"))).toEqual(new Date("2024-03-31T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-03-15T10:00:00Z"))).toEqual(
+      new Date("2024-03-31T00:00:00Z"),
+    );
 
     // April 15 reference (in March-April cycle) → next cycle is April 30
-    expect(getBillingCycleEnd(org, new Date("2024-04-15T10:00:00Z"))).toEqual(new Date("2024-04-30T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-04-15T10:00:00Z"))).toEqual(
+      new Date("2024-04-30T00:00:00Z"),
+    );
   });
 
   it("handles reference date on cycle day → returns next month", () => {
@@ -185,7 +227,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Reference on Feb 15 exactly → next cycle is March 15
-    expect(getBillingCycleEnd(org, new Date("2024-02-15T00:00:00Z"))).toEqual(new Date("2024-03-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-02-15T00:00:00Z"))).toEqual(
+      new Date("2024-03-15T00:00:00Z"),
+    );
   });
 
   it("handles reference date after cycle day in current month", () => {
@@ -196,7 +240,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Jan 5 (before cycle day 15) → next cycle is Jan 15
-    expect(getBillingCycleEnd(org, new Date("2024-01-05T10:00:00Z"))).toEqual(new Date("2024-01-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-01-05T10:00:00Z"))).toEqual(
+      new Date("2024-01-15T00:00:00Z"),
+    );
   });
 
   it("handles leap year February correctly", () => {
@@ -207,7 +253,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // 2024 is leap year - Feb 15 reference (in Jan-Feb cycle) → next cycle is Feb 29
-    expect(getBillingCycleEnd(org, new Date("2024-02-15T10:00:00Z"))).toEqual(new Date("2024-02-29T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-02-15T10:00:00Z"))).toEqual(
+      new Date("2024-02-29T00:00:00Z"),
+    );
 
     // 2025 is not leap year
     const org2025 = {
@@ -216,7 +264,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Feb 15 2025 reference → next cycle is Feb 28 (non-leap year)
-    expect(getBillingCycleEnd(org2025, new Date("2025-02-15T10:00:00Z"))).toEqual(new Date("2025-02-28T00:00:00Z"));
+    expect(
+      getBillingCycleEnd(org2025, new Date("2025-02-15T10:00:00Z")),
+    ).toEqual(new Date("2025-02-28T00:00:00Z"));
   });
 
   it("handles year boundary", () => {
@@ -227,7 +277,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Dec 20 reference → next cycle is Jan 15 next year
-    expect(getBillingCycleEnd(org, new Date("2024-12-20T10:00:00Z"))).toEqual(new Date("2025-01-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-12-20T10:00:00Z"))).toEqual(
+      new Date("2025-01-15T00:00:00Z"),
+    );
   });
 
   it("uses createdAt as fallback when cloudBillingCycleAnchor is null", () => {
@@ -238,7 +290,9 @@ describe("getBillingCycleEnd", () => {
     } as Organization;
 
     // Feb 20 reference → next cycle is March 15
-    expect(getBillingCycleEnd(org, new Date("2024-02-20T10:00:00Z"))).toEqual(new Date("2024-03-15T00:00:00Z"));
+    expect(getBillingCycleEnd(org, new Date("2024-02-20T10:00:00Z"))).toEqual(
+      new Date("2024-03-15T00:00:00Z"),
+    );
   });
 });
 
@@ -351,7 +405,9 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
 
     expect(readOrg).not.toBeNull();
     expect(readOrg!.cloudBillingCycleAnchor).toEqual(expectedDate);
-    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe("2024-09-30T00:00:00.000Z");
+    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe(
+      "2024-09-30T00:00:00.000Z",
+    );
 
     // Cleanup
     await prisma.organization.delete({ where: { id: org.id } });
@@ -378,7 +434,9 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
 
     expect(readOrg).not.toBeNull();
     expect(readOrg!.cloudBillingCycleAnchor).toEqual(expectedDate);
-    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe("2024-09-30T23:59:59.999Z");
+    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe(
+      "2024-09-30T23:59:59.999Z",
+    );
 
     // Cleanup
     await prisma.organization.delete({ where: { id: org.id } });
@@ -405,7 +463,9 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
 
     expect(readOrg).not.toBeNull();
     expect(readOrg!.cloudBillingCycleAnchor).toEqual(randomDate);
-    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe("2024-09-30T14:37:22.456Z");
+    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe(
+      "2024-09-30T14:37:22.456Z",
+    );
 
     // Cleanup
     await prisma.organization.delete({ where: { id: org.id } });
@@ -456,7 +516,9 @@ describe("Organization cloudBillingCycleAnchor persistence", () => {
 
     expect(readOrg).not.toBeNull();
     expect(readOrg!.cloudBillingCycleAnchor).toEqual(expectedUTC);
-    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe("2024-09-30T00:00:00.000Z");
+    expect(readOrg!.cloudBillingCycleAnchor?.toISOString()).toBe(
+      "2024-09-30T00:00:00.000Z",
+    );
 
     // Cleanup
     await prisma.organization.delete({ where: { id: org.id } });

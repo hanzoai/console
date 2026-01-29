@@ -1,7 +1,18 @@
 import { type EvalTemplate } from "@hanzo/shared";
 
-import { CheckIcon, ChevronDown, Cog, ExternalLink, AlertCircle, ExternalLinkIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  CheckIcon,
+  ChevronDown,
+  Cog,
+  ExternalLink,
+  AlertCircle,
+  ExternalLinkIcon,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -17,7 +28,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useExperimentEvaluatorSelection } from "@/src/features/experiments/hooks/useExperimentEvaluatorSelection";
 import { useTemplatesValidation } from "@/src/features/evals/hooks/useTemplatesValidation";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { useSingleTemplateValidation } from "@/src/features/evals/hooks/useSingleTemplateValidation";
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
@@ -49,7 +64,12 @@ export const TemplateSelector = ({
 }: TemplateSelectorProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const { activeTemplates, isTemplateActive, isTemplateInactive, handleRowClick } = useExperimentEvaluatorSelection({
+  const {
+    activeTemplates,
+    isTemplateActive,
+    isTemplateInactive,
+    handleRowClick,
+  } = useExperimentEvaluatorSelection({
     projectId: projectId,
     datasetId: datasetId,
     initialActiveTemplateIds: activeTemplateIds,
@@ -101,7 +121,8 @@ export const TemplateSelector = ({
       .sort(([a], [b]) => a.localeCompare(b)),
   };
 
-  const hasResults = filteredTemplates.hanzo.length > 0 || filteredTemplates.custom.length > 0;
+  const hasResults =
+    filteredTemplates.hanzo.length > 0 || filteredTemplates.custom.length > 0;
 
   // Handle cog button click - configure template
   const handleConfigureTemplate = (e: React.MouseEvent, templateId: string) => {
@@ -134,7 +155,9 @@ export const TemplateSelector = ({
           >
             <div className="flex items-center gap-1 overflow-hidden">
               <span className="mr-1 truncate">
-                {activeTemplates.length > 0 ? `${activeTemplates.length} active evaluators` : "Select evaluators"}
+                {activeTemplates.length > 0
+                  ? `${activeTemplates.length} active evaluators`
+                  : "Select evaluators"}
               </span>
             </div>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -159,15 +182,23 @@ export const TemplateSelector = ({
               }}
             >
               <InputCommandList className="max-h-full overflow-visible overflow-x-hidden">
-                {!hasResults && <InputCommandEmpty>No evaluator found.</InputCommandEmpty>}
+                {!hasResults && (
+                  <InputCommandEmpty>No evaluator found.</InputCommandEmpty>
+                )}
 
                 {filteredTemplates.custom.length > 0 && (
                   <>
-                    <InputCommandGroup heading="Custom evaluators" className="max-h-full">
+                    <InputCommandGroup
+                      heading="Custom evaluators"
+                      className="max-h-full"
+                    >
                       {filteredTemplates.custom.map(([name, templateData]) => {
-                        const latestTemplate = templateData[templateData.length - 1];
+                        const latestTemplate =
+                          templateData[templateData.length - 1];
                         const isActive = isTemplateActive(latestTemplate.id);
-                        const isInactive = isTemplateInactive(latestTemplate.id);
+                        const isInactive = isTemplateInactive(
+                          latestTemplate.id,
+                        );
                         const isInvalid = isTemplateInvalid(latestTemplate);
 
                         return (
@@ -178,7 +209,11 @@ export const TemplateSelector = ({
                             }}
                             disabled={isInvalid || disabled}
                           >
-                            {isActive ? <CheckIcon className="mr-2 h-4 w-4" /> : <div className="mr-2 h-4 w-4" />}
+                            {isActive ? (
+                              <CheckIcon className="mr-2 h-4 w-4" />
+                            ) : (
+                              <div className="mr-2 h-4 w-4" />
+                            )}
                             {name}
                             {isInvalid && (
                               <Tooltip>
@@ -211,9 +246,15 @@ export const TemplateSelector = ({
                               <Button
                                 variant="ghost"
                                 size="icon-xs"
-                                onClick={(e) => handleConfigureTemplate(e, latestTemplate.id)}
+                                onClick={(e) =>
+                                  handleConfigureTemplate(e, latestTemplate.id)
+                                }
                                 className="ml-auto"
-                                title={isInvalid ? "Configure default model first" : "Configure evaluator"}
+                                title={
+                                  isInvalid
+                                    ? "Configure default model first"
+                                    : "Configure evaluator"
+                                }
                                 disabled={isInvalid || disabled}
                               >
                                 <Cog className="h-4 w-4" />
@@ -223,14 +264,20 @@ export const TemplateSelector = ({
                         );
                       })}
                     </InputCommandGroup>
-                    {filteredTemplates.custom.length > 0 && <InputCommandSeparator />}
+                    {filteredTemplates.custom.length > 0 && (
+                      <InputCommandSeparator />
+                    )}
                   </>
                 )}
 
                 {filteredTemplates.hanzo.length > 0 && (
-                  <InputCommandGroup heading="Hanzo managed evaluators" className="max-h-full min-h-0">
+                  <InputCommandGroup
+                    heading="Hanzo managed evaluators"
+                    className="max-h-full min-h-0"
+                  >
                     {filteredTemplates.hanzo.map(([name, templateData]) => {
-                      const latestTemplate = templateData[templateData.length - 1];
+                      const latestTemplate =
+                        templateData[templateData.length - 1];
                       const isActive = isTemplateActive(latestTemplate.id);
                       const isInactive = isTemplateInactive(latestTemplate.id);
                       const isInvalid = isTemplateInvalid(latestTemplate);
@@ -243,9 +290,15 @@ export const TemplateSelector = ({
                           }}
                           disabled={isInvalid || disabled}
                         >
-                          {isActive ? <CheckIcon className="mr-2 h-4 w-4" /> : <div className="mr-2 h-4 w-4" />}
+                          {isActive ? (
+                            <CheckIcon className="mr-2 h-4 w-4" />
+                          ) : (
+                            <div className="mr-2 h-4 w-4" />
+                          )}
                           <div className="mr-1">{name}</div>
-                          <MaintainerTooltip maintainer={getMaintainer(latestTemplate)} />
+                          <MaintainerTooltip
+                            maintainer={getMaintainer(latestTemplate)}
+                          />
                           {isInvalid && (
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -278,8 +331,14 @@ export const TemplateSelector = ({
                               variant="ghost"
                               size="icon-xs"
                               className="ml-auto"
-                              onClick={(e) => handleConfigureTemplate(e, latestTemplate.id)}
-                              title={isInvalid ? "Configure default model first" : "Configure evaluator"}
+                              onClick={(e) =>
+                                handleConfigureTemplate(e, latestTemplate.id)
+                              }
+                              title={
+                                isInvalid
+                                  ? "Configure default model first"
+                                  : "Configure evaluator"
+                              }
                               disabled={isInvalid || disabled}
                             >
                               <Cog className="h-4 w-4" />
@@ -296,7 +355,10 @@ export const TemplateSelector = ({
                   <InputCommandItem
                     onSelect={() => {
                       if (disabled) return;
-                      window.open(`/project/${projectId}/evals/templates/new`, "_blank");
+                      window.open(
+                        `/project/${projectId}/evals/templates/new`,
+                        "_blank",
+                      );
                     }}
                   >
                     Create custom evaluator
@@ -306,7 +368,10 @@ export const TemplateSelector = ({
                     <InputCommandItem
                       onSelect={() => {
                         if (disabled) return;
-                        window.open(`/project/${projectId}/evals/default-model`, "_blank");
+                        window.open(
+                          `/project/${projectId}/evals/default-model`,
+                          "_blank",
+                        );
                       }}
                     >
                       Configure default model

@@ -54,7 +54,9 @@ type CreateOrEditLLMSchemaDialog = {
   };
 };
 
-export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> = (props) => {
+export const CreateOrEditLLMSchemaDialog: React.FC<
+  CreateOrEditLLMSchemaDialog
+> = (props) => {
   const { children, projectId, onSave, existingLlmSchema } = props;
 
   const utils = api.useUtils();
@@ -139,7 +141,11 @@ export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> 
       const prettified = JSON.stringify(parsedJson, null, 2);
       form.setValue("schema", prettified);
     } catch {
-      showErrorToast("Failed to prettify JSON", "Please verify your input is valid JSON", "WARNING");
+      showErrorToast(
+        "Failed to prettify JSON",
+        "Please verify your input is valid JSON",
+        "WARNING",
+      );
     }
   };
 
@@ -148,8 +154,12 @@ export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> 
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex flex-col sm:min-w-[32rem] md:min-w-[40rem]">
         <DialogHeader>
-          <DialogTitle>{existingLlmSchema ? "Edit LLM Schema" : "Create LLM Schema"}</DialogTitle>
-          <DialogDescription>Define a JSON Schema for structured outputs</DialogDescription>
+          <DialogTitle>
+            {existingLlmSchema ? "Edit LLM Schema" : "Create LLM Schema"}
+          </DialogTitle>
+          <DialogDescription>
+            Define a JSON Schema for structured outputs
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -206,7 +216,8 @@ export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> 
                     <FormItem>
                       <FormLabel>JSON Schema</FormLabel>
                       <FormDescription>
-                        Define the structure of your schema using JSON Schema format.{" "}
+                        Define the structure of your schema using JSON Schema
+                        format.{" "}
                         <a
                           href="https://json-schema.org/learn/miscellaneous-examples"
                           target="_blank"
@@ -237,7 +248,9 @@ export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> 
                           </Button>
                         </div>
                       </FormControl>
-                      <p className="text-xs text-muted-foreground">Parameters must be a valid JSON Schema object</p>
+                      <p className="text-xs text-muted-foreground">
+                        Parameters must be a valid JSON Schema object
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -248,15 +261,25 @@ export const CreateOrEditLLMSchemaDialog: React.FC<CreateOrEditLLMSchemaDialog> 
             <DialogFooter className="sticky bottom-0 mt-4 flex flex-col gap-2 border-t bg-background pt-4">
               <div className="flex w-full flex-col gap-2">
                 <p className="text-xs text-muted-foreground">
-                  Note: Changes to schemas are reflected to all members of this project.
+                  Note: Changes to schemas are reflected to all members of this
+                  project.
                 </p>
                 <div className="flex items-center justify-between gap-2">
                   {existingLlmSchema && (
-                    <Button type="button" variant="destructive" onClick={handleDelete} className="mr-auto">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleDelete}
+                      className="mr-auto"
+                    >
                       Delete
                     </Button>
                   )}
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button type="submit">Save</Button>

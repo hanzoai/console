@@ -258,7 +258,9 @@ describe("llmApiKey.all RPC", () => {
 
     expect(updatedKeys.length).toBe(1);
     expect(decrypt(updatedKeys[0].secretKey)).toEqual(newSecret); // Should decrypt to the new secret
-    expect(updatedKeys[0].displaySecretKey).not.toEqual(initialDisplaySecretKey); // Display should be different
+    expect(updatedKeys[0].displaySecretKey).not.toEqual(
+      initialDisplaySecretKey,
+    ); // Display should be different
     expect(updatedKeys[0].displaySecretKey).toEqual("...y123"); // Should match format with hyphens allowed
 
     // Other fields should remain unchanged
@@ -326,12 +328,18 @@ describe("llmApiKey.all RPC", () => {
 
     expect(updatedKeys.length).toBe(1);
     expect(updatedKeys[0].extraHeaders).not.toBeNull();
-    expect(updatedKeys[0].extraHeaders).not.toEqual(initialKeys[0].extraHeaders); // Should be different
-    expect(updatedKeys[0].extraHeaderKeys).toEqual(Object.keys(newExtraHeaders));
+    expect(updatedKeys[0].extraHeaders).not.toEqual(
+      initialKeys[0].extraHeaders,
+    ); // Should be different
+    expect(updatedKeys[0].extraHeaderKeys).toEqual(
+      Object.keys(newExtraHeaders),
+    );
 
     // Other fields should remain unchanged
     expect(updatedKeys[0].secretKey).toEqual(initialKeys[0].secretKey); // Secret should be same
-    expect(updatedKeys[0].displaySecretKey).toEqual(initialKeys[0].displaySecretKey); // Display should be same
+    expect(updatedKeys[0].displaySecretKey).toEqual(
+      initialKeys[0].displaySecretKey,
+    ); // Display should be same
     expect(updatedKeys[0].baseURL).toBe(baseURL);
     expect(updatedKeys[0].customModels).toEqual(customModels);
     expect(updatedKeys[0].withDefaultModels).toBe(withDefaultModels);
@@ -392,7 +400,9 @@ describe("llmApiKey.all RPC", () => {
 
     // Other fields should remain unchanged
     expect(updatedKeys[0].secretKey).toEqual(initialKeys[0].secretKey);
-    expect(updatedKeys[0].displaySecretKey).toEqual(initialKeys[0].displaySecretKey);
+    expect(updatedKeys[0].displaySecretKey).toEqual(
+      initialKeys[0].displaySecretKey,
+    );
     expect(updatedKeys[0].provider).toBe(provider);
     expect(updatedKeys[0].adapter).toBe(adapter);
   });

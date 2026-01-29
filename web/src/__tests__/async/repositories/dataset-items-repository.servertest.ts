@@ -85,7 +85,9 @@ describe("Dataset Items Repository - Versioning Tests", () => {
       expect(versions.length).toBe(3);
 
       for (let i = 0; i < versions.length - 1; i++) {
-        expect(versions[i].getTime()).toBeGreaterThan(versions[i + 1].getTime());
+        expect(versions[i].getTime()).toBeGreaterThan(
+          versions[i + 1].getTime(),
+        );
       }
     });
   });
@@ -820,7 +822,9 @@ describe("Dataset Items Repository - Versioning Tests", () => {
         datasetItemId: result2.datasetItem.id,
       });
 
-      expect(item1?.validFrom.getTime()).toBeLessThan(item2?.validFrom.getTime() ?? 0);
+      expect(item1?.validFrom.getTime()).toBeLessThan(
+        item2?.validFrom.getTime() ?? 0,
+      );
     });
   });
 
@@ -1162,7 +1166,10 @@ describe("Dataset Items Repository - Versioning Tests", () => {
       if (!result1.success || !result2.success) return;
 
       // All items should have unique IDs
-      const allIds = [...result1.datasetItems.map((i) => i.id), ...result2.datasetItems.map((i) => i.id)];
+      const allIds = [
+        ...result1.datasetItems.map((i) => i.id),
+        ...result2.datasetItems.map((i) => i.id),
+      ];
       const uniqueIds = new Set(allIds);
       expect(uniqueIds.size).toBe(4);
 
@@ -1288,7 +1295,9 @@ describe("Dataset Items Repository - Versioning Tests", () => {
       });
 
       expect(activeItems.length).toBe(2);
-      expect(activeItems.map((i) => i.id).sort()).toEqual([itemId2, itemId3].sort());
+      expect(activeItems.map((i) => i.id).sort()).toEqual(
+        [itemId2, itemId3].sort(),
+      );
     });
 
     it("should apply all filters (status, sourceTraceId, etc.) to latest version only", async () => {
@@ -1628,7 +1637,9 @@ describe("Dataset Items Repository - Versioning Tests", () => {
 
       // v1 should have valid_to set
       expect(allVersions[0].validTo).not.toBeNull();
-      expect(allVersions[0].validTo?.getTime()).toBe(allVersions[1].validFrom.getTime());
+      expect(allVersions[0].validTo?.getTime()).toBe(
+        allVersions[1].validFrom.getTime(),
+      );
 
       // v2 (current) should have valid_to as null
       expect(allVersions[1].validTo).toBeNull();
@@ -1669,7 +1680,9 @@ describe("Dataset Items Repository - Versioning Tests", () => {
 
       // Old version should have valid_to set
       expect(allVersions[0].validTo).not.toBeNull();
-      expect(allVersions[0].validTo?.getTime()).toBe(allVersions[1].validFrom.getTime());
+      expect(allVersions[0].validTo?.getTime()).toBe(
+        allVersions[1].validFrom.getTime(),
+      );
 
       // Delete marker should have valid_to as null
       expect(allVersions[1].validTo).toBeNull();

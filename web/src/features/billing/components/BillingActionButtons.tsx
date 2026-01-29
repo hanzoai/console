@@ -10,7 +10,8 @@ import { useBillingInformation } from "./useBillingInformation";
 import { StripeCancellationButton } from "./StripeCancellationButton";
 
 export const BillingActionButtons = () => {
-  const { organization, hasValidPaymentMethod, isLoading } = useBillingInformation();
+  const { organization, hasValidPaymentMethod, isLoading } =
+    useBillingInformation();
   const { setOpen } = useSupportDrawer();
 
   // Show pricing page button
@@ -19,7 +20,10 @@ export const BillingActionButtons = () => {
       return false; // always show for hobby plan users
     }
     return !hasValidPaymentMethod;
-  }, [organization?.cloudConfig?.stripe?.activeSubscriptionId, hasValidPaymentMethod]);
+  }, [
+    organization?.cloudConfig?.stripe?.activeSubscriptionId,
+    hasValidPaymentMethod,
+  ]);
 
   // Do not show checkout or customer portal if manual plan is set in cloud config
   if (organization?.cloudConfig?.plan) {
@@ -45,8 +49,15 @@ export const BillingActionButtons = () => {
 
         {organization?.cloudConfig?.stripe?.activeSubscriptionId && (
           <>
-            <StripeCustomerPortalButton orgId={organization.id} title="Update Billing Details" variant="secondary" />
-            <StripeCancellationButton orgId={organization.id} variant="secondary" />
+            <StripeCustomerPortalButton
+              orgId={organization.id}
+              title="Update Billing Details"
+              variant="secondary"
+            />
+            <StripeCancellationButton
+              orgId={organization.id}
+              variant="secondary"
+            />
           </>
         )}
         <Button variant="secondary" asChild>
@@ -55,9 +66,14 @@ export const BillingActionButtons = () => {
           </Link>
         </Button>
       </div>
-      {organization?.cloudConfig?.stripe?.activeSubscriptionId && !hasValidPaymentMethod && !isLoading && (
-        <p className="text-sm text-red-600">You do not have a valid payment method. Please Update Billing Details.</p>
-      )}
+      {organization?.cloudConfig?.stripe?.activeSubscriptionId &&
+        !hasValidPaymentMethod &&
+        !isLoading && (
+          <p className="text-sm text-red-600">
+            You do not have a valid payment method. Please Update Billing
+            Details.
+          </p>
+        )}
     </div>
   );
 };

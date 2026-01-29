@@ -1,6 +1,10 @@
 /** @jest-environment node */
 
-import { makeZodVerifiedAPICall, makeAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
+import {
+  makeZodVerifiedAPICall,
+  makeAPICall,
+  pruneDatabase,
+} from "@/src/__tests__/test-utils";
 import { prisma } from "@hanzo/shared/src/db";
 import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
 import { v4 as uuidv4 } from "uuid";
@@ -18,7 +22,11 @@ describe("/api/public/annotation-queues/:queueId/assignments API", () => {
   let secondTestUserId: string;
 
   beforeAll(async () => {
-    const { auth: newAuth, projectId: newProjectId, orgId: newOrgId } = await createOrgProjectAndApiKey();
+    const {
+      auth: newAuth,
+      projectId: newProjectId,
+      orgId: newOrgId,
+    } = await createOrgProjectAndApiKey();
     auth = newAuth;
     projectId = newProjectId;
     orgId = newOrgId;
@@ -226,7 +234,12 @@ describe("/api/public/annotation-queues/:queueId/assignments API", () => {
 
     it("should validate request body", async () => {
       // Missing userId
-      const response = await makeAPICall("POST", `/api/public/annotation-queues/${queueId}/assignments`, {}, auth);
+      const response = await makeAPICall(
+        "POST",
+        `/api/public/annotation-queues/${queueId}/assignments`,
+        {},
+        auth,
+      );
 
       expect(response.status).toBe(400);
     });

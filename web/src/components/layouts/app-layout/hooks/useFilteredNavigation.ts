@@ -9,7 +9,12 @@ import type { Session, User } from "next-auth";
 import { useEntitlements } from "@/src/features/entitlements/hooks";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
-import { ROUTES, RouteSection, RouteGroup, type Route } from "@/src/components/layouts/routes";
+import {
+  ROUTES,
+  RouteSection,
+  RouteGroup,
+  type Route,
+} from "@/src/components/layouts/routes";
 import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
 import { applyNavigationFilters } from "../utils/navigationFilters";
 import type { NavigationFilterContext } from "../utils/navigationFilters.types";
@@ -71,14 +76,19 @@ function groupNavigationItems(items: NavigationItem[]): GroupedNavigation {
  * @param organization - Current organization object
  * @returns Processed navigation with main, secondary, and flattened arrays
  */
-export function useFilteredNavigation(session: Session | null, organization: Organization) {
+export function useFilteredNavigation(
+  session: Session | null,
+  organization: Organization,
+) {
   const router = useRouter();
   const entitlements = useEntitlements();
   const uiCustomization = useUiCustomization();
   const { isHanzoCloud, region } = useHanzoCloudRegion();
 
   const routerProjectId = router.query.projectId as string | undefined;
-  const routerOrganizationId = router.query.organizationId as string | undefined;
+  const routerOrganizationId = router.query.organizationId as
+    | string
+    | undefined;
 
   // Memoize filter context to prevent unnecessary recalculations
   const filterContext = useMemo<NavigationFilterContext>(
@@ -86,8 +96,11 @@ export function useFilteredNavigation(session: Session | null, organization: Org
       routerProjectId,
       routerOrganizationId,
       session,
-      enableExperimentalFeatures: session?.environment?.enableExperimentalFeatures ?? false,
-      cloudAdmin: Boolean(session?.user?.admin && isHanzoCloud && region !== "DEV"),
+      enableExperimentalFeatures:
+        session?.environment?.enableExperimentalFeatures ?? false,
+      cloudAdmin: Boolean(
+        session?.user?.admin && isHanzoCloud && region !== "DEV",
+      ),
       entitlements,
       uiCustomization,
       currentPath: router.asPath,
@@ -134,8 +147,12 @@ export function useFilteredNavigation(session: Session | null, organization: Org
     const allItems = filteredRoutes.map(mapRouteToNavigationItem);
 
     // Split by section and group
-    const mainItems = allItems.filter((item) => item.section === RouteSection.Main);
-    const secondaryItems = allItems.filter((item) => item.section === RouteSection.Secondary);
+    const mainItems = allItems.filter(
+      (item) => item.section === RouteSection.Main,
+    );
+    const secondaryItems = allItems.filter(
+      (item) => item.section === RouteSection.Secondary,
+    );
 
     const mainNavigation = groupNavigationItems(mainItems);
     const secondaryNavigation = groupNavigationItems(secondaryItems);
@@ -143,7 +160,10 @@ export function useFilteredNavigation(session: Session | null, organization: Org
     return {
       mainNavigation,
       secondaryNavigation,
-      navigation: [...mainNavigation.flattened, ...secondaryNavigation.flattened],
+      navigation: [
+        ...mainNavigation.flattened,
+        ...secondaryNavigation.flattened,
+      ],
     };
   }, [filteredRoutes, routerProjectId, routerOrganizationId, router.pathname]);
 }

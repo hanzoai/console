@@ -8,7 +8,11 @@ import {
   CreateBlobStorageIntegrationRequest,
   type BlobStorageIntegrationResponseType,
 } from "@/src/features/public-api/types/blob-storage-integrations";
-import { HanzoNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
+import {
+  HanzoNotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+} from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
 
 export default withMiddlewares({
@@ -16,16 +20,27 @@ export default withMiddlewares({
   PUT: handleUpsertBlobStorageIntegration,
 });
 
-async function handleGetBlobStorageIntegrations(req: NextApiRequest, res: NextApiResponse) {
+async function handleGetBlobStorageIntegrations(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(
+    prisma,
+    redis,
+  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     throw new UnauthorizedError(authCheck.error ?? "Unauthorized");
   }
 
   // Check if using an organization API key
-  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
-    throw new ForbiddenError("Organization-scoped API key required for this operation.");
+  if (
+    authCheck.scope.accessLevel !== "organization" ||
+    !authCheck.scope.orgId
+  ) {
+    throw new ForbiddenError(
+      "Organization-scoped API key required for this operation.",
+    );
   }
 
   // Check scheduled-blob-exports entitlement
@@ -35,7 +50,9 @@ async function handleGetBlobStorageIntegrations(req: NextApiRequest, res: NextAp
       entitlement: "scheduled-blob-exports",
     })
   ) {
-    throw new ForbiddenError("scheduled-blob-exports entitlement required for this feature.");
+    throw new ForbiddenError(
+      "scheduled-blob-exports entitlement required for this feature.",
+    );
   }
 
   // Get all projects for the organization
@@ -52,42 +69,55 @@ async function handleGetBlobStorageIntegrations(req: NextApiRequest, res: NextAp
   });
 
   // Transform to API response format, exclude secretAccessKey
-  const responseData: BlobStorageIntegrationResponseType[] = integrations.map((integration) => ({
-    id: integration.projectId, // Using projectId as ID since it's the primary key
-    projectId: integration.projectId,
-    type: integration.type,
-    bucketName: integration.bucketName,
-    endpoint: integration.endpoint,
-    region: integration.region,
-    accessKeyId: integration.accessKeyId,
-    prefix: integration.prefix,
-    exportFrequency: integration.exportFrequency,
-    enabled: integration.enabled,
-    forcePathStyle: integration.forcePathStyle,
-    fileType: integration.fileType,
-    exportMode: integration.exportMode,
-    exportStartDate: integration.exportStartDate,
-    nextSyncAt: integration.nextSyncAt,
-    lastSyncAt: integration.lastSyncAt,
-    createdAt: integration.createdAt,
-    updatedAt: integration.updatedAt,
-  }));
+  const responseData: BlobStorageIntegrationResponseType[] = integrations.map(
+    (integration) => ({
+      id: integration.projectId, // Using projectId as ID since it's the primary key
+      projectId: integration.projectId,
+      type: integration.type,
+      bucketName: integration.bucketName,
+      endpoint: integration.endpoint,
+      region: integration.region,
+      accessKeyId: integration.accessKeyId,
+      prefix: integration.prefix,
+      exportFrequency: integration.exportFrequency,
+      enabled: integration.enabled,
+      forcePathStyle: integration.forcePathStyle,
+      fileType: integration.fileType,
+      exportMode: integration.exportMode,
+      exportStartDate: integration.exportStartDate,
+      nextSyncAt: integration.nextSyncAt,
+      lastSyncAt: integration.lastSyncAt,
+      createdAt: integration.createdAt,
+      updatedAt: integration.updatedAt,
+    }),
+  );
 
   return res.status(200).json({
     data: responseData,
   });
 }
 
-async function handleUpsertBlobStorageIntegration(req: NextApiRequest, res: NextApiResponse) {
+async function handleUpsertBlobStorageIntegration(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(
+    prisma,
+    redis,
+  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     throw new UnauthorizedError(authCheck.error ?? "Unauthorized");
   }
 
   // Check if using an organization API key
-  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
-    throw new ForbiddenError("Organization-scoped API key required for this operation.");
+  if (
+    authCheck.scope.accessLevel !== "organization" ||
+    !authCheck.scope.orgId
+  ) {
+    throw new ForbiddenError(
+      "Organization-scoped API key required for this operation.",
+    );
   }
 
   // Check scheduled-blob-exports entitlement
@@ -97,7 +127,9 @@ async function handleUpsertBlobStorageIntegration(req: NextApiRequest, res: Next
       entitlement: "scheduled-blob-exports",
     })
   ) {
-    throw new ForbiddenError("scheduled-blob-exports entitlement required for this feature.");
+    throw new ForbiddenError(
+      "scheduled-blob-exports entitlement required for this feature.",
+    );
   }
 
   // Validate request body
@@ -120,7 +152,9 @@ async function handleUpsertBlobStorageIntegration(req: NextApiRequest, res: Next
     endpoint: validatedData.endpoint || null,
     region: validatedData.region,
     accessKeyId: validatedData.accessKeyId || null,
-    secretAccessKey: validatedData.secretAccessKey ? encrypt(validatedData.secretAccessKey) : null,
+    secretAccessKey: validatedData.secretAccessKey
+      ? encrypt(validatedData.secretAccessKey)
+      : null,
     prefix: validatedData.prefix,
     exportFrequency: validatedData.exportFrequency,
     enabled: validatedData.enabled,

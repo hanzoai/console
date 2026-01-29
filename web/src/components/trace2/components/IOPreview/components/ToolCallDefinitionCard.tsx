@@ -53,10 +53,18 @@ export function ToolCallDefinitionCard({
         const callCount = toolCallCounts.get(tool.name) || 0;
         const isCalled = callCount > 0;
         const toolDefinitionNumber = toolNameToDefinitionNumber?.get(tool.name);
-        const statusText = callCount === 0 ? "not called" : callCount === 1 ? "called" : `called ${callCount}x`;
+        const statusText =
+          callCount === 0
+            ? "not called"
+            : callCount === 1
+              ? "called"
+              : `called ${callCount}x`;
 
         return (
-          <div key={`${tool.name}-${index}`} className="w-full overflow-hidden rounded-sm border">
+          <div
+            key={`${tool.name}-${index}`}
+            className="w-full overflow-hidden rounded-sm border"
+          >
             {/* Card header */}
             <div
               className="flex w-full cursor-pointer items-center justify-between gap-2 px-3 py-1.5 hover:bg-muted/20"
@@ -68,7 +76,9 @@ export function ToolCallDefinitionCard({
               <div className="flex items-center gap-2">
                 <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="font-mono text-xs font-medium text-foreground">
-                  {toolDefinitionNumber !== undefined && <span className="mr-1">{toolDefinitionNumber}.</span>}
+                  {toolDefinitionNumber !== undefined && (
+                    <span className="mr-1">{toolDefinitionNumber}.</span>
+                  )}
                   {tool.name}
                 </span>
               </div>
@@ -79,7 +89,8 @@ export function ToolCallDefinitionCard({
                   variant={isCalled ? undefined : "secondary"}
                   className={cn(
                     "text-xs font-medium",
-                    isCalled && "select-none border-transparent bg-light-green text-dark-green hover:bg-light-green",
+                    isCalled &&
+                      "select-none border-transparent bg-light-green text-dark-green hover:bg-light-green",
                   )}
                 >
                   {statusText}
@@ -102,10 +113,15 @@ export function ToolCallDefinitionCard({
                   <Tabs
                     className="h-fit py-0.5"
                     value={currentView}
-                    onValueChange={(value) => setCurrentView(value as "formatted" | "json")}
+                    onValueChange={(value) =>
+                      setCurrentView(value as "formatted" | "json")
+                    }
                   >
                     <TabsList className="h-fit p-0.5">
-                      <TabsTrigger value="formatted" className="h-fit px-1 text-xs">
+                      <TabsTrigger
+                        value="formatted"
+                        className="h-fit px-1 text-xs"
+                      >
                         Formatted
                       </TabsTrigger>
                       <TabsTrigger value="json" className="h-fit px-1 text-xs">
@@ -121,28 +137,46 @@ export function ToolCallDefinitionCard({
                     {/* Description */}
                     {tool.description && (
                       <div>
-                        <div className="mb-1.5 text-xs font-medium text-muted-foreground">Description</div>
-                        <div className="text-sm text-foreground">{tool.description}</div>
+                        <div className="mb-1.5 text-xs font-medium text-muted-foreground">
+                          Description
+                        </div>
+                        <div className="text-sm text-foreground">
+                          {tool.description}
+                        </div>
                       </div>
                     )}
 
                     {/* Parameters */}
                     {tool.parameters && (
                       <div>
-                        <div className="mb-1.5 text-xs font-medium text-muted-foreground">Parameters</div>
-                        <PrettyJsonView json={tool.parameters} currentView="pretty" codeClassName="text-xs" />
+                        <div className="mb-1.5 text-xs font-medium text-muted-foreground">
+                          Parameters
+                        </div>
+                        <PrettyJsonView
+                          json={tool.parameters}
+                          currentView="pretty"
+                          codeClassName="text-xs"
+                        />
                       </div>
                     )}
 
                     {/* Show message if no additional details */}
                     {!tool.description && !tool.parameters && (
-                      <div className="text-sm text-muted-foreground">No additional details available</div>
+                      <div className="text-sm text-muted-foreground">
+                        No additional details available
+                      </div>
                     )}
                   </div>
                 )}
 
                 {/* JSON view - full tool object */}
-                {currentView === "json" && <PrettyJsonView json={tool} currentView="json" codeClassName="text-xs" />}
+                {currentView === "json" && (
+                  <PrettyJsonView
+                    json={tool}
+                    currentView="json"
+                    codeClassName="text-xs"
+                  />
+                )}
               </div>
             )}
           </div>

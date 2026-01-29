@@ -17,7 +17,10 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { PivotTable, type PivotTableProps } from "@/src/features/widgets/chart-library/PivotTable";
+import {
+  PivotTable,
+  type PivotTableProps,
+} from "@/src/features/widgets/chart-library/PivotTable";
 import { type DataPoint } from "@/src/features/widgets/chart-library/chart-props";
 
 describe("PivotTable Component", () => {
@@ -92,8 +95,12 @@ describe("PivotTable Component", () => {
 
       render(<PivotTable {...props} />);
 
-      expect(screen.getByRole("columnheader", { name: "Model Name" })).toBeInTheDocument();
-      expect(screen.getByRole("columnheader", { name: "Request Count" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Model Name" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Request Count" }),
+      ).toBeInTheDocument();
     });
 
     test("formats multiple dimension headers correctly", () => {
@@ -115,9 +122,15 @@ describe("PivotTable Component", () => {
 
       render(<PivotTable {...props} />);
 
-      expect(screen.getByRole("columnheader", { name: "Model Name / Time Period" })).toBeInTheDocument();
-      expect(screen.getByRole("columnheader", { name: "Request Count" })).toBeInTheDocument();
-      expect(screen.getByRole("columnheader", { name: "Avg Duration" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Model Name / Time Period" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Request Count" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Avg Duration" }),
+      ).toBeInTheDocument();
     });
 
     test("defaults to 'Dimension' when no dimensions configured", () => {
@@ -139,7 +152,9 @@ describe("PivotTable Component", () => {
 
       render(<PivotTable {...props} />);
 
-      expect(screen.getByRole("columnheader", { name: "Dimension" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: "Dimension" }),
+      ).toBeInTheDocument();
     });
   });
 

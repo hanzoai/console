@@ -41,7 +41,9 @@ export const PlaygroundToolsPopover = () => {
       existingToolIndex = prev.findIndex((t) => t.id === selectedLLMTool.id);
 
       if (existingToolIndex === -1) {
-        const unsavedToolIndexWithSameName = prev.findIndex((t) => t.name === selectedLLMTool.name);
+        const unsavedToolIndexWithSameName = prev.findIndex(
+          (t) => t.name === selectedLLMTool.name,
+        );
 
         if (unsavedToolIndexWithSameName !== -1) {
           existingToolIndex = unsavedToolIndexWithSameName;
@@ -67,7 +69,10 @@ export const PlaygroundToolsPopover = () => {
   };
 
   const handleRemoveTool = (toolId: string) => {
-    setTools((prev: PlaygroundTool[]) => prev.filter((t) => !(t.id === toolId)) as PlaygroundTool[]);
+    setTools(
+      (prev: PlaygroundTool[]) =>
+        prev.filter((t) => !(t.id === toolId)) as PlaygroundTool[],
+    );
   };
 
   return (
@@ -90,7 +95,9 @@ export const PlaygroundToolsPopover = () => {
                 <WrenchIcon size={12} className="text-muted-foreground" />
                 <div className="flex-1 overflow-hidden">
                   <div className="truncate font-medium">{tool.name}</div>
-                  <div className="line-clamp-1 text-xs text-muted-foreground">{tool.description}</div>
+                  <div className="line-clamp-1 text-xs text-muted-foreground">
+                    {tool.description}
+                  </div>
                 </div>
               </div>
               <CreateOrEditLLMToolDialog
@@ -114,7 +121,10 @@ export const PlaygroundToolsPopover = () => {
         <CommandSeparator />
       </CommandList>
       <div className="mt-auto p-1">
-        <CreateOrEditLLMToolDialog projectId={projectId as string} onSave={handleSelectTool}>
+        <CreateOrEditLLMToolDialog
+          projectId={projectId as string}
+          onSave={handleSelectTool}
+        >
           <Button variant="outline" size="default" className="w-full">
             <PlusIcon className="mr-2 h-4 w-4" />
             Create new tool
@@ -146,7 +156,8 @@ export const PlaygroundTools = () => {
         (savedTool) =>
           savedTool.id === tool.id &&
           savedTool.description === tool.description &&
-          JSON.stringify(savedTool.parameters) === JSON.stringify(tool.parameters),
+          JSON.stringify(savedTool.parameters) ===
+            JSON.stringify(tool.parameters),
       );
     },
     [savedTools],
@@ -155,7 +166,9 @@ export const PlaygroundTools = () => {
   useEffect(() => {
     tools.forEach((tool, index) => {
       if (!tool.existingLlmTool) {
-        const matchingSavedTool = savedTools.find((savedTool) => savedTool.name === tool.name);
+        const matchingSavedTool = savedTools.find(
+          (savedTool) => savedTool.name === tool.name,
+        );
 
         if (matchingSavedTool) {
           const newTools = [...tools];
@@ -176,7 +189,9 @@ export const PlaygroundTools = () => {
       existingToolIndex = prev.findIndex((t) => t.id === selectedLLMTool.id);
 
       if (existingToolIndex === -1) {
-        const unsavedToolIndexWithSameName = prev.findIndex((t) => t.name === selectedLLMTool.name);
+        const unsavedToolIndexWithSameName = prev.findIndex(
+          (t) => t.name === selectedLLMTool.name,
+        );
 
         if (unsavedToolIndexWithSameName !== -1) {
           existingToolIndex = unsavedToolIndexWithSameName;
@@ -202,7 +217,10 @@ export const PlaygroundTools = () => {
   };
 
   const handleRemoveTool = (toolId: string) => {
-    setTools((prev: PlaygroundTool[]) => prev.filter((t) => !(t.id === toolId)) as PlaygroundTool[]);
+    setTools(
+      (prev: PlaygroundTool[]) =>
+        prev.filter((t) => !(t.id === toolId)) as PlaygroundTool[],
+    );
   };
 
   return (
@@ -234,11 +252,16 @@ export const PlaygroundTools = () => {
                 <div className="mb-1 flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <WrenchIcon className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="max-w-[145px] truncate text-ellipsis text-sm font-medium" title={tool.name}>
+                    <h3
+                      className="max-w-[145px] truncate text-ellipsis text-sm font-medium"
+                      title={tool.name}
+                    >
                       {tool.name}
                     </h3>
                     {!isToolSaved(tool) ? (
-                      <span className="rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">Unsaved</span>
+                      <span className="rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">
+                        Unsaved
+                      </span>
                     ) : null}
                   </div>
                   <div className="flex items-center gap-1">
@@ -255,7 +278,10 @@ export const PlaygroundTools = () => {
                     </Button>
                   </div>
                 </div>
-                <p className="line-clamp-2 break-all text-xs text-muted-foreground" title={tool.description}>
+                <p
+                  className="line-clamp-2 break-all text-xs text-muted-foreground"
+                  title={tool.description}
+                >
                   {tool.description}
                 </p>
               </div>

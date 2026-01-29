@@ -35,7 +35,9 @@ function loadPreferences(): JsonViewPreferences {
 
     // Validate stringWrapMode
     const stringWrapMode =
-      parsed.stringWrapMode === "truncate" || parsed.stringWrapMode === "wrap" || parsed.stringWrapMode === "nowrap"
+      parsed.stringWrapMode === "truncate" ||
+      parsed.stringWrapMode === "wrap" ||
+      parsed.stringWrapMode === "nowrap"
         ? parsed.stringWrapMode
         : DEFAULT_PREFERENCES.stringWrapMode;
 
@@ -67,7 +69,8 @@ function savePreferences(preferences: JsonViewPreferences): void {
  * Hook to manage JSON viewer preferences
  */
 export function useJsonViewPreferences() {
-  const [preferences, setPreferences] = useState<JsonViewPreferences>(loadPreferences);
+  const [preferences, setPreferences] =
+    useState<JsonViewPreferences>(loadPreferences);
 
   // Save to localStorage whenever preferences change
   useEffect(() => {

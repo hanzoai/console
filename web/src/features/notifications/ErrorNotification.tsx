@@ -21,7 +21,9 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
 }) => {
   const { setOpen } = useSupportDrawer();
   const isError = type === "ERROR";
-  const textColor = isError ? "text-destructive-foreground" : "text-dark-yellow";
+  const textColor = isError
+    ? "text-destructive-foreground"
+    : "text-dark-yellow";
 
   // const handleReportIssueClick = () => {
   //   if (chatAvailable) {
@@ -37,10 +39,22 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
       <div className="flex min-w-[300px] flex-1 flex-col gap-2">
         <div className="flex items-center gap-2">
           <AlertTriangle size={20} className={textColor} />
-          <div className={`m-0 text-sm font-medium leading-tight ${textColor}`}>{error}</div>
+          <div className={`m-0 text-sm font-medium leading-tight ${textColor}`}>
+            {error}
+          </div>
         </div>
-        {description && <div className={`whitespace-pre-line text-sm leading-tight ${textColor}`}>{description}</div>}
-        {path && <div className={`text-sm leading-tight ${textColor}`}>Path: {path}</div>}
+        {description && (
+          <div
+            className={`whitespace-pre-line text-sm leading-tight ${textColor}`}
+          >
+            {description}
+          </div>
+        )}
+        {path && (
+          <div className={`text-sm leading-tight ${textColor}`}>
+            Path: {path}
+          </div>
+        )}
 
         {isError && (
           <Button

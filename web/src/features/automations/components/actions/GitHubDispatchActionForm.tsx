@@ -1,5 +1,12 @@
 import { Input } from "@/src/components/ui/input";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
 import { type ActionDomain } from "@hanzo/shared";
 import { ExternalLink } from "lucide-react";
@@ -12,7 +19,9 @@ interface GitHubDispatchActionFormProps {
   action?: ActionDomain;
 }
 
-export const GitHubDispatchActionForm: React.FC<GitHubDispatchActionFormProps> = ({ form, disabled }) => {
+export const GitHubDispatchActionForm: React.FC<
+  GitHubDispatchActionFormProps
+> = ({ form, disabled }) => {
   const displayGitHubToken = form.watch("githubDispatch.displayGitHubToken");
 
   return (
@@ -24,10 +33,15 @@ export const GitHubDispatchActionForm: React.FC<GitHubDispatchActionFormProps> =
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center">
-              Repository Dispatch URL <span className="ml-1 text-destructive">*</span>
+              Repository Dispatch URL{" "}
+              <span className="ml-1 text-destructive">*</span>
             </FormLabel>
             <FormControl>
-              <Input placeholder="https://api.github.com/repos/owner/repo/dispatches" disabled={disabled} {...field} />
+              <Input
+                placeholder="https://api.github.com/repos/owner/repo/dispatches"
+                disabled={disabled}
+                {...field}
+              />
             </FormControl>
             <FormDescription>
               GitHub API endpoint for repository dispatch.{" "}
@@ -55,11 +69,17 @@ export const GitHubDispatchActionForm: React.FC<GitHubDispatchActionFormProps> =
               Event Type <span className="ml-1 text-destructive">*</span>
             </FormLabel>
             <FormControl>
-              <Input placeholder="prompt-update" disabled={disabled} {...field} />
+              <Input
+                placeholder="prompt-update"
+                disabled={disabled}
+                {...field}
+              />
             </FormControl>
             <FormDescription>
-              Event type for GitHub Actions workflow triggers. This will be used in the{" "}
-              <code className="text-xs">on.repository_dispatch.types</code> filter in your workflow file.
+              Event type for GitHub Actions workflow triggers. This will be used
+              in the{" "}
+              <code className="text-xs">on.repository_dispatch.types</code>{" "}
+              filter in your workflow file.
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -73,14 +93,24 @@ export const GitHubDispatchActionForm: React.FC<GitHubDispatchActionFormProps> =
           <FormItem>
             <FormLabel className="flex items-center">
               GitHub Personal Access Token
-              {!displayGitHubToken && <span className="ml-1 text-destructive">*</span>}
+              {!displayGitHubToken && (
+                <span className="ml-1 text-destructive">*</span>
+              )}
             </FormLabel>
             <FormControl>
-              <Input type="password" placeholder={displayGitHubToken || "ghp_..."} disabled={disabled} {...field} />
+              <Input
+                type="password"
+                placeholder={displayGitHubToken || "ghp_..."}
+                disabled={disabled}
+                {...field}
+              />
             </FormControl>
             <FormDescription>
-              GitHub PAT with <code className="text-xs">repo</code> scope for repository dispatch.
-              {displayGitHubToken ? " Leave empty to keep existing token." : ""}{" "}
+              GitHub PAT with <code className="text-xs">repo</code> scope for
+              repository dispatch.
+              {displayGitHubToken
+                ? " Leave empty to keep existing token."
+                : ""}{" "}
               <Link
                 href="https://github.com/settings/tokens/new?scopes=repo&description=Hanzo%20Automation"
                 target="_blank"

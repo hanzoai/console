@@ -97,7 +97,9 @@ export function denormalizeExpansionState(
     const actualTopLevelKeys = normalizedToActual.get(topLevelNormalized) || [];
 
     actualTopLevelKeys.forEach((actualTopLevel) => {
-      const actualKey = restOfPath ? `${actualTopLevel}.${restOfPath}` : actualTopLevel;
+      const actualKey = restOfPath
+        ? `${actualTopLevel}.${restOfPath}`
+        : actualTopLevel;
       denormalized[actualKey] = value;
     });
   });

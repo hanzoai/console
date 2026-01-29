@@ -9,8 +9,14 @@
 import useLocalStorage from "@/src/components/useLocalStorage";
 
 export function useLogViewPreferences() {
-  const [indentEnabled, setIndentEnabled] = useLocalStorage("logView-indentEnabled", false);
-  const [showMilliseconds, setShowMilliseconds] = useLocalStorage("logView-showMilliseconds", false);
+  const [indentEnabled, setIndentEnabled] = useLocalStorage(
+    "logView-indentEnabled",
+    false,
+  );
+  const [showMilliseconds, setShowMilliseconds] = useLocalStorage(
+    "logView-showMilliseconds",
+    false,
+  );
 
   return {
     indentEnabled,

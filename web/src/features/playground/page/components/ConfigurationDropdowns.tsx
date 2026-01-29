@@ -2,17 +2,29 @@ import React from "react";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { ChevronDown, Wrench, Braces, Variable } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { usePlaygroundContext } from "../context";
 import { usePlaygroundWindowSize } from "../hooks/usePlaygroundWindowSize";
 import { PlaygroundTools, PlaygroundToolsPopover } from "./PlaygroundTools";
-import { StructuredOutputSchemaSection, StructuredOutputSchemaPopover } from "./StructuredOutputSchemaSection";
+import {
+  StructuredOutputSchemaSection,
+  StructuredOutputSchemaPopover,
+} from "./StructuredOutputSchemaSection";
 import { Variables } from "./Variables";
 import { MessagePlaceholders } from "./MessagePlaceholders";
 
 export const ConfigurationDropdowns: React.FC = () => {
   const { containerRef, isVeryCompact, isCompact } = usePlaygroundWindowSize();
-  const { tools, structuredOutputSchema, promptVariables, messagePlaceholders } = usePlaygroundContext();
+  const {
+    tools,
+    structuredOutputSchema,
+    promptVariables,
+    messagePlaceholders,
+  } = usePlaygroundContext();
 
   const toolsCount = tools.length;
   const hasSchema = structuredOutputSchema ? 1 : 0;
@@ -44,7 +56,10 @@ export const ConfigurationDropdowns: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="flex-shrink-0 border-b bg-muted/25 px-3 py-2">
+    <div
+      ref={containerRef}
+      className="flex-shrink-0 border-b bg-muted/25 px-3 py-2"
+    >
       <div className="flex items-center justify-start gap-2">
         {/* Tools Dropdown */}
         <Popover>
@@ -62,7 +77,9 @@ export const ConfigurationDropdowns: React.FC = () => {
           <PopoverContent className="w-80 p-4" align="start">
             <div className="mb-3">
               <h4 className="mb-1 text-sm font-medium">Tools</h4>
-              <p className="text-xs text-muted-foreground">Configure tools for your model to use.</p>
+              <p className="text-xs text-muted-foreground">
+                Configure tools for your model to use.
+              </p>
             </div>
             {toolsCount > 0 ? (
               <div className="mb-3">
@@ -70,7 +87,9 @@ export const ConfigurationDropdowns: React.FC = () => {
               </div>
             ) : (
               <div className="mb-3">
-                <p className="text-xs text-muted-foreground">No tools attached.</p>
+                <p className="text-xs text-muted-foreground">
+                  No tools attached.
+                </p>
               </div>
             )}
             <div className="border-t pt-3">
@@ -95,7 +114,9 @@ export const ConfigurationDropdowns: React.FC = () => {
           <PopoverContent className="w-80 p-4" align="start">
             <div className="mb-3">
               <h4 className="mb-1 text-sm font-medium">Structured Output</h4>
-              <p className="text-xs text-muted-foreground">Configure JSON schema for structured output.</p>
+              <p className="text-xs text-muted-foreground">
+                Configure JSON schema for structured output.
+              </p>
             </div>
             {structuredOutputSchema ? (
               <div className="mb-3">
@@ -103,7 +124,9 @@ export const ConfigurationDropdowns: React.FC = () => {
               </div>
             ) : (
               <div className="mb-3">
-                <p className="text-xs text-muted-foreground">No schema provided.</p>
+                <p className="text-xs text-muted-foreground">
+                  No schema provided.
+                </p>
               </div>
             )}
             <div className="border-t pt-3">
@@ -127,27 +150,36 @@ export const ConfigurationDropdowns: React.FC = () => {
           </PopoverTrigger>
           <PopoverContent className="w-80 p-4" align="start">
             <div className="mb-3">
-              <h4 className="mb-1 text-sm font-medium">Variables & Message Placeholders</h4>
+              <h4 className="mb-1 text-sm font-medium">
+                Variables & Message Placeholders
+              </h4>
               <p className="text-xs text-muted-foreground">
                 Configure variables and message placeholders for your prompts.
               </p>
             </div>
             {variablesCount > 0 ? (
-              <div className="mb-3" style={{ maxHeight: "50vh", overflowY: "auto" }}>
+              <div
+                className="mb-3"
+                style={{ maxHeight: "50vh", overflowY: "auto" }}
+              >
                 <div className="space-y-4">
                   <div>
                     <h5 className="mb-2 text-xs font-medium">Variables</h5>
                     <Variables />
                   </div>
                   <div>
-                    <h5 className="mb-2 text-xs font-medium">Message Placeholders</h5>
+                    <h5 className="mb-2 text-xs font-medium">
+                      Message Placeholders
+                    </h5>
                     <MessagePlaceholders />
                   </div>
                 </div>
               </div>
             ) : (
               <div className="mb-3">
-                <p className="text-xs text-muted-foreground">No variables or message placeholders defined.</p>
+                <p className="text-xs text-muted-foreground">
+                  No variables or message placeholders defined.
+                </p>
               </div>
             )}
           </PopoverContent>

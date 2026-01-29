@@ -17,10 +17,17 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import TableIdOrName from "@/src/components/table/table-id";
 import { convertRunItemToItemsByItemUiTableRow } from "@/src/features/datasets/lib/convertRunItemDataToUiTableRow";
-import { DatasetItemIOCell, TraceObservationIOCell } from "@/src/features/datasets/components/DatasetIOCells";
+import {
+  DatasetItemIOCell,
+  TraceObservationIOCell,
+} from "@/src/features/datasets/components/DatasetIOCells";
 import { type DatasetRunItemByItemRowData } from "@/src/features/datasets/lib/types";
 
-export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId: string; datasetItemId: string }) {
+export function DatasetRunItemsByItemTable(props: {
+  projectId: string;
+  datasetId: string;
+  datasetItemId: string;
+}) {
   const { setDetailPageList } = useDetailPageLists();
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -39,20 +46,23 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
     if (runItems.isSuccess) {
       setDetailPageList(
         "traces",
-        runItems.data.runItems.filter((i) => !!i.trace).map((i) => ({ id: i.trace!.id })),
+        runItems.data.runItems
+          .filter((i) => !!i.trace)
+          .map((i) => ({ id: i.trace!.id })),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runItems.isSuccess, runItems.data]);
 
-  const { scoreColumns, isLoading: isColumnLoading } = useScoreColumns<DatasetRunItemByItemRowData>({
-    projectId: props.projectId,
-    scoreColumnKey: "scores",
-    filter: scoreFilters.forDatasetItems({
-      datasetItemIds: [props.datasetItemId],
-      datasetId: props.datasetId,
-    }),
-  });
+  const { scoreColumns, isLoading: isColumnLoading } =
+    useScoreColumns<DatasetRunItemByItemRowData>({
+      projectId: props.projectId,
+      scoreColumnKey: "scores",
+      filter: scoreFilters.forDatasetItems({
+        datasetItemIds: [props.datasetItemId],
+        datasetId: props.datasetId,
+      }),
+    });
 
   const columns: HanzoColumnDef<DatasetRunItemByItemRowData>[] = [
     {
@@ -62,7 +72,8 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       size: 150,
       isPinnedLeft: true,
       cell: ({ row }) => {
-        const datasetRunName: string | undefined = row.getValue("datasetRunName");
+        const datasetRunName: string | undefined =
+          row.getValue("datasetRunName");
         return <TableIdOrName value={datasetRunName || "-"} />;
       },
     },
@@ -72,7 +83,8 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       id: "runAt",
       size: 150,
       cell: ({ row }) => {
-        const value: DatasetRunItemByItemRowData["runAt"] = row.getValue("runAt");
+        const value: DatasetRunItemByItemRowData["runAt"] =
+          row.getValue("runAt");
         return <LocalIsoDate date={value} />;
       },
     },
@@ -83,8 +95,10 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       size: 200,
       enableHiding: true,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByItemRowData["trace"] = row.getValue("trace");
-        const runAt: DatasetRunItemByItemRowData["runAt"] = row.getValue("runAt");
+        const trace: DatasetRunItemByItemRowData["trace"] =
+          row.getValue("trace");
+        const runAt: DatasetRunItemByItemRowData["runAt"] =
+          row.getValue("runAt");
         return trace ? (
           <TraceObservationIOCell
             traceId={trace.traceId}
@@ -104,8 +118,10 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       size: 200,
       enableHiding: true,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByItemRowData["trace"] = row.getValue("trace");
-        const runAt: DatasetRunItemByItemRowData["runAt"] = row.getValue("runAt");
+        const trace: DatasetRunItemByItemRowData["trace"] =
+          row.getValue("trace");
+        const runAt: DatasetRunItemByItemRowData["runAt"] =
+          row.getValue("runAt");
         return trace ? (
           <TraceObservationIOCell
             traceId={trace.traceId}
@@ -143,7 +159,8 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       id: "trace",
       size: 60,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByItemRowData["trace"] = row.getValue("trace");
+        const trace: DatasetRunItemByItemRowData["trace"] =
+          row.getValue("trace");
         if (!trace) return null;
         return trace.observationId ? (
           <TableLink
@@ -167,7 +184,8 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       size: 70,
       enableHiding: true,
       cell: ({ row }) => {
-        const latency: DatasetRunItemByItemRowData["latency"] = row.getValue("latency");
+        const latency: DatasetRunItemByItemRowData["latency"] =
+          row.getValue("latency");
         return <>{!!latency ? formatIntervalSeconds(latency) : null}</>;
       },
     },
@@ -178,7 +196,8 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
       size: 60,
       enableHiding: true,
       cell: ({ row }) => {
-        const totalCost: DatasetRunItemByItemRowData["totalCost"] = row.getValue("totalCost");
+        const totalCost: DatasetRunItemByItemRowData["totalCost"] =
+          row.getValue("totalCost");
         return totalCost ?? undefined;
       },
     },
@@ -195,18 +214,24 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
     },
   ];
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<DatasetRunItemByItemRowData>(
-    `datasetRunsByItemColumnVisibility-${props.projectId}`,
-    columns,
-  );
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<DatasetRunItemByItemRowData>(
+      `datasetRunsByItemColumnVisibility-${props.projectId}`,
+      columns,
+    );
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<DatasetRunItemByItemRowData>(
-    "datasetRunsByItemColumnOrder",
-    columns,
-  );
+  const [columnOrder, setColumnOrder] =
+    useColumnOrder<DatasetRunItemByItemRowData>(
+      "datasetRunsByItemColumnOrder",
+      columns,
+    );
 
   const rows = useMemo(() => {
-    return runItems.isSuccess ? runItems.data.runItems.map((item) => convertRunItemToItemsByItemUiTableRow(item)) : [];
+    return runItems.isSuccess
+      ? runItems.data.runItems.map((item) =>
+          convertRunItemToItemsByItemUiTableRow(item),
+        )
+      : [];
   }, [runItems.isSuccess, runItems.data?.runItems]);
 
   return (

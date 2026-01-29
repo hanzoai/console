@@ -53,7 +53,11 @@ export function HeatmapLegend({
   if (orientation === "vertical") {
     return (
       <div className={cn("flex flex-col gap-2", className)}>
-        {title && <div className="text-xs font-medium text-muted-foreground">{title}</div>}
+        {title && (
+          <div className="text-xs font-medium text-muted-foreground">
+            {title}
+          </div>
+        )}
         <div className="flex flex-col gap-1">
           {colors
             .slice()
@@ -74,7 +78,9 @@ export function HeatmapLegend({
                     onMouseEnter={() => setHoveredIdx(idx)}
                     onMouseLeave={() => setHoveredIdx(null)}
                   />
-                  <span className="text-xs text-muted-foreground">{labels[labelIdx]}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {labels[labelIdx]}
+                  </span>
                 </div>
               );
             })}

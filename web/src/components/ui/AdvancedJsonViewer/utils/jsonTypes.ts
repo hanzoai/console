@@ -132,7 +132,13 @@ export function getTypeLabel(type: JSONType): string {
  */
 export function isPrimitive(value: unknown): boolean {
   const type = getJSONType(value);
-  return type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined";
+  return (
+    type === "string" ||
+    type === "number" ||
+    type === "boolean" ||
+    type === "null" ||
+    type === "undefined"
+  );
 }
 
 /**
@@ -160,7 +166,9 @@ export function isArrayIndex(key: string | number): boolean {
 
   // String that is a valid array index
   const num = Number(key);
-  return !isNaN(num) && num >= 0 && Number.isInteger(num) && String(num) === key;
+  return (
+    !isNaN(num) && num >= 0 && Number.isInteger(num) && String(num) === key
+  );
 }
 
 /**

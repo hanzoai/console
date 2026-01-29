@@ -375,10 +375,14 @@ describe("traces trpc", () => {
       });
 
       // Find the sentiment score in categorical scores
-      const sentimentScore = filterOptions.score_categories.find((score) => score.label === "sentiment");
+      const sentimentScore = filterOptions.score_categories.find(
+        (score) => score.label === "sentiment",
+      );
 
       expect(sentimentScore).toBeDefined();
-      expect(sentimentScore?.values).toEqual(expect.arrayContaining(["custom", "positive", "neutral", "negative"]));
+      expect(sentimentScore?.values).toEqual(
+        expect.arrayContaining(["custom", "positive", "neutral", "negative"]),
+      );
       // Should include all possible values from config, not just the actual score value
       expect(sentimentScore?.values).toHaveLength(4);
     });
@@ -406,8 +410,12 @@ describe("traces trpc", () => {
       await createTracesCh([trace]);
       await createObservationsCh([observation]);
 
-      const minStartTime = new Date(new Date(trace.timestamp).getTime() - 1000).toISOString();
-      const maxStartTime = new Date(new Date(trace.timestamp).getTime() + 1000).toISOString();
+      const minStartTime = new Date(
+        new Date(trace.timestamp).getTime() - 1000,
+      ).toISOString();
+      const maxStartTime = new Date(
+        new Date(trace.timestamp).getTime() + 1000,
+      ).toISOString();
 
       const agentGraphData = await unAuthedCaller.traces.getAgentGraphData({
         projectId,
@@ -441,8 +449,12 @@ describe("traces trpc", () => {
       await createTracesCh([trace]);
       await createObservationsCh([observation]);
 
-      const minStartTime = new Date(new Date(trace.timestamp).getTime() - 1000).toISOString();
-      const maxStartTime = new Date(new Date(trace.timestamp).getTime() + 1000).toISOString();
+      const minStartTime = new Date(
+        new Date(trace.timestamp).getTime() - 1000,
+      ).toISOString();
+      const maxStartTime = new Date(
+        new Date(trace.timestamp).getTime() + 1000,
+      ).toISOString();
 
       await expect(
         unAuthedCaller.traces.getAgentGraphData({

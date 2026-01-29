@@ -54,7 +54,9 @@ export default withMiddlewares({
       });
 
       // Transform and validate through strict schema
-      const transformedConnections = llmConnections.map(transformDbLlmConnectionToAPI);
+      const transformedConnections = llmConnections.map(
+        transformDbLlmConnectionToAPI,
+      );
 
       return {
         data: transformedConnections,
@@ -95,8 +97,12 @@ export default withMiddlewares({
         baseURL: body.baseURL || null,
         customModels: body.customModels || [],
         withDefaultModels: body.withDefaultModels,
-        extraHeaders: body.extraHeaders ? encrypt(JSON.stringify(body.extraHeaders)) : null,
-        extraHeaderKeys: body.extraHeaders ? Object.keys(body.extraHeaders) : [],
+        extraHeaders: body.extraHeaders
+          ? encrypt(JSON.stringify(body.extraHeaders))
+          : null,
+        extraHeaderKeys: body.extraHeaders
+          ? Object.keys(body.extraHeaders)
+          : [],
         config: body.config,
       };
 

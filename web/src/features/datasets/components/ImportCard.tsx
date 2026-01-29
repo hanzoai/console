@@ -1,5 +1,10 @@
 import DocPopup from "@/src/components/layouts/doc-popup";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { cn } from "@/src/utils/tailwind";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { type UniqueIdentifier } from "@dnd-kit/core";
@@ -18,7 +23,13 @@ type ImportCardProps = {
   onSchemaKeyMap?: (schemaKey: string, csvColumn: string) => void;
 };
 
-function DraggableColumn({ column, parentId }: { column: CsvColumnPreview; parentId: UniqueIdentifier }) {
+function DraggableColumn({
+  column,
+  parentId,
+}: {
+  column: CsvColumnPreview;
+  parentId: UniqueIdentifier;
+}) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: column.name,
     data: {
@@ -39,7 +50,9 @@ function DraggableColumn({ column, parentId }: { column: CsvColumnPreview; paren
     >
       <div className="flex flex-wrap items-center justify-between space-x-1">
         <span className="text-sm">{column.name}</span>
-        <span className="text-xs text-muted-foreground">{column.inferredType}</span>
+        <span className="text-xs text-muted-foreground">
+          {column.inferredType}
+        </span>
       </div>
     </div>
   );
@@ -68,13 +81,23 @@ function SchemaKeyDropZone({
     >
       <div className="flex items-center justify-between">
         <span className="font-medium">{schemaKey}</span>
-        {mappedColumn && <span className="text-xs text-muted-foreground">{mappedColumn}</span>}
+        {mappedColumn && (
+          <span className="text-xs text-muted-foreground">{mappedColumn}</span>
+        )}
       </div>
     </div>
   );
 }
 
-export function ImportCard({ title, columns, id, className, info, schemaKeys, schemaKeyMapping }: ImportCardProps) {
+export function ImportCard({
+  title,
+  columns,
+  id,
+  className,
+  info,
+  schemaKeys,
+  schemaKeyMapping,
+}: ImportCardProps) {
   const { setNodeRef, isOver } = useDroppable({
     id,
   });
@@ -117,7 +140,13 @@ export function ImportCard({ title, columns, id, className, info, schemaKeys, sc
                 Drag columns here
               </div>
             ) : (
-              columns.map((column) => <DraggableColumn key={column.name} column={column} parentId={id} />)
+              columns.map((column) => (
+                <DraggableColumn
+                  key={column.name}
+                  column={column}
+                  parentId={id}
+                />
+              ))
             )}
           </>
         )}

@@ -10,7 +10,11 @@ import { Button } from "@/src/components/ui/button";
 import { ChevronUp, ChevronDown, WrapText, Minus, Copy } from "lucide-react";
 import { useJsonViewPreferences } from "@/src/components/ui/AdvancedJsonViewer/hooks/useJsonViewPreferences";
 import { type MediaReturnType } from "@/src/features/media/validation";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import {
   InlineCommentSelectionProvider,
   useInlineCommentSelectionOptional,
@@ -163,7 +167,9 @@ function IOPreviewJSONInner({
 
   const handlePreviousMatch = useCallback(() => {
     if (searchMatchCount === 0) return;
-    setCurrentMatchIndex((prev) => (prev === 0 ? searchMatchCount - 1 : prev - 1));
+    setCurrentMatchIndex((prev) =>
+      prev === 0 ? searchMatchCount - 1 : prev - 1,
+    );
   }, [searchMatchCount]);
 
   const handleClearSearch = useCallback(() => {
@@ -195,7 +201,14 @@ function IOPreviewJSONInner({
     if (showMetadata) dataObj.metadata = parsedMetadata;
     const jsonString = JSON.stringify(dataObj, null, 2);
     void navigator.clipboard.writeText(jsonString);
-  }, [showInput, showOutput, showMetadata, parsedInput, parsedOutput, parsedMetadata]);
+  }, [
+    showInput,
+    showOutput,
+    showMetadata,
+    parsedInput,
+    parsedOutput,
+    parsedMetadata,
+  ]);
 
   const wrapIcon = useMemo(
     () =>
@@ -320,7 +333,9 @@ function IOPreviewJSONInner({
   return (
     <div className="flex min-h-0 flex-1 flex-col border-b border-t">
       {/* Inline comment bubble - shows when text is selected */}
-      {enableInlineComments && <InlineCommentBubble onAddComment={handleAddComment} />}
+      {enableInlineComments && (
+        <InlineCommentBubble onAddComment={handleAddComment} />
+      )}
 
       {/* Header - matches LogViewToolbar styling */}
       <div className="flex h-9 flex-shrink-0 items-center gap-1.5 border-b bg-background px-2">
@@ -350,7 +365,9 @@ function IOPreviewJSONInner({
         {/* Match counter - inline text (only when searching) */}
         {searchQuery && (
           <span className="whitespace-nowrap text-xs text-muted-foreground">
-            {searchMatchCount > 0 ? `${currentMatchIndex + 1} of ${searchMatchCount}` : "No matches"}
+            {searchMatchCount > 0
+              ? `${currentMatchIndex + 1} of ${searchMatchCount}`
+              : "No matches"}
           </span>
         )}
 
@@ -390,7 +407,13 @@ function IOPreviewJSONInner({
         </Button>
 
         {/* Copy button */}
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} title="Copy to clipboard">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={handleCopy}
+          title="Copy to clipboard"
+        >
           <Copy className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -406,7 +429,9 @@ function IOPreviewJSONInner({
             >
               {section.title}
             </button>
-            {index < sections.length - 1 && <span className="text-xs text-muted-foreground">,&nbsp;</span>}
+            {index < sections.length - 1 && (
+              <span className="text-xs text-muted-foreground">,&nbsp;</span>
+            )}
           </span>
         ))}
         {needsVirtualization && (
@@ -420,9 +445,11 @@ function IOPreviewJSONInner({
               <div className="space-y-2">
                 <p className="text-sm font-medium">Virtualized View</p>
                 <p className="text-xs text-muted-foreground">
-                  This view is using virtualization due to a large number of keys ({rowCounts.input.toLocaleString()}{" "}
-                  input, {rowCounts.output.toLocaleString()} output, {rowCounts.metadata.toLocaleString()} metadata).
-                  Only visible rows are rendered for optimal performance.
+                  This view is using virtualization due to a large number of
+                  keys ({rowCounts.input.toLocaleString()} input,{" "}
+                  {rowCounts.output.toLocaleString()} output,{" "}
+                  {rowCounts.metadata.toLocaleString()} metadata). Only visible
+                  rows are rendered for optimal performance.
                 </p>
               </div>
             </HoverCardContent>
@@ -433,7 +460,9 @@ function IOPreviewJSONInner({
       {/* Body with MultiSectionJsonViewer */}
       <div className="min-h-0 flex-1 overflow-auto" ref={scrollContainerRef}>
         {enableInlineComments ? (
-          <CommentableJsonView enabled={enableInlineComments}>{viewerContent}</CommentableJsonView>
+          <CommentableJsonView enabled={enableInlineComments}>
+            {viewerContent}
+          </CommentableJsonView>
         ) : (
           viewerContent
         )}

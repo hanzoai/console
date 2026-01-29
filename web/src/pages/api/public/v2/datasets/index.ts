@@ -18,7 +18,8 @@ export default withMiddlewares({
     responseSchema: PostDatasetsV2Response,
     rateLimitResource: "datasets",
     fn: async ({ body, auth }) => {
-      const { name, description, metadata, inputSchema, expectedOutputSchema } = body;
+      const { name, description, metadata, inputSchema, expectedOutputSchema } =
+        body;
 
       const dataset = await upsertDataset({
         input: {

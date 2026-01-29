@@ -18,7 +18,9 @@ import { buildStepData } from "@/src/features/trace-graph-view/buildStepData";
 import { type AgentGraphDataResponse } from "@/src/features/trace-graph-view/types";
 
 describe("buildStepData", () => {
-  const createMockObservation = (overrides: Partial<AgentGraphDataResponse> = {}): AgentGraphDataResponse => ({
+  const createMockObservation = (
+    overrides: Partial<AgentGraphDataResponse> = {},
+  ): AgentGraphDataResponse => ({
     id: "mock-id",
     name: "mock-name",
     node: null,
@@ -173,9 +175,15 @@ describe("buildStepData", () => {
       expect(userObservations).toHaveLength(4);
 
       const longTask = userObservations.find((obs) => obs.name === "long_task");
-      const shortOverlap = userObservations.find((obs) => obs.name === "short_overlap");
-      const lateStart = userObservations.find((obs) => obs.name === "late_start");
-      const independent = userObservations.find((obs) => obs.name === "independent");
+      const shortOverlap = userObservations.find(
+        (obs) => obs.name === "short_overlap",
+      );
+      const lateStart = userObservations.find(
+        (obs) => obs.name === "late_start",
+      );
+      const independent = userObservations.find(
+        (obs) => obs.name === "independent",
+      );
 
       // Expected behavior:
       // Step 1: long_task, short_overlap (they overlap)
@@ -255,7 +263,9 @@ describe("buildStepData", () => {
 
       const parent = userObservations.find((obs) => obs.name === "parent_task");
       const child = userObservations.find((obs) => obs.name === "child_task");
-      const independent = userObservations.find((obs) => obs.name === "independent_task");
+      const independent = userObservations.find(
+        (obs) => obs.name === "independent_task",
+      );
 
       expect(parent?.step).toBe(1);
       expect(child?.step).toBe(2); // Inserted due to parent constraint
@@ -324,9 +334,15 @@ describe("buildStepData", () => {
 
       const userObservations = result.filter((obs) => !obs.name.includes("__"));
 
-      const runAgent = userObservations.find((obs) => obs.name === "run_smolagents_joke_evaluation");
-      const createAgent = userObservations.find((obs) => obs.name === "create_joke_evaluation_agent");
-      const getData = userObservations.find((obs) => obs.name === "get_joke_database_inspiration");
+      const runAgent = userObservations.find(
+        (obs) => obs.name === "run_smolagents_joke_evaluation",
+      );
+      const createAgent = userObservations.find(
+        (obs) => obs.name === "create_joke_evaluation_agent",
+      );
+      const getData = userObservations.find(
+        (obs) => obs.name === "get_joke_database_inspiration",
+      );
 
       expect(runAgent?.step).toBe(1);
       expect(createAgent?.step).toBe(2); // Child of run_agent, so step 2
@@ -450,7 +466,9 @@ describe("buildStepData", () => {
             id: `span_${i.toString().padStart(3, "0")}`,
             name: `complex_task_${i}`,
             startTime: new Date(sameStartTime).toISOString(),
-            endTime: new Date(sameStartTime + (zeroDuration ? 0 : 10 + (i % 5))).toISOString(),
+            endTime: new Date(
+              sameStartTime + (zeroDuration ? 0 : 10 + (i % 5)),
+            ).toISOString(),
             parentObservationId:
               i === 0
                 ? null

@@ -56,7 +56,8 @@ export function useJsonTheme(userTheme?: PartialJSONTheme): JSONTheme {
 
   return useMemo(() => {
     // Select base theme based on mode
-    const baseTheme = resolvedTheme === "dark" ? defaultDarkTheme : defaultLightTheme;
+    const baseTheme =
+      resolvedTheme === "dark" ? defaultDarkTheme : defaultLightTheme;
 
     // Merge with user overrides
     if (!userTheme) return baseTheme;

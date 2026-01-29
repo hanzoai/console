@@ -1,8 +1,17 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { type HanzoColumnDef } from "@/src/components/table/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { CreateProjectMemberButton } from "@/src/features/rbac/components/CreateProjectMemberButton";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
@@ -18,7 +27,11 @@ import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { RoleSelectItem } from "@/src/features/rbac/components/RoleSelectItem";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import Link from "next/link";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
@@ -53,7 +66,9 @@ export function MembersTable({
   showSettingsCard?: boolean;
 }) {
   // Create a unique key for this table's pagination state
-  const paginationKey = project ? `projectMembers_${project.id}_pagination` : `orgMembers_${orgId}_pagination`;
+  const paginationKey = project
+    ? `projectMembers_${project.id}_pagination`
+    : `orgMembers_${orgId}_pagination`;
 
   const session = useSession();
   const hasOrgViewAccess = useHasOrganizationAccess({
@@ -65,12 +80,18 @@ export function MembersTable({
       projectId: project?.id,
       scope: "projectMembers:read",
     }) || hasOrgViewAccess;
-  const [paginationState, setPaginationState] = useSessionStorage(paginationKey, {
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const [paginationState, setPaginationState] = useSessionStorage(
+    paginationKey,
+    {
+      pageIndex: 0,
+      pageSize: 10,
+    },
+  );
 
-  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
+  const [searchQuery, setSearchQuery] = useQueryParam(
+    "search",
+    withDefault(StringParam, null),
+  );
 
   useEffect(() => {
     setPaginationState((prev) => ({
@@ -136,7 +157,10 @@ export function MembersTable({
         return (
           <div className="flex items-center space-x-2">
             <Avatar className="h-7 w-7">
-              <AvatarImage src={image ?? undefined} alt={name ?? "User Avatar"} />
+              <AvatarImage
+                src={image ?? undefined}
+                alt={name ?? "User Avatar"}
+              />
               <AvatarFallback>
                 {name
                   ? name
@@ -180,7 +204,9 @@ export function MembersTable({
       },
       cell: ({ row }) => {
         const orgRole = row.getValue("orgRole") as MembersTableRow["orgRole"];
-        const { orgMembershipId } = row.getValue("meta") as MembersTableRow["meta"];
+        const { orgMembershipId } = row.getValue(
+          "meta",
+        ) as MembersTableRow["meta"];
         const { userId } = row.getValue("meta") as MembersTableRow["meta"];
         const disableInProjectSettings = Boolean(project?.id);
 
@@ -202,10 +228,17 @@ export function MembersTable({
                   <ConfiguredOrgRoleDropdown />
                 </HoverCardTrigger>
                 <HoverCardPortal>
-                  <HoverCardContent hideWhenDetached={true} align="center" side="right">
+                  <HoverCardContent
+                    hideWhenDetached={true}
+                    align="center"
+                    side="right"
+                  >
                     <p className="text-xs">
                       The organization-level role can to be edited in the{" "}
-                      <Link href={`/organization/${orgId}/settings/members`} className="underline">
+                      <Link
+                        href={`/organization/${orgId}/settings/members`}
+                        className="underline"
+                      >
                         organization settings
                       </Link>
                       .
@@ -236,8 +269,12 @@ export function MembersTable({
             }: {
               row: Row<MembersTableRow>; // need to specify the type here due to conditional rendering
             }) => {
-              const projectRole = row.getValue("projectRole") as MembersTableRow["projectRole"];
-              const { orgMembershipId, userId } = row.getValue("meta") as MembersTableRow["meta"];
+              const projectRole = row.getValue(
+                "projectRole",
+              ) as MembersTableRow["projectRole"];
+              const { orgMembershipId, userId } = row.getValue(
+                "meta",
+              ) as MembersTableRow["meta"];
 
               if (!projectRolesEntitlement) return "N/A on plan";
 
@@ -248,7 +285,9 @@ export function MembersTable({
                   currentProjectRole={projectRole ?? null}
                   orgId={orgId}
                   projectId={project.id}
-                  hasCudAccess={hasCudAccessOrgLevel || hasCudAccessProjectLevel}
+                  hasCudAccess={
+                    hasCudAccessOrgLevel || hasCudAccessProjectLevel
+                  }
                 />
               );
             },
@@ -272,8 +311,11 @@ export function MembersTable({
       header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const { orgMembershipId, userId } = row.getValue("meta") as MembersTableRow["meta"];
-        return hasCudAccessOrgLevel || (userId && userId === session.data?.user?.id) ? (
+        const { orgMembershipId, userId } = row.getValue(
+          "meta",
+        ) as MembersTableRow["meta"];
+        return hasCudAccessOrgLevel ||
+          (userId && userId === session.data?.user?.id) ? (
           <div className="flex space-x-2">
             <button
               onClick={() => {
@@ -296,10 +338,11 @@ export function MembersTable({
     },
   ];
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<MembersTableRow>(
-    project ? "membersColumnVisibilityProject" : "membersColumnVisibilityOrg",
-    columns,
-  );
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<MembersTableRow>(
+      project ? "membersColumnVisibilityProject" : "membersColumnVisibilityOrg",
+      columns,
+    );
 
   const [columnOrder, setColumnOrder] = useColumnOrder<MembersTableRow>(
     project ? "membersColumnOrderProject" : "membersColumnOrderOrg",
@@ -330,7 +373,9 @@ export function MembersTable({
     return (
       <Alert>
         <AlertTitle>Access Denied</AlertTitle>
-        <AlertDescription>You do not have permission to view members of this organization.</AlertDescription>
+        <AlertDescription>
+          You do not have permission to view members of this organization.
+        </AlertDescription>
       </Alert>
     );
   }
@@ -343,7 +388,9 @@ export function MembersTable({
         setColumnVisibility={setColumnVisibility}
         columnOrder={columnOrder}
         setColumnOrder={setColumnOrder}
-        actionButtons={<CreateProjectMemberButton orgId={orgId} project={project} />}
+        actionButtons={
+          <CreateProjectMemberButton orgId={orgId} project={project} />
+        }
         searchConfig={{
           metadataSearchFields: ["Name", "Email"],
           updateQuery: setSearchQuery,
@@ -371,7 +418,9 @@ export function MembersTable({
                   : {
                       isLoading: false,
                       isError: false,
-                      data: safeExtract(members.data, "memberships", []).map((t) => convertToTableRow(t)),
+                      data: safeExtract(members.data, "memberships", []).map(
+                        (t) => convertToTableRow(t),
+                      ),
                     }
             }
             pagination={{
@@ -401,7 +450,9 @@ export function MembersTable({
                 : {
                     isLoading: false,
                     isError: false,
-                    data: safeExtract(members.data, "memberships", []).map((t) => convertToTableRow(t)),
+                    data: safeExtract(members.data, "memberships", []).map(
+                      (t) => convertToTableRow(t),
+                    ),
                   }
           }
           pagination={{
@@ -453,7 +504,9 @@ const OrgRoleDropdown = ({
       onValueChange={(value) => {
         if (
           userId !== session.data?.user?.id ||
-          confirm("Are you sure that you want to change your own organization role?")
+          confirm(
+            "Are you sure that you want to change your own organization role?",
+          )
         ) {
           mut.mutate({
             orgId,

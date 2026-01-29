@@ -9,10 +9,17 @@ import { useNamingConflicts } from "../hooks/useNamingConflicts";
 export const PromptVariableComponent: React.FC<{
   promptVariable: PromptVariable;
 }> = ({ promptVariable }) => {
-  const { updatePromptVariableValue, deletePromptVariable, promptVariables, messagePlaceholders } =
-    usePlaygroundContext();
+  const {
+    updatePromptVariableValue,
+    deletePromptVariable,
+    promptVariables,
+    messagePlaceholders,
+  } = usePlaygroundContext();
   const { name, value, isUsed } = promptVariable;
-  const { isVariableConflicting } = useNamingConflicts(promptVariables, messagePlaceholders);
+  const { isVariableConflicting } = useNamingConflicts(
+    promptVariables,
+    messagePlaceholders,
+  );
   const hasConflict = isVariableConflicting(name);
 
   const handleInputChange = (value: string) => {
@@ -21,15 +28,24 @@ export const PromptVariableComponent: React.FC<{
   const handleDeleteVariable = () => {
     deletePromptVariable(name);
   };
-  const isUsedIcon = isUsed ? <CheckCircle2 size={16} color="green" /> : <Circle size={16} color="grey" />;
-  const isUsedTooltip = isUsed ? "Variable is in use" : "Variable is not in use";
+  const isUsedIcon = isUsed ? (
+    <CheckCircle2 size={16} color="green" />
+  ) : (
+    <Circle size={16} color="grey" />
+  );
+  const isUsedTooltip = isUsed
+    ? "Variable is in use"
+    : "Variable is not in use";
 
   return (
     <div className="p-1">
       <div className="mb-1 flex flex-row items-center">
         <span className="flex flex-1 flex-row space-x-2 text-xs">
           <p title={isUsedTooltip}>{isUsedIcon}</p>
-          <p className={`min-w-[90px] truncate font-mono ${hasConflict ? "text-red-500" : ""}`} title={name}>
+          <p
+            className={`min-w-[90px] truncate font-mono ${hasConflict ? "text-red-500" : ""}`}
+            title={name}
+          >
             {name}
           </p>
         </span>
@@ -57,7 +73,9 @@ export const PromptVariableComponent: React.FC<{
       />
 
       {hasConflict && (
-        <p className="mt-1 text-xs text-red-500">Variable name conflicts with placeholder. Names must be unique.</p>
+        <p className="mt-1 text-xs text-red-500">
+          Variable name conflicts with placeholder. Names must be unique.
+        </p>
       )}
     </div>
   );

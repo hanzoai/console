@@ -41,7 +41,9 @@ export default withMiddlewares({
           });
 
       if (!clickhouseObservation) {
-        throw new HanzoNotFoundError("Observation not found within authorized project");
+        throw new HanzoNotFoundError(
+          "Observation not found within authorized project",
+        );
       }
 
       const model = clickhouseObservation.internalModelId
@@ -81,7 +83,9 @@ export default withMiddlewares({
       };
 
       if (!observation) {
-        throw new HanzoNotFoundError("Observation not found within authorized project");
+        throw new HanzoNotFoundError(
+          "Observation not found within authorized project",
+        );
       }
       return transformDbToApiObservation(observation);
     },

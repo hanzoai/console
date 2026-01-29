@@ -4,13 +4,20 @@
  * Critical functionality: search matching, highlight positioning, match counting
  */
 
-import { searchInTree, getMatchCountsPerNode, highlightText } from "./searchJson";
+import {
+  searchInTree,
+  getMatchCountsPerNode,
+  highlightText,
+} from "./searchJson";
 import { buildTreeFromJSON } from "./treeStructure";
 
 describe("searchJson", () => {
   describe("searchInTree", () => {
     it("should find matches case-insensitively by default", () => {
-      const tree = buildTreeFromJSON({ name: "John", status: "ACTIVE" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { name: "John", status: "ACTIVE" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "john", { caseSensitive: false });
       expect(matches.length).toBe(1);
@@ -19,7 +26,10 @@ describe("searchJson", () => {
     });
 
     it("should respect case-sensitive search", () => {
-      const tree = buildTreeFromJSON({ name: "John", status: "ACTIVE" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { name: "John", status: "ACTIVE" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matchesInsensitive = searchInTree(tree, "john", {
         caseSensitive: false,
@@ -33,7 +43,10 @@ describe("searchJson", () => {
     });
 
     it("should find matches in keys", () => {
-      const tree = buildTreeFromJSON({ userName: "Alice", userAge: 25 }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { userName: "Alice", userAge: 25 },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "user", { caseSensitive: false });
       expect(matches.length).toBe(2);
@@ -41,7 +54,10 @@ describe("searchJson", () => {
     });
 
     it("should find matches in values", () => {
-      const tree = buildTreeFromJSON({ status: "active", role: "admin" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { status: "active", role: "admin" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "active", { caseSensitive: false });
       expect(matches.length).toBe(1);
@@ -63,7 +79,10 @@ describe("searchJson", () => {
     });
 
     it("should handle multiple matches in same string", () => {
-      const tree = buildTreeFromJSON({ text: "hello hello world" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { text: "hello hello world" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "hello", { caseSensitive: false });
       // Each match in the string creates a separate SearchMatch entry
@@ -71,7 +90,10 @@ describe("searchJson", () => {
     });
 
     it("should return empty array for empty query", () => {
-      const tree = buildTreeFromJSON({ data: "test" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { data: "test" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "", { caseSensitive: false });
       expect(matches.length).toBe(0);
@@ -118,7 +140,10 @@ describe("searchJson", () => {
     });
 
     it("should return all zeros for no matches", () => {
-      const tree = buildTreeFromJSON({ data: "value" }, { rootKey: "root", initialExpansion: true });
+      const tree = buildTreeFromJSON(
+        { data: "value" },
+        { rootKey: "root", initialExpansion: true },
+      );
 
       const matches = searchInTree(tree, "xyz123notfound", {
         caseSensitive: false,

@@ -4,7 +4,11 @@ import { FlaskConical, List } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { MarkdownJsonView } from "@/src/components/ui/MarkdownJsonView";
-import { Dialog, DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/src/components/ui/dialog";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { DatasetAnalytics } from "@/src/features/datasets/components/DatasetAnalytics";
@@ -15,7 +19,12 @@ import { RESOURCE_METRICS } from "@/src/features/dashboard/lib/score-analytics-u
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import Page from "@/src/components/layouts/page";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
-import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
+import {
+  SidePanel,
+  SidePanelContent,
+  SidePanelHeader,
+  SidePanelTitle,
+} from "@/src/components/ui/side-panel";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 import { useDatasetRunsCompare } from "@/src/features/datasets/hooks/useDatasetRunsCompare";
@@ -32,7 +41,8 @@ export default function DatasetCompare() {
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
 
-  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] = useState(false);
+  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] =
+    useState(false);
 
   const [selectedMetrics, setSelectedMetrics] = useLocalStorage<string[]>(
     `${projectId}-dataset-compare-metrics`,
@@ -53,11 +63,8 @@ export default function DatasetCompare() {
     setLocalRuns,
   } = useDatasetRunsCompare(projectId, datasetId);
 
-  const { chartDataMap, scoreAnalyticsOptions, scoreKeyToData, isLoading } = useDatasetRunCompareChartData(
-    projectId,
-    datasetId,
-    runIds,
-  );
+  const { chartDataMap, scoreAnalyticsOptions, scoreKeyToData, isLoading } =
+    useDatasetRunCompareChartData(projectId, datasetId, runIds);
 
   const handleExperimentSettled = async (data?: {
     success: boolean;
@@ -183,26 +190,44 @@ export default function DatasetCompare() {
                   const scoreData = scoreKeyToData.get(key);
                   if (!scoreData)
                     return (
-                      <div key={key} className="max-h-52 min-h-0 min-w-0 max-w-full">
+                      <div
+                        key={key}
+                        className="max-h-52 min-h-0 min-w-0 max-w-full"
+                      >
                         <TimeseriesChart
                           key={key}
                           chartData={chartData}
                           chartLabels={chartLabels}
-                          title={RESOURCE_METRICS.find((metric) => metric.key === key)?.label ?? key}
+                          title={
+                            RESOURCE_METRICS.find(
+                              (metric) => metric.key === key,
+                            )?.label ?? key
+                          }
                           type="numeric"
-                          maxFractionDigits={RESOURCE_METRICS.find((metric) => metric.key === key)?.maxFractionDigits}
+                          maxFractionDigits={
+                            RESOURCE_METRICS.find(
+                              (metric) => metric.key === key,
+                            )?.maxFractionDigits
+                          }
                         />
                       </div>
                     );
 
                   return (
-                    <div key={key} className="max-h-52 min-h-0 min-w-0 max-w-full">
+                    <div
+                      key={key}
+                      className="max-h-52 min-h-0 min-w-0 max-w-full"
+                    >
                       <TimeseriesChart
                         key={key}
                         chartData={chartData}
                         chartLabels={chartLabels}
                         title={`${getScoreDataTypeIcon(scoreData.dataType)} ${scoreData.name} (${scoreData.source.toLowerCase()})`}
-                        type={isNumericDataType(scoreData.dataType) ? "numeric" : "categorical"}
+                        type={
+                          isNumericDataType(scoreData.dataType)
+                            ? "numeric"
+                            : "categorical"
+                        }
                       />
                     </div>
                   );
@@ -219,7 +244,11 @@ export default function DatasetCompare() {
             )}
           </div>
         </div>
-        <SidePanel mobileTitle={dataset.data?.name ?? datasetId} id="compare-dataset-runs" scrollable={false}>
+        <SidePanel
+          mobileTitle={dataset.data?.name ?? datasetId}
+          id="compare-dataset-runs"
+          scrollable={false}
+        >
           <SidePanelHeader>
             <SidePanelTitle>{dataset.data?.name}</SidePanelTitle>
           </SidePanelHeader>
@@ -227,7 +256,9 @@ export default function DatasetCompare() {
             <div className="w-full space-y-4">
               <div>
                 <SubHeaderLabel title="Description" />
-                <span className="text-sm text-muted-foreground">{dataset.data?.description ?? "No description"}</span>
+                <span className="text-sm text-muted-foreground">
+                  {dataset.data?.description ?? "No description"}
+                </span>
               </div>
               {dataset.data?.metadata && (
                 <div>

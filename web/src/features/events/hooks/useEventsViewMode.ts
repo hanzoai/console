@@ -23,7 +23,8 @@ export function useEventsViewMode(projectId: string): UseEventsViewModeOutput {
 
   return useMemo(() => {
     const rawMode = queryParams.viewMode;
-    const viewMode: EventsViewMode = rawMode === "observation" || rawMode === "trace" ? rawMode : defaultMode;
+    const viewMode: EventsViewMode =
+      rawMode === "observation" || rawMode === "trace" ? rawMode : defaultMode;
 
     const setViewMode = (mode: EventsViewMode) => {
       setQueryParams({ viewMode: mode });

@@ -2,7 +2,13 @@ import { cn } from "@/src/utils/tailwind";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { useRouter } from "next/router";
 
 type SettingsProps = {
@@ -16,17 +22,27 @@ type SettingsProps = {
   activeSlug?: string;
 };
 
-export const PagedSettingsContainer = ({ pages, activeSlug }: SettingsProps) => {
+export const PagedSettingsContainer = ({
+  pages,
+  activeSlug,
+}: SettingsProps) => {
   const router = useRouter();
   const availablePages = pages.filter((page) =>
-    "show" in page ? (typeof page.show === "function" ? page.show() : page.show) : true,
+    "show" in page
+      ? typeof page.show === "function"
+        ? page.show()
+        : page.show
+      : true,
   );
 
-  const currentPage = availablePages.find((page) => page.slug === activeSlug) ?? availablePages[0]; // Fallback to first page if not found
+  const currentPage =
+    availablePages.find((page) => page.slug === activeSlug) ??
+    availablePages[0]; // Fallback to first page if not found
 
   const onChange = (newSlug: string) => {
     const pathSegments = router.asPath.split("/");
-    if (pathSegments[pathSegments.length - 1] !== "settings") pathSegments.pop();
+    if (pathSegments[pathSegments.length - 1] !== "settings")
+      pathSegments.pop();
     if (newSlug !== "index") pathSegments.push(newSlug);
     router.push(pathSegments.join("/"));
   };
@@ -50,7 +66,9 @@ export const PagedSettingsContainer = ({ pages, activeSlug }: SettingsProps) => 
               {availablePages.map((page) => (
                 <SelectItem key={page.title} value={page.slug}>
                   {page.title}
-                  {"href" in page && <ArrowUpRight size={14} className="ml-1 inline" />}
+                  {"href" in page && (
+                    <ArrowUpRight size={14} className="ml-1 inline" />
+                  )}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -62,7 +80,11 @@ export const PagedSettingsContainer = ({ pages, activeSlug }: SettingsProps) => 
         >
           {availablePages.map((page) =>
             "href" in page ? (
-              <Link key={page.title} href={page.href} className="flex flex-row items-center gap-2 font-semibold">
+              <Link
+                key={page.title}
+                href={page.href}
+                className="flex flex-row items-center gap-2 font-semibold"
+              >
                 {page.title}
                 <ArrowUpRight size={14} className="inline" />
               </Link>
@@ -70,7 +92,10 @@ export const PagedSettingsContainer = ({ pages, activeSlug }: SettingsProps) => 
               <span
                 key={page.title}
                 onClick={() => onChange(page.slug)}
-                className={cn("cursor-pointer font-semibold", page.slug === currentPage.slug && "text-primary")}
+                className={cn(
+                  "cursor-pointer font-semibold",
+                  page.slug === currentPage.slug && "text-primary",
+                )}
               >
                 {page.title}
               </span>

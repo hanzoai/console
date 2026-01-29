@@ -1,10 +1,20 @@
 import { Input } from "@/src/components/ui/input";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { type UseFormReturn } from "react-hook-form";
 import { type ActionDomain } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { SlackConnectionCard } from "@/src/features/slack/components/SlackConnectionCard";
-import { ChannelSelector, type SlackChannel } from "@/src/features/slack/components/ChannelSelector";
+import {
+  ChannelSelector,
+  type SlackChannel,
+} from "@/src/features/slack/components/ChannelSelector";
 import { SlackTestMessageButton } from "@/src/features/slack/components/SlackTestMessageButton";
 import { useState } from "react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -16,11 +26,20 @@ interface SlackActionFormProps {
   action?: ActionDomain;
 }
 
-export const SlackActionForm: React.FC<SlackActionFormProps> = ({ form, disabled, projectId }) => {
-  const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(null);
+export const SlackActionForm: React.FC<SlackActionFormProps> = ({
+  form,
+  disabled,
+  projectId,
+}) => {
+  const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(
+    null,
+  );
 
   // Get Slack integration status
-  const { data: integrationStatus } = api.slack.getIntegrationStatus.useQuery({ projectId }, { enabled: !!projectId });
+  const { data: integrationStatus } = api.slack.getIntegrationStatus.useQuery(
+    { projectId },
+    { enabled: !!projectId },
+  );
 
   // Check user permissions
   const hasAccess = useHasProjectAccess({
@@ -76,7 +95,9 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({ form, disabled
                     />
                   </div>
                 </FormControl>
-                <FormDescription>Select the Slack channel where notifications will be sent.</FormDescription>
+                <FormDescription>
+                  Select the Slack channel where notifications will be sent.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -100,7 +121,9 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({ form, disabled
                 size="sm"
                 buttonText="Test Channel"
               />
-              <p className="text-sm text-muted-foreground">Test this channel to verify the bot can send messages.</p>
+              <p className="text-sm text-muted-foreground">
+                Test this channel to verify the bot can send messages.
+              </p>
             </div>
           )}
         </div>

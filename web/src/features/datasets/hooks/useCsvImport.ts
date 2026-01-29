@@ -4,8 +4,15 @@ import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { MAX_FILE_SIZE_BYTES } from "@/src/features/datasets/components/UploadDatasetCsv";
 import { type BulkDatasetItemValidationError } from "@hanzo/shared";
 import chunk from "lodash/chunk";
-import { parseCsvClient, parseColumns, buildSchemaObject } from "@/src/features/datasets/lib/csv/helpers";
-import type { CsvColumnPreview, FieldMapping } from "@/src/features/datasets/lib/csv/types";
+import {
+  parseCsvClient,
+  parseColumns,
+  buildSchemaObject,
+} from "@/src/features/datasets/lib/csv/helpers";
+import type {
+  CsvColumnPreview,
+  FieldMapping,
+} from "@/src/features/datasets/lib/csv/types";
 
 const MIN_CHUNK_SIZE = 1;
 const CHUNK_START_SIZE = 50;
@@ -64,13 +71,17 @@ export function useCsvImport(options: UseCsvImportOptions) {
     processedItems: 0,
     status: "not-started",
   });
-  const [validationErrors, setValidationErrors] = useState<BulkDatasetItemValidationError[]>([]);
+  const [validationErrors, setValidationErrors] = useState<
+    BulkDatasetItemValidationError[]
+  >([]);
 
   const utils = api.useUtils();
-  const mutCreateManyDatasetItems = api.datasets.createManyDatasetItems.useMutation({});
+  const mutCreateManyDatasetItems =
+    api.datasets.createManyDatasetItems.useMutation({});
 
   const execute = async (wrapSingleColumn: boolean) => {
-    const { csvFile, projectId, datasetId, input, expectedOutput, metadata } = options;
+    const { csvFile, projectId, datasetId, input, expectedOutput, metadata } =
+      options;
 
     if (!csvFile) return;
     if (csvFile.size > MAX_FILE_SIZE_BYTES) {
@@ -83,22 +94,37 @@ export function useCsvImport(options: UseCsvImportOptions) {
     let processedCount = 0;
     let headerMap: Map<string, number>;
 
-    const items: RouterInputs["datasets"]["createManyDatasetItems"]["items"] = [];
+    const items: RouterInputs["datasets"]["createManyDatasetItems"]["items"] =
+      [];
 
     // Prepare mappings based on field type
     const inputMapping =
       input.type === "schema"
-        ? Object.fromEntries(input.entries.map((entry) => [entry.key, entry.columns.map((c) => c.name)]))
+        ? Object.fromEntries(
+            input.entries.map((entry) => [
+              entry.key,
+              entry.columns.map((c) => c.name),
+            ]),
+          )
         : undefined;
 
-    const inputColumns = input.type === "freeform" ? input.columns.map((c) => c.name) : [];
+    const inputColumns =
+      input.type === "freeform" ? input.columns.map((c) => c.name) : [];
 
     const expectedOutputMapping =
       expectedOutput.type === "schema"
-        ? Object.fromEntries(expectedOutput.entries.map((entry) => [entry.key, entry.columns.map((c) => c.name)]))
+        ? Object.fromEntries(
+            expectedOutput.entries.map((entry) => [
+              entry.key,
+              entry.columns.map((c) => c.name),
+            ]),
+          )
         : undefined;
 
-    const expectedOutputColumns = expectedOutput.type === "freeform" ? expectedOutput.columns.map((c) => c.name) : [];
+    const expectedOutputColumns =
+      expectedOutput.type === "freeform"
+        ? expectedOutput.columns.map((c) => c.name)
+        : [];
 
     const metadataColumns = metadata.map((c) => c.name);
 
@@ -116,7 +142,9 @@ export function useCsvImport(options: UseCsvImportOptions) {
               ...expectedOutputColumns,
               ...metadataColumns,
             ];
-            const missingColumns = allColumns.filter((col) => !headerMap.has(col));
+            const missingColumns = allColumns.filter(
+              (col) => !headerMap.has(col),
+            );
             if (missingColumns.length > 0) {
               throw new Error(`Missing columns: ${missingColumns.join(", ")}`);
             }
@@ -138,7 +166,11 @@ export function useCsvImport(options: UseCsvImportOptions) {
 
               // Process expected output
               if (expectedOutput.type === "schema" && expectedOutputMapping) {
-                itemExpected = buildSchemaObject(expectedOutputMapping, row, headerMap);
+                itemExpected = buildSchemaObject(
+                  expectedOutputMapping,
+                  row,
+                  headerMap,
+                );
               } else {
                 itemExpected =
                   parseColumns(expectedOutputColumns, row, headerMap, {

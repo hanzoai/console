@@ -53,7 +53,9 @@ export const AutoComplete = ({
 
       // This is not a default behavior of the <input /> field
       if (event.key === "Enter" && input.value !== "") {
-        const optionToSelect = options.find((option) => option.label === input.value);
+        const optionToSelect = options.find(
+          (option) => option.label === input.value,
+        );
         if (optionToSelect) {
           setSelected(optionToSelect);
           onValueChange?.(optionToSelect);
@@ -118,7 +120,10 @@ export const AutoComplete = ({
                           event.stopPropagation();
                         }}
                         onSelect={() => handleSelectOption(option)}
-                        className={cn("flex w-full items-center gap-2", !isSelected ? "pl-8" : null)}
+                        className={cn(
+                          "flex w-full items-center gap-2",
+                          !isSelected ? "pl-8" : null,
+                        )}
                       >
                         {isSelected ? <Check className="w-4" /> : null}
                         {option.label}
@@ -132,7 +137,9 @@ export const AutoComplete = ({
                   event.preventDefault();
                   event.stopPropagation();
                 }}
-                onSelect={() => handleSelectOption({ value: inputValue, label: inputValue })}
+                onSelect={() =>
+                  handleSelectOption({ value: inputValue, label: inputValue })
+                }
                 createLabel={createLabel}
                 {...{ inputValue, options }}
               />
@@ -159,7 +166,9 @@ const InputCommandItemCreate = ({
   onSelect: () => void;
   onMouseDown: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
-  const hasNoOption = !options.map(({ value }) => value).includes(inputValue.toLowerCase());
+  const hasNoOption = !options
+    .map(({ value }) => value)
+    .includes(inputValue.toLowerCase());
 
   const render = inputValue !== "" && hasNoOption;
 

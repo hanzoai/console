@@ -17,7 +17,12 @@ type PricingSectionProps = {
 
 export type { PricingSectionProps };
 
-export function PricingSection({ fields, form, remove, addTier }: PricingSectionProps) {
+export function PricingSection({
+  fields,
+  form,
+  remove,
+  addTier,
+}: PricingSectionProps) {
   const hasMultipleTiers = fields.length > 1;
   const defaultTierIndex = fields.findIndex((f) => f.isDefault);
 
@@ -28,13 +33,17 @@ export function PricingSection({ fields, form, remove, addTier }: PricingSection
         <div>
           <FormLabel>Prices</FormLabel>
           <FormDescription>
-            Set prices per usage type for this model. Usage types must exactly match the keys of the ingested usage
-            details.
+            Set prices per usage type for this model. Usage types must exactly
+            match the keys of the ingested usage details.
           </FormDescription>
         </div>
 
         <TierPrefillButtons tierIndex={defaultTierIndex} form={form} />
-        <TierPriceEditor tierIndex={defaultTierIndex} form={form} isDefault={true} />
+        <TierPriceEditor
+          tierIndex={defaultTierIndex}
+          form={form}
+          isDefault={true}
+        />
 
         <Button type="button" variant="ghost" onClick={addTier}>
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -50,7 +59,8 @@ export function PricingSection({ fields, form, remove, addTier }: PricingSection
       <div>
         <FormLabel>Pricing Tiers</FormLabel>
         <FormDescription>
-          Define pricing rules evaluated in priority order. Tiers are checked from top to bottom until conditions match.
+          Define pricing rules evaluated in priority order. Tiers are checked
+          from top to bottom until conditions match.
         </FormDescription>
       </div>
 

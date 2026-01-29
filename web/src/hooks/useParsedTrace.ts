@@ -17,7 +17,10 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import type { ParseRequest, ParseResponse } from "@/src/workers/json-parser.worker";
+import type {
+  ParseRequest,
+  ParseResponse,
+} from "@/src/workers/json-parser.worker";
 
 /**
  * Threshold for using Web Worker vs sync parsing (in characters).
@@ -43,7 +46,10 @@ function estimateSize(value: unknown): number {
 
 // Singleton worker instance shared across all hook calls
 let workerInstance: Worker | null = null;
-const pendingCallbacks = new Map<string, (data: ParseResponse & { error?: string }) => void>();
+const pendingCallbacks = new Map<
+  string,
+  (data: ParseResponse & { error?: string }) => void
+>();
 
 function getOrCreateWorker(): Worker | null {
   if (typeof window === "undefined" || !window.Worker) {
@@ -53,7 +59,9 @@ function getOrCreateWorker(): Worker | null {
   if (!workerInstance) {
     try {
       // Next.js will bundle this as a separate chunk
-      workerInstance = new Worker(new URL("@/src/workers/json-parser.worker.ts", import.meta.url));
+      workerInstance = new Worker(
+        new URL("@/src/workers/json-parser.worker.ts", import.meta.url),
+      );
 
       workerInstance.onmessage = (e: MessageEvent<ParseResponse>) => {
         const callback = pendingCallbacks.get(e.data.id);
@@ -92,7 +100,11 @@ interface ParsedData {
 /**
  * Sync parse helper - used for small payloads or when Web Worker unavailable
  */
-async function syncParseTraceData(input: unknown, output: unknown, metadata: unknown): Promise<ParsedData> {
+async function syncParseTraceData(
+  input: unknown,
+  output: unknown,
+  metadata: unknown,
+): Promise<ParsedData> {
   const { deepParseJsonIterative } = await import("@hanzo/shared");
   const startTime = performance.now();
 
@@ -117,9 +129,14 @@ async function syncParseTraceData(input: unknown, output: unknown, metadata: unk
  * Parse trace data in Web Worker (or sync for small payloads)
  * Returns a promise that resolves with parsed data
  */
-async function parseTraceData(input: unknown, output: unknown, metadata: unknown): Promise<ParsedData> {
+async function parseTraceData(
+  input: unknown,
+  output: unknown,
+  metadata: unknown,
+): Promise<ParsedData> {
   // Estimate total size to decide sync vs worker
-  const totalSize = estimateSize(input) + estimateSize(output) + estimateSize(metadata);
+  const totalSize =
+    estimateSize(input) + estimateSize(output) + estimateSize(metadata);
 
   // Small payloads: sync parse (faster, no message-passing overhead)
   if (totalSize < PARSE_IN_WEBWORKER_THRESHOLD) {
@@ -165,7 +182,12 @@ async function parseTraceData(input: unknown, output: unknown, metadata: unknown
   });
 }
 
-export function useParsedTrace({ traceId, input, output, metadata }: UseParsedTraceParams) {
+export function useParsedTrace({
+  traceId,
+  input,
+  output,
+  metadata,
+}: UseParsedTraceParams) {
   // Parse the data in Web Worker (React Query caches this)
   const parseQuery = useQuery({
     queryKey: [

@@ -10,7 +10,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/src/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import {
@@ -50,37 +56,67 @@ import {
   VariableMappingDescription,
 } from "@/src/features/evals/components/eval-form-descriptions";
 import { Suspense, lazy } from "react";
-import { getDateFromOption, type TableDateRange } from "@/src/utils/date-range-utils";
+import {
+  getDateFromOption,
+  type TableDateRange,
+} from "@/src/utils/date-range-utils";
 import { useEvalConfigMappingData } from "@/src/features/evals/hooks/useEvalConfigMappingData";
 import { type PartialConfig } from "@/src/features/evals/types";
 import { Switch } from "@/src/components/ui/switch";
-import { EvaluationPromptPreview, getVariableColor } from "@/src/features/evals/components/evaluation-prompt-preview";
+import {
+  EvaluationPromptPreview,
+  getVariableColor,
+} from "@/src/features/evals/components/evaluation-prompt-preview";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/src/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 
 // Lazy load TracesTable
-const TracesTable = lazy(() => import("@/src/components/table/use-cases/traces"));
+const TracesTable = lazy(
+  () => import("@/src/components/table/use-cases/traces"),
+);
 
-const OUTPUT_MAPPING = ["generation", "output", "response", "answer", "completion"];
+const OUTPUT_MAPPING = [
+  "generation",
+  "output",
+  "response",
+  "answer",
+  "completion",
+];
 
-const inferDefaultMapping = (variable: string): Pick<VariableMapping, "hanzoObject" | "selectedColumnId"> => {
+const inferDefaultMapping = (
+  variable: string,
+): Pick<VariableMapping, "hanzoObject" | "selectedColumnId"> => {
   return {
     hanzoObject: "trace" as const,
-    selectedColumnId: OUTPUT_MAPPING.includes(variable.toLowerCase()) ? "output" : "input",
+    selectedColumnId: OUTPUT_MAPPING.includes(variable.toLowerCase())
+      ? "output"
+      : "input",
   };
 };
 
-const fieldHasJsonSelectorOption = (selectedColumnId: string | undefined | null): boolean =>
+const fieldHasJsonSelectorOption = (
+  selectedColumnId: string | undefined | null,
+): boolean =>
   selectedColumnId === "input" ||
   selectedColumnId === "output" ||
   selectedColumnId === "metadata" ||
   selectedColumnId === "expected_output";
 
 const TracesPreview = memo(
-  ({ projectId, filterState }: { projectId: string; filterState: z.infer<typeof singleFilter>[] }) => {
+  ({
+    projectId,
+    filterState,
+  }: {
+    projectId: string;
+    filterState: z.infer<typeof singleFilter>[];
+  }) => {
     const dateRange = useMemo(() => {
       return {
         from: getDateFromOption({
@@ -93,8 +129,12 @@ const TracesPreview = memo(
     return (
       <>
         <div className="flex flex-col items-start gap-1">
-          <span className="text-sm font-medium leading-none">Preview sample matched traces</span>
-          <FormDescription>Sample over the last 24 hours that match these filters</FormDescription>
+          <span className="text-sm font-medium leading-none">
+            Preview sample matched traces
+          </span>
+          <FormDescription>
+            Sample over the last 24 hours that match these filters
+          </FormDescription>
         </div>
         <div className="mb-4 flex max-h-[30dvh] w-full flex-col overflow-hidden border-b border-l border-r">
           <Suspense fallback={<Skeleton className="h-[30dvh] w-full" />}>
@@ -137,11 +177,16 @@ export const InnerEvaluatorForm = (props: {
     resolver: zodResolver(evalConfigFormSchema),
     disabled: props.disabled,
     defaultValues: {
-      scoreName: props.existingEvaluator?.scoreName ?? `${props.evalTemplate.name}`,
+      scoreName:
+        props.existingEvaluator?.scoreName ?? `${props.evalTemplate.name}`,
       target: props.existingEvaluator?.targetObject ?? "trace",
-      filter: props.existingEvaluator?.filter ? z.array(singleFilter).parse(props.existingEvaluator.filter) : [],
+      filter: props.existingEvaluator?.filter
+        ? z.array(singleFilter).parse(props.existingEvaluator.filter)
+        : [],
       mapping: props.existingEvaluator?.variableMapping
-        ? z.array(variableMapping).parse(props.existingEvaluator.variableMapping)
+        ? z
+            .array(variableMapping)
+            .parse(props.existingEvaluator.variableMapping)
         : z.array(variableMapping).parse(
             props.evalTemplate
               ? props.evalTemplate.vars.map((v) => ({
@@ -151,10 +196,15 @@ export const InnerEvaluatorForm = (props: {
                 }))
               : [],
           ),
-      sampling: props.existingEvaluator?.sampling ? props.existingEvaluator.sampling.toNumber() : 1,
-      delay: props.existingEvaluator?.delay ? props.existingEvaluator.delay / 1000 : 30,
-      timeScope: (props.existingEvaluator?.timeScope ?? ["NEW"]).filter((option): option is "NEW" | "EXISTING" =>
-        ["NEW", "EXISTING"].includes(option),
+      sampling: props.existingEvaluator?.sampling
+        ? props.existingEvaluator.sampling.toNumber()
+        : 1,
+      delay: props.existingEvaluator?.delay
+        ? props.existingEvaluator.delay / 1000
+        : 30,
+      timeScope: (props.existingEvaluator?.timeScope ?? ["NEW"]).filter(
+        (option): option is "NEW" | "EXISTING" =>
+          ["NEW", "EXISTING"].includes(option),
       ),
     },
   }) as UseFormReturn<EvalFormType>;
@@ -170,18 +220,19 @@ export const InnerEvaluatorForm = (props: {
     },
   );
 
-  const environmentFilterOptionsResponse = api.projects.environmentFilterOptions.useQuery(
-    {
-      projectId: props.projectId,
-    },
-    {
-      trpc: { context: { skipBatch: true } },
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      staleTime: Infinity,
-    },
-  );
+  const environmentFilterOptionsResponse =
+    api.projects.environmentFilterOptions.useQuery(
+      {
+        projectId: props.projectId,
+      },
+      {
+        trpc: { context: { skipBatch: true } },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+      },
+    );
 
   const traceFilterOptions = useMemo(() => {
     // Normalize API response to match TraceOptions type (count should be number, not string)
@@ -225,12 +276,8 @@ export const InnerEvaluatorForm = (props: {
   );
 
   const shouldFetch = !props.disabled && form.watch("target") === "trace";
-  const { observationTypeToNames, traceWithObservations, isLoading } = useEvalConfigMappingData(
-    props.projectId,
-    form,
-    traceId,
-    shouldFetch,
-  );
+  const { observationTypeToNames, traceWithObservations, isLoading } =
+    useEvalConfigMappingData(props.projectId, form, traceId, shouldFetch);
 
   const datasetFilterOptions = useMemo(() => {
     if (!datasets.data) return undefined;
@@ -287,7 +334,11 @@ export const InnerEvaluatorForm = (props: {
   );
 
   function onSubmit(values: z.infer<typeof evalConfigFormSchema>) {
-    capture(props.mode === "edit" ? "eval_config:update" : "eval_config:new_form_submit");
+    capture(
+      props.mode === "edit"
+        ? "eval_config:update"
+        : "eval_config:new_form_submit",
+    );
 
     // Apply preprocessFormValues if it exists
     if (props.preprocessFormValues) {
@@ -303,7 +354,8 @@ export const InnerEvaluatorForm = (props: {
     ) {
       form.setError("timeScope", {
         type: "manual",
-        message: "The evaluator ran on existing traces already. This cannot be changed anymore.",
+        message:
+          "The evaluator ran on existing traces already. This cannot be changed anymore.",
       });
       return;
     }
@@ -323,7 +375,9 @@ export const InnerEvaluatorForm = (props: {
       return;
     }
 
-    const validatedVarMapping = z.array(variableMapping).safeParse(values.mapping);
+    const validatedVarMapping = z
+      .array(variableMapping)
+      .safeParse(values.mapping);
 
     if (validatedVarMapping.success === false) {
       form.setError("mapping", {
@@ -388,7 +442,11 @@ export const InnerEvaluatorForm = (props: {
       {form.watch("target") === "trace" && !props.disabled && (
         <>
           <span className="text-xs text-muted-foreground">Show Preview</span>
-          <Switch checked={showPreview} onCheckedChange={setShowPreview} disabled={props.disabled} />
+          <Switch
+            checked={showPreview}
+            onCheckedChange={setShowPreview}
+            disabled={props.disabled}
+          />
           {showPreview &&
             (traceWithObservations ? (
               <DetailPageNav
@@ -442,7 +500,8 @@ export const InnerEvaluatorForm = (props: {
                         </TooltipTrigger>
                         <TooltipContent className="max-w-[200px] p-2">
                           <span className="leading-4">
-                            An evaluator&apos;s target data may only be configured at creation.
+                            An evaluator&apos;s target data may only be
+                            configured at creation.
                           </span>
                         </TooltipContent>
                       </Tooltip>
@@ -454,22 +513,36 @@ export const InnerEvaluatorForm = (props: {
                       value={field.value}
                       onValueChange={(value) => {
                         const isTrace = isTraceTarget(value);
-                        const hanzoObject: HanzoObject = isTrace ? "trace" : "dataset_item";
-                        const newMapping = form.getValues("mapping").map((field) => ({
-                          ...field,
-                          hanzoObject,
-                        }));
+                        const hanzoObject: HanzoObject = isTrace
+                          ? "trace"
+                          : "dataset_item";
+                        const newMapping = form
+                          .getValues("mapping")
+                          .map((field) => ({
+                            ...field,
+                            hanzoObject,
+                          }));
                         form.setValue("filter", []);
                         form.setValue("mapping", newMapping);
-                        setAvailableVariables(isTrace ? availableTraceEvalVariables : availableDatasetEvalVariables);
+                        setAvailableVariables(
+                          isTrace
+                            ? availableTraceEvalVariables
+                            : availableDatasetEvalVariables,
+                        );
                         field.onChange(value);
                       }}
                     >
                       <TabsList>
-                        <TabsTrigger value="trace" disabled={props.disabled || props.mode === "edit"}>
+                        <TabsTrigger
+                          value="trace"
+                          disabled={props.disabled || props.mode === "edit"}
+                        >
                           Live tracing data
                         </TabsTrigger>
-                        <TabsTrigger value="dataset" disabled={props.disabled || props.mode === "edit"}>
+                        <TabsTrigger
+                          value="dataset"
+                          disabled={props.disabled || props.mode === "edit"}
+                        >
                           Dataset runs
                         </TabsTrigger>
                       </TabsList>
@@ -493,7 +566,9 @@ export const InnerEvaluatorForm = (props: {
                           id="newObjects"
                           checked={field.value.includes("NEW")}
                           onCheckedChange={(checked) => {
-                            const newValue = checked ? [...field.value, "NEW"] : field.value.filter((v) => v !== "NEW");
+                            const newValue = checked
+                              ? [...field.value, "NEW"]
+                              : field.value.filter((v) => v !== "NEW");
                             field.onChange(newValue);
                           }}
                           disabled={props.disabled}
@@ -503,7 +578,10 @@ export const InnerEvaluatorForm = (props: {
                             htmlFor="newObjects"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            New {form.watch("target") === "trace" ? "traces" : "dataset run items"}
+                            New{" "}
+                            {form.watch("target") === "trace"
+                              ? "traces"
+                              : "dataset run items"}
                           </label>
                         </div>
                       </div>
@@ -517,14 +595,21 @@ export const InnerEvaluatorForm = (props: {
                               : field.value.filter((v) => v !== "EXISTING");
                             field.onChange(newValue);
                           }}
-                          disabled={props.disabled || (props.mode === "edit" && field.value.includes("EXISTING"))}
+                          disabled={
+                            props.disabled ||
+                            (props.mode === "edit" &&
+                              field.value.includes("EXISTING"))
+                          }
                         />
                         <div className="flex items-center gap-1.5 leading-none">
                           <label
                             htmlFor="existingObjects"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            Existing {form.watch("target") === "trace" ? "traces" : "dataset run items"}
+                            Existing{" "}
+                            {form.watch("target") === "trace"
+                              ? "traces"
+                              : "dataset run items"}
                           </label>
                           {field.value.includes("EXISTING") &&
                             !props.disabled &&
@@ -536,9 +621,15 @@ export const InnerEvaluatorForm = (props: {
                                 <TooltipContent className="max-w-[300px] p-2">
                                   <span className="leading-4">
                                     This evaluator has already run on existing{" "}
-                                    {form.watch("target") === "trace" ? "traces" : "dataset run items"} once. Set up a
-                                    new evaluator to re-run on existing{" "}
-                                    {form.watch("target") === "trace" ? "traces" : "dataset run items"}.
+                                    {form.watch("target") === "trace"
+                                      ? "traces"
+                                      : "dataset run items"}{" "}
+                                    once. Set up a new evaluator to re-run on
+                                    existing{" "}
+                                    {form.watch("target") === "trace"
+                                      ? "traces"
+                                      : "dataset run items"}
+                                    .
                                   </span>
                                 </TooltipContent>
                               </Tooltip>
@@ -569,12 +660,18 @@ export const InnerEvaluatorForm = (props: {
                       <FormControl>
                         <div className="max-w-[500px]">
                           <InlineFilterBuilder
-                            columns={tracesTableColsWithOptions(traceFilterOptions, evalTraceTableCols)}
+                            columns={tracesTableColsWithOptions(
+                              traceFilterOptions,
+                              evalTraceTableCols,
+                            )}
                             filterState={field.value ?? []}
-                            onChange={(value: z.infer<typeof singleFilter>[]) => {
+                            onChange={(
+                              value: z.infer<typeof singleFilter>[],
+                            ) => {
                               field.onChange(value);
                               if (router.query.traceId) {
-                                const { traceId, ...otherParams } = router.query;
+                                const { traceId, ...otherParams } =
+                                  router.query;
                                 router.replace(
                                   {
                                     pathname: router.pathname,
@@ -596,7 +693,10 @@ export const InnerEvaluatorForm = (props: {
                     <>
                       <FormControl>
                         <InlineFilterBuilder
-                          columns={datasetFormFilterColsWithOptions(datasetFilterOptions, evalDatasetFormFilterCols)}
+                          columns={datasetFormFilterColsWithOptions(
+                            datasetFilterOptions,
+                            evalDatasetFormFilterCols,
+                          )}
                           filterState={field.value ?? []}
                           onChange={field.onChange}
                           disabled={props.disabled}
@@ -610,7 +710,10 @@ export const InnerEvaluatorForm = (props: {
             />
 
             {form.watch("target") === "trace" && !props.disabled && (
-              <TracesPreview projectId={props.projectId} filterState={form.watch("filter") ?? []} />
+              <TracesPreview
+                projectId={props.projectId}
+                filterState={form.watch("filter") ?? []}
+              />
             )}
 
             <FormField
@@ -638,7 +741,9 @@ export const InnerEvaluatorForm = (props: {
                       <TimeScopeDescription
                         projectId={props.projectId}
                         timeScope={form.watch("timeScope")}
-                        target={form.watch("target") as "trace" | "dataset_item"}
+                        target={
+                          form.watch("target") as "trace" | "dataset_item"
+                        }
                       />
                     </FormDescription>
                   </div>
@@ -657,7 +762,8 @@ export const InnerEvaluatorForm = (props: {
                     <Input {...field} type="number" min={0} />
                   </FormControl>
                   <FormDescription>
-                    Time between first Trace/Dataset run event and evaluation execution to ensure all data is available
+                    Time between first Trace/Dataset run event and evaluation
+                    execution to ensure all data is available
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -672,8 +778,8 @@ export const InnerEvaluatorForm = (props: {
         </div>
         {form.watch("target") === "trace" && !props.disabled && (
           <FormDescription>
-            Preview of the evaluation prompt with the variables replaced with the first matched trace data subject to
-            the filters.
+            Preview of the evaluation prompt with the variables replaced with
+            the first matched trace data subject to the filters.
           </FormDescription>
         )}
         <div className="flex max-w-full flex-col gap-4">
@@ -682,7 +788,12 @@ export const InnerEvaluatorForm = (props: {
             name="mapping"
             render={() => (
               <>
-                <div className={cn("my-2 flex max-w-full flex-col gap-2", !props.shouldWrapVariables && "lg:flex-row")}>
+                <div
+                  className={cn(
+                    "my-2 flex max-w-full flex-col gap-2",
+                    !props.shouldWrapVariables && "lg:flex-row",
+                  )}
+                >
                   {showPreview ? (
                     traceWithObservations ? (
                       <EvaluationPromptPreview
@@ -690,7 +801,10 @@ export const InnerEvaluatorForm = (props: {
                         trace={traceWithObservations}
                         variableMapping={form.watch("mapping")}
                         isLoading={isLoading}
-                        className={cn("min-h-48", !props.shouldWrapVariables && "lg:w-2/3")}
+                        className={cn(
+                          "min-h-48",
+                          !props.shouldWrapVariables && "lg:w-2/3",
+                        )}
                         controlButtons={mappingControlButtons}
                       />
                     ) : (
@@ -700,11 +814,14 @@ export const InnerEvaluatorForm = (props: {
                             Evaluation Prompt Preview
                             <Skeleton className="h-[25px] w-[63px]" />
                           </div>
-                          <div className="flex justify-end">{mappingControlButtons}</div>
+                          <div className="flex justify-end">
+                            {mappingControlButtons}
+                          </div>
                         </div>
                         <div className="flex h-full w-full flex-1 items-center justify-center rounded border">
                           <p className="text-center text-sm text-muted-foreground">
-                            No trace data found, please adjust filters or switch to not show preview.
+                            No trace data found, please adjust filters or switch
+                            to not show preview.
                           </p>
                         </div>
                       </div>
@@ -713,22 +830,39 @@ export const InnerEvaluatorForm = (props: {
                     <JSONView
                       title={"Evaluation Prompt"}
                       json={props.evalTemplate.prompt ?? null}
-                      className={cn("min-h-48", !props.shouldWrapVariables && "lg:w-2/3")}
+                      className={cn(
+                        "min-h-48",
+                        !props.shouldWrapVariables && "lg:w-2/3",
+                      )}
                       codeClassName="flex-1"
                       collapseStringsAfterLength={null}
                       controlButtons={mappingControlButtons}
                     />
                   )}
-                  <div className={cn("flex flex-col gap-2", !props.shouldWrapVariables && "lg:w-1/3")}>
+                  <div
+                    className={cn(
+                      "flex flex-col gap-2",
+                      !props.shouldWrapVariables && "lg:w-1/3",
+                    )}
+                  >
                     {fields.map((mappingField, index) => (
                       <Card className="flex flex-col gap-2 p-4" key={index}>
-                        <div className={cn("text-sm font-semibold", getVariableColor(index))}>
+                        <div
+                          className={cn(
+                            "text-sm font-semibold",
+                            getVariableColor(index),
+                          )}
+                        >
                           {"{{"}
                           {mappingField.templateVariable}
                           {"}}"}
                           <DocPopup
-                            description={"Variable in the template to be replaced with the mapped data."}
-                            href={"https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"}
+                            description={
+                              "Variable in the template to be replaced with the mapped data."
+                            }
+                            href={
+                              "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                            }
                           />
                         </div>
                         <FormField
@@ -739,8 +873,12 @@ export const InnerEvaluatorForm = (props: {
                             <div className="flex items-center gap-2">
                               <VariableMappingDescription
                                 title="Object"
-                                description={"Hanzo object to retrieve the data from."}
-                                href={"https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"}
+                                description={
+                                  "Hanzo object to retrieve the data from."
+                                }
+                                href={
+                                  "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                                }
                               />
                               <FormItem className="w-2/3">
                                 <FormControl>
@@ -749,7 +887,10 @@ export const InnerEvaluatorForm = (props: {
                                     defaultValue={field.value}
                                     onValueChange={(value) => {
                                       field.onChange(value);
-                                      form.setValue(`mapping.${index}.objectName`, undefined);
+                                      form.setValue(
+                                        `mapping.${index}.objectName`,
+                                        undefined,
+                                      );
                                     }}
                                   >
                                     <SelectTrigger>
@@ -757,7 +898,10 @@ export const InnerEvaluatorForm = (props: {
                                     </SelectTrigger>
                                     <SelectContent>
                                       {availableVariables.map((evalObject) => (
-                                        <SelectItem value={evalObject.id} key={evalObject.id}>
+                                        <SelectItem
+                                          value={evalObject.id}
+                                          key={evalObject.id}
+                                        >
                                           {evalObject.display}
                                         </SelectItem>
                                       ))}
@@ -770,7 +914,9 @@ export const InnerEvaluatorForm = (props: {
                           )}
                         />
 
-                        {!isTraceOrDatasetObject(form.watch(`mapping.${index}.hanzoObject`)) ? (
+                        {!isTraceOrDatasetObject(
+                          form.watch(`mapping.${index}.hanzoObject`),
+                        ) ? (
                           <FormField
                             control={form.control}
                             key={`${mappingField.id}-objectName`}
@@ -779,15 +925,23 @@ export const InnerEvaluatorForm = (props: {
                               const type = String(
                                 form.watch(`mapping.${index}.hanzoObject`),
                               ).toUpperCase() as ObservationType;
-                              const nameOptions = Array.from(observationTypeToNames.get(type) ?? []);
+                              const nameOptions = Array.from(
+                                observationTypeToNames.get(type) ?? [],
+                              );
                               const isCustomOption =
-                                field.value === "custom" || (field.value && !nameOptions.includes(field.value));
+                                field.value === "custom" ||
+                                (field.value &&
+                                  !nameOptions.includes(field.value));
                               return (
                                 <div className="flex items-center gap-2">
                                   <VariableMappingDescription
                                     title={"Object Name"}
-                                    description={"Name of the object to retrieve the data from."}
-                                    href={"https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"}
+                                    description={
+                                      "Name of the object to retrieve the data from."
+                                    }
+                                    href={
+                                      "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                                    }
                                   />
                                   <FormItem className="w-2/3">
                                     <FormControl>
@@ -803,22 +957,36 @@ export const InnerEvaluatorForm = (props: {
                                             disabled={props.disabled}
                                           >
                                             <SelectTrigger>
-                                              <SelectValue>Enter name...</SelectValue>
+                                              <SelectValue>
+                                                Enter name...
+                                              </SelectValue>
                                             </SelectTrigger>
                                             <SelectContent>
                                               {nameOptions?.map((name) => (
-                                                <SelectItem key={name} value={name}>
+                                                <SelectItem
+                                                  key={name}
+                                                  value={name}
+                                                >
                                                   {name}
                                                 </SelectItem>
                                               ))}
-                                              <SelectItem key="custom" value="custom">
+                                              <SelectItem
+                                                key="custom"
+                                                value="custom"
+                                              >
                                                 Enter name...
                                               </SelectItem>
                                             </SelectContent>
                                           </Select>
                                           <Input
-                                            value={field.value === "custom" ? "" : field.value || ""}
-                                            onChange={(e) => field.onChange(e.target.value)}
+                                            value={
+                                              field.value === "custom"
+                                                ? ""
+                                                : field.value || ""
+                                            }
+                                            onChange={(e) =>
+                                              field.onChange(e.target.value)
+                                            }
                                             placeholder="Enter hanzo object name"
                                             disabled={props.disabled}
                                           />
@@ -835,11 +1003,17 @@ export const InnerEvaluatorForm = (props: {
                                           </SelectTrigger>
                                           <SelectContent>
                                             {nameOptions?.map((name) => (
-                                              <SelectItem key={name} value={name}>
+                                              <SelectItem
+                                                key={name}
+                                                value={name}
+                                              >
                                                 {name}
                                               </SelectItem>
                                             ))}
-                                            <SelectItem key="custom" value="custom">
+                                            <SelectItem
+                                              key="custom"
+                                              value="custom"
+                                            >
                                               Enter name...
                                             </SelectItem>
                                           </SelectContent>
@@ -862,8 +1036,12 @@ export const InnerEvaluatorForm = (props: {
                             <div className="flex items-center gap-2">
                               <VariableMappingDescription
                                 title={"Object Variable"}
-                                description={"Variable on the Hanzo object to insert into the template."}
-                                href={"https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"}
+                                description={
+                                  "Variable on the Hanzo object to insert into the template."
+                                }
+                                href={
+                                  "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                                }
                               />
                               <FormItem className="w-2/3">
                                 <FormControl>
@@ -871,11 +1049,18 @@ export const InnerEvaluatorForm = (props: {
                                     disabled={props.disabled}
                                     defaultValue={field.value ?? undefined}
                                     onValueChange={(value) => {
-                                      const availableColumns = availableVariables.find(
-                                        (evalObject) => evalObject.id === form.watch(`mapping.${index}.hanzoObject`),
-                                      )?.availableColumns;
+                                      const availableColumns =
+                                        availableVariables.find(
+                                          (evalObject) =>
+                                            evalObject.id ===
+                                            form.watch(
+                                              `mapping.${index}.hanzoObject`,
+                                            ),
+                                        )?.availableColumns;
 
-                                      const column = availableColumns?.find((column) => column.id === value);
+                                      const column = availableColumns?.find(
+                                        (column) => column.id === value,
+                                      );
 
                                       field.onChange(column?.id);
                                     }}
@@ -886,10 +1071,17 @@ export const InnerEvaluatorForm = (props: {
                                     <SelectContent>
                                       {availableVariables
                                         .find(
-                                          (evalObject) => evalObject.id === form.watch(`mapping.${index}.hanzoObject`),
+                                          (evalObject) =>
+                                            evalObject.id ===
+                                            form.watch(
+                                              `mapping.${index}.hanzoObject`,
+                                            ),
                                         )
                                         ?.availableColumns.map((column) => (
-                                          <SelectItem value={column.id} key={column.id}>
+                                          <SelectItem
+                                            value={column.id}
+                                            key={column.id}
+                                          >
                                             {column.name}
                                           </SelectItem>
                                         ))}
@@ -901,7 +1093,9 @@ export const InnerEvaluatorForm = (props: {
                             </div>
                           )}
                         />
-                        {fieldHasJsonSelectorOption(form.watch(`mapping.${index}.selectedColumnId`)) ? (
+                        {fieldHasJsonSelectorOption(
+                          form.watch(`mapping.${index}.selectedColumnId`),
+                        ) ? (
                           <FormField
                             control={form.control}
                             key={`${mappingField.id}-jsonSelector`}
@@ -913,7 +1107,9 @@ export const InnerEvaluatorForm = (props: {
                                   description={
                                     "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt."
                                   }
-                                  href={"https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"}
+                                  href={
+                                    "https://hanzo.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                                  }
                                 />
                                 <FormItem className="w-2/3">
                                   <FormControl>

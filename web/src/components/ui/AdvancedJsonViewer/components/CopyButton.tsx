@@ -40,7 +40,10 @@ export function CopyButton({ value, theme, className }: CopyButtonProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className={cn("inline-flex items-center justify-center transition-opacity hover:opacity-100", className)}
+      className={cn(
+        "inline-flex items-center justify-center transition-opacity hover:opacity-100",
+        className,
+      )}
       style={{
         width: "12px",
         height: "12px",

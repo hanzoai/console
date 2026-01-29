@@ -2,7 +2,8 @@ import { env } from "@/src/env.mjs";
 import { type Plan } from "@hanzo/shared";
 
 const isTestEnvironment =
-  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" || env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING";
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" ||
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING";
 
 type StripeProduct = {
   stripeProductId: string;
@@ -32,10 +33,16 @@ export const stripeProducts: StripeProduct[] = [
     orderKey: 29,
     checkout: {
       title: "Core",
-      description: "Great to get started for most projects with unlimited users and 90 days data access.",
+      description:
+        "Great to get started for most projects with unlimited users and 90 days data access.",
       price: "$29 / month",
       usagePrice: "$8-6/100k units (100k included, graduated pricing)",
-      mainFeatures: ["90 days data access", "Unlimited users", "Unlimited evaluators", "Support via Email/Chat"],
+      mainFeatures: [
+        "90 days data access",
+        "Unlimited users",
+        "Unlimited evaluators",
+        "Support via Email/Chat",
+      ],
     },
   },
   {
@@ -46,7 +53,8 @@ export const stripeProducts: StripeProduct[] = [
     orderKey: 199,
     checkout: {
       title: "Pro",
-      description: "For projects that scale and need unlimited data access, high rate limits, and Slack support.",
+      description:
+        "For projects that scale and need unlimited data access, high rate limits, and Slack support.",
       price: "$199 / month",
       usagePrice: "$8-6/100k units (100k included, graduated pricing)",
       mainFeatures: [
@@ -87,7 +95,8 @@ export const stripeProducts: StripeProduct[] = [
     orderKey: 2499,
     checkout: {
       title: "Enterprise",
-      description: "For large scale teams. Enterprise-grade support and security.",
+      description:
+        "For large scale teams. Enterprise-grade support and security.",
       price: "$2499 / month",
       usagePrice: "$8-6/100k units (100k included, graduated pricing)",
       mainFeatures: [
@@ -114,16 +123,26 @@ export const stripeUsageProduct = {
 };
 
 export const mapStripeProductIdToPlan = (productId: string): Plan | null =>
-  stripeProducts.find((product) => product.stripeProductId === productId)?.mappedPlan ?? null;
+  stripeProducts.find((product) => product.stripeProductId === productId)
+    ?.mappedPlan ?? null;
 
-export const isUpgrade = (oldProductId: string, newProductId: string): boolean => {
-  const oldProduct = stripeProducts.find((product) => product.stripeProductId === oldProductId);
-  const newProduct = stripeProducts.find((product) => product.stripeProductId === newProductId);
+export const isUpgrade = (
+  oldProductId: string,
+  newProductId: string,
+): boolean => {
+  const oldProduct = stripeProducts.find(
+    (product) => product.stripeProductId === oldProductId,
+  );
+  const newProduct = stripeProducts.find(
+    (product) => product.stripeProductId === newProductId,
+  );
   return (oldProduct?.orderKey ?? 0) < (newProduct?.orderKey ?? 0);
 };
 
 export const isValidCheckoutProduct = (id: string) => {
-  return stripeProducts.some((p) => Boolean(p.checkout) && p.stripeProductId === id);
+  return stripeProducts.some(
+    (p) => Boolean(p.checkout) && p.stripeProductId === id,
+  );
 };
 
 export const StripeCatalogue = {

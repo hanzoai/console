@@ -9,7 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { api } from "@/src/utils/api";
 import * as z from "zod/v4";
@@ -25,7 +31,9 @@ export function DeleteProjectButton() {
 
   //code for dynamic confirmation message
   const { project, organization } = useQueryProject();
-  const confirmMessage = (organization?.name + "/" + project?.name).replaceAll(" ", "-").toLowerCase();
+  const confirmMessage = (organization?.name + "/" + project?.name)
+    .replaceAll(" ", "-")
+    .toLowerCase();
 
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
@@ -72,7 +80,9 @@ export function DeleteProjectButton() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Delete Project</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Delete Project
+          </DialogTitle>
           <DialogDescription className=" ">
             {`To confirm, type "${confirmMessage}" in the input box `}
           </DialogDescription>
@@ -94,7 +104,12 @@ export function DeleteProjectButton() {
               />
             </DialogBody>
             <DialogFooter>
-              <Button type="submit" variant="destructive" loading={deleteProject.isPending} className="w-full">
+              <Button
+                type="submit"
+                variant="destructive"
+                loading={deleteProject.isPending}
+                className="w-full"
+              >
                 Delete project
               </Button>
             </DialogFooter>

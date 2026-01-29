@@ -3,7 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { Button } from "@/src/components/ui/button";
-import { DialogBody, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+import {
+  DialogBody,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -26,7 +32,9 @@ const RemoteExperimentTriggerSchema = z.object({
   payload: z.string(),
 });
 
-type RemoteExperimentTriggerForm = z.infer<typeof RemoteExperimentTriggerSchema>;
+type RemoteExperimentTriggerForm = z.infer<
+  typeof RemoteExperimentTriggerSchema
+>;
 
 export const RemoteExperimentTriggerModal = ({
   projectId,
@@ -59,28 +67,29 @@ export const RemoteExperimentTriggerModal = ({
     },
   });
 
-  const runRemoteExperimentMutation = api.datasets.triggerRemoteExperiment.useMutation({
-    onSuccess: (data) => {
-      if (data.success) {
-        showSuccessToast({
-          title: "Dataset run started",
-          description: "Your dataset run may take a few minutes to complete.",
-        });
-      } else {
+  const runRemoteExperimentMutation =
+    api.datasets.triggerRemoteExperiment.useMutation({
+      onSuccess: (data) => {
+        if (data.success) {
+          showSuccessToast({
+            title: "Dataset run started",
+            description: "Your dataset run may take a few minutes to complete.",
+          });
+        } else {
+          showErrorToast(
+            "Failed to start dataset run",
+            "Please try again or check your remote dataset run configuration.",
+          );
+        }
+        setShowTriggerModal(false);
+      },
+      onError: (error) => {
         showErrorToast(
-          "Failed to start dataset run",
+          error.message || "Failed to start dataset run",
           "Please try again or check your remote dataset run configuration.",
         );
-      }
-      setShowTriggerModal(false);
-    },
-    onError: (error) => {
-      showErrorToast(
-        error.message || "Failed to start dataset run",
-        "Please try again or check your remote dataset run configuration.",
-      );
-    },
-  });
+      },
+    });
 
   const onSubmit = (data: RemoteExperimentTriggerForm) => {
     if (data.payload.trim()) {
@@ -108,12 +117,17 @@ export const RemoteExperimentTriggerModal = ({
   return (
     <>
       <DialogHeader>
-        <Button variant="ghost" onClick={() => setShowTriggerModal(false)} className="inline-block self-start">
+        <Button
+          variant="ghost"
+          onClick={() => setShowTriggerModal(false)}
+          className="inline-block self-start"
+        >
           ← Back
         </Button>
         <DialogTitle>Run remote dataset run</DialogTitle>
         <DialogDescription>
-          This action will send the following information to <strong>{remoteExperimentConfig.url}</strong>.
+          This action will send the following information to{" "}
+          <strong>{remoteExperimentConfig.url}</strong>.
         </DialogDescription>
       </DialogHeader>
 
@@ -128,7 +142,8 @@ export const RemoteExperimentTriggerModal = ({
                   <FormItem>
                     <FormLabel>Config</FormLabel>
                     <FormDescription>
-                      Confirm the config you want to send to the remote dataset run URL along with the{" "}
+                      Confirm the config you want to send to the remote dataset
+                      run URL along with the{" "}
                       <strong>{dataset.data?.name}</strong> dataset information.
                     </FormDescription>
                     <FormControl>
@@ -158,8 +173,13 @@ export const RemoteExperimentTriggerModal = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={runRemoteExperimentMutation.isPending}>
-                {runRemoteExperimentMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button
+                type="submit"
+                disabled={runRemoteExperimentMutation.isPending}
+              >
+                {runRemoteExperimentMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Run
               </Button>
             </div>

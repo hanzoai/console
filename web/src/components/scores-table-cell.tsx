@@ -1,5 +1,12 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import { type CategoricalAggregate, type AggregatedScoreData } from "@hanzo/shared";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
+import {
+  type CategoricalAggregate,
+  type AggregatedScoreData,
+} from "@hanzo/shared";
 
 import { numberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";
@@ -29,7 +36,9 @@ const ScoreValueCounts = ({
     <div key={value} className="flex flex-row">
       <span className="truncate">{value}</span>
       <span>{`: ${numberFormatter(count, 0)}`}</span>
-      {!wrap && index < valueCounts.length - 1 && <span className="mr-1">{";"}</span>}
+      {!wrap && index < valueCounts.length - 1 && (
+        <span className="mr-1">{";"}</span>
+      )}
     </div>
   ));
 };
@@ -58,10 +67,15 @@ export const ScoresTableCell = ({
   };
 
   if (displayFormat === "smart" && aggregate.values.length === 1 && projectId) {
-    const value = aggregate.type === "NUMERIC" ? aggregate.average.toFixed(4) : aggregate.values[0];
+    const value =
+      aggregate.type === "NUMERIC"
+        ? aggregate.average.toFixed(4)
+        : aggregate.values[0];
 
     return (
-      <span className={cn("flex flex-row gap-0.5 rounded-sm", COLOR_MAP.get(value))}>
+      <span
+        className={cn("flex flex-row gap-0.5 rounded-sm", COLOR_MAP.get(value))}
+      >
         {value}
         {aggregate.comment && (
           <HoverCard>
@@ -77,7 +91,11 @@ export const ScoresTableCell = ({
                   className="rounded p-1 hover:bg-accent"
                   aria-label={copied ? "Copied" : "Copy to clipboard"}
                 >
-                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  {copied ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
                 </Button>
               </div>
               <div className="max-h-[40vh] overflow-y-auto p-3 pt-0">
@@ -86,13 +104,20 @@ export const ScoresTableCell = ({
             </HoverCardContent>
           </HoverCard>
         )}
-        {hasMetadata && !!aggregate.id && <AggregateScoreMetadataPeek scoreId={aggregate.id} projectId={projectId} />}
+        {hasMetadata && !!aggregate.id && (
+          <AggregateScoreMetadataPeek
+            scoreId={aggregate.id}
+            projectId={projectId}
+          />
+        )}
       </span>
     );
   }
 
   if (aggregate.type === "NUMERIC") {
-    return <span className="rounded-sm">{`Ø ${aggregate.average.toFixed(4)}`}</span>;
+    return (
+      <span className="rounded-sm">{`Ø ${aggregate.average.toFixed(4)}`}</span>
+    );
   }
 
   return (
@@ -101,10 +126,16 @@ export const ScoresTableCell = ({
         <HoverCard>
           <HoverCardTrigger>
             <div
-              className={cn("flex cursor-pointer group-hover:text-accent-dark-blue/55", wrap ? "flex-col" : "flex-row")}
+              className={cn(
+                "flex cursor-pointer group-hover:text-accent-dark-blue/55",
+                wrap ? "flex-col" : "flex-row",
+              )}
             >
               <ScoreValueCounts
-                valueCounts={aggregate.valueCounts.slice(0, COLLAPSE_CATEGORICAL_SCORES_AFTER)}
+                valueCounts={aggregate.valueCounts.slice(
+                  0,
+                  COLLAPSE_CATEGORICAL_SCORES_AFTER,
+                )}
                 wrap={wrap}
               />
             </div>
@@ -122,7 +153,13 @@ export const ScoresTableCell = ({
   );
 };
 
-function AggregateScoreMetadataPeek({ scoreId, projectId }: { scoreId: string; projectId: string }) {
+function AggregateScoreMetadataPeek({
+  scoreId,
+  projectId,
+}: {
+  scoreId: string;
+  projectId: string;
+}) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const { data: metadata } = api.scores.getScoreMetadataById.useQuery(

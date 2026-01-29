@@ -27,9 +27,15 @@ export default function PromptsWithFolder() {
   // this in the UI (we URL encode here and don't strip metrics). We could resolve this with another API call
   // to check the prompt name existence.
   const segmentsArray = Array.isArray(routeSegments) ? routeSegments : [];
-  const isMetricsPage = segmentsArray.length > 0 && segmentsArray[segmentsArray.length - 1] === "metrics";
+  const isMetricsPage =
+    segmentsArray.length > 0 &&
+    segmentsArray[segmentsArray.length - 1] === "metrics";
   const promptNameFromRoute =
-    segmentsArray.length > 0 ? (isMetricsPage ? segmentsArray.slice(0, -1).join("/") : segmentsArray.join("/")) : "";
+    segmentsArray.length > 0
+      ? isMetricsPage
+        ? segmentsArray.slice(0, -1).join("/")
+        : segmentsArray.join("/")
+      : "";
 
   const capture = usePostHogClientCapture();
   const hasCUDAccess = useHasProjectAccess({
@@ -104,7 +110,11 @@ export default function PromptsWithFolder() {
       scrollable={showOnboarding}
     >
       {/* Show onboarding screen if project has no prompts */}
-      {showOnboarding ? <PromptsOnboarding projectId={projectId} /> : <PromptTable key={folderQueryParam} />}
+      {showOnboarding ? (
+        <PromptsOnboarding projectId={projectId} />
+      ) : (
+        <PromptTable key={folderQueryParam} />
+      )}
     </Page>
   );
 }

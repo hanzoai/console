@@ -1,23 +1,42 @@
 import { type z } from "zod/v4";
 import { z as zodSchema } from "zod/v4";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { type Observation, type OrderByState, paginationZod, timeFilter } from "@hanzo/shared";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
+import {
+  type Observation,
+  type OrderByState,
+  paginationZod,
+  timeFilter,
+} from "@hanzo/shared";
 import { EventsTableOptions } from "./types";
-import { getEventList, getEventCount, getEventFilterOptions, getEventBatchIO } from "./eventsService";
+import {
+  getEventList,
+  getEventCount,
+  getEventFilterOptions,
+  getEventBatchIO,
+} from "./eventsService";
 import {
   instrumentAsync,
   getScoresAndCorrectionsForTraces,
   convertDateToClickhouseDateTime,
   getAgentGraphDataFromEventsTable,
 } from "@hanzo/shared/src/server";
-import { AgentGraphDataSchema, type AgentGraphDataResponse } from "@/src/features/trace-graph-view/types";
+import {
+  AgentGraphDataSchema,
+  type AgentGraphDataResponse,
+} from "@/src/features/trace-graph-view/types";
 import type * as opentelemetry from "@opentelemetry/api";
 
 const GetAllEventsInput = EventsTableOptions.extend({
   ...paginationZod,
 });
 
-export type EventBatchIOOutput = Pick<Observation, "id" | "input" | "output" | "metadata">;
+export type EventBatchIOOutput = Pick<
+  Observation,
+  "id" | "input" | "output" | "metadata"
+>;
 
 export type GetAllEventsInput = z.infer<typeof GetAllEventsInput>;
 
@@ -26,7 +45,9 @@ const GetEventFilterOptionsInput = zodSchema.object({
   startTimeFilter: zodSchema.array(timeFilter).optional(),
 });
 
-export type GetEventFilterOptionsInput = z.infer<typeof GetEventFilterOptionsInput>;
+export type GetEventFilterOptionsInput = z.infer<
+  typeof GetEventFilterOptionsInput
+>;
 
 export const BatchIOInput = zodSchema.object({
   projectId: zodSchema.string(),
@@ -44,43 +65,47 @@ export const BatchIOInput = zodSchema.object({
 export type BatchIOInput = z.infer<typeof BatchIOInput>;
 
 export const eventsRouter = createTRPCRouter({
-  all: protectedProjectProcedure.input(GetAllEventsInput).query(async ({ input, ctx }) => {
-    return instrumentAsync(
-      {
-        name: "get-event-list-trpc",
-      },
-      async (span) => {
-        addAttributesToSpan({ span, input, orderBy: input.orderBy });
+  all: protectedProjectProcedure
+    .input(GetAllEventsInput)
+    .query(async ({ input, ctx }) => {
+      return instrumentAsync(
+        {
+          name: "get-event-list-trpc",
+        },
+        async (span) => {
+          addAttributesToSpan({ span, input, orderBy: input.orderBy });
 
-        return getEventList({
-          projectId: ctx.session.projectId,
-          filter: input.filter ?? [],
-          searchQuery: input.searchQuery ?? undefined,
-          searchType: input.searchType,
-          orderBy: input.orderBy,
-          page: input.page,
-          limit: input.limit,
-        });
-      },
-    );
-  }),
-  countAll: protectedProjectProcedure.input(GetAllEventsInput).query(async ({ input, ctx }) => {
-    return instrumentAsync(
-      {
-        name: "get-event-count-trpc",
-      },
-      async (span) => {
-        addAttributesToSpan({ span, input, orderBy: input.orderBy });
-        return getEventCount({
-          projectId: ctx.session.projectId,
-          filter: input.filter ?? [],
-          searchQuery: input.searchQuery ?? undefined,
-          searchType: input.searchType,
-          orderBy: input.orderBy,
-        });
-      },
-    );
-  }),
+          return getEventList({
+            projectId: ctx.session.projectId,
+            filter: input.filter ?? [],
+            searchQuery: input.searchQuery ?? undefined,
+            searchType: input.searchType,
+            orderBy: input.orderBy,
+            page: input.page,
+            limit: input.limit,
+          });
+        },
+      );
+    }),
+  countAll: protectedProjectProcedure
+    .input(GetAllEventsInput)
+    .query(async ({ input, ctx }) => {
+      return instrumentAsync(
+        {
+          name: "get-event-count-trpc",
+        },
+        async (span) => {
+          addAttributesToSpan({ span, input, orderBy: input.orderBy });
+          return getEventCount({
+            projectId: ctx.session.projectId,
+            filter: input.filter ?? [],
+            searchQuery: input.searchQuery ?? undefined,
+            searchType: input.searchType,
+            orderBy: input.orderBy,
+          });
+        },
+      );
+    }),
   filterOptions: protectedProjectProcedure
     .input(
       zodSchema.object({
@@ -105,20 +130,25 @@ export const eventsRouter = createTRPCRouter({
         },
       );
     }),
-  batchIO: protectedProjectProcedure.input(BatchIOInput).query(async ({ input, ctx }) => {
-    return instrumentAsync({ name: "get-event-batch-io-trpc" }, async (span) => {
-      span.setAttribute("project_id", input.projectId);
-      span.setAttribute("observation_count", input.observations.length);
+  batchIO: protectedProjectProcedure
+    .input(BatchIOInput)
+    .query(async ({ input, ctx }) => {
+      return instrumentAsync(
+        { name: "get-event-batch-io-trpc" },
+        async (span) => {
+          span.setAttribute("project_id", input.projectId);
+          span.setAttribute("observation_count", input.observations.length);
 
-      return getEventBatchIO({
-        projectId: ctx.session.projectId,
-        observations: input.observations,
-        minStartTime: input.minStartTime,
-        maxStartTime: input.maxStartTime,
-        truncated: input.truncated,
-      });
-    });
-  }),
+          return getEventBatchIO({
+            projectId: ctx.session.projectId,
+            observations: input.observations,
+            minStartTime: input.minStartTime,
+            maxStartTime: input.maxStartTime,
+            truncated: input.truncated,
+          });
+        },
+      );
+    }),
   /**
    * Fetch scores and corrections for a trace.
    * Used by the v4 trace detail view where trace data comes from events table.
@@ -132,16 +162,19 @@ export const eventsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return instrumentAsync({ name: "get-events-scores-for-trace-trpc" }, async (span) => {
-        span.setAttribute("project_id", input.projectId);
-        span.setAttribute("trace_id", input.traceId);
+      return instrumentAsync(
+        { name: "get-events-scores-for-trace-trpc" },
+        async (span) => {
+          span.setAttribute("project_id", input.projectId);
+          span.setAttribute("trace_id", input.traceId);
 
-        return getScoresAndCorrectionsForTraces({
-          projectId: ctx.session.projectId,
-          traceIds: [input.traceId],
-          timestamp: input.timestamp,
-        });
-      });
+          return getScoresAndCorrectionsForTraces({
+            projectId: ctx.session.projectId,
+            traceIds: [input.traceId],
+            timestamp: input.timestamp,
+          });
+        },
+      );
     }),
   /**
    * Fetch agent graph data from events table.
@@ -157,68 +190,77 @@ export const eventsRouter = createTRPCRouter({
         maxStartTime: zodSchema.string(),
       }),
     )
-    .query(async ({ input, ctx }): Promise<Required<AgentGraphDataResponse>[]> => {
-      return instrumentAsync({ name: "get-events-agent-graph-data-trpc" }, async (span) => {
-        span.setAttribute("project_id", input.projectId);
-        span.setAttribute("trace_id", input.traceId);
+    .query(
+      async ({ input, ctx }): Promise<Required<AgentGraphDataResponse>[]> => {
+        return instrumentAsync(
+          { name: "get-events-agent-graph-data-trpc" },
+          async (span) => {
+            span.setAttribute("project_id", input.projectId);
+            span.setAttribute("trace_id", input.traceId);
 
-        const { traceId, minStartTime, maxStartTime } = input;
+            const { traceId, minStartTime, maxStartTime } = input;
 
-        const chMinStartTime = convertDateToClickhouseDateTime(new Date(minStartTime));
-        const chMaxStartTime = convertDateToClickhouseDateTime(new Date(maxStartTime));
+            const chMinStartTime = convertDateToClickhouseDateTime(
+              new Date(minStartTime),
+            );
+            const chMaxStartTime = convertDateToClickhouseDateTime(
+              new Date(maxStartTime),
+            );
 
-        const records = await getAgentGraphDataFromEventsTable({
-          projectId: ctx.session.projectId,
-          traceId,
-          chMinStartTime,
-          chMaxStartTime,
-        });
+            const records = await getAgentGraphDataFromEventsTable({
+              projectId: ctx.session.projectId,
+              traceId,
+              chMinStartTime,
+              chMaxStartTime,
+            });
 
-        // Transform to AgentGraphDataResponse format
-        // TODO: Extract this transformation logic into a shared utility
-        // (duplicated from traces.getAgentGraphData in traces.ts)
-        const result = records
-          .map((r) => {
-            const parsed = AgentGraphDataSchema.safeParse(r);
-            if (!parsed.success) {
-              return null;
-            }
+            // Transform to AgentGraphDataResponse format
+            // TODO: Extract this transformation logic into a shared utility
+            // (duplicated from traces.getAgentGraphData in traces.ts)
+            const result = records
+              .map((r) => {
+                const parsed = AgentGraphDataSchema.safeParse(r);
+                if (!parsed.success) {
+                  return null;
+                }
 
-            const data = parsed.data;
-            const hasLangGraphData = data.step != null && data.node != null;
-            const hasAgentData = data.type !== "EVENT";
+                const data = parsed.data;
+                const hasLangGraphData = data.step != null && data.node != null;
+                const hasAgentData = data.type !== "EVENT";
 
-            if (hasLangGraphData) {
-              return {
-                id: data.id,
-                node: data.node,
-                step: data.step,
-                parentObservationId: data.parent_observation_id || null,
-                name: data.name,
-                startTime: data.start_time,
-                endTime: data.end_time || undefined,
-                observationType: data.type,
-              };
-            } else if (hasAgentData) {
-              return {
-                id: data.id,
-                node: data.name,
-                step: 0,
-                parentObservationId: data.parent_observation_id || null,
-                name: data.name,
-                startTime: data.start_time,
-                endTime: data.end_time || undefined,
-                observationType: data.type,
-              };
-            }
+                if (hasLangGraphData) {
+                  return {
+                    id: data.id,
+                    node: data.node,
+                    step: data.step,
+                    parentObservationId: data.parent_observation_id || null,
+                    name: data.name,
+                    startTime: data.start_time,
+                    endTime: data.end_time || undefined,
+                    observationType: data.type,
+                  };
+                } else if (hasAgentData) {
+                  return {
+                    id: data.id,
+                    node: data.name,
+                    step: 0,
+                    parentObservationId: data.parent_observation_id || null,
+                    name: data.name,
+                    startTime: data.start_time,
+                    endTime: data.end_time || undefined,
+                    observationType: data.type,
+                  };
+                }
 
-            return null;
-          })
-          .filter((r): r is Required<AgentGraphDataResponse> => Boolean(r));
+                return null;
+              })
+              .filter((r): r is Required<AgentGraphDataResponse> => Boolean(r));
 
-        return result;
-      });
-    }),
+            return result;
+          },
+        );
+      },
+    ),
 });
 
 export const addAttributesToSpan = ({
@@ -234,11 +276,18 @@ export const addAttributesToSpan = ({
 
   // Only process filter if it exists (not present in GetEventFilterOptionsInput)
   if ("filter" in input && input.filter) {
-    const startTimeFilter = input.filter.find((f) => f.column === "startTime" && f.type === "datetime");
-    const endTimeFilter = input.filter.find((f) => f.column === "endTime" && f.type === "datetime");
+    const startTimeFilter = input.filter.find(
+      (f) => f.column === "startTime" && f.type === "datetime",
+    );
+    const endTimeFilter = input.filter.find(
+      (f) => f.column === "endTime" && f.type === "datetime",
+    );
 
     if (startTimeFilter?.value && endTimeFilter?.value) {
-      const durationMs = dateDiff(startTimeFilter.value as Date, endTimeFilter.value as Date);
+      const durationMs = dateDiff(
+        startTimeFilter.value as Date,
+        endTimeFilter.value as Date,
+      );
       // Convert milliseconds to minutes
       span.setAttribute("duration_minutes", durationMs / 60000);
     }

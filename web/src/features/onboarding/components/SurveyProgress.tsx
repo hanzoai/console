@@ -6,7 +6,11 @@ interface SurveyProgressProps {
   className?: string;
 }
 
-export function SurveyProgress({ currentStep, totalSteps, className }: SurveyProgressProps) {
+export function SurveyProgress({
+  currentStep,
+  totalSteps,
+  className,
+}: SurveyProgressProps) {
   return (
     <div className={cn("flex w-full gap-3", className)}>
       {Array.from({ length: totalSteps }).map((_, index) => (

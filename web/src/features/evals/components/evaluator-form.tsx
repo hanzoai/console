@@ -17,7 +17,8 @@ export const EvaluatorForm = (props: {
   preprocessFormValues?: (values: any) => any;
 }) => {
   const currentTemplate =
-    props.existingEvaluator?.evalTemplate ?? props.evalTemplates.find((t) => t.id === props.templateId);
+    props.existingEvaluator?.evalTemplate ??
+    props.evalTemplates.find((t) => t.id === props.templateId);
 
   if (!currentTemplate) {
     return null;

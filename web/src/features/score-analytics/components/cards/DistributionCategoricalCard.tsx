@@ -1,5 +1,11 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
@@ -28,7 +34,9 @@ function calculateUnmatchedScore2Distribution(
 }> {
   // Helper to check if a key represents an unmatched category
   const isUnmatchedKey = (key: string): boolean => {
-    return key === "__unmatched__" || key === "0" || key === "" || key === "null";
+    return (
+      key === "__unmatched__" || key === "0" || key === "" || key === "null"
+    );
   };
 
   // Build total counts map from score2Individual
@@ -47,7 +55,10 @@ function calculateUnmatchedScore2Distribution(
   const matchedCountsMap = new Map<string, number>();
   stackedDistribution.forEach((item) => {
     // Skip existing unmatched markers
-    if (!isUnmatchedKey(item.score2Stack) && !isUnmatchedKey(item.score1Category)) {
+    if (
+      !isUnmatchedKey(item.score2Stack) &&
+      !isUnmatchedKey(item.score1Category)
+    ) {
       const currentCount = matchedCountsMap.get(item.score2Stack) || 0;
       matchedCountsMap.set(item.score2Stack, currentCount + item.count);
     }
@@ -150,7 +161,10 @@ export function DistributionCategoricalCard() {
         );
 
         // Combine original stacked data with unmatched score2 items
-        const augmentedStackedDistribution = [...(distribution.stackedDistribution ?? []), ...unmatchedScore2];
+        const augmentedStackedDistribution = [
+          ...(distribution.stackedDistribution ?? []),
+          ...unmatchedScore2,
+        ];
 
         return {
           distribution1: undefined, // Not used in stacked mode
@@ -240,7 +254,10 @@ export function DistributionCategoricalCard() {
   };
 
   // Build full tab labels for title attribute (hover tooltip)
-  const score1FullLabel = score1.name === score2?.name ? `${score1.source} · ${score1.name}` : score1.name;
+  const score1FullLabel =
+    score1.name === score2?.name
+      ? `${score1.source} · ${score1.name}`
+      : score1.name;
 
   const score2FullLabel = score2
     ? score2.name === score1.name
@@ -257,19 +274,33 @@ export function DistributionCategoricalCard() {
               <CardTitle className="flex items-center gap-2">
                 Distribution
                 {data.samplingMetadata.isSampled && (
-                  <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} showLabel />
+                  <SamplingDetailsHoverCard
+                    samplingMetadata={data.samplingMetadata}
+                    showLabel
+                  />
                 )}
               </CardTitle>
               <CardDescription>{chartData.description}</CardDescription>
             </div>
           </div>
           {showTabs && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DistributionTab)}>
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as DistributionTab)}
+            >
               <TabsList className="h-7">
-                <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score1"
+                  title={score1FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score1FullLabel)}
                 </TabsTrigger>
-                <TabsTrigger value="score2" title={score2FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score2"
+                  title={score2FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score2FullLabel)}
                 </TabsTrigger>
                 <TabsTrigger value="all" className="h-5 px-2 text-xs">

@@ -18,7 +18,13 @@ export const TagButton: React.FC<{
     loading={loading}
   >
     <TagIcon className="mr-1 h-3.5 w-3.5 flex-shrink-0" />
-    <span className={cn("overflow-hidden text-ellipsis whitespace-nowrap", !isTableCell && "text-xs")} title={tag}>
+    <span
+      className={cn(
+        "overflow-hidden text-ellipsis whitespace-nowrap",
+        !isTableCell && "text-xs",
+      )}
+      title={tag}
+    >
       {tag}
     </span>
   </Button>

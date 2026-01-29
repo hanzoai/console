@@ -42,7 +42,12 @@ export default function AnnotationQueues() {
             "Annotation queues are used to manage scoring workflows for your LLM projects. See docs to learn more.",
           href: "https://hanzo.com/docs/evaluation/evaluation-methods/annotation",
         },
-        actionButtonsRight: <CreateOrEditAnnotationQueueButton projectId={projectId} variant="default" />,
+        actionButtonsRight: (
+          <CreateOrEditAnnotationQueueButton
+            projectId={projectId}
+            variant="default"
+          />
+        ),
       }}
       scrollable={showOnboarding}
     >

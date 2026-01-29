@@ -14,7 +14,10 @@ import {
 } from "@/src/utils/date-range-utils";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type QueryType,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 
 export function ChartScores(props: {
@@ -30,9 +33,13 @@ export function ChartScores(props: {
     view: "scores-numeric",
     dimensions: [{ field: "name" }, { field: "dataType" }, { field: "source" }],
     metrics: [{ measure: "value", aggregation: "avg" }],
-    filters: mapLegacyUiTableFilterToView("scores-numeric", props.globalFilterState),
+    filters: mapLegacyUiTableFilterToView(
+      "scores-numeric",
+      props.globalFilterState,
+    ),
     timeDimension: {
-      granularity: dashboardDateRangeAggregationSettings[props.agg].dateTrunc ?? "day",
+      granularity:
+        dashboardDateRangeAggregationSettings[props.agg].dateTrunc ?? "day",
     },
     fromTimestamp: props.fromTimestamp.toISOString(),
     toTimestamp: props.toTimestamp.toISOString(),
@@ -61,7 +68,8 @@ export function ChartScores(props: {
             uniqueIdentifierColumns: [
               {
                 accessor: "data_type",
-                formatFct: (value) => getScoreDataTypeIcon(value as ScoreDataTypeType),
+                formatFct: (value) =>
+                  getScoreDataTypeIcon(value as ScoreDataTypeType),
               },
               { accessor: "name" },
               {

@@ -213,7 +213,9 @@ const viewMappings: Record<z.infer<typeof views>, Record<string, string>[]> = {
   ],
 };
 
-const isLegacyUiTableFilter = (filter: z.infer<typeof singleFilter>): boolean => {
+const isLegacyUiTableFilter = (
+  filter: z.infer<typeof singleFilter>,
+): boolean => {
   return dashboardColumnDefinitions
     .concat([
       {
@@ -260,7 +262,9 @@ export const mapLegacyUiTableFilterToView = (
       return [filter];
     }
     // Check if we have a match in our mapping
-    const definition = viewMappings[view].find((def) => def.uiTableName === filter.column);
+    const definition = viewMappings[view].find(
+      (def) => def.uiTableName === filter.column,
+    );
     // Ignore if there is no match
     if (!definition) {
       return [];

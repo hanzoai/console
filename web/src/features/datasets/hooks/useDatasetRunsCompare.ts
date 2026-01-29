@@ -7,7 +7,9 @@ export function useDatasetRunsCompare(projectId: string, datasetId: string) {
     runs: withDefault(ArrayParam, []),
   });
 
-  const [localRuns, setLocalRuns] = useState<Array<{ key: string; value: string }>>([]);
+  const [localRuns, setLocalRuns] = useState<
+    Array<{ key: string; value: string }>
+  >([]);
   const runIds = runState.runs as undefined | string[];
 
   const dataset = api.datasets.byId.useQuery({

@@ -1,6 +1,10 @@
 import { api } from "@/src/utils/api";
 import { useMemo } from "react";
-import { type FilterState, AnnotationQueueObjectType, type EventsObservation } from "@hanzo/shared";
+import {
+  type FilterState,
+  AnnotationQueueObjectType,
+  type EventsObservation,
+} from "@hanzo/shared";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { joinTableCoreAndMetrics } from "@/src/components/table/utils/joinTableCoreAndMetrics";
 import { type EventBatchIOOutput } from "@/src/features/events/server/eventsRouter";
@@ -55,7 +59,12 @@ export function useEventsTableData({
       limit: paginationState.limit,
       orderBy: orderByState,
     }),
-    [getCountPayload, paginationState.page, paginationState.limit, orderByState],
+    [
+      getCountPayload,
+      paginationState.page,
+      paginationState.limit,
+      orderByState,
+    ],
   );
 
   // Fetch observations
@@ -64,13 +73,18 @@ export function useEventsTableData({
   });
 
   const batchIOPayload = useMemo(() => {
-    const validObservations = observations.data?.observations?.filter((o) => o.id && o.traceId && o.startTime) ?? [];
+    const validObservations =
+      observations.data?.observations?.filter(
+        (o) => o.id && o.traceId && o.startTime,
+      ) ?? [];
 
     if (validObservations.length === 0) {
       return null;
     }
 
-    const startTimes = validObservations.map((o) => o.startTime?.getTime() ?? 0).filter((t) => t > 0);
+    const startTimes = validObservations
+      .map((o) => o.startTime?.getTime() ?? 0)
+      .filter((t) => t > 0);
 
     const minStartTime = new Date(Math.min(...startTimes));
     const maxStartTime = new Date(Math.max(...startTimes));
@@ -97,7 +111,10 @@ export function useEventsTableData({
   // Include ioDataQuery.isSuccess to ensure re-render when I/O loads
   const joinedData = useMemo(
     () =>
-      joinTableCoreAndMetrics<EventsObservation, EventBatchIOOutput>(observations.data?.observations, ioDataQuery.data),
+      joinTableCoreAndMetrics<EventsObservation, EventBatchIOOutput>(
+        observations.data?.observations,
+        ioDataQuery.data,
+      ),
     [observations.data?.observations, ioDataQuery.data],
   );
 
@@ -123,9 +140,18 @@ export function useEventsTableData({
   });
 
   // Handler for adding to annotation queue
-  const handleAddToAnnotationQueue = async ({ projectId, targetId }: { projectId: string; targetId: string }) => {
-    const selectedObservationIds = Object.keys(selectedRows).filter((observationId) =>
-      (observations.data?.observations ?? []).map((o) => o.id).includes(observationId),
+  const handleAddToAnnotationQueue = async ({
+    projectId,
+    targetId,
+  }: {
+    projectId: string;
+    targetId: string;
+  }) => {
+    const selectedObservationIds = Object.keys(selectedRows).filter(
+      (observationId) =>
+        (observations.data?.observations ?? [])
+          .map((o) => o.id)
+          .includes(observationId),
     );
 
     await addToQueueMutation.mutateAsync({

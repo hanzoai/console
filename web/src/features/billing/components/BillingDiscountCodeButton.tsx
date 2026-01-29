@@ -15,7 +15,11 @@ import { api } from "@/src/utils/api";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
 
-export const BillingDiscountCodeButton = ({ orgId }: { orgId: string | undefined }) => {
+export const BillingDiscountCodeButton = ({
+  orgId,
+}: {
+  orgId: string | undefined;
+}) => {
   const [code, setCode] = useState("");
   const [open, setOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -56,7 +60,12 @@ export const BillingDiscountCodeButton = ({ orgId }: { orgId: string | undefined
         </DialogHeader>
         <DialogBody className="space-y-3 text-sm">
           <p>Enter a valid promotion code to apply it to your subscription.</p>
-          <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="PROMO2025" disabled={processing} />
+          <Input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="PROMO2025"
+            disabled={processing}
+          />
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>

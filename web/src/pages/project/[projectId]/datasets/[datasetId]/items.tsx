@@ -1,6 +1,9 @@
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
-import { getDatasetTabs, DATASET_TABS } from "@/src/features/navigation/utils/dataset-tabs";
+import {
+  getDatasetTabs,
+  DATASET_TABS,
+} from "@/src/features/navigation/utils/dataset-tabs";
 import { DatasetItemsTable } from "@/src/features/datasets/components/DatasetItemsTable";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { DatasetActionButton } from "@/src/features/datasets/components/DatasetActionButton";
@@ -44,7 +47,8 @@ function DatasetItemsView() {
     datasetId,
   });
 
-  const showOnboarding = totalDatasetItemCount.isSuccess && totalDatasetItemCount.data === 0;
+  const showOnboarding =
+    totalDatasetItemCount.isSuccess && totalDatasetItemCount.data === 0;
 
   // Fetch change counts since selected version
   const changeCounts = api.datasets.countChangesSinceVersion.useQuery(
@@ -72,7 +76,9 @@ function DatasetItemsView() {
               description: dataset.data.description,
             }
           : undefined,
-        breadcrumb: [{ name: "Datasets", href: `/project/${projectId}/datasets` }],
+        breadcrumb: [
+          { name: "Datasets", href: `/project/${projectId}/datasets` },
+        ],
         tabsProps: {
           tabs: getDatasetTabs(projectId, datasetId),
           activeTab: DATASET_TABS.ITEMS,
@@ -81,13 +87,21 @@ function DatasetItemsView() {
           <>
             {!showOnboarding && (
               <>
-                <NewDatasetItemButton projectId={projectId} datasetId={datasetId} />
-                <UploadDatasetCsvButton projectId={projectId} datasetId={datasetId} />
+                <NewDatasetItemButton
+                  projectId={projectId}
+                  datasetId={datasetId}
+                />
+                <UploadDatasetCsvButton
+                  projectId={projectId}
+                  datasetId={datasetId}
+                />
               </>
             )}
             <DetailPageNav
               currentId={datasetId}
-              path={(entry) => `/project/${projectId}/datasets/${entry.id}/items/`}
+              path={(entry) =>
+                `/project/${projectId}/datasets/${entry.id}/items/`
+              }
               listKey="datasets"
             />
             <DropdownMenu>
@@ -106,11 +120,16 @@ function DatasetItemsView() {
                     datasetDescription={dataset.data?.description ?? undefined}
                     datasetMetadata={dataset.data?.metadata}
                     datasetInputSchema={dataset.data?.inputSchema ?? undefined}
-                    datasetExpectedOutputSchema={dataset.data?.expectedOutputSchema ?? undefined}
+                    datasetExpectedOutputSchema={
+                      dataset.data?.expectedOutputSchema ?? undefined
+                    }
                   />
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <DuplicateDatasetButton datasetId={datasetId} projectId={projectId} />
+                  <DuplicateDatasetButton
+                    datasetId={datasetId}
+                    projectId={projectId}
+                  />
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
@@ -163,7 +182,10 @@ function DatasetItemsView() {
             mobileTitle="Version History"
           >
             <SidePanelContent className="h-full">
-              <DatasetVersionHistoryPanel projectId={projectId} datasetId={datasetId} />
+              <DatasetVersionHistoryPanel
+                projectId={projectId}
+                datasetId={datasetId}
+              />
             </SidePanelContent>
           </SidePanel>
         </div>

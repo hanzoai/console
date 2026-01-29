@@ -32,7 +32,10 @@ export function useMonospaceCharWidth(fontSize = "0.7rem"): number {
         }
       }
     } catch (error) {
-      console.warn("[useMonospaceCharWidth] Failed to read from sessionStorage:", error);
+      console.warn(
+        "[useMonospaceCharWidth] Failed to read from sessionStorage:",
+        error,
+      );
     }
 
     return DEFAULT_CHAR_WIDTH;
@@ -75,13 +78,20 @@ export function useMonospaceCharWidth(fontSize = "0.7rem"): number {
         try {
           sessionStorage.setItem(STORAGE_KEY, measuredWidth.toString());
         } catch (error) {
-          console.warn("[useMonospaceCharWidth] Failed to write to sessionStorage:", error);
+          console.warn(
+            "[useMonospaceCharWidth] Failed to write to sessionStorage:",
+            error,
+          );
         }
 
         // Update state
         setCharWidth(measuredWidth);
       } else {
-        console.warn("[useMonospaceCharWidth] Invalid measurement:", measuredWidth, "- using default");
+        console.warn(
+          "[useMonospaceCharWidth] Invalid measurement:",
+          measuredWidth,
+          "- using default",
+        );
       }
     } catch (error) {
       console.error("[useMonospaceCharWidth] Measurement failed:", error);

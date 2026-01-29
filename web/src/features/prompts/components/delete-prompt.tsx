@@ -3,7 +3,11 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { api } from "@/src/utils/api";
 import { Trash } from "lucide-react";
 import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 
 export function DeletePrompt({ promptName }: { promptName: string }) {
@@ -34,7 +38,8 @@ export function DeletePrompt({ promptName }: { promptName: string }) {
       <PopoverContent>
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 text-sm">
-          This action permanently deletes this prompt. All requests to fetch prompt{" "}
+          This action permanently deletes this prompt. All requests to fetch
+          prompt{" "}
           <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
             {promptName}
           </code>{" "}

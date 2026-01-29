@@ -32,7 +32,11 @@ export function getCommentCountForSection(
 ): number {
   if (!sectionKey || !commentedPathsByField) return 0;
 
-  if (sectionKey !== "input" && sectionKey !== "output" && sectionKey !== "metadata") {
+  if (
+    sectionKey !== "input" &&
+    sectionKey !== "output" &&
+    sectionKey !== "metadata"
+  ) {
     return 0;
   }
 
@@ -51,7 +55,11 @@ export function getCommentRangesForRow(
   if (!sectionKey || !commentedPathsByField) return undefined;
 
   // Type-safe check for valid section keys
-  if (sectionKey !== "input" && sectionKey !== "output" && sectionKey !== "metadata") {
+  if (
+    sectionKey !== "input" &&
+    sectionKey !== "output" &&
+    sectionKey !== "metadata"
+  ) {
     return undefined;
   }
 

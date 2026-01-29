@@ -87,7 +87,8 @@ export const AuthentikProviderSchema = base.extend({
       clientId: z.string(),
       clientSecret: z.string(),
       issuer: z.string().regex(/^https:\/\/.+\/application\/o\/[^/]+$/, {
-        message: "Authentik issuer must be in format https://<domain>/application/o/<slug> without trailing slash",
+        message:
+          "Authentik issuer must be in format https://<domain>/application/o/<slug> without trailing slash",
       }),
       allowDangerousEmailAccountLinking: z.boolean().optional().default(false),
     })
@@ -173,7 +174,9 @@ export const JumpCloudProviderSchema = base.extend({
 
 export type GoogleProviderSchema = z.infer<typeof GoogleProviderSchema>;
 export type GithubProviderSchema = z.infer<typeof GithubProviderSchema>;
-export type GithubEnterpriseProviderSchema = z.infer<typeof GithubEnterpriseProviderSchema>;
+export type GithubEnterpriseProviderSchema = z.infer<
+  typeof GithubEnterpriseProviderSchema
+>;
 export type GitlabProviderSchema = z.infer<typeof GitlabProviderSchema>;
 export type Auth0ProviderSchema = z.infer<typeof Auth0ProviderSchema>;
 export type OktaProviderSchema = z.infer<typeof OktaProviderSchema>;

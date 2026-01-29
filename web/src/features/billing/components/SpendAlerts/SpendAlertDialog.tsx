@@ -2,8 +2,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod/v4";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/src/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
@@ -12,8 +24,14 @@ import { toast } from "sonner";
 import { Info } from "lucide-react";
 
 const spendAlertSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
-  limit: z.coerce.number().positive("Limit must be positive").max(1000000, "Limit must be less than $1,000,000"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title must be less than 100 characters"),
+  limit: z.coerce
+    .number()
+    .positive("Limit must be positive")
+    .max(1000000, "Limit must be less than $1,000,000"),
 });
 
 type SpendAlertFormInput = z.input<typeof spendAlertSchema>;
@@ -31,7 +49,13 @@ interface SpendAlertDialogProps {
   onSuccess: () => void;
 }
 
-export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }: SpendAlertDialogProps) {
+export function SpendAlertDialog({
+  orgId,
+  alert,
+  open,
+  onOpenChange,
+  onSuccess,
+}: SpendAlertDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const capture = usePostHogClientCapture();
 
@@ -79,7 +103,9 @@ export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }
       onSuccess();
     } catch (error) {
       console.error("Failed to save spend alert:", error);
-      toast.error(`Failed to ${alert ? "update" : "create"} spend alert. Please try again.`);
+      toast.error(
+        `Failed to ${alert ? "update" : "create"} spend alert. Please try again.`,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +114,9 @@ export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-4 sm:max-w-[425px]">
-        <DialogTitle>{alert ? "Edit Spend Alert" : "Create Spend Alert"}</DialogTitle>
+        <DialogTitle>
+          {alert ? "Edit Spend Alert" : "Create Spend Alert"}
+        </DialogTitle>
         <DialogDescription className="pb-2 pt-1 text-sm text-muted-foreground">
           Get notified when your organization&apos;s spending exceeds a limit.
         </DialogDescription>
@@ -124,7 +152,12 @@ export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }
                       onBlur={field.onBlur}
                       ref={field.ref}
                       onChange={field.onChange}
-                      value={typeof field.value === "number" || typeof field.value === "string" ? field.value : ""}
+                      value={
+                        typeof field.value === "number" ||
+                        typeof field.value === "string"
+                          ? field.value
+                          : ""
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -138,8 +171,8 @@ export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }
               </div>
               <ul className="list-disc pl-5">
                 <li>
-                  The limit is evaluated against your upcoming invoice total, including base fee, running usage fees,
-                  discounts, and taxes.
+                  The limit is evaluated against your upcoming invoice total,
+                  including base fee, running usage fees, discounts, and taxes.
                 </li>
                 <li>Alerts trigger once per billing cycle.</li>
                 <li>You will receive an email when the alert is triggered.</li>
@@ -147,11 +180,22 @@ export function SpendAlertDialog({ orgId, alert, open, onOpenChange, onSuccess }
               </ul>
             </div>
             <div className="flex flex-row items-center justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (alert ? "Updating..." : "Creating...") : alert ? "Update Alert" : "Create Alert"}
+                {isSubmitting
+                  ? alert
+                    ? "Updating..."
+                    : "Creating..."
+                  : alert
+                    ? "Update Alert"
+                    : "Create Alert"}
               </Button>
             </div>
           </form>

@@ -1,5 +1,8 @@
 import { randomUUID } from "crypto";
-import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
+import {
+  makeZodVerifiedAPICall,
+  makeAPICall,
+} from "@/src/__tests__/test-utils";
 import { GetMetricsV1Response } from "@/src/features/public-api/types/metrics";
 import {
   createEvent,
@@ -78,7 +81,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
           query: `SELECT count() as count FROM events WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
           params: { projectId, ids: observationIds },
         });
-        expect(Number(result[0]?.count)).toBeGreaterThanOrEqual(observationIds.length);
+        expect(Number(result[0]?.count)).toBeGreaterThanOrEqual(
+          observationIds.length,
+        );
       },
       5000,
       10,
@@ -280,7 +285,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
         );
       });
 
-      await createEventsCh(histogramObservations as ReturnType<typeof createEvent>[]);
+      await createEventsCh(
+        histogramObservations as ReturnType<typeof createEvent>[],
+      );
 
       const twoDaysAgo = new Date(new Date().getTime() - 3600 * 24 * 2 * 1000);
       const tomorrow = new Date(new Date().getTime() + 3600 * 24 * 1000);
@@ -319,7 +326,11 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       expect(response.body.data).toHaveLength(1);
 
       // Validate histogram data structure
-      const histogramData = response.body.data[0].histogram_totalCost as [number, number, number][];
+      const histogramData = response.body.data[0].histogram_totalCost as [
+        number,
+        number,
+        number,
+      ][];
       expect(Array.isArray(histogramData)).toBe(true);
       expect(histogramData.length).toBeGreaterThan(0);
       expect(histogramData.length).toBeLessThanOrEqual(15); // Should not exceed requested bins
@@ -339,28 +350,33 @@ describe("/api/public/v2/metrics API Endpoint", () => {
   });
 
   maybe("Denormalized Trace Fields", () => {
-    it.each([["tags"], ["release"]])("Denormalized field: %s", async (field) => {
-      const query = {
-        view: "observations",
-        dimensions: [{ field }],
-        metrics: [{ measure: "count", aggregation: "count" }],
-        fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
-        toTimestamp: new Date().toISOString(),
-      };
+    it.each([["tags"], ["release"]])(
+      "Denormalized field: %s",
+      async (field) => {
+        const query = {
+          view: "observations",
+          dimensions: [{ field }],
+          metrics: [{ measure: "count", aggregation: "count" }],
+          fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
+          toTimestamp: new Date().toISOString(),
+        };
 
-      const response = await makeZodVerifiedAPICall(
-        GetMetricsV1Response,
-        "GET",
-        `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
-      );
+        const response = await makeZodVerifiedAPICall(
+          GetMetricsV1Response,
+          "GET",
+          `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
+        );
 
-      expect(response.status).toBe(200);
-      expect(response.body.data).toBeDefined();
-      expect(response.body.data.length).toBeGreaterThan(0);
-      expect(
-        response.body.data.filter((x) => (x.count_count && x[field] ? (x.count_count as number) > 0 : false)).length,
-      ).toBeGreaterThan(0);
-    });
+        expect(response.status).toBe(200);
+        expect(response.body.data).toBeDefined();
+        expect(response.body.data.length).toBeGreaterThan(0);
+        expect(
+          response.body.data.filter((x) =>
+            x.count_count && x[field] ? (x.count_count as number) > 0 : false,
+          ).length,
+        ).toBeGreaterThan(0);
+      },
+    );
 
     it("should support multiple denormalized dimensions together", async () => {
       const query = {
@@ -413,7 +429,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
         expect(response.status).toBe(400);
         expect(response.body).toMatchObject({
           error: "InvalidRequestError",
-          message: expect.stringContaining(`require both 'config.row_limit' and 'orderBy' with direction 'desc'`),
+          message: expect.stringContaining(
+            `require both 'config.row_limit' and 'orderBy' with direction 'desc'`,
+          ),
         });
       },
     );
@@ -437,7 +455,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
         error: "InvalidRequestError",
-        message: expect.stringContaining(`require both 'config.row_limit' and 'orderBy' with direction 'desc'`),
+        message: expect.stringContaining(
+          `require both 'config.row_limit' and 'orderBy' with direction 'desc'`,
+        ),
       });
     });
 
@@ -644,7 +664,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
         error: "InvalidRequestError",
-        message: expect.stringContaining("Array fields require type 'arrayOptions', not 'string'"),
+        message: expect.stringContaining(
+          "Array fields require type 'arrayOptions', not 'string'",
+        ),
       });
     });
 
@@ -676,7 +698,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
         error: "InvalidRequestError",
-        message: expect.stringContaining("Metadata filters require type 'stringObject'"),
+        message: expect.stringContaining(
+          "Metadata filters require type 'stringObject'",
+        ),
       });
     });
 
@@ -731,7 +755,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       expect(response.body.data.length).toBeGreaterThan(0);
 
       // Verify we got the tagged observation
-      const taggedObsResult = response.body.data.find((row: any) => row.name === "tagged-observation");
+      const taggedObsResult = response.body.data.find(
+        (row: any) => row.name === "tagged-observation",
+      );
       expect(taggedObsResult).toBeDefined();
       expect(Number(taggedObsResult?.count_count)).toBeGreaterThanOrEqual(1);
     });
@@ -788,7 +814,9 @@ describe("/api/public/v2/metrics API Endpoint", () => {
             query: `SELECT count() as count FROM scores WHERE project_id = {projectId: String} AND id IN ({ids: Array(String)})`,
             params: { projectId, ids: scoreIds },
           });
-          expect(Number(result[0]?.count)).toBeGreaterThanOrEqual(scoreIds.length);
+          expect(Number(result[0]?.count)).toBeGreaterThanOrEqual(
+            scoreIds.length,
+          );
         },
         5000,
         10,
@@ -953,43 +981,58 @@ describe("/api/public/v2/metrics API Endpoint", () => {
     });
 
     it.each([
-      ["traceName", eventsScoreTraceName, (row: any) => row.traceName === eventsScoreTraceName],
+      [
+        "traceName",
+        eventsScoreTraceName,
+        (row: any) => row.traceName === eventsScoreTraceName,
+      ],
       ["tags", eventsScoreTags, (row: any) => Array.isArray(row.tags)],
-      ["traceRelease", eventsScoreRelease, (row: any) => row.traceRelease === eventsScoreRelease],
-      ["traceVersion", eventsScoreVersion, (row: any) => row.traceVersion === eventsScoreVersion],
-    ])("should support %s dimension via events JOIN", async (dimensionField, expectedValue, findRowFn) => {
-      const query = {
-        view: "scores-numeric",
-        dimensions: [{ field: dimensionField }],
-        metrics: [{ measure: "count", aggregation: "count" }],
-        filters: [
-          {
-            column: "name",
-            operator: "=",
-            value: "score-with-events",
-            type: "string",
-          },
-        ],
-        fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
-        toTimestamp: new Date().toISOString(),
-      };
+      [
+        "traceRelease",
+        eventsScoreRelease,
+        (row: any) => row.traceRelease === eventsScoreRelease,
+      ],
+      [
+        "traceVersion",
+        eventsScoreVersion,
+        (row: any) => row.traceVersion === eventsScoreVersion,
+      ],
+    ])(
+      "should support %s dimension via events JOIN",
+      async (dimensionField, expectedValue, findRowFn) => {
+        const query = {
+          view: "scores-numeric",
+          dimensions: [{ field: dimensionField }],
+          metrics: [{ measure: "count", aggregation: "count" }],
+          filters: [
+            {
+              column: "name",
+              operator: "=",
+              value: "score-with-events",
+              type: "string",
+            },
+          ],
+          fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
+          toTimestamp: new Date().toISOString(),
+        };
 
-      const response = await makeZodVerifiedAPICall(
-        GetMetricsV1Response,
-        "GET",
-        `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
-      );
+        const response = await makeZodVerifiedAPICall(
+          GetMetricsV1Response,
+          "GET",
+          `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
+        );
 
-      expect(response.status).toBe(200);
-      expect(response.body.data).toBeDefined();
+        expect(response.status).toBe(200);
+        expect(response.body.data).toBeDefined();
 
-      if (dimensionField === "tags") {
-        expect(response.body.data.length).toBeGreaterThan(0);
-      } else {
-        const foundRow = response.body.data.find(findRowFn);
-        expect(foundRow).toBeDefined();
-      }
-    });
+        if (dimensionField === "tags") {
+          expect(response.body.data.length).toBeGreaterThan(0);
+        } else {
+          const foundRow = response.body.data.find(findRowFn);
+          expect(foundRow).toBeDefined();
+        }
+      },
+    );
   });
 
   maybe("Scores Views - Observation Dimensions via Events", () => {
@@ -1045,41 +1088,48 @@ describe("/api/public/v2/metrics API Endpoint", () => {
     });
 
     it.each([
-      ["observationModelName", "gpt-4-turbo", (row: any) => row.observationModelName === "gpt-4-turbo"],
+      [
+        "observationModelName",
+        "gpt-4-turbo",
+        (row: any) => row.observationModelName === "gpt-4-turbo",
+      ],
       [
         "observationName",
         "test-observation-for-score-v2",
         (row: any) => row.observationName === "test-observation-for-score-v2",
       ],
-    ])("should support %s dimension via events table", async (dimensionField, expectedValue, findRowFn) => {
-      const query = {
-        view: "scores-numeric",
-        dimensions: [{ field: dimensionField }],
-        metrics: [{ measure: "count", aggregation: "count" }],
-        filters: [
-          {
-            column: "name",
-            operator: "=",
-            value: "score-with-observation-v2",
-            type: "string",
-          },
-        ],
-        fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
-        toTimestamp: new Date().toISOString(),
-      };
+    ])(
+      "should support %s dimension via events table",
+      async (dimensionField, expectedValue, findRowFn) => {
+        const query = {
+          view: "scores-numeric",
+          dimensions: [{ field: dimensionField }],
+          metrics: [{ measure: "count", aggregation: "count" }],
+          filters: [
+            {
+              column: "name",
+              operator: "=",
+              value: "score-with-observation-v2",
+              type: "string",
+            },
+          ],
+          fromTimestamp: new Date(Date.now() - 86400000).toISOString(),
+          toTimestamp: new Date().toISOString(),
+        };
 
-      const response = await makeZodVerifiedAPICall(
-        GetMetricsV1Response,
-        "GET",
-        `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
-      );
+        const response = await makeZodVerifiedAPICall(
+          GetMetricsV1Response,
+          "GET",
+          `/api/public/v2/metrics?query=${encodeURIComponent(JSON.stringify(query))}`,
+        );
 
-      expect(response.status).toBe(200);
-      expect(response.body.data).toBeDefined();
+        expect(response.status).toBe(200);
+        expect(response.body.data).toBeDefined();
 
-      // Should be able to access observation fields via events table JOIN
-      const foundRow = response.body.data.find(findRowFn);
-      expect(foundRow).toBeDefined();
-    });
+        // Should be able to access observation fields via events table JOIN
+        const foundRow = response.body.data.find(findRowFn);
+        expect(foundRow).toBeDefined();
+      },
+    );
   });
 });

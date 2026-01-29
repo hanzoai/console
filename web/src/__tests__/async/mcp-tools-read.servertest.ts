@@ -16,15 +16,25 @@ jest.mock("@hanzo/shared/src/server", () => {
 });
 
 import { nanoid } from "nanoid";
-import { createMcpTestSetup, createPromptInDb, verifyToolAnnotations } from "./mcp-helpers";
+import {
+  createMcpTestSetup,
+  createPromptInDb,
+  verifyToolAnnotations,
+} from "./mcp-helpers";
 
 // Import MCP tool handlers directly
-import { getPromptTool, handleGetPrompt } from "@/src/features/mcp/features/prompts/tools/getPrompt";
+import {
+  getPromptTool,
+  handleGetPrompt,
+} from "@/src/features/mcp/features/prompts/tools/getPrompt";
 import {
   getPromptUnresolvedTool,
   handleGetPromptUnresolved,
 } from "@/src/features/mcp/features/prompts/tools/getPromptUnresolved";
-import { listPromptsTool, handleListPrompts } from "@/src/features/mcp/features/prompts/tools/listPrompts";
+import {
+  listPromptsTool,
+  handleListPrompts,
+} from "@/src/features/mcp/features/prompts/tools/listPrompts";
 
 describe("MCP Read Tools", () => {
   describe("getPrompt tool", () => {
@@ -78,7 +88,10 @@ describe("MCP Read Tools", () => {
         version: 2,
       });
 
-      const result = (await handleGetPrompt({ name: promptName, label: "staging" }, context)) as {
+      const result = (await handleGetPrompt(
+        { name: promptName, label: "staging" },
+        context,
+      )) as {
         version: number;
         prompt: string;
       };
@@ -105,7 +118,10 @@ describe("MCP Read Tools", () => {
         version: 2,
       });
 
-      const result = (await handleGetPrompt({ name: promptName, version: 2 }, context)) as {
+      const result = (await handleGetPrompt(
+        { name: promptName, version: 2 },
+        context,
+      )) as {
         version: number;
         prompt: string;
       };
@@ -125,13 +141,20 @@ describe("MCP Read Tools", () => {
       });
 
       // The input schema refinement should reject this
-      await expect(handleGetPrompt({ name: promptName, label: "production", version: 1 }, context)).rejects.toThrow();
+      await expect(
+        handleGetPrompt(
+          { name: promptName, label: "production", version: 1 },
+          context,
+        ),
+      ).rejects.toThrow();
     });
 
     it("should return error for non-existent prompt", async () => {
       const { context } = await createMcpTestSetup();
 
-      await expect(handleGetPrompt({ name: "non-existent-prompt" }, context)).rejects.toThrow(/not found/i);
+      await expect(
+        handleGetPrompt({ name: "non-existent-prompt" }, context),
+      ).rejects.toThrow(/not found/i);
     });
 
     it("should return error for non-existent label", async () => {
@@ -145,7 +168,9 @@ describe("MCP Read Tools", () => {
         labels: ["staging"],
       });
 
-      await expect(handleGetPrompt({ name: promptName, label: "production" }, context)).rejects.toThrow(/not found/i);
+      await expect(
+        handleGetPrompt({ name: promptName, label: "production" }, context),
+      ).rejects.toThrow(/not found/i);
     });
 
     it("should return error for non-existent version", async () => {
@@ -159,12 +184,16 @@ describe("MCP Read Tools", () => {
         version: 1,
       });
 
-      await expect(handleGetPrompt({ name: promptName, version: 999 }, context)).rejects.toThrow(/not found/i);
+      await expect(
+        handleGetPrompt({ name: promptName, version: 999 }, context),
+      ).rejects.toThrow(/not found/i);
     });
 
     it("should use context.projectId for tenant isolation", async () => {
-      const { context: context1, projectId: projectId1 } = await createMcpTestSetup();
-      const { context: context2, projectId: projectId2 } = await createMcpTestSetup();
+      const { context: context1, projectId: projectId1 } =
+        await createMcpTestSetup();
+      const { context: context2, projectId: projectId2 } =
+        await createMcpTestSetup();
 
       const promptName = `shared-name-${nanoid()}`;
 
@@ -184,10 +213,16 @@ describe("MCP Read Tools", () => {
       });
 
       // Each context should only see its own project's prompt
-      const result1 = (await handleGetPrompt({ name: promptName }, context1)) as { prompt: string };
+      const result1 = (await handleGetPrompt(
+        { name: promptName },
+        context1,
+      )) as { prompt: string };
       expect(result1.prompt).toBe("Project 1 content");
 
-      const result2 = (await handleGetPrompt({ name: promptName }, context2)) as { prompt: string };
+      const result2 = (await handleGetPrompt(
+        { name: promptName },
+        context2,
+      )) as { prompt: string };
       expect(result2.prompt).toBe("Project 2 content");
     });
 
@@ -271,7 +306,10 @@ describe("MCP Read Tools", () => {
         projectId,
       });
 
-      const result = (await handleListPrompts({ page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<{ name: string }>;
         pagination: { totalItems: number };
       };
@@ -299,7 +337,10 @@ describe("MCP Read Tools", () => {
         projectId,
       });
 
-      const result = (await handleListPrompts({ name: `${uniquePrefix}-match`, page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { name: `${uniquePrefix}-match`, page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<{ name: string }>;
       };
 
@@ -327,7 +368,10 @@ describe("MCP Read Tools", () => {
         version: 1,
       });
 
-      const result = (await handleListPrompts({ label: "production", page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { label: "production", page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<{ name: string; labels: string[] }>;
       };
 
@@ -355,7 +399,10 @@ describe("MCP Read Tools", () => {
         tags: [],
       });
 
-      const result = (await handleListPrompts({ tag: "experimental", page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { tag: "experimental", page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<{ name: string; tags: string[] }>;
       };
 
@@ -378,7 +425,10 @@ describe("MCP Read Tools", () => {
         });
       }
 
-      const result = (await handleListPrompts({ page: 1, limit: 2 }, context)) as {
+      const result = (await handleListPrompts(
+        { page: 1, limit: 2 },
+        context,
+      )) as {
         data: Array<{ name: string }>;
         pagination: { page: number; limit: number; totalPages: number };
       };
@@ -392,7 +442,10 @@ describe("MCP Read Tools", () => {
     it("should return empty results for no matches", async () => {
       const { context } = await createMcpTestSetup();
 
-      const result = (await handleListPrompts({ name: `non-existent-${nanoid()}`, page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { name: `non-existent-${nanoid()}`, page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<unknown>;
         pagination: { totalItems: number };
       };
@@ -402,7 +455,8 @@ describe("MCP Read Tools", () => {
     });
 
     it("should use context.projectId for tenant isolation", async () => {
-      const { context: context1, projectId: projectId1 } = await createMcpTestSetup();
+      const { context: context1, projectId: projectId1 } =
+        await createMcpTestSetup();
       const { context: context2 } = await createMcpTestSetup();
 
       const uniqueName = `isolation-test-${nanoid()}`;
@@ -415,13 +469,19 @@ describe("MCP Read Tools", () => {
       });
 
       // Project 1 should see it
-      const result1 = (await handleListPrompts({ name: uniqueName, page: 1, limit: 100 }, context1)) as {
+      const result1 = (await handleListPrompts(
+        { name: uniqueName, page: 1, limit: 100 },
+        context1,
+      )) as {
         data: Array<unknown>;
       };
       expect(result1.data.length).toBe(1);
 
       // Project 2 should not see it
-      const result2 = (await handleListPrompts({ name: uniqueName, page: 1, limit: 100 }, context2)) as {
+      const result2 = (await handleListPrompts(
+        { name: uniqueName, page: 1, limit: 100 },
+        context2,
+      )) as {
         data: Array<unknown>;
       };
       expect(result2.data.length).toBe(0);
@@ -430,7 +490,10 @@ describe("MCP Read Tools", () => {
     it("should respect default pagination values", async () => {
       const { context } = await createMcpTestSetup();
 
-      const result = (await handleListPrompts({ page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { page: 1, limit: 100 },
+        context,
+      )) as {
         pagination: { page: number; limit: number };
       };
 
@@ -452,7 +515,10 @@ describe("MCP Read Tools", () => {
         version: 1,
       });
 
-      const result = (await handleListPrompts({ name: promptName, page: 1, limit: 100 }, context)) as {
+      const result = (await handleListPrompts(
+        { name: promptName, page: 1, limit: 100 },
+        context,
+      )) as {
         data: Array<{
           name: string;
           version: number;
@@ -477,7 +543,8 @@ describe("MCP Read Tools", () => {
       const promptName = `test-prompt-unresolved-${nanoid()}`;
 
       // Create a prompt with dependency tags (unresolved)
-      const rawPromptContent = "You are a helpful assistant. @@@hanzoPrompt:name=base-instructions|label=production@@@";
+      const rawPromptContent =
+        "You are a helpful assistant. @@@hanzoPrompt:name=base-instructions|label=production@@@";
 
       await createPromptInDb({
         name: promptName,
@@ -487,7 +554,10 @@ describe("MCP Read Tools", () => {
         version: 1,
       });
 
-      const result = (await handleGetPromptUnresolved({ name: promptName }, context)) as {
+      const result = (await handleGetPromptUnresolved(
+        { name: promptName },
+        context,
+      )) as {
         name: string;
         version: number;
         prompt: string;
@@ -499,7 +569,9 @@ describe("MCP Read Tools", () => {
       expect(result.labels).toContain("production");
       // Verify dependency tags are NOT resolved
       expect(result.prompt).toBe(rawPromptContent);
-      expect(result.prompt).toContain("@@@hanzoPrompt:name=base-instructions|label=production@@@");
+      expect(result.prompt).toContain(
+        "@@@hanzoPrompt:name=base-instructions|label=production@@@",
+      );
     });
 
     it("should fetch prompt by name and specific label without resolution", async () => {
@@ -524,13 +596,18 @@ describe("MCP Read Tools", () => {
         version: 2,
       });
 
-      const result = (await handleGetPromptUnresolved({ name: promptName, label: "staging" }, context)) as {
+      const result = (await handleGetPromptUnresolved(
+        { name: promptName, label: "staging" },
+        context,
+      )) as {
         version: number;
         prompt: string;
       };
 
       expect(result.version).toBe(1);
-      expect(result.prompt).toBe("Version 1 @@@hanzoPrompt:name=helper|label=staging@@@");
+      expect(result.prompt).toBe(
+        "Version 1 @@@hanzoPrompt:name=helper|label=staging@@@",
+      );
     });
 
     it("should fetch prompt by name and specific version without resolution", async () => {
@@ -553,29 +630,42 @@ describe("MCP Read Tools", () => {
         version: 2,
       });
 
-      const result = (await handleGetPromptUnresolved({ name: promptName, version: 1 }, context)) as {
+      const result = (await handleGetPromptUnresolved(
+        { name: promptName, version: 1 },
+        context,
+      )) as {
         version: number;
         prompt: string;
       };
 
       expect(result.version).toBe(1);
-      expect(result.prompt).toBe("V1 content @@@hanzoPrompt:name=dep|label=v1@@@");
+      expect(result.prompt).toBe(
+        "V1 content @@@hanzoPrompt:name=dep|label=v1@@@",
+      );
     });
 
     it("should throw error if prompt not found", async () => {
       const { context } = await createMcpTestSetup();
 
-      await expect(handleGetPromptUnresolved({ name: "non-existent-prompt-12345" }, context)).rejects.toThrow(
-        "Prompt 'non-existent-prompt-12345' not found",
-      );
+      await expect(
+        handleGetPromptUnresolved(
+          { name: "non-existent-prompt-12345" },
+          context,
+        ),
+      ).rejects.toThrow("Prompt 'non-existent-prompt-12345' not found");
     });
 
     it("should throw error when both label and version are specified", async () => {
       const { context } = await createMcpTestSetup();
 
       await expect(
-        handleGetPromptUnresolved({ name: "test", label: "production", version: 1 }, context),
-      ).rejects.toThrow("Cannot specify both label and version - they are mutually exclusive");
+        handleGetPromptUnresolved(
+          { name: "test", label: "production", version: 1 },
+          context,
+        ),
+      ).rejects.toThrow(
+        "Cannot specify both label and version - they are mutually exclusive",
+      );
     });
 
     it("should return raw chat prompt without resolving dependencies", async () => {
@@ -585,7 +675,8 @@ describe("MCP Read Tools", () => {
       const chatMessages = [
         {
           role: "system",
-          content: "You are helpful @@@hanzoPrompt:name=system-base|label=production@@@",
+          content:
+            "You are helpful @@@hanzoPrompt:name=system-base|label=production@@@",
         },
         {
           role: "user",
@@ -602,7 +693,10 @@ describe("MCP Read Tools", () => {
         type: "chat",
       });
 
-      const result = (await handleGetPromptUnresolved({ name: promptName }, context)) as {
+      const result = (await handleGetPromptUnresolved(
+        { name: promptName },
+        context,
+      )) as {
         name: string;
         type: string;
         prompt: Array<{ role: string; content: string }>;
@@ -610,7 +704,9 @@ describe("MCP Read Tools", () => {
 
       expect(result.type).toBe("chat");
       expect(result.prompt).toEqual(chatMessages);
-      expect(result.prompt[0].content).toContain("@@@hanzoPrompt:name=system-base|label=production@@@");
+      expect(result.prompt[0].content).toContain(
+        "@@@hanzoPrompt:name=system-base|label=production@@@",
+      );
     });
   });
 });

@@ -1,5 +1,13 @@
 import { cn } from "@/src/utils/tailwind";
-import { type FC, type ReactNode, type ReactElement, memo, isValidElement, Children, createElement } from "react";
+import {
+  type FC,
+  type ReactNode,
+  type ReactElement,
+  memo,
+  isValidElement,
+  Children,
+  createElement,
+} from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
 import Link from "next/link";
 import remarkGfm from "remark-gfm";
@@ -32,7 +40,10 @@ import { useCollapsibleSystemPrompt } from "@/src/hooks/useCollapsibleSystemProm
 import { Button } from "@/src/components/ui/button";
 
 type ReactMarkdownNode = ReactMarkdownExtraProps["node"];
-type ReactMarkdownNodeChildren = Exclude<ReactMarkdownNode, undefined>["children"];
+type ReactMarkdownNodeChildren = Exclude<
+  ReactMarkdownNode,
+  undefined
+>["children"];
 
 // ReactMarkdown does not render raw HTML by default for security reasons, to prevent XSS (Cross-Site Scripting) attacks.
 // html is rendered as plain text by default.
@@ -65,14 +76,20 @@ const getSafeUrl = (href: string | undefined | null): string | null => {
   }
 };
 
-const isTextElement = (child: ReactNode): child is ReactElement<{ className?: string }> =>
+const isTextElement = (
+  child: ReactNode,
+): child is ReactElement<{ className?: string }> =>
   isValidElement(child) &&
   typeof child.type === "string" &&
   ["p", "h1", "h2", "h3", "h4", "h5", "h6"].includes(child.type);
 
 const isChecklist = (children: ReactNode) =>
   Array.isArray(children) &&
-  children.some((child) => isValidElement(child) && (child.props as any)?.className === "task-list-item");
+  children.some(
+    (child) =>
+      isValidElement(child) &&
+      (child.props as any)?.className === "task-list-item",
+  );
 
 const transformListItemChildren = (children: ReactNode) =>
   Children.map(children, (child) =>
@@ -87,7 +104,10 @@ const transformListItemChildren = (children: ReactNode) =>
 const isImageNode = (node?: ReactMarkdownNode): boolean =>
   !!node &&
   Array.isArray(node.children) &&
-  node.children.some((child: ReactMarkdownNodeChildren[number]) => "tagName" in child && child.tagName === "img");
+  node.children.some(
+    (child: ReactMarkdownNodeChildren[number]) =>
+      "tagName" in child && child.tagName === "img",
+  );
 
 function MarkdownRenderer({
   markdown,
@@ -105,7 +125,12 @@ function MarkdownRenderer({
   try {
     // If parsing succeeds, render with ReactMarkdown
     return (
-      <div className={cn("space-y-2 overflow-x-auto break-words text-sm", className)}>
+      <div
+        className={cn(
+          "space-y-2 overflow-x-auto break-words text-sm",
+          className,
+        )}
+      >
         <MemoizedReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -113,29 +138,43 @@ function MarkdownRenderer({
               if (isImageNode(node)) {
                 return <>{children}</>;
               }
-              return <p className="mb-2 whitespace-pre-wrap last:mb-0">{children}</p>;
+              return (
+                <p className="mb-2 whitespace-pre-wrap last:mb-0">{children}</p>
+              );
             },
             a({ children, href }) {
               // Handle mention links
               if (href?.startsWith(MENTION_USER_PREFIX)) {
                 const userId = href.replace(MENTION_USER_PREFIX, "");
                 const displayName = String(children);
-                return <MentionBadge userId={userId} displayName={displayName} />;
+                return (
+                  <MentionBadge userId={userId} displayName={displayName} />
+                );
               }
 
               // Handle regular links
               const safeHref = getSafeUrl(href);
               if (safeHref) {
                 return (
-                  <Link href={safeHref} className="underline" target="_blank" rel="noopener noreferrer">
+                  <Link
+                    href={safeHref}
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {children}
                   </Link>
                 );
               }
-              return <span className="text-muted-foreground underline">{children}</span>;
+              return (
+                <span className="text-muted-foreground underline">
+                  {children}
+                </span>
+              );
             },
             ul({ children }) {
-              if (isChecklist(children)) return <ul className="list-none">{children}</ul>;
+              if (isChecklist(children))
+                return <ul className="list-none">{children}</ul>;
 
               return <ul className="list-inside list-disc">{children}</ul>;
             },
@@ -143,7 +182,11 @@ function MarkdownRenderer({
               return <ol className="list-inside list-decimal">{children}</ol>;
             },
             li({ children }) {
-              return <li className="mt-1 [&>ol]:pl-4 [&>ul]:pl-4">{transformListItemChildren(children)}</li>;
+              return (
+                <li className="mt-1 [&>ol]:pl-4 [&>ul]:pl-4">
+                  {transformListItemChildren(children)}
+                </li>
+              );
             },
             pre({ children }) {
               return <pre className="rounded p-2">{children}</pre>;
@@ -183,14 +226,22 @@ function MarkdownRenderer({
                 />
               ) : (
                 // inline code
-                <code className="rounded border bg-secondary px-0.5">{codeContent}</code>
+                <code className="rounded border bg-secondary px-0.5">
+                  {codeContent}
+                </code>
               );
             },
             blockquote({ children }) {
-              return <blockquote className="border-l-4 pl-4 italic">{children}</blockquote>;
+              return (
+                <blockquote className="border-l-4 pl-4 italic">
+                  {children}
+                </blockquote>
+              );
             },
             img({ src, alt }) {
-              return src && typeof src === "string" ? <ResizableImage src={src} alt={alt} /> : null;
+              return src && typeof src === "string" ? (
+                <ResizableImage src={src} alt={alt} />
+              ) : null;
             },
             hr() {
               return <hr className="my-4" />;
@@ -206,16 +257,24 @@ function MarkdownRenderer({
               return <thead>{children}</thead>;
             },
             tbody({ children }) {
-              return <tbody className="divide-y divide-border">{children}</tbody>;
+              return (
+                <tbody className="divide-y divide-border">{children}</tbody>
+              );
             },
             tr({ children }) {
               return <tr>{children}</tr>;
             },
             th({ children }) {
-              return <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">{children}</th>;
+              return (
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider">
+                  {children}
+                </th>
+              );
             },
             td({ children }) {
-              return <td className="whitespace-nowrap px-4 py-2">{children}</td>;
+              return (
+                <td className="whitespace-nowrap px-4 py-2">{children}</td>
+              );
             },
           }}
         >
@@ -237,7 +296,9 @@ function MarkdownRenderer({
     );
   }
 }
-const parseOpenAIContentParts = (content: z.infer<typeof OpenAIContentParts> | null): string => {
+const parseOpenAIContentParts = (
+  content: z.infer<typeof OpenAIContentParts> | null,
+): string => {
   return (content ?? [])
     .map((item) => {
       if (item.type === "text") {
@@ -277,9 +338,15 @@ export function MarkdownView({
   const { resolvedTheme: theme } = useTheme();
   const { setIsMarkdownEnabled } = useMarkdownContext();
 
-  const markdownContent = typeof markdown === "string" ? markdown : parseOpenAIContentParts(markdown);
+  const markdownContent =
+    typeof markdown === "string" ? markdown : parseOpenAIContentParts(markdown);
 
-  const { shouldBeCollapsible, isCollapsed, toggleCollapsed, truncatedContent } = useCollapsibleSystemPrompt({
+  const {
+    shouldBeCollapsible,
+    isCollapsed,
+    toggleCollapsed,
+    truncatedContent,
+  } = useCollapsibleSystemPrompt({
     role: title ?? "",
     content: markdownContent,
   });
@@ -313,8 +380,12 @@ export function MarkdownView({
       <div
         className={cn(
           "io-message-content grid grid-flow-row gap-2 px-1 py-2",
-          title === "assistant" || title === "Output" || title === "Model" ? "bg-accent-light-green" : "",
-          title === "system" || title === "Input" ? "bg-primary-foreground" : "",
+          title === "assistant" || title === "Output" || title === "Model"
+            ? "bg-accent-light-green"
+            : "",
+          title === "system" || title === "Input"
+            ? "bg-primary-foreground"
+            : "",
           className,
         )}
       >
@@ -322,13 +393,22 @@ export function MarkdownView({
           // plain string
           <>
             <MarkdownRenderer
-              markdown={shouldBeCollapsible && isCollapsed ? truncatedContent : markdown}
+              markdown={
+                shouldBeCollapsible && isCollapsed ? truncatedContent : markdown
+              }
               theme={theme}
               customCodeHeaderClassName={customCodeHeaderClassName}
             />
             {shouldBeCollapsible && (
-              <Button variant="ghost" size="xs" onClick={toggleCollapsed} className="w-fit text-xs underline">
-                {isCollapsed ? "Expand system prompt" : "Collapse system prompt"}
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={toggleCollapsed}
+                className="w-fit text-xs underline"
+              >
+                {isCollapsed
+                  ? "Expand system prompt"
+                  : "Collapse system prompt"}
               </Button>
             )}
           </>
@@ -347,14 +427,17 @@ export function MarkdownView({
                 <div key={index}>
                   <ResizableImage src={content.image_url.url.toString()} />
                 </div>
-              ) : MediaReferenceStringSchema.safeParse(content.image_url.url).success ? (
+              ) : MediaReferenceStringSchema.safeParse(content.image_url.url)
+                  .success ? (
                 <HanzoMediaView mediaReferenceString={content.image_url.url} />
               ) : (
                 <div className="grid grid-cols-[auto,1fr] items-center gap-2">
                   <span title="<Base64 data URI>" className="h-4 w-4">
                     <ImageOff className="h-4 w-4" />
                   </span>
-                  <span className="truncate text-sm">{content.image_url.url.toString()}</span>
+                  <span className="truncate text-sm">
+                    {content.image_url.url.toString()}
+                  </span>
                 </div>
               )
             ) : content.type === "input_audio" ? (
@@ -375,10 +458,16 @@ export function MarkdownView({
       </div>
       {media && media.length > 0 && (
         <>
-          <div className="mx-3 border-t px-2 py-1 text-xs text-muted-foreground">Media</div>
+          <div className="mx-3 border-t px-2 py-1 text-xs text-muted-foreground">
+            Media
+          </div>
           <div className="flex flex-wrap gap-2 p-4 pt-1">
             {media.map((m) => (
-              <HanzoMediaView mediaAPIReturnValue={m} asFileIcon={true} key={m.mediaId} />
+              <HanzoMediaView
+                mediaAPIReturnValue={m}
+                asFileIcon={true}
+                key={m.mediaId}
+              />
             ))}
           </div>
         </>

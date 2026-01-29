@@ -44,7 +44,9 @@ export const getAllModels = (
   return allModels.data ? extractAllModels(allModels.data) : [];
 };
 
-const extractAllModels = (data: Record<string, unknown>[]): { model: string; count: number }[] => {
+const extractAllModels = (
+  data: Record<string, unknown>[],
+): { model: string; count: number }[] => {
   return data
     .filter((item) => item.providedModelName !== null)
     .map((item) => ({
@@ -73,7 +75,9 @@ function generateChartLabelFromColumns(
   return uniqueIdentifierColumns
     .map(({ accessor, formatFct }) => {
       if (row[accessor] === null || row[accessor] === undefined) return null;
-      return formatFct ? formatFct(row[accessor] as string) : (row[accessor] as string);
+      return formatFct
+        ? formatFct(row[accessor] as string)
+        : (row[accessor] as string);
     })
     .filter((value) => value !== null)
     .join(" ");
@@ -96,9 +100,16 @@ export function extractTimeSeriesData(
     const reducedData: ChartData[] = [];
     // Map the desired fields from the DatabaseRow to the ChartData based on the mapping provided
     mapping.forEach((mapItem) => {
-      const chartLabel = generateChartLabelFromColumns(mapItem.uniqueIdentifierColumns, curr);
+      const chartLabel = generateChartLabelFromColumns(
+        mapItem.uniqueIdentifierColumns,
+        curr,
+      );
       const columnValue = curr[mapItem.valueColumn];
-      if (chartLabel && columnValue !== undefined && typeof chartLabel === "string") {
+      if (
+        chartLabel &&
+        columnValue !== undefined &&
+        typeof chartLabel === "string"
+      ) {
         reducedData.push({
           label: chartLabel,
           value: columnValue ? (columnValue as number) : 0,
@@ -152,7 +163,10 @@ export const isEmptyTimeSeries = ({
     data.length === 0 ||
     data.every(
       (item) =>
-        item.values.length === 0 || (isNullValueAllowed ? false : item.values.every((value) => value.value === 0)),
+        item.values.length === 0 ||
+        (isNullValueAllowed
+          ? false
+          : item.values.every((value) => value.value === 0)),
     )
   );
 };

@@ -1,7 +1,12 @@
 import { StreamingTextResponse } from "ai";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { BaseError, ForbiddenError, InternalServerError, InvalidRequestError } from "@hanzo/shared";
+import {
+  BaseError,
+  ForbiddenError,
+  InternalServerError,
+  InvalidRequestError,
+} from "@hanzo/shared";
 
 import { PosthogCallbackHandler } from "./analytics/posthogCallback";
 import { authorizeRequestOrThrow } from "./authorizeRequest";
@@ -9,7 +14,12 @@ import { validateChatCompletionBody } from "./validateChatCompletionBody";
 
 import { env } from "@/src/env.mjs";
 import { prisma } from "@hanzo/shared/src/db";
-import { LLMApiKeySchema, logger, fetchLLMCompletion, contextWithHanzoProps } from "@hanzo/shared/src/server";
+import {
+  LLMApiKeySchema,
+  logger,
+  fetchLLMCompletion,
+  contextWithHanzoProps,
+} from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 export default async function chatCompletionHandler(req: NextRequest) {
@@ -30,7 +40,13 @@ export default async function chatCompletionHandler(req: NextRequest) {
     });
 
     return opentelemetry.context.with(baggageCtx, async () => {
-      const { messages, modelParams, tools, structuredOutputSchema, streaming } = body;
+      const {
+        messages,
+        modelParams,
+        tools,
+        structuredOutputSchema,
+        streaming,
+      } = body;
 
       const LLMApiKey = await prisma.llmApiKeys.findFirst({
         where: {
@@ -74,8 +90,13 @@ export default async function chatCompletionHandler(req: NextRequest) {
       if ((tools && tools.length > 0) || hasToolResults) {
         // Fix empty tool_call_id values by mapping to langgraph IDs
         const fixedMessages = messages.map((msg) => {
-          if (msg.type === "tool-result" && (!msg.toolCallId || msg.toolCallId === "")) {
-            const assistantMessages = messages.filter((m) => m.type === "assistant-tool-call" && m.toolCalls).reverse();
+          if (
+            msg.type === "tool-result" &&
+            (!msg.toolCallId || msg.toolCallId === "")
+          ) {
+            const assistantMessages = messages
+              .filter((m) => m.type === "assistant-tool-call" && m.toolCalls)
+              .reverse();
 
             // Find the first matching tool call by name
             // Note: using 'as any' because we filtered for assistant-tool-call messages above

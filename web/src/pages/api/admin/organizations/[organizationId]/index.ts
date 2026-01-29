@@ -9,7 +9,10 @@ import {
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSelfHostedInstancePlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     // Verify admin API authentication, only allow on self-hosted (not on Hanzo Cloud)
     if (!AdminApiAuthService.handleAdminAuth(req, res)) {

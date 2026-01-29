@@ -10,7 +10,11 @@
  */
 
 import { memo } from "react";
-import { type TraceDomain, type ScoreDomain, AnnotationQueueObjectType } from "@hanzo/shared";
+import {
+  type TraceDomain,
+  type ScoreDomain,
+  AnnotationQueueObjectType,
+} from "@hanzo/shared";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { ItemBadge } from "@/src/components/ItemBadge";
@@ -20,7 +24,13 @@ import { NewDatasetItemFromExistingObject } from "@/src/features/datasets/compon
 import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
-import { SessionBadge, UserIdBadge, EnvironmentBadge, ReleaseBadge, VersionBadge } from "./TraceMetadataBadges";
+import {
+  SessionBadge,
+  UserIdBadge,
+  EnvironmentBadge,
+  ReleaseBadge,
+  VersionBadge,
+} from "./TraceMetadataBadges";
 
 export interface TraceDetailViewHeaderProps {
   trace: Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
@@ -112,7 +122,11 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
       <div className="flex flex-col gap-2">
         {/* Timestamp */}
         <div className="flex flex-wrap items-center gap-1">
-          <LocalIsoDate date={trace.timestamp} accuracy="millisecond" className="text-sm" />
+          <LocalIsoDate
+            date={trace.timestamp}
+            accuracy="millisecond"
+            className="text-sm"
+          />
         </div>
 
         {/* Other badges */}

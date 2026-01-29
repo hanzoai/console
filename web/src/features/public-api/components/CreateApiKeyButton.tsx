@@ -23,7 +23,10 @@ import { SubHeader } from "@/src/components/layouts/header";
 
 type ApiKeyScope = "project" | "organization";
 
-export function CreateApiKeyButton(props: { entityId: string; scope: ApiKeyScope }) {
+export function CreateApiKeyButton(props: {
+  entityId: string;
+  scope: ApiKeyScope;
+}) {
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
 
@@ -36,7 +39,8 @@ export function CreateApiKeyButton(props: { entityId: string; scope: ApiKeyScope
     scope: "organization:CRUD_apiKeys",
   });
 
-  const hasAccess = props.scope === "project" ? hasProjectAccess : hasOrganizationAccess;
+  const hasAccess =
+    props.scope === "project" ? hasProjectAccess : hasOrganizationAccess;
 
   const mutCreateProjectApiKey = api.projectApiKeys.create.useMutation({
     onSuccess: () => utils.projectApiKeys.invalidate(),
@@ -109,7 +113,9 @@ export function CreateApiKeyButton(props: { entityId: string; scope: ApiKeyScope
       </DialogTrigger>
       <DialogContent onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{generatedKeys ? "API Keys" : "Create API Keys"}</DialogTitle>
+          <DialogTitle>
+            {generatedKeys ? "API Keys" : "Create API Keys"}
+          </DialogTitle>
         </DialogHeader>
         <DialogBody>
           {generatedKeys ? (
@@ -136,7 +142,12 @@ export function CreateApiKeyButton(props: { entityId: string; scope: ApiKeyScope
         </DialogBody>
         {!generatedKeys && (
           <DialogFooter>
-            <Button onClick={createApiKey} loading={mutCreateProjectApiKey.isPending || mutCreateOrgApiKey.isPending}>
+            <Button
+              onClick={createApiKey}
+              loading={
+                mutCreateProjectApiKey.isPending || mutCreateOrgApiKey.isPending
+              }
+            >
               Create API keys
             </Button>
           </DialogFooter>
@@ -162,13 +173,20 @@ export const ApiKeyRender = ({
       <div>
         <SubHeader title="Secret Key" />
         <div className="text-sm text-muted-foreground">
-          This key can only be viewed once. You can always create new keys in the {scope} settings.
+          This key can only be viewed once. You can always create new keys in
+          the {scope} settings.
         </div>
-        <CodeView content={generatedKeys?.secretKey ?? "Loading ..."} className="mt-2" />
+        <CodeView
+          content={generatedKeys?.secretKey ?? "Loading ..."}
+          className="mt-2"
+        />
       </div>
       <div>
         <SubHeader title="Public Key" />
-        <CodeView content={generatedKeys?.publicKey ?? "Loading ..."} className="mt-2" />
+        <CodeView
+          content={generatedKeys?.publicKey ?? "Loading ..."}
+          className="mt-2"
+        />
       </div>
       <div>
         <SubHeader title=".env" />

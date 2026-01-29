@@ -1,6 +1,9 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import {
   AnnotationQueueObjectType,
   AnnotationQueueStatus,
@@ -103,21 +106,26 @@ export const queueRouter = createTRPCRouter({
           }),
         ]);
 
-        const userQueueAssignments = await ctx.prisma.annotationQueueAssignment.findMany({
-          where: {
-            userId: ctx.session.user.id,
-          },
-          select: {
-            queueId: true,
-          },
-        });
+        const userQueueAssignments =
+          await ctx.prisma.annotationQueueAssignment.findMany({
+            where: {
+              userId: ctx.session.user.id,
+            },
+            select: {
+              queueId: true,
+            },
+          });
 
         return {
           totalCount,
           queues: queues.map((queue) => ({
             ...queue,
-            scoreConfigs: scoreConfigs.filter((config) => queue.scoreConfigIds.includes(config.id)),
-            isCurrentUserAssigned: userQueueAssignments.some((assignment) => assignment.queueId === queue.id),
+            scoreConfigs: scoreConfigs.filter((config) =>
+              queue.scoreConfigIds.includes(config.id),
+            ),
+            isCurrentUserAssigned: userQueueAssignments.some(
+              (assignment) => assignment.queueId === queue.id,
+            ),
           })),
         };
       } catch (error) {
@@ -161,22 +169,24 @@ export const queueRouter = createTRPCRouter({
         });
       }
     }),
-  count: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ input, ctx }) => {
-    try {
-      return ctx.prisma.annotationQueue.count({
-        where: { projectId: input.projectId },
-      });
-    } catch (error) {
-      logger.error(error);
-      if (error instanceof TRPCError) {
-        throw error;
+  count: protectedProjectProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      try {
+        return ctx.prisma.annotationQueue.count({
+          where: { projectId: input.projectId },
+        });
+      } catch (error) {
+        logger.error(error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Fetching annotation queue count failed.",
+        });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Fetching annotation queue count failed.",
-      });
-    }
-  }),
+    }),
   byId: protectedProjectProcedure
     .input(z.object({ queueId: z.string(), projectId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -310,7 +320,8 @@ export const queueRouter = createTRPCRouter({
           ) {
             throw new TRPCError({
               code: "FORBIDDEN",
-              message: "Maximum number of annotation queues reached on Hobby plan.",
+              message:
+                "Maximum number of annotation queues reached on Hobby plan.",
             });
           }
         }
@@ -471,7 +482,11 @@ export const queueRouter = createTRPCRouter({
             queueId: input.queueId,
             projectId: input.projectId,
             status: AnnotationQueueStatus.PENDING,
-            OR: [{ lockedAt: null }, { lockedAt: { lt: fiveMinutesAgo } }, { lockedByUserId: ctx.session.user.id }],
+            OR: [
+              { lockedAt: null },
+              { lockedAt: { lt: fiveMinutesAgo } },
+              { lockedByUserId: ctx.session.user.id },
+            ],
             NOT: {
               id: { in: input.seenItemIds },
             },

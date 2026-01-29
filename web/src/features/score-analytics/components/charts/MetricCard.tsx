@@ -1,6 +1,15 @@
 import { Badge } from "@/src/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { HelpCircle, AlertCircle } from "lucide-react";
 import type { InterpretationResult } from "@/src/features/score-analytics/lib/statistics-utils";
 
@@ -80,31 +89,42 @@ export function MetricCard({
           <span className="text-sm text-muted-foreground/50">—</span>
         ) : (
           // Normal styling for actual values
-          <p className={isContext ? "text-lg font-semibold" : "text-lg font-semibold"}>{displayValue}</p>
+          <p
+            className={
+              isContext ? "text-lg font-semibold" : "text-lg font-semibold"
+            }
+          >
+            {displayValue}
+          </p>
         )}
-        {interpretation && !isPlaceholder && !isNA && interpretation.strength !== "N/A" && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge
-                  variant={getBadgeVariant(interpretation.color)}
-                  className="px-1.5 py-0 text-[10px] font-normal opacity-70"
-                >
-                  {interpretation.strength}
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
-                <p className="text-xs">{interpretation.description}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+        {interpretation &&
+          !isPlaceholder &&
+          !isNA &&
+          interpretation.strength !== "N/A" && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant={getBadgeVariant(interpretation.color)}
+                    className="px-1.5 py-0 text-[10px] font-normal opacity-70"
+                  >
+                    {interpretation.strength}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-xs">{interpretation.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         {warning?.show && !isPlaceholder && !isNA && (
           <HoverCard>
             <HoverCardTrigger asChild>
               <AlertCircle className="h-4 w-4 cursor-help text-amber-500" />
             </HoverCardTrigger>
-            <HoverCardContent className="w-80">{warning.content}</HoverCardContent>
+            <HoverCardContent className="w-80">
+              {warning.content}
+            </HoverCardContent>
           </HoverCard>
         )}
       </div>

@@ -5,13 +5,18 @@ import { isSigtermReceived } from "@/src/utils/shutdown";
 import { logger, traceException } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     await runMiddleware(req, res, cors);
     await telemetry();
 
     if (isSigtermReceived()) {
-      logger.info("Readiness check failed: SIGTERM / SIGINT received, shutting down.");
+      logger.info(
+        "Readiness check failed: SIGTERM / SIGINT received, shutting down.",
+      );
       return res.status(500).json({
         status: "SIGTERM / SIGINT received, shutting down",
         version: VERSION.replace("v", ""),

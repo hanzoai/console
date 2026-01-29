@@ -71,9 +71,15 @@ describe("pivot-table-utils", () => {
         metrics: ["count"],
       };
 
-      expect(() => validatePivotTableConfig(configWithNoDimensions)).not.toThrow();
-      expect(() => validatePivotTableConfig(configWithOneDimension)).not.toThrow();
-      expect(() => validatePivotTableConfig(configWithTwoDimensions)).not.toThrow();
+      expect(() =>
+        validatePivotTableConfig(configWithNoDimensions),
+      ).not.toThrow();
+      expect(() =>
+        validatePivotTableConfig(configWithOneDimension),
+      ).not.toThrow();
+      expect(() =>
+        validatePivotTableConfig(configWithTwoDimensions),
+      ).not.toThrow();
     });
 
     it("should throw error for empty metrics", () => {
@@ -82,7 +88,9 @@ describe("pivot-table-utils", () => {
         metrics: [],
       };
 
-      expect(() => validatePivotTableConfig(invalidConfig)).toThrow("At least one metric is required for pivot table");
+      expect(() => validatePivotTableConfig(invalidConfig)).toThrow(
+        "At least one metric is required for pivot table",
+      );
     });
 
     it("should throw error for invalid row limit", () => {
@@ -92,11 +100,16 @@ describe("pivot-table-utils", () => {
         rowLimit: 0,
       };
 
-      expect(() => validatePivotTableConfig(invalidConfig)).toThrow("Row limit must be a positive number");
+      expect(() => validatePivotTableConfig(invalidConfig)).toThrow(
+        "Row limit must be a positive number",
+      );
     });
 
     it("should throw error when dimension count exceeds maximum", () => {
-      const tooManyDimensions = Array.from({ length: MAX_PIVOT_TABLE_DIMENSIONS + 1 }, (_, i) => `dim${i + 1}`);
+      const tooManyDimensions = Array.from(
+        { length: MAX_PIVOT_TABLE_DIMENSIONS + 1 },
+        (_, i) => `dim${i + 1}`,
+      );
 
       const invalidConfig: PivotTableConfig = {
         dimensions: tooManyDimensions,
@@ -345,7 +358,11 @@ describe("pivot-table-utils", () => {
     });
 
     it("should handle missing values", () => {
-      const data: DatabaseRow[] = [{ count: 10 }, { count: 15, avg_cost: 0.6 }, { avg_cost: 0.3 }];
+      const data: DatabaseRow[] = [
+        { count: 10 },
+        { count: 15, avg_cost: 0.6 },
+        { avg_cost: 0.3 },
+      ];
 
       const result = calculateSubtotals(data, ["count", "avg_cost"]);
 
@@ -595,11 +612,16 @@ describe("pivot-table-utils", () => {
 
       it("should validate configuration before processing", () => {
         const invalidConfig: PivotTableConfig = {
-          dimensions: Array.from({ length: MAX_PIVOT_TABLE_DIMENSIONS + 1 }, (_, i) => `dim${i + 1}`),
+          dimensions: Array.from(
+            { length: MAX_PIVOT_TABLE_DIMENSIONS + 1 },
+            (_, i) => `dim${i + 1}`,
+          ),
           metrics: [],
         };
 
-        expect(() => transformToPivotTable(sampleData, invalidConfig)).toThrow();
+        expect(() =>
+          transformToPivotTable(sampleData, invalidConfig),
+        ).toThrow();
       });
 
       it("should use default row limit when not specified", () => {
@@ -615,12 +637,15 @@ describe("pivot-table-utils", () => {
 
       it("should handle very large datasets with row limiting", () => {
         // Create a large dataset
-        const largeData: DatabaseRow[] = Array.from({ length: 100 }, (_, i) => ({
-          model: `model-${i % 10}`,
-          user: `user-${i % 5}`,
-          count: i + 1,
-          avg_cost: (i + 1) * 0.1,
-        }));
+        const largeData: DatabaseRow[] = Array.from(
+          { length: 100 },
+          (_, i) => ({
+            model: `model-${i % 10}`,
+            user: `user-${i % 5}`,
+            count: i + 1,
+            avg_cost: (i + 1) * 0.1,
+          }),
+        );
 
         const config: PivotTableConfig = {
           dimensions: ["model"],
@@ -653,7 +678,12 @@ describe("pivot-table-utils", () => {
       });
 
       it("should handle many metrics", () => {
-        const manyMetrics = ["count", "avg_cost", "total_tokens", "avg_latency"];
+        const manyMetrics = [
+          "count",
+          "avg_cost",
+          "total_tokens",
+          "avg_latency",
+        ];
         const dataWithManyMetrics: DatabaseRow[] = sampleData.map((row) => ({
           ...row,
           total_tokens: 1000,
@@ -708,7 +738,14 @@ describe("pivot-table-utils", () => {
       },
     ];
 
-    const multiMetrics = ["count_requests", "sum_tokens", "avg_latency", "min_cost", "max_cost", "p95_duration"];
+    const multiMetrics = [
+      "count_requests",
+      "sum_tokens",
+      "avg_latency",
+      "min_cost",
+      "max_cost",
+      "p95_duration",
+    ];
 
     describe("aggregation type detection and calculation", () => {
       it("should correctly aggregate multiple metrics with different aggregation types", () => {
@@ -757,7 +794,8 @@ describe("pivot-table-utils", () => {
         const productionDataRows = dataRows.filter(
           (row) =>
             row.label.includes("production") ||
-            (row.dimensionValues && row.dimensionValues.environment === "production"),
+            (row.dimensionValues &&
+              row.dimensionValues.environment === "production"),
         );
 
         // There should be 2 production data rows
@@ -879,7 +917,9 @@ describe("pivot-table-utils", () => {
         expect(result[0].type).toBe("total");
 
         // Check that subtotals correctly aggregate their children
-        const productionSubtotal = subtotalRows.find((row) => row.label.includes("production"));
+        const productionSubtotal = subtotalRows.find((row) =>
+          row.label.includes("production"),
+        );
 
         if (productionSubtotal) {
           // Production has 2 models: gpt-4 (100 requests) + gpt-3.5 (200 requests) = 300
@@ -992,53 +1032,89 @@ describe("pivot-table-utils", () => {
 
     describe("different column", () => {
       test("returns DESC when different column", () => {
-        const next = getNextSortState(null, { column: "metric", order: "ASC" }, "count");
+        const next = getNextSortState(
+          null,
+          { column: "metric", order: "ASC" },
+          "count",
+        );
         expect(next).toEqual({ column: "count", order: "DESC" });
       });
 
       test("returns DESC when different column with default sort", () => {
-        const next = getNextSortState(defaultSort, { column: "metric", order: "ASC" }, "count");
+        const next = getNextSortState(
+          defaultSort,
+          { column: "metric", order: "ASC" },
+          "count",
+        );
         expect(next).toEqual({ column: "count", order: "DESC" });
       });
     });
 
     describe("non-default column cycling", () => {
       test("non-default column: DESC -> ASC", () => {
-        const next = getNextSortState(defaultSort, { column: "count", order: "DESC" }, "count");
+        const next = getNextSortState(
+          defaultSort,
+          { column: "count", order: "DESC" },
+          "count",
+        );
         expect(next).toEqual({ column: "count", order: "ASC" });
       });
 
       test("non-default column: ASC -> default sort", () => {
-        const next = getNextSortState(defaultSort, { column: "count", order: "ASC" }, "count");
+        const next = getNextSortState(
+          defaultSort,
+          { column: "count", order: "ASC" },
+          "count",
+        );
         expect(next).toEqual(defaultSort);
       });
 
       test("non-default column: ASC -> null when no default sort", () => {
-        const next = getNextSortState(null, { column: "count", order: "ASC" }, "count");
+        const next = getNextSortState(
+          null,
+          { column: "count", order: "ASC" },
+          "count",
+        );
         expect(next).toBeNull();
       });
     });
 
     describe("default column cycling", () => {
       test("default column: DESC -> ASC", () => {
-        const next = getNextSortState(defaultSort, { column: "avg_cost", order: "DESC" }, "avg_cost");
+        const next = getNextSortState(
+          defaultSort,
+          { column: "avg_cost", order: "DESC" },
+          "avg_cost",
+        );
         expect(next).toEqual({ column: "avg_cost", order: "ASC" });
       });
 
       test("default column: ASC -> DESC (infinite cycle)", () => {
-        const next = getNextSortState(defaultSort, { column: "avg_cost", order: "ASC" }, "avg_cost");
+        const next = getNextSortState(
+          defaultSort,
+          { column: "avg_cost", order: "ASC" },
+          "avg_cost",
+        );
         expect(next).toEqual({ column: "avg_cost", order: "DESC" });
       });
     });
 
     describe("edge cases", () => {
       test("handles undefined default sort", () => {
-        const next = getNextSortState(undefined as any, { column: "count", order: "ASC" }, "count");
+        const next = getNextSortState(
+          undefined as any,
+          { column: "count", order: "ASC" },
+          "count",
+        );
         expect(next).toBeNull();
       });
 
       test("handles null default sort", () => {
-        const next = getNextSortState(null, { column: "count", order: "ASC" }, "count");
+        const next = getNextSortState(
+          null,
+          { column: "count", order: "ASC" },
+          "count",
+        );
         expect(next).toBeNull();
       });
 

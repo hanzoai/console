@@ -57,7 +57,9 @@ if (env.HANZO_INIT_ORG_ID) {
 
   // Partial API key config
   if (hasPublicKey !== hasSecretKey) {
-    const missingKey = hasPublicKey ? "HANZO_INIT_PROJECT_SECRET_KEY" : "HANZO_INIT_PROJECT_PUBLIC_KEY";
+    const missingKey = hasPublicKey
+      ? "HANZO_INIT_PROJECT_SECRET_KEY"
+      : "HANZO_INIT_PROJECT_PUBLIC_KEY";
     logger.warn(
       `[Hanzo Init] Partial API key configuration: ${missingKey} is not set. ` +
         `Both HANZO_INIT_PROJECT_PUBLIC_KEY and HANZO_INIT_PROJECT_SECRET_KEY must be set to create API keys.`,
@@ -74,7 +76,9 @@ if (env.HANZO_INIT_ORG_ID) {
 
   // Partial user config
   if (hasEmail !== hasPassword) {
-    const missingVar = hasEmail ? "HANZO_INIT_USER_PASSWORD" : "HANZO_INIT_USER_EMAIL";
+    const missingVar = hasEmail
+      ? "HANZO_INIT_USER_PASSWORD"
+      : "HANZO_INIT_USER_EMAIL";
     logger.warn(
       `[Hanzo Init] Partial user configuration: ${missingVar} is not set. ` +
         `Both HANZO_INIT_USER_EMAIL and HANZO_INIT_USER_PASSWORD must be set to create a user.`,
@@ -104,20 +108,29 @@ if (env.HANZO_INIT_ORG_ID) {
     });
 
     // Add API Keys: Project -> API Key
-    if (env.HANZO_INIT_PROJECT_SECRET_KEY && env.HANZO_INIT_PROJECT_PUBLIC_KEY) {
+    if (
+      env.HANZO_INIT_PROJECT_SECRET_KEY &&
+      env.HANZO_INIT_PROJECT_PUBLIC_KEY
+    ) {
       const existingApiKey = await prisma.apiKey.findUnique({
         where: { publicKey: env.HANZO_INIT_PROJECT_PUBLIC_KEY },
       });
 
       // Delete key if project changed
-      if (existingApiKey && existingApiKey.projectId !== env.HANZO_INIT_PROJECT_ID) {
+      if (
+        existingApiKey &&
+        existingApiKey.projectId !== env.HANZO_INIT_PROJECT_ID
+      ) {
         await prisma.apiKey.delete({
           where: { publicKey: env.HANZO_INIT_PROJECT_PUBLIC_KEY },
         });
       }
 
       // Create new key if it doesn't exist or project changed
-      if (!existingApiKey || existingApiKey.projectId !== env.HANZO_INIT_PROJECT_ID) {
+      if (
+        !existingApiKey ||
+        existingApiKey.projectId !== env.HANZO_INIT_PROJECT_ID
+      ) {
         await createAndAddApiKeysToDb({
           prisma,
           entityId: env.HANZO_INIT_PROJECT_ID,

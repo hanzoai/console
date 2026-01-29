@@ -20,16 +20,27 @@ import { redis, traceException, logger } from "@hanzo/shared/src/server";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { telemetry } from "@/src/features/telemetry";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   await runMiddleware(req, res, cors);
 
   try {
     // Authentication and authorization
-    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(
+      prisma,
+      redis,
+    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
 
     if (!authCheck.validKey) throw new UnauthorizedError(authCheck.error);
-    if (authCheck.scope.accessLevel !== "project" || !authCheck.scope.projectId) {
-      throw new ForbiddenError(`Access denied: Bearer auth and org api keys are not allowed to access`);
+    if (
+      authCheck.scope.accessLevel !== "project" ||
+      !authCheck.scope.projectId
+    ) {
+      throw new ForbiddenError(
+        `Access denied: Bearer auth and org api keys are not allowed to access`,
+      );
     }
 
     await telemetry();
@@ -42,7 +53,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const version = searchParams.version ?? undefined;
       const shouldResolve = searchParams.resolve ?? true; // Default to true for backward compatibility
 
-      const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "prompts");
+      const rateLimitCheck =
+        await RateLimitService.getInstance().rateLimitRequest(
+          authCheck.scope,
+          "prompts",
+        );
 
       if (rateLimitCheck?.isRateLimited()) {
         return rateLimitCheck.sendRestResponseIfLimited(res);
@@ -110,7 +125,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(500).json({
       message: "Invalid request data",
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     });
   }
 }

@@ -29,12 +29,18 @@ const renderBytes = (bytes: number) => {
   return `${size.toFixed(2)}${units[unitIndex]}`;
 };
 
-const DropzoneContext = createContext<DropzoneContextType | undefined>(undefined);
+const DropzoneContext = createContext<DropzoneContextType | undefined>(
+  undefined,
+);
 
 export type DropzoneProps = Omit<DropzoneOptions, "onDrop"> & {
   src?: File[];
   className?: string;
-  onDrop?: (acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => void;
+  onDrop?: (
+    acceptedFiles: File[],
+    fileRejections: FileRejection[],
+    event: DropEvent,
+  ) => void;
   children?: ReactNode;
 };
 
@@ -71,7 +77,10 @@ export const Dropzone = ({
   });
 
   return (
-    <DropzoneContext.Provider key={JSON.stringify(src)} value={{ src, accept, maxSize, minSize, maxFiles }}>
+    <DropzoneContext.Provider
+      key={JSON.stringify(src)}
+      value={{ src, accept, maxSize, minSize, maxFiles }}
+    >
       <Button
         className={cn(
           "relative h-auto w-full flex-col overflow-hidden p-8",
@@ -107,7 +116,10 @@ export type DropzoneContentProps = {
 
 const maxLabelItems = 3;
 
-export const DropzoneContent = ({ children, className }: DropzoneContentProps) => {
+export const DropzoneContent = ({
+  children,
+  className,
+}: DropzoneContentProps) => {
   const { src } = useDropzoneContext();
 
   if (!src) {
@@ -130,7 +142,9 @@ export const DropzoneContent = ({ children, className }: DropzoneContentProps) =
             )} and ${src.length - maxLabelItems} more`
           : new Intl.ListFormat("en").format(src.map((file) => file.name))}
       </p>
-      <p className="w-full text-wrap text-xs text-muted-foreground">Drag and drop or click to replace</p>
+      <p className="w-full text-wrap text-xs text-muted-foreground">
+        Drag and drop or click to replace
+      </p>
     </div>
   );
 };
@@ -140,7 +154,10 @@ export type DropzoneEmptyStateProps = {
   className?: string;
 };
 
-export const DropzoneEmptyState = ({ children, className }: DropzoneEmptyStateProps) => {
+export const DropzoneEmptyState = ({
+  children,
+  className,
+}: DropzoneEmptyStateProps) => {
   const { src, accept, maxSize, minSize, maxFiles } = useDropzoneContext();
 
   if (src) {
@@ -171,9 +188,15 @@ export const DropzoneEmptyState = ({ children, className }: DropzoneEmptyStatePr
       <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
         <UploadIcon size={16} />
       </div>
-      <p className="my-2 w-full truncate text-wrap text-sm font-medium">Upload {maxFiles === 1 ? "a file" : "files"}</p>
-      <p className="w-full truncate text-wrap text-xs text-muted-foreground">Drag and drop or click to upload</p>
-      {caption && <p className="text-wrap text-xs text-muted-foreground">{caption}.</p>}
+      <p className="my-2 w-full truncate text-wrap text-sm font-medium">
+        Upload {maxFiles === 1 ? "a file" : "files"}
+      </p>
+      <p className="w-full truncate text-wrap text-xs text-muted-foreground">
+        Drag and drop or click to upload
+      </p>
+      {caption && (
+        <p className="text-wrap text-xs text-muted-foreground">{caption}.</p>
+      )}
     </div>
   );
 };

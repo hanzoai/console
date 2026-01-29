@@ -22,17 +22,30 @@ type PromptVersionDiffDialogProps = {
 };
 
 // Create a word-based diff that preserves JSON structure
-const createSmartDiff = (oldPrompt: Prompt, newPrompt: Prompt): { oldString: string; newString: string } => {
+const createSmartDiff = (
+  oldPrompt: Prompt,
+  newPrompt: Prompt,
+): { oldString: string; newString: string } => {
   if (oldPrompt.type === "text" || newPrompt.type === "text") {
     return {
-      oldString: oldPrompt.type === "text" ? (oldPrompt.prompt as string) : JSON.stringify(oldPrompt.prompt, null, 2),
-      newString: newPrompt.type === "text" ? (newPrompt.prompt as string) : JSON.stringify(newPrompt.prompt, null, 2),
+      oldString:
+        oldPrompt.type === "text"
+          ? (oldPrompt.prompt as string)
+          : JSON.stringify(oldPrompt.prompt, null, 2),
+      newString:
+        newPrompt.type === "text"
+          ? (newPrompt.prompt as string)
+          : JSON.stringify(newPrompt.prompt, null, 2),
     };
   }
 
   const formatMessages = (messages: any[]) =>
     JSON.stringify(
-      messages.map((m) => Object.fromEntries(Object.entries(m).sort(([a], [b]) => a.localeCompare(b)))),
+      messages.map((m) =>
+        Object.fromEntries(
+          Object.entries(m).sort(([a], [b]) => a.localeCompare(b)),
+        ),
+      ),
       null,
       2,
     );
@@ -43,7 +56,9 @@ const createSmartDiff = (oldPrompt: Prompt, newPrompt: Prompt): { oldString: str
   };
 };
 
-export const PromptVersionDiffDialog: React.FC<PromptVersionDiffDialogProps> = (props) => {
+export const PromptVersionDiffDialog: React.FC<PromptVersionDiffDialogProps> = (
+  props,
+) => {
   const { leftPrompt, rightPrompt, isOpen, setIsOpen } = props;
 
   return (

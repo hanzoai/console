@@ -10,7 +10,9 @@ import { type ScoreDomain } from "@hanzo/shared";
  * @param mode - Filter mode: "target-scores-only" for exact match, "target-and-child-scores" for all
  * @returns Filtered scores matching the target
  */
-export function filterScoresByTarget<T extends WithStringifiedMetadata<ScoreDomain> | AnnotationScore>(
+export function filterScoresByTarget<
+  T extends WithStringifiedMetadata<ScoreDomain> | AnnotationScore,
+>(
   scores: T[],
   target: ScoreTarget,
   mode: "target-and-child-scores" | "target-scores-only",
@@ -26,6 +28,9 @@ export function filterScoresByTarget<T extends WithStringifiedMetadata<ScoreDoma
       return score.sessionId === target.sessionId;
     }
     // Trace target: match both traceId AND observationId
-    return score.traceId === target.traceId && (score.observationId ?? null) === (target.observationId ?? null);
+    return (
+      score.traceId === target.traceId &&
+      (score.observationId ?? null) === (target.observationId ?? null)
+    );
   });
 }

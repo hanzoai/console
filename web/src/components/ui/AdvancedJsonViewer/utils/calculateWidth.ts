@@ -80,7 +80,10 @@ function calculateRowWidth(row: FlatJSONRow, theme: JSONTheme): number {
  * This is only for the scrollable column (excludes fixed column with line numbers/buttons).
  * Always calculates FULL untruncated width (data layer).
  */
-export function calculateMinimumWidth(rows: FlatJSONRow[], theme: JSONTheme): number {
+export function calculateMinimumWidth(
+  rows: FlatJSONRow[],
+  theme: JSONTheme,
+): number {
   if (rows.length === 0) return 0;
 
   let maxWidth = 0;
@@ -116,7 +119,10 @@ export interface WidthEstimatorConfig {
  * @param config - Width estimation configuration
  * @returns Estimated width in pixels
  */
-export function calculateNodeWidth(node: TreeNode, config: WidthEstimatorConfig): number {
+export function calculateNodeWidth(
+  node: TreeNode,
+  config: WidthEstimatorConfig,
+): number {
   // Components in scrollable column:
   // 1. Indentation (depth * indentSize)
   const indentWidth = node.depth * config.indentSizePx;
@@ -138,7 +144,8 @@ export function calculateNodeWidth(node: TreeNode, config: WidthEstimatorConfig)
   const charWidth = charCount * config.charWidthPx;
 
   // Total width
-  const totalWidth = indentWidth + colonWidth + charWidth + paddingWidth + config.extraBufferPx;
+  const totalWidth =
+    indentWidth + colonWidth + charWidth + paddingWidth + config.extraBufferPx;
 
   return totalWidth;
 }

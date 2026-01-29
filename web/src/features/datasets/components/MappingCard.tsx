@@ -1,8 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { cn } from "@/src/utils/tailwind";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { X } from "lucide-react";
-import { type CsvColumnPreview, type FieldMapping } from "@/src/features/datasets/lib/csv/types";
+import {
+  type CsvColumnPreview,
+  type FieldMapping,
+} from "@/src/features/datasets/lib/csv/types";
 import { isSchemaField } from "@/src/features/datasets/lib/csv/helpers";
 
 function SchemaKeyDropZone({
@@ -24,8 +32,11 @@ function SchemaKeyDropZone({
       ref={setNodeRef}
       className={cn(
         "min-h-[52px] rounded-md border border-dashed text-sm transition-colors",
-        isOver && mappedColumns.length === 0 && "border-solid border-primary bg-background",
-        mappedColumns.length > 0 && "border-solid border-accent-dark-blue bg-light-blue/40",
+        isOver &&
+          mappedColumns.length === 0 &&
+          "border-solid border-primary bg-background",
+        mappedColumns.length > 0 &&
+          "border-solid border-accent-dark-blue bg-light-blue/40",
       )}
     >
       {mappedColumns.length === 0 ? (
@@ -37,7 +48,11 @@ function SchemaKeyDropZone({
           <div className="mb-1 text-sm font-medium">{schemaKey}</div>
           <div className="flex flex-wrap gap-1.5">
             {mappedColumns.map((column) => (
-              <MappedColumnBadge key={column.name} column={column} onRemove={onRemove} />
+              <MappedColumnBadge
+                key={column.name}
+                column={column}
+                onRemove={onRemove}
+              />
             ))}
           </div>
         </div>
@@ -62,14 +77,21 @@ function FreeformDropZone({
       ref={setNodeRef}
       className={cn(
         "min-h-[60px] rounded-md border border-dashed p-2 transition-colors",
-        isOver && columns.length === 0 && "border border-solid border-primary bg-background",
-        columns.length > 0 && "border-solid border-accent-dark-blue bg-light-blue/40",
+        isOver &&
+          columns.length === 0 &&
+          "border border-solid border-primary bg-background",
+        columns.length > 0 &&
+          "border-solid border-accent-dark-blue bg-light-blue/40",
       )}
     >
       {columns.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {columns.map((column) => (
-            <MappedColumnBadge key={column.name} column={column} onRemove={onRemove} />
+            <MappedColumnBadge
+              key={column.name}
+              column={column}
+              onRemove={onRemove}
+            />
           ))}
         </div>
       )}
@@ -77,7 +99,13 @@ function FreeformDropZone({
   );
 }
 
-function MappedColumnBadge({ column, onRemove }: { column: CsvColumnPreview; onRemove: (columnName: string) => void }) {
+function MappedColumnBadge({
+  column,
+  onRemove,
+}: {
+  column: CsvColumnPreview;
+  onRemove: (columnName: string) => void;
+}) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `mapped-${column.name}`,
     data: {
@@ -131,12 +159,16 @@ export function MappingCard({
   return (
     <Card className="flex h-full flex-col overflow-hidden">
       <CardHeader className="shrink-0 border-b p-3">
-        <CardTitle className="text-base font-semibold">Map to Dataset Items</CardTitle>
+        <CardTitle className="text-base font-semibold">
+          Map to Dataset Items
+        </CardTitle>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
         {/* INPUT SECTION */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">Input</h3>
+          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">
+            Input
+          </h3>
           {isSchemaField(input) ? (
             <div className="space-y-2">
               {input.entries.map((entry) => (
@@ -145,18 +177,26 @@ export function MappingCard({
                   schemaKey={entry.key}
                   mappedColumns={entry.columns}
                   parentId="input"
-                  onRemove={(columnName) => onRemoveInputColumn(columnName, entry.key)}
+                  onRemove={(columnName) =>
+                    onRemoveInputColumn(columnName, entry.key)
+                  }
                 />
               ))}
             </div>
           ) : (
-            <FreeformDropZone id="input" columns={input.columns} onRemove={onRemoveInputColumn} />
+            <FreeformDropZone
+              id="input"
+              columns={input.columns}
+              onRemove={onRemoveInputColumn}
+            />
           )}
         </div>
 
         {/* OUTPUT SECTION */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">Expected Output</h3>
+          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">
+            Expected Output
+          </h3>
           {expectedOutput.type === "schema" ? (
             <div className="space-y-2">
               {expectedOutput.entries.map((entry) => (
@@ -165,19 +205,31 @@ export function MappingCard({
                   schemaKey={entry.key}
                   mappedColumns={entry.columns}
                   parentId="expectedOutput"
-                  onRemove={(columnName) => onRemoveExpectedColumn(columnName, entry.key)}
+                  onRemove={(columnName) =>
+                    onRemoveExpectedColumn(columnName, entry.key)
+                  }
                 />
               ))}
             </div>
           ) : (
-            <FreeformDropZone id="expected" columns={expectedOutput.columns} onRemove={onRemoveExpectedColumn} />
+            <FreeformDropZone
+              id="expected"
+              columns={expectedOutput.columns}
+              onRemove={onRemoveExpectedColumn}
+            />
           )}
         </div>
 
         {/* METADATA SECTION */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">Metadata</h3>
-          <FreeformDropZone id="metadata" columns={metadata} onRemove={onRemoveMetadataColumn} />
+          <h3 className="text-sm font-semibold tracking-wide text-muted-foreground">
+            Metadata
+          </h3>
+          <FreeformDropZone
+            id="metadata"
+            columns={metadata}
+            onRemove={onRemoveMetadataColumn}
+          />
         </div>
       </CardContent>
     </Card>

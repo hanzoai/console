@@ -61,11 +61,18 @@ export function AdvancedJsonViewer({
   const [internalSearchQuery, setInternalSearchQuery] = useState("");
   const [internalCurrentMatchIndex, setInternalCurrentMatchIndex] = useState(0);
 
-  const isSearchControlled = controlledSearchQuery !== undefined && onSearchQueryChange !== undefined;
-  const searchQuery = isSearchControlled ? controlledSearchQuery : internalSearchQuery;
+  const isSearchControlled =
+    controlledSearchQuery !== undefined && onSearchQueryChange !== undefined;
+  const searchQuery = isSearchControlled
+    ? controlledSearchQuery
+    : internalSearchQuery;
 
-  const isMatchIndexControlled = controlledCurrentMatchIndex !== undefined && onCurrentMatchIndexChange !== undefined;
-  const currentMatchIndex = isMatchIndexControlled ? controlledCurrentMatchIndex : internalCurrentMatchIndex;
+  const isMatchIndexControlled =
+    controlledCurrentMatchIndex !== undefined &&
+    onCurrentMatchIndexChange !== undefined;
+  const currentMatchIndex = isMatchIndexControlled
+    ? controlledCurrentMatchIndex
+    : internalCurrentMatchIndex;
 
   // Build tree from JSON data (sync for <10K, worker for >10K)
   // JIT expansion: reads from storage directly, no context subscription
@@ -84,13 +91,17 @@ export function AdvancedJsonViewer({
   // Search matches
   const searchMatches = useMemo(() => {
     debugLog("[AdvancedJsonViewer] Computing searchMatches");
-    return tree ? searchInTree(tree, searchQuery, { caseSensitive: false }) : [];
+    return tree
+      ? searchInTree(tree, searchQuery, { caseSensitive: false })
+      : [];
   }, [tree, searchQuery]);
 
   // Calculate match counts for collapsed nodes
   const calculatedMatchCounts = useMemo(() => {
     debugLog("[AdvancedJsonViewer] Computing calculatedMatchCounts");
-    return tree && searchMatches.length > 0 ? getMatchCountsPerNode(tree, searchMatches) : matchCounts;
+    return tree && searchMatches.length > 0
+      ? getMatchCountsPerNode(tree, searchMatches)
+      : matchCounts;
   }, [tree, searchMatches, matchCounts]);
 
   // Reset match index when matches change
@@ -102,7 +113,12 @@ export function AdvancedJsonViewer({
         setInternalCurrentMatchIndex(0);
       }
     }
-  }, [searchMatches, currentMatchIndex, isMatchIndexControlled, onCurrentMatchIndexChange]);
+  }, [
+    searchMatches,
+    currentMatchIndex,
+    isMatchIndexControlled,
+    onCurrentMatchIndexChange,
+  ]);
 
   // Determine if virtualization should be used
   // Use initial tree size (totalNodeCount) rather than current visible rows
@@ -120,7 +136,12 @@ export function AdvancedJsonViewer({
   const handleToggleExpansion = treeHandleToggleExpansion;
 
   // Search navigation
-  const { handleNextMatch, handlePreviousMatch, handleClearSearch, scrollToIndex } = useSearchNavigationTree({
+  const {
+    handleNextMatch,
+    handlePreviousMatch,
+    handleClearSearch,
+    scrollToIndex,
+  } = useSearchNavigationTree({
     searchMatches,
     currentMatchIndex,
     tree,
@@ -146,12 +167,21 @@ export function AdvancedJsonViewer({
         setInternalCurrentMatchIndex(0);
       }
     },
-    [isSearchControlled, onSearchQueryChange, isMatchIndexControlled, onCurrentMatchIndexChange],
+    [
+      isSearchControlled,
+      onSearchQueryChange,
+      isMatchIndexControlled,
+      onCurrentMatchIndexChange,
+    ],
   );
 
   // Wrap handleClearSearch to pass required params
   const handleClearSearchWrapped = useCallback(() => {
-    handleClearSearch(isSearchControlled, onSearchQueryChange, setInternalSearchQuery);
+    handleClearSearch(
+      isSearchControlled,
+      onSearchQueryChange,
+      setInternalSearchQuery,
+    );
   }, [handleClearSearch, isSearchControlled, onSearchQueryChange]);
 
   // Common viewer props - memoized to prevent unnecessary re-renders
@@ -216,7 +246,9 @@ export function AdvancedJsonViewer({
   if (buildError) {
     return (
       <div className={className} style={{ padding: "16px" }}>
-        <div className="text-sm text-destructive">Error building tree: {buildError}</div>
+        <div className="text-sm text-destructive">
+          Error building tree: {buildError}
+        </div>
       </div>
     );
   }
@@ -254,7 +286,11 @@ export function AdvancedJsonViewer({
 
       {/* Viewer - conditionally render without creating new component references */}
       <div style={{ flex: 1, minHeight: 0 }}>
-        {shouldUseVirtualization ? <VirtualizedJsonViewer {...viewerProps} /> : <SimpleJsonViewer {...viewerProps} />}
+        {shouldUseVirtualization ? (
+          <VirtualizedJsonViewer {...viewerProps} />
+        ) : (
+          <SimpleJsonViewer {...viewerProps} />
+        )}
       </div>
     </div>
   );

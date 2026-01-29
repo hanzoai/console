@@ -9,7 +9,10 @@ import { ExpandListButton } from "@/src/features/dashboard/components/cards/Chev
 import { useState } from "react";
 import { totalCostDashboardFormatted } from "@/src/features/dashboard/lib/dashboard-utils";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type QueryType,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 
 type BarChartDataPoint = {
   name: string;
@@ -117,13 +120,20 @@ export const UserChart = ({
         })
     : [];
 
-  const totalCost = user.data?.reduce((acc, curr) => acc + (Number(curr.sum_totalCost) || 0), 0);
+  const totalCost = user.data?.reduce(
+    (acc, curr) => acc + (Number(curr.sum_totalCost) || 0),
+    0,
+  );
 
-  const totalTraces = traces.data?.reduce((acc, curr) => acc + (Number(curr.count_count) || 0), 0);
+  const totalTraces = traces.data?.reduce(
+    (acc, curr) => acc + (Number(curr.count_count) || 0),
+    0,
+  );
 
   const maxNumberOfEntries = { collapsed: 5, expanded: 20 } as const;
 
-  const localUsdFormatter = (value: number) => totalCostDashboardFormatted(value);
+  const localUsdFormatter = (value: number) =>
+    totalCostDashboardFormatted(value);
 
   const data = [
     {
@@ -140,13 +150,19 @@ export const UserChart = ({
       data: isExpanded
         ? transformedNumberOfTraces.slice(0, maxNumberOfEntries.expanded)
         : transformedNumberOfTraces.slice(0, maxNumberOfEntries.collapsed),
-      totalMetric: totalTraces ? compactNumberFormatter(totalTraces) : compactNumberFormatter(0),
+      totalMetric: totalTraces
+        ? compactNumberFormatter(totalTraces)
+        : compactNumberFormatter(0),
       metricDescription: "Total traces",
     },
   ];
 
   return (
-    <DashboardCard className={className} title="User consumption" isLoading={isLoading || user.isPending}>
+    <DashboardCard
+      className={className}
+      title="User consumption"
+      isLoading={isLoading || user.isPending}
+    >
       <TabComponent
         tabs={data.map((item) => {
           return {
@@ -155,7 +171,10 @@ export const UserChart = ({
               <>
                 {item.data.length > 0 ? (
                   <>
-                    <TotalMetric metric={item.totalMetric} description={item.metricDescription} />
+                    <TotalMetric
+                      metric={item.totalMetric}
+                      description={item.metricDescription}
+                    />
                     <BarList
                       data={item.data}
                       valueFormatter={item.formatter}
@@ -182,7 +201,9 @@ export const UserChart = ({
         totalLength={transformedCost.length}
         maxLength={maxNumberOfEntries.collapsed}
         expandText={
-          transformedCost.length > maxNumberOfEntries.expanded ? `Show top ${maxNumberOfEntries.expanded}` : "Show all"
+          transformedCost.length > maxNumberOfEntries.expanded
+            ? `Show top ${maxNumberOfEntries.expanded}`
+            : "Show all"
         }
       />
     </DashboardCard>

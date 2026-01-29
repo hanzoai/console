@@ -15,7 +15,11 @@ import { DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { Dialog } from "@/src/components/ui/dialog";
 import { Pencil } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { Label } from "@/src/components/ui/label";
 import { Input } from "@/src/components/ui/input";
 
@@ -39,7 +43,10 @@ export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
     availableProviders,
   } = useModelParams();
 
-  const { selectedModel, isDefaultModelLoading } = useEvaluationModel(projectId, setModelParams);
+  const { selectedModel, isDefaultModelLoading } = useEvaluationModel(
+    projectId,
+    setModelParams,
+  );
 
   const { mutateAsync: upsertDefaultModel, isPending: isUpsertLoading } =
     api.defaultLlmModel.upsertDefaultModel.useMutation({
@@ -88,7 +95,12 @@ export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
       </Card>
 
       <div className="mt-2 flex justify-end gap-2">
-        {selectedModel && <DeleteEvaluationModelButton projectId={projectId} scope="evalDefaultModel:CUD" />}
+        {selectedModel && (
+          <DeleteEvaluationModelButton
+            projectId={projectId}
+            scope="evalDefaultModel:CUD"
+          />
+        )}
 
         <Dialog
           open={isEditing}
@@ -112,7 +124,11 @@ export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
           </DialogTrigger>
           <DialogContent className="px-3 py-10">
             <ModelParameters
-              customHeader={<p className="font-medium leading-none">Default model configuration</p>}
+              customHeader={
+                <p className="font-medium leading-none">
+                  Default model configuration
+                </p>
+              }
               {...{
                 modelParams,
                 availableModels,
@@ -123,7 +139,9 @@ export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
               }}
               formDisabled={!hasWriteAccess}
             />
-            <div className="my-2 text-xs text-muted-foreground">Select a model which supports function calling.</div>
+            <div className="my-2 text-xs text-muted-foreground">
+              Select a model which supports function calling.
+            </div>
             <div className="flex flex-col gap-2">
               <div className="mt-2 flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -136,7 +154,10 @@ export function DefaultEvalModelSetup({ projectId }: { projectId: string }) {
                     executeUpsertMutation={executeUpsertMutation}
                   />
                 ) : (
-                  <Button disabled={!hasWriteAccess || !modelParams.provider.value} onClick={executeUpsertMutation}>
+                  <Button
+                    disabled={!hasWriteAccess || !modelParams.provider.value}
+                    onClick={executeUpsertMutation}
+                  >
                     Save
                   </Button>
                 )}
@@ -183,14 +204,20 @@ function UpdateButton({
           Update
         </Button>
       </PopoverTrigger>
-      <PopoverContent onClick={(e) => e.stopPropagation()} className="w-fit max-w-[500px]">
+      <PopoverContent
+        onClick={(e) => e.stopPropagation()}
+        className="w-fit max-w-[500px]"
+      >
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 text-sm">
-          Updating the default model will impact any currently running evaluators that use it. Please confirm that you
-          want to proceed with this change.
+          Updating the default model will impact any currently running
+          evaluators that use it. Please confirm that you want to proceed with
+          this change.
         </p>
         <div className="mb-4 grid w-full gap-1.5">
-          <Label htmlFor="update-confirmation">Type &quot;{CONFIRMATION}&quot; to confirm</Label>
+          <Label htmlFor="update-confirmation">
+            Type &quot;{CONFIRMATION}&quot; to confirm
+          </Label>
           <Input
             id="update-confirmation"
             value={confirmationInput}

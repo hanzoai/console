@@ -13,7 +13,11 @@ import {
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { Archive, Edit, ListTree, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { datasetItemFilterColumns, DatasetStatus, type Prisma } from "@hanzo/shared";
+import {
+  datasetItemFilterColumns,
+  DatasetStatus,
+  type Prisma,
+} from "@hanzo/shared";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { useEffect, useState } from "react";
@@ -64,16 +68,26 @@ export function DatasetItemsTable({
     pageSize: withDefault(NumberParam, 50),
   });
 
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("datasetItems", "m");
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
+    "datasetItems",
+    "m",
+  );
 
-  const [filterState, setFilterState] = useQueryFilterState([], "dataset_items", projectId);
+  const [filterState, setFilterState] = useQueryFilterState(
+    [],
+    "dataset_items",
+    projectId,
+  );
 
-  const { searchQuery, searchType, setSearchQuery, setSearchType } = useFullTextSearch();
+  const { searchQuery, searchType, setSearchQuery, setSearchType } =
+    useFullTextSearch();
 
   const hasAccess = useHasProjectAccess({ projectId, scope: "datasets:CUD" });
   const { selectedVersion } = useDatasetVersion();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedItemForEdit, setSelectedItemForEdit] = useState<string | null>(null);
+  const [selectedItemForEdit, setSelectedItemForEdit] = useState<string | null>(
+    null,
+  );
 
   const items = api.datasets.itemsByDatasetId.useQuery({
     projectId,
@@ -136,15 +150,23 @@ export function DatasetItemsTable({
       isFixedPosition: true,
       cell: ({ row }) => {
         const id: string = row.getValue("id");
-        const versionParam = selectedVersion ? `?version=${encodeURIComponent(selectedVersion.toISOString())}` : "";
-        return <TableLink path={`/project/${projectId}/datasets/${datasetId}/items/${id}${versionParam}`} value={id} />;
+        const versionParam = selectedVersion
+          ? `?version=${encodeURIComponent(selectedVersion.toISOString())}`
+          : "";
+        return (
+          <TableLink
+            path={`/project/${projectId}/datasets/${datasetId}/items/${id}${versionParam}`}
+            value={id}
+          />
+        );
       },
     },
     {
       accessorKey: "source",
       header: "Source",
       headerTooltip: {
-        description: "Link to the source trace based on which this item was added",
+        description:
+          "Link to the source trace based on which this item was added",
       },
       id: "source",
       size: 90,
@@ -173,7 +195,13 @@ export function DatasetItemsTable({
       size: 80,
       cell: ({ row }) => {
         const status: DatasetStatus = row.getValue("status");
-        return <StatusBadge className="capitalize" type={status.toLowerCase()} isLive={false} />;
+        return (
+          <StatusBadge
+            className="capitalize"
+            type={status.toLowerCase()}
+            isLive={false}
+          />
+        );
       },
     },
     {
@@ -195,7 +223,9 @@ export function DatasetItemsTable({
       enableHiding: true,
       cell: ({ row }) => {
         const input = row.getValue("input") as RowData["input"];
-        return input !== null ? <IOTableCell data={input} singleLine={rowHeight === "s"} /> : null;
+        return input !== null ? (
+          <IOTableCell data={input} singleLine={rowHeight === "s"} />
+        ) : null;
       },
     },
     {
@@ -205,9 +235,15 @@ export function DatasetItemsTable({
       size: 200,
       enableHiding: true,
       cell: ({ row }) => {
-        const expectedOutput = row.getValue("expectedOutput") as RowData["expectedOutput"];
+        const expectedOutput = row.getValue(
+          "expectedOutput",
+        ) as RowData["expectedOutput"];
         return expectedOutput !== null ? (
-          <IOTableCell data={expectedOutput} className="bg-accent-light-green" singleLine={rowHeight === "s"} />
+          <IOTableCell
+            data={expectedOutput}
+            className="bg-accent-light-green"
+            singleLine={rowHeight === "s"}
+          />
         ) : null;
       },
     },
@@ -219,7 +255,9 @@ export function DatasetItemsTable({
       enableHiding: true,
       cell: ({ row }) => {
         const metadata = row.getValue("metadata") as RowData["metadata"];
-        return metadata !== null ? <IOTableCell data={metadata} singleLine={rowHeight === "s"} /> : null;
+        return metadata !== null ? (
+          <IOTableCell data={metadata} singleLine={rowHeight === "s"} />
+        ) : null;
       },
     },
     {
@@ -254,13 +292,19 @@ export function DatasetItemsTable({
                 disabled={!hasAccess || !!selectedVersion}
                 onClick={() => {
                   capture("dataset_item:archive_toggle", {
-                    status: status === DatasetStatus.ARCHIVED ? "unarchived" : "archived",
+                    status:
+                      status === DatasetStatus.ARCHIVED
+                        ? "unarchived"
+                        : "archived",
                   });
                   mutUpdate.mutate({
                     projectId: projectId,
                     datasetId: datasetId,
                     datasetItemId: id,
-                    status: status === DatasetStatus.ARCHIVED ? DatasetStatus.ACTIVE : DatasetStatus.ARCHIVED,
+                    status:
+                      status === DatasetStatus.ARCHIVED
+                        ? DatasetStatus.ACTIVE
+                        : DatasetStatus.ARCHIVED,
                   });
                 }}
               >
@@ -295,7 +339,9 @@ export function DatasetItemsTable({
     },
   ];
 
-  const convertToTableRow = (item: RouterOutput["datasets"]["itemsByDatasetId"]["datasetItems"][number]): RowData => {
+  const convertToTableRow = (
+    item: RouterOutput["datasets"]["itemsByDatasetId"]["datasetItems"][number],
+  ): RowData => {
     return {
       id: item.id,
       source: item.sourceTraceId
@@ -312,9 +358,15 @@ export function DatasetItemsTable({
     };
   };
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<RowData>("datasetItemsColumnVisibility", columns);
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility<RowData>(
+    "datasetItemsColumnVisibility",
+    columns,
+  );
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<RowData>("datasetItemsColumnOrder", columns);
+  const [columnOrder, setColumnOrder] = useColumnOrder<RowData>(
+    "datasetItemsColumnOrder",
+    columns,
+  );
 
   const batchExportButton = (
     <BatchExportTableButton
@@ -379,7 +431,9 @@ export function DatasetItemsTable({
               : {
                   isLoading: false,
                   isError: false,
-                  data: safeExtract(items.data, "datasetItems", []).map((t) => convertToTableRow(t)),
+                  data: safeExtract(items.data, "datasetItems", []).map((t) =>
+                    convertToTableRow(t),
+                  ),
                 }
         }
         pagination={{

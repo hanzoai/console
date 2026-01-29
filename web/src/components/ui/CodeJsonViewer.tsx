@@ -1,6 +1,13 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import { Check, ChevronsDownUp, ChevronsUpDown, Copy, FoldVertical, UnfoldVertical } from "lucide-react";
+import {
+  Check,
+  ChevronsDownUp,
+  ChevronsUpDown,
+  Copy,
+  FoldVertical,
+  UnfoldVertical,
+} from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
 import { default as React18JsonView } from "react18-json-view";
 import "react18-json-view/src/dark.css";
@@ -85,7 +92,9 @@ export function JSONView(props: {
           props.title === "assistant" || props.title === "Output"
             ? "bg-accent-light-green dark:border-accent-dark-green"
             : "",
-          props.title === "system" || props.title === "Input" ? "bg-primary-foreground" : "",
+          props.title === "system" || props.title === "Input"
+            ? "bg-primary-foreground"
+            : "",
           props.scrollable || props.borderless ? "" : "rounded-sm border",
           props.codeClassName,
         )}
@@ -93,8 +102,15 @@ export function JSONView(props: {
         {props.isLoading ? (
           <Skeleton className="h-3 w-3/4" />
         ) : props.projectIdForPromptButtons ? (
-          <code className="whitespace-pre-wrap break-words" dir="auto" style={{ unicodeBidi: "plaintext" }}>
-            {renderRichPromptContent(props.projectIdForPromptButtons, String(parsedJson))}
+          <code
+            className="whitespace-pre-wrap break-words"
+            dir="auto"
+            style={{ unicodeBidi: "plaintext" }}
+          >
+            {renderRichPromptContent(
+              props.projectIdForPromptButtons,
+              String(parsedJson),
+            )}
           </code>
         ) : (
           <div
@@ -130,10 +146,16 @@ export function JSONView(props: {
       </div>
       {props.media && props.media.length > 0 && (
         <>
-          <div className="my-1 px-0 py-1 text-xs text-muted-foreground">Media</div>
+          <div className="my-1 px-0 py-1 text-xs text-muted-foreground">
+            Media
+          </div>
           <div className="flex flex-wrap gap-2 p-4 pt-1">
             {props.media.map((m) => (
-              <HanzoMediaView mediaAPIReturnValue={m} asFileIcon={true} key={m.mediaId} />
+              <HanzoMediaView
+                mediaAPIReturnValue={m}
+                asFileIcon={true}
+                key={m.mediaId}
+              />
             ))}
           </div>
         </>
@@ -142,7 +164,13 @@ export function JSONView(props: {
   );
 
   return (
-    <div className={cn("flex max-h-full min-h-0 flex-col", props.className, props.scrollable ? "overflow-hidden" : "")}>
+    <div
+      className={cn(
+        "flex max-h-full min-h-0 flex-col",
+        props.className,
+        props.scrollable ? "overflow-hidden" : "",
+      )}
+    >
       {props.title && !props.hideTitle ? (
         <MarkdownJsonViewHeader
           title={props.title}
@@ -159,7 +187,11 @@ export function JSONView(props: {
                 className="-mr-2 hover:bg-border"
                 title={isCollapsed ? "Expand all" : "Collapse all"}
               >
-                {isCollapsed ? <UnfoldVertical className="h-3 w-3" /> : <FoldVertical className="h-3 w-3" />}
+                {isCollapsed ? (
+                  <UnfoldVertical className="h-3 w-3" />
+                ) : (
+                  <FoldVertical className="h-3 w-3" />
+                )}
               </Button>
             </>
           }
@@ -167,7 +199,9 @@ export function JSONView(props: {
       ) : null}
       {props.scrollable ? (
         <div className="flex h-full min-h-0 overflow-hidden rounded-sm border">
-          <div className="max-h-full min-h-0 w-full overflow-y-auto">{body}</div>
+          <div className="max-h-full min-h-0 w-full overflow-y-auto">
+            {body}
+          </div>
         </div>
       ) : (
         body
@@ -191,7 +225,10 @@ export function CodeView(props: {
     event.preventDefault();
     setIsCopied(true);
     const content =
-      props.originalContent ?? (typeof props.content === "string" ? props.content : (props.content?.join("\n") ?? ""));
+      props.originalContent ??
+      (typeof props.content === "string"
+        ? props.content
+        : (props.content?.join("\n") ?? ""));
     void copyTextToClipboard(content);
     setTimeout(() => setIsCopied(false), 1000);
 
@@ -202,13 +239,28 @@ export function CodeView(props: {
   const handleShowAll = () => setCollapsed(!isCollapsed);
 
   return (
-    <div className={cn("flex max-w-full flex-col", props.className, props.scrollable && "max-h-full min-h-0")}>
+    <div
+      className={cn(
+        "flex max-w-full flex-col",
+        props.className,
+        props.scrollable && "max-h-full min-h-0",
+      )}
+    >
       <>
         {props.title ? (
           <div className="my-1 flex flex-shrink-0 items-center justify-between pl-1">
             <div className="text-sm font-medium">{props.title}</div>
-            <Button variant="ghost" size="icon-xs" onClick={handleCopy} className="">
-              {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={handleCopy}
+              className=""
+            >
+              {isCopied ? (
+                <Check className="h-3 w-3" />
+              ) : (
+                <Copy className="h-3 w-3" />
+              )}
             </Button>
           </div>
         ) : undefined}
@@ -220,8 +272,17 @@ export function CodeView(props: {
         )}
       >
         {!props.title && (
-          <Button variant="secondary" size="icon-xs" onClick={handleCopy} className="absolute right-2 top-2 z-10">
-            {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          <Button
+            variant="secondary"
+            size="icon-xs"
+            onClick={handleCopy}
+            className="absolute right-2 top-2 z-10"
+          >
+            {isCopied ? (
+              <Check className="h-3 w-3" />
+            ) : (
+              <Copy className="h-3 w-3" />
+            )}
           </Button>
         )}
         <code
@@ -238,7 +299,11 @@ export function CodeView(props: {
         {props.defaultCollapsed ? (
           <div className="flex gap-2 py-2 pr-2">
             <Button variant="secondary" size="xs" onClick={handleShowAll}>
-              {isCollapsed ? <ChevronsUpDown className="h-3 w-3" /> : <ChevronsDownUp className="h-3 w-3" />}
+              {isCollapsed ? (
+                <ChevronsUpDown className="h-3 w-3" />
+              ) : (
+                <ChevronsDownUp className="h-3 w-3" />
+              )}
             </Button>
           </div>
         ) : undefined}
@@ -257,10 +322,22 @@ export const JsonSkeleton = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("w-[400px] rounded-md", borderless ? "" : "border", className)}>
+    <div
+      className={cn(
+        "w-[400px] rounded-md",
+        borderless ? "" : "border",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-1">
         {[...Array<number>(numRows)].map((_, i) => (
-          <Skeleton className={cn("h-4 w-full", i === numRows - 1 ? "w-3/4" : undefined)} key={i} />
+          <Skeleton
+            className={cn(
+              "h-4 w-full",
+              i === numRows - 1 ? "w-3/4" : undefined,
+            )}
+            key={i}
+          />
         ))}
       </div>
     </div>

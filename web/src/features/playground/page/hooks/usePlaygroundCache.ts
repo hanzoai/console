@@ -21,7 +21,9 @@ const readCache = (key: string): PlaygroundCache => {
  */
 export default function usePlaygroundCache(windowId?: string) {
   const cacheKey = getCacheKey(windowId ?? "");
-  const [cache, setCache] = useState<PlaygroundCache>(() => readCache(cacheKey));
+  const [cache, setCache] = useState<PlaygroundCache>(() =>
+    readCache(cacheKey),
+  );
 
   // Re-read when key changes (windowId change)
   useEffect(() => {

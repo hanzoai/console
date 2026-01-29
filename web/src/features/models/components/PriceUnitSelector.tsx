@@ -1,8 +1,18 @@
 import { ChevronDownIcon } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { PriceUnit } from "@/src/features/models/validation";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
 
@@ -17,7 +27,10 @@ export const PriceUnitSelector = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Select value={priceUnit} onValueChange={(value: PriceUnit) => setPriceUnit(value)}>
+        <Select
+          value={priceUnit}
+          onValueChange={(value: PriceUnit) => setPriceUnit(value)}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select unit" />
           </SelectTrigger>

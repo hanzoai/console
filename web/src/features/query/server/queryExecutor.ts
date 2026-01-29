@@ -1,4 +1,8 @@
-import { queryClickhouse, measureAndReturn, logger } from "@hanzo/shared/src/server";
+import {
+  queryClickhouse,
+  measureAndReturn,
+  logger,
+} from "@hanzo/shared/src/server";
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";
 import { type QueryType, type ViewVersion } from "@/src/features/query/types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
@@ -8,7 +12,9 @@ import { env } from "@/src/env.mjs";
  * Result of query validation.
  * Either valid (query is safe to run) or invalid with a reason.
  */
-export type QueryValidationResult = { valid: true } | { valid: false; reason: string };
+export type QueryValidationResult =
+  | { valid: true }
+  | { valid: false; reason: string };
 
 /**
  * Gets the list of high cardinality dimension fields used in the query.
@@ -17,13 +23,18 @@ export type QueryValidationResult = { valid: true } | { valid: false; reason: st
  * @param version - The view version (v1 or v2)
  * @returns Array of high cardinality field names
  */
-function getHighCardinalityDimensions(query: QueryType, version: ViewVersion): string[] {
+function getHighCardinalityDimensions(
+  query: QueryType,
+  version: ViewVersion,
+): string[] {
   if (!query.dimensions || query.dimensions.length === 0) {
     return [];
   }
 
   const view = getViewDeclaration(query.view, version);
-  return query.dimensions.filter((dim) => view.dimensions[dim.field]?.highCardinality).map((dim) => dim.field);
+  return query.dimensions
+    .filter((dim) => view.dimensions[dim.field]?.highCardinality)
+    .map((dim) => dim.field);
 }
 
 /**
@@ -37,7 +48,10 @@ function getHighCardinalityDimensions(query: QueryType, version: ViewVersion): s
  * @param knownMeasures - List of known measure names from the query
  * @returns The matching measure name, or null if no match found
  */
-function findMeasureInOrderByField(orderByField: string, knownMeasures: string[]): string | null {
+function findMeasureInOrderByField(
+  orderByField: string,
+  knownMeasures: string[],
+): string | null {
   for (const measure of knownMeasures) {
     // Check exact match (e.g., orderBy: "totalCost" matches measure "totalCost")
     if (orderByField === measure) {
@@ -63,7 +77,10 @@ function findMeasureInOrderByField(orderByField: string, knownMeasures: string[]
  * @param version - The view version (v1 or v2)
  * @returns Validation result: { valid: true } or { valid: false, reason: string }
  */
-export function validateQuery(query: QueryType, version: ViewVersion): QueryValidationResult {
+export function validateQuery(
+  query: QueryType,
+  version: ViewVersion,
+): QueryValidationResult {
   // 1. Check for high cardinality dimensions
   const highCardDims = getHighCardinalityDimensions(query, version);
 
@@ -73,11 +90,14 @@ export function validateQuery(query: QueryType, version: ViewVersion): QueryVali
 
   // 2. Validate required conditions for high cardinality
   // Support both public API "config" and internal "chartConfig" field names
-  const chartConfig = (query as unknown as { config?: QueryType["chartConfig"] }).config ?? query.chartConfig;
+  const chartConfig =
+    (query as unknown as { config?: QueryType["chartConfig"] }).config ??
+    query.chartConfig;
   const hasExplicitLimit = chartConfig?.row_limit !== undefined;
 
   // 3. Validate ORDER BY - must have at least one desc on a measure field
-  const orderByDescFields = query.orderBy?.filter((o) => o.direction === "desc") ?? [];
+  const orderByDescFields =
+    query.orderBy?.filter((o) => o.direction === "desc") ?? [];
 
   if (!hasExplicitLimit || orderByDescFields.length === 0) {
     return {
@@ -91,7 +111,10 @@ export function validateQuery(query: QueryType, version: ViewVersion): QueryVali
   const invalidOrderByFields: string[] = [];
 
   for (const orderBy of orderByDescFields) {
-    const matchedMeasure = findMeasureInOrderByField(orderBy.field, queryMeasureNames);
+    const matchedMeasure = findMeasureInOrderByField(
+      orderBy.field,
+      queryMeasureNames,
+    );
     if (!matchedMeasure) {
       invalidOrderByFields.push(orderBy.field);
     }
@@ -180,7 +203,9 @@ export async function executeQuery(
 ): Promise<Array<Record<string, unknown>>> {
   // Remap config to chartConfig for public API compatibility
   // Public API uses "config" while internal QueryType uses "chartConfig"
-  const chartConfig = (query as unknown as { config?: QueryType["chartConfig"] }).config ?? query.chartConfig;
+  const chartConfig =
+    (query as unknown as { config?: QueryType["chartConfig"] }).config ??
+    query.chartConfig;
   const queryBuilder = new QueryBuilder(chartConfig, version);
 
   // Build the primary query (with or without optimization based on flag)
@@ -204,10 +229,12 @@ export async function executeQuery(
   ];
 
   // Add shadow test query if optimization is OFF and shadow testing is enabled
-  const shadowTestEnabled = env.HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST === "true";
+  const shadowTestEnabled =
+    env.HANZO_ENABLE_QUERY_OPTIMIZATION_SHADOW_TEST === "true";
 
   if (!enableSingleLevelOptimization && shadowTestEnabled) {
-    const { query: optimizedQuery, parameters: optimizedParams } = await queryBuilder.build(query, projectId, true);
+    const { query: optimizedQuery, parameters: optimizedParams } =
+      await queryBuilder.build(query, projectId, true);
 
     // Only run shadow test if optimization actually changed the query
     if (optimizedQuery !== compiledQuery) {
@@ -224,71 +251,85 @@ export async function executeQuery(
 
   // Execute all queries in parallel
   const results = await Promise.all(
-    queriesToExecute.map(async (queryToExecute): Promise<Array<Record<string, unknown>> | null> => {
-      try {
-        if (!usesTraceTable) {
-          // No trace table placeholders, execute normally
-          return await queryClickhouse<Record<string, unknown>>({
-            query: queryToExecute.query,
-            params: queryToExecute.params,
-            clickhouseConfigs: {
-              clickhouse_settings: {
-                date_time_output_format: "iso",
-                max_bytes_before_external_group_by: String(env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
-              },
-            },
-            tags: {
-              feature: queryToExecute.type === "shadow" ? "custom-queries-shadow-test" : "custom-queries",
-              type: query.view,
-              kind: "analytic",
-              projectId,
-            },
-          });
-        } else {
-          // Use measureAndReturn for trace table queries
-          return await measureAndReturn({
-            operationName: "executeQuery",
-            projectId,
-            input: {
+    queriesToExecute.map(
+      async (
+        queryToExecute,
+      ): Promise<Array<Record<string, unknown>> | null> => {
+        try {
+          if (!usesTraceTable) {
+            // No trace table placeholders, execute normally
+            return await queryClickhouse<Record<string, unknown>>({
               query: queryToExecute.query,
               params: queryToExecute.params,
-              fromTimestamp: query.fromTimestamp,
+              clickhouseConfigs: {
+                clickhouse_settings: {
+                  date_time_output_format: "iso",
+                  max_bytes_before_external_group_by: String(
+                    env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
+                  ),
+                },
+              },
               tags: {
-                feature: queryToExecute.type === "shadow" ? "custom-queries-shadow-test" : "custom-queries",
+                feature:
+                  queryToExecute.type === "shadow"
+                    ? "custom-queries-shadow-test"
+                    : "custom-queries",
                 type: query.view,
                 kind: "analytic",
                 projectId,
-                operation_name: "executeQuery",
               },
-            },
-            fn: async (input) => {
-              return queryClickhouse<Record<string, unknown>>({
-                query: input.query,
-                params: input.params,
-                clickhouseConfigs: {
-                  clickhouse_settings: {
-                    date_time_output_format: "iso",
-                    max_bytes_before_external_group_by: String(env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
-                  },
+            });
+          } else {
+            // Use measureAndReturn for trace table queries
+            return await measureAndReturn({
+              operationName: "executeQuery",
+              projectId,
+              input: {
+                query: queryToExecute.query,
+                params: queryToExecute.params,
+                fromTimestamp: query.fromTimestamp,
+                tags: {
+                  feature:
+                    queryToExecute.type === "shadow"
+                      ? "custom-queries-shadow-test"
+                      : "custom-queries",
+                  type: query.view,
+                  kind: "analytic",
+                  projectId,
+                  operation_name: "executeQuery",
                 },
-                tags: input.tags,
-              });
-            },
-          });
+              },
+              fn: async (input) => {
+                return queryClickhouse<Record<string, unknown>>({
+                  query: input.query,
+                  params: input.params,
+                  clickhouseConfigs: {
+                    clickhouse_settings: {
+                      date_time_output_format: "iso",
+                      max_bytes_before_external_group_by: String(
+                        env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
+                      ),
+                    },
+                  },
+                  tags: input.tags,
+                });
+              },
+            });
+          }
+        } catch (error) {
+          // Only log shadow test errors
+          if (queryToExecute.type === "shadow") {
+            logger.warn("Shadow test query failed", {
+              view: query.view,
+              error: error instanceof Error ? error.message : String(error),
+            });
+            return null;
+          }
+          // Re-throw errors from regular query
+          throw error;
         }
-      } catch (error) {
-        // Only log shadow test errors
-        if (queryToExecute.type === "shadow") {
-          logger.warn("Shadow test query failed", {
-            view: query.view,
-            error: error instanceof Error ? error.message : String(error),
-          });
-          return null;
-        }
-        // Re-throw errors from regular query
-        throw error;
-      }
-    }),
+      },
+    ),
   );
 
   // Extract results - regularResult should never be null (would have thrown)

@@ -5,12 +5,18 @@ interface CommandMenuContextType {
   setOpen: (open: boolean) => void;
 }
 
-const CommandMenuContext = createContext<CommandMenuContextType | undefined>(undefined);
+const CommandMenuContext = createContext<CommandMenuContextType | undefined>(
+  undefined,
+);
 
 export function CommandMenuProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
-  return <CommandMenuContext.Provider value={{ open, setOpen }}>{children}</CommandMenuContext.Provider>;
+  return (
+    <CommandMenuContext.Provider value={{ open, setOpen }}>
+      {children}
+    </CommandMenuContext.Provider>
+  );
 }
 
 export function useCommandMenu() {

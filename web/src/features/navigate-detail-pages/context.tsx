@@ -1,4 +1,9 @@
-import React, { type PropsWithChildren, createContext, useContext, useState } from "react";
+import React, {
+  type PropsWithChildren,
+  createContext,
+  useContext,
+  useState,
+} from "react";
 
 export type ListEntry = {
   id: string;
@@ -15,19 +20,25 @@ const DetailPageLists = createContext<ListContextType | undefined>(undefined);
 export function useDetailPageLists(): ListContextType {
   const context = useContext(DetailPageLists);
   if (!context) {
-    throw new Error("useDetailPageLists must be used within a DetailPageListsProvider");
+    throw new Error(
+      "useDetailPageLists must be used within a DetailPageListsProvider",
+    );
   }
   return context;
 }
 
 export function DetailPageListsProvider(props: PropsWithChildren) {
-  const [detailPagelists, setLists] = useState<Record<string, Array<ListEntry>>>({});
+  const [detailPagelists, setLists] = useState<
+    Record<string, Array<ListEntry>>
+  >({});
 
   const setDetailPageList = (key: string, list: Array<ListEntry>) => {
     setLists((prevLists) => ({ ...prevLists, [key]: list }));
   };
 
   return (
-    <DetailPageLists.Provider value={{ detailPagelists, setDetailPageList }}>{props.children}</DetailPageLists.Provider>
+    <DetailPageLists.Provider value={{ detailPagelists, setDetailPageList }}>
+      {props.children}
+    </DetailPageLists.Provider>
   );
 }

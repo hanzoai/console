@@ -28,7 +28,10 @@ const PADDING = 8;
  * @param maxLineNumberDigits - Maximum number of digits in line numbers
  * @returns Width in pixels
  */
-export function calculateFixedColumnWidth(showLineNumbers: boolean, maxLineNumberDigits: number): number {
+export function calculateFixedColumnWidth(
+  showLineNumbers: boolean,
+  maxLineNumberDigits: number,
+): number {
   let width = EXPAND_BUTTON_WIDTH + PADDING;
 
   if (showLineNumbers) {

@@ -1,12 +1,18 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
+import {
+  DataTableControlsProvider,
+  DataTableControls,
+} from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useSidebarFilterState } from "@/src/features/filters/hooks/useSidebarFilterState";
-import { getEventsColumnName, observationEventsFilterConfig } from "../config/filter-config";
+import {
+  getEventsColumnName,
+  observationEventsFilterConfig,
+} from "../config/filter-config";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
@@ -58,7 +64,10 @@ import { useEventsFilterOptions } from "@/src/features/events/hooks/useEventsFil
 import { useEventsViewMode } from "@/src/features/events/hooks/useEventsViewMode";
 import { EventsViewModeToggle } from "@/src/features/events/components/EventsViewModeToggle";
 import { JsonSkeleton } from "@/src/components/ui/CodeJsonViewer";
-import { type RefreshInterval, REFRESH_INTERVALS } from "@/src/components/table/data-table-refresh-button";
+import {
+  type RefreshInterval,
+  REFRESH_INTERVALS,
+} from "@/src/components/table/data-table-refresh-button";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { api } from "@/src/utils/api";
 
@@ -131,13 +140,16 @@ export type EventsTableProps = {
   projectId: string;
 };
 
-export default function ObservationsEventsTable({ projectId }: EventsTableProps) {
+export default function ObservationsEventsTable({
+  projectId,
+}: EventsTableProps) {
   const router = useRouter();
   const { viewId } = router.query;
 
   const { setDetailPageList } = useDetailPageLists();
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
-  const { searchQuery, searchType, setSearchQuery, setSearchType } = useFullTextSearch();
+  const { searchQuery, searchType, setSearchQuery, setSearchType } =
+    useFullTextSearch();
 
   const { selectAll, setSelectAll } = useSelectAll(projectId, "observations");
 
@@ -146,7 +158,10 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
     limit: withDefault(NumberParam, 50),
   });
 
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("observations", "s");
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
+    "observations",
+    "s",
+  );
 
   const [inputFilterState] = useQueryFilterState(
     // Default type filter - exclude SPAN and EVENT types
@@ -156,7 +171,16 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
             column: "type",
             type: "stringOptions",
             operator: "any of",
-            value: ["GENERATION", "AGENT", "TOOL", "CHAIN", "RETRIEVER", "EVALUATOR", "EMBEDDING", "GUARDRAIL"],
+            value: [
+              "GENERATION",
+              "AGENT",
+              "TOOL",
+              "CHAIN",
+              "RETRIEVER",
+              "EVALUATOR",
+              "EMBEDDING",
+              "GUARDRAIL",
+            ],
           },
         ]
       : [],
@@ -172,7 +196,8 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
   const { timeRange, setTimeRange } = useTableDateRange(projectId);
 
   // View mode toggle (Trace vs Observation)
-  const { viewMode, setViewMode: setViewModeRaw } = useEventsViewMode(projectId);
+  const { viewMode, setViewMode: setViewModeRaw } =
+    useEventsViewMode(projectId);
 
   // Convert view mode to hasParentObservation filter value
   // trace = false (no parent), observation = true (has parent)
@@ -189,14 +214,17 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
 
   // for auto data refresh
   const utils = api.useUtils();
-  const [rawRefreshInterval, setRawRefreshInterval] = useSessionStorage<RefreshInterval>(
-    `tableRefreshInterval-events-${projectId}`,
-    null,
-  );
+  const [rawRefreshInterval, setRawRefreshInterval] =
+    useSessionStorage<RefreshInterval>(
+      `tableRefreshInterval-events-${projectId}`,
+      null,
+    );
 
   // Validate session storage value against allowed intervals
   const allowedValues = REFRESH_INTERVALS.map((i) => i.value);
-  const refreshInterval = allowedValues.includes(rawRefreshInterval) ? rawRefreshInterval : null;
+  const refreshInterval = allowedValues.includes(rawRefreshInterval)
+    ? rawRefreshInterval
+    : null;
   const setRefreshInterval = useCallback(
     (value: RefreshInterval) => {
       if (allowedValues.includes(value)) {
@@ -275,7 +303,10 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
   const queryFilterRef = useRef(queryFilter);
   queryFilterRef.current = queryFilter;
 
-  const setFiltersWrapper = useCallback((filters: FilterState) => queryFilterRef.current?.setFilterState(filters), []);
+  const setFiltersWrapper = useCallback(
+    (filters: FilterState) => queryFilterRef.current?.setFilterState(filters),
+    [],
+  );
 
   // Create view mode filter (not shown in sidebar)
   const viewModeFilter: FilterState = [
@@ -287,10 +318,18 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
     },
   ];
 
-  const filterState = queryFilter.filterState.concat(dateRangeFilter).concat(viewModeFilter);
+  const filterState = queryFilter.filterState
+    .concat(dateRangeFilter)
+    .concat(viewModeFilter);
 
   // Use the custom hook for observations data fetching
-  const { observations, totalCount, handleAddToAnnotationQueue, dataUpdatedAt, ioLoading } = useEventsTableData({
+  const {
+    observations,
+    totalCount,
+    handleAddToAnnotationQueue,
+    dataUpdatedAt,
+    ioLoading,
+  } = useEventsTableData({
     projectId,
     filterState,
     paginationState,
@@ -320,12 +359,13 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observations.status, observations.rows]);
 
-  const { scoreColumns, isLoading: isColumnLoading } = useScoreColumns<EventsTableRow>({
-    scoreColumnKey: "scores",
-    projectId,
-    filter: scoreFilters.forObservations(),
-    fromTimestamp: dateRange?.from,
-  });
+  const { scoreColumns, isLoading: isColumnLoading } =
+    useScoreColumns<EventsTableRow>({
+      scoreColumnKey: "scores",
+      projectId,
+      filter: scoreFilters.forObservations(),
+      fromTimestamp: dateRange?.from,
+    });
 
   const { selectActionColumn } = TableSelectionManager<EventsTableRow>({
     projectId,
@@ -395,9 +435,20 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       cell: ({ row }) => {
         const value: string | undefined = row.getValue("input");
         if (ioLoading) {
-          return <JsonSkeleton borderless className="h-full w-full overflow-hidden px-2 py-1" />;
+          return (
+            <JsonSkeleton
+              borderless
+              className="h-full w-full overflow-hidden px-2 py-1"
+            />
+          );
         }
-        return value ? <MemoizedIOTableCell isLoading={false} data={value} singleLine={rowHeight === "s"} /> : null;
+        return value ? (
+          <MemoizedIOTableCell
+            isLoading={false}
+            data={value}
+            singleLine={rowHeight === "s"}
+          />
+        ) : null;
       },
       enableHiding: true,
     },
@@ -409,7 +460,12 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       cell: ({ row }) => {
         const value: string | undefined = row.getValue("output");
         if (ioLoading) {
-          return <JsonSkeleton borderless className="h-full w-full overflow-hidden px-2 py-1" />;
+          return (
+            <JsonSkeleton
+              borderless
+              className="h-full w-full overflow-hidden px-2 py-1"
+            />
+          );
         }
         return value ? (
           <MemoizedIOTableCell
@@ -433,9 +489,20 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       cell: ({ row }) => {
         const value: string | undefined = row.getValue("metadata");
         if (ioLoading) {
-          return <JsonSkeleton borderless className="h-full w-full overflow-hidden px-2 py-1" />;
+          return (
+            <JsonSkeleton
+              borderless
+              className="h-full w-full overflow-hidden px-2 py-1"
+            />
+          );
         }
-        return value ? <MemoizedIOTableCell isLoading={false} data={value} singleLine={rowHeight === "s"} /> : null;
+        return value ? (
+          <MemoizedIOTableCell
+            isLoading={false}
+            data={value}
+            singleLine={rowHeight === "s"}
+          />
+        ) : null;
       },
       enableHiding: true,
     },
@@ -453,7 +520,13 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       cell: ({ row }) => {
         const value: ObservationLevelType | undefined = row.getValue("level");
         return value ? (
-          <span className={cn("rounded-sm p-0.5 text-xs", LevelColors[value].bg, LevelColors[value].text)}>
+          <span
+            className={cn(
+              "rounded-sm p-0.5 text-xs",
+              LevelColors[value].bg,
+              LevelColors[value].text,
+            )}
+          >
             {value}
           </span>
         ) : undefined;
@@ -466,7 +539,8 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       id: "statusMessage",
       size: 150,
       headerTooltip: {
-        description: "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
+        description:
+          "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
         href: "https://hanzo.com/docs/observability/features/log-levels",
       },
       enableHiding: true,
@@ -474,7 +548,11 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       cell: ({ row }) => {
         const value: string | undefined = row.getValue("statusMessage");
         return value ? (
-          <MemoizedIOTableCell isLoading={false} data={value} singleLine={rowHeight === "s"} />
+          <MemoizedIOTableCell
+            isLoading={false}
+            data={value}
+            singleLine={rowHeight === "s"}
+          />
         ) : undefined;
       },
     },
@@ -485,7 +563,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       size: 100,
       cell: ({ row }) => {
         const latency: number | undefined = row.getValue("latency");
-        return latency !== undefined ? <span>{formatIntervalSeconds(latency)}</span> : undefined;
+        return latency !== undefined ? (
+          <span>{formatIntervalSeconds(latency)}</span>
+        ) : undefined;
       },
       enableHiding: true,
       enableSorting: true,
@@ -521,7 +601,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       enableHiding: true,
       defaultHidden: true,
       cell: () => {
-        return observations.status === "loading" ? <Skeleton className="h-3 w-1/2" /> : null;
+        return observations.status === "loading" ? (
+          <Skeleton className="h-3 w-1/2" />
+        ) : null;
       },
       columns: [
         {
@@ -535,7 +617,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
               outputCost: number | undefined;
             };
 
-            return value.inputCost !== undefined ? <span>{usdFormatter(value.inputCost)}</span> : undefined;
+            return value.inputCost !== undefined ? (
+              <span>{usdFormatter(value.inputCost)}</span>
+            ) : undefined;
           },
           enableHiding: true,
           defaultHidden: true,
@@ -552,7 +636,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
               outputCost: number | undefined;
             };
 
-            return value.outputCost !== undefined ? <span>{usdFormatter(value.outputCost)}</span> : undefined;
+            return value.outputCost !== undefined ? (
+              <span>{usdFormatter(value.outputCost)}</span>
+            ) : undefined;
           },
           enableHiding: true,
           defaultHidden: true,
@@ -568,9 +654,14 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       enableHiding: true,
       enableSorting: true,
       cell: ({ row }) => {
-        const timeToFirstToken: number | undefined = row.getValue("timeToFirstToken");
+        const timeToFirstToken: number | undefined =
+          row.getValue("timeToFirstToken");
 
-        return <span>{timeToFirstToken ? formatIntervalSeconds(timeToFirstToken) : "-"}</span>;
+        return (
+          <span>
+            {timeToFirstToken ? formatIntervalSeconds(timeToFirstToken) : "-"}
+          </span>
+        );
       },
     },
     {
@@ -580,7 +671,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       enableHiding: true,
       defaultHidden: true,
       cell: () => {
-        return observations.status === "loading" ? <Skeleton className="h-3 w-1/2" /> : null;
+        return observations.status === "loading" ? (
+          <Skeleton className="h-3 w-1/2" />
+        ) : null;
       },
       columns: [
         {
@@ -595,8 +688,13 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
               outputUsage: number;
               totalUsage: number;
             };
-            return latency !== undefined && (usage.outputUsage !== 0 || usage.totalUsage !== 0) ? (
-              <span>{usage.outputUsage && latency ? Number((usage.outputUsage / latency).toFixed(1)) : undefined}</span>
+            return latency !== undefined &&
+              (usage.outputUsage !== 0 || usage.totalUsage !== 0) ? (
+              <span>
+                {usage.outputUsage && latency
+                  ? Number((usage.outputUsage / latency).toFixed(1))
+                  : undefined}
+              </span>
             ) : undefined;
           },
           defaultHidden: true,
@@ -725,9 +823,13 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       size: 150,
       enableHiding: true,
       cell: ({ row }) => {
-        const value: EventsTableRow["environment"] = row.getValue("environment");
+        const value: EventsTableRow["environment"] =
+          row.getValue("environment");
         return value ? (
-          <Badge variant="secondary" className="max-w-fit truncate rounded-sm px-1 font-normal">
+          <Badge
+            variant="secondary"
+            className="max-w-fit truncate rounded-sm px-1 font-normal"
+          >
             {value}
           </Badge>
         ) : null;
@@ -743,7 +845,12 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
         const traceTags: string[] | undefined = row.getValue("traceTags");
         return (
           traceTags && (
-            <div className={cn("flex gap-x-2 gap-y-1", rowHeight !== "s" && "flex-wrap")}>
+            <div
+              className={cn(
+                "flex gap-x-2 gap-y-1",
+                rowHeight !== "s" && "flex-wrap",
+              )}
+            >
               <TagList selectedTags={traceTags} isLoading={false} />
             </div>
           )
@@ -781,7 +888,9 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
       size: 100,
       cell: ({ row }) => {
         const value = row.getValue("traceId");
-        return typeof value === "string" ? <TableIdOrName value={value} /> : undefined;
+        return typeof value === "string" ? (
+          <TableIdOrName value={value} />
+        ) : undefined;
       },
       enableSorting: true,
       enableHiding: true,
@@ -826,12 +935,16 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
     },
   ];
 
-  const [columnVisibility, setColumnVisibilityState] = useColumnVisibility<EventsTableRow>(
-    `eventsColumnVisibility-${projectId}`,
+  const [columnVisibility, setColumnVisibilityState] =
+    useColumnVisibility<EventsTableRow>(
+      `eventsColumnVisibility-${projectId}`,
+      columns,
+    );
+
+  const [columnOrder, setColumnOrder] = useColumnOrder<EventsTableRow>(
+    `eventsColumnOrder-${projectId}`,
     columns,
   );
-
-  const [columnOrder, setColumnOrder] = useColumnOrder<EventsTableRow>(`eventsColumnOrder-${projectId}`, columns);
 
   const peekNavigationProps = usePeekNavigation({
     queryParams: ["observation", "display", "timestamp", "traceId"],
@@ -913,7 +1026,8 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
               timestamp: observation.startTime ?? undefined,
               usageDetails: observation.usageDetails ?? {},
               costDetails: observation.costDetails ?? {},
-              usagePricingTierName: observation.usagePricingTierName ?? undefined,
+              usagePricingTierName:
+                observation.usagePricingTierName ?? undefined,
               environment: observation.environment ?? undefined,
               // I/O data comes from joined data already
               input: observation.input
@@ -967,7 +1081,12 @@ export default function ObservationsEventsTable({ projectId }: EventsTableProps)
           setRowHeight={setRowHeight}
           timeRange={timeRange}
           setTimeRange={setTimeRange}
-          viewModeToggle={<EventsViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />}
+          viewModeToggle={
+            <EventsViewModeToggle
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+            />
+          }
           refreshConfig={{
             onRefresh: handleRefresh,
             isRefreshing: observations.status === "loading",

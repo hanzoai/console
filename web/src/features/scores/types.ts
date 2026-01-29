@@ -72,7 +72,11 @@ export type AnnotationScore = {
 
 type AnalyticsData = {
   type: "trace" | "session";
-  source: "TraceDetail" | "SessionDetail" | "AnnotationQueue" | "DatasetCompare";
+  source:
+    | "TraceDetail"
+    | "SessionDetail"
+    | "AnnotationQueue"
+    | "DatasetCompare";
 };
 
 export type AnnotateDrawerProps<Target extends ScoreTarget> = {
@@ -89,10 +93,13 @@ export type AnnotateDrawerProps<Target extends ScoreTarget> = {
 };
 
 export type AnnotateFormSchemaType = z.infer<typeof AnnotateFormSchema>;
-export type AnnotationScoreSchemaType = z.infer<typeof AnnotationScoreDataSchema>;
+export type AnnotationScoreSchemaType = z.infer<
+  typeof AnnotationScoreDataSchema
+>;
 
 export type AnnotationScoreDataType = ScoreConfigDataType;
-export const ANNOTATION_SCORE_DATA_TYPES_ARRAY = Object.values(ScoreConfigDataType);
+export const ANNOTATION_SCORE_DATA_TYPES_ARRAY =
+  Object.values(ScoreConfigDataType);
 
 export type ScoreColumn = {
   key: string;
@@ -101,7 +108,9 @@ export type ScoreColumn = {
   dataType: AggregatableScoreDataType;
 };
 
-export type ScoreConfigSelection = { mode: "fixed"; configs: ScoreConfigDomain[] } | { mode: "selectable" };
+export type ScoreConfigSelection =
+  | { mode: "fixed"; configs: ScoreConfigDomain[] }
+  | { mode: "selectable" };
 
 export type AnnotationForm<Target extends ScoreTarget> = {
   scoreTarget: Target;

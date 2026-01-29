@@ -1,5 +1,9 @@
 import { transformToAnnotationScores } from "@/src/features/scores/lib/transformScores";
-import { type ScoreDomain, type ScoreAggregate, type ScoreConfigDomain } from "@hanzo/shared";
+import {
+  type ScoreDomain,
+  type ScoreAggregate,
+  type ScoreConfigDomain,
+} from "@hanzo/shared";
 
 const mockConfigs: ScoreConfigDomain[] = [
   {
@@ -220,7 +224,12 @@ describe("transformToAnnotationScores - aggregates", () => {
       },
     };
 
-    const result = transformToAnnotationScores(aggregates, mockConfigs, "trace-1", "obs-1");
+    const result = transformToAnnotationScores(
+      aggregates,
+      mockConfigs,
+      "trace-1",
+      "obs-1",
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
@@ -251,7 +260,11 @@ describe("transformToAnnotationScores - aggregates", () => {
       },
     };
 
-    const result = transformToAnnotationScores(aggregates, mockConfigs, "trace-1");
+    const result = transformToAnnotationScores(
+      aggregates,
+      mockConfigs,
+      "trace-1",
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
@@ -281,7 +294,11 @@ describe("transformToAnnotationScores - aggregates", () => {
       },
     };
 
-    const result = transformToAnnotationScores(aggregates, mockConfigs, "trace-1");
+    const result = transformToAnnotationScores(
+      aggregates,
+      mockConfigs,
+      "trace-1",
+    );
 
     expect(result).toHaveLength(0);
   });
@@ -297,7 +314,11 @@ describe("transformToAnnotationScores - aggregates", () => {
       },
     };
 
-    const result = transformToAnnotationScores(aggregates, mockConfigs, "trace-1");
+    const result = transformToAnnotationScores(
+      aggregates,
+      mockConfigs,
+      "trace-1",
+    );
 
     expect(result).toHaveLength(0);
   });
@@ -313,7 +334,11 @@ describe("transformToAnnotationScores - aggregates", () => {
       },
     };
 
-    const result = transformToAnnotationScores(aggregates, mockConfigs, "trace-1");
+    const result = transformToAnnotationScores(
+      aggregates,
+      mockConfigs,
+      "trace-1",
+    );
 
     expect(result).toHaveLength(0);
   });

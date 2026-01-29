@@ -1,4 +1,7 @@
-import { createTRPCRouter, authenticatedProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  authenticatedProcedure,
+} from "@/src/server/api/trpc";
 import { z } from "zod/v4";
 import { promises as dns } from "dns";
 import { Address4, Address6 } from "ip-address";
@@ -44,7 +47,9 @@ const isPrivateIp = (ipAddress: string): boolean => {
   }
 };
 
-const resolveHostname = async (hostname: string): Promise<{ addresses4: string[]; addresses6: string[] }> => {
+const resolveHostname = async (
+  hostname: string,
+): Promise<{ addresses4: string[]; addresses6: string[] }> => {
   let addresses4: string[] = [];
   let addresses6: string[] = [];
 
@@ -74,8 +79,10 @@ const isValidAndSecureUrl = async (urlString: string): Promise<boolean> => {
 
     // Consider unresolvable or private hostnames as invalid/unsafe
     return (
-      (Boolean(ipAddresses.addresses4.length) && ipAddresses.addresses4.every((ip) => !isPrivateIp(ip))) ||
-      (Boolean(ipAddresses.addresses6.length) && ipAddresses.addresses6.every((ip) => !isPrivateIp(ip)))
+      (Boolean(ipAddresses.addresses4.length) &&
+        ipAddresses.addresses4.every((ip) => !isPrivateIp(ip))) ||
+      (Boolean(ipAddresses.addresses6.length) &&
+        ipAddresses.addresses6.every((ip) => !isPrivateIp(ip)))
     );
   } catch (error) {
     logger.info("Invalid URL:", error);
@@ -85,9 +92,11 @@ const isValidAndSecureUrl = async (urlString: string): Promise<boolean> => {
 
 // Define a Zod schema for pre-signed S3 URL validation, based on https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html; 04.12.24
 const s3UrlSchema = z.object({
-  hostname: z.string().refine((hostname) => hostname.endsWith(".amazonaws.com"), {
-    message: "Invalid hostname. Must be an S3 URL.",
-  }),
+  hostname: z
+    .string()
+    .refine((hostname) => hostname.endsWith(".amazonaws.com"), {
+      message: "Invalid hostname. Must be an S3 URL.",
+    }),
   path: z.string(),
   query: z.object({
     "X-Amz-Algorithm": z.string().optional(),
@@ -140,7 +149,9 @@ const isValidPresignedS3Url = async (url: string): Promise<boolean> => {
 
     // Attempt a GET request, as most pre-signed URLs are restricted to GET requests only
     if (response.status === 403) {
-      logger.info("HEAD request returned 403, attempting GET for validation...");
+      logger.info(
+        "HEAD request returned 403, attempting GET for validation...",
+      );
 
       const getResponse = await fetch(url, {
         method: "GET",
@@ -188,13 +199,15 @@ const isValidImageUrl = async (url: string): Promise<boolean> => {
 };
 
 export const utilsRouter = createTRPCRouter({
-  validateImgUrl: authenticatedProcedure.input(z.string().max(2048)).query(async ({ input: url }) => {
-    const isValidUrl = await isValidAndSecureUrl(url);
-    if (!isValidUrl) {
-      return { isValid: false };
-    }
+  validateImgUrl: authenticatedProcedure
+    .input(z.string().max(2048))
+    .query(async ({ input: url }) => {
+      const isValidUrl = await isValidAndSecureUrl(url);
+      if (!isValidUrl) {
+        return { isValid: false };
+      }
 
-    const isValidImg = await isValidImageUrl(url);
-    return { isValid: isValidImg };
-  }),
+      const isValidImg = await isValidImageUrl(url);
+      return { isValid: isValidImg };
+    }),
 });

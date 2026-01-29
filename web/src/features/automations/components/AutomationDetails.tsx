@@ -5,8 +5,17 @@ import { Edit } from "lucide-react";
 import { AutomationForm } from "./automationForm";
 import { AutomationExecutionsTable } from "./AutomationExecutionsTable";
 import { AutomationFailureBanner } from "./AutomationFailureBanner";
-import { type AutomationDomain, JobConfigState, type TriggerEventSource } from "@hanzo/shared";
-import { TabsBar, TabsBarContent, TabsBarList, TabsBarTrigger } from "@/src/components/ui/tabs-bar";
+import {
+  type AutomationDomain,
+  JobConfigState,
+  type TriggerEventSource,
+} from "@hanzo/shared";
+import {
+  TabsBar,
+  TabsBarContent,
+  TabsBarList,
+  TabsBarTrigger,
+} from "@/src/components/ui/tabs-bar";
 import { type FilterState } from "@hanzo/shared";
 import Header from "@/src/components/layouts/header";
 import { SettingsTableCard } from "@/src/components/layouts/settings-table-card";
@@ -29,17 +38,21 @@ export const AutomationDetails: React.FC<AutomationDetailsProps> = ({
   onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useQueryParam("tab", withDefault(StringParam, "executions"));
-
-  const { data: automation, isLoading } = api.automations.getAutomation.useQuery(
-    {
-      projectId,
-      automationId,
-    },
-    {
-      enabled: !!projectId && !!automationId,
-    },
+  const [activeTab, setActiveTab] = useQueryParam(
+    "tab",
+    withDefault(StringParam, "executions"),
   );
+
+  const { data: automation, isLoading } =
+    api.automations.getAutomation.useQuery(
+      {
+        projectId,
+        automationId,
+      },
+      {
+        enabled: !!projectId && !!automationId,
+      },
+    );
 
   const handleEdit = () => {
     if (onEdit && automation) {
@@ -59,11 +72,17 @@ export const AutomationDetails: React.FC<AutomationDetailsProps> = ({
   };
 
   if (isLoading) {
-    return <div className="py-4 text-center">Loading automation details...</div>;
+    return (
+      <div className="py-4 text-center">Loading automation details...</div>
+    );
   }
 
   if (!automation) {
-    return <div className="py-4 text-center text-muted-foreground">Automation not found.</div>;
+    return (
+      <div className="py-4 text-center text-muted-foreground">
+        Automation not found.
+      </div>
+    );
   }
 
   const automationForForm: AutomationDomain = {
@@ -92,7 +111,11 @@ export const AutomationDetails: React.FC<AutomationDetailsProps> = ({
         <>
           <Header
             title={automation.name}
-            status={automation.trigger.status === JobConfigState.ACTIVE ? "active" : "inactive"}
+            status={
+              automation.trigger.status === JobConfigState.ACTIVE
+                ? "active"
+                : "inactive"
+            }
             actionButtons={
               <div className="flex gap-2">
                 <Button variant="outline" onClick={handleEdit}>
@@ -109,22 +132,40 @@ export const AutomationDetails: React.FC<AutomationDetailsProps> = ({
             }
           />
 
-          <AutomationFailureBanner projectId={projectId} automationId={automationId} />
+          <AutomationFailureBanner
+            projectId={projectId}
+            automationId={automationId}
+          />
 
-          <TabsBar value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsBar
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsBarList>
-              <TabsBarTrigger value="executions">Execution History</TabsBarTrigger>
-              <TabsBarTrigger value="configuration">Configuration</TabsBarTrigger>
+              <TabsBarTrigger value="executions">
+                Execution History
+              </TabsBarTrigger>
+              <TabsBarTrigger value="configuration">
+                Configuration
+              </TabsBarTrigger>
             </TabsBarList>
 
             <TabsBarContent value="executions" className="mt-6">
               <SettingsTableCard>
-                <AutomationExecutionsTable projectId={projectId} automationId={automationId} />
+                <AutomationExecutionsTable
+                  projectId={projectId}
+                  automationId={automationId}
+                />
               </SettingsTableCard>
             </TabsBarContent>
 
             <TabsBarContent value="configuration" className="mt-6">
-              <AutomationForm projectId={projectId} automation={automationForForm} isEditing={false} />
+              <AutomationForm
+                projectId={projectId}
+                automation={automationForForm}
+                isEditing={false}
+              />
             </TabsBarContent>
           </TabsBar>
         </>

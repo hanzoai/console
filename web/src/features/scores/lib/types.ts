@@ -2,7 +2,10 @@ import { type ObservationsTableRow } from "@/src/components/table/use-cases/obse
 import { type SessionTableRow } from "@/src/components/table/use-cases/sessions";
 import { type TracesTableRow } from "@/src/components/table/use-cases/traces";
 import { type DatasetRunRowData } from "@/src/features/datasets/components/DatasetRunsTable";
-import { type DatasetRunItemByItemRowData, type DatasetRunItemByRunRowData } from "@/src/features/datasets/lib/types";
+import {
+  type DatasetRunItemByItemRowData,
+  type DatasetRunItemByRunRowData,
+} from "@/src/features/datasets/lib/types";
 import { type PromptVersionTableRow } from "@/src/pages/project/[projectId]/prompts/metrics";
 import { type ScoreDataTypeType, type ScoreSourceType } from "@hanzo/shared";
 

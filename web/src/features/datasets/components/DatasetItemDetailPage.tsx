@@ -15,7 +15,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { useState } from "react";
 import { getDatasetItemTabs } from "@/src/features/navigation/utils/dataset-item-tabs";
 import { type DatasetItemTab } from "@/src/features/navigation/utils/dataset-item-tabs";
@@ -77,7 +81,10 @@ export const DatasetItemDetailPage = ({
   const toggleArchiveStatus = () => {
     if (!item.data?.status || !hasAccess || mutUpdate.isPending) return;
 
-    const newStatus = item.data.status === DatasetStatus.ARCHIVED ? DatasetStatus.ACTIVE : DatasetStatus.ARCHIVED;
+    const newStatus =
+      item.data.status === DatasetStatus.ARCHIVED
+        ? DatasetStatus.ACTIVE
+        : DatasetStatus.ARCHIVED;
 
     capture("dataset_item:archive_toggle", {
       status: newStatus === DatasetStatus.ARCHIVED ? "archived" : "unarchived",
@@ -131,7 +138,10 @@ export const DatasetItemDetailPage = ({
         actionButtonsLeft: (
           <>
             {item.data?.status && (
-              <Popover open={isArchivePopoverOpen} onOpenChange={setIsArchivePopoverOpen}>
+              <Popover
+                open={isArchivePopoverOpen}
+                onOpenChange={setIsArchivePopoverOpen}
+              >
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="xs">
                     {item.data.status}
@@ -141,7 +151,9 @@ export const DatasetItemDetailPage = ({
                   <div className="flex flex-col gap-4">
                     <div className="space-y-2">
                       <h4 className="font-medium leading-none">
-                        {item.data.status === DatasetStatus.ACTIVE ? "Archive this item?" : "Unarchive this item?"}
+                        {item.data.status === DatasetStatus.ACTIVE
+                          ? "Archive this item?"
+                          : "Unarchive this item?"}
                       </h4>
                       <p className="text-sm text-muted-foreground">
                         {item.data.status === DatasetStatus.ACTIVE
@@ -152,7 +164,11 @@ export const DatasetItemDetailPage = ({
                     <Button
                       onClick={toggleArchiveStatus}
                       disabled={!hasAccess || mutUpdate.isPending}
-                      variant={item.data.status === DatasetStatus.ACTIVE ? "destructive" : "default"}
+                      variant={
+                        item.data.status === DatasetStatus.ACTIVE
+                          ? "destructive"
+                          : "default"
+                      }
                       size="sm"
                     >
                       {mutUpdate.isPending
@@ -181,7 +197,9 @@ export const DatasetItemDetailPage = ({
           <>
             <DetailPageNav
               currentId={itemId}
-              path={(entry) => `/project/${projectId}/datasets/${datasetId}/items/${entry.id}`}
+              path={(entry) =>
+                `/project/${projectId}/datasets/${datasetId}/items/${entry.id}`
+              }
               listKey="datasetItems"
             />
             {item.data ? (
@@ -216,7 +234,12 @@ export const DatasetItemDetailPage = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleDelete}
-                  disabled={!hasAccess || mutDelete.isPending || isViewingOldVersion || !item.data}
+                  disabled={
+                    !hasAccess ||
+                    mutDelete.isPending ||
+                    isViewingOldVersion ||
+                    !item.data
+                  }
                   className="text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />

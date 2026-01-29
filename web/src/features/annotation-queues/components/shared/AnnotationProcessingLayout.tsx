@@ -1,4 +1,8 @@
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/src/components/ui/resizable";
 import useSessionStorage from "@/src/components/useSessionStorage";
 
 interface AnnotationProcessingLayoutProps {
@@ -7,18 +11,21 @@ interface AnnotationProcessingLayoutProps {
   projectId: string;
 }
 
-export const AnnotationProcessingLayout: React.FC<AnnotationProcessingLayoutProps> = ({
-  leftPanel,
-  rightPanel,
-  projectId,
-}) => {
-  const [panelSize, setPanelSize] = useSessionStorage(`annotationQueuePanelSize-${projectId}`, 65);
+export const AnnotationProcessingLayout: React.FC<
+  AnnotationProcessingLayoutProps
+> = ({ leftPanel, rightPanel, projectId }) => {
+  const [panelSize, setPanelSize] = useSessionStorage(
+    `annotationQueuePanelSize-${projectId}`,
+    65,
+  );
 
   return (
     <>
       {/* Mobile: Vertical stack without resizing */}
       <div className="flex h-full flex-col gap-2 overflow-hidden md:hidden">
-        <div className="h-1/2 overflow-y-auto rounded-md border">{leftPanel}</div>
+        <div className="h-1/2 overflow-y-auto rounded-md border">
+          {leftPanel}
+        </div>
         <div className="flex h-1/2 flex-col overflow-hidden">{rightPanel}</div>
       </div>
 
@@ -39,7 +46,10 @@ export const AnnotationProcessingLayout: React.FC<AnnotationProcessingLayoutProp
             {leftPanel}
           </ResizablePanel>
           <ResizableHandle withHandle className="ml-4 bg-transparent" />
-          <ResizablePanel className="col-span-1 flex h-full flex-col overflow-hidden" minSize={30}>
+          <ResizablePanel
+            className="col-span-1 flex h-full flex-col overflow-hidden"
+            minSize={30}
+          >
             {rightPanel}
           </ResizablePanel>
         </ResizablePanelGroup>

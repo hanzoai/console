@@ -1,6 +1,11 @@
 import { v4 } from "uuid";
 import { JobExecutionStatus, Prisma, prisma } from "@hanzo/shared/src/db";
-import { getObservationById, getTraceById, OrgEnrichedApiKey, redis } from "@hanzo/shared/src/server";
+import {
+  getObservationById,
+  getTraceById,
+  OrgEnrichedApiKey,
+  redis,
+} from "@hanzo/shared/src/server";
 import waitForExpect from "wait-for-expect";
 
 const generateAuth = (username: string, password: string) => {
@@ -126,7 +131,9 @@ describe("Ingestion Pipeline", () => {
         const redisValue = await redis?.get(redisKeys![0]);
 
         const llmApiKey = OrgEnrichedApiKey.parse(JSON.parse(redisValue!));
-        expect(llmApiKey.projectId).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
+        expect(llmApiKey.projectId).toBe(
+          "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+        );
       },
       40000,
       1000,
@@ -252,28 +259,34 @@ describe("Prompts endpoint", () => {
       { role: "system", content: "You are a bot" },
       { role: "user", content: "What's up?" },
     ];
-    const response = await fetch("http://localhost:3000/api/public/v2/prompts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: userApiKeyAuth,
+    const response = await fetch(
+      "http://localhost:3000/api/public/v2/prompts",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: userApiKeyAuth,
+        },
+        body: JSON.stringify({
+          name: promptName,
+          prompt: chatMessages,
+          type: "chat",
+          labels: ["production"],
+        }),
       },
-      body: JSON.stringify({
-        name: promptName,
-        prompt: chatMessages,
-        type: "chat",
-        labels: ["production"],
-      }),
-    });
+    );
 
     expect(response.status).toBe(201);
 
-    const fetchedPrompt = await fetch(`http://localhost:3000/api/public/v2/prompts/${encodeURIComponent(promptName)}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: userApiKeyAuth,
+    const fetchedPrompt = await fetch(
+      `http://localhost:3000/api/public/v2/prompts/${encodeURIComponent(promptName)}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: userApiKeyAuth,
+        },
       },
-    });
+    );
     expect(fetchedPrompt.status).toBe(200);
     expect(fetchedPrompt.body).not.toBeNull();
 

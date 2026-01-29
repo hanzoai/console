@@ -16,7 +16,10 @@ Sentry.init({
 
     // Filter invalid href errors - these are from user-inputted data containing malformed URLs
     // The Next.js router correctly rejects them, no need to log as errors
-    if (errorValue.includes("Invalid href") && errorValue.includes("passed to next/router")) {
+    if (
+      errorValue.includes("Invalid href") &&
+      errorValue.includes("passed to next/router")
+    ) {
       return null;
     }
 

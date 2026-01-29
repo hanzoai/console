@@ -36,7 +36,9 @@ export interface ChatMLParserResult {
  * Parse tool calls from a ChatML message.
  * Handles both standard tool_calls array and passthrough json.tool_calls.
  */
-function parseToolCallsFromMessage(message: ReturnType<typeof combineInputOutputMessages>[0]) {
+function parseToolCallsFromMessage(
+  message: ReturnType<typeof combineInputOutputMessages>[0],
+) {
   return message.tool_calls && Array.isArray(message.tool_calls)
     ? message.tool_calls
     : message.json?.tool_calls && Array.isArray(message.json?.tool_calls)
@@ -69,11 +71,17 @@ export function useChatMLParser(
   // Use pre-parsed data if available (from Web Worker), otherwise parse synchronously
   // This eliminates ~100ms of duplicate parsing when data comes from useParsedObservation
   const parsedInput =
-    preParsedInput !== undefined ? preParsedInput : deepParseJson(input, { maxSize: 300_000, maxDepth: 25 });
+    preParsedInput !== undefined
+      ? preParsedInput
+      : deepParseJson(input, { maxSize: 300_000, maxDepth: 25 });
   const parsedOutput =
-    preParsedOutput !== undefined ? preParsedOutput : deepParseJson(output, { maxSize: 300_000, maxDepth: 25 });
+    preParsedOutput !== undefined
+      ? preParsedOutput
+      : deepParseJson(output, { maxSize: 300_000, maxDepth: 25 });
   const parsedMetadata =
-    preParsedMetadata !== undefined ? preParsedMetadata : deepParseJson(metadata, { maxSize: 100_000, maxDepth: 25 });
+    preParsedMetadata !== undefined
+      ? preParsedMetadata
+      : deepParseJson(metadata, { maxSize: 100_000, maxDepth: 25 });
 
   return useMemo(() => {
     // Normalize input
@@ -87,7 +95,11 @@ export function useChatMLParser(
     const outputClean = cleanLegacyOutput(parsedOutput, parsedOutput);
 
     // Combine messages
-    const messages = combineInputOutputMessages(inResult, outResult, outputClean);
+    const messages = combineInputOutputMessages(
+      inResult,
+      outResult,
+      outputClean,
+    );
 
     // Extract all unique tools from messages (no numbering yet)
     const toolsMap = new Map<string, ToolDefinition>();
@@ -130,7 +142,10 @@ export function useChatMLParser(
           if (calledToolName) {
             // Count tool calls from OUTPUT messages only
             if (isOutputMessage) {
-              toolCallCounts.set(calledToolName, (toolCallCounts.get(calledToolName) || 0) + 1);
+              toolCallCounts.set(
+                calledToolName,
+                (toolCallCounts.get(calledToolName) || 0) + 1,
+              );
               toolCallCounter++;
               messageToolNumbers.push(toolCallCounter);
             }
@@ -159,7 +174,8 @@ export function useChatMLParser(
     });
 
     return {
-      canDisplayAsChat: (inResult.success || outResult.success) && messages.length > 0,
+      canDisplayAsChat:
+        (inResult.success || outResult.success) && messages.length > 0,
       allMessages: messages as ChatMlMessage[],
       additionalInput: extractAdditionalInput(parsedInput),
       allTools: sortedTools,

@@ -65,7 +65,8 @@ const calculateSegmentDiff = (oldString: string, newString: string) => {
       // removed, so we need to check if there is an addition next.
       const nextChange = segmentChanges[charIndex + 1];
       const areThereMoreCharacterChanges = nextChange !== undefined;
-      const addsCharacterNext = areThereMoreCharacterChanges && segmentChanges[charIndex + 1].added;
+      const addsCharacterNext =
+        areThereMoreCharacterChanges && segmentChanges[charIndex + 1].added;
       if (addsCharacterNext) {
         // there is addition next so we can show it as an update.
         leftWords.push({ value: change.value, type: "removed" });
@@ -118,10 +119,14 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
       } else if (part.removed) {
         // removed, so we need to check if there is an addition next.
         const areThereMoreChanges = diffIndex < lineChanges.length - 1;
-        const isThereAnAdditionNext = areThereMoreChanges && lineChanges[diffIndex + 1].added;
+        const isThereAnAdditionNext =
+          areThereMoreChanges && lineChanges[diffIndex + 1].added;
         if (isThereAnAdditionNext) {
           // there is another change and it's an addition, meaning there is a change in the segment.
-          const { leftWords, rightWords } = calculateSegmentDiff(part.value, lineChanges[diffIndex + 1].value);
+          const { leftWords, rightWords } = calculateSegmentDiff(
+            part.value,
+            lineChanges[diffIndex + 1].value,
+          );
 
           left.push({ parts: leftWords, text: "", type: "removed" });
           right.push({ parts: rightWords, text: "", type: "added" });
@@ -155,7 +160,10 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
     const renderContent = (line: DiffSegment) =>
       line.parts
         ? line.parts.map((part, idx) => (
-            <span key={idx} className={part.type ? DIFF_COLORS[part.type].text : undefined}>
+            <span
+              key={idx}
+              className={part.type ? DIFF_COLORS[part.type].text : undefined}
+            >
               {part.value}
             </span>
           ))
@@ -171,7 +179,12 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
         >
           {renderContent(leftLine)}
         </div>
-        <div className={cn("whitespace-pre-wrap break-words px-4 py-1 font-mono text-xs", typeClasses[rightLine.type])}>
+        <div
+          className={cn(
+            "whitespace-pre-wrap break-words px-4 py-1 font-mono text-xs",
+            typeClasses[rightLine.type],
+          )}
+        >
           {renderContent(rightLine)}
         </div>
       </div>
@@ -190,7 +203,10 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
             <div className="flex flex-row gap-1 border-b border-r bg-muted px-4 py-2 text-xs font-semibold">
               {oldLabel}
               {oldSubLabel && (
-                <div className="truncate text-xs text-muted-foreground" title={oldSubLabel}>
+                <div
+                  className="truncate text-xs text-muted-foreground"
+                  title={oldSubLabel}
+                >
                   {oldSubLabel}
                 </div>
               )}
@@ -198,7 +214,10 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
             <div className="flex flex-row gap-1 border-b bg-muted px-4 py-2 text-xs font-semibold">
               {newLabel}
               {newSubLabel && (
-                <div className="truncate text-xs text-muted-foreground" title={newSubLabel}>
+                <div
+                  className="truncate text-xs text-muted-foreground"
+                  title={newSubLabel}
+                >
                   {newSubLabel}
                 </div>
               )}
@@ -206,7 +225,11 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
           </div>
           <div>
             {diffLines.left.map((leftLine, idx) => (
-              <DiffRow key={idx} leftLine={leftLine} rightLine={diffLines.right[idx]} />
+              <DiffRow
+                key={idx}
+                leftLine={leftLine}
+                rightLine={diffLines.right[idx]}
+              />
             ))}
           </div>
         </CardContent>

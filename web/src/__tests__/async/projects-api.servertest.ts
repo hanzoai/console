@@ -1,8 +1,14 @@
 /** @jest-environment node */
 
-import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
+import {
+  makeZodVerifiedAPICall,
+  makeAPICall,
+} from "@/src/__tests__/test-utils";
 import { z } from "zod/v4";
-import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
+import {
+  createAndAddApiKeysToDb,
+  createBasicAuthHeader,
+} from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 
@@ -146,11 +152,21 @@ describe("Projects API", () => {
 
     it("should handle different authentication formats", async () => {
       // Test with Bearer token format
-      const bearerResult = await makeAPICall("GET", "/api/public/projects", undefined, `Bearer ${projectSecretKey}`);
+      const bearerResult = await makeAPICall(
+        "GET",
+        "/api/public/projects",
+        undefined,
+        `Bearer ${projectSecretKey}`,
+      );
       expect(bearerResult.status).toBe(401);
 
       // Test with just the secret key (no Bearer prefix)
-      const secretKeyResult = await makeAPICall("GET", "/api/public/projects", undefined, projectSecretKey);
+      const secretKeyResult = await makeAPICall(
+        "GET",
+        "/api/public/projects",
+        undefined,
+        projectSecretKey,
+      );
       expect(secretKeyResult.status).toBe(401);
     });
   });
@@ -257,7 +273,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 401 when invalid API keys are provided", async () => {
@@ -449,7 +467,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 404 when project does not exist", async () => {
@@ -521,7 +541,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 401 when invalid API keys are provided", async () => {
@@ -584,7 +606,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 404 when project does not exist", async () => {
@@ -671,7 +695,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 401 when invalid API keys are provided", async () => {
@@ -755,7 +781,9 @@ describe("Projects API", () => {
       );
 
       expect(result.status).toBe(400);
-      expect(result.body.message).toContain("Both publicKey and secretKey must be provided together");
+      expect(result.body.message).toContain(
+        "Both publicKey and secretKey must be provided together",
+      );
     });
 
     it("should return 400 when only secretKey is provided without publicKey", async () => {
@@ -773,7 +801,9 @@ describe("Projects API", () => {
       );
 
       expect(result.status).toBe(400);
-      expect(result.body.message).toContain("Both publicKey and secretKey must be provided together");
+      expect(result.body.message).toContain(
+        "Both publicKey and secretKey must be provided together",
+      );
     });
 
     it("should return 400 when publicKey does not start with pk-lf-", async () => {
@@ -908,7 +938,9 @@ describe("Projects API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.message).toContain("Organization-scoped API key required");
+      expect(result.body.message).toContain(
+        "Organization-scoped API key required",
+      );
     });
 
     it("should return 401 when invalid API keys are provided", async () => {

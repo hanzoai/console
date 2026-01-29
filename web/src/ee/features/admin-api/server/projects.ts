@@ -2,7 +2,11 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "@hanzo/shared/src/db";
 
 // GET - Retrieve all projects in an organization
-export async function handleGetProjects(req: NextApiRequest, res: NextApiResponse, orgId: string) {
+export async function handleGetProjects(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  orgId: string,
+) {
   const projects = await prisma.project.findMany({
     where: {
       orgId,

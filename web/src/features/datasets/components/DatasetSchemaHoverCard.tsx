@@ -1,5 +1,9 @@
 import { ArrowUpRight, LockIcon, Copy, Check } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import type { Prisma } from "@hanzo/shared";
 import { Button } from "@/src/components/ui/button";
@@ -19,7 +23,8 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
   schemaType,
   showLabel = false,
 }) => {
-  const title = schemaType === "input" ? "Input Schema" : "Expected Output Schema";
+  const title =
+    schemaType === "input" ? "Input Schema" : "Expected Output Schema";
 
   const schemaString = JSON.stringify(schema, null, 2);
 
@@ -51,7 +56,10 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
           {showLabel && <span>Schema enforced</span>}
         </Button>
       </HoverCardTrigger>
-      <HoverCardContent className="max-h-[80vh] w-[400px] overflow-auto" collisionPadding={20}>
+      <HoverCardContent
+        className="max-h-[80vh] w-[400px] overflow-auto"
+        collisionPadding={20}
+      >
         <p className="text-sm font-medium">{title}</p>
         <p className="pt-2 text-sm text-muted-foreground">
           Learn more about{" "}
@@ -81,8 +89,17 @@ export const DatasetSchemaHoverCard: React.FC<DatasetSchemaHoverCardProps> = ({
             <Separator className="my-4" />
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Example Object</p>
-              <Button variant="ghost" size="sm" onClick={handleCopyExample} className="h-7 px-2">
-                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyExample}
+                className="h-7 px-2"
+              >
+                {copied ? (
+                  <Check className="h-3 w-3" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
               </Button>
             </div>
             <div className="mt-2">

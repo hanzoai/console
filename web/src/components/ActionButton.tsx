@@ -1,7 +1,11 @@
 import React from "react";
 import { Lock, AlertCircle, Sparkle } from "lucide-react";
 import { Button, type ButtonProps } from "@/src/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/src/components/ui/hover-card";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import Link from "next/link";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -9,7 +13,8 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 const BUTTON_STATE_MESSAGES = {
   limitReached: (current: number, max: number) =>
     `You have reached the limit (${current}/${max}) for this resource at your current plan. Upgrade your plan to increase the limit.`,
-  noAccess: "You do not have access to this resource, please ask your admin to grant you access.",
+  noAccess:
+    "You do not have access to this resource, please ask your admin to grant you access.",
   entitlement: "This feature is not available in your current plan.",
 } as const;
 
@@ -27,7 +32,10 @@ interface ActionButtonProps extends ButtonProps {
   trackingProps?: Record<string, unknown>;
 }
 
-export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
+export const ActionButton = React.forwardRef<
+  HTMLButtonElement,
+  ActionButtonProps
+>(function ActionButton(
   {
     loading = false,
     hasAccess = true,
@@ -46,13 +54,21 @@ export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProp
   ref,
 ) {
   const capture = usePostHogClientCapture();
-  const hasReachedLimit = typeof limit === "number" && limitValue !== undefined && limitValue >= limit;
-  const isDisabled = disabled || !hasAccess || !hasEntitlement || hasReachedLimit;
+  const hasReachedLimit =
+    typeof limit === "number" &&
+    limitValue !== undefined &&
+    limitValue >= limit;
+  const isDisabled =
+    disabled || !hasAccess || !hasEntitlement || hasReachedLimit;
 
   const getMessage = () => {
     if (!hasAccess) return BUTTON_STATE_MESSAGES.noAccess;
     if (!hasEntitlement) return BUTTON_STATE_MESSAGES.entitlement;
-    if (hasReachedLimit && typeof limit === "number" && limitValue !== undefined) {
+    if (
+      hasReachedLimit &&
+      typeof limit === "number" &&
+      limitValue !== undefined
+    ) {
       return BUTTON_STATE_MESSAGES.limitReached(limitValue, limit);
     }
     return null;
@@ -92,7 +108,9 @@ export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProp
           <span>{btnContent}</span>
         </HoverCardTrigger>
         <HoverCardPortal>
-          <HoverCardContent className="w-80 text-sm">{message}</HoverCardContent>
+          <HoverCardContent className="w-80 text-sm">
+            {message}
+          </HoverCardContent>
         </HoverCardPortal>
       </HoverCard>
     );
@@ -102,7 +120,11 @@ export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProp
 });
 
 const isExternalUrl = (url: string) => {
-  return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//");
+  return (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("//")
+  );
 };
 
 const ButtonContent = React.forwardRef<

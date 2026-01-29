@@ -83,7 +83,10 @@ export function DatasetsTable(props: { projectId: string }) {
     setPaginationAndFolderState,
   } = useFolderPagination();
 
-  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
+  const [searchQuery, setSearchQuery] = useQueryParam(
+    "search",
+    withDefault(StringParam, null),
+  );
 
   // Reset pagination when search query changes
   useEffect(() => {
@@ -131,11 +134,19 @@ export function DatasetsTable(props: { projectId: string }) {
         const rowData = row.original;
 
         if (rowData.isFolder) {
-          return <FolderBreadcrumbLink name={key.name} onClick={() => navigateToFolder(rowData.folderPath)} />;
+          return (
+            <FolderBreadcrumbLink
+              name={key.name}
+              onClick={() => navigateToFolder(rowData.folderPath)}
+            />
+          );
         }
 
         return (
-          <TableLink path={`/project/${props.projectId}/datasets/${encodeURIComponent(key.id)}`} value={key.name} />
+          <TableLink
+            path={`/project/${props.projectId}/datasets/${encodeURIComponent(key.id)}`}
+            value={key.name}
+          />
         );
       },
     },
@@ -146,7 +157,8 @@ export function DatasetsTable(props: { projectId: string }) {
       enableHiding: true,
       size: 200,
       cell: ({ row }) => {
-        const description: DatasetTableRow["description"] = row.getValue("description");
+        const description: DatasetTableRow["description"] =
+          row.getValue("description");
         return description;
       },
     },
@@ -193,11 +205,14 @@ export function DatasetsTable(props: { projectId: string }) {
       enableHiding: true,
       size: 80,
       cell: ({ row }) => {
-        const inputSchema: DatasetTableRow["inputSchema"] = row.getValue("inputSchema");
+        const inputSchema: DatasetTableRow["inputSchema"] =
+          row.getValue("inputSchema");
 
         if (!inputSchema) return null;
 
-        return <DatasetSchemaHoverCard schema={inputSchema} schemaType="input" />;
+        return (
+          <DatasetSchemaHoverCard schema={inputSchema} schemaType="input" />
+        );
       },
     },
     {
@@ -207,11 +222,17 @@ export function DatasetsTable(props: { projectId: string }) {
       enableHiding: true,
       size: 90,
       cell: ({ row }) => {
-        const expectedOutputSchema: DatasetTableRow["expectedOutputSchema"] = row.getValue("expectedOutputSchema");
+        const expectedOutputSchema: DatasetTableRow["expectedOutputSchema"] =
+          row.getValue("expectedOutputSchema");
 
         if (!expectedOutputSchema) return null;
 
-        return <DatasetSchemaHoverCard schema={expectedOutputSchema} schemaType="expectedOutput" />;
+        return (
+          <DatasetSchemaHoverCard
+            schema={expectedOutputSchema}
+            schemaType="expectedOutput"
+          />
+        );
       },
     },
     {
@@ -222,7 +243,9 @@ export function DatasetsTable(props: { projectId: string }) {
       size: 300,
       cell: ({ row }) => {
         const metadata: DatasetTableRow["metadata"] = row.getValue("metadata");
-        return !!metadata ? <IOTableCell data={metadata} singleLine={rowHeight === "s"} /> : null;
+        return !!metadata ? (
+          <IOTableCell data={metadata} singleLine={rowHeight === "s"} />
+        ) : null;
       },
     },
     {
@@ -245,7 +268,10 @@ export function DatasetsTable(props: { projectId: string }) {
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="flex flex-col [&>*]:w-full [&>*]:justify-start">
+            <DropdownMenuContent
+              align="end"
+              className="flex flex-col [&>*]:w-full [&>*]:justify-start"
+            >
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem asChild>
                 <DatasetActionButton
@@ -256,7 +282,9 @@ export function DatasetsTable(props: { projectId: string }) {
                   datasetDescription={row.getValue("description") ?? undefined}
                   datasetMetadata={row.getValue("metadata") ?? undefined}
                   datasetInputSchema={row.original.inputSchema ?? undefined}
-                  datasetExpectedOutputSchema={row.original.expectedOutputSchema ?? undefined}
+                  datasetExpectedOutputSchema={
+                    row.original.expectedOutputSchema ?? undefined
+                  }
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -275,19 +303,21 @@ export function DatasetsTable(props: { projectId: string }) {
   ];
 
   type CoreOutput = RouterOutput["datasets"]["allDatasets"]["datasets"][number];
-  type MetricsOutput = RouterOutput["datasets"]["allDatasetsMetrics"]["metrics"][number];
+  type MetricsOutput =
+    RouterOutput["datasets"]["allDatasetsMetrics"]["metrics"][number];
 
-  const datasetsDatasetTableRow = joinTableCoreAndMetrics<CoreOutput, MetricsOutput>(
-    datasets.data?.datasets,
-    metrics.data?.metrics,
-  );
+  const datasetsDatasetTableRow = joinTableCoreAndMetrics<
+    CoreOutput,
+    MetricsOutput
+  >(datasets.data?.datasets, metrics.data?.metrics);
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<DatasetTableRow>(
-    "datasetsColumnVisibility",
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<DatasetTableRow>("datasetsColumnVisibility", columns);
+
+  const [columnOrder, setColumnOrder] = useColumnOrder<DatasetTableRow>(
+    "datasetsColumnOrder",
     columns,
   );
-
-  const [columnOrder, setColumnOrder] = useColumnOrder<DatasetTableRow>("datasetsColumnOrder", columns);
 
   const { isLoading: isViewLoading, ...viewControllers } = useTableViewManager({
     tableName: TableViewPresetTableName.Datasets,
@@ -304,7 +334,8 @@ export function DatasetsTable(props: { projectId: string }) {
 
   // Backend returns folder representatives with row_type metadata
   const processedRowData = useMemo(() => {
-    if (!datasetsDatasetTableRow.rows) return { ...datasetsDatasetTableRow, rows: [] };
+    if (!datasetsDatasetTableRow.rows)
+      return { ...datasetsDatasetTableRow, rows: [] };
 
     const combinedRows: DatasetTableRow[] = [];
 
@@ -346,7 +377,10 @@ export function DatasetsTable(props: { projectId: string }) {
   return (
     <>
       {currentFolderPath && (
-        <FolderBreadcrumb currentFolderPath={currentFolderPath} navigateToFolder={navigateToFolder} />
+        <FolderBreadcrumb
+          currentFolderPath={currentFolderPath}
+          navigateToFolder={navigateToFolder}
+        />
       )}
       <DataTableToolbar
         columns={columns}

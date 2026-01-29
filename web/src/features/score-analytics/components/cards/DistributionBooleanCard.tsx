@@ -1,5 +1,11 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
@@ -24,71 +30,73 @@ type DistributionTab = "score1" | "score2" | "all" | "matched";
  * - Color logic is simpler than categorical (only 2 shades needed)
  */
 export function DistributionBooleanCard() {
-  const { data, isLoading, params, colorMappings, getColorForScore } = useScoreAnalytics();
+  const { data, isLoading, params, colorMappings, getColorForScore } =
+    useScoreAnalytics();
 
   const [activeTab, setActiveTab] = useState<DistributionTab>("all");
 
   // Select distribution data and categories based on active tab
-  const { distribution1Data, distribution2Data, categories, description } = useMemo(() => {
-    if (!data) {
-      return {
-        distribution1Data: [],
-        distribution2Data: undefined,
-        categories: [],
-        description: "",
-      };
-    }
-
-    const { distribution, metadata, statistics } = data;
-    const { mode } = metadata;
-    const { score1, score2 } = params;
-
-    if (mode === "single") {
-      // Single score mode - only show individual distribution
-      return {
-        distribution1Data: distribution.score1,
-        distribution2Data: undefined,
-        categories: distribution.categories ?? [],
-        description: `${statistics.score1.total.toLocaleString()} observations${
-          statistics.score1.mode
-            ? ` | Most frequent: ${statistics.score1.mode.category} (${statistics.score1.mode.count.toLocaleString()})`
-            : ""
-        }`,
-      };
-    }
-
-    // Two score mode - handle tabs
-    switch (activeTab) {
-      case "score1":
+  const { distribution1Data, distribution2Data, categories, description } =
+    useMemo(() => {
+      if (!data) {
         return {
-          distribution1Data: distribution.score1Individual,
+          distribution1Data: [],
+          distribution2Data: undefined,
+          categories: [],
+          description: "",
+        };
+      }
+
+      const { distribution, metadata, statistics } = data;
+      const { mode } = metadata;
+      const { score1, score2 } = params;
+
+      if (mode === "single") {
+        // Single score mode - only show individual distribution
+        return {
+          distribution1Data: distribution.score1,
           distribution2Data: undefined,
           categories: distribution.categories ?? [],
-          description: `${score1.name} - ${statistics.score1.total.toLocaleString()} observations`,
+          description: `${statistics.score1.total.toLocaleString()} observations${
+            statistics.score1.mode
+              ? ` | Most frequent: ${statistics.score1.mode.category} (${statistics.score1.mode.count.toLocaleString()})`
+              : ""
+          }`,
         };
-      case "score2":
-        return {
-          distribution1Data: distribution.score2Individual,
-          distribution2Data: undefined,
-          categories: distribution.score2Categories ?? [],
-          description: `${score2?.name ?? "Score 2"} - ${statistics.score2?.total.toLocaleString()} observations`,
-        };
-      case "all":
-        return {
-          distribution1Data: distribution.score1Individual,
-          distribution2Data: distribution.score2Individual,
-          categories: distribution.categories ?? [],
-          description: `${score1.name} (${statistics.score1.total.toLocaleString()}) vs ${score2?.name} (${statistics.score2?.total.toLocaleString()})`,
-        };
-      case "matched":
-        return {
-          distribution1Data: distribution.score1Matched,
-          distribution2Data: distribution.score2Matched,
-          categories: distribution.categories ?? [],
-          description: `${score1.name} vs ${score2?.name} - ${statistics.comparison?.matchedCount.toLocaleString()} matched`,
-        };
-    }
-  }, [data, activeTab, params]);
+      }
+
+      // Two score mode - handle tabs
+      switch (activeTab) {
+        case "score1":
+          return {
+            distribution1Data: distribution.score1Individual,
+            distribution2Data: undefined,
+            categories: distribution.categories ?? [],
+            description: `${score1.name} - ${statistics.score1.total.toLocaleString()} observations`,
+          };
+        case "score2":
+          return {
+            distribution1Data: distribution.score2Individual,
+            distribution2Data: undefined,
+            categories: distribution.score2Categories ?? [],
+            description: `${score2?.name ?? "Score 2"} - ${statistics.score2?.total.toLocaleString()} observations`,
+          };
+        case "all":
+          return {
+            distribution1Data: distribution.score1Individual,
+            distribution2Data: distribution.score2Individual,
+            categories: distribution.categories ?? [],
+            description: `${score1.name} (${statistics.score1.total.toLocaleString()}) vs ${score2?.name} (${statistics.score2?.total.toLocaleString()})`,
+          };
+        case "matched":
+          return {
+            distribution1Data: distribution.score1Matched,
+            distribution2Data: distribution.score2Matched,
+            categories: distribution.categories ?? [],
+            description: `${score1.name} vs ${score2?.name} - ${statistics.comparison?.matchedCount.toLocaleString()} matched`,
+          };
+      }
+    }, [data, activeTab, params]);
 
   // Build color mapping for boolean charts
   const chartColors = useMemo(() => {
@@ -155,7 +163,10 @@ export function DistributionBooleanCard() {
   };
 
   // Build full tab labels for title attribute (hover tooltip)
-  const score1FullLabel = score1.name === score2?.name ? `${score1.source} · ${score1.name}` : score1.name;
+  const score1FullLabel =
+    score1.name === score2?.name
+      ? `${score1.source} · ${score1.name}`
+      : score1.name;
 
   const score2FullLabel = score2
     ? score2.name === score1.name
@@ -172,19 +183,33 @@ export function DistributionBooleanCard() {
               <CardTitle className="flex items-center gap-2">
                 Distribution
                 {data.samplingMetadata.isSampled && (
-                  <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} showLabel />
+                  <SamplingDetailsHoverCard
+                    samplingMetadata={data.samplingMetadata}
+                    showLabel
+                  />
                 )}
               </CardTitle>
               <CardDescription>{description}</CardDescription>
             </div>
           </div>
           {showTabs && (
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DistributionTab)}>
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as DistributionTab)}
+            >
               <TabsList className="h-7">
-                <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score1"
+                  title={score1FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score1FullLabel)}
                 </TabsTrigger>
-                <TabsTrigger value="score2" title={score2FullLabel} className="h-5 px-2 text-xs">
+                <TabsTrigger
+                  value="score2"
+                  title={score2FullLabel}
+                  className="h-5 px-2 text-xs"
+                >
                   {truncateLabel(score2FullLabel)}
                 </TabsTrigger>
                 <TabsTrigger value="all" className="h-5 px-2 text-xs">
@@ -202,7 +227,11 @@ export function DistributionBooleanCard() {
         {hasData ? (
           <ScoreDistributionBooleanChart
             distribution1={distribution1Data}
-            distribution2={activeTab === "score1" || activeTab === "score2" ? undefined : distribution2Data}
+            distribution2={
+              activeTab === "score1" || activeTab === "score2"
+                ? undefined
+                : distribution2Data
+            }
             categories={categories}
             score1Name={
               activeTab === "score2" && score2

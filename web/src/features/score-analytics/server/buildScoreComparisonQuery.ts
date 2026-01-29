@@ -82,7 +82,9 @@ export function buildScoreComparisonQuery(params: {
   const objectTypeFilter = buildObjectTypeFilter(objectType);
 
   // Build sampling expression
-  const samplingExpression = shouldSample ? buildSamplingExpression(samplingPercent) : null;
+  const samplingExpression = shouldSample
+    ? buildSamplingExpression(samplingPercent)
+    : null;
 
   // ============================================
   // CONDITIONAL CTE BUILDERS

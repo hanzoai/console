@@ -32,7 +32,9 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
   const traceFilter = chFilter.find((f) => f.clickhouseTable === "traces");
 
   // ClickHouse query optimizations for List Observations API
-  const disableObservationsFinal = await shouldSkipObservationsFinal(props.projectId);
+  const disableObservationsFinal = await shouldSkipObservationsFinal(
+    props.projectId,
+  );
 
   const query = `
     with clickhouse_keys as (
@@ -94,7 +96,9 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
         ...appliedFilter.params,
         projectId: props.projectId,
         ...(props.limit !== undefined ? { limit: props.limit } : {}),
-        ...(props.page !== undefined ? { offset: (props.page - 1) * props.limit } : {}),
+        ...(props.page !== undefined
+          ? { offset: (props.page - 1) * props.limit }
+          : {}),
       },
       tags: {
         feature: "tracing",
@@ -153,7 +157,11 @@ export const getObservationsCountForPublicApi = async (props: QueryType) => {
   });
 };
 
-const filterParams = createPublicApiObservationsColumnMapping("observations", "o", "parent_observation_id");
+const filterParams = createPublicApiObservationsColumnMapping(
+  "observations",
+  "o",
+  "parent_observation_id",
+);
 
 const generateFilter = (query: QueryType) => {
   const { advancedFilters, ...simpleFilterProps } = query;
@@ -161,11 +169,15 @@ const generateFilter = (query: QueryType) => {
     simpleFilterProps,
     filterParams,
     advancedFilters,
-    observationsTableUiColumnDefinitions.filter((c) => c.clickhouseTableName !== "scores"),
+    observationsTableUiColumnDefinitions.filter(
+      (c) => c.clickhouseTableName !== "scores",
+    ),
   );
 
   // Remove score filters since observations don't support scores in response
-  const filteredChFilter = chFilter.filter((f) => f.clickhouseTable !== "scores");
+  const filteredChFilter = chFilter.filter(
+    (f) => f.clickhouseTable !== "scores",
+  );
 
   // Add project filter
   filteredChFilter.push(

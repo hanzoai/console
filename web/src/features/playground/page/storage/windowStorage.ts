@@ -1,5 +1,10 @@
 import { type PlaygroundCache } from "../types";
-import { getCacheKey, getModelNameKey, getModelProviderKey, WINDOW_IDS_KEY } from "./keys";
+import {
+  getCacheKey,
+  getModelNameKey,
+  getModelProviderKey,
+  WINDOW_IDS_KEY,
+} from "./keys";
 
 /**
  * Retrieves the list of window IDs from sessionStorage.
@@ -52,25 +57,41 @@ export const getWindowState = (windowId: string): PlaygroundCache | null => {
  * @param sourceWindowId - The ID of the window to copy from.
  * @param targetWindowId - The ID of the window to copy to.
  */
-export const cloneWindowState = (sourceWindowId: string, targetWindowId: string): void => {
+export const cloneWindowState = (
+  sourceWindowId: string,
+  targetWindowId: string,
+): void => {
   try {
     // 1. Clone sessionStorage (cache)
     const sourceState = getWindowState(sourceWindowId);
     if (sourceState) {
       const clonedState = JSON.parse(JSON.stringify(sourceState));
-      sessionStorage.setItem(getCacheKey(targetWindowId), JSON.stringify(clonedState));
+      sessionStorage.setItem(
+        getCacheKey(targetWindowId),
+        JSON.stringify(clonedState),
+      );
     }
 
-    const sourceModelName = sessionStorage.getItem(getModelNameKey(sourceWindowId));
+    const sourceModelName = sessionStorage.getItem(
+      getModelNameKey(sourceWindowId),
+    );
     if (sourceModelName) {
       sessionStorage.setItem(getModelNameKey(targetWindowId), sourceModelName);
     }
-    const sourceModelProvider = sessionStorage.getItem(getModelProviderKey(sourceWindowId));
+    const sourceModelProvider = sessionStorage.getItem(
+      getModelProviderKey(sourceWindowId),
+    );
     if (sourceModelProvider) {
-      sessionStorage.setItem(getModelProviderKey(targetWindowId), sourceModelProvider);
+      sessionStorage.setItem(
+        getModelProviderKey(targetWindowId),
+        sourceModelProvider,
+      );
     }
   } catch (error) {
-    console.error(`Failed to clone window state from ${sourceWindowId} to ${targetWindowId}`, error);
+    console.error(
+      `Failed to clone window state from ${sourceWindowId} to ${targetWindowId}`,
+      error,
+    );
   }
 };
 

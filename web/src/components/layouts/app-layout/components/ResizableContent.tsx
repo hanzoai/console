@@ -16,7 +16,13 @@ import {
   ResizablePanelGroup,
   type ImperativePanelHandle,
 } from "@/src/components/ui/resizable";
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/src/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/src/components/ui/drawer";
 
 /**
  * Resizable content for support drawer on the right side of the screen (desktop).
@@ -84,7 +90,9 @@ export function ResizableContent({ children }: PropsWithChildren) {
   return (
     <ResizablePanelGroup direction="horizontal" className="flex h-full w-full">
       <ResizablePanel ref={mainPanelRef} defaultSize={100} minSize={30}>
-        <main className="relative h-full w-full overflow-scroll">{children}</main>
+        <main className="relative h-full w-full overflow-scroll">
+          {children}
+        </main>
       </ResizablePanel>
       {open && <ResizableHandle withHandle />}
       <ResizablePanel

@@ -1,5 +1,9 @@
 import { api } from "@/src/utils/api";
-import { type ModelParams, ZodModelConfig, type UIModelParams } from "@hanzo/shared";
+import {
+  type ModelParams,
+  ZodModelConfig,
+  type UIModelParams,
+} from "@hanzo/shared";
 import { type Dispatch, type SetStateAction, useEffect } from "react";
 
 export function useEvaluationModel(
@@ -13,9 +17,10 @@ export function useEvaluationModel(
     };
   },
 ) {
-  const { data: defaultModel, isLoading: isDefaultModelLoading } = api.defaultLlmModel.fetchDefaultModel.useQuery({
-    projectId,
-  });
+  const { data: defaultModel, isLoading: isDefaultModelLoading } =
+    api.defaultLlmModel.fetchDefaultModel.useQuery({
+      projectId,
+    });
 
   const selectedModel = customModelParams ?? defaultModel;
 
@@ -27,12 +32,15 @@ export function useEvaluationModel(
         return;
       }
 
-      const modelConfig = Object.entries(parsedModelParams.data).reduce((acc, [key, value]) => {
-        return {
-          ...acc,
-          [key]: { value, enabled: true },
-        };
-      }, {} as UIModelParams);
+      const modelConfig = Object.entries(parsedModelParams.data).reduce(
+        (acc, [key, value]) => {
+          return {
+            ...acc,
+            [key]: { value, enabled: true },
+          };
+        },
+        {} as UIModelParams,
+      );
 
       setModelParams((prev: UIModelParams) => ({
         ...prev,

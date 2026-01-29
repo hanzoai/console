@@ -49,7 +49,11 @@ export function MultiSectionJsonViewerHeader({
           opacity: 0.5,
         }}
       >
-        {context.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        {context.isExpanded ? (
+          <ChevronDown size={14} />
+        ) : (
+          <ChevronRight size={14} />
+        )}
       </span>
       <span className="text-xs font-medium">{title}</span>
       <span
@@ -77,7 +81,9 @@ export function MultiSectionJsonViewerHeader({
           {commentCount}
         </span>
       )}
-      <div style={{ marginLeft: "auto" }}>{media && media.length > 0 && <MediaButtonGroup media={media} />}</div>
+      <div style={{ marginLeft: "auto" }}>
+        {media && media.length > 0 && <MediaButtonGroup media={media} />}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import { ObservationType } from "@hanzo/shared";
-import { type AgentGraphDataResponse, HANZO_START_NODE_NAME, HANZO_END_NODE_NAME } from "./types";
+import {
+  type AgentGraphDataResponse,
+  HANZO_START_NODE_NAME,
+  HANZO_END_NODE_NAME,
+} from "./types";
 
 function buildStepGroups(
   observations: AgentGraphDataResponse[],
@@ -76,7 +80,9 @@ function buildStepGroups(
   return stepGroups;
 }
 
-function assignGlobalTimingSteps(data: AgentGraphDataResponse[]): AgentGraphDataResponse[] {
+function assignGlobalTimingSteps(
+  data: AgentGraphDataResponse[],
+): AgentGraphDataResponse[] {
   const dataCopy: AgentGraphDataResponse[] = [];
   const timestampCache = new Map<string, { start: number; end: number }>();
   for (const obs of data) {
@@ -84,12 +90,16 @@ function assignGlobalTimingSteps(data: AgentGraphDataResponse[]): AgentGraphData
     dataCopy.push(obsCopy);
     timestampCache.set(obs.id, {
       start: new Date(obs.startTime).getTime(),
-      end: obs.endTime ? new Date(obs.endTime).getTime() : new Date(obs.startTime).getTime(),
+      end: obs.endTime
+        ? new Date(obs.endTime).getTime()
+        : new Date(obs.startTime).getTime(),
     });
   }
 
   // sort observations by start time
-  const sortedObs = [...dataCopy].sort((a, b) => timestampCache.get(a.id)!.start - timestampCache.get(b.id)!.start);
+  const sortedObs = [...dataCopy].sort(
+    (a, b) => timestampCache.get(a.id)!.start - timestampCache.get(b.id)!.start,
+  );
 
   const stepGroups = buildStepGroups(sortedObs, timestampCache);
 
@@ -151,8 +161,14 @@ function assignGlobalTimingSteps(data: AgentGraphDataResponse[]): AgentGraphData
 
           if (target.id === obs.id) {
             // child adjustment
-            adjustments.set(target.id, (adjustments.get(target.id) || 0) + (requiredMinStep - obs.step));
-          } else if (target.step >= requiredMinStep && !ancestors.has(target.id)) {
+            adjustments.set(
+              target.id,
+              (adjustments.get(target.id) || 0) + (requiredMinStep - obs.step),
+            );
+          } else if (
+            target.step >= requiredMinStep &&
+            !ancestors.has(target.id)
+          ) {
             // Push forward observations at future steps except for ancestors
             adjustments.set(target.id, (adjustments.get(target.id) || 0) + 1);
           }
@@ -162,14 +178,19 @@ function assignGlobalTimingSteps(data: AgentGraphDataResponse[]): AgentGraphData
 
     result = result.map((obs) => ({
       ...obs,
-      step: obs.step !== null ? obs.step + (adjustments.get(obs.id) || 0) : obs.step,
+      step:
+        obs.step !== null
+          ? obs.step + (adjustments.get(obs.id) || 0)
+          : obs.step,
     }));
   } // end loop to check if parent-child constraints require step adjustments
 
   return result;
 }
 
-function addHanzoSystemNodes(data: AgentGraphDataResponse[]): AgentGraphDataResponse[] {
+function addHanzoSystemNodes(
+  data: AgentGraphDataResponse[],
+): AgentGraphDataResponse[] {
   const systemNodes: AgentGraphDataResponse[] = [];
 
   // Find the top-level parent for system node mapping
@@ -206,7 +227,9 @@ function addHanzoSystemNodes(data: AgentGraphDataResponse[]): AgentGraphDataResp
   return [...data, ...systemNodes];
 }
 
-export function buildStepData(agentGraphData: AgentGraphDataResponse[]): AgentGraphDataResponse[] {
+export function buildStepData(
+  agentGraphData: AgentGraphDataResponse[],
+): AgentGraphDataResponse[] {
   // for now, we don't want to show SPAN/EVENTs in our agent graphs
   // TODO: move this filter to a separate function
   const filteredData = agentGraphData.filter(

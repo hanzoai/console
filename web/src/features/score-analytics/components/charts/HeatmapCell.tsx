@@ -1,6 +1,10 @@
 import { type HeatmapCell } from "@/src/features/score-analytics/lib/heatmap-utils";
 import { getContrastColor } from "@/src/features/score-analytics/lib/color-scales";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { cn } from "@/src/utils/tailwind";
 import { useState } from "react";
 
@@ -47,7 +51,15 @@ function EmptyCell({ cellClassName }: { cellClassName?: string }) {
 /**
  * Cell with data component
  */
-function CellWithData({ cell, color, onHover, onClick, renderTooltip, cellClassName, showValues }: CellWithDataProps) {
+function CellWithData({
+  cell,
+  color,
+  onHover,
+  onClick,
+  renderTooltip,
+  cellClassName,
+  showValues,
+}: CellWithDataProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Determine if cell is empty (value = 0)
@@ -56,7 +68,9 @@ function CellWithData({ cell, color, onHover, onClick, renderTooltip, cellClassN
 
   // Use color from parent, fallback to transparent for empty cells
   const cellColor = color || "transparent";
-  const textColor = isEmpty ? "hsl(var(--muted-foreground))" : getContrastColor(cellColor);
+  const textColor = isEmpty
+    ? "hsl(var(--muted-foreground))"
+    : getContrastColor(cellColor);
 
   const sharedClassName = cn(
     "h-full w-full rounded-sm border-[0.5px]",
@@ -103,7 +117,9 @@ function CellWithData({ cell, color, onHover, onClick, renderTooltip, cellClassN
       onClick={() => onClick?.(cell)}
       aria-label={cell.displayValue || `Value: ${cell.value}`}
     >
-      {showValues && <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>}
+      {showValues && (
+        <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>
+      )}
     </button>
   ) : (
     <div
@@ -113,7 +129,9 @@ function CellWithData({ cell, color, onHover, onClick, renderTooltip, cellClassN
       onMouseLeave={handleMouseLeave}
       aria-label={cell.displayValue || `Value: ${cell.value}`}
     >
-      {showValues && <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>}
+      {showValues && (
+        <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>
+      )}
     </div>
   );
 
@@ -122,7 +140,9 @@ function CellWithData({ cell, color, onHover, onClick, renderTooltip, cellClassN
     return (
       <Tooltip>
         <TooltipTrigger asChild>{cellContent}</TooltipTrigger>
-        <TooltipContent className="max-w-xs">{renderTooltip(cell)}</TooltipContent>
+        <TooltipContent className="max-w-xs">
+          {renderTooltip(cell)}
+        </TooltipContent>
       </Tooltip>
     );
   }

@@ -48,7 +48,11 @@ export function MarkdownJsonViewHeader({
           }}
           className="-mr-2 hover:bg-border"
         >
-          {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          {isCopied ? (
+            <Check className="h-3 w-3" />
+          ) : (
+            <Copy className="h-3 w-3" />
+          )}
         </Button>
       </div>
     </div>
@@ -94,10 +98,19 @@ export function MarkdownJsonView({
   /** Content to render between header and main content (e.g., thinking blocks) */
   afterHeader?: React.ReactNode;
 }) {
-  const stringOrValidatedMarkdown = useMemo(() => StringOrMarkdownSchema.safeParse(content), [content]);
-  const validatedOpenAIContent = useMemo(() => OpenAIContentSchema.safeParse(content), [content]);
+  const stringOrValidatedMarkdown = useMemo(
+    () => StringOrMarkdownSchema.safeParse(content),
+    [content],
+  );
+  const validatedOpenAIContent = useMemo(
+    () => OpenAIContentSchema.safeParse(content),
+    [content],
+  );
 
-  const canEnableMarkdown = isSupportedMarkdownFormat(content, validatedOpenAIContent);
+  const canEnableMarkdown = isSupportedMarkdownFormat(
+    content,
+    validatedOpenAIContent,
+  );
 
   return (
     <>

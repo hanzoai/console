@@ -1,7 +1,13 @@
 import TableLink from "@/src/components/table/table-link";
 import { Folder } from "lucide-react";
 
-export const FolderBreadcrumbLink = ({ name, onClick }: { name: string; onClick: () => void }) => {
+export const FolderBreadcrumbLink = ({
+  name,
+  onClick,
+}: {
+  name: string;
+  onClick: () => void;
+}) => {
   return (
     <TableLink
       path={""}

@@ -66,7 +66,11 @@ export function JsonRowFixed({
     >
       {/* Line number (optional) */}
       {showLineNumber && lineNumber !== undefined && (
-        <LineNumber lineNumber={lineNumber} theme={theme} maxDigits={maxLineNumberDigits} />
+        <LineNumber
+          lineNumber={lineNumber}
+          theme={theme}
+          maxDigits={maxLineNumberDigits}
+        />
       )}
 
       {/* Expand/collapse button */}
@@ -79,35 +83,39 @@ export function JsonRowFixed({
       />
 
       {/* Match count badge (positioned absolutely in top-right corner) */}
-      {matchCount !== undefined && matchCount > 1 && ((row.isExpandable && !row.isExpanded) || !row.isExpandable) && (
-        <span
-          style={{
-            position: "absolute",
-            top: "2px",
-            right: "2px",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 4px",
-            minWidth: "16px",
-            height: "14px",
-            fontSize: "9px",
-            fontWeight: 600,
-            borderRadius: "7px",
-            backgroundColor: theme.searchMatchBackground,
-            color: theme.foreground,
-            border: `1px solid ${theme.searchCurrentBackground}`,
-            pointerEvents: "none", // Don't interfere with clicks
-          }}
-          title={
-            row.isExpandable
-              ? `${matchCount} match${matchCount === 1 ? "" : "es"} in this section`
-              : `${matchCount} match${matchCount === 1 ? "" : "es"} in this value`
-          }
-        >
-          {currentMatchIndexInRow !== undefined ? `${currentMatchIndexInRow}/${matchCount}` : matchCount}
-        </span>
-      )}
+      {matchCount !== undefined &&
+        matchCount > 1 &&
+        ((row.isExpandable && !row.isExpanded) || !row.isExpandable) && (
+          <span
+            style={{
+              position: "absolute",
+              top: "2px",
+              right: "2px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 4px",
+              minWidth: "16px",
+              height: "14px",
+              fontSize: "9px",
+              fontWeight: 600,
+              borderRadius: "7px",
+              backgroundColor: theme.searchMatchBackground,
+              color: theme.foreground,
+              border: `1px solid ${theme.searchCurrentBackground}`,
+              pointerEvents: "none", // Don't interfere with clicks
+            }}
+            title={
+              row.isExpandable
+                ? `${matchCount} match${matchCount === 1 ? "" : "es"} in this section`
+                : `${matchCount} match${matchCount === 1 ? "" : "es"} in this value`
+            }
+          >
+            {currentMatchIndexInRow !== undefined
+              ? `${currentMatchIndexInRow}/${matchCount}`
+              : matchCount}
+          </span>
+        )}
     </div>
   );
 }

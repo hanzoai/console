@@ -1,6 +1,9 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { redis } from "@hanzo/shared/src/server";
@@ -125,6 +128,10 @@ export const projectApiKeysRouter = createTRPCRouter({
         action: "delete",
       });
 
-      return await new ApiAuthService(ctx.prisma, redis).deleteApiKey(input.id, input.projectId, "PROJECT");
+      return await new ApiAuthService(ctx.prisma, redis).deleteApiKey(
+        input.id,
+        input.projectId,
+        "PROJECT",
+      );
     }),
 });

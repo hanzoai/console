@@ -30,7 +30,10 @@ export type AuthGuardResult =
  * @param session - Session object from useSession hook
  * @returns Guard state indicating what action to take
  */
-export function useAuthGuard(session: SessionContextValue, _hideNavigation: boolean): AuthGuardResult {
+export function useAuthGuard(
+  session: SessionContextValue,
+  _hideNavigation: boolean,
+): AuthGuardResult {
   const router = useRouter();
 
   return useMemo(() => {
@@ -41,7 +44,9 @@ export function useAuthGuard(session: SessionContextValue, _hideNavigation: bool
       return { action: "loading", message: "Loading" };
     }
 
-    const isUnauthPath = PATH_CONSTANTS.unauthenticated.some((p) => pathname.startsWith(p));
+    const isUnauthPath = PATH_CONSTANTS.unauthenticated.some((p) =>
+      pathname.startsWith(p),
+    );
     const isPublicPath = pathname.startsWith("/public/");
 
     // Check if path is publishable (can be accessed without authentication)
@@ -65,19 +70,33 @@ export function useAuthGuard(session: SessionContextValue, _hideNavigation: bool
 
     // Invalid user - has session but no DB user
     // This can happen if user was deleted from DB but still has valid JWT
-    if (session.data && session.data.user === null && !isUnauthPath && !isPublishable && !isPublicPath) {
+    if (
+      session.data &&
+      session.data.user === null &&
+      !isUnauthPath &&
+      !isPublishable &&
+      !isPublicPath
+    ) {
       return { action: "sign-out", message: "Redirecting" };
     }
 
     // Unauthenticated user trying to access protected route
-    if (session.status === "unauthenticated" && !isUnauthPath && !isPublishable && !isPublicPath) {
+    if (
+      session.status === "unauthenticated" &&
+      !isUnauthPath &&
+      !isPublishable &&
+      !isPublicPath
+    ) {
       // asPath already includes the base path when accessed via browser
       // Strip the base path if present to avoid double-prepending
       const rawPath = asPath || pathname || "/";
       const pathToStore = stripBasePath(rawPath);
 
       // Only include targetPath if it's not the root
-      const targetPathQuery = pathToStore !== "/" ? `?targetPath=${encodeURIComponent(pathToStore)}` : "";
+      const targetPathQuery =
+        pathToStore !== "/"
+          ? `?targetPath=${encodeURIComponent(pathToStore)}`
+          : "";
 
       return {
         action: "redirect",

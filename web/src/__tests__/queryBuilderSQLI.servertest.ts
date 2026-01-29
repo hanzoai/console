@@ -60,7 +60,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error rather than allow the injection
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
   });
 
@@ -81,7 +83,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid dimension
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid dimension");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid dimension");
     });
 
     it("should safely handle special characters in valid dimension fields", async () => {
@@ -110,7 +114,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
 
       // Ensure the value is parameterized and not directly included in the SQL
       expect(result.query).not.toContain("chat'; DROP TABLE traces; --");
-      expect(Object.values(result.parameters)).toContain("chat'; DROP TABLE traces; --");
+      expect(Object.values(result.parameters)).toContain(
+        "chat'; DROP TABLE traces; --",
+      );
     });
   });
 
@@ -135,7 +141,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid metric
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid metric");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid metric");
     });
 
     it("should prevent injection via metric aggregation", async () => {
@@ -158,7 +166,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid aggregation
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
   });
 
@@ -184,7 +194,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid filter field
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid filter");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid filter");
     });
 
     it("should prevent injection via filter operator", async () => {
@@ -208,7 +220,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid operator
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
 
     it("should safely handle special characters in filter values", async () => {
@@ -236,7 +250,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
 
       // Check for parameterization
       expect(result.query).not.toContain("production'; DROP TABLE traces; --");
-      expect(Object.values(result.parameters)).toContain("production'; DROP TABLE traces; --");
+      expect(Object.values(result.parameters)).toContain(
+        "production'; DROP TABLE traces; --",
+      );
     });
 
     it("should safely handle array values in IN operators", async () => {
@@ -262,7 +278,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       // Should parameterize the values
       const result = await buildQueryWithoutExecuting(query, projectId);
 
-      expect(result.query).not.toContain("production,development'); DROP TABLE traces; --");
+      expect(result.query).not.toContain(
+        "production,development'); DROP TABLE traces; --",
+      );
     });
 
     it("should prevent SQL injection via metadata column name", async () => {
@@ -287,7 +305,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid filter field
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid filter");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid filter");
     });
 
     it("should prevent SQL injection via metadata operator", async () => {
@@ -312,7 +332,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid operator
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
 
     it("should safely handle special characters in metadata key path", async () => {
@@ -340,8 +362,12 @@ describe("QueryBuilder SQL Injection Tests", () => {
       const result = await buildQueryWithoutExecuting(query, projectId);
 
       // Check for parameterization
-      expect(result.query).not.toContain("customer.field'); DROP TABLE traces; --");
-      expect(Object.values(result.parameters)).toContain("customer.field'); DROP TABLE traces; --");
+      expect(result.query).not.toContain(
+        "customer.field'); DROP TABLE traces; --",
+      );
+      expect(Object.values(result.parameters)).toContain(
+        "customer.field'); DROP TABLE traces; --",
+      );
     });
 
     it("should safely handle special characters in metadata value", async () => {
@@ -370,7 +396,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
 
       // Check for parameterization
       expect(result.query).not.toContain("test'); DROP TABLE traces; --");
-      expect(Object.values(result.parameters)).toContain("test'); DROP TABLE traces; --");
+      expect(Object.values(result.parameters)).toContain(
+        "test'); DROP TABLE traces; --",
+      );
     });
 
     it("should prevent SQL injection via metadata filter type", async () => {
@@ -395,7 +423,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid type
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
   });
 
@@ -415,7 +445,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
         orderBy: null,
       };
       // Should throw an error for invalid granularity
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
   });
 
@@ -434,7 +466,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
         orderBy: null,
       };
       // Should throw an error for invalid timestamp format
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
   });
 
@@ -455,7 +489,10 @@ describe("QueryBuilder SQL Injection Tests", () => {
       const maliciousProjectId = "fake-id'; DROP TABLE traces; --";
 
       // Should parameterize the project ID
-      const result = await buildQueryWithoutExecuting(query, maliciousProjectId);
+      const result = await buildQueryWithoutExecuting(
+        query,
+        maliciousProjectId,
+      );
 
       // Check for parameterization
       expect(result.query).not.toContain(maliciousProjectId);
@@ -484,7 +521,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid orderBy field
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid orderBy field");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid orderBy field");
     });
 
     it("should prevent injection via orderBy direction", async () => {
@@ -506,7 +545,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid direction
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid query");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid query");
     });
 
     it("should prevent injection via non-existing metric field in orderBy", async () => {
@@ -528,7 +569,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
       };
 
       // Should throw an error for invalid orderBy field
-      await expect(buildQueryWithoutExecuting(maliciousQuery, projectId)).rejects.toThrow("Invalid orderBy field");
+      await expect(
+        buildQueryWithoutExecuting(maliciousQuery, projectId),
+      ).rejects.toThrow("Invalid orderBy field");
     });
   });
 
@@ -556,7 +599,9 @@ describe("QueryBuilder SQL Injection Tests", () => {
 
       // Expect the executeQuery function to throw a TRPC error
       // rather than allowing the injection
-      await expect(executeQuery(projectId, maliciousQuery)).rejects.toThrow(InvalidRequestError);
+      await expect(executeQuery(projectId, maliciousQuery)).rejects.toThrow(
+        InvalidRequestError,
+      );
     });
   });
 });

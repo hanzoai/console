@@ -14,7 +14,10 @@ import { formatDisplayName } from "./log-view-formatters";
 
 // Constants for prefetching behavior
 const {
-  prefetch: { rootMargin: PREFETCH_ROOT_MARGIN, debounceMs: PREFETCH_DEBOUNCE_MS },
+  prefetch: {
+    rootMargin: PREFETCH_ROOT_MARGIN,
+    debounceMs: PREFETCH_DEBOUNCE_MS,
+  },
   indentPx: INDENT_PX,
 } = TRACE_VIEW_CONFIG.logView;
 
@@ -79,7 +82,11 @@ export const LogViewObservationCell = memo(function LogViewObservationCell({
   const indent = indentEnabled ? item.node.depth * INDENT_PX : 0;
 
   return (
-    <div ref={ref} className="flex h-5 min-w-0 items-center gap-2" style={{ paddingLeft: indent }}>
+    <div
+      ref={ref}
+      className="flex h-5 min-w-0 items-center gap-2"
+      style={{ paddingLeft: indent }}
+    >
       <ItemBadge type={item.node.type} isSmall />
       <span className="truncate">{displayName}</span>
       {childrenCount > 0 && (

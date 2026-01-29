@@ -37,7 +37,9 @@ const rainbowButtonVariants = cva(
 );
 
 interface RainbowButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof rainbowButtonVariants> {
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof rainbowButtonVariants> {
   asChild?: boolean;
 }
 

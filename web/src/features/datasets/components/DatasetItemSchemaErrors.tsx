@@ -15,7 +15,9 @@ type DatasetItemSchemaErrorsProps = {
   errors: DatasetError[];
 };
 
-export const DatasetItemSchemaErrors: React.FC<DatasetItemSchemaErrorsProps> = ({ errors }) => {
+export const DatasetItemSchemaErrors: React.FC<
+  DatasetItemSchemaErrorsProps
+> = ({ errors }) => {
   if (errors.length === 0) return null;
 
   // Group errors by dataset
@@ -37,17 +39,25 @@ export const DatasetItemSchemaErrors: React.FC<DatasetItemSchemaErrorsProps> = (
   return (
     <Alert variant="destructive" className="mt-4">
       <AlertCircle className="h-4 w-4" />
-      <AlertTitle className="text-base font-semibold">Schema Validation Failed</AlertTitle>
+      <AlertTitle className="text-base font-semibold">
+        Schema Validation Failed
+      </AlertTitle>
       <AlertDescription className="mt-2 space-y-4">
-        <p className="text-sm">The data does not match the required schema for this dataset.</p>
+        <p className="text-sm">
+          The data does not match the required schema for this dataset.
+        </p>
         {Object.entries(errorsByDataset).map(([datasetId, datasetErrors]) => (
           <div key={datasetId} className="space-y-3">
             {Object.keys(errorsByDataset).length > 1 && (
-              <div className="text-sm font-semibold">{datasetErrors.datasetName}</div>
+              <div className="text-sm font-semibold">
+                {datasetErrors.datasetName}
+              </div>
             )}
             {datasetErrors.errors.map((error, idx) => (
               <div key={idx} className="space-y-2">
-                <div className="text-sm font-semibold">{error.field === "input" ? "Input" : "Expected Output"}</div>
+                <div className="text-sm font-semibold">
+                  {error.field === "input" ? "Input" : "Expected Output"}
+                </div>
                 <ul className="ml-4 space-y-1.5 text-sm">
                   {error.errors.map((err, errIdx) => (
                     <li key={errIdx} className="list-disc">
@@ -55,7 +65,10 @@ export const DatasetItemSchemaErrors: React.FC<DatasetItemSchemaErrorsProps> = (
                         <span>{err.message}</span>
                       ) : (
                         <span>
-                          <span className="font-mono text-xs">{err.path.replace(/^\//, "")}</span>: {err.message}
+                          <span className="font-mono text-xs">
+                            {err.path.replace(/^\//, "")}
+                          </span>
+                          : {err.message}
                         </span>
                       )}
                     </li>

@@ -11,7 +11,10 @@ import {
   redis,
   ZodModelConfig,
 } from "@hanzo/shared/src/server";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import {
   extractVariables,
   validateDatasetItem,
@@ -35,7 +38,10 @@ const InvalidConfigResponse = z.object({
   message: z.string(),
 });
 
-const ConfigResponse = z.discriminatedUnion("isValid", [ValidConfigResponse, InvalidConfigResponse]);
+const ConfigResponse = z.discriminatedUnion("isValid", [
+  ValidConfigResponse,
+  InvalidConfigResponse,
+]);
 
 const countValidDatasetItems = (
   datasetItems: Omit<DatasetItemDomain, "status">[],
@@ -118,8 +124,13 @@ export const experimentsRouter = createTRPCRouter({
       );
 
       const promptMessages =
-        resolvedPrompt?.type === PromptType.Chat && Array.isArray(resolvedPrompt?.prompt) ? resolvedPrompt.prompt : [];
-      const placeholderNames = extractPlaceholderNames(promptMessages as PromptMessage[]);
+        resolvedPrompt?.type === PromptType.Chat &&
+        Array.isArray(resolvedPrompt?.prompt)
+          ? resolvedPrompt.prompt
+          : [];
+      const placeholderNames = extractPlaceholderNames(
+        promptMessages as PromptMessage[],
+      );
 
       const allVariables = [...extractedVariables, ...placeholderNames];
 

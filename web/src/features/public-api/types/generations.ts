@@ -1,7 +1,10 @@
 // src/features/public-api/types/generations.ts
 
 import { z } from "zod/v4";
-import { LegacyGenerationsCreateSchema, LegacyGenerationPatchSchema } from "@hanzo/shared/src/server";
+import {
+  LegacyGenerationsCreateSchema,
+  LegacyGenerationPatchSchema,
+} from "@hanzo/shared/src/server";
 
 // POST /generations
 export const PostGenerationsV1Body = LegacyGenerationsCreateSchema;

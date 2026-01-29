@@ -8,7 +8,10 @@ interface EnvironmentVisibility {
 // TODO: Add the environment selection to the query params to persist the environment filter when sharing links.
 // See useDashboardDateRange for an example of this.
 
-export function convertSelectedEnvironmentsToFilter(environmentColumns: string[], selectedEnvironments: string[]) {
+export function convertSelectedEnvironmentsToFilter(
+  environmentColumns: string[],
+  selectedEnvironments: string[],
+) {
   if (selectedEnvironments.length === 0) {
     // No environments selected = no filter (show all)
     return [];
@@ -22,13 +25,19 @@ export function convertSelectedEnvironmentsToFilter(environmentColumns: string[]
   }));
 }
 
-export function useEnvironmentFilter(availableEnvironments: string[] | undefined, projectId: string) {
-  const [visibilityMap, setVisibilityMap] = useLocalStorage<EnvironmentVisibility>(
-    `hanzo-environment-visibility-${projectId}`,
-    {},
-  );
+export function useEnvironmentFilter(
+  availableEnvironments: string[] | undefined,
+  projectId: string,
+) {
+  const [visibilityMap, setVisibilityMap] =
+    useLocalStorage<EnvironmentVisibility>(
+      `hanzo-environment-visibility-${projectId}`,
+      {},
+    );
 
-  const visibleEnvironments = (availableEnvironments || []).filter((env) => visibilityMap[env] === true);
+  const visibleEnvironments = (availableEnvironments || []).filter(
+    (env) => visibilityMap[env] === true,
+  );
 
   const handleSetVisibilityMap = (environments: string[]) => {
     const selectedSet = new Set(environments);

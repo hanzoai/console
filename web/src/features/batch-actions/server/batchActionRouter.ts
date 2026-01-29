@@ -1,5 +1,8 @@
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProjectProcedure,
+} from "@/src/server/api/trpc";
 import { paginationZod } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
@@ -8,42 +11,44 @@ import { addToDatasetRouter } from "./addToDatasetRouter";
 
 export const batchActionRouter = createTRPCRouter({
   addToDataset: addToDatasetRouter,
-  byId: protectedProjectProcedure.input(GetBatchActionByIdSchema).query(async ({ input, ctx }) => {
-    throwIfNoProjectAccess({
-      session: ctx.session,
-      projectId: input.projectId,
-      scope: "datasets:CUD",
-    });
-
-    const batchAction = await ctx.prisma.batchAction.findUnique({
-      where: {
-        id: input.batchActionId,
+  byId: protectedProjectProcedure
+    .input(GetBatchActionByIdSchema)
+    .query(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
         projectId: input.projectId,
-      },
-      select: {
-        id: true,
-        status: true,
-        totalCount: true,
-        processedCount: true,
-        failedCount: true,
-        log: true,
-        createdAt: true,
-        finishedAt: true,
-        actionType: true,
-        tableName: true,
-        config: true,
-      },
-    });
-
-    if (!batchAction) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Batch action not found",
+        scope: "datasets:CUD",
       });
-    }
 
-    return batchAction;
-  }),
+      const batchAction = await ctx.prisma.batchAction.findUnique({
+        where: {
+          id: input.batchActionId,
+          projectId: input.projectId,
+        },
+        select: {
+          id: true,
+          status: true,
+          totalCount: true,
+          processedCount: true,
+          failedCount: true,
+          log: true,
+          createdAt: true,
+          finishedAt: true,
+          actionType: true,
+          tableName: true,
+          config: true,
+        },
+      });
+
+      if (!batchAction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Batch action not found",
+        });
+      }
+
+      return batchAction;
+    }),
 
   all: protectedProjectProcedure
     .input(

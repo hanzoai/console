@@ -1,5 +1,11 @@
 import { z } from "zod/v4";
-import { LLMAdapter, LLMJSONSchema, LLMToolDefinitionSchema, ChatMessageSchema, JSONObjectSchema } from "@hanzo/shared";
+import {
+  LLMAdapter,
+  LLMJSONSchema,
+  LLMToolDefinitionSchema,
+  ChatMessageSchema,
+  JSONObjectSchema,
+} from "@hanzo/shared";
 
 const ModelParamsSchema = z.object({
   provider: z.string(),
@@ -24,4 +30,6 @@ export const validateChatCompletionBody = (input: unknown) => {
   return ChatCompletionBodySchema.parse(input);
 };
 
-export type ValidatedChatCompletionBody = z.infer<typeof ChatCompletionBodySchema>;
+export type ValidatedChatCompletionBody = z.infer<
+  typeof ChatCompletionBodySchema
+>;

@@ -7,17 +7,20 @@ import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
  */
 export const groupDataByTimeDimension = (data: DataPoint[]) => {
   // First, group by time_dimension
-  const timeGroups = data.reduce((acc: Record<string, Record<string, number>>, item: DataPoint) => {
-    const time = item.time_dimension || "Unknown";
-    if (!acc[time]) {
-      acc[time] = {};
-    }
+  const timeGroups = data.reduce(
+    (acc: Record<string, Record<string, number>>, item: DataPoint) => {
+      const time = item.time_dimension || "Unknown";
+      if (!acc[time]) {
+        acc[time] = {};
+      }
 
-    const dimension = item.dimension || "Unknown";
-    acc[time][dimension] = item.metric as number;
+      const dimension = item.dimension || "Unknown";
+      acc[time][dimension] = item.metric as number;
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    {},
+  );
 
   // Convert to array format for Recharts
   return Object.entries(timeGroups).map(([time, dimensions]) => ({
@@ -36,7 +39,9 @@ export const getUniqueDimensions = (data: DataPoint[]) => {
   return Array.from(uniqueDimensions);
 };
 
-export const isTimeSeriesChart = (chartType: DashboardWidgetChartType): boolean => {
+export const isTimeSeriesChart = (
+  chartType: DashboardWidgetChartType,
+): boolean => {
   switch (chartType) {
     case "LINE_TIME_SERIES":
     case "BAR_TIME_SERIES":
@@ -54,12 +59,15 @@ export const isTimeSeriesChart = (chartType: DashboardWidgetChartType): boolean 
 };
 
 // Used for a combination of YAxis styling workarounds as discussed in https://github.com/recharts/recharts/issues/2027#issuecomment-769674096.
-export const formatAxisLabel = (label: string): string => (label.length > 13 ? label.slice(0, 13).concat("…") : label);
+export const formatAxisLabel = (label: string): string =>
+  label.length > 13 ? label.slice(0, 13).concat("…") : label;
 
 /**
  * Maps chart types to their human-readable display names.
  */
-export function getChartTypeDisplayName(chartType: DashboardWidgetChartType): string {
+export function getChartTypeDisplayName(
+  chartType: DashboardWidgetChartType,
+): string {
   switch (chartType) {
     case "LINE_TIME_SERIES":
       return "Line Chart (Time Series)";

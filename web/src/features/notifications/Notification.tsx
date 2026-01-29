@@ -17,14 +17,23 @@ interface NotificationProps {
   toast: string | number;
 }
 
-export const Notification: React.FC<NotificationProps> = ({ notification, setLastSeenId, dismissToast, toast }) => {
+export const Notification: React.FC<NotificationProps> = ({
+  notification,
+  setLastSeenId,
+  dismissToast,
+  toast,
+}) => {
   const capture = usePostHogClientCapture();
   return (
     <div className="flex justify-between">
       <div className="flex min-w-[300px] flex-1 flex-col justify-center">
-        <div className="m-0 text-sm font-medium leading-tight text-primary">{notification.message}</div>
+        <div className="m-0 text-sm font-medium leading-tight text-primary">
+          {notification.message}
+        </div>
         {notification.description && (
-          <div className="mt-2 flex-1 text-sm leading-tight text-primary">{notification.description}</div>
+          <div className="mt-2 flex-1 text-sm leading-tight text-primary">
+            {notification.description}
+          </div>
         )}
       </div>
       <button

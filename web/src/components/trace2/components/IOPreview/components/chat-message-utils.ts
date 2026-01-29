@@ -23,7 +23,9 @@ export function hasRenderableContent(message: ChatMlMessage): boolean {
  * Check if message has additional data beyond role and content.
  */
 export function hasAdditionalData(message: ChatMlMessage): boolean {
-  const messageKeys = Object.keys(message).filter((key) => key !== "role" && key !== "content");
+  const messageKeys = Object.keys(message).filter(
+    (key) => key !== "role" && key !== "content",
+  );
   return messageKeys.length > 0;
 }
 
@@ -47,7 +49,10 @@ export function isPlaceholderMessage(message: ChatMlMessage): boolean {
  * Valid ChatML needs content OR tool_calls OR audio (role alone is insufficient).
  */
 export function isOnlyJsonMessage(message: ChatMlMessage): boolean {
-  const hasValidChatMlContent = message.content != null || message.tool_calls != null || message.audio != null;
+  const hasValidChatMlContent =
+    message.content != null ||
+    message.tool_calls != null ||
+    message.audio != null;
   return !hasValidChatMlContent && message.json != null;
 }
 
@@ -55,14 +60,20 @@ export function isOnlyJsonMessage(message: ChatMlMessage): boolean {
  * Check if message should be rendered (has content, audio, additional data, or is placeholder).
  */
 export function shouldRenderMessage(message: ChatMlMessage): boolean {
-  return hasRenderableContent(message) || hasAdditionalData(message) || isPlaceholderMessage(message);
+  return (
+    hasRenderableContent(message) ||
+    hasAdditionalData(message) ||
+    isPlaceholderMessage(message)
+  );
 }
 
 /**
  * Parse tool calls from a ChatML message.
  * Handles both standard tool_calls array and passthrough json.tool_calls.
  */
-export function parseToolCallsFromMessage(message: ReturnType<typeof combineInputOutputMessages>[0]): unknown[] {
+export function parseToolCallsFromMessage(
+  message: ReturnType<typeof combineInputOutputMessages>[0],
+): unknown[] {
   return message.tool_calls && Array.isArray(message.tool_calls)
     ? message.tool_calls
     : message.json?.tool_calls && Array.isArray(message.json?.tool_calls)
@@ -81,5 +92,8 @@ export function hasThinkingContent(message: ChatMlMessage): boolean {
  * Check if message has redacted thinking content.
  */
 export function hasRedactedThinkingContent(message: ChatMlMessage): boolean {
-  return Array.isArray(message.redacted_thinking) && message.redacted_thinking.length > 0;
+  return (
+    Array.isArray(message.redacted_thinking) &&
+    message.redacted_thinking.length > 0
+  );
 }

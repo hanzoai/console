@@ -1,4 +1,10 @@
-import { DummyDriver, Kysely, PostgresAdapter, PostgresIntrospector, PostgresQueryCompiler } from "kysely";
+import {
+  DummyDriver,
+  Kysely,
+  PostgresAdapter,
+  PostgresIntrospector,
+  PostgresQueryCompiler,
+} from "kysely";
 import { type DB as Database } from "@hanzo/shared";
 
 export const DB = new Kysely<Database>({

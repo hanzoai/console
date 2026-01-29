@@ -14,7 +14,11 @@ type TierPriceEditorProps = {
 
 export type { TierPriceEditorProps };
 
-export function TierPriceEditor({ tierIndex, form, isDefault }: TierPriceEditorProps) {
+export function TierPriceEditor({
+  tierIndex,
+  form,
+  isDefault,
+}: TierPriceEditorProps) {
   const prices = form.watch(`pricingTiers.${tierIndex}.prices`) || {};
 
   return (

@@ -1,4 +1,8 @@
-import type { ChatMessage, ChatMessageWithId, PlaceholderMessage } from "@hanzo/shared";
+import type {
+  ChatMessage,
+  ChatMessageWithId,
+  PlaceholderMessage,
+} from "@hanzo/shared";
 
 export type MessagesContext = {
   messages: ChatMessageWithId[];
@@ -7,7 +11,10 @@ export type MessagesContext = {
   deleteMessage: (id: string) => void;
   updateMessage: <
     T extends ChatMessageWithId["type"],
-    Key extends keyof Omit<Extract<ChatMessageWithId, { type: T }>, "id" | "type">,
+    Key extends keyof Omit<
+      Extract<ChatMessageWithId, { type: T }>,
+      "id" | "type"
+    >,
     Value = Extract<ChatMessageWithId, { type: T }>[Key],
   >(
     type: T,

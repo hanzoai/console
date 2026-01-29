@@ -4,7 +4,11 @@ import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import { transformAggregatedRunMetricsToChartData } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { convertScoreColumnsToAnalyticsData } from "@/src/features/scores/lib/scoreColumns";
 
-export function useDatasetRunCompareChartData(projectId: string, datasetId: string, runIds: string[] | undefined) {
+export function useDatasetRunCompareChartData(
+  projectId: string,
+  datasetId: string,
+  runIds: string[] | undefined,
+) {
   const runMetrics = api.datasets.runsByDatasetIdMetrics.useQuery(
     {
       projectId,
@@ -34,7 +38,10 @@ export function useDatasetRunCompareChartData(projectId: string, datasetId: stri
   );
 
   const scoreIdToName = useMemo(() => {
-    return new Map(scoreKeysAndProps.data?.scoreColumns.map((obj) => [obj.key, obj.name]) ?? []);
+    return new Map(
+      scoreKeysAndProps.data?.scoreColumns.map((obj) => [obj.key, obj.name]) ??
+        [],
+    );
   }, [scoreKeysAndProps.data]);
 
   const chartDataMap = useMemo(() => {
@@ -45,7 +52,8 @@ export function useDatasetRunCompareChartData(projectId: string, datasetId: stri
   }, [runMetrics.data, runIds, scoreIdToName]);
 
   const { scoreAnalyticsOptions, scoreKeyToData } = useMemo(
-    () => convertScoreColumnsToAnalyticsData(scoreKeysAndProps.data?.scoreColumns),
+    () =>
+      convertScoreColumnsToAnalyticsData(scoreKeysAndProps.data?.scoreColumns),
     [scoreKeysAndProps.data],
   );
 

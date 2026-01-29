@@ -2,7 +2,10 @@ import React, { useMemo } from "react";
 import { ChartContainer, ChartTooltip } from "@/src/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { type ChartProps } from "@/src/features/widgets/chart-library/chart-props";
-import { getUniqueDimensions, groupDataByTimeDimension } from "@/src/features/widgets/chart-library/utils";
+import {
+  getUniqueDimensions,
+  groupDataByTimeDimension,
+} from "@/src/features/widgets/chart-library/utils";
 
 /**
  * VerticalBarChartTimeSeries component
@@ -35,7 +38,13 @@ export const VerticalBarChartTimeSeries: React.FC<ChartProps> = ({
           tickLine={false}
           axisLine={false}
         />
-        <YAxis type="number" stroke="hsl(var(--chart-grid))" fontSize={12} tickLine={false} axisLine={false} />
+        <YAxis
+          type="number"
+          stroke="hsl(var(--chart-grid))"
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+        />
         {dimensions.map((dimension, index) => (
           <Bar
             key={dimension}
@@ -46,7 +55,9 @@ export const VerticalBarChartTimeSeries: React.FC<ChartProps> = ({
             stackId={dimensions.length > 1 ? "stack" : undefined}
           />
         ))}
-        <ChartTooltip contentStyle={{ backgroundColor: "hsl(var(--background))" }} />
+        <ChartTooltip
+          contentStyle={{ backgroundColor: "hsl(var(--background))" }}
+        />
       </BarChart>
     </ChartContainer>
   );

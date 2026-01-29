@@ -2,8 +2,18 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Badge } from "@/src/components/ui/badge";
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/src/components/ui/accordion";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/src/components/ui/accordion";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/src/components/ui/form";
 import { TierConditionsEditor } from "./TierConditionsEditor";
 import { TierPriceEditor } from "./TierPriceEditor";
 import { TierPrefillButtons } from "./TierPrefillButtons";
@@ -20,15 +30,26 @@ type TierAccordionItemProps = {
 
 export type { TierAccordionItemProps };
 
-export function TierAccordionItem({ tier, index, form, remove, isDefault }: TierAccordionItemProps) {
+export function TierAccordionItem({
+  tier,
+  index,
+  form,
+  remove,
+  isDefault,
+}: TierAccordionItemProps) {
   return (
-    <AccordionItem value={`tier-${index}`} className="rounded-lg border bg-muted/30">
+    <AccordionItem
+      value={`tier-${index}`}
+      className="rounded-lg border bg-muted/30"
+    >
       <AccordionTrigger className="px-4 hover:no-underline">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold">{tier.name}</span>
             {isDefault && <Badge variant="secondary">Default</Badge>}
-            <span className="text-xs text-muted-foreground">Priority: {tier.priority}</span>
+            <span className="text-xs text-muted-foreground">
+              Priority: {tier.priority}
+            </span>
           </div>
           {!isDefault && (
             <Button

@@ -6,9 +6,15 @@ export function useSelectAll(projectId: string, tableName: string) {
   const router = useRouter();
   // Read initial value from session storage
   const storageKey = `selectAll-${projectId}-${tableName}`;
-  const initialValue = typeof window !== "undefined" ? window.sessionStorage.getItem(storageKey) === "true" : false;
+  const initialValue =
+    typeof window !== "undefined"
+      ? window.sessionStorage.getItem(storageKey) === "true"
+      : false;
 
-  const [selectAll, setSelectAll] = useSessionStorage<boolean>(storageKey, initialValue);
+  const [selectAll, setSelectAll] = useSessionStorage<boolean>(
+    storageKey,
+    initialValue,
+  );
 
   useEffect(() => {
     const handleRouteChange = () => {

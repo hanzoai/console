@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/src/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/src/components/ui/card";
 import { cn } from "@/src/utils/tailwind";
 import { Loader } from "lucide-react";
 import { type ReactNode } from "react";
@@ -32,7 +38,9 @@ export const DashboardCard = ({
         <div className="items-top flex justify-between">
           <div className="flex flex-col gap-1.5">
             <CardTitle>{title}</CardTitle>
-            {description ? <CardDescription>{description}</CardDescription> : undefined}
+            {description ? (
+              <CardDescription>{description}</CardDescription>
+            ) : undefined}
           </div>
           {headerRight}
         </div>
@@ -43,7 +51,11 @@ export const DashboardCard = ({
           </div>
         ) : null}
       </CardHeader>
-      <CardContent className={cn("flex flex-1 flex-col gap-4", cardContentClassName)}>{children}</CardContent>
+      <CardContent
+        className={cn("flex flex-1 flex-col gap-4", cardContentClassName)}
+      >
+        {children}
+      </CardContent>
     </Card>
   );
 };

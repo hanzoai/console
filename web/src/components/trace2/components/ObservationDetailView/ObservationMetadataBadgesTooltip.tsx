@@ -45,12 +45,20 @@ export function UsageBadge({
   // Only show for generation-like observations
   if (!isGenerationLike(type) || !usageDetails) return null;
 
-  const tokenText = formatTokenCounts(inputUsage, outputUsage, totalUsage, true);
+  const tokenText = formatTokenCounts(
+    inputUsage,
+    outputUsage,
+    totalUsage,
+    true,
+  );
   const hasText = tokenText.length > 0;
 
   return (
     <BreakdownTooltip details={usageDetails} isCost={false}>
-      <Badge variant="tertiary" className={`flex items-center gap-1 ${!hasText ? "h-6 pl-2" : ""}`}>
+      <Badge
+        variant="tertiary"
+        className={`flex items-center gap-1 ${!hasText ? "h-6 pl-2" : ""}`}
+      >
         {hasText && <span>{tokenText}</span>}
         <InfoIcon className="h-3 w-3" />
       </Badge>

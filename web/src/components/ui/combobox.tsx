@@ -13,24 +13,34 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 
-export interface ComboboxOption<T extends string | number | boolean | { id: string }> {
+export interface ComboboxOption<
+  T extends string | number | boolean | { id: string },
+> {
   value: T;
   label?: string;
   disabled?: boolean;
 }
 
-export interface ComboboxOptionGroup<T extends string | number | boolean | { id: string }> {
+export interface ComboboxOptionGroup<
+  T extends string | number | boolean | { id: string },
+> {
   heading?: string;
   options: ComboboxOption<T>[];
 }
 
-export type ComboboxOptionsInput<T extends string | number | boolean | { id: string }> =
-  | ComboboxOption<T>[]
-  | ComboboxOptionGroup<T>[];
+export type ComboboxOptionsInput<
+  T extends string | number | boolean | { id: string },
+> = ComboboxOption<T>[] | ComboboxOptionGroup<T>[];
 
-export interface ComboboxProps<T extends string | number | boolean | { id: string }> {
+export interface ComboboxProps<
+  T extends string | number | boolean | { id: string },
+> {
   options: ComboboxOptionsInput<T>;
   value?: T;
   onValueChange?: (value: T) => void;
@@ -46,12 +56,25 @@ function isGroupedOptions<T extends string | number | boolean | { id: string }>(
   options: ComboboxOptionsInput<T>,
 ): options is ComboboxOptionGroup<T>[] {
   return (
-    options.length > 0 && typeof options[0] === "object" && "options" in options[0] && Array.isArray(options[0].options)
+    options.length > 0 &&
+    typeof options[0] === "object" &&
+    "options" in options[0] &&
+    Array.isArray(options[0].options)
   );
 }
 
-function isEqual<T extends string | number | boolean | { id: string }>(a: T | undefined, b: T | undefined): boolean {
-  if (a && b && typeof a === "object" && typeof b === "object" && "id" in a && "id" in b) {
+function isEqual<T extends string | number | boolean | { id: string }>(
+  a: T | undefined,
+  b: T | undefined,
+): boolean {
+  if (
+    a &&
+    b &&
+    typeof a === "object" &&
+    typeof b === "object" &&
+    "id" in a &&
+    "id" in b
+  ) {
     return (a as { id: string }).id === (b as { id: string }).id;
   }
   return a === b;
@@ -88,12 +111,18 @@ export function Combobox<T extends string | number | boolean | { id: string }>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between text-xs font-normal", !value && "text-muted-foreground", className)}
+          className={cn(
+            "w-full justify-between text-xs font-normal",
+            !value && "text-muted-foreground",
+            className,
+          )}
           disabled={disabled}
           name={name}
         >
           <span className="truncate">
-            {selectedOption ? (selectedOption.label ?? String(selectedOption.value)) : placeholder}
+            {selectedOption
+              ? (selectedOption.label ?? String(selectedOption.value))
+              : placeholder}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -110,7 +139,9 @@ export function Combobox<T extends string | number | boolean | { id: string }>({
                   {group.options.map((option) => (
                     <CommandItem
                       key={
-                        typeof option.value === "object" ? (option.value as { id: string }).id : String(option.value)
+                        typeof option.value === "object"
+                          ? (option.value as { id: string }).id
+                          : String(option.value)
                       }
                       value={option.label ?? String(option.value)}
                       disabled={option.disabled}
@@ -120,12 +151,17 @@ export function Combobox<T extends string | number | boolean | { id: string }>({
                           setOpen(false);
                         }
                       }}
-                      className={cn("text-xs", option.disabled && "text-muted-foreground line-through")}
+                      className={cn(
+                        "text-xs",
+                        option.disabled && "text-muted-foreground line-through",
+                      )}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          isEqual(value as T | undefined, option.value) ? "opacity-100" : "opacity-0",
+                          isEqual(value as T | undefined, option.value)
+                            ? "opacity-100"
+                            : "opacity-0",
                         )}
                       />
                       {option.label ?? String(option.value)}
@@ -138,7 +174,11 @@ export function Combobox<T extends string | number | boolean | { id: string }>({
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem
-                    key={typeof option.value === "object" ? (option.value as { id: string }).id : String(option.value)}
+                    key={
+                      typeof option.value === "object"
+                        ? (option.value as { id: string }).id
+                        : String(option.value)
+                    }
                     value={option.label ?? String(option.value)}
                     disabled={option.disabled}
                     onSelect={() => {
@@ -147,12 +187,17 @@ export function Combobox<T extends string | number | boolean | { id: string }>({
                         setOpen(false);
                       }
                     }}
-                    className={cn("text-xs", option.disabled && "text-muted-foreground line-through")}
+                    className={cn(
+                      "text-xs",
+                      option.disabled && "text-muted-foreground line-through",
+                    )}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        isEqual(value as T | undefined, option.value) ? "opacity-100" : "opacity-0",
+                        isEqual(value as T | undefined, option.value)
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                     {option.label ?? String(option.value)}

@@ -56,7 +56,9 @@ export default function NewEvaluatorPage() {
     },
   );
 
-  const currentTemplate = evalTemplates.data?.templates.find((t) => t.id === evaluatorId);
+  const currentTemplate = evalTemplates.data?.templates.find(
+    (t) => t.id === evaluatorId,
+  );
 
   if (!hasAccess) {
     return <div>You do not have access to this page.</div>;
@@ -82,10 +84,16 @@ export default function NewEvaluatorPage() {
             <>
               <BreadcrumbItem>
                 <BreadcrumbPage
-                  className={cn(stepInt !== 0 ? "text-muted-foreground" : "font-semibold text-foreground")}
+                  className={cn(
+                    stepInt !== 0
+                      ? "text-muted-foreground"
+                      : "font-semibold text-foreground",
+                  )}
                 >
                   0. Set up default model
-                  {stepInt > 0 && <Check className="ml-1 inline-block h-3 w-3" />}
+                  {stepInt > 0 && (
+                    <Check className="ml-1 inline-block h-3 w-3" />
+                  )}
                 </BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -95,20 +103,36 @@ export default function NewEvaluatorPage() {
             className="hover:cursor-pointer"
             onClick={() => router.push(`/project/${projectId}/evals/new`)}
           >
-            <BreadcrumbPage className={cn(stepInt !== 1 ? "text-muted-foreground" : "font-semibold text-foreground")}>
+            <BreadcrumbPage
+              className={cn(
+                stepInt !== 1
+                  ? "text-muted-foreground"
+                  : "font-semibold text-foreground",
+              )}
+            >
               1. Select Evaluator
               {stepInt > 1 && <Check className="ml-1 inline-block h-3 w-3" />}
             </BreadcrumbPage>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className={cn(stepInt !== 2 ? "text-muted-foreground" : "font-semibold text-foreground")}>
+            <BreadcrumbPage
+              className={cn(
+                stepInt !== 2
+                  ? "text-muted-foreground"
+                  : "font-semibold text-foreground",
+              )}
+            >
               <div className="flex flex-row">
                 2. Run Evaluator
                 {currentTemplate && (
                   <div className="flex flex-row gap-2">
-                    <span>{currentTemplate.name ? `: ${currentTemplate.name}` : ""}</span>
-                    <MaintainerTooltip maintainer={getMaintainer(currentTemplate)} />
+                    <span>
+                      {currentTemplate.name ? `: ${currentTemplate.name}` : ""}
+                    </span>
+                    <MaintainerTooltip
+                      maintainer={getMaintainer(currentTemplate)}
+                    />
                   </div>
                 )}
               </div>
@@ -118,11 +142,15 @@ export default function NewEvaluatorPage() {
       </Breadcrumb>
       {
         // 0. Set up default model
-        stepInt === 0 && projectId && <DefaultEvalModelSetup projectId={projectId} />
+        stepInt === 0 && projectId && (
+          <DefaultEvalModelSetup projectId={projectId} />
+        )
       }
       {
         // 1. Select Evaluator
-        stepInt === 1 && projectId && <SelectEvaluatorList projectId={projectId} />
+        stepInt === 1 && projectId && (
+          <SelectEvaluatorList projectId={projectId} />
+        )
       }
       {
         // 2. Run Evaluator

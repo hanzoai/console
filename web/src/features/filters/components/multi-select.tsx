@@ -13,7 +13,11 @@ import {
   InputCommandList,
   InputCommandSeparator,
 } from "@/src/components/ui/input-command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { Separator } from "@/src/components/ui/separator";
 import { type FilterOption } from "@hanzo/shared";
 import { Input } from "@/src/components/ui/input";
@@ -25,7 +29,9 @@ const getFreeTextInput = (
   values: string[],
   optionValues: Set<string>,
 ): string | undefined =>
-  isCustomSelectEnabled ? Array.from(values.values()).find((value) => !optionValues.has(value)) : undefined;
+  isCustomSelectEnabled
+    ? Array.from(values.values()).find((value) => !optionValues.has(value))
+    : undefined;
 
 export function MultiSelect({
   title,
@@ -50,24 +56,37 @@ export function MultiSelect({
 }) {
   const selectedValues = useMemo(() => new Set(values), [values]);
   const optionValues = new Set(options.map((option) => option.value));
-  const freeTextInput = getFreeTextInput(isCustomSelectEnabled, values, optionValues);
+  const freeTextInput = getFreeTextInput(
+    isCustomSelectEnabled,
+    values,
+    optionValues,
+  );
   const [freeText, setFreeText] = useState(freeTextInput || "");
 
-  const selectableOptions = useMemo(() => options.filter((option) => option.value.length > 0), [options]);
+  const selectableOptions = useMemo(
+    () => options.filter((option) => option.value.length > 0),
+    [options],
+  );
 
   const allSelectedState = useMemo(() => {
     if (selectableOptions.length === 0) return false;
-    return selectableOptions.every((option) => selectedValues.has(option.value));
+    return selectableOptions.every((option) =>
+      selectedValues.has(option.value),
+    );
   }, [selectableOptions, selectedValues]);
 
   const handleSelectAll = useCallback(() => {
     const newSelectedValues = new Set(selectedValues);
     if (allSelectedState) {
       // Deselect all selectable options
-      selectableOptions.forEach((option) => newSelectedValues.delete(option.value));
+      selectableOptions.forEach((option) =>
+        newSelectedValues.delete(option.value),
+      );
     } else {
       // Select all selectable options
-      selectableOptions.forEach((option) => newSelectedValues.add(option.value));
+      selectableOptions.forEach((option) =>
+        newSelectedValues.add(option.value),
+      );
     }
     const filterValues = Array.from(newSelectedValues);
     onValueChange(filterValues.length ? filterValues : []);
@@ -75,7 +94,11 @@ export function MultiSelect({
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const handleDebouncedChange = (value: string) => {
-    const freeTextInput = getFreeTextInput(isCustomSelectEnabled, values, optionValues);
+    const freeTextInput = getFreeTextInput(
+      isCustomSelectEnabled,
+      values,
+      optionValues,
+    );
 
     if (!!freeTextInput) {
       selectedValues.delete(freeTextInput);
@@ -87,10 +110,16 @@ export function MultiSelect({
   };
 
   function getSelectedOptions() {
-    const selectedOptions = options.filter(({ value }) => selectedValues.has(value));
+    const selectedOptions = options.filter(({ value }) =>
+      selectedValues.has(value),
+    );
 
-    const hasCustomOption = !!freeText && !!getFreeTextInput(isCustomSelectEnabled, values, optionValues);
-    const customOption: FilterOption[] = hasCustomOption ? [{ value: freeText }] : [];
+    const hasCustomOption =
+      !!freeText &&
+      !!getFreeTextInput(isCustomSelectEnabled, values, optionValues);
+    const customOption: FilterOption[] = hasCustomOption
+      ? [{ value: freeText }]
+      : [];
 
     return [...selectedOptions, ...customOption];
   }
@@ -111,22 +140,33 @@ export function MultiSelect({
           {selectedValues.size > 0 && (
             <>
               <Separator orientation="vertical" className="mr-auto h-4" />
-              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
+              <Badge
+                variant="secondary"
+                className="rounded-sm px-1 font-normal lg:hidden"
+              >
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
                 {selectedValues.size > labelTruncateCutOff ? (
-                  <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+                  <Badge
+                    variant="secondary"
+                    className="rounded-sm px-1 font-normal"
+                  >
                     {selectedValues.size} selected
                   </Badge>
                 ) : (
                   getSelectedOptions().map((option) => {
-                    const displayValue = option.displayValue ?? (option.value === "" ? "(empty)" : option.value);
+                    const displayValue =
+                      option.displayValue ??
+                      (option.value === "" ? "(empty)" : option.value);
                     return (
                       <Badge
                         variant="secondary"
                         key={option.value}
-                        className={cn("rounded-sm px-1 font-normal", option.value === "" && "italic")}
+                        className={cn(
+                          "rounded-sm px-1 font-normal",
+                          option.value === "" && "italic",
+                        )}
                       >
                         {displayValue}
                       </Badge>
@@ -143,7 +183,9 @@ export function MultiSelect({
           <InputCommandInput placeholder={title} variant="bottom" />
           <InputCommandList>
             {/* if isCustomSelectEnabled we always show custom select hence never empty */}
-            {!isCustomSelectEnabled && <InputCommandEmpty>No results found.</InputCommandEmpty>}
+            {!isCustomSelectEnabled && (
+              <InputCommandEmpty>No results found.</InputCommandEmpty>
+            )}
             <InputCommandGroup>
               {selectableOptions.length > 0 && (
                 <>
@@ -151,12 +193,16 @@ export function MultiSelect({
                     <div
                       className={cn(
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        allSelectedState ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
+                        allSelectedState
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible",
                       )}
                     >
                       <Check className={cn("h-4 w-4")} />
                     </div>
-                    <div className="font-medium">{allSelectedState ? "Deselect All" : "Select All"}</div>
+                    <div className="font-medium">
+                      {allSelectedState ? "Deselect All" : "Select All"}
+                    </div>
                   </InputCommandItem>
                   <InputCommandSeparator />
                 </>
@@ -164,8 +210,12 @@ export function MultiSelect({
               {options.map((option) => {
                 if (option.value.length === 0) return;
                 const isSelected = selectedValues.has(option.value);
-                const displayValue = option.displayValue ?? (option.value === "" ? "(empty)" : option.value);
-                const displayTitle = option.displayValue ?? (option.value === "" ? "(empty)" : option.value);
+                const displayValue =
+                  option.displayValue ??
+                  (option.value === "" ? "(empty)" : option.value);
+                const displayTitle =
+                  option.displayValue ??
+                  (option.value === "" ? "(empty)" : option.value);
 
                 const commandItem = (
                   <InputCommandItem
@@ -183,7 +233,9 @@ export function MultiSelect({
                     <div
                       className={cn(
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible",
                       )}
                     >
                       <Check className={cn("h-4 w-4")} />
@@ -206,7 +258,11 @@ export function MultiSelect({
                 );
 
                 return option.description ? (
-                  <PropertyHoverCard key={option.value} label={displayValue} description={option.description}>
+                  <PropertyHoverCard
+                    key={option.value}
+                    label={displayValue}
+                    description={option.description}
+                  >
                     {commandItem}
                   </PropertyHoverCard>
                 ) : (
@@ -220,7 +276,11 @@ export function MultiSelect({
                 <InputCommandItem
                   key="freeTextField"
                   onSelect={() => {
-                    const freeTextInput = getFreeTextInput(isCustomSelectEnabled, values, optionValues);
+                    const freeTextInput = getFreeTextInput(
+                      isCustomSelectEnabled,
+                      values,
+                      optionValues,
+                    );
 
                     if (!!freeTextInput) {
                       selectedValues.delete(freeTextInput);
@@ -235,8 +295,13 @@ export function MultiSelect({
                   <div
                     className={cn(
                       "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                      getFreeTextInput(isCustomSelectEnabled, values, optionValues) ||
-                        (optionValues.has(freeText) && selectedValues.has(freeText))
+                      getFreeTextInput(
+                        isCustomSelectEnabled,
+                        values,
+                        optionValues,
+                      ) ||
+                        (optionValues.has(freeText) &&
+                          selectedValues.has(freeText))
                         ? "bg-primary text-primary-foreground"
                         : "opacity-50 [&_svg]:invisible",
                     )}
@@ -268,7 +333,10 @@ export function MultiSelect({
               <>
                 <InputCommandSeparator />
                 <InputCommandGroup>
-                  <InputCommandItem onSelect={() => onValueChange([])} className="justify-center text-center">
+                  <InputCommandItem
+                    onSelect={() => onValueChange([])}
+                    className="justify-center text-center"
+                  >
                     Clear filters
                   </InputCommandItem>
                 </InputCommandGroup>

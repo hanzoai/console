@@ -1,5 +1,9 @@
 // Helper function to generate default experiment name
-export function generateDefaultExperimentName(promptName: string, promptVersion: number, datasetName: string): string {
+export function generateDefaultExperimentName(
+  promptName: string,
+  promptVersion: number,
+  datasetName: string,
+): string {
   return `Prompt ${promptName}-v${promptVersion} on dataset ${datasetName}`;
 }
 

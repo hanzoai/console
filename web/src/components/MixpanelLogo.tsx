@@ -3,7 +3,15 @@ import * as React from "react";
 import { type SVGProps } from "react";
 
 export const MixpanelLogo = (props: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 371.61 88" width="1em" height="1em" fill="none" aria-hidden="true" focusable="false" {...props}>
+  <svg
+    viewBox="0 0 371.61 88"
+    width="1em"
+    height="1em"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+    {...props}
+  >
     <path
       d="M0,68.26h22.29v-2.37h-1.67c-3.26,0-4.04-0.89-4.04-4.14V32.36c2.27-3.85,5.33-6.32,9.18-6.32
         c4.84,0,7.79,3.55,7.79,10.26v25.45c0,3.26-0.79,4.14-3.95,4.14h-1.78v2.37h21.8V65.9h-1.58c-3.26,0-4.04-0.89-4.04-4.14V35.21

@@ -1,6 +1,8 @@
 import { MediaContentType, MediaFileExtension } from "../validation";
 
-export const getFileExtensionFromContentType = (contentType: MediaContentType): MediaFileExtension => {
+export const getFileExtensionFromContentType = (
+  contentType: MediaContentType,
+): MediaFileExtension => {
   const mimeToExtension: Record<MediaContentType, MediaFileExtension> = {
     [MediaContentType.PNG]: MediaFileExtension.PNG,
     [MediaContentType.JPEG]: MediaFileExtension.JPEG,

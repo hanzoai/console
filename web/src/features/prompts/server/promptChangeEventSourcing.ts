@@ -1,11 +1,20 @@
 import { jsonSchemaNullable, type TriggerEventAction } from "@hanzo/shared";
-import { logger, type PromptResult, EntityChangeQueue, QueueJobs, QueueName } from "@hanzo/shared/src/server";
+import {
+  logger,
+  type PromptResult,
+  EntityChangeQueue,
+  QueueJobs,
+  QueueName,
+} from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
 /**
  * Queue prompt change events for async processing using the generic EntityChangeQueue
  */
-export const promptChangeEventSourcing = async (promptData: PromptResult | null, action: TriggerEventAction) => {
+export const promptChangeEventSourcing = async (
+  promptData: PromptResult | null,
+  action: TriggerEventAction,
+) => {
   if (!promptData) {
     return;
   }
@@ -28,7 +37,10 @@ export const promptChangeEventSourcing = async (promptData: PromptResult | null,
   };
   try {
     // Queue the entity change event for async processing
-    await EntityChangeQueue.getInstance()?.add(QueueName.EntityChangeQueue, event);
+    await EntityChangeQueue.getInstance()?.add(
+      QueueName.EntityChangeQueue,
+      event,
+    );
 
     logger.info(
       `Queued entity change event for prompt ${promptData.id} in project ${promptData.projectId} with action ${action}`,

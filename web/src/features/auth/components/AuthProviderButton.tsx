@@ -19,12 +19,20 @@ export function AuthProviderButton({
 }: AuthProviderButtonProps) {
   return (
     <div>
-      <Button onClick={onClick} variant="secondary" loading={loading} className="w-full">
+      <Button
+        onClick={onClick}
+        variant="secondary"
+        loading={loading}
+        className="w-full"
+      >
         {icon}
         {label}
       </Button>
       <div
-        className={cn("mt-0.5 text-center text-xs text-muted-foreground", showLastUsedBadge ? "visible" : "invisible")}
+        className={cn(
+          "mt-0.5 text-center text-xs text-muted-foreground",
+          showLastUsedBadge ? "visible" : "invisible",
+        )}
       >
         Last used
       </div>

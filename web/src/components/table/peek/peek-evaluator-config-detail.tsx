@@ -4,7 +4,11 @@ import TableLink from "@/src/components/table/table-link";
 import { CardDescription } from "@/src/components/ui/card";
 import { EvaluatorForm } from "@/src/features/evals/components/evaluator-form";
 import { usePeekEvalConfigData } from "@/src/components/table/peek/hooks/usePeekEvalConfigData";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { UserCircle2Icon } from "lucide-react";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
@@ -16,7 +20,11 @@ import { cn } from "@/src/utils/tailwind";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { api } from "@/src/utils/api";
 
-export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string }) => {
+export const PeekViewEvaluatorConfigDetail = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
   const router = useRouter();
   const peekId = router.query.peek as string | undefined;
   const [isEditMode, setIsEditMode] = useState(false);
@@ -39,14 +47,29 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
         <div className="flex flex-row items-center gap-2">
           <span className="max-h-fit text-lg font-medium">Configuration</span>
           <div className="flex items-center gap-2">
-            <StatusBadge type={evalConfig.finalStatus.toLowerCase()} isLive className="max-h-8" />
-            <DeactivateEvalConfig projectId={projectId} evalConfig={evalConfig} />
+            <StatusBadge
+              type={evalConfig.finalStatus.toLowerCase()}
+              isLive
+              className="max-h-8"
+            />
+            <DeactivateEvalConfig
+              projectId={projectId}
+              evalConfig={evalConfig}
+            />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={cn("text-sm", isEditMode ? "" : "text-muted-foreground")}>Edit Mode</span>
+          <span
+            className={cn("text-sm", isEditMode ? "" : "text-muted-foreground")}
+          >
+            Edit Mode
+          </span>
           <Switch
-            disabled={!hasAccess || (evalConfig?.timeScope?.length === 1 && evalConfig.timeScope[0] === "EXISTING")}
+            disabled={
+              !hasAccess ||
+              (evalConfig?.timeScope?.length === 1 &&
+                evalConfig.timeScope[0] === "EXISTING")
+            }
             checked={isEditMode}
             onCheckedChange={setIsEditMode}
           />
@@ -70,7 +93,9 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
                 <UserCircle2Icon className="h-4 w-4" />
               )}
             </TooltipTrigger>
-            <TooltipContent>{evalConfig.evalTemplate.partner ?? "Hanzo"}</TooltipContent>
+            <TooltipContent>
+              {evalConfig.evalTemplate.partner ?? "Hanzo"}
+            </TooltipContent>
           </Tooltip>
         )}
       </CardDescription>
@@ -78,7 +103,9 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
         <EvaluatorForm
           key={`${evalConfig?.id}-${evalConfig?.updatedAt}-${isEditMode}`}
           projectId={projectId}
-          evalTemplates={evalConfig?.evalTemplate ? [evalConfig.evalTemplate] : []}
+          evalTemplates={
+            evalConfig?.evalTemplate ? [evalConfig.evalTemplate] : []
+          }
           existingEvaluator={
             evalConfig.evalTemplate
               ? {

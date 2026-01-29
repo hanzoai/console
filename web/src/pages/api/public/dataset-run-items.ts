@@ -106,7 +106,9 @@ export default withMiddlewares({
       });
       if (ingestionResult.errors.length > 0) {
         const error = ingestionResult.errors[0];
-        res.status(error.status).json({ message: error.error ?? error.message });
+        res
+          .status(error.status)
+          .json({ message: error.error ?? error.message });
         // We will still return the mock dataset run item in the response for now. Logs are to be monitored.
       }
       if (ingestionResult.successes.length !== 1) {
@@ -166,7 +168,9 @@ export default withMiddlewares({
       });
 
       if (!datasetRun) {
-        throw new HanzoNotFoundError("Dataset run not found for the given project and dataset id");
+        throw new HanzoNotFoundError(
+          "Dataset run not found for the given project and dataset id",
+        );
       }
 
       const { datasetId, limit, page } = query;

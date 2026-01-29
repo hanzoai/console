@@ -16,7 +16,9 @@ export type MetadataDomainClient = string | null | undefined;
  * type ScoreFrontend = WithStringifiedMetadata<ScoreDomain>;
  * // Result: ScoreDomain but with metadata: string | null | undefined
  */
-export type WithStringifiedMetadata<T extends { metadata?: MetadataDomain | undefined }> = Omit<T, "metadata"> & {
+export type WithStringifiedMetadata<
+  T extends { metadata?: MetadataDomain | undefined },
+> = Omit<T, "metadata"> & {
   metadata: MetadataDomainClient;
 };
 
@@ -24,7 +26,9 @@ export type WithStringifiedMetadata<T extends { metadata?: MetadataDomain | unde
  * Stringifies metadata field for frontend consumption.
  * Returns null if metadata is null/undefined or empty object.
  */
-export const stringifyMetadata = (metadata: MetadataDomain | null | undefined): MetadataDomainClient => {
+export const stringifyMetadata = (
+  metadata: MetadataDomain | null | undefined,
+): MetadataDomainClient => {
   if (!metadata) return null;
   return JSON.stringify(metadata);
 };
@@ -36,7 +40,9 @@ export const stringifyMetadata = (metadata: MetadataDomain | null | undefined): 
  * @example
  * return toDomainWithStringifiedMetadata(score);
  */
-export const toDomainWithStringifiedMetadata = <T extends { metadata?: MetadataDomain | undefined }>(
+export const toDomainWithStringifiedMetadata = <
+  T extends { metadata?: MetadataDomain | undefined },
+>(
   obj: T,
 ): WithStringifiedMetadata<T> => {
   const { metadata, ...rest } = obj;
@@ -53,7 +59,9 @@ export const toDomainWithStringifiedMetadata = <T extends { metadata?: MetadataD
  * @example
  * return { scores: toDomainArrayWithStringifiedMetadata(scores) };
  */
-export const toDomainArrayWithStringifiedMetadata = <T extends { metadata?: MetadataDomain | undefined }>(
+export const toDomainArrayWithStringifiedMetadata = <
+  T extends { metadata?: MetadataDomain | undefined },
+>(
   arr: T[],
 ): WithStringifiedMetadata<T>[] => {
   return arr.map(toDomainWithStringifiedMetadata);

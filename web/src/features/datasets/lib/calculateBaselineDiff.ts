@@ -27,7 +27,8 @@ export function calculateNumericDiff(
 
   // Convert to numbers
   const currentNum = typeof current === "number" ? current : current.toNumber();
-  const baselineNum = typeof baseline === "number" ? baseline : baseline.toNumber();
+  const baselineNum =
+    typeof baseline === "number" ? baseline : baseline.toNumber();
 
   //  Same value → no diff
   const diff = currentNum - baselineNum;

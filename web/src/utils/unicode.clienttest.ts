@@ -8,7 +8,9 @@ describe("decodeUnicodeEscapesOnly", () => {
 
   it("should decode surrogate pairs, i.e. emoji", () => {
     expect(decodeUnicodeEscapesOnly("\\ud83d\\ude00")).toBe("😀"); // grinning face
-    expect(decodeUnicodeEscapesOnly("Hello \\ud83d\\udc4b World")).toBe("Hello 👋 World"); // waving hand
+    expect(decodeUnicodeEscapesOnly("Hello \\ud83d\\udc4b World")).toBe(
+      "Hello 👋 World",
+    ); // waving hand
   });
 
   it("should handle multi-backslash scenarios", () => {
@@ -37,9 +39,11 @@ describe("decodeUnicodeEscapesOnly", () => {
   });
 
   it("should handle mixed content", () => {
-    expect(decodeUnicodeEscapesOnly('{"name": "\\u4f60\\u597d", "emoji": "\\ud83d\\ude00"}')).toBe(
-      '{"name": "你好", "emoji": "😀"}',
-    );
+    expect(
+      decodeUnicodeEscapesOnly(
+        '{"name": "\\u4f60\\u597d", "emoji": "\\ud83d\\ude00"}',
+      ),
+    ).toBe('{"name": "你好", "emoji": "😀"}');
   });
 
   it("should handle no escapes", () => {
@@ -61,7 +65,9 @@ describe("decodeUnicodeEscapesOnly", () => {
 
     it("should handle mixed content in greedy mode", () => {
       const input = '{"content": "\\\\uc885\\\\ubd80\\\\uc138"}';
-      expect(decodeUnicodeEscapesOnly(input, true)).toBe('{"content": "종부세"}');
+      expect(decodeUnicodeEscapesOnly(input, true)).toBe(
+        '{"content": "종부세"}',
+      );
     });
   });
 });

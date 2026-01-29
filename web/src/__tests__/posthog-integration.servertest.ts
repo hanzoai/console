@@ -12,7 +12,8 @@ describe("PostHog Integration SSRF Protection", () => {
 
   beforeAll(() => {
     // Set a test encryption key (64 hex characters = 32 bytes)
-    process.env.ENCRYPTION_KEY = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+    process.env.ENCRYPTION_KEY =
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
   });
 
   afterAll(() => {

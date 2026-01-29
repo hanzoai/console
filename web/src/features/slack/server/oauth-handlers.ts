@@ -1,5 +1,8 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { SlackService, parseSlackInstallationMetadata } from "@hanzo/shared/src/server";
+import {
+  SlackService,
+  parseSlackInstallationMetadata,
+} from "@hanzo/shared/src/server";
 import { logger } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { getServerAuthSession } from "@/src/server/auth";
@@ -15,7 +18,11 @@ import { prisma } from "@hanzo/shared/src/db";
 /**
  * Handle OAuth install path using the shared InstallProvider
  */
-export async function handleInstallPath(req: NextApiRequest, res: NextApiResponse, projectId: string) {
+export async function handleInstallPath(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  projectId: string,
+) {
   try {
     // Use InstallProvider's handleInstallPath method to render the installation page
     // This method will:
@@ -30,9 +37,14 @@ export async function handleInstallPath(req: NextApiRequest, res: NextApiRespons
 
     // hack because nextjs dev server support for https is experimental
     if (env.NODE_ENV === "development") {
-      installOptions.redirectUri = installOptions.redirectUri?.replace("http://", "https://");
+      installOptions.redirectUri = installOptions.redirectUri?.replace(
+        "http://",
+        "https://",
+      );
     }
-    return await SlackService.getInstance().getInstaller().handleInstallPath(req, res, undefined, installOptions);
+    return await SlackService.getInstance()
+      .getInstaller()
+      .handleInstallPath(req, res, undefined, installOptions);
   } catch (error) {
     logger.error("Install path handler failed", { error, projectId });
     throw error;
@@ -42,13 +54,18 @@ export async function handleInstallPath(req: NextApiRequest, res: NextApiRespons
 /**
  * Handle OAuth callback using the shared InstallProvider
  */
-export async function handleCallback(req: NextApiRequest, res: NextApiResponse) {
+export async function handleCallback(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     return await SlackService.getInstance()
       .getInstaller()
       .handleCallback(req, res, {
         success: async (installation) => {
-          const metadata = parseSlackInstallationMetadata(installation?.metadata);
+          const metadata = parseSlackInstallationMetadata(
+            installation?.metadata,
+          );
           const projectId = metadata.projectId;
 
           logger.info("OAuth callback successful", {

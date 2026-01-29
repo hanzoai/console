@@ -14,7 +14,11 @@ import { Button } from "@/src/components/ui/button";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Trash } from "lucide-react";
 import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { useRouter } from "next/router";
@@ -32,11 +36,19 @@ type WidgetTableRow = {
   owner: "PROJECT" | "HANZO";
 };
 
-export function DeleteWidget({ widgetId, owner }: { widgetId: string; owner: "PROJECT" | "HANZO" }) {
+export function DeleteWidget({
+  widgetId,
+  owner,
+}: {
+  widgetId: string;
+  owner: "PROJECT" | "HANZO";
+}) {
   const projectId = useProjectIdFromURL();
   const utils = api.useUtils();
   const [isOpen, setIsOpen] = useState(false);
-  const hasAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) && owner !== "HANZO";
+  const hasAccess =
+    useHasProjectAccess({ projectId, scope: "dashboards:CUD" }) &&
+    owner !== "HANZO";
   const capture = usePostHogClientCapture();
 
   const mutDeleteWidget = api.dashboardWidgets.delete.useMutation({
@@ -66,8 +78,9 @@ export function DeleteWidget({ widgetId, owner }: { widgetId: string; owner: "PR
       <PopoverContent>
         <h2 className="text-md mb-3 font-semibold">Please confirm</h2>
         <p className="mb-3 text-sm">
-          This action permanently deletes this widget. If the widget is currently used in any dashboard, you will need
-          to remove it from those dashboards first.
+          This action permanently deletes this widget. If the widget is
+          currently used in any dashboard, you will need to remove it from those
+          dashboards first.
         </p>
         <div className="flex justify-end space-x-4">
           <Button
@@ -146,7 +159,10 @@ export function DashboardWidgetTable() {
       cell: (row) => {
         const name = row.getValue();
         return name ? (
-          <TableLink path={`/project/${projectId}/widgets/${encodeURIComponent(row.row.original.id)}`} value={name} />
+          <TableLink
+            path={`/project/${projectId}/widgets/${encodeURIComponent(row.row.original.id)}`}
+            value={name}
+          />
         ) : undefined;
       },
     }),
@@ -172,7 +188,8 @@ export function DashboardWidgetTable() {
       id: "chartType",
       enableSorting: true,
       size: 100,
-      cell: (row) => getChartTypeDisplayName(row.getValue() as DashboardWidgetChartType),
+      cell: (row) =>
+        getChartTypeDisplayName(row.getValue() as DashboardWidgetChartType),
     }),
     columnHelper.accessor("createdAt", {
       header: "Created At",
@@ -236,7 +253,9 @@ export function DashboardWidgetTable() {
         state: paginationState,
       }}
       onRowClick={(row) => {
-        router.push(`/project/${projectId}/widgets/${encodeURIComponent(row.id)}`);
+        router.push(
+          `/project/${projectId}/widgets/${encodeURIComponent(row.id)}`,
+        );
       }}
     />
   );

@@ -1,4 +1,8 @@
-import { prisma as _prisma, type Role, AuditLogRecordType } from "@hanzo/shared/src/db";
+import {
+  prisma as _prisma,
+  type Role,
+  AuditLogRecordType,
+} from "@hanzo/shared/src/db";
 
 export type AuditableResource =
   | "annotationQueue"

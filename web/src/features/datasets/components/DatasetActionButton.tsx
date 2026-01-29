@@ -1,6 +1,12 @@
 import { Button, type ButtonProps } from "@/src/components/ui/button";
 import { Edit, LockIcon, PlusIcon, Trash } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import { useState, forwardRef } from "react";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { DatasetForm } from "@/src/features/datasets/components/DatasetForm";
@@ -38,9 +44,15 @@ interface UpdateDatasetButtonProps extends BaseDatasetButtonProps {
   icon?: boolean;
 }
 
-type DatasetActionButtonProps = CreateDatasetButtonProps | UpdateDatasetButtonProps | DeleteDatasetButtonProps;
+type DatasetActionButtonProps =
+  | CreateDatasetButtonProps
+  | UpdateDatasetButtonProps
+  | DeleteDatasetButtonProps;
 
-export const DatasetActionButton = forwardRef<HTMLButtonElement, DatasetActionButtonProps>((props, ref) => {
+export const DatasetActionButton = forwardRef<
+  HTMLButtonElement,
+  DatasetActionButtonProps
+>((props, ref) => {
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
@@ -81,7 +93,11 @@ export const DatasetActionButton = forwardRef<HTMLButtonElement, DatasetActionBu
                 });
               }}
             >
-              {hasAccess ? <Edit className="mr-2 h-4 w-4" /> : <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />}
+              {hasAccess ? (
+                <Edit className="mr-2 h-4 w-4" />
+              ) : (
+                <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+              )}
               Edit
             </Button>
           )
@@ -99,7 +115,11 @@ export const DatasetActionButton = forwardRef<HTMLButtonElement, DatasetActionBu
               });
             }}
           >
-            {hasAccess ? <Trash className="mr-2 h-4 w-4" /> : <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />}
+            {hasAccess ? (
+              <Trash className="mr-2 h-4 w-4" />
+            ) : (
+              <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+            )}
             Delete
           </Button>
         ) : (
@@ -131,7 +151,8 @@ export const DatasetActionButton = forwardRef<HTMLButtonElement, DatasetActionBu
           </DialogTitle>
           {props.mode === "delete" && (
             <DialogDescription className="text-md p-0">
-              This action cannot be undone and removes all the data associated with this dataset.
+              This action cannot be undone and removes all the data associated
+              with this dataset.
             </DialogDescription>
           )}
         </DialogHeader>

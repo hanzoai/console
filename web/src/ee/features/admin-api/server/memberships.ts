@@ -15,7 +15,11 @@ const DeleteMembershipSchema = z.object({
 });
 
 // GET - Retrieve all organization memberships
-export async function handleGetMemberships(req: NextApiRequest, res: NextApiResponse, orgId: string) {
+export async function handleGetMemberships(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  orgId: string,
+) {
   const memberships = await prisma.organizationMembership.findMany({
     where: {
       orgId: orgId,
@@ -42,7 +46,11 @@ export async function handleGetMemberships(req: NextApiRequest, res: NextApiResp
 }
 
 // PUT - Update or create an organization membership
-export async function handleUpdateMembership(req: NextApiRequest, res: NextApiResponse, orgId: string) {
+export async function handleUpdateMembership(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  orgId: string,
+) {
   const validatedBody = MembershipSchema.safeParse(req.body);
   if (!validatedBody.success) {
     return res.status(400).json({
@@ -91,7 +99,11 @@ export async function handleUpdateMembership(req: NextApiRequest, res: NextApiRe
 }
 
 // DELETE - Remove an organization membership
-export async function handleDeleteMembership(req: NextApiRequest, res: NextApiResponse, orgId: string) {
+export async function handleDeleteMembership(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  orgId: string,
+) {
   const validatedBody = DeleteMembershipSchema.safeParse(req.body);
   if (!validatedBody.success) {
     return res.status(400).json({

@@ -4,7 +4,11 @@ import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-sel
 import { FlaskConical, List } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/src/components/ui/dialog";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -14,7 +18,10 @@ import {
   getDatasetRunCompareTabs,
 } from "@/src/features/navigation/utils/dataset-run-compare-tabs";
 import { useDatasetRunsCompare } from "@/src/features/datasets/hooks/useDatasetRunsCompare";
-import { ActiveCellProvider, useActiveCell } from "@/src/features/datasets/contexts/ActiveCellContext";
+import {
+  ActiveCellProvider,
+  useActiveCell,
+} from "@/src/features/datasets/contexts/ActiveCellContext";
 import { SidePanel, SidePanelContent } from "@/src/components/ui/side-panel";
 import { AnnotationPanel } from "@/src/features/datasets/components/AnnotationPanel";
 
@@ -24,7 +31,8 @@ function DatasetCompareInternal() {
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
 
-  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] = useState(false);
+  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] =
+    useState(false);
   const [isAnnotationPanelOpen, setIsAnnotationPanelOpen] = useState(false);
 
   const hasExperimentWriteAccess = useHasProjectAccess({
@@ -154,10 +162,13 @@ function DatasetCompareInternal() {
                     setLocalRuns([]);
                   } else {
                     capture("dataset_run:compare_run_removed");
-                    const newRunIds = runIds?.filter((id) => id !== changedValueId) ?? [];
+                    const newRunIds =
+                      runIds?.filter((id) => id !== changedValueId) ?? [];
 
                     // Clear baseline if the removed run was the baseline
-                    const baselineRunId = router.query.baseline as string | undefined;
+                    const baselineRunId = router.query.baseline as
+                      | string
+                      | undefined;
                     if (baselineRunId === changedValueId) {
                       const { baseline, ...restQuery } = router.query;
                       void router.push({
@@ -199,7 +210,9 @@ function DatasetCompareInternal() {
               <AnnotationPanel projectId={projectId} />
             ) : (
               <div className="flex items-center justify-center p-4">
-                <span className="text-sm text-muted-foreground">Loading annotation data...</span>
+                <span className="text-sm text-muted-foreground">
+                  Loading annotation data...
+                </span>
               </div>
             )}
           </SidePanelContent>

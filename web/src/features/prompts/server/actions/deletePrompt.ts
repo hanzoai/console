@@ -49,7 +49,9 @@ export const deletePrompt = async (params: DeletePromptParams) => {
   const versionIdsBeingDeleted = new Set(promptVersions.map((p) => p.id));
   const versionsBeingDeleted = new Set(promptVersions.map((p) => p.version));
 
-  const remainingVersions = allVersions.filter((v) => !versionIdsBeingDeleted.has(v.id));
+  const remainingVersions = allVersions.filter(
+    (v) => !versionIdsBeingDeleted.has(v.id),
+  );
 
   // only get dependencies that will actually break
   const blockingDependents = dependents.filter((dep) => {
@@ -59,7 +61,9 @@ export const deletePrompt = async (params: DeletePromptParams) => {
     }
     // block only if no remaining version has this label
     if (dep.child_label) {
-      const labelWillExist = remainingVersions.some((v) => v.labels.includes(dep.child_label));
+      const labelWillExist = remainingVersions.some((v) =>
+        v.labels.includes(dep.child_label),
+      );
       return !labelWillExist;
     }
     return false;
@@ -75,7 +79,9 @@ export const deletePrompt = async (params: DeletePromptParams) => {
     const dependencyMessages = blockingDependents
       .map((d) => {
         const parent = parentPrompts.find((p) => p.id === d.parent_id);
-        const parentInfo = parent ? `${parent.name} v${parent.version}` : d.parent_id;
+        const parentInfo = parent
+          ? `${parent.name} v${parent.version}`
+          : d.parent_id;
         return `${parentInfo} depends on ${promptName} ${d.child_version ? `v${d.child_version}` : d.child_label}`;
       })
       .join("\n");
@@ -91,12 +97,22 @@ export const deletePrompt = async (params: DeletePromptParams) => {
     await promptService.lockCache({ projectId, promptName });
     await promptService.invalidateCache({ projectId, promptName });
 
-    const deletingLatest = promptVersions.some((p) => p.labels.includes("latest"));
-    const latestRemainsAfterDeletion = remainingVersions.some((v) => v.labels.includes("latest"));
+    const deletingLatest = promptVersions.some((p) =>
+      p.labels.includes("latest"),
+    );
+    const latestRemainsAfterDeletion = remainingVersions.some((v) =>
+      v.labels.includes("latest"),
+    );
 
     // reattach "latest" to highest remaining version
-    if (deletingLatest && !latestRemainsAfterDeletion && remainingVersions.length > 0) {
-      const highestRemainingVersion = remainingVersions.reduce((max, v) => (v.version > max.version ? v : max));
+    if (
+      deletingLatest &&
+      !latestRemainsAfterDeletion &&
+      remainingVersions.length > 0
+    ) {
+      const highestRemainingVersion = remainingVersions.reduce((max, v) =>
+        v.version > max.version ? v : max,
+      );
 
       await prisma.prompt.update({
         where: { id: highestRemainingVersion.id },
