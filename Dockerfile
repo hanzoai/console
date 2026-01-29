@@ -2,7 +2,7 @@
 # Multi-stage build optimized for Next.js applications
 
 # ===== Base Stage =====
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Install system dependencies and security updates
 RUN apk update && apk upgrade && \
@@ -13,8 +13,8 @@ RUN apk update && apk upgrade && \
     ca-certificates && \
     rm -rf /var/cache/apk/*
 
-# Enable Corepack for pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable Corepack for pnpm (pinned version for reliability)
+RUN corepack enable && corepack prepare pnpm@9.5.0 --activate
 
 # Create app directory with proper permissions
 WORKDIR /app
@@ -33,13 +33,18 @@ COPY --chown=nextjs:nodejs turbo.json* ./
 # Copy workspace package files
 COPY --chown=nextjs:nodejs web/package.json ./web/
 COPY --chown=nextjs:nodejs worker/package.json ./worker/
-COPY --chown=nextjs:nodejs packages/*/package.json ./packages/*/
+COPY --chown=nextjs:nodejs packages/shared/package.json ./packages/shared/
+COPY --chown=nextjs:nodejs packages/ee/package.json ./packages/ee/
+COPY --chown=nextjs:nodejs packages/config-eslint/package.json ./packages/config-eslint/
+COPY --chown=nextjs:nodejs packages/config-typescript/package.json ./packages/config-typescript/
+COPY --chown=nextjs:nodejs packages/console-js/package.json ./packages/console-js/
+COPY --chown=nextjs:nodejs packages/hanzo-langchain/package.json ./packages/hanzo-langchain/
 
 # Switch to nextjs user for security
 USER nextjs
 
 # Install dependencies with frozen lockfile
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # ===== Builder Stage =====
 FROM deps AS builder
@@ -50,6 +55,15 @@ COPY --chown=nextjs:nodejs . .
 # Set build environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build-time env vars required by env.mjs validation (overridden at runtime)
+ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+ENV NEXTAUTH_SECRET=build-time-secret
+ENV NEXTAUTH_URL=http://localhost:3000
+ENV SALT=build-time-salt-value-that-is-long-enough
+ENV CLICKHOUSE_URL=http://localhost:8123
+ENV CLICKHOUSE_USER=default
+ENV CLICKHOUSE_PASSWORD=placeholder
 
 # Build the application
 RUN pnpm build
