@@ -1,0 +1,24 @@
+{
+  "name": "@hanzo/console",
+  "version": "1.0.0",
+  "description": "Hanzo Console SDK for prompt management and observability",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.7.2"
+  }
+}

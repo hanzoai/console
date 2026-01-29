@@ -1,0 +1,25 @@
+{
+  "name": "hanzo-langchain",
+  "version": "1.0.0",
+  "description": "Hanzo LangChain callback handler for observability",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "langfuse-langchain": "3.38.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
