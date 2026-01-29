@@ -19,7 +19,6 @@ import {
 import { transformFiltersForBackend } from "@/src/features/filters/lib/filter-transform";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
-import { type HanzoColumnDef } from "@/src/components/table/types";
 import {
   type ObservationLevelType,
   type FilterState,
