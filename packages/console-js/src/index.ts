@@ -21,7 +21,7 @@ export interface ChatMessage {
 
 export interface PromptResponse {
   name: string;
-  version?: number;
+  version: number;
   prompt: string | ChatMessage[];
   compile: (variables: Record<string, string>) => ChatMessage[];
 }
@@ -91,7 +91,7 @@ export class Hanzo {
 
     return {
       name: data.name ?? name,
-      version: data.version,
+      version: data.version ?? 1,
       prompt: data.prompt ?? data.content,
       compile,
     };
