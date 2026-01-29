@@ -1,11 +1,11 @@
 export { BaseError } from "./BaseError";
-export { HanzoNotFoundError, HanzoNotFoundError as LangfuseNotFoundError } from "./NotFoundError";
+export { HanzoNotFoundError } from "./NotFoundError";
 export { InvalidRequestError } from "./InvalidRequestError";
 export { UnauthorizedError } from "./UnauthorizedError";
 export { ForbiddenError } from "./ForbiddenError";
 export { MethodNotAllowedError } from "./MethodNotAllowedError";
 export { ApiError } from "./ApiError";
 export { InternalServerError } from "./InternalServerError";
-export { LangfuseConflictError } from "./ConflictError";
+export { HanzoConflictError } from "./ConflictError";
 export { ServiceUnavailableError } from "./ServiceUnavailableError";
 export { NotImplementedError } from "./NotImplementedError";

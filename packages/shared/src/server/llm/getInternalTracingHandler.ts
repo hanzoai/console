@@ -1,4 +1,4 @@
-import CallbackHandler from "langfuse-langchain";
+import CallbackHandler from "hanzo-langchain";
 import { TraceSinkParams } from "./types";
 import { processEventBatch } from "../ingestion/processEventBatch";
 import { logger } from "../logger";
@@ -17,7 +17,7 @@ export function getInternalTracingHandler(traceSinkParams: TraceSinkParams): {
 
   const processTracedEvents = async () => {
     try {
-      const events = await handler.langfuse._exportLocalEvents(
+      const events = await (handler as any).langfuse._exportLocalEvents(
         traceSinkParams.targetProjectId,
       );
 
@@ -41,7 +41,7 @@ export function getInternalTracingHandler(traceSinkParams: TraceSinkParams): {
       }
 
       const processedEvents = events
-        .filter((event) => {
+        .filter((event: any) => {
           if ("id" in event.body) {
             return !blockedSpanIds.has(event.body.id);
           }
@@ -72,7 +72,7 @@ export function getInternalTracingHandler(traceSinkParams: TraceSinkParams): {
           } as any,
         },
         {
-          isLangfuseInternal: true,
+          isHanzoInternal: true,
         },
       );
     } catch (e) {
