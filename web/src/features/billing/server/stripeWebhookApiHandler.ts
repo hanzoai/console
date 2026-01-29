@@ -348,7 +348,6 @@ async function handleSubscriptionChanged(
         stripeProductId: parsedOrg.cloudConfig?.stripe?.activeProductId || undefined,
       });
     }
-    // commnet
 
     // need to update the plan in the api keys
     await new ApiAuthService(prisma, redis).invalidateCachedOrgApiKeys(parsedOrg.id);
