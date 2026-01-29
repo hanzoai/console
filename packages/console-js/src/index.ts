@@ -14,7 +14,7 @@ export interface PromptOptions {
   type?: "chat" | "text";
 }
 
-export interface ChatMessage {
+export interface PromptMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
@@ -22,8 +22,8 @@ export interface ChatMessage {
 export interface PromptResponse {
   name: string;
   version: number;
-  prompt: string | ChatMessage[];
-  compile: (variables: Record<string, string>) => ChatMessage[];
+  prompt: string | PromptMessage[];
+  compile: (variables: Record<string, string>) => PromptMessage[];
 }
 
 /**
@@ -69,12 +69,12 @@ export class Hanzo {
     const data = await response.json();
 
     // Create a compile function that substitutes variables in the prompt
-    const compile = (variables: Record<string, string>): ChatMessage[] => {
+    const compile = (variables: Record<string, string>): PromptMessage[] => {
       const promptContent = data.prompt ?? data.content ?? "";
 
       // Handle chat prompts (array of messages)
       if (Array.isArray(promptContent)) {
-        return promptContent.map((msg: ChatMessage) => ({
+        return promptContent.map((msg: PromptMessage) => ({
           ...msg,
           content: substituteVariables(msg.content, variables),
         }));

@@ -4,7 +4,6 @@ import {
 } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  type ChatMessage,
   ChatMessageType,
   fetchLLMCompletion,
   logger,
@@ -117,8 +116,9 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
         const modelParams = getDefaultModelParams();
 
         const llmCompletion = await fetchLLMCompletion({
-          messages: messages.map((m: ChatMessage) => ({
-            ...m,
+          messages: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
             type: ChatMessageType.PublicAPICreated,
           })),
           modelParams,
