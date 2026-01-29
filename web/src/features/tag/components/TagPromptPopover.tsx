@@ -3,7 +3,7 @@ import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type RouterOutput, type RouterInput } from "@/src/utils/types";
 import TagManager from "@/src/features/tag/components/TagManager";
-import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
+// trpcErrorToast import removed - was unused
 
 type TagPromptPopverProps = {
   tags: string[];

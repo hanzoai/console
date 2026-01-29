@@ -1,9 +1,9 @@
-import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
+import { HanzoCloudIcon as _HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export function Spinner(props: { message: string }) {
-  const [animationComplete, setAnimationComplete] = useState(false);
+  const [_animationComplete, setAnimationComplete] = useState(false);
   const logoVariants = {
     initial: {
       opacity: 0,

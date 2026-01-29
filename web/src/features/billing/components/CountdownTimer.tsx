@@ -61,7 +61,7 @@ const CountdownTimer: React.FC<CountdownProps> = ({ expiredAt, orgId }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [expiredAt]);
+  }, [expiredAt, orgId, updateCredits]);
 
   return (
     <p className="text-sm text-muted-foreground">

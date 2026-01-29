@@ -5,7 +5,11 @@
 
 import { Card } from "@/src/components/ui/card";
 
-export const AuditLogsSettingsPage = ({ projectId }: { projectId: string }) => {
+export const AuditLogsSettingsPage = ({
+  projectId: _projectId,
+}: {
+  projectId: string;
+}) => {
   return (
     <Card className="p-4">
       <p className="text-sm text-muted-foreground">
