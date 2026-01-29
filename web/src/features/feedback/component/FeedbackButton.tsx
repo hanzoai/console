@@ -30,11 +30,7 @@ export function FeedbackButtonWrapper({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        className={className}
-        asChild
-        onClick={(e) => e.stopPropagation()}
-      >
+      <DialogTrigger className={className} asChild onClick={(e) => e.stopPropagation()}>
         {children}
       </DialogTrigger>
       <DialogPortal>

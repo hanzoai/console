@@ -49,26 +49,19 @@ class TokenCountWorkerManager {
   private createWorkerWithListeners(): Worker {
     const worker = new Worker(this.workerPath);
 
-    worker.on(
-      "message",
-      (data: {
-        id: string;
-        result: number | undefined;
-        error: string | null;
-      }) => {
-        const request = this.pool.pendingRequests.get(data.id);
-        if (request) {
-          clearTimeout(request.timeout);
-          this.pool.pendingRequests.delete(data.id);
+    worker.on("message", (data: { id: string; result: number | undefined; error: string | null }) => {
+      const request = this.pool.pendingRequests.get(data.id);
+      if (request) {
+        clearTimeout(request.timeout);
+        this.pool.pendingRequests.delete(data.id);
 
-          if (data.error) {
-            request.reject(new Error(data.error));
-          } else {
-            request.resolve(data.result);
-          }
+        if (data.error) {
+          request.reject(new Error(data.error));
+        } else {
+          request.resolve(data.result);
         }
-      },
-    );
+      }
+    });
 
     worker.on("error", (error) => {
       logger.error("Worker thread error:", error);
@@ -108,24 +101,18 @@ class TokenCountWorkerManager {
 
   private getNextWorker(): Worker {
     const worker = this.pool.workers[this.pool.currentWorkerIndex];
-    this.pool.currentWorkerIndex =
-      (this.pool.currentWorkerIndex + 1) % this.poolSize;
+    this.pool.currentWorkerIndex = (this.pool.currentWorkerIndex + 1) % this.poolSize;
     return worker;
   }
 
-  async tokenCount(
-    params: { model: Model; text: unknown },
-    timeoutMs = 30000,
-  ): Promise<number | undefined> {
+  async tokenCount(params: { model: Model; text: unknown }, timeoutMs = 30000): Promise<number | undefined> {
     return new Promise((resolve, reject) => {
       const id = `token-count-${++this.requestCounter}-${Date.now()}`;
       const worker = this.getNextWorker();
 
       const timeout = setTimeout(() => {
         this.pool.pendingRequests.delete(id);
-        reject(
-          new Error(`Token count operation timed out after ${timeoutMs}ms`),
-        );
+        reject(new Error(`Token count operation timed out after ${timeoutMs}ms`));
       }, timeoutMs);
 
       this.pool.pendingRequests.set(id, { resolve, reject, timeout });
@@ -158,13 +145,9 @@ class TokenCountWorkerManager {
 // Singleton instance
 let workerManager: TokenCountWorkerManager | null = null;
 
-export function getTokenCountWorkerManager(
-  poolSize?: number,
-): TokenCountWorkerManager {
+export function getTokenCountWorkerManager(poolSize?: number): TokenCountWorkerManager {
   if (!workerManager) {
-    workerManager = new TokenCountWorkerManager(
-      poolSize ?? env.HANZO_TOKEN_COUNT_WORKER_POOL_SIZE,
-    );
+    workerManager = new TokenCountWorkerManager(poolSize ?? env.HANZO_TOKEN_COUNT_WORKER_POOL_SIZE);
   }
   return workerManager;
 }

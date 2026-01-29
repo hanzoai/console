@@ -5,18 +5,10 @@ import { api } from "@/src/utils/api";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
-import {
-  type ScoreConfigDataType,
-  type Prisma,
-  type ScoreConfigCategoryDomain,
-} from "@hanzo/shared";
+import { type ScoreConfigDataType, type Prisma, type ScoreConfigCategoryDomain } from "@hanzo/shared";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
-import {
-  isBooleanDataType,
-  isCategoricalDataType,
-  isNumericDataType,
-} from "@/src/features/scores/lib/helpers";
+import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";
 import { Edit, MoreVertical } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
@@ -46,9 +38,7 @@ type ScoreConfigTableRow = {
   isArchived: boolean;
 };
 
-function getConfigRange(
-  originalRow: ScoreConfigTableRow,
-): undefined | Prisma.JsonValue {
+function getConfigRange(originalRow: ScoreConfigTableRow): undefined | Prisma.JsonValue {
   const { range, dataType } = originalRow;
 
   if (isNumericDataType(dataType)) {
@@ -84,10 +74,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
     scope: "scoreConfigs:CUD",
   });
 
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
-    "scoreConfigs",
-    "s",
-  );
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("scoreConfigs", "s");
 
   const configs = api.scoreConfigs.all.useQuery(
     {
@@ -128,9 +115,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const range = getConfigRange(row.original);
 
-        return !!range ? (
-          <IOTableCell data={range} singleLine={rowHeight === "s"} />
-        ) : null;
+        return !!range ? <IOTableCell data={range} singleLine={rowHeight === "s"} /> : null;
       },
     },
     {
@@ -141,9 +126,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const value = row.original.description;
 
-        return !!value ? (
-          <IOTableCell data={value} singleLine={rowHeight === "s"} />
-        ) : null;
+        return !!value ? <IOTableCell data={value} singleLine={rowHeight === "s"} /> : null;
       },
     },
     {
@@ -188,11 +171,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                key={configId}
-                aria-label="edit"
-                onClick={() => setEditConfigId(configId)}
-              >
+              <DropdownMenuItem key={configId} aria-label="edit" onClick={() => setEditConfigId(configId)}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
@@ -211,16 +190,12 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
     },
   ];
 
-  const [columnVisibility, setColumnVisibility] =
-    useColumnVisibility<ScoreConfigTableRow>(
-      "scoreConfigsColumnVisibility",
-      columns,
-    );
-
-  const [columnOrder, setColumnOrder] = useColumnOrder<ScoreConfigTableRow>(
-    "scoreConfigsColumnOrder",
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility<ScoreConfigTableRow>(
+    "scoreConfigsColumnVisibility",
     columns,
   );
+
+  const [columnOrder, setColumnOrder] = useColumnOrder<ScoreConfigTableRow>("scoreConfigsColumnOrder", columns);
 
   return (
     <>
@@ -306,9 +281,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
                   minValue: configQuery.data.minValue ?? undefined,
                   maxValue: configQuery.data.maxValue ?? undefined,
                   description: configQuery.data.description ?? undefined,
-                  categories: configQuery.data.categories?.length
-                    ? configQuery.data.categories
-                    : undefined,
+                  categories: configQuery.data.categories?.length ? configQuery.data.categories : undefined,
                 }
               : undefined
           }

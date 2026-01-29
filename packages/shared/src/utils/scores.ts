@@ -1,8 +1,6 @@
 import z from "zod/v4";
 
-export const applyScoreValidation = <T extends z.ZodType<any, any, any>>(
-  schema: T,
-) => {
+export const applyScoreValidation = <T extends z.ZodType<any, any, any>>(schema: T) => {
   return schema.refine(
     (data) => {
       const hasTraceId = !!data.traceId;
@@ -11,10 +9,7 @@ export const applyScoreValidation = <T extends z.ZodType<any, any, any>>(
 
       return (
         (hasTraceId && !hasSessionId && !hasDatasetRunId) ||
-        (hasSessionId &&
-          !hasTraceId &&
-          !hasDatasetRunId &&
-          !data.observationId) ||
+        (hasSessionId && !hasTraceId && !hasDatasetRunId && !data.observationId) ||
         (hasDatasetRunId && !hasTraceId && !hasSessionId && !data.observationId)
       );
     },

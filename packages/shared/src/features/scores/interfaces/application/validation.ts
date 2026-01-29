@@ -1,11 +1,6 @@
 import z from "zod/v4";
 import { APIScoreSchemaV1, APIScoreV1 } from "../api/v1/schemas";
-import {
-  ScoreDomain,
-  ScoreSchema,
-  ScoreDataTypeType,
-  ScoresByDataTypes,
-} from "../../../../domain";
+import { ScoreDomain, ScoreSchema, ScoreDataTypeType, ScoresByDataTypes } from "../../../../domain";
 
 type ValidatedScore<
   IncludeHasMetadata extends boolean,
@@ -23,8 +18,7 @@ type InputScore = ScoreDomain & { hasMetadata?: boolean };
  * @returns validated score
  * @throws error if score fails validation
  */
-export const validateDbScore = (score: unknown): ScoreDomain =>
-  ScoreSchema.parse(score);
+export const validateDbScore = (score: unknown): ScoreDomain => ScoreSchema.parse(score);
 
 /**
  * Use this function when pulling a list of scores from the database before using in the application to ensure type safety.
@@ -87,9 +81,7 @@ type ValidatedAPITraceScore<IncludeHasMetadata extends boolean> = APIScoreV1 & {
  * @param scores
  * @returns list of validated scores
  */
-export const filterAndValidateDbTraceScoreList = <
-  IncludeHasMetadata extends boolean,
->({
+export const filterAndValidateDbTraceScoreList = <IncludeHasMetadata extends boolean>({
   scores,
   includeHasMetadata = false as IncludeHasMetadata,
   onParseError,

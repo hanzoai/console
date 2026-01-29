@@ -4,11 +4,7 @@ import { http, HttpResponse } from "msw";
 import { executeWebhook } from "../queues/webhooks";
 import { prisma } from "@hanzo/shared/src/db";
 import { encrypt } from "@hanzo/shared/encryption";
-import {
-  ActionExecutionStatus,
-  JobConfigState,
-  PromptDomainSchema,
-} from "@hanzo/shared";
+import { ActionExecutionStatus, JobConfigState, PromptDomainSchema } from "@hanzo/shared";
 import type { WebhookInput } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
@@ -148,17 +144,8 @@ describe("Webhook Redirect Functional Tests", () => {
   }
 
   // Helper function to prepare webhook input with execution record
-  async function prepareWebhookExecution(
-    automation: Awaited<ReturnType<typeof createTestAutomation>>,
-  ) {
-    const {
-      projectId,
-      automationId,
-      executionId,
-      promptId,
-      triggerId,
-      actionId,
-    } = automation;
+  async function prepareWebhookExecution(automation: Awaited<ReturnType<typeof createTestAutomation>>) {
+    const { projectId, automationId, executionId, promptId, triggerId, actionId } = automation;
 
     // Get the full prompt for the payload
     const fullPrompt = await prisma.prompt.findUnique({
@@ -195,9 +182,7 @@ describe("Webhook Redirect Functional Tests", () => {
 
   describe("Legitimate Redirects", () => {
     it("should follow single redirect to valid public URL", async () => {
-      const automation = await createTestAutomation(
-        "https://redirector.example.com/step1",
-      );
+      const automation = await createTestAutomation("https://redirector.example.com/step1");
 
       let step1Called = false;
       let step2Called = false;
@@ -234,9 +219,7 @@ describe("Webhook Redirect Functional Tests", () => {
     });
 
     it("should follow multiple redirects to valid URLs", async () => {
-      const automation = await createTestAutomation(
-        "https://redirector.example.com/step1",
-      );
+      const automation = await createTestAutomation("https://redirector.example.com/step1");
 
       const callOrder: string[] = [];
 
@@ -278,9 +261,7 @@ describe("Webhook Redirect Functional Tests", () => {
     });
 
     it("should handle no redirects (direct response)", async () => {
-      const automation = await createTestAutomation(
-        "https://direct.example.com/webhook",
-      );
+      const automation = await createTestAutomation("https://direct.example.com/webhook");
 
       let called = false;
 
@@ -308,9 +289,7 @@ describe("Webhook Redirect Functional Tests", () => {
     });
 
     it("should resolve relative URL redirects correctly", async () => {
-      const automation = await createTestAutomation(
-        "https://relative-redirect.example.com/start",
-      );
+      const automation = await createTestAutomation("https://relative-redirect.example.com/start");
 
       let finalCalled = false;
 
@@ -346,9 +325,7 @@ describe("Webhook Redirect Functional Tests", () => {
 
   describe("Edge Cases", () => {
     it("should fail when max redirect depth exceeded", async () => {
-      const automation = await createTestAutomation(
-        "https://infinite-redirect.example.com/step0",
-      );
+      const automation = await createTestAutomation("https://infinite-redirect.example.com/step0");
 
       // Create 11 redirects (exceeds default max of 10)
       const handlers = [];
@@ -356,17 +333,14 @@ describe("Webhook Redirect Functional Tests", () => {
         const currentStep = i;
         const nextStep = i + 1;
         handlers.push(
-          http.post(
-            `https://infinite-redirect.example.com/step${currentStep}`,
-            () => {
-              return new Response(null, {
-                status: 302,
-                headers: {
-                  Location: `https://infinite-redirect.example.com/step${nextStep}`,
-                },
-              });
-            },
-          ),
+          http.post(`https://infinite-redirect.example.com/step${currentStep}`, () => {
+            return new Response(null, {
+              status: 302,
+              headers: {
+                Location: `https://infinite-redirect.example.com/step${nextStep}`,
+              },
+            });
+          }),
         );
       }
 
@@ -388,9 +362,7 @@ describe("Webhook Redirect Functional Tests", () => {
     });
 
     it("should detect and block circular redirects", async () => {
-      const automation = await createTestAutomation(
-        "https://circular.example.com/a",
-      );
+      const automation = await createTestAutomation("https://circular.example.com/a");
 
       server.use(
         http.post("https://circular.example.com/a", () => {
@@ -423,9 +395,7 @@ describe("Webhook Redirect Functional Tests", () => {
     });
 
     it("should fail on missing Location header in redirect response", async () => {
-      const automation = await createTestAutomation(
-        "https://broken-redirect.example.com/hook",
-      );
+      const automation = await createTestAutomation("https://broken-redirect.example.com/hook");
 
       server.use(
         http.post("https://broken-redirect.example.com/hook", () => {

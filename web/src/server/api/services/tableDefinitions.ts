@@ -58,8 +58,7 @@ export const duration = {
   name: "duration",
   id: "duration",
   type: "number",
-  internal:
-    'EXTRACT(EPOCH FROM o."end_time") - EXTRACT(EPOCH FROM o."start_time")',
+  internal: 'EXTRACT(EPOCH FROM o."end_time") - EXTRACT(EPOCH FROM o."start_time")',
 } as const;
 export const release = {
   name: "Release",

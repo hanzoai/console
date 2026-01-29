@@ -1,16 +1,10 @@
 import { api } from "@/src/utils/api";
 
 import { ImageOff } from "lucide-react";
-import {
-  MediaReferenceStringSchema,
-  type ParsedMediaReferenceType,
-} from "@hanzo/shared";
+import { MediaReferenceStringSchema, type ParsedMediaReferenceType } from "@hanzo/shared";
 import { ResizableImage } from "@/src/components/ui/resizable-image";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
-import {
-  type MediaContentType,
-  type MediaReturnType,
-} from "@/src/features/media/validation";
+import { type MediaContentType, type MediaReturnType } from "@/src/features/media/validation";
 import { File, Image as ImageIcon, Volume2 } from "lucide-react";
 
 export const HanzoMediaView = ({
@@ -27,8 +21,7 @@ export const HanzoMediaView = ({
   const projectId = useProjectIdFromURL();
 
   if (mediaReferenceString && typeof mediaReferenceString === "string") {
-    const { success, data: parsedTag } =
-      MediaReferenceStringSchema.safeParse(mediaReferenceString);
+    const { success, data: parsedTag } = MediaReferenceStringSchema.safeParse(mediaReferenceString);
     if (success)
       mediaData = {
         id: parsedTag.id,
@@ -81,11 +74,7 @@ export const HanzoMediaView = ({
   if (mediaData.type.startsWith("image")) {
     return (
       <div>
-        <ResizableImage
-          src={mediaUrl}
-          isDefaultVisible={true}
-          shouldValidateImageSource={false}
-        />
+        <ResizableImage src={mediaUrl} isDefaultVisible={true} shouldValidateImageSource={false} />
       </div>
     );
   } else if (mediaData.type.startsWith("audio")) {
@@ -97,13 +86,7 @@ export const HanzoMediaView = ({
   }
 };
 
-function FileViewer({
-  src,
-  contentType,
-}: {
-  src?: string;
-  contentType: MediaContentType;
-}) {
+function FileViewer({ src, contentType }: { src?: string; contentType: MediaContentType }) {
   if (!src) return null;
 
   const mimeType = String(contentType);

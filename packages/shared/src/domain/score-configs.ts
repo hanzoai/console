@@ -30,17 +30,13 @@ export const BooleanConfigFields = z.object({
       ];
       return categories.every(
         (category, index) =>
-          category.label === expectedCategories[index].label &&
-          category.value === expectedCategories[index].value,
+          category.label === expectedCategories[index].label && category.value === expectedCategories[index].value,
       );
     }),
 });
 
 // Category config fields and types
-export const validateCategories = (
-  categories: z.infer<typeof ScoreConfigCategory>[],
-  ctx: z.RefinementCtx,
-) => {
+export const validateCategories = (categories: z.infer<typeof ScoreConfigCategory>[], ctx: z.RefinementCtx) => {
   const uniqueNames = new Set<string>();
   const uniqueValues = new Set<number>();
 
@@ -87,11 +83,7 @@ export const validateNumericRangeFields = (
   ctx: z.RefinementCtx,
 ): void | Promise<void> => {
   if (data.dataType === "NUMERIC") {
-    if (
-      isPresent(data.maxValue) &&
-      isPresent(data.minValue) &&
-      data.maxValue <= data.minValue
-    ) {
+    if (isPresent(data.maxValue) && isPresent(data.minValue) && data.maxValue <= data.minValue) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Maximum value must be greater than Minimum value",

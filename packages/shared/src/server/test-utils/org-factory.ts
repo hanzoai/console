@@ -3,13 +3,8 @@ import { prisma } from "../../db";
 import { hashSecretKey, getDisplaySecretKey } from "../auth/apiKeys";
 import { CloudConfigSchema } from "../../interfaces/cloudConfigSchema";
 
-export function createBasicAuthHeader(
-  username: string,
-  password: string,
-): string {
-  const base64Credentials = Buffer.from(`${username}:${password}`).toString(
-    "base64",
-  );
+export function createBasicAuthHeader(username: string, password: string): string {
+  const base64Credentials = Buffer.from(`${username}:${password}`).toString("base64");
   return `Basic ${base64Credentials}`;
 }
 
@@ -17,9 +12,7 @@ export type CreateOrgProjectAndApiKeyOptions = {
   projectId?: string;
   plan?: "Team" | "Hobby" | "Core" | "Pro" | "Enterprise";
 };
-export const createOrgProjectAndApiKey = async (
-  props?: CreateOrgProjectAndApiKeyOptions,
-) => {
+export const createOrgProjectAndApiKey = async (props?: CreateOrgProjectAndApiKeyOptions) => {
   const projectId = props?.projectId ?? v4();
   const org = await prisma.organization.create({
     data: {

@@ -20,11 +20,7 @@ export const DuplicateDatasetButton: React.FC<{
   });
 
   const handleDuplicate = () => {
-    if (
-      confirm(
-        "Are you sure you want to duplicate this dataset and all of its items?",
-      )
-    ) {
+    if (confirm("Are you sure you want to duplicate this dataset and all of its items?")) {
       duplicateDataset.mutate({ projectId, datasetId });
     }
   };

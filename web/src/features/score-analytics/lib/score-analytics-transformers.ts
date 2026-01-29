@@ -112,13 +112,8 @@ export function extractCategories(params: {
  * // ]
  * ```
  */
-export function fillDistributionBins(
-  distribution: Distribution,
-  categories: string[],
-): Distribution {
-  const binMap = new Map(
-    distribution.map((item) => [item.binIndex, item.count]),
-  );
+export function fillDistributionBins(distribution: Distribution, categories: string[]): Distribution {
+  const binMap = new Map(distribution.map((item) => [item.binIndex, item.count]));
 
   return categories.map((_, index) => ({
     binIndex: index,
@@ -162,13 +157,9 @@ export function calculateModeMetrics(params: {
 
   // Extract unique categories and create mapping
   // This matches the ORDER BY in the ClickHouse query
-  const uniqueCategories = Array.from(
-    new Set(params.timeSeries.map((item) => item.category)),
-  ).sort();
+  const uniqueCategories = Array.from(new Set(params.timeSeries.map((item) => item.category))).sort();
 
-  const binIndexToCategory = new Map(
-    uniqueCategories.map((cat, idx) => [idx, cat]),
-  );
+  const binIndexToCategory = new Map(uniqueCategories.map((cat, idx) => [idx, cat]));
 
   // Find bin with max count (mode)
   const maxCount = Math.max(...params.distribution.map((d) => d.count));
@@ -217,10 +208,7 @@ export function transformHeatmapData(params: {
   apiData: RouterOutputs["scoreAnalytics"]["getScoreComparisonAnalytics"];
   dataType: DataType;
   parsedScore1: { name: string; dataType: string; source: string };
-}):
-  | ReturnType<typeof generateNumericHeatmapData>
-  | ReturnType<typeof generateConfusionMatrixData>
-  | null {
+}): ReturnType<typeof generateNumericHeatmapData> | ReturnType<typeof generateConfusionMatrixData> | null {
   const { apiData, dataType } = params;
 
   if (!apiData) return null;
@@ -281,11 +269,7 @@ export function transformHeatmapData(params: {
  * // Returns: ['[0.0, 0.2)', '[0.2, 0.5)', '[0.5, 0.8)', '[0.8, 1.0)']
  * ```
  */
-export function generateBinLabels(params: {
-  min: number;
-  max: number;
-  nBins: number;
-}): string[] {
+export function generateBinLabels(params: { min: number; max: number; nBins: number }): string[] {
   const { min, max, nBins } = params;
   const binWidth = (max - min) / nBins;
 

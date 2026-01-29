@@ -6,23 +6,16 @@ import { env } from "../env";
 // In this case it is not used as we will skip this migration and run the RMT migration instead
 // const backgroundMigrationId = "8d47f91b-3e5c-4a26-9f85-c12d6e4b9a3d";
 
-export default class MigrateDatasetRunItemsFromPostgresToClickhouse
-  implements IBackgroundMigration
-{
+export default class MigrateDatasetRunItemsFromPostgresToClickhouse implements IBackgroundMigration {
   async validate(): Promise<{
     valid: boolean;
     invalidReason: string | undefined;
   }> {
     // Check if Clickhouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Clickhouse credentials must be configured to perform migration",
       };
     }
 
@@ -37,9 +30,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouse
   }
 
   async abort(): Promise<void> {
-    logger.info(
-      `Aborting migration of dataset run items from Postgres to clickhouse`,
-    );
+    logger.info(`Aborting migration of dataset run items from Postgres to clickhouse`);
   }
 }
 

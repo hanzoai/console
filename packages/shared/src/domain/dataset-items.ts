@@ -21,7 +21,4 @@ export type DatasetItemDomain = Pick<
  * DatasetItemDomain without IO fields (input, expectedOutput, metadata)
  * Used for listing items without fetching large payloads
  */
-export type DatasetItemDomainWithoutIO = Omit<
-  DatasetItemDomain,
-  "input" | "expectedOutput" | "metadata"
->;
+export type DatasetItemDomainWithoutIO = Omit<DatasetItemDomain, "input" | "expectedOutput" | "metadata">;

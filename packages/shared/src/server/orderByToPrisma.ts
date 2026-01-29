@@ -12,10 +12,7 @@ import { logger } from "./logger";
  * @param tableColumns column definitions, used to map orderBy column to internal name
  * @returns Prisma.sql
  */
-export function orderByToPrismaSql(
-  orderBy: OrderByState,
-  tableColumns: ColumnDefinition[],
-): Prisma.Sql {
+export function orderByToPrismaSql(orderBy: OrderByState, tableColumns: ColumnDefinition[]): Prisma.Sql {
   if (!orderBy) {
     return Prisma.sql`ORDER BY t.timestamp DESC`;
   }

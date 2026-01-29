@@ -1,9 +1,4 @@
-import {
-  BooleanData,
-  CategoricalData,
-  NumericData,
-  ScoreSchemaExclReferencesAndDates,
-} from "../../../../../domain";
+import { BooleanData, CategoricalData, NumericData, ScoreSchemaExclReferencesAndDates } from "../../../../../domain";
 import z from "zod/v4";
 
 const CorrectionData = z.object({
@@ -30,12 +25,7 @@ const ScoreFoundationSchemaV2 = ScoreSchemaExclReferencesAndDates.extend({
 });
 
 export const APIScoreSchemaV2 = ScoreFoundationSchemaV2.and(
-  z.discriminatedUnion("dataType", [
-    NumericData,
-    CategoricalData,
-    BooleanData,
-    CorrectionData,
-  ]),
+  z.discriminatedUnion("dataType", [NumericData, CategoricalData, BooleanData, CorrectionData]),
 );
 
 export type APIScoreV2 = z.infer<typeof APIScoreSchemaV2>;

@@ -19,11 +19,7 @@
  */
 
 import { type ReactNode } from "react";
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-  ResizableHandle,
-} from "@/src/components/ui/resizable";
+import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from "@/src/components/ui/resizable";
 import { useDesktopLayoutContext } from "./TraceLayoutDesktop";
 import { TracePanelNavigationHeader } from "./TracePanelNavigationHeader";
 import { TracePanelNavigationHiddenNotice } from "./TracePanelNavigationHiddenNotice";
@@ -35,8 +31,7 @@ export function TracePanelNavigationLayoutDesktop({
   children: ReactNode;
   secondaryContent?: ReactNode;
 }) {
-  const { isNavigationPanelCollapsed, handleTogglePanel, shouldPulseToggle } =
-    useDesktopLayoutContext();
+  const { isNavigationPanelCollapsed, handleTogglePanel, shouldPulseToggle } = useDesktopLayoutContext();
 
   return (
     <div className="flex h-full flex-col border-r">
@@ -49,10 +44,7 @@ export function TracePanelNavigationLayoutDesktop({
         <>
           <TracePanelNavigationHiddenNotice />
           {secondaryContent ? (
-            <ResizablePanelGroup
-              direction="vertical"
-              className="flex-1 overflow-hidden"
-            >
+            <ResizablePanelGroup direction="vertical" className="flex-1 overflow-hidden">
               <ResizablePanel defaultSize={60} minSize={20}>
                 <div className="h-full overflow-hidden">{children}</div>
               </ResizablePanel>

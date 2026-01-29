@@ -108,11 +108,7 @@ export function IOPreviewJSONSimple({
           currentView="json"
           externalExpansionState={inputExpanded}
           // Cast: PrettyJsonView accepts union type, but JSON view only uses boolean
-          onExternalExpansionChange={
-            onInputExpandedChange as (
-              expansion: boolean | Record<string, boolean>,
-            ) => void
-          }
+          onExternalExpansionChange={onInputExpandedChange as (expansion: boolean | Record<string, boolean>) => void}
         />
       )}
       {showOutput && (
@@ -125,11 +121,7 @@ export function IOPreviewJSONSimple({
           media={media?.filter((m) => m.field === "output") ?? []}
           currentView="json"
           externalExpansionState={outputExpanded}
-          onExternalExpansionChange={
-            onOutputExpandedChange as (
-              expansion: boolean | Record<string, boolean>,
-            ) => void
-          }
+          onExternalExpansionChange={onOutputExpandedChange as (expansion: boolean | Record<string, boolean>) => void}
         />
       )}
       {showCorrections && (
@@ -152,11 +144,7 @@ export function IOPreviewJSONSimple({
           media={media?.filter((m) => m.field === "metadata") ?? []}
           currentView="json"
           externalExpansionState={metadataExpanded}
-          onExternalExpansionChange={
-            onMetadataExpandedChange as (
-              expansion: boolean | Record<string, boolean>,
-            ) => void
-          }
+          onExternalExpansionChange={onMetadataExpandedChange as (expansion: boolean | Record<string, boolean>) => void}
         />
       )}
     </div>

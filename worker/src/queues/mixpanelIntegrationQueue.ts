@@ -1,9 +1,5 @@
 import { Processor } from "bullmq";
-import {
-  instrumentAsync,
-  logger,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { handleMixpanelIntegrationSchedule } from "../features/mixpanel/handleMixpanelIntegrationSchedule";
 import { handleMixpanelIntegrationProjectJob } from "../features/mixpanel/handleMixpanelIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";
@@ -20,9 +16,7 @@ export const mixpanelIntegrationProcessor: Processor = async (job) => {
   }
 };
 
-export const mixpanelIntegrationProcessingProcessor: Processor = async (
-  job,
-) => {
+export const mixpanelIntegrationProcessingProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.MixpanelIntegrationProcessingJob) {
     return await instrumentAsync(
       {
@@ -34,10 +28,7 @@ export const mixpanelIntegrationProcessingProcessor: Processor = async (
         try {
           return await handleMixpanelIntegrationProjectJob(job);
         } catch (error) {
-          logger.error(
-            "Error executing MixpanelIntegrationProcessingJob",
-            error,
-          );
+          logger.error("Error executing MixpanelIntegrationProcessingJob", error);
           throw error;
         }
       },

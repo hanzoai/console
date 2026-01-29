@@ -26,34 +26,19 @@ import { ClickhouseWriter, TableName } from "../services/ClickhouseWriter";
 import { chunk } from "lodash";
 import { randomUUID } from "crypto";
 
-export const ingestionQueueProcessorBuilder = (
-  enableRedirectToSecondaryQueue: boolean,
-): Processor => {
+export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: boolean): Processor => {
   const projectIdsToRedirectToSecondaryQueue =
-    env.HANZO_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS?.split(",") ??
-    [];
+    env.HANZO_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS?.split(",") ?? [];
 
   return async (job: Job<TQueueJobTypes[QueueName.IngestionQueue]>) => {
     try {
       const span = getCurrentSpan();
       if (span) {
         span.setAttribute("messaging.bullmq.job.input.id", job.data.id);
-        span.setAttribute(
-          "messaging.bullmq.job.input.projectId",
-          job.data.payload.authCheck.scope.projectId,
-        );
-        span.setAttribute(
-          "messaging.bullmq.job.input.eventBodyId",
-          job.data.payload.data.eventBodyId,
-        );
-        span.setAttribute(
-          "messaging.bullmq.job.input.type",
-          job.data.payload.data.type,
-        );
-        span.setAttribute(
-          "messaging.bullmq.job.input.fileKey",
-          job.data.payload.data.fileKey ?? "",
-        );
+        span.setAttribute("messaging.bullmq.job.input.projectId", job.data.payload.authCheck.scope.projectId);
+        span.setAttribute("messaging.bullmq.job.input.eventBodyId", job.data.payload.data.eventBodyId);
+        span.setAttribute("messaging.bullmq.job.input.type", job.data.payload.data.type);
+        span.setAttribute("messaging.bullmq.job.input.fileKey", job.data.payload.data.fileKey ?? "");
       }
 
       // We write the new file into the ClickHouse event log to keep track for retention and deletions
@@ -81,11 +66,7 @@ export const ingestionQueueProcessorBuilder = (
       }
 
       // If fileKey was processed within the last minutes, i.e. has a match in redis, we skip processing.
-      if (
-        env.HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" &&
-        redis &&
-        job.data.payload.data.fileKey
-      ) {
+      if (env.HANZO_ENABLE_REDIS_SEEN_EVENT_CACHE === "true" && redis && job.data.payload.data.fileKey) {
         const key = `hanzo:ingestion:recently-processed:${job.data.payload.authCheck.scope.projectId}:${job.data.payload.data.type}:${job.data.payload.data.eventBodyId}:${job.data.payload.data.fileKey}`;
         const exists = await redis.exists(key);
         if (exists) {
@@ -107,20 +88,13 @@ export const ingestionQueueProcessorBuilder = (
 
       // Check if project should be redirected to secondary queue
       const projectId = job.data.payload.authCheck.scope.projectId;
-      const shouldRedirectEnv =
-        projectIdsToRedirectToSecondaryQueue.includes(projectId);
+      const shouldRedirectEnv = projectIdsToRedirectToSecondaryQueue.includes(projectId);
       const shouldRedirectSlowdown = await hasS3SlowdownFlag(projectId);
 
-      if (
-        enableRedirectToSecondaryQueue &&
-        (shouldRedirectEnv || shouldRedirectSlowdown)
-      ) {
-        logger.debug(
-          `Redirecting ingestion event to secondary queue for project ${projectId}`,
-          {
-            reason: shouldRedirectSlowdown ? "s3_slowdown_flag" : "env_config",
-          },
-        );
+      if (enableRedirectToSecondaryQueue && (shouldRedirectEnv || shouldRedirectSlowdown)) {
+        logger.debug(`Redirecting ingestion event to secondary queue for project ${projectId}`, {
+          reason: shouldRedirectSlowdown ? "s3_slowdown_flag" : "env_config",
+        });
         const secondaryQueue = getQueue(QueueName.IngestionSecondaryQueue);
         if (secondaryQueue) {
           await secondaryQueue.add(QueueName.IngestionSecondaryQueue, job.data);
@@ -129,24 +103,15 @@ export const ingestionQueueProcessorBuilder = (
         }
       }
 
-      const s3Client = getS3EventStorageClient(
-        env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-      );
+      const s3Client = getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET);
 
-      logger.debug(
-        `Processing ingestion event ${
-          enableRedirectToSecondaryQueue ? "" : "secondary"
-        }`,
-        {
-          projectId: job.data.payload.authCheck.scope.projectId,
-          payload: job.data.payload.data,
-        },
-      );
+      logger.debug(`Processing ingestion event ${enableRedirectToSecondaryQueue ? "" : "secondary"}`, {
+        projectId: job.data.payload.authCheck.scope.projectId,
+        payload: job.data.payload.data,
+      });
 
       // Download all events from folder into a local array
-      const clickhouseEntityType = getClickhouseEntityType(
-        job.data.payload.data.type,
-      );
+      const clickhouseEntityType = getClickhouseEntityType(job.data.payload.data.type);
 
       let eventFiles: { file: string; createdAt: Date }[] = [];
       const events: IngestionEventType[] = [];
@@ -195,29 +160,17 @@ export const ingestionQueueProcessorBuilder = (
         const S3_CONCURRENT_READS = env.HANZO_S3_CONCURRENT_READS;
         const batches = chunk(eventFiles, S3_CONCURRENT_READS);
         for (const batch of batches) {
-          const batchEvents = await Promise.all(
-            batch.map(downloadAndParseFile),
-          );
+          const batchEvents = await Promise.all(batch.map(downloadAndParseFile));
           events.push(...batchEvents.flat());
         }
       }
 
-      recordDistribution(
-        "hanzo.ingestion.count_files_distribution",
-        eventFiles.length,
-        {
-          kind: clickhouseEntityType,
-        },
-      );
-      span?.setAttribute(
-        "hanzo.ingestion.event.count_files",
-        eventFiles.length,
-      );
+      recordDistribution("hanzo.ingestion.count_files_distribution", eventFiles.length, {
+        kind: clickhouseEntityType,
+      });
+      span?.setAttribute("hanzo.ingestion.event.count_files", eventFiles.length);
       span?.setAttribute("hanzo.ingestion.event.kind", clickhouseEntityType);
-      span?.setAttribute(
-        "hanzo.ingestion.s3_all_files_size_bytes",
-        totalS3DownloadSizeBytes,
-      );
+      span?.setAttribute("hanzo.ingestion.s3_all_files_size_bytes", totalS3DownloadSizeBytes);
 
       const firstS3WriteTime =
         eventFiles
@@ -250,10 +203,7 @@ export const ingestionQueueProcessorBuilder = (
               ),
           );
         } catch (e) {
-          logger.warn(
-            `Failed to set recently-processed cache. Continuing processing.`,
-            e,
-          );
+          logger.warn(`Failed to set recently-processed cache. Continuing processing.`, e);
         }
       }
 
@@ -269,12 +219,7 @@ export const ingestionQueueProcessorBuilder = (
           env.QUEUE_CONSUMER_EVENT_PROPAGATION_QUEUE_IS_ENABLED === "true" &&
           env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true");
 
-      await new IngestionService(
-        redis,
-        prisma,
-        clickhouseWriter,
-        clickhouseClient(),
-      ).mergeAndWrite(
+      await new IngestionService(redis, prisma, clickhouseWriter, clickhouseClient()).mergeAndWrite(
         getClickhouseEntityType(events[0].type),
         job.data.payload.authCheck.scope.projectId,
         job.data.payload.data.eventBodyId,
@@ -286,17 +231,14 @@ export const ingestionQueueProcessorBuilder = (
       // Check if this is a SlowDown error and mark the project for secondary queue
       if (isS3SlowDownError(e)) {
         const projectId = job.data.payload.authCheck.scope.projectId;
-        logger.warn(
-          "S3 SlowDown error during ingestion processing, marking project for secondary queue",
-          { projectId, error: e },
-        );
+        logger.warn("S3 SlowDown error during ingestion processing, marking project for secondary queue", {
+          projectId,
+          error: e,
+        });
         await markProjectS3Slowdown(projectId);
       }
 
-      logger.error(
-        `Failed job ingestion processing for ${job.data.payload.authCheck.scope.projectId}`,
-        e,
-      );
+      logger.error(`Failed job ingestion processing for ${job.data.payload.authCheck.scope.projectId}`, e);
       traceException(e);
       throw e;
     }

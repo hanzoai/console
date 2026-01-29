@@ -512,9 +512,7 @@ describe("select all test suite", () => {
         expect(jobTraceIds).toContain(traceId1);
         expect(jobTraceIds).toContain(traceId2);
 
-        const jobDatasetIds = jobs?.map(
-          (job) => job.data.payload.datasetItemId,
-        );
+        const jobDatasetIds = jobs?.map((job) => job.data.payload.datasetItemId);
         expect(jobDatasetIds).toContain(datasetItem1.id);
         expect(jobDatasetIds).toContain(datasetItem2.id);
         const configIds = jobs?.map((job) => job.data.payload.configId);

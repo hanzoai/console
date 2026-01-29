@@ -31,10 +31,7 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   return s3MediaStorageClient;
 };
 
-const deleteMediaItemsForTraces = async (
-  projectId: string,
-  traceIds: string[],
-): Promise<void> => {
+const deleteMediaItemsForTraces = async (projectId: string, traceIds: string[]): Promise<void> => {
   if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
     return;
   }
@@ -137,13 +134,8 @@ const deleteMediaItemsForTraces = async (
   }
 };
 
-export const processClickhouseTraceDelete = async (
-  projectId: string,
-  traceIds: string[],
-) => {
-  logger.info(
-    `Deleting traces ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`,
-  );
+export const processClickhouseTraceDelete = async (projectId: string, traceIds: string[]) => {
+  logger.info(`Deleting traces ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`);
 
   await deleteMediaItemsForTraces(projectId, traceIds);
 
@@ -163,10 +155,7 @@ export const processClickhouseTraceDelete = async (
         : Promise.resolve(),
     ]);
   } catch (e) {
-    logger.error(
-      `Error deleting trace ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`,
-      e,
-    );
+    logger.error(`Error deleting trace ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`, e);
     traceException(e);
     throw e;
   }

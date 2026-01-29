@@ -10,10 +10,7 @@ import {
   StringFilter,
   StringOptionsFilter,
 } from "../queries";
-import {
-  parseClickhouseUTCDateTimeFormat,
-  queryClickhouse,
-} from "./clickhouse";
+import { parseClickhouseUTCDateTimeFormat, queryClickhouse } from "./clickhouse";
 import { convertDatasetRunItemClickhouseToDomain } from "./dataset-run-items-converters";
 import { DatasetRunItemRecord } from "./definitions";
 import { env } from "../../env";
@@ -57,10 +54,7 @@ type DatasetItemIdsWithRunDataQuery = BaseDatasetItemWithRunDataQuery & {
 
 type DatasetItemsWithRunDataCountQuery = BaseDatasetItemWithRunDataQuery;
 
-type DatasetRunItemsByDatasetIdQuery = Omit<
-  DatasetRunItemsTableQuery,
-  "datasetId"
-> & {
+type DatasetRunItemsByDatasetIdQuery = Omit<DatasetRunItemsTableQuery, "datasetId"> & {
   datasetId: string;
 };
 
@@ -81,10 +75,9 @@ type BaseDatasetRunItemsWithoutIOQuery = {
   runIds: string[];
 };
 
-type DatasetRunItemsByItemIdsWithoutIOQuery =
-  BaseDatasetRunItemsWithoutIOQuery & {
-    datasetItemIds: string[];
-  };
+type DatasetRunItemsByItemIdsWithoutIOQuery = BaseDatasetRunItemsWithoutIOQuery & {
+  datasetItemIds: string[];
+};
 
 export type DatasetRunsMetrics = {
   id: string;
@@ -153,30 +146,22 @@ export type EnrichedDatasetRunItem = {
   scores: ScoreAggregate;
 };
 
-const convertDatasetRunsMetricsRecord = (
-  record: DatasetRunsMetricsRecordType,
-): DatasetRunsMetrics => {
+const convertDatasetRunsMetricsRecord = (record: DatasetRunsMetricsRecordType): DatasetRunsMetrics => {
   return {
     id: record.dataset_run_id,
     name: record.dataset_run_name,
     projectId: record.project_id,
     datasetId: record.dataset_id,
     countRunItems: record.count_run_items,
-    avgTotalCost: record.avg_total_cost
-      ? new Decimal(record.avg_total_cost)
-      : new Decimal(0),
-    totalCost: record.total_cost
-      ? new Decimal(record.total_cost)
-      : new Decimal(0),
+    avgTotalCost: record.avg_total_cost ? new Decimal(record.avg_total_cost) : new Decimal(0),
+    totalCost: record.total_cost ? new Decimal(record.total_cost) : new Decimal(0),
     avgLatency: record.avg_latency_seconds ?? 0,
     aggScoresAvg: record.agg_scores_avg ?? [],
     aggScoreCategories: record.agg_score_categories ?? [],
   };
 };
 
-const convertDatasetRunsRowsRecord = (
-  record: DatasetRunsRowsRecordType,
-): DatasetRunsRows => {
+const convertDatasetRunsRowsRecord = (record: DatasetRunsRowsRecordType): DatasetRunsRows => {
   return {
     id: record.dataset_run_id,
     name: record.dataset_run_name,
@@ -188,11 +173,7 @@ const convertDatasetRunsRowsRecord = (
   };
 };
 
-const getProjectDatasetIdDefaultFilter = (
-  projectId: string,
-  datasetId?: string,
-  runIds?: string[],
-) => {
+const getProjectDatasetIdDefaultFilter = (projectId: string, datasetId?: string, runIds?: string[]) => {
   return {
     datasetRunItemsFilter: new FilterList([
       new StringFilter({
@@ -278,11 +259,7 @@ const getDatasetRunsTableInternal = async <T>(
       break;
   }
 
-  const { datasetRunItemsFilter } = getProjectDatasetIdDefaultFilter(
-    projectId,
-    datasetId,
-    runIds,
-  );
+  const { datasetRunItemsFilter } = getProjectDatasetIdDefaultFilter(projectId, datasetId, runIds);
 
   const baseFilter = datasetRunItemsFilter.apply();
 
@@ -297,10 +274,7 @@ const getDatasetRunsTableInternal = async <T>(
 
   const appliedScoresFilter = scoresFilter.apply();
 
-  const userFilters = createFilterFromFilterState(
-    filter,
-    datasetRunsTableUiColumnDefinitions,
-  );
+  const userFilters = createFilterFromFilterState(filter, datasetRunsTableUiColumnDefinitions);
   datasetRunItemsFilter.push(...userFilters);
 
   const appliedFilter = datasetRunItemsFilter.apply();
@@ -318,10 +292,7 @@ const getDatasetRunsTableInternal = async <T>(
     orderByArray.push(orderBy);
   }
 
-  const orderByClause = orderByToClickhouseSql(
-    orderByArray,
-    datasetRunsTableUiColumnDefinitions,
-  );
+  const orderByClause = orderByToClickhouseSql(orderByArray, datasetRunsTableUiColumnDefinitions);
 
   const scoresCte = `
    WITH scores_aggregated AS (
@@ -533,12 +504,11 @@ export const getDatasetRunsTableCountCh = async (
   return Number(rows[0]?.count);
 };
 
-type GetDatasetRunItemsTableOpts<IncludeIO extends boolean> =
-  DatasetRunItemsTableQuery & {
-    select: "count" | "rows";
-    tags: Record<string, string>;
-    includeIO?: IncludeIO;
-  };
+type GetDatasetRunItemsTableOpts<IncludeIO extends boolean> = DatasetRunItemsTableQuery & {
+  select: "count" | "rows";
+  tags: Record<string, string>;
+  includeIO?: IncludeIO;
+};
 
 // Phase 1: Find dataset item IDs or count that satisfy conditions across ALL runs
 const getQualifyingDatasetItems = async <T>(opts: {
@@ -553,16 +523,14 @@ const getQualifyingDatasetItems = async <T>(opts: {
   limit?: number;
   offset?: number;
 }): Promise<Array<T>> => {
-  const { select, projectId, datasetId, runIds, runFilters, limit, offset } =
-    opts;
+  const { select, projectId, datasetId, runIds, runFilters, limit, offset } = opts;
 
   if (runIds.length === 0) {
     return [];
   }
 
   // Build base filter (project + dataset only)
-  const { datasetRunItemsFilter: baseDatasetRunItemsFilter } =
-    getProjectDatasetIdDefaultFilter(projectId, datasetId);
+  const { datasetRunItemsFilter: baseDatasetRunItemsFilter } = getProjectDatasetIdDefaultFilter(projectId, datasetId);
   const baseFilter = baseDatasetRunItemsFilter.apply();
 
   // Build run-specific conditions for the intersection query
@@ -578,10 +546,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
     });
 
     // Create user filters for this run
-    const userFilters = createFilterFromFilterState(
-      filterState,
-      datasetRunItemsTableUiColumnDefinitions,
-    );
+    const userFilters = createFilterFromFilterState(filterState, datasetRunItemsTableUiColumnDefinitions);
 
     // Combine run condition with user filters using AND and apply immediately
     const runFilterList = new FilterList([runConditionFilter, ...userFilters]);
@@ -608,14 +573,10 @@ const getQualifyingDatasetItems = async <T>(opts: {
   const combinedQuery = `(${runFilterResults.map((result) => `(${result.query})`).join(" OR ")})`;
 
   const intersectionQuery =
-    runFilters.length > 0
-      ? `HAVING COUNT(DISTINCT dataset_run_id) = {totalRunCount: UInt32}`
-      : "";
+    runFilters.length > 0 ? `HAVING COUNT(DISTINCT dataset_run_id) = {totalRunCount: UInt32}` : "";
 
   // Check if any run has score filters for CTE
-  const hasScoresFilter = runFilters
-    .flatMap((f) => f.filters)
-    .some((f) => f.column.toLowerCase().includes("score"));
+  const hasScoresFilter = runFilters.flatMap((f) => f.filters).some((f) => f.column.toLowerCase().includes("score"));
 
   // Build scores filter
   const scoresFilter = new FilterList([
@@ -628,10 +589,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
   ]);
   const appliedScoresFilter = scoresFilter.apply();
 
-  const selectString =
-    select === "count"
-      ? "COUNT(DISTINCT dataset_item_id) as count"
-      : "dataset_item_id";
+  const selectString = select === "count" ? "COUNT(DISTINCT dataset_item_id) as count" : "dataset_item_id";
 
   // Build the intersection query
   const scoresCte = hasScoresFilter
@@ -718,21 +676,16 @@ const getQualifyingDatasetItems = async <T>(opts: {
   return res;
 };
 
-const getDatasetRunItemsTableInternal = async <
-  T,
-  IncludeIO extends boolean = true,
->(
+const getDatasetRunItemsTableInternal = async <T, IncludeIO extends boolean = true>(
   opts: GetDatasetRunItemsTableOpts<IncludeIO>,
 ): Promise<Array<T>> => {
-  const { projectId, datasetId, filter, orderBy, limit, offset, includeIO } =
-    opts;
+  const { projectId, datasetId, filter, orderBy, limit, offset, includeIO } = opts;
 
   let selectString = "";
 
   switch (opts.select) {
     case "count":
-      selectString =
-        "count(DISTINCT dri.project_id, dri.dataset_id, dri.dataset_run_id, dri.dataset_item_id) as count";
+      selectString = "count(DISTINCT dri.project_id, dri.dataset_id, dri.dataset_run_id, dri.dataset_item_id) as count";
       break;
     case "rows":
       selectString = `
@@ -760,17 +713,9 @@ const getDatasetRunItemsTableInternal = async <
       throw new Error(`Unknown select type: ${opts.select}`);
   }
 
-  const { datasetRunItemsFilter } = getProjectDatasetIdDefaultFilter(
-    projectId,
-    datasetId,
-  );
+  const { datasetRunItemsFilter } = getProjectDatasetIdDefaultFilter(projectId, datasetId);
 
-  datasetRunItemsFilter.push(
-    ...createFilterFromFilterState(
-      filter,
-      datasetRunItemsTableUiColumnDefinitions,
-    ),
-  );
+  datasetRunItemsFilter.push(...createFilterFromFilterState(filter, datasetRunItemsTableUiColumnDefinitions));
   const appliedFilter = datasetRunItemsFilter.apply();
 
   const scoresFilter = new FilterList([
@@ -782,9 +727,7 @@ const getDatasetRunItemsTableInternal = async <
     }),
   ]);
 
-  const hasScoresFilter = filter.some((f) =>
-    f.column.toLowerCase().includes("score"),
-  );
+  const hasScoresFilter = filter.some((f) => f.column.toLowerCase().includes("score"));
 
   const appliedScoresFilter = scoresFilter.apply();
 
@@ -808,10 +751,7 @@ const getDatasetRunItemsTableInternal = async <
     });
   }
 
-  const orderByClause = orderByToClickhouseSql(
-    orderByArray,
-    datasetRunItemsTableUiColumnDefinitions,
-  );
+  const orderByClause = orderByToClickhouseSql(orderByArray, datasetRunItemsTableUiColumnDefinitions);
 
   const scoresCte = `
   WITH scores_aggregated AS (
@@ -898,9 +838,7 @@ const getDatasetRunItemsTableInternal = async <
   return res;
 };
 
-export const getDatasetRunItemsCh = async (
-  opts: DatasetRunItemsTableQuery,
-): Promise<DatasetRunItemDomain[]> => {
+export const getDatasetRunItemsCh = async (opts: DatasetRunItemsTableQuery): Promise<DatasetRunItemDomain[]> => {
   const rows = await getDatasetRunItemsTableInternal<DatasetRunItemRecord>({
     ...opts,
     select: "rows",
@@ -922,9 +860,7 @@ export const getDatasetRunItemsByDatasetIdCh = async (
   return rows.map((row) => convertDatasetRunItemClickhouseToDomain(row));
 };
 
-export const getDatasetItemsWithRunDataCount = async (
-  opts: DatasetItemsWithRunDataCountQuery,
-): Promise<number> => {
+export const getDatasetItemsWithRunDataCount = async (opts: DatasetItemsWithRunDataCountQuery): Promise<number> => {
   const { projectId, datasetId, runIds, filterByRun } = opts;
 
   const rows = await getQualifyingDatasetItems<{ count: string }>({
@@ -938,9 +874,7 @@ export const getDatasetItemsWithRunDataCount = async (
   return Number(rows[0]?.count);
 };
 
-export const getDatasetItemIdsWithRunData = async (
-  opts: DatasetItemIdsWithRunDataQuery,
-): Promise<string[]> => {
+export const getDatasetItemIdsWithRunData = async (opts: DatasetItemIdsWithRunDataQuery): Promise<string[]> => {
   const rows = await getQualifyingDatasetItems<{ dataset_item_id: string }>({
     select: "rows",
     runFilters: opts.filterByRun,
@@ -970,10 +904,7 @@ export const getDatasetRunItemsWithoutIOByItemIds = async (
       type: "stringOptions" as const,
     },
   ];
-  const rows = await getDatasetRunItemsTableInternal<
-    DatasetRunItemRecord<false>,
-    false
-  >({
+  const rows = await getDatasetRunItemsTableInternal<DatasetRunItemRecord<false>, false>({
     ...rest,
     filter,
     select: "rows",
@@ -986,9 +917,7 @@ export const getDatasetRunItemsWithoutIOByItemIds = async (
 
 export const getDatasetItemIdsByTraceIdCh = async (
   opts: DatasetItemIdsByTraceIdQuery,
-): Promise<
-  { id: string; datasetId: string; observationId: string | null }[]
-> => {
+): Promise<{ id: string; datasetId: string; observationId: string | null }[]> => {
   const { projectId, traceId, filter } = opts;
 
   const datasetRunItemsFilter = new FilterList([
@@ -1006,12 +935,7 @@ export const getDatasetItemIdsByTraceIdCh = async (
     }),
   ]);
 
-  datasetRunItemsFilter.push(
-    ...createFilterFromFilterState(
-      filter,
-      datasetRunItemsTableUiColumnDefinitions,
-    ),
-  );
+  datasetRunItemsFilter.push(...createFilterFromFilterState(filter, datasetRunItemsTableUiColumnDefinitions));
   const appliedFilter = datasetRunItemsFilter.apply();
 
   const query = `
@@ -1049,9 +973,7 @@ export const getDatasetItemIdsByTraceIdCh = async (
   });
 };
 
-export const getDatasetRunItemsCountCh = async (
-  opts: DatasetRunItemsTableQuery,
-): Promise<number> => {
+export const getDatasetRunItemsCountCh = async (opts: DatasetRunItemsTableQuery): Promise<number> => {
   const rows = await getDatasetRunItemsTableInternal<{ count: string }>({
     ...opts,
     select: "count",
@@ -1061,9 +983,7 @@ export const getDatasetRunItemsCountCh = async (
   return Number(rows[0]?.count);
 };
 
-export const getDatasetRunItemsCountByDatasetIdCh = async (
-  opts: DatasetRunItemsByDatasetIdQuery,
-): Promise<number> => {
+export const getDatasetRunItemsCountByDatasetIdCh = async (opts: DatasetRunItemsByDatasetIdQuery): Promise<number> => {
   const rows = await getDatasetRunItemsTableInternal<{ count: string }>({
     ...opts,
     select: "count",
@@ -1073,9 +993,7 @@ export const getDatasetRunItemsCountByDatasetIdCh = async (
   return Number(rows[0]?.count);
 };
 
-export const hasAnyDatasetRunItem = async (
-  projectId: string,
-): Promise<boolean> => {
+export const hasAnyDatasetRunItem = async (projectId: string): Promise<boolean> => {
   const query = `
     SELECT 1
     FROM dataset_run_items_rmt
@@ -1097,9 +1015,7 @@ export const hasAnyDatasetRunItem = async (
   return rows.length > 0;
 };
 
-export const deleteDatasetRunItemsByProjectId = async (
-  projectId: string,
-): Promise<boolean> => {
+export const deleteDatasetRunItemsByProjectId = async (projectId: string): Promise<boolean> => {
   const hasData = await hasAnyDatasetRunItem(projectId);
   if (!hasData) {
     return false;

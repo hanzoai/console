@@ -2,9 +2,7 @@
  * SSO exports - stub for community edition.
  */
 
-export const getSsoAuthProviderIdForDomain = async (
-  _domain: string,
-): Promise<string | null> => {
+export const getSsoAuthProviderIdForDomain = async (_domain: string): Promise<string | null> => {
   return null;
 };
 

@@ -1,19 +1,12 @@
 import { Queue } from "bullmq";
 import { QueueName, TQueueJobTypes } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 import { getShardIndex } from "./sharding";
 import { env } from "../../env";
 
 export class IngestionQueue {
-  private static instances: Map<
-    number,
-    Queue<TQueueJobTypes[QueueName.IngestionQueue]> | null
-  > = new Map();
+  private static instances: Map<number, Queue<TQueueJobTypes[QueueName.IngestionQueue]> | null> = new Map();
 
   public static getShardNames() {
     return Array.from(
@@ -22,16 +15,12 @@ export class IngestionQueue {
     );
   }
 
-  static getShardIndexFromShardName(
-    shardName: string | undefined,
-  ): number | null {
+  static getShardIndexFromShardName(shardName: string | undefined): number | null {
     if (!shardName) return null;
 
     // Extract shard index from shard name
     const shardIndex =
-      shardName === QueueName.IngestionQueue
-        ? 0
-        : parseInt(shardName.replace(`${QueueName.IngestionQueue}-`, ""), 10);
+      shardName === QueueName.IngestionQueue ? 0 : parseInt(shardName.replace(`${QueueName.IngestionQueue}-`, ""), 10);
 
     if (isNaN(shardIndex)) return null;
     return shardIndex;
@@ -93,15 +82,10 @@ export class IngestionQueue {
 }
 
 export class SecondaryIngestionQueue {
-  private static instance: Queue<
-    TQueueJobTypes[QueueName.IngestionSecondaryQueue]
-  > | null = null;
+  private static instance: Queue<TQueueJobTypes[QueueName.IngestionSecondaryQueue]> | null = null;
 
-  public static getInstance(): Queue<
-    TQueueJobTypes[QueueName.IngestionSecondaryQueue]
-  > | null {
-    if (SecondaryIngestionQueue.instance)
-      return SecondaryIngestionQueue.instance;
+  public static getInstance(): Queue<TQueueJobTypes[QueueName.IngestionSecondaryQueue]> | null {
+    if (SecondaryIngestionQueue.instance) return SecondaryIngestionQueue.instance;
 
     const newRedis = createNewRedisInstance({
       enableOfflineQueue: false,
@@ -109,22 +93,19 @@ export class SecondaryIngestionQueue {
     });
 
     SecondaryIngestionQueue.instance = newRedis
-      ? new Queue<TQueueJobTypes[QueueName.IngestionSecondaryQueue]>(
-          QueueName.IngestionSecondaryQueue,
-          {
-            connection: newRedis,
-            prefix: getQueuePrefix(QueueName.IngestionSecondaryQueue),
-            defaultJobOptions: {
-              removeOnComplete: true,
-              removeOnFail: 100_000,
-              attempts: 5,
-              backoff: {
-                type: "exponential",
-                delay: 5000,
-              },
+      ? new Queue<TQueueJobTypes[QueueName.IngestionSecondaryQueue]>(QueueName.IngestionSecondaryQueue, {
+          connection: newRedis,
+          prefix: getQueuePrefix(QueueName.IngestionSecondaryQueue),
+          defaultJobOptions: {
+            removeOnComplete: true,
+            removeOnFail: 100_000,
+            attempts: 5,
+            backoff: {
+              type: "exponential",
+              delay: 5000,
             },
           },
-        )
+        })
       : null;
 
     SecondaryIngestionQueue.instance?.on("error", (err) => {

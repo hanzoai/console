@@ -1,16 +1,10 @@
-import {
-  parseClickhouseUTCDateTimeFormat,
-  queryClickhouse,
-} from "./clickhouse";
+import { parseClickhouseUTCDateTimeFormat, queryClickhouse } from "./clickhouse";
 import { createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
 import { FilterState } from "../../types";
 import { DateTimeFilter, FilterList } from "../queries";
 import { dashboardColumnDefinitions } from "../tableMappings";
 import { convertDateToClickhouseDateTime } from "../clickhouse/client";
-import {
-  OBSERVATIONS_TO_TRACE_INTERVAL,
-  SCORE_TO_TRACE_OBSERVATIONS_INTERVAL,
-} from "./constants";
+import { OBSERVATIONS_TO_TRACE_INTERVAL, SCORE_TO_TRACE_OBSERVATIONS_INTERVAL } from "./constants";
 
 export type DateTrunc = "month" | "week" | "day" | "hour" | "minute";
 
@@ -34,23 +28,14 @@ const convertEnvFilterToClickhouseFilter = (filter: FilterState) => {
   ]);
 };
 
-export const getScoreAggregate = async (
-  projectId: string,
-  filter: FilterState,
-) => {
-  const { envFilter, remainingFilters } =
-    extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(
-    convertEnvFilterToClickhouseFilter(envFilter),
-  ).apply();
-  const chFilter = new FilterList(
-    createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions),
-  );
+export const getScoreAggregate = async (projectId: string, filter: FilterState) => {
+  const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
+  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
-  const timeFilter = chFilter.find(
-    (f) =>
-      f.field === "timestamp" && (f.operator === ">=" || f.operator === ">"),
-  ) as DateTimeFilter | undefined;
+  const timeFilter = chFilter.find((f) => f.field === "timestamp" && (f.operator === ">=" || f.operator === ">")) as
+    | DateTimeFilter
+    | undefined;
 
   const chFilterApplied = chFilter.apply();
 
@@ -86,9 +71,7 @@ export const getScoreAggregate = async (
       projectId,
       ...chFilterApplied.params,
       ...environmentFilter.params,
-      ...(timeFilter
-        ? { tracesTimestamp: convertDateToClickhouseDateTime(timeFilter.value) }
-        : {}),
+      ...(timeFilter ? { tracesTimestamp: convertDateToClickhouseDateTime(timeFilter.value) } : {}),
     },
     tags: {
       feature: "dashboard",
@@ -101,18 +84,10 @@ export const getScoreAggregate = async (
   return result;
 };
 
-export const getObservationCostByTypeByTime = async (
-  projectId: string,
-  filter: FilterState,
-) => {
-  const { envFilter, remainingFilters } =
-    extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(
-    convertEnvFilterToClickhouseFilter(envFilter),
-  ).apply();
-  const chFilter = new FilterList(
-    createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions),
-  );
+export const getObservationCostByTypeByTime = async (projectId: string, filter: FilterState) => {
+  const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
+  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
   const appliedFilter = chFilter.apply();
 
@@ -126,10 +101,7 @@ export const getObservationCostByTypeByTime = async (
       ) as DateTimeFilter | undefined)
     : undefined;
 
-  const [orderByQuery, orderByParams, bucketSizeInSeconds] = orderByTimeSeries(
-    filter,
-    "start_time",
-  );
+  const [orderByQuery, orderByParams, bucketSizeInSeconds] = orderByTimeSeries(filter, "start_time");
 
   const query = `
     SELECT 
@@ -169,9 +141,7 @@ export const getObservationCostByTypeByTime = async (
       ...appliedFilter.params,
       ...environmentFilter.params,
       ...orderByParams,
-      ...(timeFilter
-        ? { traceTimestamp: convertDateToClickhouseDateTime(timeFilter.value) }
-        : {}),
+      ...(timeFilter ? { traceTimestamp: convertDateToClickhouseDateTime(timeFilter.value) } : {}),
     },
     tags: {
       feature: "dashboard",
@@ -199,18 +169,10 @@ export const getObservationCostByTypeByTime = async (
   });
 };
 
-export const getObservationUsageByTypeByTime = async (
-  projectId: string,
-  filter: FilterState,
-) => {
-  const { envFilter, remainingFilters } =
-    extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(
-    convertEnvFilterToClickhouseFilter(envFilter),
-  ).apply();
-  const chFilter = new FilterList(
-    createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions),
-  );
+export const getObservationUsageByTypeByTime = async (projectId: string, filter: FilterState) => {
+  const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
+  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
   const appliedFilter = chFilter.apply();
 
@@ -224,10 +186,7 @@ export const getObservationUsageByTypeByTime = async (
       ) as DateTimeFilter | undefined)
     : undefined;
 
-  const [orderByQuery, orderByParams, bucketSizeInSeconds] = orderByTimeSeries(
-    filter,
-    "start_time",
-  );
+  const [orderByQuery, orderByParams, bucketSizeInSeconds] = orderByTimeSeries(filter, "start_time");
 
   const query = `
     SELECT 
@@ -267,9 +226,7 @@ export const getObservationUsageByTypeByTime = async (
       ...appliedFilter.params,
       ...environmentFilter.params,
       ...orderByParams,
-      ...(timeFilter
-        ? { traceTimestamp: convertDateToClickhouseDateTime(timeFilter.value) }
-        : {}),
+      ...(timeFilter ? { traceTimestamp: convertDateToClickhouseDateTime(timeFilter.value) } : {}),
     },
     tags: {
       feature: "dashboard",
@@ -301,9 +258,7 @@ export const orderByTimeSeries = (
   filter: FilterState,
   col: string,
 ): [string, { fromTime: number; toTime: number }, number] => {
-  const potentialBucketSizesSeconds = [
-    5, 10, 30, 60, 300, 600, 1800, 3600, 18000, 36000, 86400, 604800, 2592000,
-  ];
+  const potentialBucketSizesSeconds = [5, 10, 30, 60, 300, 600, 1800, 3600, 18000, 36000, 86400, 604800, 2592000];
 
   // Calculate time difference in seconds
   const [from, to] = extractFromAndToTimestampsFromFilter(filter);
@@ -321,9 +276,7 @@ export const orderByTimeSeries = (
   const bucketSizeInSeconds = potentialBucketSizesSeconds.reduce(
     (closest, size) => {
       const diffFromDesiredBuckets = Math.abs(diffInSeconds / size - 50);
-      return diffFromDesiredBuckets < closest.diffFromDesiredBuckets
-        ? { size, diffFromDesiredBuckets }
-        : closest;
+      return diffFromDesiredBuckets < closest.diffFromDesiredBuckets ? { size, diffFromDesiredBuckets } : closest;
     },
     { size: 0, diffFromDesiredBuckets: Infinity },
   ).size;
@@ -342,25 +295,16 @@ export const orderByTimeSeries = (
   ];
 };
 
-export const selectTimeseriesColumn = (
-  bucketSizeInSeconds: number,
-  col: string,
-  as: String,
-) => {
+export const selectTimeseriesColumn = (bucketSizeInSeconds: number, col: string, as: String) => {
   return `toStartOfInterval(${col}, INTERVAL ${bucketSizeInSeconds} SECOND) as ${as}`;
 };
 
 export const extractFromAndToTimestampsFromFilter = (filter?: FilterState) => {
-  if (!filter)
-    throw new Error("Time Filter is required for time series queries");
+  if (!filter) throw new Error("Time Filter is required for time series queries");
 
-  const fromTimestamp = filter.filter(
-    (f) => f.type === "datetime" && (f.operator === ">" || f.operator === ">="),
-  );
+  const fromTimestamp = filter.filter((f) => f.type === "datetime" && (f.operator === ">" || f.operator === ">="));
 
-  const toTimestamp = filter.filter(
-    (f) => f.type === "datetime" && (f.operator === "<" || f.operator === "<="),
-  );
+  const toTimestamp = filter.filter((f) => f.type === "datetime" && (f.operator === "<" || f.operator === "<="));
 
   return [fromTimestamp[0], toTimestamp[0]];
 };

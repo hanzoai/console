@@ -22,10 +22,7 @@ import {
 import { prisma } from "@hanzo/shared/src/db";
 import { Readable } from "stream";
 import { env } from "../../env";
-import {
-  getChunkWithFlattenedScores,
-  prepareScoresForOutput,
-} from "./getDatabaseReadStream";
+import { getChunkWithFlattenedScores, prepareScoresForOutput } from "./getDatabaseReadStream";
 import { fetchCommentsForExport } from "./fetchCommentsForExport";
 import type { Model, Price } from "@prisma/client";
 
@@ -43,9 +40,7 @@ type ModelWithPrice = Model & { Price: Price[] };
 const createModelCache = (projectId: string) => {
   const modelCache = new Map<string, ModelWithPrice | null>();
 
-  const getModel = async (
-    internalModelId: string | null | undefined,
-  ): Promise<ModelWithPrice | null> => {
+  const getModel = async (internalModelId: string | null | undefined): Promise<ModelWithPrice | null> => {
     if (!internalModelId) return null;
 
     // Check if model is already in cache
@@ -314,10 +309,7 @@ export const getObservationStream = async (props: {
     userId: string | null;
   };
 
-  const processObservationRow = async (
-    bufferedRow: ObservationRow,
-    commentsByObservation: Map<string, any[]>,
-  ) => {
+  const processObservationRow = async (bufferedRow: ObservationRow, commentsByObservation: Map<string, any[]>) => {
     // Fetch model data from cache (or database if not cached)
     const model = await modelCache.getModel(bufferedRow.internal_model_id);
     const modelData = enrichObservationWithModelData(model);
@@ -331,20 +323,20 @@ export const getObservationStream = async (props: {
     }));
 
     // Process categorical scores (format: "name:value")
-    const categoricalScores = (bufferedRow.score_categories ?? []).map(
-      (cat: string) => {
-        const [name, ...valueParts] = cat.split(":");
-        return {
-          name,
-          value: null,
-          dataType: ScoreDataTypeEnum.CATEGORICAL,
-          stringValue: valueParts.join(":"),
-        };
-      },
-    );
+    const categoricalScores = (bufferedRow.score_categories ?? []).map((cat: string) => {
+      const [name, ...valueParts] = cat.split(":");
+      return {
+        name,
+        value: null,
+        dataType: ScoreDataTypeEnum.CATEGORICAL,
+        stringValue: valueParts.join(":"),
+      };
+    });
 
-    const outputScores: Record<string, string[] | number[]> =
-      prepareScoresForOutput([...numericScores, ...categoricalScores]);
+    const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput([
+      ...numericScores,
+      ...categoricalScores,
+    ]);
 
     // Get comments for this observation
     const observationComments = commentsByObservation.get(bufferedRow.id) ?? [];
@@ -388,20 +380,13 @@ export const getObservationStream = async (props: {
         // Process in batches
         if (rowBuffer.length >= BATCH_SIZE) {
           // Fetch comments for this batch
-          const commentsByObservation = await fetchCommentsForExport(
-            projectId,
-            "OBSERVATION",
-            observationIds,
-          );
+          const commentsByObservation = await fetchCommentsForExport(projectId, "OBSERVATION", observationIds);
 
           // Process each row in the buffer
           for (const bufferedRow of rowBuffer) {
             recordsProcessed++;
 
-            yield await processObservationRow(
-              bufferedRow,
-              commentsByObservation,
-            );
+            yield await processObservationRow(bufferedRow, commentsByObservation);
           }
 
           // Reset buffers
@@ -412,11 +397,7 @@ export const getObservationStream = async (props: {
 
       // Process remaining rows in buffer
       if (rowBuffer.length > 0) {
-        const commentsByObservation = await fetchCommentsForExport(
-          projectId,
-          "OBSERVATION",
-          observationIds,
-        );
+        const commentsByObservation = await fetchCommentsForExport(projectId, "OBSERVATION", observationIds);
 
         for (const bufferedRow of rowBuffer) {
           recordsProcessed++;

@@ -1,7 +1,4 @@
-import {
-  CloudWatchClient,
-  PutMetricDataCommand,
-} from "@aws-sdk/client-cloudwatch";
+import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 import * as opentelemetry from "@opentelemetry/api";
 import * as dd from "dd-trace";
 import { env } from "../../env";
@@ -25,17 +22,11 @@ export type SpanCtx = {
 
 type AsyncCallbackFn<T> = (span: opentelemetry.Span) => Promise<T>;
 
-export async function instrumentAsync<T>(
-  ctx: SpanCtx,
-  callback: AsyncCallbackFn<T>,
-): Promise<T> {
+export async function instrumentAsync<T>(ctx: SpanCtx, callback: AsyncCallbackFn<T>): Promise<T> {
   const activeContext = ctx.startNewTrace
     ? opentelemetry.ROOT_CONTEXT
     : ctx.traceContext
-      ? opentelemetry.propagation.extract(
-          opentelemetry.context.active(),
-          ctx.traceContext,
-        )
+      ? opentelemetry.propagation.extract(opentelemetry.context.active(), ctx.traceContext)
       : opentelemetry.context.active();
 
   return getTracer(ctx.traceScope ?? callback.name).startActiveSpan(
@@ -46,13 +37,9 @@ export async function instrumentAsync<T>(
     },
     activeContext,
     async (span) => {
-      const baggage = opentelemetry.propagation.getBaggage(
-        opentelemetry.context.active(),
-      );
+      const baggage = opentelemetry.propagation.getBaggage(opentelemetry.context.active());
       if (baggage) {
-        baggage
-          .getAllEntries()
-          .forEach(([k, v]) => span.setAttribute(k, v.value));
+        baggage.getAllEntries().forEach(([k, v]) => span.setAttribute(k, v.value));
       }
       try {
         const result = await callback(span);
@@ -69,17 +56,11 @@ export async function instrumentAsync<T>(
 
 type SyncCallbackFn<T> = (span: opentelemetry.Span) => T;
 
-export function instrumentSync<T>(
-  ctx: SpanCtx,
-  callback: SyncCallbackFn<T>,
-): T {
+export function instrumentSync<T>(ctx: SpanCtx, callback: SyncCallbackFn<T>): T {
   const activeContext = ctx.startNewTrace
     ? opentelemetry.ROOT_CONTEXT
     : ctx.traceContext
-      ? opentelemetry.propagation.extract(
-          opentelemetry.context.active(),
-          ctx.traceContext,
-        )
+      ? opentelemetry.propagation.extract(opentelemetry.context.active(), ctx.traceContext)
       : opentelemetry.context.active();
 
   return getTracer(ctx.traceScope ?? callback.name).startActiveSpan(
@@ -90,13 +71,9 @@ export function instrumentSync<T>(
     },
     activeContext,
     (span) => {
-      const baggage = opentelemetry.propagation.getBaggage(
-        opentelemetry.context.active(),
-      );
+      const baggage = opentelemetry.propagation.getBaggage(opentelemetry.context.active());
       if (baggage) {
-        baggage
-          .getAllEntries()
-          .forEach(([k, v]) => span.setAttribute(k, v.value));
+        baggage.getAllEntries().forEach(([k, v]) => span.setAttribute(k, v.value));
       }
       try {
         const result = callback(span);
@@ -113,11 +90,7 @@ export function instrumentSync<T>(
 
 export const getCurrentSpan = () => opentelemetry.trace.getActiveSpan();
 
-export const traceException = (
-  ex: unknown,
-  span?: opentelemetry.Span,
-  code?: string,
-) => {
+export const traceException = (ex: unknown, span?: opentelemetry.Span, code?: string) => {
   const activeSpan = span ?? getCurrentSpan();
 
   if (!activeSpan) {
@@ -179,9 +152,7 @@ export const addUserToSpan = (
   }
 
   const ctx = opentelemetry.context.active();
-  let baggage =
-    opentelemetry.propagation.getBaggage(ctx) ??
-    opentelemetry.propagation.createBaggage();
+  let baggage = opentelemetry.propagation.getBaggage(ctx) ?? opentelemetry.propagation.createBaggage();
 
   if (attributes.userId) {
     baggage = baggage.setEntry("user.id", {
@@ -312,7 +283,5 @@ export const recordDistribution = (
  * Example: `legacy-ingestion-queue` -> `hanzo.queue.legacy_ingestion`
  */
 export const convertQueueNameToMetricName = (queueName: string): string => {
-  return (
-    "hanzo.queue." + queueName.replace(/-/g, "_").replace(/_queue$/, "")
-  );
+  return "hanzo.queue." + queueName.replace(/-/g, "_").replace(/_queue$/, "");
 };

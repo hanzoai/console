@@ -1,7 +1,4 @@
-export function joinTableCoreAndMetrics<
-  Core extends { id: string },
-  Metric extends { id: string },
->(
+export function joinTableCoreAndMetrics<Core extends { id: string }, Metric extends { id: string }>(
   userCoreData?: Core[],
   userMetricsData?: Metric[],
 ): {
@@ -26,13 +23,10 @@ export function joinTableCoreAndMetrics<
     };
   }
 
-  const metricsById = userMetricsData.reduce<Record<string, Metric>>(
-    (acc, metric) => {
-      acc[metric.id] = metric;
-      return acc;
-    },
-    {},
-  );
+  const metricsById = userMetricsData.reduce<Record<string, Metric>>((acc, metric) => {
+    acc[metric.id] = metric;
+    return acc;
+  }, {});
 
   const joinedData = userCoreDataProcessed.map((userCore) => {
     const metrics = metricsById[userCore.id];

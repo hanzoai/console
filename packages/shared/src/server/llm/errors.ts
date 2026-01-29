@@ -4,11 +4,7 @@ export class LLMCompletionError extends Error {
   responseStatusCode: number;
   isRetryable: boolean;
 
-  constructor(params: {
-    message: string;
-    responseStatusCode?: number;
-    isRetryable?: boolean;
-  }) {
+  constructor(params: { message: string; responseStatusCode?: number; isRetryable?: boolean }) {
     super(params.message);
 
     this.name = LLMCompletionErrorName;

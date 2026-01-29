@@ -123,48 +123,42 @@ export const eventsTableCols: ColumnDefinition[] = [
     name: "Total Cost ($)",
     id: "totalCost",
     type: "number",
-    internal:
-      "if(mapExists((k, v) -> (k = 'total'), cost_details), cost_details['total'], NULL)",
+    internal: "if(mapExists((k, v) -> (k = 'total'), cost_details), cost_details['total'], NULL)",
     nullable: true,
   },
   {
     name: "Input Tokens",
     id: "inputTokens",
     type: "number",
-    internal:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, usage_details)))",
+    internal: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, usage_details)))",
     nullable: true,
   },
   {
     name: "Output Tokens",
     id: "outputTokens",
     type: "number",
-    internal:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, usage_details)))",
+    internal: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, usage_details)))",
     nullable: true,
   },
   {
     name: "Total Tokens",
     id: "totalTokens",
     type: "number",
-    internal:
-      "if(mapExists((k, v) -> (k = 'total'), usage_details), usage_details['total'], NULL)",
+    internal: "if(mapExists((k, v) -> (k = 'total'), usage_details), usage_details['total'], NULL)",
     nullable: true,
   },
   {
     name: "Input Cost ($)",
     id: "inputCost",
     type: "number",
-    internal:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, cost_details)))",
+    internal: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, cost_details)))",
     nullable: true,
   },
   {
     name: "Output Cost ($)",
     id: "outputCost",
     type: "number",
-    internal:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, cost_details)))",
+    internal: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, cost_details)))",
     nullable: true,
   },
   {
@@ -178,8 +172,7 @@ export const eventsTableCols: ColumnDefinition[] = [
     name: "Time To First Token (s)",
     id: "timeToFirstToken",
     type: "number",
-    internal:
-      "date_diff('millisecond', e.start_time, e.completion_start_time) / 1000.0",
+    internal: "date_diff('millisecond', e.start_time, e.completion_start_time) / 1000.0",
     nullable: true,
   },
   {

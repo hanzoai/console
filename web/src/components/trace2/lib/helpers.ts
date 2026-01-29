@@ -2,11 +2,7 @@ import { type NestedObservation } from "@/src/utils/types";
 import { type TreeNode, type TraceSearchListItem } from "./types";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import Decimal from "decimal.js";
-import {
-  type ObservationLevelType,
-  ObservationLevel,
-  type TraceDomain,
-} from "@hanzo/shared";
+import { type ObservationLevelType, ObservationLevel, type TraceDomain } from "@hanzo/shared";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 export function nestObservations(
@@ -16,33 +12,25 @@ export function nestObservations(
   nestedObservations: NestedObservation[];
   hiddenObservationsCount: number;
 } {
-  if (list.length === 0)
-    return { nestedObservations: [], hiddenObservationsCount: 0 };
+  if (list.length === 0) return { nestedObservations: [], hiddenObservationsCount: 0 };
 
   // Data prep:
   // - Filter for observations with minimum level
   // - Remove parentObservationId attribute from observations if the id does not exist in the list of observations
-  const mutableList = list.filter((o) =>
-    getObservationLevels(minLevel).includes(o.level),
-  );
+  const mutableList = list.filter((o) => getObservationLevels(minLevel).includes(o.level));
   const hiddenObservationsCount = list.length - mutableList.length;
 
   // Build a Set of all observation IDs for O(1) lookup instead of O(n) find
   const observationIds = new Set(list.map((o) => o.id));
 
   mutableList.forEach((observation) => {
-    if (
-      observation.parentObservationId &&
-      !observationIds.has(observation.parentObservationId)
-    ) {
+    if (observation.parentObservationId && !observationIds.has(observation.parentObservationId)) {
       observation.parentObservationId = null;
     }
   });
 
   // Step 0: Sort the list by start time to ensure observations are in right order
-  const sortedObservations = mutableList.sort(
-    (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-  );
+  const sortedObservations = mutableList.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
   // Step 1: Create a map where the keys are object IDs, and the values are
   // the corresponding objects with an added 'children' property.
@@ -89,9 +77,7 @@ export function calculateDisplayTotalCost(p: {
 
   if (p.rootObservationId) {
     observations = observations.filter(
-      (o) =>
-        o.parentObservationId === p.rootObservationId ||
-        o.id === p.rootObservationId,
+      (o) => o.parentObservationId === p.rootObservationId || o.id === p.rootObservationId,
     );
 
     while (true) {
@@ -113,21 +99,13 @@ export function calculateDisplayTotalCost(p: {
 
       // if we have either input or output cost, but not total cost, we can use that
       if (!curr.totalCost && (curr.inputCost || curr.outputCost)) {
-        const inputCost =
-          curr.inputCost != null ? new Decimal(curr.inputCost) : new Decimal(0);
+        const inputCost = curr.inputCost != null ? new Decimal(curr.inputCost) : new Decimal(0);
 
-        const outputCost =
-          curr.outputCost != null
-            ? new Decimal(curr.outputCost)
-            : new Decimal(0);
+        const outputCost = curr.outputCost != null ? new Decimal(curr.outputCost) : new Decimal(0);
 
         const combinedCost = inputCost.plus(outputCost);
 
-        return prev
-          ? prev.plus(combinedCost)
-          : combinedCost.isZero()
-            ? undefined
-            : combinedCost;
+        return prev ? prev.plus(combinedCost) : combinedCost.isZero() ? undefined : combinedCost;
       }
 
       if (!curr.totalCost) return prev;
@@ -156,11 +134,7 @@ function getObservationLevels(minLevel: ObservationLevelType | undefined) {
   return ascendingLevels.slice(minLevelIndex);
 }
 
-export const heatMapTextColor = (p: {
-  min?: Decimal | number;
-  max: Decimal | number;
-  value: Decimal | number;
-}) => {
+export const heatMapTextColor = (p: { min?: Decimal | number; max: Decimal | number; value: Decimal | number }) => {
   const { min, max, value } = p;
   const minDecimal = min ? new Decimal(min) : new Decimal(0);
   const maxDecimal = new Decimal(max);
@@ -170,9 +144,7 @@ export const heatMapTextColor = (p: {
     [0.75, "text-dark-red"], // 75%
     [0.5, "text-dark-yellow"], // 50%
   ];
-  const standardizedValueOnStartEndScale = valueDecimal
-    .sub(minDecimal)
-    .div(maxDecimal.sub(minDecimal));
+  const standardizedValueOnStartEndScale = valueDecimal.sub(minDecimal).div(maxDecimal.sub(minDecimal));
   const ratio = standardizedValueOnStartEndScale.toNumber();
 
   // pick based on ratio if threshold is exceeded
@@ -199,14 +171,9 @@ export const unnestObservation = (nestedObservation: NestedObservation) => {
 // Helper function to compute and enrich tree nodes with pre-computed costs
 // This is done bottom-up: compute children first, then sum up to parent
 // Also populates the nodeMap for O(1) lookup by ID
-function enrichTreeNodeWithCosts(
-  node: TreeNode,
-  nodeMap: Map<string, TreeNode>,
-): TreeNode {
+function enrichTreeNodeWithCosts(node: TreeNode, nodeMap: Map<string, TreeNode>): TreeNode {
   // First, recursively enrich all children
-  const enrichedChildren = node.children.map((child) =>
-    enrichTreeNodeWithCosts(child, nodeMap),
-  );
+  const enrichedChildren = node.children.map((child) => enrichTreeNodeWithCosts(child, nodeMap));
 
   // Calculate this node's own cost
   let nodeCost: Decimal | undefined;
@@ -216,18 +183,9 @@ function enrichTreeNodeWithCosts(
     if (!cost.isZero()) {
       nodeCost = cost;
     }
-  } else if (
-    node.calculatedInputCost != null ||
-    node.calculatedOutputCost != null
-  ) {
-    const inputCost =
-      node.calculatedInputCost != null
-        ? new Decimal(node.calculatedInputCost)
-        : new Decimal(0);
-    const outputCost =
-      node.calculatedOutputCost != null
-        ? new Decimal(node.calculatedOutputCost)
-        : new Decimal(0);
+  } else if (node.calculatedInputCost != null || node.calculatedOutputCost != null) {
+    const inputCost = node.calculatedInputCost != null ? new Decimal(node.calculatedInputCost) : new Decimal(0);
+    const outputCost = node.calculatedOutputCost != null ? new Decimal(node.calculatedOutputCost) : new Decimal(0);
     const combinedCost = inputCost.plus(outputCost);
     if (!combinedCost.isZero()) {
       nodeCost = combinedCost;
@@ -235,19 +193,13 @@ function enrichTreeNodeWithCosts(
   }
 
   // Sum up all children's total costs
-  const childrenTotalCost = enrichedChildren.reduce<Decimal | undefined>(
-    (acc, child) => {
-      if (!child.totalCost) return acc;
-      return acc ? acc.plus(child.totalCost) : child.totalCost;
-    },
-    undefined,
-  );
+  const childrenTotalCost = enrichedChildren.reduce<Decimal | undefined>((acc, child) => {
+    if (!child.totalCost) return acc;
+    return acc ? acc.plus(child.totalCost) : child.totalCost;
+  }, undefined);
 
   // Total cost = this node's cost + all children's costs
-  const totalCost =
-    nodeCost && childrenTotalCost
-      ? nodeCost.plus(childrenTotalCost)
-      : nodeCost || childrenTotalCost;
+  const totalCost = nodeCost && childrenTotalCost ? nodeCost.plus(childrenTotalCost) : nodeCost || childrenTotalCost;
 
   const enrichedNode = {
     ...node,
@@ -275,10 +227,7 @@ function buildTraceTree(
   nodeMap: Map<string, TreeNode>;
 } {
   // First, nest the observations as before
-  const { nestedObservations, hiddenObservationsCount } = nestObservations(
-    observations,
-    minLevel,
-  );
+  const { nestedObservations, hiddenObservationsCount } = nestObservations(observations, minLevel);
 
   // Create nodeMap for O(1) lookup by ID
   const nodeMap = new Map<string, TreeNode>();
@@ -291,19 +240,11 @@ function buildTraceTree(
     depth: number,
   ): TreeNode => {
     const children = obs.children.map((child) =>
-      convertObservationToTreeNode(
-        child,
-        traceStartTime,
-        obs.startTime,
-        depth + 1,
-      ),
+      convertObservationToTreeNode(child, traceStartTime, obs.startTime, depth + 1),
     );
 
     // Calculate childrenDepth (max depth of subtree rooted at this node)
-    const childrenDepth =
-      children.length > 0
-        ? Math.max(...children.map((c) => c.childrenDepth)) + 1
-        : 0;
+    const childrenDepth = children.length > 0 ? Math.max(...children.map((c) => c.childrenDepth)) + 1 : 0;
 
     return {
       id: obs.id,
@@ -322,10 +263,7 @@ function buildTraceTree(
       parentObservationId: obs.parentObservationId,
       traceId: obs.traceId,
       startTimeSinceTrace: obs.startTime.getTime() - traceStartTime.getTime(),
-      startTimeSinceParentStart:
-        parentStartTime !== null
-          ? obs.startTime.getTime() - parentStartTime.getTime()
-          : null,
+      startTimeSinceParentStart: parentStartTime !== null ? obs.startTime.getTime() - parentStartTime.getTime() : null,
       depth,
       childrenDepth,
     };
@@ -337,19 +275,14 @@ function buildTraceTree(
     .map((node) => enrichTreeNodeWithCosts(node, nodeMap));
 
   // Calculate total cost for trace root (sum of all top-level children)
-  const traceTotalCost = enrichedChildren.reduce<Decimal | undefined>(
-    (acc, child) => {
-      if (!child.totalCost) return acc;
-      return acc ? acc.plus(child.totalCost) : child.totalCost;
-    },
-    undefined,
-  );
+  const traceTotalCost = enrichedChildren.reduce<Decimal | undefined>((acc, child) => {
+    if (!child.totalCost) return acc;
+    return acc ? acc.plus(child.totalCost) : child.totalCost;
+  }, undefined);
 
   // Calculate childrenDepth for trace root
   const traceChildrenDepth =
-    enrichedChildren.length > 0
-      ? Math.max(...enrichedChildren.map((c) => c.childrenDepth)) + 1
-      : 0;
+    enrichedChildren.length > 0 ? Math.max(...enrichedChildren.map((c) => c.childrenDepth)) + 1 : 0;
 
   // Create the root tree node (trace)
   // Use a unique ID for the trace root to avoid conflicts with observations that might have the same ID
@@ -390,11 +323,7 @@ export function buildTraceUiData(
   searchItems: TraceSearchListItem[];
   nodeMap: Map<string, TreeNode>;
 } {
-  const { tree, hiddenObservationsCount, nodeMap } = buildTraceTree(
-    trace,
-    observations,
-    minLevel,
-  );
+  const { tree, hiddenObservationsCount, nodeMap } = buildTraceTree(trace, observations, minLevel);
 
   // Calculate total cost directly from TreeNode structure
   // This avoids unnecessary type conversions and is more straightforward
@@ -407,18 +336,9 @@ export function buildTraceUiData(
       if (!cost.isZero()) {
         nodeCost = cost;
       }
-    } else if (
-      node.calculatedInputCost != null ||
-      node.calculatedOutputCost != null
-    ) {
-      const inputCost =
-        node.calculatedInputCost != null
-          ? new Decimal(node.calculatedInputCost)
-          : new Decimal(0);
-      const outputCost =
-        node.calculatedOutputCost != null
-          ? new Decimal(node.calculatedOutputCost)
-          : new Decimal(0);
+    } else if (node.calculatedInputCost != null || node.calculatedOutputCost != null) {
+      const inputCost = node.calculatedInputCost != null ? new Decimal(node.calculatedInputCost) : new Decimal(0);
+      const outputCost = node.calculatedOutputCost != null ? new Decimal(node.calculatedOutputCost) : new Decimal(0);
       const combinedCost = inputCost.plus(outputCost);
       if (!combinedCost.isZero()) {
         nodeCost = combinedCost;
@@ -426,14 +346,11 @@ export function buildTraceUiData(
     }
 
     // Calculate total from all children
-    const childrenCost = node.children.reduce<Decimal | undefined>(
-      (acc, child) => {
-        const childCost = calculateTreeNodeTotalCost(child);
-        if (!childCost) return acc;
-        return acc ? acc.plus(childCost) : childCost;
-      },
-      undefined,
-    );
+    const childrenCost = node.children.reduce<Decimal | undefined>((acc, child) => {
+      const childCost = calculateTreeNodeTotalCost(child);
+      if (!childCost) return acc;
+      return acc ? acc.plus(childCost) : childCost;
+    }, undefined);
 
     // Return the sum of node cost and children cost
     if (nodeCost && childrenCost) {

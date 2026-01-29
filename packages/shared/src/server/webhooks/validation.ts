@@ -6,10 +6,7 @@ import { logger } from "../logger";
 
 export async function resolveHost(hostname: string): Promise<string[]> {
   // Returns every A + AAAA address
-  const [v4, v6] = await Promise.allSettled([
-    dns.resolve4(hostname),
-    dns.resolve6(hostname),
-  ]);
+  const [v4, v6] = await Promise.allSettled([dns.resolve4(hostname), dns.resolve6(hostname)]);
 
   const ips: string[] = [];
   if (v4.status === "fulfilled") {
@@ -90,9 +87,7 @@ export async function validateWebhookURL(
   if (isIPAddress(hostname)) {
     if (isIPBlocked(hostname, whitelist.ips, whitelist.ip_ranges)) {
       // Log detailed error internally for debugging
-      logger.warn(
-        `Webhook validation blocked IP address in hostname: ${hostname}`,
-      );
+      logger.warn(`Webhook validation blocked IP address in hostname: ${hostname}`);
       // Throw generic error to user to prevent IP leakage
       throw new Error("Blocked IP address detected");
     }
@@ -103,9 +98,7 @@ export async function validateWebhookURL(
   for (const ip of ips) {
     if (isIPBlocked(ip, whitelist.ips, whitelist.ip_ranges)) {
       // Log detailed error internally for debugging
-      logger.warn(
-        `Webhook validation blocked resolved IP address: ${ip} for hostname: ${hostname}`,
-      );
+      logger.warn(`Webhook validation blocked resolved IP address: ${ip} for hostname: ${hostname}`);
       // Throw generic error to user to prevent IP leakage
       throw new Error("Blocked IP address detected");
     }

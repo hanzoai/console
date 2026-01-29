@@ -36,14 +36,8 @@ export function TimelineRow({
       {depth > 0 && (
         <div className="flex flex-shrink-0">
           {Array.from({ length: depth - 1 }, (_, i) => (
-            <div
-              key={i}
-              className="relative"
-              style={{ width: `${TREE_INDENTATION}px` }}
-            >
-              {treeLines[i] && (
-                <div className="absolute bottom-0 left-1.5 top-0 w-px bg-border" />
-              )}
+            <div key={i} className="relative" style={{ width: `${TREE_INDENTATION}px` }}>
+              {treeLines[i] && <div className="absolute bottom-0 left-1.5 top-0 w-px bg-border" />}
             </div>
           ))}
         </div>
@@ -51,17 +45,9 @@ export function TimelineRow({
 
       {/* Current level tree connector */}
       {depth > 0 && (
-        <div
-          className="relative flex-shrink-0"
-          style={{ width: `${TREE_INDENTATION}px` }}
-        >
+        <div className="relative flex-shrink-0" style={{ width: `${TREE_INDENTATION}px` }}>
           {/* Vertical line up */}
-          <div
-            className={cn(
-              "absolute left-1.5 top-0 w-px bg-border",
-              isLastSibling ? "h-3" : "bottom-0",
-            )}
-          />
+          <div className={cn("absolute left-1.5 top-0 w-px bg-border", isLastSibling ? "h-3" : "bottom-0")} />
           {/* Horizontal line to content */}
           <div className="absolute left-1.5 top-3 h-px w-2 bg-border" />
         </div>
@@ -81,12 +67,7 @@ export function TimelineRow({
             transform: "translateY(-50%)",
           }}
         >
-          <ChevronRight
-            className={cn(
-              "h-4 w-4 transition-transform duration-200",
-              !isCollapsed && "rotate-90",
-            )}
-          />
+          <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-90")} />
         </button>
       )}
 

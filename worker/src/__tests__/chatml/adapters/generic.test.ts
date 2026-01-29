@@ -10,9 +10,7 @@ import {
 describe("Generic Adapter", () => {
   it("should always detect (fallback)", () => {
     expect(genericAdapter.detect({})).toBe(true);
-    expect(genericAdapter.detect({ metadata: { anything: "value" } })).toBe(
-      true,
-    );
+    expect(genericAdapter.detect({ metadata: { anything: "value" } })).toBe(true);
   });
 
   it("should handle basic ChatML format", () => {
@@ -24,11 +22,7 @@ describe("Generic Adapter", () => {
 
     const inResult = normalizeInput(input);
     const outResult = normalizeOutput(output);
-    const allMessages = combineInputOutputMessages(
-      inResult,
-      outResult,
-      cleanLegacyOutput(output, output),
-    );
+    const allMessages = combineInputOutputMessages(inResult, outResult, cleanLegacyOutput(output, output));
 
     expect(inResult.success).toBe(true);
     expect(outResult.success).toBe(true);
@@ -63,11 +57,7 @@ describe("Generic Adapter", () => {
 
     const inResult = normalizeInput(input);
     const outResult = normalizeOutput(output);
-    const allMessages = combineInputOutputMessages(
-      inResult,
-      outResult,
-      cleanLegacyOutput(output, output),
-    );
+    const allMessages = combineInputOutputMessages(inResult, outResult, cleanLegacyOutput(output, output));
 
     expect(inResult.success).toBe(false);
     expect(allMessages).toHaveLength(0);

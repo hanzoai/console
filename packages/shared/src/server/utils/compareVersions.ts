@@ -8,10 +8,7 @@ export const versionSchema = z.string().regex(/^v?\d+\.\d+\.\d+(?:[-+].+)?$/); /
  * @param latest - Latest/minimum version to compare against (e.g., "v1.2.3")
  * @returns "major" | "minor" | "patch" if latest is newer, null if current >= latest
  */
-export const compareVersions = (
-  current: string,
-  latest: string,
-): "major" | "minor" | "patch" | null => {
+export const compareVersions = (current: string, latest: string): "major" | "minor" | "patch" | null => {
   const currentValidated = versionSchema.parse(current);
   const latestValidated = versionSchema.parse(latest);
 
@@ -47,14 +44,8 @@ export const compareVersions = (
   }
 
   if (latestMajor > currentMajor) return "major";
-  if (latestMajor === currentMajor && latestMinor > currentMinor)
-    return "minor";
-  if (
-    latestMajor === currentMajor &&
-    latestMinor === currentMinor &&
-    latestPatch > currentPatch
-  )
-    return "patch";
+  if (latestMajor === currentMajor && latestMinor > currentMinor) return "minor";
+  if (latestMajor === currentMajor && latestMinor === currentMinor && latestPatch > currentPatch) return "patch";
 
   return null;
 };

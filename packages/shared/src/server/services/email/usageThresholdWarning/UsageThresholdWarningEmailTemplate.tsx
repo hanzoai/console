@@ -44,8 +44,7 @@ export const UsageThresholdWarningEmailTemplate = ({
     <Html>
       <Head />
       <Preview>
-        Your Hanzo organization &quot;{organizationName}&quot; has reached{" "}
-        {currentUsage.toLocaleString()} events
+        Your Hanzo organization &quot;{organizationName}&quot; has reached {currentUsage.toLocaleString()} events
       </Preview>
       <Tailwind>
         <Body className="bg-background my-auto mx-auto font-sans">
@@ -66,9 +65,8 @@ export const UsageThresholdWarningEmailTemplate = ({
               </Heading>
               <Text className="text-gray-700 text-sm leading-6">
                 Your organization &quot;{organizationName}&quot; has reached{" "}
-                <strong>{currentUsage.toLocaleString()}</strong> events out of
-                your <strong>{limit.toLocaleString()}</strong> event limit for
-                the free tier.
+                <strong>{currentUsage.toLocaleString()}</strong> events out of your{" "}
+                <strong>{limit.toLocaleString()}</strong> event limit for the free tier.
               </Text>
             </Section>
 
@@ -76,20 +74,12 @@ export const UsageThresholdWarningEmailTemplate = ({
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <Row>
                   <Column className="text-center">
-                    <Text className="text-gray-600 text-sm font-medium m-0 mb-1">
-                      Current Usage
-                    </Text>
-                    <Text className="text-2xl font-bold text-gray-900 m-0">
-                      {currentUsage.toLocaleString()}
-                    </Text>
+                    <Text className="text-gray-600 text-sm font-medium m-0 mb-1">Current Usage</Text>
+                    <Text className="text-2xl font-bold text-gray-900 m-0">{currentUsage.toLocaleString()}</Text>
                   </Column>
                   <Column className="text-center">
-                    <Text className="text-gray-600 text-sm font-medium m-0 mb-1">
-                      Threshold
-                    </Text>
-                    <Text className="text-2xl font-bold text-gray-900 m-0">
-                      {limit.toLocaleString()}
-                    </Text>
+                    <Text className="text-gray-600 text-sm font-medium m-0 mb-1">Threshold</Text>
+                    <Text className="text-2xl font-bold text-gray-900 m-0">{limit.toLocaleString()}</Text>
                   </Column>
                 </Row>
               </div>
@@ -105,23 +95,18 @@ export const UsageThresholdWarningEmailTemplate = ({
             </Section>
 
             <Section className="mt-8">
-              <Heading className="text-black text-[18px] font-semibold">
-                What happens next?
-              </Heading>
+              <Heading className="text-black text-[18px] font-semibold">What happens next?</Heading>
               <Text className="text-gray-700 text-sm leading-6">
                 • Your usage continues to be tracked for a grace period
                 <br />
-                • Ingestion will soon be suspended and incoming observations,
-                traces, and scores will be dropped unless you upgrade
-                <br />• Your usage limit resets on{" "}
-                <strong>{formattedResetDate}</strong>
+                • Ingestion will soon be suspended and incoming observations, traces, and scores will be dropped unless
+                you upgrade
+                <br />• Your usage limit resets on <strong>{formattedResetDate}</strong>
               </Text>
             </Section>
 
             <Section className="mt-8">
-              <Heading className="text-black text-[18px] font-semibold">
-                Upgrade to Core at only $29/month
-              </Heading>
+              <Heading className="text-black text-[18px] font-semibold">Upgrade to Core at only $29/month</Heading>
               <Text className="text-gray-700 text-sm leading-6">
                 When you upgrade, you can:
                 <br />
@@ -133,12 +118,8 @@ export const UsageThresholdWarningEmailTemplate = ({
                 <br />• Get support via Email/Chat
               </Text>
               <Text className="text-gray-700 text-sm leading-6 mt-4">
-                <strong>Startup Program:</strong> Eligible startups get 50% off
-                for their first year.{" "}
-                <a
-                  href="https://hanzo.com/startups"
-                  className="text-blue-600 underline"
-                >
+                <strong>Startup Program:</strong> Eligible startups get 50% off for their first year.{" "}
+                <a href="https://hanzo.com/startups" className="text-blue-600 underline">
                   Learn more →
                 </a>
               </Text>
@@ -148,12 +129,10 @@ export const UsageThresholdWarningEmailTemplate = ({
 
             <Section>
               <Text className="text-[#666666] text-[12px] leading-[24px]">
-                This email was sent to {receiverEmail} regarding usage alerts
-                for &quot;{organizationName}&quot;.
+                This email was sent to {receiverEmail} regarding usage alerts for &quot;{organizationName}&quot;.
               </Text>
               <Text className="text-[#666666] text-[12px] leading-[24px]">
-                Questions? Simply reply to this email and we&apos;ll be happy to
-                help.
+                Questions? Simply reply to this email and we&apos;ll be happy to help.
               </Text>
             </Section>
           </Container>

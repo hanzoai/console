@@ -20,10 +20,7 @@ export function useSurveyForm() {
       });
     },
     onError: (error) => {
-      showErrorToast(
-        "Failed to submit survey",
-        error.message || "Please try again later.",
-      );
+      showErrorToast("Failed to submit survey", error.message || "Please try again later.");
     },
   });
 
@@ -40,9 +37,7 @@ export function useSurveyForm() {
   const shouldSkipReferralQuestion = signupReason === "Invited by team";
 
   // Get effective total steps (skip last question if invited by team)
-  const effectiveTotalSteps = shouldSkipReferralQuestion
-    ? TOTAL_STEPS - 1
-    : TOTAL_STEPS;
+  const effectiveTotalSteps = shouldSkipReferralQuestion ? TOTAL_STEPS - 1 : TOTAL_STEPS;
 
   // Get current question, but skip the referral question if "Invited by team" is selected
   const currentQuestion = SURVEY_QUESTIONS[state.currentStep];
@@ -80,10 +75,8 @@ export function useSurveyForm() {
     async (data: SurveyFormData) => {
       const transformedResponse: Record<string, string> = {};
       if (data.role) transformedResponse["role"] = data.role;
-      if (data.signupReason)
-        transformedResponse["signupReason"] = data.signupReason;
-      if (data.referralSource)
-        transformedResponse["referralSource"] = data.referralSource.trim();
+      if (data.signupReason) transformedResponse["signupReason"] = data.signupReason;
+      if (data.referralSource) transformedResponse["referralSource"] = data.referralSource.trim();
 
       try {
         await createSurveyMutation.mutateAsync({

@@ -1,13 +1,7 @@
 import { env } from "@/src/env.mjs";
-import {
-  createTRPCRouter,
-  protectedGetTraceProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedGetTraceProcedure } from "@/src/server/api/trpc";
 import { HanzoNotFoundError, parseIO } from "@hanzo/shared";
-import {
-  getObservationById,
-  getObservationByIdFromEventsTable,
-} from "@hanzo/shared/src/server";
+import { getObservationById, getObservationByIdFromEventsTable } from "@hanzo/shared/src/server";
 import { z } from "zod/v4";
 import { toDomainWithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
@@ -39,9 +33,7 @@ export const observationsRouter = createTRPCRouter({
           ? await getObservationByIdFromEventsTable(queryOpts)
           : await getObservationById(queryOpts);
       if (!obs) {
-        throw new HanzoNotFoundError(
-          "Observation not found within authorized project",
-        );
+        throw new HanzoNotFoundError("Observation not found within authorized project");
       }
       return {
         ...toDomainWithStringifiedMetadata(obs),

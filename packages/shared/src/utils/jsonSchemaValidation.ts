@@ -55,10 +55,7 @@ export function isValidJSONSchema(schema: unknown): boolean {
  * Validates data against a compiled schema validator
  * Optimized for reuse - compiles schema once, validates many times
  */
-export function validateWithCompiledSchema(
-  data: unknown,
-  validator: ValidateFunction,
-): FieldValidationResult {
+export function validateWithCompiledSchema(data: unknown, validator: ValidateFunction): FieldValidationResult {
   const isValid = validator(data);
 
   if (!isValid && validator.errors) {

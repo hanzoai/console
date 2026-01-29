@@ -22,16 +22,9 @@ export function getDisplaySecretKey(secretKey: string): string {
 }
 
 // Generate HMAC-SHA256 signature for webhook payload
-export function generateWebhookSignature(
-  payload: string,
-  timestamp: number,
-  secret: string,
-) {
+export function generateWebhookSignature(payload: string, timestamp: number, secret: string) {
   const signedPayload = `${timestamp}.${payload}`;
-  return crypto
-    .createHmac("sha256", secret)
-    .update(signedPayload, "utf8")
-    .digest("hex");
+  return crypto.createHmac("sha256", secret).update(signedPayload, "utf8").digest("hex");
 }
 
 export function createSignatureHeader(payload: string, secret: string): string {

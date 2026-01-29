@@ -42,9 +42,7 @@ export interface SlackInstallationMetadata {
 /**
  * Type guard to validate Slack installation metadata
  */
-function isSlackInstallationMetadata(
-  metadata: unknown,
-): metadata is SlackInstallationMetadata {
+function isSlackInstallationMetadata(metadata: unknown): metadata is SlackInstallationMetadata {
   return (
     typeof metadata === "object" &&
     metadata !== null &&
@@ -57,9 +55,7 @@ function isSlackInstallationMetadata(
 /**
  * Helper function to safely parse and validate Slack installation metadata
  */
-export function parseSlackInstallationMetadata(
-  metadata: unknown,
-): SlackInstallationMetadata {
+export function parseSlackInstallationMetadata(metadata: unknown): SlackInstallationMetadata {
   if (typeof metadata !== "string") {
     throw new Error("Installation metadata must be a string");
   }
@@ -72,9 +68,7 @@ export function parseSlackInstallationMetadata(
   }
 
   if (!isSlackInstallationMetadata(parsedMetadata)) {
-    throw new Error(
-      "Invalid installation metadata: missing or invalid projectId",
-    );
+    throw new Error("Invalid installation metadata: missing or invalid projectId");
   }
 
   return parsedMetadata;
@@ -101,9 +95,7 @@ export class SlackService {
       installationStore: {
         storeInstallation: async (installation) => {
           try {
-            const metadata = parseSlackInstallationMetadata(
-              installation.metadata,
-            );
+            const metadata = parseSlackInstallationMetadata(installation.metadata);
             const projectId = metadata.projectId;
 
             logger.info("Storing Slack installation for project", {
@@ -258,9 +250,7 @@ export class SlackService {
       logger.info("Slack integration deleted for project", { projectId });
     } catch (error) {
       logger.error("Failed to delete Slack integration", { error, projectId });
-      throw new Error(
-        `Failed to delete integration: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new Error(`Failed to delete integration: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -289,9 +279,7 @@ export class SlackService {
         error,
         projectId,
       });
-      throw new Error(
-        `Failed to create WebClient: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new Error(`Failed to create WebClient: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -316,20 +304,15 @@ export class SlackService {
         throw new Error(`Slack API error: ${result.error}`);
       }
 
-      const channels: SlackChannel[] = (result.channels || []).map(
-        (channel) => ({
-          id: channel.id!,
-          name: channel.name!,
-          isPrivate: channel.is_private || false,
-          isMember: channel.is_member || false,
-        }),
-      );
+      const channels: SlackChannel[] = (result.channels || []).map((channel) => ({
+        id: channel.id!,
+        name: channel.name!,
+        isPrivate: channel.is_private || false,
+        isMember: channel.is_member || false,
+      }));
 
       const nextCursor = result.response_metadata?.next_cursor;
-      if (
-        nextCursor &&
-        fetchedRecords + channels.length < env.SLACK_FETCH_LIMIT
-      ) {
+      if (nextCursor && fetchedRecords + channels.length < env.SLACK_FETCH_LIMIT) {
         try {
           const nextPageChannels = await this.getChannelsRecursive(
             client,
@@ -338,18 +321,13 @@ export class SlackService {
           );
           return [...channels, ...nextPageChannels];
         } catch (error) {
-          logger.error(
-            `Failed to retrieve next page of channels, returning only already fetched`,
-            error,
-          );
+          logger.error(`Failed to retrieve next page of channels, returning only already fetched`, error);
         }
       }
       return channels;
     } catch (error) {
       logger.error("Failed to fetch channels recursively", { error, cursor });
-      throw new Error(
-        `Failed to fetch channels: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new Error(`Failed to fetch channels: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -367,9 +345,7 @@ export class SlackService {
       return channels;
     } catch (error) {
       logger.error("Failed to fetch channels", { error });
-      throw new Error(
-        `Failed to fetch channels: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new Error(`Failed to fetch channels: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -406,9 +382,7 @@ export class SlackService {
         error,
         channelId: params.channelId,
       });
-      throw new Error(
-        `Failed to send message: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new Error(`Failed to send message: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 

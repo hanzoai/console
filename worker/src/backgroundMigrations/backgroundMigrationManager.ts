@@ -54,21 +54,13 @@ export class BackgroundMigrationManager {
             // Abort if there is no migration to run or migration was locked less than 60s ago
             // We do not check lockedAt in the DB query, because findFirst might return other uncompleted migrations
             // which would lead to concurrent execution.
-            if (
-              !migration ||
-              (migration.lockedAt &&
-                migration.lockedAt > new Date(Date.now() - 60 * 1000))
-            ) {
-              logger.info(
-                "[Background Migration] No background migrations to run",
-              );
+            if (!migration || (migration.lockedAt && migration.lockedAt > new Date(Date.now() - 60 * 1000))) {
+              logger.info("[Background Migration] No background migrations to run");
               migrationToRun = false;
               return;
             }
 
-            logger.info(
-              `[Background Migration] Found background migrations ${migration.name} to run`,
-            );
+            logger.info(`[Background Migration] Found background migrations ${migration.name} to run`);
 
             // Acquire lock
             await tx.backgroundMigration.update({
@@ -80,9 +72,7 @@ export class BackgroundMigrationManager {
                 lockedAt: new Date(),
               },
             });
-            logger.info(
-              `[Background Migration] Acquired lock for background migration ${migration.name}`,
-            );
+            logger.info(`[Background Migration] Acquired lock for background migration ${migration.name}`);
             BackgroundMigrationManager.activeMigration = {
               id: migration.id,
               name: migration.name,
@@ -154,8 +144,7 @@ export class BackgroundMigrationManager {
             data: {
               lockedAt: null,
               failedAt: new Date(),
-              failedReason:
-                err instanceof Error ? err.message : "Unknown error",
+              failedReason: err instanceof Error ? err.message : "Unknown error",
             },
           });
         }
@@ -176,9 +165,7 @@ export class BackgroundMigrationManager {
           lockedAt: null,
         },
       });
-      logger.info(
-        `[Background Migration] Aborted active migration ${BackgroundMigrationManager.activeMigration.name}`,
-      );
+      logger.info(`[Background Migration] Aborted active migration ${BackgroundMigrationManager.activeMigration.name}`);
       BackgroundMigrationManager.activeMigration = undefined;
     }
   }

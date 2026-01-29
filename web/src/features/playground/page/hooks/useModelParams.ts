@@ -3,11 +3,7 @@ import { useEffect, useMemo, useCallback, useState } from "react";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import useLocalStorage from "@/src/components/useLocalStorage";
-import {
-  LLMAdapter,
-  supportedModels,
-  type UIModelParams,
-} from "@hanzo/shared";
+import { LLMAdapter, supportedModels, type UIModelParams } from "@hanzo/shared";
 import { type ModelParamsContext } from "@/src/components/ModelParameters";
 import { getModelNameKey, getModelProviderKey } from "../storage/keys";
 
@@ -38,13 +34,9 @@ export const useModelParams = (windowId?: string) => {
   const modelNameKey = getModelNameKey(windowId ?? "");
   const modelProviderKey = getModelProviderKey(windowId ?? "");
 
-  const [persistedModelName, setPersistedModelName] = useLocalStorage<
-    string | null
-  >(modelNameKey, null);
+  const [persistedModelName, setPersistedModelName] = useLocalStorage<string | null>(modelNameKey, null);
 
-  const [persistedModelProvider, setPersistedModelProvider] = useLocalStorage<
-    string | null
-  >(modelProviderKey, null);
+  const [persistedModelProvider, setPersistedModelProvider] = useLocalStorage<string | null>(modelProviderKey, null);
 
   const availableProviders = useMemo(() => {
     const adapter = availableLLMApiKeys.data?.data ?? [];
@@ -59,9 +51,7 @@ export const useModelParams = (windowId?: string) => {
   const providerModelCombinations =
     availableLLMApiKeys.data?.data.reduce((acc, v) => {
       if (v.withDefaultModels) {
-        acc.push(
-          ...supportedModels[v.adapter].map((m) => `${v.provider}: ${m}`),
-        );
+        acc.push(...supportedModels[v.adapter].map((m) => `${v.provider}: ${m}`));
       }
       acc.push(...v.customModels.map((m) => `${v.provider}: ${m}`));
 
@@ -73,17 +63,12 @@ export const useModelParams = (windowId?: string) => {
       !selectedProviderApiKey
         ? []
         : selectedProviderApiKey.withDefaultModels
-          ? [
-              ...selectedProviderApiKey.customModels,
-              ...supportedModels[selectedProviderApiKey.adapter],
-            ]
+          ? [...selectedProviderApiKey.customModels, ...supportedModels[selectedProviderApiKey.adapter]]
           : selectedProviderApiKey.customModels,
     [selectedProviderApiKey],
   );
 
-  const updateModelParamValue = useCallback<
-    ModelParamsContext["updateModelParamValue"]
-  >(
+  const updateModelParamValue = useCallback<ModelParamsContext["updateModelParamValue"]>(
     (key, value) => {
       setModelParams((prev) => ({
         ...prev,
@@ -100,10 +85,7 @@ export const useModelParams = (windowId?: string) => {
     [setPersistedModelName, setPersistedModelProvider, setModelParams],
   );
 
-  const setModelParamEnabled: ModelParamsContext["setModelParamEnabled"] = (
-    key,
-    enabled,
-  ) => {
+  const setModelParamEnabled: ModelParamsContext["setModelParamEnabled"] = (key, enabled) => {
     setModelParams((prev) => ({
       ...prev,
       [key]: { ...prev[key], enabled },
@@ -114,25 +96,16 @@ export const useModelParams = (windowId?: string) => {
   useEffect(() => {
     if (
       availableProviders.length > 0 &&
-      (!modelParams.provider.value ||
-        !availableProviders.includes(modelParams.provider.value))
+      (!modelParams.provider.value || !availableProviders.includes(modelParams.provider.value))
     ) {
       // fall back to a valid provider whenever the cached value is missing or no longer available (e.g. after switching projects)
-      if (
-        persistedModelProvider &&
-        availableProviders.includes(persistedModelProvider)
-      ) {
+      if (persistedModelProvider && availableProviders.includes(persistedModelProvider)) {
         updateModelParamValue("provider", persistedModelProvider);
       } else {
         updateModelParamValue("provider", availableProviders[0]);
       }
     }
-  }, [
-    availableProviders,
-    modelParams.provider.value,
-    updateModelParamValue,
-    persistedModelProvider,
-  ]);
+  }, [availableProviders, modelParams.provider.value, updateModelParamValue, persistedModelProvider]);
 
   useEffect(() => {
     if (
@@ -145,12 +118,7 @@ export const useModelParams = (windowId?: string) => {
         updateModelParamValue("model", availableModels[0]);
       }
     }
-  }, [
-    availableModels,
-    modelParams.model.value,
-    updateModelParamValue,
-    persistedModelName,
-  ]);
+  }, [availableModels, modelParams.model.value, updateModelParamValue, persistedModelName]);
 
   // Update adapter, max temperature, temperature, max_tokens, top_p when provider changes
   useEffect(() => {
@@ -162,31 +130,23 @@ export const useModelParams = (windowId?: string) => {
           enabled: true,
         },
         maxTemperature: {
-          value: getDefaultAdapterParams(selectedProviderApiKey.adapter)
-            .maxTemperature.value,
-          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter)
-            .maxTemperature.enabled,
+          value: getDefaultAdapterParams(selectedProviderApiKey.adapter).maxTemperature.value,
+          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter).maxTemperature.enabled,
         },
         temperature: {
           value: Math.min(
             prev.temperature.value,
-            getDefaultAdapterParams(selectedProviderApiKey.adapter)
-              .maxTemperature.value,
+            getDefaultAdapterParams(selectedProviderApiKey.adapter).maxTemperature.value,
           ),
-          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter)
-            .temperature.enabled,
+          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter).temperature.enabled,
         },
         max_tokens: {
-          value: getDefaultAdapterParams(selectedProviderApiKey.adapter)
-            .max_tokens.value,
-          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter)
-            .max_tokens.enabled,
+          value: getDefaultAdapterParams(selectedProviderApiKey.adapter).max_tokens.value,
+          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter).max_tokens.enabled,
         },
         top_p: {
-          value: getDefaultAdapterParams(selectedProviderApiKey.adapter).top_p
-            .value,
-          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter).top_p
-            .enabled,
+          value: getDefaultAdapterParams(selectedProviderApiKey.adapter).top_p.value,
+          enabled: getDefaultAdapterParams(selectedProviderApiKey.adapter).top_p.enabled,
         },
       }));
     }
@@ -203,9 +163,7 @@ export const useModelParams = (windowId?: string) => {
   };
 };
 
-function getDefaultAdapterParams(
-  adapter: LLMAdapter,
-): Omit<UIModelParams, "provider" | "model"> {
+function getDefaultAdapterParams(adapter: LLMAdapter): Omit<UIModelParams, "provider" | "model"> {
   switch (adapter) {
     // Docs: https://platform.openai.com/docs/api-reference/chat/create
     case LLMAdapter.OpenAI:

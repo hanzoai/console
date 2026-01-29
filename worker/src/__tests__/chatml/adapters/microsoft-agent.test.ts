@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  microsoftAgentAdapter,
-  selectAdapter,
-  SimpleChatMlArraySchema,
-  type NormalizerContext,
-} from "@hanzo/shared";
+import { microsoftAgentAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
 
 // Test helpers
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {
@@ -42,9 +37,7 @@ describe("Microsoft Agent Framework Adapter", () => {
     });
 
     it("should detect by framework override", () => {
-      expect(
-        microsoftAgentAdapter.detect({ framework: "microsoft-agent" }),
-      ).toBe(true);
+      expect(microsoftAgentAdapter.detect({ framework: "microsoft-agent" })).toBe(true);
     });
 
     it("should detect Microsoft Agent format with parts array", () => {
@@ -88,9 +81,7 @@ describe("Microsoft Agent Framework Adapter", () => {
       expect(result.success).toBe(true);
       expect(result.data?.[0].tool_calls).toBeDefined();
       expect(result.data?.[0].tool_calls?.[0].name).toBe("get_weather");
-      expect(result.data?.[0].tool_calls?.[0].arguments).toBe(
-        '{"location":"Portland"}',
-      );
+      expect(result.data?.[0].tool_calls?.[0].arguments).toBe('{"location":"Portland"}');
       expect(result.data?.[0].tool_calls?.[0].id).toBe("call_456");
     });
 
@@ -110,9 +101,7 @@ describe("Microsoft Agent Framework Adapter", () => {
       const result = normalizeInput(input, { framework: "microsoft-agent" });
 
       expect(result.success).toBe(true);
-      expect(result.data?.[0].content).toBe(
-        "What's the weather like in Portland?",
-      );
+      expect(result.data?.[0].content).toBe("What's the weather like in Portland?");
       // parts should be removed during normalization (not in ChatML type)
       expect((result.data?.[0] as any).parts).toBeUndefined();
     });
@@ -125,8 +114,7 @@ describe("Microsoft Agent Framework Adapter", () => {
             {
               type: "tool_call_response",
               id: ["run_123", "call_456"],
-              response:
-                "The weather in Portland is stormy with a high of 19°C.",
+              response: "The weather in Portland is stormy with a high of 19°C.",
             },
           ],
         },
@@ -135,9 +123,7 @@ describe("Microsoft Agent Framework Adapter", () => {
       const result = normalizeInput(input, { framework: "microsoft-agent" });
 
       expect(result.success).toBe(true);
-      expect(result.data?.[0].content).toBe(
-        "The weather in Portland is stormy with a high of 19°C.",
-      );
+      expect(result.data?.[0].content).toBe("The weather in Portland is stormy with a high of 19°C.");
       expect(result.data?.[0].tool_call_id).toBe("call_456");
     });
 
@@ -185,9 +171,7 @@ describe("Microsoft Agent Framework Adapter", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.data?.[0].content).toBe(
-        "What's the weather like in Portland?",
-      );
+      expect(result.data?.[0].content).toBe("What's the weather like in Portland?");
       expect(result.data?.[0].tools).toBeDefined();
       expect(result.data?.[0].tools?.[0].name).toBe("get_weather");
     });
@@ -211,8 +195,7 @@ describe("Microsoft Agent Framework Adapter", () => {
             {
               type: "tool_call_response",
               id: ["run_123", "call_456"],
-              response:
-                "The weather in Portland is stormy with a high of 19°C.",
+              response: "The weather in Portland is stormy with a high of 19°C.",
             },
           ],
         },
@@ -221,8 +204,7 @@ describe("Microsoft Agent Framework Adapter", () => {
           parts: [
             {
               type: "text",
-              content:
-                "The weather in Portland is currently stormy with a high temperature of 19°C.",
+              content: "The weather in Portland is currently stormy with a high temperature of 19°C.",
             },
           ],
         },
@@ -238,9 +220,7 @@ describe("Microsoft Agent Framework Adapter", () => {
       expect(result.data?.[0].tool_calls?.[0].name).toBe("get_weather");
 
       // Second message: tool response
-      expect(result.data?.[1].content).toBe(
-        "The weather in Portland is stormy with a high of 19°C.",
-      );
+      expect(result.data?.[1].content).toBe("The weather in Portland is stormy with a high of 19°C.");
 
       // Third message: text response
       expect(result.data?.[2].content).toBe(

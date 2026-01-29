@@ -5,10 +5,7 @@ import { type WidgetChartConfig, WidgetForm } from "@/src/features/widgets";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
-import {
-  type views,
-  type metricAggregations,
-} from "@/src/features/query/types";
+import { type views, type metricAggregations } from "@/src/features/query/types";
 import { type z } from "zod/v4";
 import { SelectDashboardDialog } from "@/src/features/dashboard/components/SelectDashboardDialog";
 import { useState } from "react";
@@ -28,9 +25,7 @@ export default function NewWidget() {
       });
 
       if (dashboardId) {
-        void router.push(
-          `/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${data.widget.id}`,
-        );
+        void router.push(`/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${data.widget.id}`);
       } else {
         setPendingWidgetId(data.widget.id); // store for dialog
         setDashboardDialogOpen(true);
@@ -108,9 +103,7 @@ export default function NewWidget() {
           onOpenChange={setDashboardDialogOpen}
           projectId={projectId}
           onSelectDashboard={(dashboardId) => {
-            router.push(
-              `/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${pendingWidgetId}`,
-            );
+            router.push(`/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${pendingWidgetId}`);
           }}
           onSkip={() => {
             router.push(`/project/${projectId}/widgets`);

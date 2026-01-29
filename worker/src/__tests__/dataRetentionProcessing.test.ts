@@ -97,11 +97,7 @@ describe("DataRetentionProcessingJob", () => {
     const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).toContain(fileName);
 
-    const eventLogRecord = await getBlobStorageByProjectAndEntityId(
-      projectId,
-      "trace",
-      `${baseId}-trace`,
-    );
+    const eventLogRecord = await getBlobStorageByProjectAndEntityId(projectId, "trace", `${baseId}-trace`);
     expect(eventLogRecord).toHaveLength(1);
 
     // Cleanup
@@ -156,11 +152,7 @@ describe("DataRetentionProcessingJob", () => {
     const files = await storageService.listFiles(s3Prefix);
     expect(files.map((file) => file.file)).not.toContain(fileName);
 
-    const eventLogRecord = await getBlobStorageByProjectAndEntityId(
-      projectId,
-      "trace",
-      `${baseId}-trace`,
-    );
+    const eventLogRecord = await getBlobStorageByProjectAndEntityId(projectId, "trace", `${baseId}-trace`);
     expect(eventLogRecord).toHaveLength(0);
 
     // Cleanup
@@ -376,9 +368,7 @@ describe("DataRetentionProcessingJob", () => {
     } as Job);
 
     // Then
-    expect(() =>
-      getObservationById({ id: `${baseId}-observation-old`, projectId }),
-    ).rejects.toThrowError("not found");
+    expect(() => getObservationById({ id: `${baseId}-observation-old`, projectId })).rejects.toThrowError("not found");
     const observationNew = await getObservationById({
       id: `${baseId}-observation-new`,
       projectId,

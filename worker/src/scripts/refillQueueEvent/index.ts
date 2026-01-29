@@ -22,9 +22,7 @@ const QUEUE_JOB_MAP = {
 } as const;
 
 // Type guard to check if queue name is supported
-function isSupportedQueue(
-  queueName: string,
-): queueName is keyof typeof QUEUE_SCHEMA_MAP {
+function isSupportedQueue(queueName: string): queueName is keyof typeof QUEUE_SCHEMA_MAP {
   return queueName in QUEUE_SCHEMA_MAP;
 }
 
@@ -43,9 +41,7 @@ interface Stats {
 function validateConfig() {
   if (!isSupportedQueue(QUEUE_NAME)) {
     const supportedQueues = Object.keys(QUEUE_SCHEMA_MAP).join(", ");
-    throw new Error(
-      `Unsupported queue: ${QUEUE_NAME}. Supported queues: ${supportedQueues}`,
-    );
+    throw new Error(`Unsupported queue: ${QUEUE_NAME}. Supported queues: ${supportedQueues}`);
   }
 
   if (!fs.existsSync(EVENTS_FILE)) {
@@ -171,9 +167,7 @@ async function processEvents(
     // Log progress
     const batchNumber = Math.ceil((i + 1) / batchSize);
     const totalBatches = Math.ceil(events.length / batchSize);
-    console.log(
-      `Processed batch ${batchNumber}/${totalBatches} (${stats.processedEvents}/${events.length} events)`,
-    );
+    console.log(`Processed batch ${batchNumber}/${totalBatches} (${stats.processedEvents}/${events.length} events)`);
 
     // Log sample event from first batch
     if (i === 0 && batch.length > 0) {
@@ -197,17 +191,11 @@ function printStats(stats: Stats): void {
   console.log(`Valid events: ${stats.validEvents.toLocaleString()}`);
   console.log(`Invalid events: ${stats.invalidEvents.toLocaleString()}`);
   console.log(`Processed events: ${stats.processedEvents.toLocaleString()}`);
-  console.log(
-    `Processing time: ${(stats.processingTimeMs / 1000).toFixed(1)} seconds`,
-  );
+  console.log(`Processing time: ${(stats.processingTimeMs / 1000).toFixed(1)} seconds`);
 
   if (stats.processingTimeMs > 0) {
-    const eventsPerSecond = Math.round(
-      stats.processedEvents / (stats.processingTimeMs / 1000),
-    );
-    console.log(
-      `Average speed: ${eventsPerSecond.toLocaleString()} events/second`,
-    );
+    const eventsPerSecond = Math.round(stats.processedEvents / (stats.processingTimeMs / 1000));
+    console.log(`Average speed: ${eventsPerSecond.toLocaleString()} events/second`);
   }
 }
 
@@ -230,10 +218,7 @@ async function main(): Promise<void> {
     }
 
     // Validate events
-    const { valid: validEvents, invalid: invalidEvents } = validateEvents(
-      rawEvents,
-      QUEUE_NAME,
-    );
+    const { valid: validEvents, invalid: invalidEvents } = validateEvents(rawEvents, QUEUE_NAME);
 
     if (validEvents.length === 0) {
       console.log("No valid events found. Exiting.");

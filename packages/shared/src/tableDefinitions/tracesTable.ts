@@ -1,9 +1,4 @@
-import {
-  type ColumnDefinition,
-  type MultiValueOption,
-  type ObservationLevelType,
-  type SingleValueOption,
-} from "..";
+import { type ColumnDefinition, type MultiValueOption, type ObservationLevelType, type SingleValueOption } from "..";
 import { formatColumnOptions } from "./typeHelpers";
 
 export const tracesOnlyCols: ColumnDefinition[] = [
@@ -74,12 +69,9 @@ export const tracesOnlyCols: ColumnDefinition[] = [
     id: "level",
     type: "stringOptions",
     internal: '"level"',
-    options: [
-      { value: "DEBUG" },
-      { value: "DEFAULT" },
-      { value: "WARNING" },
-      { value: "ERROR" },
-    ] as { value: ObservationLevelType }[],
+    options: [{ value: "DEBUG" }, { value: "DEFAULT" }, { value: "WARNING" }, { value: "ERROR" }] as {
+      value: ObservationLevelType;
+    }[],
   },
   {
     name: "Tags",

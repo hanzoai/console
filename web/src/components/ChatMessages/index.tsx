@@ -2,23 +2,14 @@ import { ChevronDownIcon, PlusCircleIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/src/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import {
-  ChatMessageRole,
-  ChatMessageType,
-  type ChatMessageWithId,
-} from "@hanzo/shared";
+import { ChatMessageRole, ChatMessageType, type ChatMessageWithId } from "@hanzo/shared";
 
 import { ChatMessageComponent } from "./ChatMessageComponent";
 
@@ -34,11 +25,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { isString } from "@/src/utils/types";
 
 type ChatMessagesProps = MessagesContext;
@@ -56,11 +43,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = (props) => {
     prevMessageCount.current = messages.length;
   }, [scrollAreaRef, messages.length]);
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {}),
-  );
+  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -89,10 +72,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = (props) => {
       <div className="flex h-full flex-col">
         <div className="flex-1 overflow-auto scroll-smooth" ref={scrollAreaRef}>
           <div className="flex-1 space-y-2">
-            <SortableContext
-              items={props.messages.map((message) => message.id)}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={props.messages.map((message) => message.id)} strategy={verticalListSortingStrategy}>
               {props.messages.map((message, index) => {
                 return (
                   <ChatMessageComponent
@@ -119,23 +99,14 @@ export const ChatMessages: React.FC<ChatMessagesProps> = (props) => {
 };
 
 type AddMessageButtonProps = Pick<MessagesContext, "messages" | "addMessage">;
-const AddMessageButton: React.FC<AddMessageButtonProps> = ({
-  messages,
-  addMessage,
-}) => {
+const AddMessageButton: React.FC<AddMessageButtonProps> = ({ messages, addMessage }) => {
   // Skip placeholder messages when determining last roles
   const lastMessageWithRole = messages
     .slice()
     .reverse()
-    .find(
-      (msg): msg is ChatMessageWithId & { role: string } =>
-        msg.type !== ChatMessageType.Placeholder,
-    );
+    .find((msg): msg is ChatMessageWithId & { role: string } => msg.type !== ChatMessageType.Placeholder);
   const lastMessageRole = lastMessageWithRole?.role;
-  const nextMessageRole =
-    lastMessageRole === ChatMessageRole.User
-      ? ChatMessageRole.Assistant
-      : ChatMessageRole.User;
+  const nextMessageRole = lastMessageRole === ChatMessageRole.User ? ChatMessageRole.Assistant : ChatMessageRole.User;
 
   const addRegularMessage = () => {
     if (nextMessageRole === ChatMessageRole.User) {
@@ -217,61 +188,37 @@ const AddMessageButton: React.FC<AddMessageButtonProps> = ({
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-l-none border-l px-2"
-            >
+            <Button type="button" variant="outline" className="rounded-l-none border-l px-2">
               <ChevronDownIcon size={14} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => addMessageWithRole(ChatMessageRole.User)}
-            >
-              User Message
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => addMessageWithRole(ChatMessageRole.Assistant)}
-            >
+            <DropdownMenuItem onClick={() => addMessageWithRole(ChatMessageRole.User)}>User Message</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addMessageWithRole(ChatMessageRole.Assistant)}>
               Assistant Message
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => addMessageWithRole(ChatMessageRole.System)}
-            >
+            <DropdownMenuItem onClick={() => addMessageWithRole(ChatMessageRole.System)}>
               System Message
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => addMessageWithRole(ChatMessageRole.Developer)}
-            >
+            <DropdownMenuItem onClick={() => addMessageWithRole(ChatMessageRole.Developer)}>
               Developer Message
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => addMessageWithRole(ChatMessageRole.Tool)}
-            >
-              Tool Message
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addMessageWithRole(ChatMessageRole.Tool)}>Tool Message</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={addPlaceholderMessage}
-            >
+            <Button type="button" variant="outline" className="flex-1" onClick={addPlaceholderMessage}>
               <PlusCircleIcon size={14} className="mr-2" />
               <p>Placeholder</p>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
             <p className="text-xs">
-              Adds a placeholder to inject message pairs, e.g. a message history
-              (with &quot;role&quot;, &quot;content&quot; pairs) when compiling
-              the message in the SDK.
+              Adds a placeholder to inject message pairs, e.g. a message history (with &quot;role&quot;,
+              &quot;content&quot; pairs) when compiling the message in the SDK.
             </p>
           </TooltipContent>
         </Tooltip>

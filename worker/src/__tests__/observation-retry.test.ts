@@ -1,12 +1,6 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
-import {
-  observationRetryDelayInMs,
-  retryObservationNotFound,
-} from "../features/evaluation/retryObservationNotFound";
-import {
-  DatasetRunItemUpsertQueue,
-  RetryBaggage,
-} from "@hanzo/shared/src/server";
+import { observationRetryDelayInMs, retryObservationNotFound } from "../features/evaluation/retryObservationNotFound";
+import { DatasetRunItemUpsertQueue, RetryBaggage } from "@hanzo/shared/src/server";
 import { ObservationNotFoundError } from "../errors/ObservationNotFoundError";
 
 // Mock the queue
@@ -41,9 +35,7 @@ describe("Observation Retry Logic", () => {
     beforeEach(() => {
       mockQueueAdd = vi.fn().mockResolvedValue(undefined);
       mockQueue = { add: mockQueueAdd };
-      vi.mocked(DatasetRunItemUpsertQueue.getInstance).mockReturnValue(
-        mockQueue as any,
-      );
+      vi.mocked(DatasetRunItemUpsertQueue.getInstance).mockReturnValue(mockQueue as any);
     });
 
     afterEach(() => {
@@ -184,9 +176,7 @@ describe("Observation Retry Logic", () => {
       await retryObservationNotFound(error, job);
 
       const addCall = mockQueueAdd.mock.calls[0];
-      expect(addCall[1].retryBaggage.originalJobTimestamp).toEqual(
-        originalTimestamp,
-      );
+      expect(addCall[1].retryBaggage.originalJobTimestamp).toEqual(originalTimestamp);
     });
 
     test("includes all job data in retry payload", async () => {

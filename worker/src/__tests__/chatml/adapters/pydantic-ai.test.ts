@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  pydanticAIAdapter,
-  selectAdapter,
-  SimpleChatMlArraySchema,
-  type NormalizerContext,
-} from "@hanzo/shared";
+import { pydanticAIAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
 
 // Test helper
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {
@@ -60,8 +55,7 @@ describe("Pydantic AI Adapter", () => {
               type: "tool_call_response",
               id: "call_123",
               name: "get_pun_suggestion",
-              result:
-                "Pun idea: Play on words related to 'programming' - think about homophones or double meanings",
+              result: "Pun idea: Play on words related to 'programming' - think about homophones or double meanings",
             },
           ],
         },
@@ -127,9 +121,7 @@ describe("Pydantic AI Adapter", () => {
 
       // Second message - user
       expect(result.data?.[1].role).toBe("user");
-      expect(result.data?.[1].content).toBe(
-        "Tell me a joke about programming.",
-      );
+      expect(result.data?.[1].content).toBe("Tell me a joke about programming.");
       expect(result.data?.[1].tools).toHaveLength(2); // Available tools attached
 
       // Third message - assistant with CALLED tool
@@ -159,8 +151,7 @@ describe("Pydantic AI Adapter", () => {
           parts: [
             {
               type: "thinking",
-              content:
-                "The user wants weather info.\n- Location: NYC\n- Need to call weather API",
+              content: "The user wants weather info.\n- Location: NYC\n- Need to call weather API",
             },
             {
               type: "tool_call",

@@ -23,21 +23,11 @@ import { PROMPT_NAME_MAX_LENGTH } from "@hanzo/shared";
  * Uses simple types without refinements
  */
 const UpdatePromptLabelsBaseSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .max(PROMPT_NAME_MAX_LENGTH)
-    .describe("The name of the prompt"),
-  version: z.coerce
-    .number()
-    .int()
-    .positive()
-    .describe("The version number to update (required)"),
+  name: z.string().min(1).max(PROMPT_NAME_MAX_LENGTH).describe("The name of the prompt"),
+  version: z.coerce.number().int().positive().describe("The version number to update (required)"),
   newLabels: z
     .array(z.string())
-    .describe(
-      "Array of new labels to assign to the prompt version (can be empty to remove all labels)",
-    ),
+    .describe("Array of new labels to assign to the prompt version (can be empty to remove all labels)"),
 });
 
 /**
@@ -46,11 +36,7 @@ const UpdatePromptLabelsBaseSchema = z.object({
  */
 const UpdatePromptLabelsInputSchema = z.object({
   name: ParamPromptName,
-  version: z.coerce
-    .number()
-    .int()
-    .positive()
-    .describe("The version number to update (required)"),
+  version: z.coerce.number().int().positive().describe("The version number to update (required)"),
   newLabels: ParamNewLabels,
 });
 
@@ -74,67 +60,62 @@ export const [updatePromptLabelsTool, handleUpdatePromptLabels] = defineTool({
   baseSchema: UpdatePromptLabelsBaseSchema,
   inputSchema: UpdatePromptLabelsInputSchema,
   handler: async (input, context) => {
-    return await instrumentAsync(
-      { name: "mcp.prompts.update_labels", spanKind: SpanKind.INTERNAL },
-      async (span) => {
-        const { name, version, newLabels } = input;
+    return await instrumentAsync({ name: "mcp.prompts.update_labels", spanKind: SpanKind.INTERNAL }, async (span) => {
+      const { name, version, newLabels } = input;
 
-        // Set span attributes for observability
-        span.setAttributes({
-          "hanzo.project.id": context.projectId,
-          "hanzo.org.id": context.orgId,
-          "mcp.api_key_id": context.apiKeyId,
-          "mcp.prompt_name": name,
-          "mcp.prompt_version": version,
-          "mcp.new_labels_count": newLabels.length,
-        });
+      // Set span attributes for observability
+      span.setAttributes({
+        "hanzo.project.id": context.projectId,
+        "hanzo.org.id": context.orgId,
+        "mcp.api_key_id": context.apiKeyId,
+        "mcp.prompt_name": name,
+        "mcp.prompt_version": version,
+        "mcp.new_labels_count": newLabels.length,
+      });
 
-        // Fetch existing prompt to capture "before" state for audit log
-        const existingPrompt = await prisma.prompt.findUnique({
-          where: {
-            projectId_name_version: {
-              projectId: context.projectId,
-              name,
-              version,
-            },
+      // Fetch existing prompt to capture "before" state for audit log
+      const existingPrompt = await prisma.prompt.findUnique({
+        where: {
+          projectId_name_version: {
+            projectId: context.projectId,
+            name,
+            version,
           },
-        });
+        },
+      });
 
-        if (!existingPrompt) {
-          throw new UserInputError(
-            `Prompt '${name}' version ${version} not found in project`,
-          );
-        }
+      if (!existingPrompt) {
+        throw new UserInputError(`Prompt '${name}' version ${version} not found in project`);
+      }
 
-        // Update prompt labels using existing action
-        const updatedPrompt = await updatePrompt({
-          promptName: name,
-          projectId: context.projectId, // Auto-injected from authenticated API key
-          promptVersion: version,
-          newLabels,
-        });
+      // Update prompt labels using existing action
+      const updatedPrompt = await updatePrompt({
+        promptName: name,
+        projectId: context.projectId, // Auto-injected from authenticated API key
+        promptVersion: version,
+        newLabels,
+      });
 
-        // Audit log the update with both before and after states
-        await auditLog({
-          action: "update",
-          resourceType: "prompt",
-          resourceId: updatedPrompt.id,
-          projectId: context.projectId,
-          orgId: context.orgId,
-          apiKeyId: context.apiKeyId,
-          before: existingPrompt,
-          after: updatedPrompt,
-        });
+      // Audit log the update with both before and after states
+      await auditLog({
+        action: "update",
+        resourceType: "prompt",
+        resourceId: updatedPrompt.id,
+        projectId: context.projectId,
+        orgId: context.orgId,
+        apiKeyId: context.apiKeyId,
+        before: existingPrompt,
+        after: updatedPrompt,
+      });
 
-        // Return formatted response
-        return {
-          id: updatedPrompt.id,
-          name: updatedPrompt.name,
-          version: updatedPrompt.version,
-          labels: updatedPrompt.labels,
-          message: `Successfully updated labels for '${updatedPrompt.name}' version ${updatedPrompt.version}. Labels are now: ${updatedPrompt.labels.length > 0 ? updatedPrompt.labels.join(", ") : "(none)"}`,
-        };
-      },
-    );
+      // Return formatted response
+      return {
+        id: updatedPrompt.id,
+        name: updatedPrompt.name,
+        version: updatedPrompt.version,
+        labels: updatedPrompt.labels,
+        message: `Successfully updated labels for '${updatedPrompt.name}' version ${updatedPrompt.version}. Labels are now: ${updatedPrompt.labels.length > 0 ? updatedPrompt.labels.join(", ") : "(none)"}`,
+      };
+    });
   },
 });

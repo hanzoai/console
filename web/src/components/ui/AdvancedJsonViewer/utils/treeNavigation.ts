@@ -29,10 +29,7 @@ import type { FlatJSONRow } from "../types";
  * @param index - 0-based index in visible rows
  * @returns TreeNode at that index, or null if out of bounds
  */
-export function getNodeByIndex(
-  rootNode: TreeNode,
-  index: number,
-): TreeNode | null {
+export function getNodeByIndex(rootNode: TreeNode, index: number): TreeNode | null {
   if (index < 0) return null;
 
   let currentNode = rootNode;
@@ -152,9 +149,7 @@ export function treeNodeToFlatRow(node: TreeNode, _index: number): FlatJSONRow {
  */
 export function findNodeIndex(rootNode: TreeNode, targetId: string): number {
   // Iterative pre-order traversal
-  const stack: Array<{ node: TreeNode; index: number }> = [
-    { node: rootNode, index: 0 },
-  ];
+  const stack: Array<{ node: TreeNode; index: number }> = [{ node: rootNode, index: 0 }];
 
   while (stack.length > 0) {
     const current = stack.pop()!;
@@ -193,14 +188,9 @@ export function findNodeIndex(rootNode: TreeNode, targetId: string): number {
  * @param sectionKey - Section key to find (e.g., "input", "output")
  * @returns 0-based index in visible rows, or -1 if not found/not visible
  */
-export function findSectionHeaderIndex(
-  rootNode: TreeNode,
-  sectionKey: string,
-): number {
+export function findSectionHeaderIndex(rootNode: TreeNode, sectionKey: string): number {
   // Iterative pre-order traversal
-  const stack: Array<{ node: TreeNode; index: number }> = [
-    { node: rootNode, index: 0 },
-  ];
+  const stack: Array<{ node: TreeNode; index: number }> = [{ node: rootNode, index: 0 }];
 
   while (stack.length > 0) {
     const current = stack.pop()!;
@@ -392,9 +382,7 @@ export function validateGetNodeByIndex(rootNode: TreeNode): boolean {
         totalVisibleRows,
       };
       console.error("[validateGetNodeByIndex] VALIDATION FAILED:", error);
-      throw new Error(
-        `getNodeByIndex(${i}) returned null, expected node ${expectedNode.id}`,
-      );
+      throw new Error(`getNodeByIndex(${i}) returned null, expected node ${expectedNode.id}`);
     }
 
     if (actualNode.id !== expectedNode.id) {
@@ -418,9 +406,7 @@ export function validateGetNodeByIndex(rootNode: TreeNode): boolean {
         totalVisibleRows,
       };
       console.error("[validateGetNodeByIndex] VALIDATION FAILED:", error);
-      throw new Error(
-        `Node mismatch at index ${i}: expected ${expectedNode.id}, got ${actualNode.id}`,
-      );
+      throw new Error(`Node mismatch at index ${i}: expected ${expectedNode.id}, got ${actualNode.id}`);
     }
   }
 

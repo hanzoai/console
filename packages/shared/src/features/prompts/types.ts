@@ -55,10 +55,7 @@ export const CreateChatPromptSchema = BaseCreateChatPromptSchema.extend({
   commitMessage: z.string().max(COMMIT_MESSAGE_MAX_LENGTH).nullish(),
 });
 
-export const CreatePromptSchema = z.union([
-  CreateTextPromptSchema,
-  CreateChatPromptSchema,
-]);
+export const CreatePromptSchema = z.union([CreateTextPromptSchema, CreateChatPromptSchema]);
 
 export type CreatePromptType = z.infer<typeof CreatePromptSchema>;
 
@@ -69,10 +66,7 @@ const CreateTextPromptTRPCSchema = CreateTextPromptSchema.extend({
 const CreateChatPromptTRPCSchema = CreateChatPromptSchema.extend({
   projectId: z.string(),
 });
-export const CreatePromptTRPCSchema = z.union([
-  CreateTextPromptTRPCSchema,
-  CreateChatPromptTRPCSchema,
-]);
+export const CreatePromptTRPCSchema = z.union([CreateTextPromptTRPCSchema, CreateChatPromptTRPCSchema]);
 
 export type CreatePromptTRPCType = z.infer<typeof CreatePromptTRPCSchema>;
 
@@ -131,10 +125,7 @@ export const TextPromptSchema = BaseTextPromptSchema.extend({
   commitMessage: z.string().max(COMMIT_MESSAGE_MAX_LENGTH).nullish(),
 });
 
-export type TextPromptType =
-  z.infer<typeof TextPromptSchema> extends Prompt
-    ? z.infer<typeof TextPromptSchema>
-    : never;
+export type TextPromptType = z.infer<typeof TextPromptSchema> extends Prompt ? z.infer<typeof TextPromptSchema> : never;
 
 export const BaseChatPromptSchema = z.object({
   id: z.string(),
@@ -157,10 +148,7 @@ export const ChatPromptSchema = BaseChatPromptSchema.extend({
   commitMessage: z.string().max(COMMIT_MESSAGE_MAX_LENGTH).nullish(),
 });
 
-export type ChatPromptType =
-  z.infer<typeof ChatPromptSchema> extends Prompt
-    ? z.infer<typeof ChatPromptSchema>
-    : never;
+export type ChatPromptType = z.infer<typeof ChatPromptSchema> extends Prompt ? z.infer<typeof ChatPromptSchema> : never;
 
 export const PromptSchema = z.union([TextPromptSchema, ChatPromptSchema]);
 export type ValidatedPrompt = z.infer<typeof PromptSchema>;

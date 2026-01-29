@@ -13,21 +13,15 @@ import { parseArgs } from "node:util";
  * - This migration is no longer needed as we have migrated to the new versioning/temporal table support
  *
  */
-export default class BackfillSysIdForDatasetItems
-  implements IBackgroundMigration
-{
+export default class BackfillSysIdForDatasetItems implements IBackgroundMigration {
   private isAborted = false;
 
-  async validate(
-    _args: Record<string, unknown>,
-  ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
+  async validate(_args: Record<string, unknown>): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     return { valid: true, invalidReason: undefined };
   }
 
   async run(_args: Record<string, unknown>): Promise<void> {
-    logger.info(
-      `Migration will be skipped as we no longer need to backfill sys_id for dataset_items`,
-    );
+    logger.info(`Migration will be skipped as we no longer need to backfill sys_id for dataset_items`);
   }
 
   abort(): Promise<void> {
@@ -61,9 +55,7 @@ if (require.main === module) {
       process.exit(0);
     })
     .catch((error) => {
-      logger.error(
-        `[Background Migration] Migration execution failed: ${error}`,
-      );
+      logger.error(`[Background Migration] Migration execution failed: ${error}`);
       process.exit(1); // Exit with an error code
     });
 }

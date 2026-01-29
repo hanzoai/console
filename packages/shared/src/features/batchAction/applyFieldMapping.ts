@@ -1,10 +1,6 @@
 import { JSONPath } from "jsonpath-plus";
 import set from "lodash/set";
-import type {
-  FieldMappingConfig,
-  SourceField,
-  AddToDatasetMapping,
-} from "./addToDatasetTypes";
+import type { FieldMappingConfig, SourceField, AddToDatasetMapping } from "./addToDatasetTypes";
 import { parseJsonPrioritised } from "../../utils/json";
 
 type ObservationData = {
@@ -21,8 +17,7 @@ export function testJsonPath(props: { jsonPath: string; data: unknown }): {
   error?: string;
 } {
   try {
-    const parsed =
-      typeof props.data === "string" ? JSON.parse(props.data) : props.data;
+    const parsed = typeof props.data === "string" ? JSON.parse(props.data) : props.data;
     JSONPath({ path: props.jsonPath, json: parsed });
     return { success: true };
   } catch (error) {
@@ -67,11 +62,7 @@ export function isJsonPath(value: string): boolean {
  * setNestedValue({}, "context.user_id", "123")
  * // Returns: { context: { user_id: "123" } }
  */
-function setNestedValue(
-  obj: Record<string, unknown>,
-  path: string,
-  value: unknown,
-): void {
+function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
   set(obj, path, value);
 }
 
@@ -155,10 +146,7 @@ export function applyFieldMappingConfig(props: {
 /**
  * Apply the full mapping config to an observation and return the dataset item fields
  */
-export function applyFullMapping(props: {
-  observation: ObservationData;
-  mapping: AddToDatasetMapping;
-}): {
+export function applyFullMapping(props: { observation: ObservationData; mapping: AddToDatasetMapping }): {
   input: unknown;
   expectedOutput: unknown;
   metadata: unknown;
@@ -187,10 +175,7 @@ export function applyFullMapping(props: {
 /**
  * Generate autocomplete suggestions for JSON paths based on the data structure
  */
-export function generateJsonPathSuggestions(
-  data: unknown,
-  prefix: string = "$",
-): string[] {
+export function generateJsonPathSuggestions(data: unknown, prefix: string = "$"): string[] {
   const suggestions: string[] = [];
 
   if (data === null || data === undefined) {
@@ -204,15 +189,11 @@ export function generateJsonPathSuggestions(
       suggestions.push(`${prefix}[*]`);
       // Also recurse into first element
       if (data.length > 0) {
-        suggestions.push(
-          ...generateJsonPathSuggestions(data[0], `${prefix}[0]`),
-        );
+        suggestions.push(...generateJsonPathSuggestions(data[0], `${prefix}[0]`));
       }
     } else {
       // For objects, suggest each key
-      for (const [key, value] of Object.entries(
-        data as Record<string, unknown>,
-      )) {
+      for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
         const childPath = `${prefix}.${key}`;
         suggestions.push(childPath);
         // Recurse into nested objects/arrays

@@ -14,11 +14,7 @@ export function transformStreamToCsv(): Transform {
 
   return new Transform({
     objectMode: true,
-    transform(
-      row: Record<string, any>,
-      encoding: BufferEncoding,
-      callback: TransformCallback,
-    ): void {
+    transform(row: Record<string, any>, encoding: BufferEncoding, callback: TransformCallback): void {
       if (isFirstChunk) {
         // Extract headers from the first object
         headers = Object.keys(row);

@@ -45,15 +45,9 @@ export function TracePanelNavigationLayoutMobile({
             className="flex w-full items-center justify-between px-2 py-1"
           >
             <span className="text-xs font-medium">Graph View</span>
-            {isGraphExpanded ? (
-              <ChevronUp className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronDown className="h-3.5 w-3.5" />
-            )}
+            {isGraphExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </Button>
-          {isGraphExpanded && (
-            <div className="h-64 overflow-hidden">{secondaryContent}</div>
-          )}
+          {isGraphExpanded && <div className="h-64 overflow-hidden">{secondaryContent}</div>}
         </div>
       )}
     </div>

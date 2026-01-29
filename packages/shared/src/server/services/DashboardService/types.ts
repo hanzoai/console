@@ -76,9 +76,7 @@ export const DashboardDefinitionWidgetWidgetSchema = z.object({
   y_size: z.number().int().positive(),
 });
 
-export const DashboardDefinitionWidgetSchema = z.discriminatedUnion("type", [
-  DashboardDefinitionWidgetWidgetSchema,
-]);
+export const DashboardDefinitionWidgetSchema = z.discriminatedUnion("type", [DashboardDefinitionWidgetWidgetSchema]);
 
 export const DashboardDefinitionSchema = z.object({
   widgets: z.array(DashboardDefinitionWidgetSchema),

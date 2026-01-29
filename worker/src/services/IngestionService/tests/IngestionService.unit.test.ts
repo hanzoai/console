@@ -10,9 +10,7 @@ describe("IngestionService unit tests", () => {
 
     const records = [thirdTrace, secondTrace, firstTrace];
 
-    const sortedEventList = (IngestionService as any).toTimeSortedEventList(
-      records,
-    );
+    const sortedEventList = (IngestionService as any).toTimeSortedEventList(records);
 
     expect(sortedEventList).toEqual([firstTrace, secondTrace, thirdTrace]);
     expect(sortedEventList).not.toBe(records); // Ensure that the original array is not mutated

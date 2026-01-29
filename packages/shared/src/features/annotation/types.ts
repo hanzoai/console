@@ -14,10 +14,7 @@ const ScoreTargetSession = z.object({
 });
 
 // Your existing ScoreTarget remains the same, but can now use these components
-const ScoreTarget = z.discriminatedUnion("type", [
-  ScoreTargetTrace,
-  ScoreTargetSession,
-]);
+const ScoreTarget = z.discriminatedUnion("type", [ScoreTargetTrace, ScoreTargetSession]);
 
 export type ScoreTargetTrace = z.infer<typeof ScoreTargetTrace>;
 export type ScoreTargetSession = z.infer<typeof ScoreTargetSession>;
@@ -48,9 +45,7 @@ export const CreateAnnotationScoreData = CreateAnnotationScoreBase.and(
   z.discriminatedUnion("dataType", [NumericData, CategoricalData, BooleanData]),
 );
 
-export type CreateAnnotationScoreData = z.infer<
-  typeof CreateAnnotationScoreData
->;
+export type CreateAnnotationScoreData = z.infer<typeof CreateAnnotationScoreData>;
 
 /**
  * UpdateAnnotationScoreData is only used for annotation scores updated via the UI
@@ -60,9 +55,7 @@ export const UpdateAnnotationScoreData = UpdateAnnotationScoreBase.and(
   z.discriminatedUnion("dataType", [NumericData, CategoricalData, BooleanData]),
 );
 
-export type UpdateAnnotationScoreData = z.infer<
-  typeof UpdateAnnotationScoreData
->;
+export type UpdateAnnotationScoreData = z.infer<typeof UpdateAnnotationScoreData>;
 
 // annotation queues
 
@@ -79,6 +72,4 @@ export const CreateQueueWithAssignmentsData = CreateQueueData.extend({
 });
 
 export type CreateQueue = z.infer<typeof CreateQueueData>;
-export type CreateQueueWithAssignments = z.infer<
-  typeof CreateQueueWithAssignmentsData
->;
+export type CreateQueueWithAssignments = z.infer<typeof CreateQueueWithAssignmentsData>;

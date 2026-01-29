@@ -41,6 +41,4 @@ export const GitHubDispatchWebhookOutboundSchema = z.object({
   client_payload: PromptWebhookOutboundSchema,
 });
 
-export type GitHubDispatchWebhookOutput = z.infer<
-  typeof GitHubDispatchWebhookOutboundSchema
->;
+export type GitHubDispatchWebhookOutput = z.infer<typeof GitHubDispatchWebhookOutboundSchema>;

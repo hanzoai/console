@@ -3,10 +3,7 @@ import ScoresTable from "@/src/components/table/use-cases/scores";
 import Page from "@/src/components/layouts/page";
 import { api } from "@/src/utils/api";
 import { ScoresOnboarding } from "@/src/components/onboarding/ScoresOnboarding";
-import {
-  getScoresTabs,
-  SCORES_TABS,
-} from "@/src/features/navigation/utils/scores-tabs";
+import { getScoresTabs, SCORES_TABS } from "@/src/features/navigation/utils/scores-tabs";
 
 export default function ScoresPage() {
   const router = useRouter();
@@ -45,11 +42,7 @@ export default function ScoresPage() {
       scrollable={showOnboarding}
     >
       {/* Show onboarding screen if user has no scores */}
-      {showOnboarding ? (
-        <ScoresOnboarding />
-      ) : (
-        <ScoresTable projectId={projectId} />
-      )}
+      {showOnboarding ? <ScoresOnboarding /> : <ScoresTable projectId={projectId} />}
     </Page>
   );
 }

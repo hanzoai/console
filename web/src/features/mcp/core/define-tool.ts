@@ -12,10 +12,7 @@ import type { ServerContext } from "../types";
 /**
  * Tool handler function type
  */
-export type ToolHandler<TInput> = (
-  input: TInput,
-  context: ServerContext,
-) => Promise<unknown>;
+export type ToolHandler<TInput> = (input: TInput, context: ServerContext) => Promise<unknown>;
 
 /**
  * Tool definition options
@@ -88,19 +85,8 @@ export interface ToolDefinition {
  *   readOnly: true,
  * });
  */
-export function defineTool<TInput>(
-  options: DefineToolOptions<TInput>,
-): [ToolDefinition, ToolHandler<TInput>] {
-  const {
-    name,
-    description,
-    baseSchema,
-    inputSchema,
-    handler,
-    readOnlyHint,
-    destructiveHint,
-    expensiveHint,
-  } = options;
+export function defineTool<TInput>(options: DefineToolOptions<TInput>): [ToolDefinition, ToolHandler<TInput>] {
+  const { name, description, baseSchema, inputSchema, handler, readOnlyHint, destructiveHint, expensiveHint } = options;
 
   // Convert base Zod schema to JSON Schema using Zod v4's native method
   const jsonSchema = z.toJSONSchema(baseSchema, {
@@ -109,17 +95,12 @@ export function defineTool<TInput>(
   });
 
   if (!jsonSchema) {
-    throw new Error(
-      `Failed to convert Zod schema to JSON Schema for tool: ${name}.`,
-    );
+    throw new Error(`Failed to convert Zod schema to JSON Schema for tool: ${name}.`);
   }
 
   // Validate that we got a usable schema (object or union of objects)
   const hasObjectType = (jsonSchema as { type?: string }).type === "object";
-  const hasUnionType =
-    "oneOf" in jsonSchema ||
-    "anyOf" in jsonSchema ||
-    "discriminator" in jsonSchema;
+  const hasUnionType = "oneOf" in jsonSchema || "anyOf" in jsonSchema || "discriminator" in jsonSchema;
   if (!hasObjectType && !hasUnionType) {
     throw new Error(
       `Failed to convert Zod schema to JSON Schema for tool: ${name}. Expected object or union schema, got: ${JSON.stringify(jsonSchema).slice(0, 100)}`,
@@ -143,13 +124,11 @@ export function defineTool<TInput>(
   }
 
   // Wrap handler with validation and error handling
-  const wrappedHandler: ToolHandler<TInput> = wrapErrorHandling(
-    async (rawInput: unknown, context: ServerContext) => {
-      // Validate input with the full schema (including refinements)
-      const validatedInput = inputSchema.parse(rawInput);
-      return await handler(validatedInput, context);
-    },
-  );
+  const wrappedHandler: ToolHandler<TInput> = wrapErrorHandling(async (rawInput: unknown, context: ServerContext) => {
+    // Validate input with the full schema (including refinements)
+    const validatedInput = inputSchema.parse(rawInput);
+    return await handler(validatedInput, context);
+  });
 
   return [toolDefinition, wrappedHandler];
 }

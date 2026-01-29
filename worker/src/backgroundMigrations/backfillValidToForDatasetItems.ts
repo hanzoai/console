@@ -26,14 +26,10 @@ const backgroundMigrationId = "d4f5a6b7-c8d9-4e1f-a2b3-c4d5e6f7a8b8";
 
 const DEFAULT_BATCH_SIZE = 1000;
 
-export default class BackfillValidToForDatasetItems
-  implements IBackgroundMigration
-{
+export default class BackfillValidToForDatasetItems implements IBackgroundMigration {
   private isAborted = false;
 
-  async validate(
-    _args: Record<string, unknown>,
-  ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
+  async validate(_args: Record<string, unknown>): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // validate that the background migration record exists
     const migration = await prisma.backgroundMigration.findUnique({
       where: { id: backgroundMigrationId },
@@ -70,9 +66,7 @@ export default class BackfillValidToForDatasetItems
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(
-      `Backfilling valid_to for dataset_items with ${JSON.stringify(args)}`,
-    );
+    logger.info(`Backfilling valid_to for dataset_items with ${JSON.stringify(args)}`);
 
     const batchSize = Number(args.batchSize ?? DEFAULT_BATCH_SIZE);
     const delayBetweenBatchesMs = Number(args.delayBetweenBatchesMs ?? 200);
@@ -91,20 +85,12 @@ export default class BackfillValidToForDatasetItems
     });
 
     let lastProcessedProjectId =
-      "lastProcessedProjectId" in initialMigrationState.state
-        ? initialMigrationState.state.lastProcessedProjectId
-        : "";
+      "lastProcessedProjectId" in initialMigrationState.state ? initialMigrationState.state.lastProcessedProjectId : "";
     let lastProcessedId =
-      "lastProcessedId" in initialMigrationState.state
-        ? initialMigrationState.state.lastProcessedId
-        : "";
+      "lastProcessedId" in initialMigrationState.state ? initialMigrationState.state.lastProcessedId : "";
 
     while (!this.isAborted) {
-      const result = await backfillValidToForDatasetItems(
-        lastProcessedProjectId,
-        lastProcessedId,
-        batchSize,
-      );
+      const result = await backfillValidToForDatasetItems(lastProcessedProjectId, lastProcessedId, batchSize);
 
       if (result.completed) {
         break;
@@ -124,16 +110,12 @@ export default class BackfillValidToForDatasetItems
 
       // Delay between batches
       if (delayBetweenBatchesMs > 0 && !this.isAborted) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, delayBetweenBatchesMs),
-        );
+        await new Promise((resolve) => setTimeout(resolve, delayBetweenBatchesMs));
       }
     }
 
     const duration = Date.now() - start;
-    logger.info(
-      `Backfill ${this.isAborted ? "aborted" : "completed"} in ${duration}ms`,
-    );
+    logger.info(`Backfill ${this.isAborted ? "aborted" : "completed"} in ${duration}ms`);
   }
 
   abort(): Promise<void> {
@@ -170,9 +152,7 @@ if (require.main === module) {
       process.exit(0);
     })
     .catch((error) => {
-      logger.error(
-        `[Background Migration] Migration execution failed: ${error}`,
-      );
+      logger.error(`[Background Migration] Migration execution failed: ${error}`);
       process.exit(1); // Exit with an error code
     });
 }

@@ -2,11 +2,7 @@ import { Dataset, DatasetItem, DatasetStatus, prisma, Prisma } from "../../db";
 import type { FilterState } from "../../types";
 import { tableColumnsToSqlFilterAndPrefix } from "../filterToPrisma";
 import { datasetItemsFilterCols } from "./dataset-items-columns";
-import {
-  InternalServerError,
-  InvalidRequestError,
-  HanzoNotFoundError,
-} from "../../errors";
+import { InternalServerError, InvalidRequestError, HanzoNotFoundError } from "../../errors";
 import { DatasetItemValidator } from "../services/DatasetService";
 import {
   executeWithDatasetServiceStrategy,
@@ -57,9 +53,7 @@ async function getDatasets(props: {
   });
 
   if (datasets.length !== props.datasetIds.length)
-    throw new HanzoNotFoundError(
-      `One or more datasets not found for project ${props.projectId}`,
-    );
+    throw new HanzoNotFoundError(`One or more datasets not found for project ${props.projectId}`);
 
   return datasets;
 }
@@ -91,9 +85,7 @@ async function getDatasetByName(props: {
     },
   });
   if (!dataset) {
-    throw new HanzoNotFoundError(
-      `Dataset ${props.datasetName} not found for project ${props.projectId}`,
-    );
+    throw new HanzoNotFoundError(`Dataset ${props.datasetName} not found for project ${props.projectId}`);
   }
   return dataset;
 }
@@ -102,10 +94,7 @@ async function getDatasetByName(props: {
  * Converts a DatasetItem to Domain types with optional IO fields and dataset name.
  * Automatically excludes internal version column (isDeleted) from domain types.
  */
-function toDomainType<
-  IncludeIO extends boolean = true,
-  IncludeDatasetName extends boolean = false,
->(
+function toDomainType<IncludeIO extends boolean = true, IncludeDatasetName extends boolean = false>(
   item: DatasetItem & { dataset?: { name: string } },
   includeIO: IncludeIO = true as IncludeIO,
   includeDatasetName: IncludeDatasetName = false as IncludeDatasetName,
@@ -131,8 +120,7 @@ function toDomainType<
   // Add IO fields if requested (or if not specified and they're present)
   const shouldIncludeIO =
     includeIO === true ||
-    (includeIO === undefined &&
-      ("input" in item || "expectedOutput" in item || "metadata" in item));
+    (includeIO === undefined && ("input" in item || "expectedOutput" in item || "metadata" in item));
 
   const withIO = shouldIncludeIO
     ? {
@@ -144,10 +132,7 @@ function toDomainType<
     : base;
 
   // Add dataset name if requested
-  const withDatasetName =
-    includeDatasetName && item.dataset
-      ? { ...withIO, datasetName: item.dataset.name }
-      : withIO;
+  const withDatasetName = includeDatasetName && item.dataset ? { ...withIO, datasetName: item.dataset.name } : withIO;
 
   return withDatasetName as any;
 }
@@ -165,24 +150,12 @@ function mergeItemData(
 ) {
   return {
     input: newData.input !== undefined ? newData.input : existingItem?.input,
-    expectedOutput:
-      newData.expectedOutput !== undefined
-        ? newData.expectedOutput
-        : existingItem?.expectedOutput,
-    metadata:
-      newData.metadata !== undefined
-        ? newData.metadata
-        : existingItem?.metadata,
-    sourceTraceId:
-      newData.sourceTraceId === undefined
-        ? existingItem?.sourceTraceId
-        : newData.sourceTraceId,
+    expectedOutput: newData.expectedOutput !== undefined ? newData.expectedOutput : existingItem?.expectedOutput,
+    metadata: newData.metadata !== undefined ? newData.metadata : existingItem?.metadata,
+    sourceTraceId: newData.sourceTraceId === undefined ? existingItem?.sourceTraceId : newData.sourceTraceId,
     sourceObservationId:
-      newData.sourceObservationId === undefined
-        ? existingItem?.sourceObservationId
-        : newData.sourceObservationId,
-    status:
-      newData.status === undefined ? existingItem?.status : newData.status,
+      newData.sourceObservationId === undefined ? existingItem?.sourceObservationId : newData.sourceObservationId,
+    status: newData.status === undefined ? existingItem?.status : newData.status,
   };
 }
 
@@ -298,17 +271,12 @@ export async function upsertDatasetItem(
 
   // 3. Merge incoming data with existing data
   // For fields where props value is undefined, use existing value
-  const mergedItemData = existingItem
-    ? mergeItemData(existingItem, props)
-    : props;
+  const mergedItemData = existingItem ? mergeItemData(existingItem, props) : props;
 
   // 4. Validate merged payload
   const validator = new DatasetItemValidator({
     inputSchema: dataset.inputSchema as Record<string, unknown> | null,
-    expectedOutputSchema: dataset.expectedOutputSchema as Record<
-      string,
-      unknown
-    > | null,
+    expectedOutputSchema: dataset.expectedOutputSchema as Record<string, unknown> | null,
   });
 
   const itemPayload = validator.validateAndNormalize({
@@ -320,9 +288,7 @@ export async function upsertDatasetItem(
   });
 
   if (!itemPayload.success) {
-    throw new InvalidRequestError(
-      `Dataset item validation failed: ${itemPayload.message}`,
-    );
+    throw new InvalidRequestError(`Dataset item validation failed: ${itemPayload.message}`);
   }
 
   // 5. Prepare full item data for writing
@@ -557,10 +523,7 @@ export async function createManyDatasetItems(props: {
       dataset.id,
       {
         inputSchema: dataset.inputSchema as Record<string, unknown> | null,
-        expectedOutputSchema: dataset.expectedOutputSchema as Record<
-          string,
-          unknown
-        > | null,
+        expectedOutputSchema: dataset.expectedOutputSchema as Record<string, unknown> | null,
       },
     ]),
   );
@@ -755,10 +718,7 @@ export type CreateManyValidationError = {
   }>;
 };
 
-export type ItemBase = Omit<
-  DatasetItem,
-  "input" | "expectedOutput" | "metadata"
->;
+export type ItemBase = Omit<DatasetItem, "input" | "expectedOutput" | "metadata">;
 
 export type ItemWithIO = ItemBase & {
   input: Prisma.JsonValue;
@@ -943,26 +903,16 @@ function buildDatasetItemSearchCondition(
   const searchConditions: Prisma.Sql[] = [];
 
   if (types.includes("id")) {
-    searchConditions.push(
-      Prisma.sql`${Prisma.raw(tableAlias)}.id ILIKE ${`%${searchQuery}%`}`,
-    );
+    searchConditions.push(Prisma.sql`${Prisma.raw(tableAlias)}.id ILIKE ${`%${searchQuery}%`}`);
   }
 
   if (types.includes("content")) {
-    searchConditions.push(
-      Prisma.sql`${Prisma.raw(tableAlias)}.input::text ILIKE ${`%${searchQuery}%`}`,
-    );
-    searchConditions.push(
-      Prisma.sql`${Prisma.raw(tableAlias)}.expected_output::text ILIKE ${`%${searchQuery}%`}`,
-    );
-    searchConditions.push(
-      Prisma.sql`${Prisma.raw(tableAlias)}.metadata::text ILIKE ${`%${searchQuery}%`}`,
-    );
+    searchConditions.push(Prisma.sql`${Prisma.raw(tableAlias)}.input::text ILIKE ${`%${searchQuery}%`}`);
+    searchConditions.push(Prisma.sql`${Prisma.raw(tableAlias)}.expected_output::text ILIKE ${`%${searchQuery}%`}`);
+    searchConditions.push(Prisma.sql`${Prisma.raw(tableAlias)}.metadata::text ILIKE ${`%${searchQuery}%`}`);
   }
 
-  return searchConditions.length > 0
-    ? Prisma.sql` AND (${Prisma.join(searchConditions, " OR ")})`
-    : Prisma.empty;
+  return searchConditions.length > 0 ? Prisma.sql` AND (${Prisma.join(searchConditions, " OR ")})` : Prisma.empty;
 }
 
 /**
@@ -979,29 +929,17 @@ function buildStatefulDatasetItemsQuery(
   limit?: number,
   offset?: number,
 ): Prisma.Sql {
-  const ioFields = includeIO
-    ? Prisma.sql`di.input, di.expected_output, di.metadata,`
-    : Prisma.empty;
+  const ioFields = includeIO ? Prisma.sql`di.input, di.expected_output, di.metadata,` : Prisma.empty;
 
   const datasetJoin = includeDatasetName
     ? Prisma.sql`LEFT JOIN datasets d ON di.dataset_id = d.id AND di.project_id = d.project_id`
     : Prisma.empty;
 
-  const datasetNameField = includeDatasetName
-    ? Prisma.sql`, d.name as dataset_name`
-    : Prisma.empty;
+  const datasetNameField = includeDatasetName ? Prisma.sql`, d.name as dataset_name` : Prisma.empty;
 
-  const filterCondition = tableColumnsToSqlFilterAndPrefix(
-    filter,
-    datasetItemsFilterCols,
-    "dataset_item_events",
-  );
+  const filterCondition = tableColumnsToSqlFilterAndPrefix(filter, datasetItemsFilterCols, "dataset_item_events");
 
-  const searchCondition = buildDatasetItemSearchCondition(
-    searchQuery,
-    searchType,
-    "di",
-  );
+  const searchCondition = buildDatasetItemSearchCondition(searchQuery, searchType, "di");
 
   const paginationClause =
     limit !== undefined
@@ -1039,17 +977,9 @@ function buildStatefulDatasetItemsCountQuery(
   searchQuery?: string,
   searchType?: ("id" | "content")[],
 ): Prisma.Sql {
-  const filterCondition = tableColumnsToSqlFilterAndPrefix(
-    filter,
-    datasetItemsFilterCols,
-    "dataset_item_events",
-  );
+  const filterCondition = tableColumnsToSqlFilterAndPrefix(filter, datasetItemsFilterCols, "dataset_item_events");
 
-  const searchCondition = buildDatasetItemSearchCondition(
-    searchQuery,
-    searchType,
-    "di",
-  );
+  const searchCondition = buildDatasetItemSearchCondition(searchQuery, searchType, "di");
 
   return Prisma.sql`
     SELECT COUNT(*) as count
@@ -1086,28 +1016,17 @@ function buildDatasetItemsAtVersionQuery(
   limit?: number,
   offset?: number,
 ): Prisma.Sql {
-  const ioFields = includeIO
-    ? Prisma.sql`di.input, di.expected_output, di.metadata,`
-    : Prisma.empty;
+  const ioFields = includeIO ? Prisma.sql`di.input, di.expected_output, di.metadata,` : Prisma.empty;
 
   const datasetJoin = includeDatasetName
     ? Prisma.sql`LEFT JOIN datasets d ON di.dataset_id = d.id AND di.project_id = d.project_id`
     : Prisma.empty;
 
-  const datasetNameField = includeDatasetName
-    ? Prisma.sql`, d.name as dataset_name`
-    : Prisma.empty;
+  const datasetNameField = includeDatasetName ? Prisma.sql`, d.name as dataset_name` : Prisma.empty;
 
-  const filterCondition = tableColumnsToSqlFilterAndPrefix(
-    filter,
-    datasetItemsFilterCols,
-    "dataset_item_events",
-  );
+  const filterCondition = tableColumnsToSqlFilterAndPrefix(filter, datasetItemsFilterCols, "dataset_item_events");
 
-  const searchCondition = buildDatasetItemSearchCondition(
-    searchQuery,
-    searchType,
-  );
+  const searchCondition = buildDatasetItemSearchCondition(searchQuery, searchType);
 
   const paginationClause =
     limit !== undefined
@@ -1158,16 +1077,9 @@ function buildDatasetItemsCountQuery(
   searchQuery?: string,
   searchType?: ("id" | "content")[],
 ): Prisma.Sql {
-  const filterCondition = tableColumnsToSqlFilterAndPrefix(
-    filter,
-    datasetItemsFilterCols,
-    "dataset_item_events",
-  );
+  const filterCondition = tableColumnsToSqlFilterAndPrefix(filter, datasetItemsFilterCols, "dataset_item_events");
 
-  const searchCondition = buildDatasetItemSearchCondition(
-    searchQuery,
-    searchType,
-  );
+  const searchCondition = buildDatasetItemSearchCondition(searchQuery, searchType);
 
   // New temporal query using valid_from and valid_to
   // Much simpler and more performant - no DISTINCT ON or CTE needed!
@@ -1192,10 +1104,7 @@ function buildDatasetItemsCountQuery(
 /**
  * Builds the SQL query for counting latest dataset items grouped by dataset_id.
  */
-function buildDatasetItemsLatestCountGroupedQuery(
-  projectId: string,
-  datasetIds: string[],
-): Prisma.Sql {
+function buildDatasetItemsLatestCountGroupedQuery(projectId: string, datasetIds: string[]): Prisma.Sql {
   return Prisma.sql`
     SELECT
       di.dataset_id,
@@ -1212,10 +1121,7 @@ function buildDatasetItemsLatestCountGroupedQuery(
 /**
  * Converts a raw database row from dataset_items table to Domain types
  */
-function convertLatestRowToDomain<
-  IncludeIO extends boolean = true,
-  IncludeDatasetName extends boolean = false,
->(
+function convertLatestRowToDomain<IncludeIO extends boolean = true, IncludeDatasetName extends boolean = false>(
   row: QueryGetLatestDatasetItemRow,
   includeIO: IncludeIO,
   includeDatasetName: IncludeDatasetName,
@@ -1247,9 +1153,7 @@ function convertLatestRowToDomain<
       }
     : base;
 
-  const withDatasetName = includeDatasetName
-    ? { ...withIO, datasetName: row.dataset_name! }
-    : withIO;
+  const withDatasetName = includeDatasetName ? { ...withIO, datasetName: row.dataset_name! } : withIO;
 
   return withDatasetName as any;
 }
@@ -1258,10 +1162,7 @@ function convertLatestRowToDomain<
  * Internal function to get latest dataset items using raw SQL.
  * Returns DatasetItemDomain objects with optional IO fields.
  */
-async function getDatasetItemsInternal<
-  IncludeIO extends boolean,
-  IncludeDatasetName extends boolean = false,
->(params: {
+async function getDatasetItemsInternal<IncludeIO extends boolean, IncludeDatasetName extends boolean = false>(params: {
   projectId: string;
   includeIO: IncludeIO;
   includeDatasetName?: IncludeDatasetName;
@@ -1305,13 +1206,7 @@ async function getDatasetItemsInternal<
       seenIds.add(row.id);
       return true;
     })
-    .map((row) =>
-      convertLatestRowToDomain(
-        row,
-        params.includeIO,
-        params.includeDatasetName ?? false,
-      ),
-    );
+    .map((row) => convertLatestRowToDomain(row, params.includeIO, params.includeDatasetName ?? false));
 
   return items as any;
 }
@@ -1348,19 +1243,14 @@ async function getDatasetItemsCountAtVersionInternal(params: {
  * @param props.status - Optional status filter: 'ACTIVE' for active items only, undefined (default) for all statuses
  * @returns The dataset item or null if not found/deleted
  */
-export async function getDatasetItemById<
-  IncludeIO extends boolean = true,
->(props: {
+export async function getDatasetItemById<IncludeIO extends boolean = true>(props: {
   projectId: string;
   datasetItemId: string;
   status?: "ACTIVE";
   datasetId?: string;
   version?: Date;
   includeIO?: IncludeIO;
-}): Promise<
-  | (IncludeIO extends true ? DatasetItemDomain : DatasetItemDomainWithoutIO)
-  | null
-> {
+}): Promise<(IncludeIO extends true ? DatasetItemDomain : DatasetItemDomainWithoutIO) | null> {
   const status = props.status;
   const includeIO = (props.includeIO ?? true) as IncludeIO;
 
@@ -1401,12 +1291,9 @@ export async function getDatasetItemById<
         ? 'id, project_id AS "projectId", dataset_id AS "datasetId", input, expected_output AS "expectedOutput", metadata, source_trace_id AS "sourceTraceId", source_observation_id AS "sourceObservationId", status, created_at AS "createdAt", updated_at AS "updatedAt", valid_from AS "validFrom"'
         : 'id, project_id AS "projectId", dataset_id AS "datasetId", source_trace_id AS "sourceTraceId", source_observation_id AS "sourceObservationId", status, created_at AS "createdAt", updated_at AS "updatedAt", valid_from AS "validFrom"';
 
-      const datasetFilter = props.datasetId
-        ? Prisma.sql`AND dataset_id = ${props.datasetId}`
-        : Prisma.empty;
+      const datasetFilter = props.datasetId ? Prisma.sql`AND dataset_id = ${props.datasetId}` : Prisma.empty;
 
-      const statusFilter =
-        status === "ACTIVE" ? Prisma.sql`AND status = 'ACTIVE'` : Prisma.empty;
+      const statusFilter = status === "ACTIVE" ? Prisma.sql`AND status = 'ACTIVE'` : Prisma.empty;
 
       // Temporal filter using valid_from and valid_to
       const versionFilter = props.version
@@ -1468,10 +1355,7 @@ export async function getDatasetItems<
 > {
   const includeIO = (props.includeIO ?? true) as IncludeIO;
   const includeDatasetName = props.includeDatasetName ?? false;
-  const offset =
-    props.limit !== undefined && props.page !== undefined
-      ? props.page * props.limit
-      : undefined;
+  const offset = props.limit !== undefined && props.page !== undefined ? props.page * props.limit : undefined;
 
   return executeWithDatasetServiceStrategy(OperationType.READ, {
     [Implementation.STATEFUL]: async () => {
@@ -1479,9 +1363,7 @@ export async function getDatasetItems<
       // Use raw SQL if search or metadata filters are present
       const hasSearch = props.searchQuery && props.searchQuery !== "";
       const hasMetadataFilter = props.filterState.some(
-        (f) =>
-          (f.column === "metadata" || f.column === "Metadata") &&
-          f.type === "stringObject",
+        (f) => (f.column === "metadata" || f.column === "Metadata") && f.type === "stringObject",
       );
 
       if (hasSearch || hasMetadataFilter) {
@@ -1496,12 +1378,9 @@ export async function getDatasetItems<
           offset,
         );
 
-        const result =
-          await prisma.$queryRaw<QueryGetLatestDatasetItemRow[]>(query);
+        const result = await prisma.$queryRaw<QueryGetLatestDatasetItemRow[]>(query);
 
-        return result.map((row) =>
-          convertLatestRowToDomain(row, includeIO, includeDatasetName),
-        ) as any;
+        return result.map((row) => convertLatestRowToDomain(row, includeIO, includeDatasetName)) as any;
       }
 
       // Otherwise use Prisma
@@ -1535,9 +1414,7 @@ export async function getDatasetItems<
         }),
       });
 
-      return items.map((item) =>
-        toDomainType(item, includeIO, includeDatasetName),
-      ) as any;
+      return items.map((item) => toDomainType(item, includeIO, includeDatasetName)) as any;
     },
     [Implementation.VERSIONED]: async () => {
       // VERSIONED: FilterState → SQL directly, version-aware
@@ -1576,9 +1453,7 @@ export async function getDatasetItemsCount(props: {
       // STATEFUL: Use raw SQL if search or metadata filters are present
       const hasSearch = props.searchQuery && props.searchQuery !== "";
       const hasMetadataFilter = props.filterState.some(
-        (f) =>
-          (f.column === "metadata" || f.column === "Metadata") &&
-          f.type === "stringObject",
+        (f) => (f.column === "metadata" || f.column === "Metadata") && f.type === "stringObject",
       );
 
       if (hasSearch || hasMetadataFilter) {
@@ -1636,15 +1511,9 @@ export async function getDatasetItemsCountGrouped(props: {
       }));
     },
     [Implementation.VERSIONED]: async () => {
-      const query = buildDatasetItemsLatestCountGroupedQuery(
-        props.projectId,
-        props.datasetIds,
-      );
+      const query = buildDatasetItemsLatestCountGroupedQuery(props.projectId, props.datasetIds);
 
-      const result =
-        await prisma.$queryRaw<Array<{ dataset_id: string; count: bigint }>>(
-          query,
-        );
+      const result = await prisma.$queryRaw<Array<{ dataset_id: string; count: bigint }>>(query);
 
       return result.map((row) => ({
         datasetId: row.dataset_id,
@@ -1661,10 +1530,7 @@ export async function getDatasetItemsCountGrouped(props: {
  *
  * @returns Array of Date objects representing dataset versions
  */
-export async function listDatasetVersions(props: {
-  projectId: string;
-  datasetId: string;
-}): Promise<Date[]> {
+export async function listDatasetVersions(props: { projectId: string; datasetId: string }): Promise<Date[]> {
   return executeWithDatasetServiceStrategy(OperationType.READ, {
     [Implementation.STATEFUL]: async () => {
       // In STATEFUL mode, there are no versions
@@ -1740,9 +1606,7 @@ export async function getDatasetItemChangesSinceVersion(props: {
     },
     [Implementation.VERSIONED]: async () => {
       // Count all changes after the specified version
-      const result = await prisma.$queryRaw<
-        Array<{ upserts: bigint; deletes: bigint }>
-      >(
+      const result = await prisma.$queryRaw<Array<{ upserts: bigint; deletes: bigint }>>(
         Prisma.sql`
           SELECT
             COUNT(*) FILTER (WHERE is_deleted = false) as upserts,

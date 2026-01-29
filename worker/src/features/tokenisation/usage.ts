@@ -2,12 +2,7 @@ import { Model, parseJsonPrioritised } from "@hanzo/shared";
 import { isChatModel, isTiktokenModel } from "./types";
 import { countTokens } from "@anthropic-ai/tokenizer";
 
-import {
-  type TiktokenModel,
-  type Tiktoken,
-  get_encoding,
-  encoding_for_model,
-} from "tiktoken";
+import { type TiktokenModel, type Tiktoken, get_encoding, encoding_for_model } from "tiktoken";
 
 import { z } from "zod/v4";
 import { logger } from "@hanzo/shared/src/server";
@@ -19,24 +14,15 @@ const OpenAiTokenConfig = z.object({
 });
 
 const OpenAiChatTokenConfig = z.object({
-  tokenizerModel: z
-    .string()
-    .refine((m) => isTiktokenModel(m) && isChatModel(m), {
-      message: "Chat model expected",
-    }),
+  tokenizerModel: z.string().refine((m) => isTiktokenModel(m) && isChatModel(m), {
+    message: "Chat model expected",
+  }),
   tokensPerMessage: z.number(),
   tokensPerName: z.number(),
 });
 
-export function tokenCount(p: {
-  model: Model;
-  text: unknown;
-}): number | undefined {
-  if (
-    p.text === null ||
-    p.text === undefined ||
-    (Array.isArray(p.text) && p.text.length === 0)
-  ) {
+export function tokenCount(p: { model: Model; text: unknown }): number | undefined {
+  if (p.text === null || p.text === undefined || (Array.isArray(p.text) && p.text.length === 0)) {
     return undefined;
   }
 
@@ -72,23 +58,13 @@ function openAiTokenCount(p: { model: Model; text: unknown }) {
   }
 
   let result = undefined;
-  const parsedText =
-    typeof p.text === "string" ? parseJsonPrioritised(p.text) : p.text; // Clickhouse stores ChatMessage array as string
+  const parsedText = typeof p.text === "string" ? parseJsonPrioritised(p.text) : p.text; // Clickhouse stores ChatMessage array as string
 
-  if (
-    isChatMessageArray(parsedText) &&
-    isChatModel(config.data.tokenizerModel)
-  ) {
+  if (isChatMessageArray(parsedText) && isChatModel(config.data.tokenizerModel)) {
     // check if the tokenizerConfig is a valid chat config
-    const parsedConfig = OpenAiChatTokenConfig.safeParse(
-      p.model.tokenizerConfig,
-    );
+    const parsedConfig = OpenAiChatTokenConfig.safeParse(p.model.tokenizerConfig);
     if (!parsedConfig.success) {
-      logger.error(
-        `Invalid tokenizer config for chat model ${
-          p.model.id
-        }: ${JSON.stringify(p.model.tokenizerConfig)}`,
-      );
+      logger.error(`Invalid tokenizer config for chat model ${p.model.id}: ${JSON.stringify(p.model.tokenizerConfig)}`);
       return undefined;
     }
     result = openAiChatTokenCount({
@@ -97,14 +73,8 @@ function openAiTokenCount(p: { model: Model; text: unknown }) {
     });
   } else {
     result = isString(parsedText)
-      ? getTokensByModel(
-          config.data.tokenizerModel as TiktokenModel,
-          parsedText,
-        )
-      : getTokensByModel(
-          config.data.tokenizerModel as TiktokenModel,
-          JSON.stringify(parsedText),
-        );
+      ? getTokensByModel(config.data.tokenizerModel as TiktokenModel, parsedText)
+      : getTokensByModel(config.data.tokenizerModel as TiktokenModel, JSON.stringify(parsedText));
   }
   return result;
 }
@@ -113,10 +83,7 @@ function claudeTokenCount(text: unknown) {
   return isString(text) ? countTokens(text) : countTokens(JSON.stringify(text));
 }
 
-function openAiChatTokenCount(params: {
-  messages: ChatMessage[];
-  config: z.infer<typeof OpenAiChatTokenConfig>;
-}) {
+function openAiChatTokenCount(params: { messages: ChatMessage[]; config: z.infer<typeof OpenAiChatTokenConfig> }) {
   const model = params.config.tokenizerModel;
   if (!isTiktokenModel(model)) return undefined;
 
@@ -131,15 +98,7 @@ function openAiChatTokenCount(params: {
         // memory access out of bounds error in tiktoken if unexpected key and value of type boolean
         // expected keys with booleans work
         value &&
-        [
-          "content",
-          "role",
-          "name",
-          "tool_calls",
-          "function_call",
-          "toolCalls",
-          "functionCall",
-        ].some((k) => k === key)
+        ["content", "role", "name", "tool_calls", "function_call", "toolCalls", "functionCall"].some((k) => k === key)
       ) {
         const tokens = getTokensByModel(model, value);
         if (tokens) numTokens += tokens;
@@ -158,8 +117,7 @@ const getTokensByModel = (model: TiktokenModel, text: string) => {
   // encoding should be kept in memory to avoid re-creating it
   let encoding: Tiktoken | undefined;
   try {
-    cachedTokenizerByModel[model] =
-      cachedTokenizerByModel[model] || encoding_for_model(model);
+    cachedTokenizerByModel[model] = cachedTokenizerByModel[model] || encoding_for_model(model);
 
     encoding = cachedTokenizerByModel[model];
   } catch {

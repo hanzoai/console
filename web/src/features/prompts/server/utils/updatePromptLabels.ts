@@ -6,10 +6,7 @@ export const removeLabelsFromPreviousPromptVersions = async ({
   promptName,
   labelsToRemove,
 }: {
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >;
+  prisma: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
   projectId: string;
   promptName: string;
   labelsToRemove: string[];
@@ -23,9 +20,7 @@ export const removeLabelsFromPreviousPromptVersions = async ({
     orderBy: [{ version: "desc" }],
   });
 
-  const touchedPromptIds = previouslyLabeledPrompts.map(
-    (prevPrompt) => prevPrompt.id,
-  );
+  const touchedPromptIds = previouslyLabeledPrompts.map((prevPrompt) => prevPrompt.id);
 
   return {
     touchedPromptIds,
@@ -33,9 +28,7 @@ export const removeLabelsFromPreviousPromptVersions = async ({
       prisma.prompt.update({
         where: { id: prevPrompt.id },
         data: {
-          labels: prevPrompt.labels.filter(
-            (prevLabel) => !labelsToRemove.includes(prevLabel),
-          ),
+          labels: prevPrompt.labels.filter((prevLabel) => !labelsToRemove.includes(prevLabel)),
         },
       }),
     ),

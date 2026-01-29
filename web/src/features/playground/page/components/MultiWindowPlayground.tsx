@@ -8,12 +8,7 @@ import { ModelParameters } from "@/src/components/ModelParameters";
 import { usePlaygroundContext } from "../context";
 import { Messages } from "@/src/features/playground/page/components/Messages";
 import { ConfigurationDropdowns } from "@/src/features/playground/page/components/ConfigurationDropdowns";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 
 /**
@@ -116,10 +111,7 @@ export default function MultiWindowPlayground({
         const isFirstWindow = index === 0;
 
         return (
-          <div
-            key={windowId}
-            className={isFirstWindow ? "flex-1" : "hidden md:block"}
-          >
+          <div key={windowId} className={isFirstWindow ? "flex-1" : "hidden md:block"}>
             <PlaygroundProvider windowId={windowId}>
               <PlaygroundWindowContent
                 windowId={windowId}
@@ -180,24 +172,14 @@ function PlaygroundWindowContent({
                 <>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        onClick={handleCopy}
-                        className="h-7 gap-1.5 px-2.5 text-xs @xl:hidden"
-                      >
+                      <Button variant="outline" onClick={handleCopy} className="h-7 gap-1.5 px-2.5 text-xs @xl:hidden">
                         <Plus size={14} />
                         <span className="sr-only">New split window</span>
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent className="text-xs">
-                      New split window
-                    </TooltipContent>
+                    <TooltipContent className="text-xs">New split window</TooltipContent>
                   </Tooltip>
-                  <Button
-                    variant="outline"
-                    onClick={handleCopy}
-                    className="hidden h-7 gap-1.5 px-2.5 text-xs @xl:flex"
-                  >
+                  <Button variant="outline" onClick={handleCopy} className="hidden h-7 gap-1.5 px-2.5 text-xs @xl:flex">
                     <Plus size={14} />
                     <span>New split window</span>
                   </Button>
@@ -215,9 +197,7 @@ function PlaygroundWindowContent({
                       <span className="sr-only">Remove window</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent className="text-xs">
-                    Remove window
-                  </TooltipContent>
+                  <TooltipContent className="text-xs">Remove window</TooltipContent>
                 </Tooltip>
               )}
             </TooltipProvider>

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { cn } from "@/src/utils/tailwind";
 import { useRouter } from "next/router";
 
@@ -20,10 +14,7 @@ interface ProjectNavigationProps {
   projects: Project[];
 }
 
-export const ProjectNavigation: React.FC<ProjectNavigationProps> = ({
-  currentProjectId,
-  projects,
-}) => {
+export const ProjectNavigation: React.FC<ProjectNavigationProps> = ({ currentProjectId, projects }) => {
   const router = useRouter();
   return (
     <Select
@@ -33,10 +24,7 @@ export const ProjectNavigation: React.FC<ProjectNavigationProps> = ({
       }}
     >
       <SelectTrigger className="h-8 text-primary ring-transparent focus:ring-0 focus:ring-offset-0">
-        <SelectValue
-          className="text-sm font-semibold text-primary"
-          placeholder={currentProjectId}
-        />
+        <SelectValue className="text-sm font-semibold text-primary" placeholder={currentProjectId} />
       </SelectTrigger>
       <SelectContent className="max-h-60 max-w-80">
         {projects.map((project) => (
@@ -45,9 +33,7 @@ export const ProjectNavigation: React.FC<ProjectNavigationProps> = ({
               <span
                 className={cn(
                   "truncate",
-                  currentProjectId === project.id
-                    ? "border-primary text-primary"
-                    : "text-muted-foreground",
+                  currentProjectId === project.id ? "border-primary text-primary" : "text-muted-foreground",
                 )}
               >
                 {project.name}

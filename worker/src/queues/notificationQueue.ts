@@ -3,9 +3,7 @@ import { Job } from "bullmq";
 import { logger, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { handleCommentMentionNotification } from "../features/notifications/commentMentionHandler";
 
-export const notificationQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.NotificationQueue]>,
-) => {
+export const notificationQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.NotificationQueue]>) => {
   try {
     const { type, ...payload } = job.data.payload;
     const projectId = payload.projectId;

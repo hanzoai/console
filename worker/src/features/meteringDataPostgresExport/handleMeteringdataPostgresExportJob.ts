@@ -1,9 +1,6 @@
 import { Job } from "bullmq";
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  PostHogIntegrationProcessingQueue,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { PostHogIntegrationProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handlePostHogIntegrationSchedule = async (job: Job) => {
@@ -17,8 +14,7 @@ export const handlePostHogIntegrationSchedule = async (job: Job) => {
     },
   });
 
-  const postHogIntegrationProcessingQueue =
-    PostHogIntegrationProcessingQueue.getInstance();
+  const postHogIntegrationProcessingQueue = PostHogIntegrationProcessingQueue.getInstance();
   if (!postHogIntegrationProcessingQueue) {
     throw new Error("PostHogIntegrationProcessingQueue not initialized");
   }

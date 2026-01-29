@@ -1,17 +1,8 @@
 /** @jest-environment node */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import {
-  BaseError,
-  HanzoNotFoundError,
-  UnauthorizedError,
-  ServiceUnavailableError,
-} from "@hanzo/shared";
-import {
-  ClickHouseResourceError,
-  logger,
-  traceException,
-} from "@hanzo/shared/src/server";
+import { BaseError, HanzoNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/shared";
+import { ClickHouseResourceError, logger, traceException } from "@hanzo/shared/src/server";
 import { createMocks } from "node-mocks-http";
 import { z } from "zod/v4";
 import { Prisma } from "@prisma/client";
@@ -60,12 +51,7 @@ describe("withMiddlewares error handling", () => {
     });
 
     it("should handle BaseError with 5xx status code and trace exception", async () => {
-      const error = new BaseError(
-        "ServiceUnavailable",
-        503,
-        "Internal Error",
-        true,
-      );
+      const error = new BaseError("ServiceUnavailable", 503, "Internal Error", true);
 
       const handler = withMiddlewares({
         GET: async () => {
@@ -183,10 +169,7 @@ describe("withMiddlewares error handling", () => {
   describe("ClickHouseResourceError handling", () => {
     it("should handle ClickHouseResourceError with 400 status", async () => {
       const originalError = new Error("Memory limit exceeded: maximum: 10GB");
-      const resourceError = new ClickHouseResourceError(
-        "MEMORY_LIMIT",
-        originalError,
-      );
+      const resourceError = new ClickHouseResourceError("MEMORY_LIMIT", originalError);
 
       const handler = withMiddlewares({
         POST: async () => {
@@ -206,19 +189,17 @@ describe("withMiddlewares error handling", () => {
       expect(res._getStatusCode()).toBe(524);
       const jsonData = JSON.parse(res._getData());
       expect(jsonData["message"]).toBeDefined();
-      expect(jsonData["message"]).toContain(
-        ClickHouseResourceError.ERROR_ADVICE_MESSAGE,
-      );
+      expect(jsonData["message"]).toContain(ClickHouseResourceError.ERROR_ADVICE_MESSAGE);
     });
   });
 
   describe("Prisma exception handling", () => {
     it("should handle Prisma exceptions with generic 500 error", async () => {
       // Create a real Prisma error
-      const prismaError = new Prisma.PrismaClientKnownRequestError(
-        "Unique constraint failed",
-        { code: "P2002", clientVersion: "5.0.0" },
-      );
+      const prismaError = new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+        code: "P2002",
+        clientVersion: "5.0.0",
+      });
 
       const handler = withMiddlewares({
         POST: async () => {
@@ -285,9 +266,7 @@ describe("withMiddlewares error handling", () => {
 
   describe("ServiceUnavailableError handling", () => {
     it("should handle ServiceUnavailableError with 503 status", async () => {
-      const error = new ServiceUnavailableError(
-        "Storage service temporarily unavailable due to network issues",
-      );
+      const error = new ServiceUnavailableError("Storage service temporarily unavailable due to network issues");
 
       const handler = withMiddlewares({
         POST: async () => {
@@ -307,8 +286,7 @@ describe("withMiddlewares error handling", () => {
       expect(res._getStatusCode()).toBe(503);
       const jsonData = JSON.parse(res._getData());
       expect(jsonData).toMatchObject({
-        message:
-          "Storage service temporarily unavailable due to network issues",
+        message: "Storage service temporarily unavailable due to network issues",
         error: "ServiceUnavailableError",
       });
       // Should trace 5xx errors

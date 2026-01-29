@@ -6,10 +6,7 @@ import { redis } from "../../src/server";
 
 const createRandomProjectId = () => randomUUID().toString();
 
-const prepareProjectsAndApiKeys = async (
-  numOfProjects: number,
-  opts: { requiredProjectIds: string[] },
-) => {
+const prepareProjectsAndApiKeys = async (numOfProjects: number, opts: { requiredProjectIds: string[] }) => {
   const { requiredProjectIds } = opts;
   const projectsToCreate = numOfProjects - requiredProjectIds.length;
   const projectIds = [...requiredProjectIds];
@@ -48,9 +45,7 @@ const prepareProjectsAndApiKeys = async (
       where: { id: apiKeyId },
     });
     if (!apiKeyExists) {
-      const sk = await hashSecretKey(
-        `sk-${Math.random().toString(36).substr(2, 9)}`,
-      );
+      const sk = await hashSecretKey(`sk-${Math.random().toString(36).substr(2, 9)}`);
       await prisma.apiKey.create({
         data: {
           id: apiKeyId,
@@ -84,31 +79,22 @@ async function main() {
   );
 
   if (isNaN(totalObservations)) {
-    logger.warn(
-      "Total observations not provided or invalid. Defaulting to 1000 observations.",
-    );
+    logger.warn("Total observations not provided or invalid. Defaulting to 1000 observations.");
     totalObservations = 1000;
   }
 
   if (isNaN(numOfProjects)) {
-    logger.warn(
-      "Number of projects not provided or invalid. Defaulting to 10 projects.",
-    );
+    logger.warn("Number of projects not provided or invalid. Defaulting to 10 projects.");
     numOfProjects = 10;
   }
 
   if (isNaN(numberOfDays)) {
-    logger.warn(
-      "Number of days not provided or invalid. Defaulting to 3 days.",
-    );
+    logger.warn("Number of days not provided or invalid. Defaulting to 3 days.");
     numberOfDays = 3;
   }
 
   try {
-    const projectIds = [
-      "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-      "239ad00f-562f-411d-af14-831c75ddd875",
-    ];
+    const projectIds = ["7a88fb47-b4e2-43b8-a06c-a5ce950dc53a", "239ad00f-562f-411d-af14-831c75ddd875"];
 
     const createdProjectIds = await prepareProjectsAndApiKeys(numOfProjects, {
       requiredProjectIds: projectIds,

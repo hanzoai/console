@@ -10,10 +10,7 @@ export function orderByToClickhouseSql(
   tableColumns: UiColumnMappings,
   usedInAggregation = false,
 ): string {
-  if (
-    !orderBy ||
-    (Array.isArray(orderBy) && orderBy.filter(Boolean).length === 0)
-  ) {
+  if (!orderBy || (Array.isArray(orderBy) && orderBy.filter(Boolean).length === 0)) {
     return "";
   }
 
@@ -24,13 +21,9 @@ export function orderByToClickhouseSql(
   const orderByClauses: string[] = [];
 
   // Loop through each orderBy entry
-  for (const ob of orderBy.filter((o): o is OrderByStateNotNull =>
-    Boolean(o),
-  )) {
+  for (const ob of orderBy.filter((o): o is OrderByStateNotNull => Boolean(o))) {
     // Get column definition to map column to internal name, e.g. "t.id"
-    const col = tableColumns.find(
-      (c) => c.uiTableName === ob.column || c.uiTableId === ob.column,
-    );
+    const col = tableColumns.find((c) => c.uiTableName === ob.column || c.uiTableId === ob.column);
 
     if (!col) {
       logger.warn("Invalid order by column", ob.column);
@@ -48,9 +41,7 @@ export function orderByToClickhouseSql(
     const column = `${col.queryPrefix ? col.queryPrefix + "." : ""}${col.clickhouseSelect}`;
 
     // Append the order by clause to the array
-    orderByClauses.push(
-      `${usedInAggregation ? `anyLast(${column})` : column} ${order.data}`,
-    );
+    orderByClauses.push(`${usedInAggregation ? `anyLast(${column})` : column} ${order.data}`);
   }
 
   // Join all order by clauses with a comma and return

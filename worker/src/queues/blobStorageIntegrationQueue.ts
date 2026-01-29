@@ -1,9 +1,5 @@
 import { Processor } from "bullmq";
-import {
-  QueueJobs,
-  logger,
-  instrumentAsync,
-} from "@hanzo/shared/src/server";
+import { QueueJobs, logger, instrumentAsync } from "@hanzo/shared/src/server";
 import { handleBlobStorageIntegrationSchedule } from "../features/blobstorage/handleBlobStorageIntegrationSchedule";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";
@@ -20,9 +16,7 @@ export const blobStorageIntegrationProcessor: Processor = async (job) => {
   }
 };
 
-export const blobStorageIntegrationProcessingProcessor: Processor = async (
-  job,
-) => {
+export const blobStorageIntegrationProcessingProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.BlobStorageIntegrationProcessingJob) {
     return await instrumentAsync(
       {
@@ -34,10 +28,7 @@ export const blobStorageIntegrationProcessingProcessor: Processor = async (
         try {
           return await handleBlobStorageIntegrationProjectJob(job);
         } catch (error) {
-          logger.error(
-            "Error executing BlobStorageIntegrationProcessingJob",
-            error,
-          );
+          logger.error("Error executing BlobStorageIntegrationProcessingJob", error);
           throw error;
         }
       },

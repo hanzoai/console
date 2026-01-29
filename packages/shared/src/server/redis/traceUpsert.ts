@@ -1,19 +1,12 @@
 import { QueueName, TQueueJobTypes } from "../queues";
 import { Queue } from "bullmq";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 import { getShardIndex } from "./sharding";
 import { env } from "../../env";
 
 export class TraceUpsertQueue {
-  private static instances: Map<
-    number,
-    Queue<TQueueJobTypes[QueueName.TraceUpsert]> | null
-  > = new Map();
+  private static instances: Map<number, Queue<TQueueJobTypes[QueueName.TraceUpsert]> | null> = new Map();
 
   public static getShardNames() {
     return Array.from(
@@ -22,16 +15,12 @@ export class TraceUpsertQueue {
     );
   }
 
-  static getShardIndexFromShardName(
-    shardName: string | undefined,
-  ): number | null {
+  static getShardIndexFromShardName(shardName: string | undefined): number | null {
     if (!shardName) return null;
 
     // Extract shard index from shard name
     const shardIndex =
-      shardName === QueueName.TraceUpsert
-        ? 0
-        : parseInt(shardName.replace(`${QueueName.TraceUpsert}-`, ""), 10);
+      shardName === QueueName.TraceUpsert ? 0 : parseInt(shardName.replace(`${QueueName.TraceUpsert}-`, ""), 10);
 
     if (isNaN(shardIndex)) return null;
     return shardIndex;
@@ -52,10 +41,7 @@ export class TraceUpsertQueue {
     const shardIndex =
       TraceUpsertQueue.getShardIndexFromShardName(shardName) ??
       (env.REDIS_CLUSTER_ENABLED === "true" && shardingKey
-        ? getShardIndex(
-            shardingKey,
-            env.HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT,
-          )
+        ? getShardIndex(shardingKey, env.HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT)
         : 0);
 
     // Check if we already have an instance for this shard

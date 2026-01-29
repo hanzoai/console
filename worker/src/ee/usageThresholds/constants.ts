@@ -28,10 +28,7 @@ export const BLOCKING_THRESHOLD = MAX_EVENTS_FREE_PLAN * 5; // 250,000
 /**
  * All thresholds combined for validation
  */
-export const ALL_THRESHOLDS = [
-  ...NOTIFICATION_THRESHOLDS,
-  BLOCKING_THRESHOLD,
-] as const;
+export const ALL_THRESHOLDS = [...NOTIFICATION_THRESHOLDS, BLOCKING_THRESHOLD] as const;
 
 export type NotificationThreshold = (typeof NOTIFICATION_THRESHOLDS)[number];
 export type BlockingThreshold = typeof BLOCKING_THRESHOLD;

@@ -18,27 +18,15 @@ import { serverBillingAnalytics } from "@/src/features/billing/server/analytics"
  * SSO users are created by the NextAuth adapters.
  */
 export async function stripeWebhookApiHandler(req: NextRequest) {
-  if (req.method !== "POST")
-    return NextResponse.json(
-      { message: "Method not allowed" },
-      { status: 405 },
-    );
+  if (req.method !== "POST") return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 
   if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION || !stripeClient) {
-    logger.error(
-      "[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud",
-    );
-    return NextResponse.json(
-      { message: "Stripe webhook endpoint only available in Hanzo Cloud" },
-      { status: 500 },
-    );
+    logger.error("[Stripe Webhook] Endpoint only available in HanzoCloudud Cloud");
+    return NextResponse.json({ message: "Stripe webhook endpoint only available in Hanzo Cloud" }, { status: 500 });
   }
   if (!env.STRIPE_WEBHOOK_SIGNING_SECRET) {
     logger.error("[Stripe Webhook] Stripe webhook signing key not found");
-    return NextResponse.json(
-      { message: "Stripe secret key not found" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Stripe secret key not found" }, { status: 500 });
   }
 
   // Read the request body once and store it in a variable
@@ -47,20 +35,14 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
     rawBody = await req.text();
     if (!rawBody) {
       logger.error("[Stripe Webhook] Empty request body");
-      return NextResponse.json(
-        { message: "Empty request body" },
-        { status: 400 },
-      );
+      return NextResponse.json({ message: "Empty request body" }, { status: 400 });
     }
     logger.debug("[Stripe Webhook] Received raw body", {
       length: rawBody.length,
     });
   } catch (error) {
     logger.error("[Stripe Webhook] Error reading request body", error);
-    return NextResponse.json(
-      { message: "Error reading request body" },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: "Error reading request body" }, { status: 400 });
   }
 
   const sig = req.headers.get("stripe-signature");
@@ -70,17 +52,10 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
   }
   let event: Stripe.Event;
   try {
-    event = stripeClient.webhooks.constructEvent(
-      rawBody,
-      sig,
-      env.STRIPE_WEBHOOK_SIGNING_SECRET,
-    );
+    event = stripeClient.webhooks.constructEvent(rawBody, sig, env.STRIPE_WEBHOOK_SIGNING_SECRET);
   } catch (err) {
     logger.error("[Stripe Webhook] Error verifying signature", err);
-    return NextResponse.json(
-      { message: `Webhook Error: ${err}` },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: `Webhook Error: ${err}` }, { status: 400 });
   }
 
   // Handle the event
@@ -140,10 +115,7 @@ export async function stripeWebhookApiHandler(req: NextRequest) {
   return NextResponse.json({ received: true }, { status: 200 });
 }
 
-async function handleSubscriptionChanged(
-  subscription: Stripe.Subscription,
-  action: "created" | "deleted" | "updated",
-) {
+async function handleSubscriptionChanged(subscription: Stripe.Subscription, action: "created" | "deleted" | "updated") {
   const subscriptionId = subscription.id;
   logger.info("[Stripe Webhook] Processing subscription:", {
     subscriptionId,
@@ -182,16 +154,10 @@ async function handleSubscriptionChanged(
       subscriptionId,
     });
     traceException("[Stripe Webhook] No client reference");
-    return NextResponse.json(
-      { message: "No client reference" },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: "No client reference" }, { status: 400 });
   }
   if (!isStripeClientReferenceFromCurrentCloudRegion(clientReference)) {
-    logger.info(
-      "[Stripe Webhook] Client reference not from current cloud region",
-      { clientReference },
-    );
+    logger.info("[Stripe Webhook] Client reference not from current cloud region", { clientReference });
     return;
   }
   const orgId = getOrgIdFromStripeClientReference(clientReference);
@@ -228,13 +194,8 @@ async function handleSubscriptionChanged(
 
   // check subscription items
   if (!subscription.items.data || subscription.items.data.length !== 1) {
-    logger.error(
-      "[Stripe Webhook] Subscription items not found or more than one",
-      { items: subscription.items.data },
-    );
-    traceException(
-      "[Stripe Webhook] Subscription items not found or more than one",
-    );
+    logger.error("[Stripe Webhook] Subscription items not found or more than one", { items: subscription.items.data });
+    traceException("[Stripe Webhook] Subscription items not found or more than one");
     return;
   }
 
@@ -368,14 +329,10 @@ async function handleSubscriptionChanged(
   return;
 }
 
-async function handleCreditPurchase(
-  payment: Stripe.PaymentIntent | Stripe.Checkout.Session,
-) {
+async function handleCreditPurchase(payment: Stripe.PaymentIntent | Stripe.Checkout.Session) {
   // Extract the amount paid and organization ID from the payment metadata
   const amountPaid =
-    "amount_received" in payment
-      ? payment.amount_received
-      : (payment as Stripe.Checkout.Session).amount_total;
+    "amount_received" in payment ? payment.amount_received : (payment as Stripe.Checkout.Session).amount_total;
 
   const orgId = payment.metadata?.orgId;
 

@@ -9,8 +9,8 @@ export const STEP_SIZE = 100;
 
 // Predefined step sizes for time axis (in seconds)
 export const PREDEFINED_STEP_SIZES = [
-  0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25,
-  35, 40, 45, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
+  0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 35, 40, 45, 50, 100, 150, 200, 250, 300,
+  350, 400, 450, 500,
 ];
 
 /**
@@ -27,8 +27,7 @@ export function calculateTimelineOffset(
   totalScaleSpan: number,
   scaleWidth: number = SCALE_WIDTH,
 ): number {
-  const timeFromStart =
-    (nodeStartTime.getTime() - traceStartTime.getTime()) / 1000;
+  const timeFromStart = (nodeStartTime.getTime() - traceStartTime.getTime()) / 1000;
   return (timeFromStart / totalScaleSpan) * scaleWidth;
 }
 
@@ -54,10 +53,7 @@ export function calculateTimelineWidth(
  * @param scaleWidth - Width of the timeline scale in pixels
  * @returns Step size in seconds
  */
-export function calculateStepSize(
-  traceDuration: number,
-  scaleWidth: number = SCALE_WIDTH,
-): number {
+export function calculateStepSize(traceDuration: number, scaleWidth: number = SCALE_WIDTH): number {
   const calculatedStepSize = traceDuration / (scaleWidth / STEP_SIZE);
   return (
     PREDEFINED_STEP_SIZES.find((step) => step >= calculatedStepSize) ||

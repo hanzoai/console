@@ -38,12 +38,7 @@ export function useLogViewColumns({
         header: "Observation",
         width: "flex-1",
         render: (item) => (
-          <LogViewObservationCell
-            item={item}
-            indentEnabled={indentEnabled}
-            projectId={projectId}
-            traceId={traceId}
-          />
+          <LogViewObservationCell item={item} indentEnabled={indentEnabled} projectId={projectId} traceId={traceId} />
         ),
       },
       {
@@ -52,9 +47,7 @@ export function useLogViewColumns({
         width: "w-12",
         align: "right" as const,
         render: (item) => (
-          <span className="text-xs text-muted-foreground">
-            {item.node.depth >= 0 ? `L${item.node.depth}` : "-"}
-          </span>
+          <span className="text-xs text-muted-foreground">{item.node.depth >= 0 ? `L${item.node.depth}` : "-"}</span>
         ),
       },
       {
@@ -64,10 +57,7 @@ export function useLogViewColumns({
         align: "right" as const,
         render: (item) => (
           <span className="text-xs text-muted-foreground">
-            {formatRelativeTime(
-              item.node.startTimeSinceTrace,
-              showMilliseconds,
-            )}
+            {formatRelativeTime(item.node.startTimeSinceTrace, showMilliseconds)}
           </span>
         ),
       },

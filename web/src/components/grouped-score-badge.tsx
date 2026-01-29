@@ -1,29 +1,17 @@
 import { Badge } from "@/src/components/ui/badge";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { type LastUserScore, type ScoreDomain } from "@hanzo/shared";
-import {
-  BracesIcon,
-  MessageCircleMoreIcon,
-  ExternalLinkIcon,
-} from "lucide-react";
+import { BracesIcon, MessageCircleMoreIcon, ExternalLinkIcon } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import Link from "next/link";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
-const partitionScores = <
-  T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore,
->(
+const partitionScores = <T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore>(
   scores: Record<string, T[]>,
   maxVisible?: number,
 ) => {
-  const sortedScores = Object.entries(scores).sort(([a], [b]) =>
-    a < b ? -1 : 1,
-  );
+  const sortedScores = Object.entries(scores).sort(([a], [b]) => (a < b ? -1 : 1));
   if (!maxVisible) return { visibleScores: sortedScores, hiddenScores: [] };
 
   const visibleScores = sortedScores.slice(0, maxVisible);
@@ -31,24 +19,17 @@ const partitionScores = <
   return { visibleScores, hiddenScores };
 };
 
-const hasMetadata = (
-  score: WithStringifiedMetadata<ScoreDomain> | LastUserScore,
-) => {
+const hasMetadata = (score: WithStringifiedMetadata<ScoreDomain> | LastUserScore) => {
   if (!score.metadata) return false;
   try {
-    const metadata =
-      typeof score.metadata === "string"
-        ? JSON.parse(score.metadata)
-        : score.metadata;
+    const metadata = typeof score.metadata === "string" ? JSON.parse(score.metadata) : score.metadata;
     return Object.keys(metadata).length > 0;
   } catch {
     return false;
   }
 };
 
-const ScoreGroupBadge = <
-  T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore,
->({
+const ScoreGroupBadge = <T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore>({
   name,
   scores,
   compact,
@@ -67,18 +48,12 @@ const ScoreGroupBadge = <
       key={name}
       className={`flex items-center gap-1 ${compact ? "px-1.5 leading-tight" : "px-2.5"} text-xs font-normal${badgeClassName ? " " + badgeClassName : ""}`}
     >
-      <div
-        className={`w-fit max-w-20 truncate ${compact ? "leading-tight" : ""}`}
-        title={name}
-      >
+      <div className={`w-fit max-w-20 truncate ${compact ? "leading-tight" : ""}`} title={name}>
         {name}:
       </div>
       <div className="flex items-center gap-1 text-nowrap">
         {scores.map((s, i) => (
-          <span
-            key={i}
-            className="group/score ml-1 flex items-center gap-1 rounded-sm first:ml-0"
-          >
+          <span key={i} className="group/score ml-1 flex items-center gap-1 rounded-sm first:ml-0">
             {s.stringValue ?? s.value?.toFixed(2) ?? ""}
             {s.comment && (
               <HoverCard>
@@ -87,18 +62,16 @@ const ScoreGroupBadge = <
                 </HoverCardTrigger>
                 <HoverCardContent className="max-h-[50dvh] overflow-y-auto whitespace-normal break-normal text-xs">
                   <p className="whitespace-pre-wrap">{s.comment}</p>
-                  {"executionTraceId" in s &&
-                    s.executionTraceId &&
-                    projectId && (
-                      <Link
-                        href={`/project/${projectId}/traces/${encodeURIComponent(s.executionTraceId)}`}
-                        className="mt-2 flex items-center gap-1 text-blue-600 hover:underline"
-                        target="_blank"
-                      >
-                        <ExternalLinkIcon className="h-3 w-3" />
-                        View execution trace
-                      </Link>
-                    )}
+                  {"executionTraceId" in s && s.executionTraceId && projectId && (
+                    <Link
+                      href={`/project/${projectId}/traces/${encodeURIComponent(s.executionTraceId)}`}
+                      className="mt-2 flex items-center gap-1 text-blue-600 hover:underline"
+                      target="_blank"
+                    >
+                      <ExternalLinkIcon className="h-3 w-3" />
+                      View execution trace
+                    </Link>
+                  )}
                 </HoverCardContent>
               </HoverCard>
             )}
@@ -120,9 +93,7 @@ const ScoreGroupBadge = <
   );
 };
 
-export const GroupedScoreBadges = <
-  T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore,
->({
+export const GroupedScoreBadges = <T extends WithStringifiedMetadata<ScoreDomain> | LastUserScore>({
   scores,
   maxVisible,
   compact,
@@ -142,21 +113,12 @@ export const GroupedScoreBadges = <
     return acc;
   }, {});
 
-  const { visibleScores, hiddenScores } = partitionScores(
-    groupedScores,
-    maxVisible,
-  );
+  const { visibleScores, hiddenScores } = partitionScores(groupedScores, maxVisible);
 
   return (
     <>
       {visibleScores.map(([name, scores]) => (
-        <ScoreGroupBadge
-          key={name}
-          name={name}
-          scores={scores}
-          compact={compact}
-          badgeClassName={badgeClassName}
-        />
+        <ScoreGroupBadge key={name} name={name} scores={scores} compact={compact} badgeClassName={badgeClassName} />
       ))}
       {Boolean(hiddenScores.length) && (
         <HoverCard>

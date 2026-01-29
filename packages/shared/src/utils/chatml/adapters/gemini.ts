@@ -1,9 +1,5 @@
 import type { NormalizerContext, ProviderAdapter } from "../types";
-import {
-  parseMetadata,
-  stringifyToolResultContent,
-  isRichToolResult,
-} from "../helpers";
+import { parseMetadata, stringifyToolResultContent, isRichToolResult } from "../helpers";
 import { z } from "zod/v4";
 
 /**
@@ -104,10 +100,7 @@ function extractFromParts(parts: unknown[]): {
       toolCalls.push({
         id: functionCall.id || "",
         name: functionCall.name,
-        arguments:
-          typeof functionCall.args === "string"
-            ? functionCall.args
-            : JSON.stringify(functionCall.args ?? {}),
+        arguments: typeof functionCall.args === "string" ? functionCall.args : JSON.stringify(functionCall.args ?? {}),
         type: "function",
       });
       continue;
@@ -117,8 +110,7 @@ function extractFromParts(parts: unknown[]): {
     // text can be a string (normal response) or an object (when responseMimeType: "application/json")
     // Check for thought flag (Gemini thinking indicator)
     if (p.text !== undefined && p.text !== null) {
-      const textContent =
-        typeof p.text === "string" ? p.text : JSON.stringify(p.text, null, 2);
+      const textContent = typeof p.text === "string" ? p.text : JSON.stringify(p.text, null, 2);
 
       // Gemini uses `thought: true` flag to indicate thinking content
       if (p.thought === true) {
@@ -204,18 +196,11 @@ function normalizeGeminiMessage(msg: unknown): Record<string, unknown> {
 
   // handle direct tool call message format
   // {type: "tool_call", name: "...", args: {...}} → {role: "assistant", tool_calls: [...]}
-  if (
-    normalized.type === "tool_call" &&
-    normalized.name &&
-    typeof normalized.name === "string"
-  ) {
+  if (normalized.type === "tool_call" && normalized.name && typeof normalized.name === "string") {
     const toolCall: Record<string, unknown> = {
       id: normalized.id || "",
       name: normalized.name,
-      arguments:
-        typeof normalized.args === "string"
-          ? normalized.args
-          : JSON.stringify(normalized.args ?? {}),
+      arguments: typeof normalized.args === "string" ? normalized.args : JSON.stringify(normalized.args ?? {}),
       type: "function",
     };
 
@@ -238,10 +223,7 @@ function normalizeGeminiMessage(msg: unknown): Record<string, unknown> {
         return {
           id: toolCall.id || "",
           name: toolCall.name,
-          arguments:
-            typeof toolCall.args === "string"
-              ? toolCall.args
-              : JSON.stringify(toolCall.args ?? {}),
+          arguments: typeof toolCall.args === "string" ? toolCall.args : JSON.stringify(toolCall.args ?? {}),
           type: "function",
         };
       }
@@ -253,9 +235,7 @@ function normalizeGeminiMessage(msg: unknown): Record<string, unknown> {
   // process top-level parts array
   // Gemini format: {parts: [{function_call/text/function_response}], role: "..."}
   if (normalized.parts && Array.isArray(normalized.parts)) {
-    const { toolCalls, thinkingParts, text } = extractFromParts(
-      normalized.parts,
-    );
+    const { toolCalls, thinkingParts, text } = extractFromParts(normalized.parts);
     if (toolCalls.length > 0) {
       normalized.tool_calls = toolCalls;
     }
@@ -389,11 +369,7 @@ function preprocessData(data: unknown): unknown {
       const messages: unknown[] = [];
 
       // Extract system_instruction from config and prepend as system message
-      const systemInstruction = getField(
-        config,
-        "system_instruction",
-        "systemInstruction",
-      );
+      const systemInstruction = getField(config, "system_instruction", "systemInstruction");
       if (systemInstruction && typeof systemInstruction === "string") {
         messages.push({
           role: "system",
@@ -443,9 +419,7 @@ function preprocessData(data: unknown): unknown {
     const obj = data as Record<string, unknown>;
     return {
       ...obj,
-      messages: Array.isArray(obj.messages)
-        ? normalizeMessages(obj.messages)
-        : obj.messages,
+      messages: Array.isArray(obj.messages) ? normalizeMessages(obj.messages) : obj.messages,
     };
   }
 
@@ -470,8 +444,7 @@ export const geminiAdapter: ProviderAdapter = {
       if (
         attributes &&
         typeof attributes === "object" &&
-        (attributes as Record<string, unknown>)["gen_ai.system"] ===
-          "gcp.vertex.agent"
+        (attributes as Record<string, unknown>)["gen_ai.system"] === "gcp.vertex.agent"
       ) {
         return true;
       }
@@ -492,11 +465,7 @@ export const geminiAdapter: ProviderAdapter = {
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    _ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", _ctx: NormalizerContext): unknown {
     return preprocessData(data);
   },
 };

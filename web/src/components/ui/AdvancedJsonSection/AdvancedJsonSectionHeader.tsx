@@ -70,15 +70,9 @@ export function AdvancedJsonSectionHeader({
               onToggleCollapse();
             }}
             className="inline-flex items-center justify-center rounded-sm p-0.5 transition-colors hover:bg-accent"
-            aria-label={
-              sectionCollapsed ? "Expand section" : "Collapse section"
-            }
+            aria-label={sectionCollapsed ? "Expand section" : "Collapse section"}
           >
-            {sectionCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
+            {sectionCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
         )}
         {titleIcon}
@@ -98,11 +92,7 @@ export function AdvancedJsonSectionHeader({
           }}
           className="-mr-2 hover:bg-border"
         >
-          {isCopied ? (
-            <Check className="h-3 w-3" />
-          ) : (
-            <Copy className="h-3 w-3" />
-          )}
+          {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>
       </div>
     </div>

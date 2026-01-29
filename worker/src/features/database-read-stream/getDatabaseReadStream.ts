@@ -49,37 +49,32 @@ const tableNameToTimeFilterColumnCh: Record<BatchTableNames, string> = {
   dataset_items: "createdAt",
   audit_logs: "createdAt",
 };
-const isGenerationTimestampFilter = (
-  filter: FilterCondition,
-): filter is TimeFilter => {
+const isGenerationTimestampFilter = (filter: FilterCondition): filter is TimeFilter => {
   return filter.column === "Start Time" && filter.type === "datetime";
 };
-export const isTraceTimestampFilter = (
-  filter: FilterCondition,
-): filter is TimeFilter => {
+export const isTraceTimestampFilter = (filter: FilterCondition): filter is TimeFilter => {
   return filter.column === "Timestamp" && filter.type === "datetime";
 };
-export const getChunkWithFlattenedScores = <
-  T extends BatchExportTracesRow[] | FullObservationsWithScores,
->(
+export const getChunkWithFlattenedScores = <T extends BatchExportTracesRow[] | FullObservationsWithScores>(
   chunk: T,
   emptyScoreColumns: Record<string, null>,
 ) => {
   return chunk.map((row) => {
     const { scores, ...data } = row;
     if (!scores) return { ...data, ...emptyScoreColumns };
-    const scoreColumns = Object.entries(scores).reduce<
-      Record<string, string[] | number[] | null>
-    >((acc, [key, value]) => {
-      if (key in emptyScoreColumns) {
-        return {
-          ...acc,
-          [key]: value,
-        };
-      } else {
-        return acc;
-      }
-    }, emptyScoreColumns);
+    const scoreColumns = Object.entries(scores).reduce<Record<string, string[] | number[] | null>>(
+      (acc, [key, value]) => {
+        if (key in emptyScoreColumns) {
+          return {
+            ...acc,
+            [key]: value,
+          };
+        } else {
+          return acc;
+        }
+      },
+      emptyScoreColumns,
+    );
     return {
       ...data,
       ...scoreColumns,
@@ -134,9 +129,7 @@ export const getDatabaseReadStreamPaginated = async ({
         async (pageSize: number, offset: number) => {
           const scores = await getScoresUiTable({
             projectId,
-            filter: filter
-              ? [...filter, createdAtCutoffFilter]
-              : [createdAtCutoffFilter],
+            filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             orderBy,
             limit: pageSize,
             offset,
@@ -149,9 +142,7 @@ export const getDatabaseReadStreamPaginated = async ({
           const users = await prisma.user.findMany({
             where: {
               id: {
-                in: scores
-                  .map((score) => score.authorUserId)
-                  .filter((s): s is string => Boolean(s)),
+                in: scores.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
               },
             },
             select: {
@@ -192,14 +183,9 @@ export const getDatabaseReadStreamPaginated = async ({
     case "sessions":
       return new DatabaseReadStream<unknown>(
         async (pageSize: number, offset: number) => {
-          const finalFilter = filter
-            ? [...filter, createdAtCutoffFilter]
-            : [createdAtCutoffFilter];
+          const finalFilter = filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter];
 
-          const sessionsFilter = await getPublicSessionsFilter(
-            projectId,
-            finalFilter ?? [],
-          );
+          const sessionsFilter = await getPublicSessionsFilter(projectId, finalFilter ?? []);
           const sessions = await getSessionsWithMetrics({
             projectId: projectId,
             filter: sessionsFilter,
@@ -234,12 +220,8 @@ export const getDatabaseReadStreamPaginated = async ({
               totalTokens: BigInt(s.session_total_usage),
               traceTags: s.trace_tags,
               createdAt: new Date(s.min_timestamp),
-              bookmarked:
-                prismaSessionInfo.find((p) => p.id === s.session_id)
-                  ?.bookmarked ?? false,
-              public:
-                prismaSessionInfo.find((p) => p.id === s.session_id)?.public ??
-                false,
+              bookmarked: prismaSessionInfo.find((p) => p.id === s.session_id)?.bookmarked ?? false,
+              public: prismaSessionInfo.find((p) => p.id === s.session_id)?.public ?? false,
               totalCount: s.trace_count,
             };
             return row;
@@ -269,9 +251,7 @@ export const getDatabaseReadStreamPaginated = async ({
           const distinctScoreNames = await getDistinctScoreNames({
             projectId,
             cutoffCreatedAt,
-            filter: filter
-              ? [...filter, createdAtCutoffFilterCh]
-              : [createdAtCutoffFilterCh],
+            filter: filter ? [...filter, createdAtCutoffFilterCh] : [createdAtCutoffFilterCh],
             isTimestampFilter: isGenerationTimestampFilter,
             clickhouseConfigs,
           });
@@ -285,9 +265,7 @@ export const getDatabaseReadStreamPaginated = async ({
             projectId,
             limit: pageSize,
             offset: offset,
-            filter: filter
-              ? [...filter, createdAtCutoffFilterCh]
-              : [createdAtCutoffFilterCh],
+            filter: filter ? [...filter, createdAtCutoffFilterCh] : [createdAtCutoffFilterCh],
             searchQuery,
             searchType: searchType ?? ["id" as const],
             orderBy,
@@ -301,12 +279,9 @@ export const getDatabaseReadStreamPaginated = async ({
           });
 
           const chunk = generations.map((generation) => {
-            const filteredScores = scores.filter(
-              (s) => s.observationId === generation.id,
-            );
+            const filteredScores = scores.filter((s) => s.observationId === generation.id);
 
-            const outputScores: Record<string, string[] | number[]> =
-              prepareScoresForOutput(filteredScores);
+            const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput(filteredScores);
 
             return {
               ...generation,
@@ -322,10 +297,7 @@ export const getDatabaseReadStreamPaginated = async ({
           );
 
           // Add comments to flattened chunk
-          const flattenedChunk = getChunkWithFlattenedScores(
-            chunk,
-            emptyScoreColumns,
-          );
+          const flattenedChunk = getChunkWithFlattenedScores(chunk, emptyScoreColumns);
 
           return flattenedChunk.map((obs: any) => ({
             ...obs,
@@ -344,9 +316,7 @@ export const getDatabaseReadStreamPaginated = async ({
           const distinctScoreNames = await getDistinctScoreNames({
             projectId,
             cutoffCreatedAt,
-            filter: filter
-              ? [...filter, createdAtCutoffFilter]
-              : [createdAtCutoffFilter],
+            filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             isTimestampFilter: isTraceTimestampFilter,
             clickhouseConfigs,
           });
@@ -357,9 +327,7 @@ export const getDatabaseReadStreamPaginated = async ({
 
           const traces = await getTracesTable({
             projectId,
-            filter: filter
-              ? [...filter, createdAtCutoffFilter]
-              : [createdAtCutoffFilter],
+            filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             searchQuery,
             searchType: searchType ?? ["id" as const],
             orderBy,
@@ -385,10 +353,7 @@ export const getDatabaseReadStreamPaginated = async ({
             getTracesByIds(
               traces.map((t) => t.id),
               projectId,
-              traces.reduce(
-                (min, t) => (!min || t.timestamp < min ? t.timestamp : min),
-                undefined as Date | undefined,
-              ),
+              traces.reduce((min, t) => (!min || t.timestamp < min ? t.timestamp : min), undefined as Date | undefined),
               clickhouseConfigs,
             ),
           ]);
@@ -403,11 +368,8 @@ export const getDatabaseReadStreamPaginated = async ({
             const metric = metrics.find((m) => m.id === t.id);
             const filteredScores = scores.filter((s) => s.traceId === t.id);
 
-            const outputScores: Record<string, string[] | number[]> =
-              prepareScoresForOutput(filteredScores);
-            const fullTrace = fullTraces.find(
-              (fullTrace) => fullTrace.id === t.id,
-            );
+            const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput(filteredScores);
+            const fullTrace = fullTraces.find((fullTrace) => fullTrace.id === t.id);
 
             return {
               ...t,
@@ -450,10 +412,7 @@ export const getDatabaseReadStreamPaginated = async ({
             comments: traceComments.get(trace.id) ?? [],
           }));
 
-          return getChunkWithFlattenedScores(
-            chunkWithComments,
-            emptyScoreColumns,
-          );
+          return getChunkWithFlattenedScores(chunkWithComments, emptyScoreColumns);
         },
         env.BATCH_EXPORT_PAGE_SIZE,
         rowLimit,
@@ -465,9 +424,7 @@ export const getDatabaseReadStreamPaginated = async ({
         async (pageSize: number, offset: number) => {
           const items = await getDatasetRunItemsCh({
             projectId,
-            filter: filter
-              ? [...filter, createdAtCutoffFilter]
-              : [createdAtCutoffFilter],
+            filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             limit: pageSize,
             orderBy: {
               column: "createdAt",
@@ -489,9 +446,7 @@ export const getDatabaseReadStreamPaginated = async ({
           });
 
           return items.map((item) => {
-            const datasetName = datasets.find(
-              (d) => d.id === item.datasetId,
-            )?.name;
+            const datasetName = datasets.find((d) => d.id === item.datasetId)?.name;
 
             return {
               id: item.id,
@@ -515,9 +470,7 @@ export const getDatabaseReadStreamPaginated = async ({
         async (pageSize: number, offset: number) => {
           const items = await getDatasetItems<true, true>({
             projectId,
-            filterState: filter
-              ? [...filter, createdAtCutoffFilter]
-              : [createdAtCutoffFilter],
+            filterState: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             includeIO: true,
             includeDatasetName: true,
             limit: pageSize,
@@ -528,9 +481,7 @@ export const getDatabaseReadStreamPaginated = async ({
             ...item,
             htmlSourcePath: item.sourceTraceId
               ? `/project/${projectId}/traces/${item.sourceTraceId}${
-                  item.sourceObservationId
-                    ? `?observation=${item.sourceObservationId}`
-                    : ""
+                  item.sourceObservationId ? `?observation=${item.sourceObservationId}` : ""
                 }`
               : "",
           }));
@@ -596,10 +547,7 @@ export function prepareScoresForOutput(
     (acc, score) => {
       // If this score name already exists in acc, use its existing type
       const existingValues = acc[score.name];
-      const newValue =
-        score.dataType === "NUMERIC" || score.dataType === "BOOLEAN"
-          ? score.value
-          : score.stringValue;
+      const newValue = score.dataType === "NUMERIC" || score.dataType === "BOOLEAN" ? score.value : score.stringValue;
       if (!isPresent(newValue)) return acc;
 
       if (!existingValues) {
@@ -638,15 +586,7 @@ export const getTraceIdentifierStream = async (props: {
   searchType?: TracingSearchType[];
   rowLimit?: number;
 }): Promise<DatabaseReadStream<Array<TraceIdentifiers>>> => {
-  const {
-    projectId,
-    cutoffCreatedAt,
-    filter,
-    orderBy,
-    searchQuery,
-    searchType,
-    rowLimit,
-  } = props;
+  const { projectId, cutoffCreatedAt, filter, orderBy, searchQuery, searchType, rowLimit } = props;
 
   const createdAtCutoffFilter: FilterCondition = {
     column: "timestamp",
@@ -669,9 +609,7 @@ export const getTraceIdentifierStream = async (props: {
     async (pageSize: number, offset: number) => {
       const identifiers = await getTraceIdentifiers({
         projectId,
-        filter: filter
-          ? [...filter, createdAtCutoffFilter]
-          : [createdAtCutoffFilter],
+        filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
         searchQuery,
         searchType: searchType ?? ["id" as const],
         orderBy,

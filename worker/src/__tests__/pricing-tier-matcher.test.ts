@@ -2,18 +2,13 @@ import { describe, expect, it } from "vitest";
 import { Decimal } from "decimal.js";
 import { z } from "zod/v4";
 import { validateRegexPattern } from "@hanzo/shared";
-import {
-  matchPricingTier,
-  type PricingTierWithPrices,
-} from "@hanzo/shared/src/server";
+import { matchPricingTier, type PricingTierWithPrices } from "@hanzo/shared/src/server";
 import { DefaultModelPriceSchema } from "../scripts/upsertDefaultModelPrices";
 import defaultModelPrices from "../constants/default-model-prices.json";
 
 describe("default-model-prices.json", () => {
   it("should parse successfully with Zod schema (same validation as upsertDefaultModelPrices)", () => {
-    expect(() =>
-      z.array(DefaultModelPriceSchema).parse(defaultModelPrices),
-    ).not.toThrow();
+    expect(() => z.array(DefaultModelPriceSchema).parse(defaultModelPrices)).not.toThrow();
   });
 
   it("should have unique model IDs", () => {
@@ -180,9 +175,7 @@ describe("default-model-prices.json", () => {
           expect(condition).toHaveProperty("caseSensitive");
 
           // Validate operator
-          expect(["gt", "gte", "lt", "lte", "eq", "neq"]).toContain(
-            condition.operator,
-          );
+          expect(["gt", "gte", "lt", "lte", "eq", "neq"]).toContain(condition.operator);
 
           // Validate value is a number
           expect(typeof condition.value).toBe("number");
@@ -203,36 +196,30 @@ describe("default-model-prices.json", () => {
     for (const model of defaultModelPrices) {
       for (const tier of model.pricingTiers) {
         for (const condition of tier.conditions) {
-          expect(() =>
-            validateRegexPattern(condition.usageDetailPattern),
-          ).not.toThrow();
+          expect(() => validateRegexPattern(condition.usageDetailPattern)).not.toThrow();
         }
       }
     }
   });
 
   it("should correctly match claude-sonnet-4-5 model with tiered pricing", () => {
-    const claudeModel = defaultModelPrices.find(
-      (m) => m.id === "c5qmrqolku82tra3vgdixmys",
-    );
+    const claudeModel = defaultModelPrices.find((m) => m.id === "c5qmrqolku82tra3vgdixmys");
     expect(claudeModel).toBeDefined();
     expect(claudeModel!.modelName).toBe("claude-sonnet-4-5-20250929");
     expect(claudeModel!.pricingTiers.length).toBe(2);
 
     // Convert to PricingTierWithPrices format
-    const tiers: PricingTierWithPrices[] = claudeModel!.pricingTiers.map(
-      (tier) => ({
-        id: tier.id,
-        name: tier.name,
-        isDefault: tier.isDefault,
-        priority: tier.priority,
-        conditions: tier.conditions,
-        prices: Object.entries(tier.prices).map(([usageType, price]) => ({
-          usageType,
-          price: new Decimal(price),
-        })),
-      }),
-    );
+    const tiers: PricingTierWithPrices[] = claudeModel!.pricingTiers.map((tier) => ({
+      id: tier.id,
+      name: tier.name,
+      isDefault: tier.isDefault,
+      priority: tier.priority,
+      conditions: tier.conditions,
+      prices: Object.entries(tier.prices).map(([usageType, price]) => ({
+        usageType,
+        price: new Decimal(price),
+      })),
+    }));
 
     // Test standard pricing (input <= 200K)
     const standardResult = matchPricingTier(tiers, {
@@ -268,33 +255,23 @@ describe("validateRegexPattern", () => {
 
   it("should reject patterns exceeding max length", () => {
     const longPattern = "a".repeat(201);
-    expect(() => validateRegexPattern(longPattern)).toThrow(
-      "Pattern exceeds maximum length of 200 characters",
-    );
+    expect(() => validateRegexPattern(longPattern)).toThrow("Pattern exceeds maximum length of 200 characters");
   });
 
   it("should reject invalid regex syntax", () => {
-    expect(() => validateRegexPattern("(unclosed")).toThrow(
-      "Invalid regex syntax",
-    );
-    expect(() => validateRegexPattern("[unclosed")).toThrow(
-      "Invalid regex syntax",
-    );
+    expect(() => validateRegexPattern("(unclosed")).toThrow("Invalid regex syntax");
+    expect(() => validateRegexPattern("[unclosed")).toThrow("Invalid regex syntax");
   });
 
   it("should reject patterns with catastrophic backtracking", () => {
     // Classic catastrophic backtracking pattern
     const dangerousPattern = "(a+)+b";
-    expect(() => validateRegexPattern(dangerousPattern)).toThrow(
-      "catastrophic backtracking",
-    );
+    expect(() => validateRegexPattern(dangerousPattern)).toThrow("catastrophic backtracking");
   });
 
   it("should accept safe complex patterns", () => {
     expect(() => validateRegexPattern("^(input|prompt)_tokens$")).not.toThrow();
-    expect(() =>
-      validateRegexPattern("^(input|output)_(cached|regular)$"),
-    ).not.toThrow();
+    expect(() => validateRegexPattern("^(input|output)_(cached|regular)$")).not.toThrow();
   });
 });
 
@@ -568,85 +545,49 @@ describe("matchPricingTier", () => {
     it("should correctly evaluate 'gt' operator", () => {
       const tiers = createTiers("gt", 100);
 
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-default",
-      );
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-default");
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-default");
     });
 
     it("should correctly evaluate 'gte' operator", () => {
       const tiers = createTiers("gte", 100);
 
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-default");
     });
 
     it("should correctly evaluate 'lt' operator", () => {
       const tiers = createTiers("lt", 100);
 
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-default",
-      );
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-default");
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-default");
     });
 
     it("should correctly evaluate 'lte' operator", () => {
       const tiers = createTiers("lte", 100);
 
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-default");
     });
 
     it("should correctly evaluate 'eq' operator", () => {
       const tiers = createTiers("eq", 100);
 
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-default",
-      );
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-default");
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-default");
     });
 
     it("should correctly evaluate 'neq' operator", () => {
       const tiers = createTiers("neq", 100);
 
-      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe(
-        "tier-conditional",
-      );
-      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, { input: 99 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 101 })?.pricingTierId).toBe("tier-conditional");
+      expect(matchPricingTier(tiers, { input: 100 })?.pricingTierId).toBe("tier-default");
     });
   });
 
@@ -742,27 +683,21 @@ describe("matchPricingTier", () => {
         input: 250000,
         output: 5000,
       };
-      expect(matchPricingTier(tiers, usageDetails1)?.pricingTierId).toBe(
-        "tier-complex",
-      );
+      expect(matchPricingTier(tiers, usageDetails1)?.pricingTierId).toBe("tier-complex");
 
       // First condition matches, second doesn't: input > 200K but output >= 10K
       const usageDetails2 = {
         input: 250000,
         output: 15000,
       };
-      expect(matchPricingTier(tiers, usageDetails2)?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, usageDetails2)?.pricingTierId).toBe("tier-default");
 
       // Second condition matches, first doesn't: input <= 200K but output < 10K
       const usageDetails3 = {
         input: 100000,
         output: 5000,
       };
-      expect(matchPricingTier(tiers, usageDetails3)?.pricingTierId).toBe(
-        "tier-default",
-      );
+      expect(matchPricingTier(tiers, usageDetails3)?.pricingTierId).toBe("tier-default");
     });
   });
 
@@ -1085,9 +1020,7 @@ describe("matchPricingTier", () => {
           isDefault: true,
           priority: 0,
           conditions: [],
-          prices: [
-            { usageType: "input", price: new Decimal("0.000003123456789") },
-          ],
+          prices: [{ usageType: "input", price: new Decimal("0.000003123456789") }],
         },
       ];
 

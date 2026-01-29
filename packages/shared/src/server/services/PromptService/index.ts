@@ -34,8 +34,7 @@ export class PromptService {
     if (cacheEnabled !== undefined) {
       this.cacheEnabled = cacheEnabled;
     } else {
-      this.cacheEnabled =
-        Boolean(redis) && env.HANZO_CACHE_PROMPT_ENABLED === "true";
+      this.cacheEnabled = Boolean(redis) && env.HANZO_CACHE_PROMPT_ENABLED === "true";
     }
 
     this.ttlSeconds = env.HANZO_CACHE_PROMPT_TTL_SECONDS;
@@ -45,11 +44,7 @@ export class PromptService {
     if (await this.shouldUseCache(params)) {
       const cachedPrompt = await this.getCachedPrompt(params);
 
-      this.incrementMetric(
-        cachedPrompt
-          ? PromptServiceMetrics.PromptCacheHit
-          : PromptServiceMetrics.PromptCacheMiss,
-      );
+      this.incrementMetric(cachedPrompt ? PromptServiceMetrics.PromptCacheHit : PromptServiceMetrics.PromptCacheMiss);
 
       if (cachedPrompt) {
         this.logDebug("Returning cached prompt for params", params);
@@ -71,9 +66,7 @@ export class PromptService {
     return dbPrompt;
   }
 
-  private async getDbPrompt(
-    params: PromptParams,
-  ): Promise<PromptResult | null> {
+  private async getDbPrompt(params: PromptParams): Promise<PromptResult | null> {
     const { projectId, promptName, version, label } = params;
 
     if (version) {
@@ -107,9 +100,7 @@ export class PromptService {
     return null;
   }
 
-  public async resolvePrompt(
-    prompt: Prompt | null,
-  ): Promise<PromptResult | null> {
+  public async resolvePrompt(prompt: Prompt | null): Promise<PromptResult | null> {
     if (!prompt) return prompt;
 
     const promptGraph = await this.buildAndResolvePromptGraph({
@@ -138,9 +129,7 @@ export class PromptService {
     return !isLocked;
   }
 
-  private async getCachedPrompt(
-    params: PromptParams,
-  ): Promise<PromptResult | null> {
+  private async getCachedPrompt(params: PromptParams): Promise<PromptResult | null> {
     try {
       const key = this.getCacheKey(params);
       const value = await this.redis?.getex(key, "EX", this.ttlSeconds);
@@ -172,9 +161,7 @@ export class PromptService {
    * This is useful in order to return consistent data during the
    * invalidation of the cache where we are looping through the relevant cache keys
    */
-  public async lockCache(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): Promise<void> {
+  public async lockCache(params: Pick<PromptParams, "projectId" | "promptName">): Promise<void> {
     if (!this.cacheEnabled) return;
 
     const lockKey = this.getLockKey(params);
@@ -188,9 +175,7 @@ export class PromptService {
     }
   }
 
-  public async unlockCache(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): Promise<void> {
+  public async unlockCache(params: Pick<PromptParams, "projectId" | "promptName">): Promise<void> {
     if (!this.cacheEnabled) return;
 
     const lockKey = this.getLockKey(params);
@@ -204,9 +189,7 @@ export class PromptService {
     }
   }
 
-  private async isCacheLocked(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): Promise<boolean> {
+  private async isCacheLocked(params: Pick<PromptParams, "projectId" | "promptName">): Promise<boolean> {
     const lockKey = this.getLockKey(params);
 
     try {
@@ -218,16 +201,12 @@ export class PromptService {
     }
   }
 
-  private getLockKey(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): string {
+  private getLockKey(params: Pick<PromptParams, "projectId" | "promptName">): string {
     // Important to *pre*fix LOCK as otherwise it would be deleted by deleteKeysByPrefix
     return `LOCK:prompt:${params.projectId}`;
   }
 
-  public async invalidateCache(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): Promise<void> {
+  public async invalidateCache(params: Pick<PromptParams, "projectId" | "promptName">): Promise<void> {
     if (!this.cacheEnabled) return;
 
     const keyIndexKey = this.getKeyIndexKey(params);
@@ -244,12 +223,7 @@ export class PromptService {
     const legacyKeys = await this.redis?.smembers(legacyKeyIndexKey);
 
     // Delete all keys for the prefix and the key index using safe multi-delete
-    const keysToDelete = [
-      ...(keys ?? []),
-      keyIndexKey,
-      ...(legacyKeys ?? []),
-      legacyKeyIndexKey,
-    ];
+    const keysToDelete = [...(keys ?? []), keyIndexKey, ...(legacyKeys ?? []), legacyKeyIndexKey];
     await safeMultiDel(this.redis, keysToDelete);
   }
 
@@ -259,15 +233,11 @@ export class PromptService {
     return `${prefix}:${params.version ?? params.label}`;
   }
 
-  private getCacheKeyPrefix(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): string {
+  private getCacheKeyPrefix(params: Pick<PromptParams, "projectId" | "promptName">): string {
     return `prompt:${params.projectId}:${params.promptName}`;
   }
 
-  private getKeyIndexKey(
-    params: Pick<PromptParams, "projectId" | "promptName">,
-  ): string {
+  private getKeyIndexKey(params: Pick<PromptParams, "projectId" | "promptName">): string {
     return `prompt_key_index:${params.projectId}`;
   }
 
@@ -296,16 +266,13 @@ export class PromptService {
       ) => {
         // Nesting depth check
         if (level >= MAX_PROMPT_NESTING_DEPTH) {
-          throw Error(
-            `Maximum nesting depth exceeded (${MAX_PROMPT_NESTING_DEPTH})`,
-          );
+          throw Error(`Maximum nesting depth exceeded (${MAX_PROMPT_NESTING_DEPTH})`);
         }
 
         // Circular dependency check
         if (
           seen.has(currentPrompt.id) ||
-          (currentPrompt.name === parentPrompt.name &&
-            currentPrompt.id !== parentPrompt.id) // ensure that the parent prompt cannot reference a prompt of the same name but different version
+          (currentPrompt.name === parentPrompt.name && currentPrompt.id !== parentPrompt.id) // ensure that the parent prompt cannot reference a prompt of the same name but different version
         ) {
           throw Error(
             `Circular dependency detected involving prompt '${currentPrompt.name}' version ${currentPrompt.version}`,
@@ -350,18 +317,14 @@ export class PromptService {
               where: {
                 projectId,
                 name: dep.name,
-                ...(dep.type === "version"
-                  ? { version: dep.version }
-                  : { labels: { has: dep.label } }),
+                ...(dep.type === "version" ? { version: dep.version } : { labels: { has: dep.label } }),
               },
             });
 
             const logName = `${dep.name} - ${dep.type} ${dep.type === "version" ? dep.version : dep.label}`;
 
-            if (!depPrompt)
-              throw Error(`Prompt dependency not found: ${logName}`);
-            if (depPrompt.type !== "text")
-              throw Error(`Prompt dependency is not a text prompt: ${logName}`);
+            if (!depPrompt) throw Error(`Prompt dependency not found: ${logName}`);
+            if (depPrompt.type !== "text") throw Error(`Prompt dependency is not a text prompt: ${logName}`);
 
             // side-effect: populate adjacency list to return later as well
             graph.dependencies[currentPrompt.id] ??= []; // initializes an empty list if it does not exist yet
@@ -372,20 +335,13 @@ export class PromptService {
             });
 
             // resolve the prompt content recursively
-            const resolvedDepPrompt = await resolve(
-              depPrompt,
-              undefined,
-              level + 1,
-            );
+            const resolvedDepPrompt = await resolve(depPrompt, undefined, level + 1);
 
             const versionPattern = `@@@hanzoPrompt:name=${escapeRegex(depPrompt.name)}\\|version=${escapeRegex(depPrompt.version)}@@@`;
             const labelPatterns = depPrompt.labels.map(
-              (label) =>
-                `@@@hanzoPrompt:name=${escapeRegex(depPrompt.name)}\\|label=${escapeRegex(label)}@@@`,
+              (label) => `@@@hanzoPrompt:name=${escapeRegex(depPrompt.name)}\\|label=${escapeRegex(label)}@@@`,
             );
-            const combinedPattern = [versionPattern, ...labelPatterns].join(
-              "|",
-            );
+            const combinedPattern = [versionPattern, ...labelPatterns].join("|");
             const regex = new RegExp(combinedPattern, "g");
 
             const replaceValue = JSON.stringify(resolvedDepPrompt)

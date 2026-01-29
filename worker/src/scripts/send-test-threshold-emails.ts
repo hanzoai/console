@@ -9,11 +9,7 @@
  *
  */
 
-import {
-  sendUsageThresholdWarningEmail,
-  sendUsageThresholdSuspensionEmail,
-  logger,
-} from "@hanzo/shared/src/server";
+import { sendUsageThresholdWarningEmail, sendUsageThresholdSuspensionEmail, logger } from "@hanzo/shared/src/server";
 import { env } from "../env";
 
 const TEST_EMAILS: string[] = [
@@ -21,8 +17,7 @@ const TEST_EMAILS: string[] = [
   // email@hanzo.com
 ];
 const TEST_ORG_NAME = "Test Organization";
-const BILLING_URL =
-  "http://localhost:3000/organization/test-org-id/settings/billing";
+const BILLING_URL = "http://localhost:3000/organization/test-org-id/settings/billing";
 
 // Calculate a reset date 30 days from now
 const resetDate = new Date();
@@ -33,18 +28,12 @@ const main = async () => {
   // Check if TEST_EMAILS is empty
   if (TEST_EMAILS.length === 0) {
     console.error("\n❌ Error: TEST_EMAILS list is empty!");
-    console.error(
-      "\nPlease add email addresses to the TEST_EMAILS array in this script before running it.",
-    );
-    console.error(
-      "Edit the file at: worker/src/scripts/send-test-threshold-emails.ts\n",
-    );
+    console.error("\nPlease add email addresses to the TEST_EMAILS array in this script before running it.");
+    console.error("Edit the file at: worker/src/scripts/send-test-threshold-emails.ts\n");
     process.exit(1);
   }
 
-  console.log(
-    `Sending test threshold emails to ${TEST_EMAILS.length} recipients`,
-  );
+  console.log(`Sending test threshold emails to ${TEST_EMAILS.length} recipients`);
 
   for (const email of TEST_EMAILS) {
     console.log(`\n📧 Sending to ${email}...`);
@@ -86,9 +75,7 @@ const main = async () => {
     console.log("  ✓ Blocking email sent");
   }
 
-  console.log(
-    `\n✅ All test emails sent successfully to ${TEST_EMAILS.length} recipients`,
-  );
+  console.log(`\n✅ All test emails sent successfully to ${TEST_EMAILS.length} recipients`);
   console.log("Recipients:", TEST_EMAILS.join(", "));
 };
 

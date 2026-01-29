@@ -23,9 +23,7 @@ export const EnvLabel = ({ className }: { className?: string }) => {
       )}
       onClick={() => setIsHidden(true)}
     >
-      {region && ["EU", "US", "HIPAA"].includes(region)
-        ? `PROD-${region}`
-        : region}
+      {region && ["EU", "US", "HIPAA"].includes(region) ? `PROD-${region}` : region}
     </div>
   );
 };

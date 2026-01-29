@@ -23,18 +23,12 @@ const main = async () => {
   // Check if TEST_EMAILS is empty
   if (TEST_EMAILS.length === 0) {
     console.error("\n❌ Error: TEST_EMAILS list is empty!");
-    console.error(
-      "\nPlease add email addresses to the TEST_EMAILS array in this script before running it.",
-    );
-    console.error(
-      "Edit the file at: worker/src/scripts/send-test-spend-alert-emails.ts\n",
-    );
+    console.error("\nPlease add email addresses to the TEST_EMAILS array in this script before running it.");
+    console.error("Edit the file at: worker/src/scripts/send-test-spend-alert-emails.ts\n");
     process.exit(1);
   }
 
-  console.log(
-    `Sending test spend alert emails to ${TEST_EMAILS.length} recipients`,
-  );
+  console.log(`Sending test spend alert emails to ${TEST_EMAILS.length} recipients`);
 
   // Test scenario 1: Production Alert - $100 threshold exceeded
   console.log("\n📧 Sending Production Alert emails...");
@@ -90,9 +84,7 @@ const main = async () => {
   });
   console.log("  ✓ High-Value Alert emails sent");
 
-  console.log(
-    `\n✅ All test spend alert emails sent successfully to ${TEST_EMAILS.length} recipients`,
-  );
+  console.log(`\n✅ All test spend alert emails sent successfully to ${TEST_EMAILS.length} recipients`);
   console.log("Recipients:", TEST_EMAILS.join(", "));
   console.log("\nTest scenarios sent:");
   console.log("  1. Production Alert: $127.45 / $100.00 threshold");

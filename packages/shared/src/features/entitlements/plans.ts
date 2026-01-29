@@ -1,11 +1,5 @@
 // used on organization.cloudConfig.plan
-export const cloudConfigPlans = [
-  "Hobby",
-  "Core",
-  "Pro",
-  "Team",
-  "Enterprise",
-] as const;
+export const cloudConfigPlans = ["Hobby", "Core", "Pro", "Team", "Enterprise"] as const;
 
 export const planLabels = {
   oss: "OSS",
@@ -26,8 +20,6 @@ export const plans = Object.keys(planLabels) as Plan[];
 
 // These functions are kept here to ensure consistency when updating plan names in the future.
 export const isCloudPlan = (plan?: Plan) => plan?.startsWith("cloud");
-export const isSelfHostedPlan = (plan?: Plan) =>
-  plan?.startsWith("self-hosted");
+export const isSelfHostedPlan = (plan?: Plan) => plan?.startsWith("self-hosted");
 
-export const isPlan = (value: string): value is Plan =>
-  plans.includes(value as Plan);
+export const isPlan = (value: string): value is Plan => plans.includes(value as Plan);

@@ -1,10 +1,6 @@
 import { Queue } from "bullmq";
 import { QueueName } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 
 export class MixpanelIntegrationProcessingQueue {

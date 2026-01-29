@@ -60,8 +60,7 @@ const EVENTS_FIELDS = {
   metadata: "mapFromArrays(e.metadata_names, e.metadata_prefixes) as metadata",
 
   // Calculated fields
-  latency:
-    "if(isNull(e.end_time), NULL, date_diff('millisecond', e.start_time, e.end_time)) as latency",
+  latency: "if(isNull(e.end_time), NULL, date_diff('millisecond', e.start_time, e.end_time)) as latency",
   timeToFirstToken:
     "if(isNull(e.completion_start_time), NULL, date_diff('millisecond', e.start_time, e.completion_start_time)) as \"time_to_first_token\"",
 } as const;
@@ -148,26 +147,8 @@ const FIELD_SETS = {
   byIdTimestamps: ["createdAt", "updatedAt", "eventTs"],
 
   // Public API v2 field sets (field groups for selective fetching)
-  core: [
-    "id",
-    "traceId",
-    "startTime",
-    "endTime",
-    "projectId",
-    "parentObservationId",
-    "type",
-  ],
-  basic: [
-    "name",
-    "level",
-    "statusMessage",
-    "version",
-    "environment",
-    "bookmarked",
-    "public",
-    "userId",
-    "sessionId",
-  ],
+  core: ["id", "traceId", "startTime", "endTime", "projectId", "parentObservationId", "type"],
+  basic: ["name", "level", "statusMessage", "version", "environment", "bookmarked", "public", "userId", "sessionId"],
   time: ["completionStartTime", "createdAt", "updatedAt"],
   model: ["providedModelName", "internalModelId", "modelParameters"],
   usage: ["usageDetails", "costDetails", "totalCost"],
@@ -189,29 +170,23 @@ const EVENTS_AGGREGATION_FIELDS = {
   // Aggregated fields
   name: "argMaxIf(trace_name, event_ts, trace_name <> '') AS name",
   timestamp: "min(start_time) as timestamp",
-  environment:
-    "argMaxIf(environment, event_ts, environment <> '') AS environment",
+  environment: "argMaxIf(environment, event_ts, environment <> '') AS environment",
   version: "argMaxIf(version, event_ts, version <> '') AS version",
   session_id: "argMaxIf(session_id, event_ts, session_id <> '') AS session_id",
   user_id: "argMaxIf(user_id, event_ts, user_id <> '') AS user_id",
   input: "argMaxIf(input, event_ts, parent_span_id = '') AS input",
   output: "argMaxIf(output, event_ts, parent_span_id = '') AS output",
-  input_truncated:
-    "argMaxIf(input_truncated, event_ts, parent_span_id = '') AS input_truncated",
-  output_truncated:
-    "argMaxIf(output_truncated, event_ts, parent_span_id = '') AS output_truncated",
-  metadata:
-    "argMaxIf(mapFromArrays(e.metadata_names, e.metadata_prefixes), event_ts, parent_span_id = '') AS metadata",
+  input_truncated: "argMaxIf(input_truncated, event_ts, parent_span_id = '') AS input_truncated",
+  output_truncated: "argMaxIf(output_truncated, event_ts, parent_span_id = '') AS output_truncated",
+  metadata: "argMaxIf(mapFromArrays(e.metadata_names, e.metadata_prefixes), event_ts, parent_span_id = '') AS metadata",
   created_at: "min(created_at) AS created_at",
   updated_at: "max(updated_at) AS updated_at",
   total_cost: "sum(total_cost) AS total_cost",
   latency_milliseconds:
     "date_diff('millisecond', min(start_time), greatest(max(start_time), max(end_time))) AS latency_milliseconds",
-  observation_ids:
-    "groupUniqArrayIf(span_id, span_id <> '') AS observation_ids",
+  observation_ids: "groupUniqArrayIf(span_id, span_id <> '') AS observation_ids",
 
-  bookmarked:
-    "argMaxIf(bookmarked, event_ts, parent_span_id = '') AS bookmarked",
+  bookmarked: "argMaxIf(bookmarked, event_ts, parent_span_id = '') AS bookmarked",
   public: "max(public) AS public",
 
   // Observation-level aggregations for filtering support
@@ -232,9 +207,7 @@ const EVENTS_AGGREGATION_FIELDS = {
  * Field sets for aggregation queries
  */
 const AGGREGATION_FIELD_SETS = {
-  all: Object.keys(EVENTS_AGGREGATION_FIELDS) as Array<
-    keyof typeof EVENTS_AGGREGATION_FIELDS
-  >,
+  all: Object.keys(EVENTS_AGGREGATION_FIELDS) as Array<keyof typeof EVENTS_AGGREGATION_FIELDS>,
 } as const;
 
 /**
@@ -358,10 +331,7 @@ abstract class AbstractCTEQueryBuilder extends AbstractQueryBuilder {
   /**
    * Add a CTE (Common Table Expression) to the query
    */
-  withCTE(
-    name: string,
-    queryWithParams: { query: string; params: Record<string, any> },
-  ): this {
+  withCTE(name: string, queryWithParams: { query: string; params: Record<string, any> }): this {
     this.ctes.push(`${name} AS (${queryWithParams.query})`);
     this.params = { ...this.params, ...queryWithParams.params };
     return this;
@@ -402,9 +372,7 @@ abstract class AbstractCTEQueryBuilder extends AbstractQueryBuilder {
  * Base class for events table query builders.
  * Contains shared logic for building SQL queries against the events table.
  */
-abstract class BaseEventsQueryBuilder<
-  TFields extends Record<string, string>,
-> extends AbstractCTEQueryBuilder {
+abstract class BaseEventsQueryBuilder<TFields extends Record<string, string>> extends AbstractCTEQueryBuilder {
   protected selectFields: Set<string> = new Set();
   protected projectId: string | NoProjectIdType;
 
@@ -500,9 +468,7 @@ abstract class BaseEventsQueryBuilder<
  *
  * const { query, params } = builder.buildWithParams();
  */
-export class EventsQueryBuilder extends BaseEventsQueryBuilder<
-  typeof EVENTS_FIELDS
-> {
+export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIELDS> {
   private ioFields: { truncated: boolean; charLimit?: number } | null = null;
   // Metadata expansion config: null = use truncated (default), string[] = expand specific keys, empty array = expand all
   private metadataExpansionKeys: string[] | null = null;
@@ -572,16 +538,11 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<
       fieldsToExclude.push("input", "output");
     }
     // Only exclude metadata if we have actual keys to expand
-    if (
-      this.metadataExpansionKeys !== null &&
-      this.metadataExpansionKeys.length > 0
-    ) {
+    if (this.metadataExpansionKeys !== null && this.metadataExpansionKeys.length > 0) {
       fieldsToExclude.push("metadata");
     }
 
-    const fieldsToProcess = [...this.selectFields].filter(
-      (f) => !fieldsToExclude.includes(f),
-    );
+    const fieldsToProcess = [...this.selectFields].filter((f) => !fieldsToExclude.includes(f));
 
     const fieldExpressions: string[] = fieldsToProcess.flatMap((fieldKey) => {
       const fieldExpr = EVENTS_FIELDS[fieldKey as keyof typeof EVENTS_FIELDS];
@@ -679,9 +640,7 @@ type AliasedColumns<
  *
  * const { query, params } = builder.buildWithParams();
  */
-export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<
-  typeof EVENTS_AGGREGATION_FIELDS
-> {
+export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_AGGREGATION_FIELDS> {
   constructor(options: { projectId: string }) {
     super(EVENTS_AGGREGATION_FIELDS, options);
   }
@@ -689,12 +648,8 @@ export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<
   /**
    * Add SELECT fields from predefined aggregation field sets
    */
-  selectFieldSet(
-    ...setNames: Array<keyof typeof AGGREGATION_FIELD_SETS>
-  ): this {
-    setNames
-      .flatMap((s) => AGGREGATION_FIELD_SETS[s])
-      .forEach((field) => this.selectFields.add(field));
+  selectFieldSet(...setNames: Array<keyof typeof AGGREGATION_FIELD_SETS>): this {
+    setNames.flatMap((s) => AGGREGATION_FIELD_SETS[s]).forEach((field) => this.selectFields.add(field));
     return this;
   }
 
@@ -712,10 +667,7 @@ export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<
    */
   withStartTimeFrom(startTimeFrom?: string | null): this {
     return this.when(Boolean(startTimeFrom), (b) =>
-      b.whereRaw(
-        `start_time >= {startTimeFrom: DateTime64(3)} - ${OBSERVATIONS_TO_TRACE_INTERVAL}`,
-        { startTimeFrom },
-      ),
+      b.whereRaw(`start_time >= {startTimeFrom: DateTime64(3)} - ${OBSERVATIONS_TO_TRACE_INTERVAL}`, { startTimeFrom }),
     );
   }
 
@@ -804,11 +756,7 @@ export class CTEQueryBuilder<
   withCTEFromBuilder<Name extends string>(
     name: Name,
     builder: { buildWithSchema(): CTEWithSchema },
-  ): CTEQueryBuilder<
-    RegisteredCTEs &
-      Record<Name, ReturnType<typeof builder.buildWithSchema>["schema"]>,
-    Aliases
-  > {
+  ): CTEQueryBuilder<RegisteredCTEs & Record<Name, ReturnType<typeof builder.buildWithSchema>["schema"]>, Aliases> {
     return this.withCTE(name, builder.buildWithSchema());
   }
 
@@ -821,9 +769,7 @@ export class CTEQueryBuilder<
     alias: Alias,
   ): CTEQueryBuilder<RegisteredCTEs, Aliases & Record<Alias, Name>> {
     if (!this.cteSchemas.has(cteName)) {
-      throw new Error(
-        `CTE '${cteName}' not registered. Call withCTE('${cteName}', ...) first.`,
-      );
+      throw new Error(`CTE '${cteName}' not registered. Call withCTE('${cteName}', ...) first.`);
     }
     this.fromClause = cteName;
     this.fromAlias = alias;
@@ -841,9 +787,7 @@ export class CTEQueryBuilder<
     onClause: string,
   ): CTEQueryBuilder<RegisteredCTEs, Aliases & Record<Alias, Name>> {
     if (!this.cteSchemas.has(cteName)) {
-      throw new Error(
-        `CTE '${cteName}' not registered. Call withCTE('${cteName}', ...) first.`,
-      );
+      throw new Error(`CTE '${cteName}' not registered. Call withCTE('${cteName}', ...) first.`);
     }
     this.joins.push(`LEFT JOIN ${cteName} ${alias} ${onClause}`);
     // Type assertion needed because we're changing the type parameter
@@ -864,9 +808,7 @@ export class CTEQueryBuilder<
    *   .selectColumns('t.nonexistent')             // Compile error
    *   .selectColumns('x.id')                      // Compile error - 'x' not registered
    */
-  selectColumns(
-    ...columns: Array<AliasedColumns<RegisteredCTEs, Aliases>>
-  ): this {
+  selectColumns(...columns: Array<AliasedColumns<RegisteredCTEs, Aliases>>): this {
     this.selectExpressions.push(...columns);
     return this;
   }
@@ -889,9 +831,7 @@ export class CTEQueryBuilder<
    */
   protected buildQuery(): string {
     if (!this.fromClause) {
-      throw new Error(
-        "No FROM clause set. Call from() to specify the main CTE.",
-      );
+      throw new Error("No FROM clause set. Call from() to specify the main CTE.");
     }
     if (this.selectExpressions.length === 0) {
       throw new Error("No SELECT expressions. Call select() to add columns.");
@@ -955,11 +895,7 @@ export class EventsAggQueryBuilder extends AbstractCTEQueryBuilder {
   private groupByColumn: string;
   private selectExpression: string;
 
-  constructor(options: {
-    projectId: string;
-    groupByColumn: string;
-    selectExpression: string;
-  }) {
+  constructor(options: { projectId: string; groupByColumn: string; selectExpression: string }) {
     super();
     this.projectId = options.projectId;
     this.groupByColumn = options.groupByColumn;
@@ -992,10 +928,7 @@ export class EventsAggQueryBuilder extends AbstractCTEQueryBuilder {
     }
 
     // WHERE - project_id filter added automatically
-    const allWhereClauses = [
-      "e.project_id = {projectId: String}",
-      ...this.whereClauses,
-    ];
+    const allWhereClauses = ["e.project_id = {projectId: String}", ...this.whereClauses];
     parts.push(`WHERE ${allWhereClauses.join("\n  AND ")}`);
 
     // GROUP BY

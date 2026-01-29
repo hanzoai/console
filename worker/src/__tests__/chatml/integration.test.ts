@@ -96,24 +96,18 @@ describe("ChatML Integration", () => {
   it("should handle legacy completion format {completion: string}", () => {
     const input = [{ role: "user", content: "Write a haiku" }];
     const output = {
-      completion:
-        "Cherry blossoms fall\nSoftly on the morning dew\nSpring has come at last",
+      completion: "Cherry blossoms fall\nSoftly on the morning dew\nSpring has come at last",
     };
 
     const inResult = normalizeInput(input);
     const outResult = normalizeOutput(output);
     const outputClean = cleanLegacyOutput(output, output);
-    const allMessages = combineInputOutputMessages(
-      inResult,
-      outResult,
-      outputClean,
-    );
+    const allMessages = combineInputOutputMessages(inResult, outResult, outputClean);
 
     expect(inResult.success).toBe(true);
     expect(allMessages).toHaveLength(2);
     expect(allMessages[1].json).toEqual({
-      completion:
-        "Cherry blossoms fall\nSoftly on the morning dew\nSpring has come at last",
+      completion: "Cherry blossoms fall\nSoftly on the morning dew\nSpring has come at last",
     });
   });
 
@@ -196,8 +190,7 @@ describe("ChatML Integration", () => {
     expect(inResult.data[0].content).toBe("What is Hanzo?");
 
     expect(outResult.success).toBe(true);
-    if (!outResult.data)
-      throw new Error("Expected outResult.data to be defined");
+    if (!outResult.data) throw new Error("Expected outResult.data to be defined");
     expect(outResult.data).toHaveLength(1);
     expect(outResult.data[0].role).toBe("model");
     expect(outResult.data[0].content).toContain("Hanzo");
@@ -382,9 +375,7 @@ describe("ChatML Integration", () => {
     if (!inResult.data) throw new Error("Expected data to be defined");
     expect(inResult.data).toHaveLength(3);
     expect(inResult.data[0].role).toBe("user");
-    expect(inResult.data[0].content).toBe(
-      "Search the web for 'example' and summarize.",
-    );
+    expect(inResult.data[0].content).toBe("Search the web for 'example' and summarize.");
     expect(inResult.data[1].role).toBe("assistant");
     expect(inResult.data[2].role).toBe("tool");
   });
@@ -408,9 +399,7 @@ describe("ChatML Integration", () => {
       framework: "generic",
     });
     expect(resultWithFramework.success).toBe(true);
-    expect(resultWithFramework.data?.[0].content).toBe(
-      "What's the weather like in Portland?",
-    );
+    expect(resultWithFramework.data?.[0].content).toBe("What's the weather like in Portland?");
 
     // Test automatic detection (should use generic adapter since OpenAI/Gemini reject parts)
     const inResult = normalizeInput(createInput(), {
@@ -421,9 +410,7 @@ describe("ChatML Integration", () => {
     if (!inResult.data) throw new Error("Expected data to be defined");
     expect(inResult.data).toHaveLength(1);
     expect(inResult.data[0].role).toBe("user");
-    expect(inResult.data[0].content).toBe(
-      "What's the weather like in Portland?",
-    );
+    expect(inResult.data[0].content).toBe("What's the weather like in Portland?");
   });
 
   it("should handle Microsoft Agent framework format with parts-based tool calls", () => {
@@ -445,10 +432,7 @@ describe("ChatML Integration", () => {
         parts: [
           {
             type: "tool_call",
-            id: [
-              "run_9guMCbt68iSVgtsx6WdKMA18",
-              "call_Sz1QP8T7fuJkIECGDLFWOorq",
-            ],
+            id: ["run_9guMCbt68iSVgtsx6WdKMA18", "call_Sz1QP8T7fuJkIECGDLFWOorq"],
             name: "get_weather",
             arguments: {
               location: "Portland",
@@ -461,10 +445,7 @@ describe("ChatML Integration", () => {
         parts: [
           {
             type: "tool_call_response",
-            id: [
-              "run_9guMCbt68iSVgtsx6WdKMA18",
-              "call_Sz1QP8T7fuJkIECGDLFWOorq",
-            ],
+            id: ["run_9guMCbt68iSVgtsx6WdKMA18", "call_Sz1QP8T7fuJkIECGDLFWOorq"],
             response: "The weather in Portland is stormy with a high of 19°C.",
           },
         ],
@@ -474,8 +455,7 @@ describe("ChatML Integration", () => {
         parts: [
           {
             type: "text",
-            content:
-              "The weather in Portland is currently stormy with a high temperature of 19°C.",
+            content: "The weather in Portland is currently stormy with a high temperature of 19°C.",
           },
         ],
       },
@@ -495,29 +475,20 @@ describe("ChatML Integration", () => {
     if (!inResult.data) throw new Error("Expected inResult.data to be defined");
     expect(inResult.data).toHaveLength(1);
     expect(inResult.data[0].role).toBe("user");
-    expect(inResult.data[0].content).toBe(
-      "What's the weather like in Portland?",
-    );
+    expect(inResult.data[0].content).toBe("What's the weather like in Portland?");
 
     expect(outResult.success).toBe(true);
-    if (!outResult.data)
-      throw new Error("Expected outResult.data to be defined");
+    if (!outResult.data) throw new Error("Expected outResult.data to be defined");
     expect(outResult.data).toHaveLength(3);
     expect(outResult.data[0].role).toBe("assistant");
     // Tool calls should be extracted to tool_calls field (normalized format)
     expect(outResult.data[0].tool_calls).toBeDefined();
     expect(outResult.data[0].tool_calls?.[0].name).toBe("get_weather");
-    expect(outResult.data[0].tool_calls?.[0].id).toBe(
-      "call_Sz1QP8T7fuJkIECGDLFWOorq",
-    );
-    expect(outResult.data[0].tool_calls?.[0].arguments).toBe(
-      '{"location":"Portland"}',
-    );
+    expect(outResult.data[0].tool_calls?.[0].id).toBe("call_Sz1QP8T7fuJkIECGDLFWOorq");
+    expect(outResult.data[0].tool_calls?.[0].arguments).toBe('{"location":"Portland"}');
 
     expect(outResult.data[1].role).toBe("tool");
-    expect(outResult.data[1].content).toBe(
-      "The weather in Portland is stormy with a high of 19°C.",
-    );
+    expect(outResult.data[1].content).toBe("The weather in Portland is stormy with a high of 19°C.");
 
     expect(outResult.data[2].role).toBe("assistant");
     expect(outResult.data[2].content).toBe(

@@ -30,9 +30,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
 
   // Skip if project no longer exists, has no retention, or retention is set to 0 (indefinite)
   if (!project || !project.retentionDays || project.retentionDays === 0) {
-    logger.info(
-      `[Data Retention] Skipping project ${projectId} - retention disabled or set to 0`,
-    );
+    logger.info(`[Data Retention] Skipping project ${projectId} - retention disabled or set to 0`);
     return;
   }
 
@@ -40,10 +38,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
   const currentRetention = project.retentionDays;
 
   if (span) {
-    span.setAttribute(
-      "messaging.bullmq.job.input.retentionId",
-      currentRetention,
-    );
+    span.setAttribute("messaging.bullmq.job.input.retentionId", currentRetention);
   }
 
   // Log if retention value changed since job was queued
@@ -53,15 +48,11 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
     );
   }
 
-  const cutoffDate = new Date(
-    Date.now() - currentRetention * 24 * 60 * 60 * 1000,
-  );
+  const cutoffDate = new Date(Date.now() - currentRetention * 24 * 60 * 60 * 1000);
 
   // Delete media files if bucket is configured
   if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
-    logger.info(
-      `[Data Retention] Deleting media files older than ${currentRetention} days for project ${projectId}`,
-    );
+    logger.info(`[Data Retention] Deleting media files older than ${currentRetention} days for project ${projectId}`);
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
         id: true,
@@ -77,13 +68,9 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
         },
       },
     });
-    const mediaStorageClient = getS3MediaStorageClient(
-      env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-    );
+    const mediaStorageClient = getS3MediaStorageClient(env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
     // Delete from Cloud Storage
-    await mediaStorageClient.deleteFiles(
-      mediaFilesToDelete.map((f) => f.bucketPath),
-    );
+    await mediaStorageClient.deleteFiles(mediaFilesToDelete.map((f) => f.bucketPath));
     // Delete from postgres. We should automatically remove the corresponding traceMedia and observationMedia
     await prisma.media.deleteMany({
       where: {
@@ -93,9 +80,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
         projectId,
       },
     });
-    logger.info(
-      `[Data Retention] Deleted ${mediaFilesToDelete.length} media files for project ${projectId}`,
-    );
+    logger.info(`[Data Retention] Deleted ${mediaFilesToDelete.length} media files for project ${projectId}`);
   }
 
   // Delete ClickHouse (TTL / Delete Queries)
@@ -104,10 +89,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
   );
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
-      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
-          projectId,
-          cutoffDate,
-        )
+      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(projectId, cutoffDate)
       : Promise.resolve(),
     deleteTracesOlderThanDays(projectId, cutoffDate),
     deleteObservationsOlderThanDays(projectId, cutoffDate),

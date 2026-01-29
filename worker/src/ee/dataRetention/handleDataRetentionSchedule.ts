@@ -1,8 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  DataRetentionProcessingQueue,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { DataRetentionProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handleDataRetentionSchedule = async () => {
@@ -18,8 +15,7 @@ export const handleDataRetentionSchedule = async () => {
     },
   });
 
-  const dataRetentionProcessingQueue =
-    DataRetentionProcessingQueue.getInstance();
+  const dataRetentionProcessingQueue = DataRetentionProcessingQueue.getInstance();
   if (!dataRetentionProcessingQueue) {
     throw new Error("DataRetentionProcessingQueue not initialized");
   }

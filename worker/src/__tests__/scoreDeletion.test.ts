@@ -47,9 +47,7 @@ describe("score deletion", () => {
     const { projectId } = await createOrgProjectAndApiKey();
 
     const scoreId = randomUUID();
-    await createScoresCh([
-      createTraceScore({ id: scoreId, project_id: projectId }),
-    ]);
+    await createScoresCh([createTraceScore({ id: scoreId, project_id: projectId })]);
 
     const fileType = "application/json";
     const data = JSON.stringify({ hello: "world" });

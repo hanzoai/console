@@ -25,10 +25,7 @@ type CorrectedOutputDiffDialogProps = {
  * @param strictJsonMode - Whether to enforce JSON formatting
  * @returns Formatted string for display
  */
-const formatOutputForDiff = (
-  output: unknown,
-  strictJsonMode: boolean,
-): string => {
+const formatOutputForDiff = (output: unknown, strictJsonMode: boolean): string => {
   if (output === null || output === undefined) {
     return "";
   }
@@ -53,31 +50,26 @@ const formatOutputForDiff = (
   return typeof output === "string" ? output : JSON.stringify(output, null, 2);
 };
 
-export const CorrectedOutputDiffDialog: React.FC<
-  CorrectedOutputDiffDialogProps
-> = ({ isOpen, setIsOpen, actualOutput, correctedOutput, strictJsonMode }) => {
+export const CorrectedOutputDiffDialog: React.FC<CorrectedOutputDiffDialogProps> = ({
+  isOpen,
+  setIsOpen,
+  actualOutput,
+  correctedOutput,
+  strictJsonMode,
+}) => {
   // Format both outputs for comparison
-  const formattedActualOutput = formatOutputForDiff(
-    actualOutput,
-    strictJsonMode,
-  );
-  const formattedCorrectedOutput = formatOutputForDiff(
-    correctedOutput,
-    strictJsonMode,
-  );
+  const formattedActualOutput = formatOutputForDiff(actualOutput, strictJsonMode);
+  const formattedCorrectedOutput = formatOutputForDiff(correctedOutput, strictJsonMode);
 
   // Check if there's no original output to compare
-  const hasNoOriginalOutput =
-    actualOutput === null || actualOutput === undefined;
+  const hasNoOriginalOutput = actualOutput === null || actualOutput === undefined;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent size="xl">
         <DialogHeader>
           <DialogTitle>Output Correction Diff</DialogTitle>
-          <DialogDescription>
-            Compare the original output with the corrected version
-          </DialogDescription>
+          <DialogDescription>Compare the original output with the corrected version</DialogDescription>
         </DialogHeader>
 
         <DialogBody>
@@ -85,9 +77,7 @@ export const CorrectedOutputDiffDialog: React.FC<
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <div className="text-muted-foreground">
                 <p className="text-lg font-medium">No original output</p>
-                <p className="mt-2 text-sm">
-                  There is no original output to compare with the correction.
-                </p>
+                <p className="mt-2 text-sm">There is no original output to compare with the correction.</p>
               </div>
             </div>
           ) : (

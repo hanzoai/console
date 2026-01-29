@@ -7,9 +7,8 @@ import { logger } from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
 
 export const handleCloudFreeTierUsageThresholdJob = async (job: Job) => {
-  logger.debug(
-    "[FREE TIER USAGE THRESHOLDS] Usage thresholds are not available in community edition",
-    { jobId: job.id }
-  );
+  logger.debug("[FREE TIER USAGE THRESHOLDS] Usage thresholds are not available in community edition", {
+    jobId: job.id,
+  });
   return;
 };

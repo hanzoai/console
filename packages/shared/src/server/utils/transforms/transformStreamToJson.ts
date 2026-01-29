@@ -7,11 +7,7 @@ export function transformStreamToJson(): Transform {
   return new Transform({
     objectMode: true,
 
-    transform(
-      row: any,
-      encoding: BufferEncoding,
-      callback: TransformCallback,
-    ): void {
+    transform(row: any, encoding: BufferEncoding, callback: TransformCallback): void {
       if (isFirstElement) {
         this.push("["); // Push the opening bracket for the first element
         isFirstElement = false; // Reset the flag after the first element

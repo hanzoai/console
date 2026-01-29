@@ -18,10 +18,7 @@ const evalTraceFilterColumns = [
 
 function getColumnDefinition(column: string) {
   const columnDef = tracesTableUiColumnDefinitions.find(
-    (col) =>
-      col.uiTableId === column ||
-      col.uiTableName === column ||
-      col.clickhouseSelect === column,
+    (col) => col.uiTableId === column || col.uiTableName === column || col.clickhouseSelect === column,
   );
   if (!columnDef) {
     throw new Error(`Unhandled column for trace filter: ${column}`);
@@ -33,10 +30,7 @@ function getColumnDefinition(column: string) {
  * Maps trace filter column names to trace object field values.
  * Uses the centralized table mapping to ensure consistency with UI column definitions.
  */
-export function mapTraceFilterColumn(
-  trace: TraceDomain,
-  column: string,
-): unknown {
+export function mapTraceFilterColumn(trace: TraceDomain, column: string): unknown {
   const columnDef = getColumnDefinition(column);
   switch (columnDef.uiTableId) {
     case "id":
@@ -76,11 +70,7 @@ export function requiresDatabaseLookup(filter: FilterState): boolean {
   }
 
   for (const condition of filter) {
-    if (
-      !evalTraceFilterColumns.some(
-        (c) => c === getColumnDefinition(condition.column).uiTableId,
-      )
-    ) {
+    if (!evalTraceFilterColumns.some((c) => c === getColumnDefinition(condition.column).uiTableId)) {
       return true;
     }
   }

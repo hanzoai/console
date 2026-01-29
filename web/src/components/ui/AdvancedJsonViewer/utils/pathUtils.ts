@@ -48,15 +48,9 @@ export function getPathKey(path: string): string | number {
  * Check if one path is an ancestor of another
  * @example isAncestorPath("root.users", "root.users.0.name") => true
  */
-export function isAncestorPath(
-  ancestorPath: string,
-  descendantPath: string,
-): boolean {
+export function isAncestorPath(ancestorPath: string, descendantPath: string): boolean {
   if (ancestorPath === descendantPath) return false;
-  return (
-    descendantPath.startsWith(ancestorPath + ".") ||
-    descendantPath === ancestorPath
-  );
+  return descendantPath.startsWith(ancestorPath + ".") || descendantPath === ancestorPath;
 }
 
 /**
@@ -157,10 +151,7 @@ export function comparePaths(a: string, b: string): number {
  * Get child paths of a parent path from a list of paths
  * Only returns direct children, not descendants
  */
-export function getChildPaths(
-  parentPath: string,
-  allPaths: string[],
-): string[] {
+export function getChildPaths(parentPath: string, allPaths: string[]): string[] {
   return allPaths.filter((path) => isDirectChild(parentPath, path));
 }
 
@@ -168,10 +159,7 @@ export function getChildPaths(
  * Get descendant paths of an ancestor path from a list of paths
  * Returns all descendants, not just direct children
  */
-export function getDescendantPaths(
-  ancestorPath: string,
-  allPaths: string[],
-): string[] {
+export function getDescendantPaths(ancestorPath: string, allPaths: string[]): string[] {
   return allPaths.filter((path) => isAncestorPath(ancestorPath, path));
 }
 
@@ -187,10 +175,7 @@ export function buildPath(parentPath: string, key: string | number): string {
  * Check if any ancestor of a path is collapsed
  * Used to determine if a row should be visible
  */
-export function hasCollapsedAncestor(
-  path: string,
-  collapsedPaths: Set<string>,
-): boolean {
+export function hasCollapsedAncestor(path: string, collapsedPaths: Set<string>): boolean {
   const ancestors = getAncestorPaths(path);
 
   for (const ancestor of ancestors) {

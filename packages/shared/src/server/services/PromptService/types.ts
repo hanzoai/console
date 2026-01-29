@@ -7,20 +7,14 @@ export type PromptResult = Prompt & {
 export type PromptParams = {
   projectId: string;
   promptName: string;
-} & (
-  | { version: number; label: undefined }
-  | { version: null | undefined; label: string }
-);
+} & ({ version: number; label: undefined } | { version: null | undefined; label: string });
 
 export enum PromptServiceMetrics {
   PromptCacheHit = "prompt_cache_hit",
   PromptCacheMiss = "prompt_cache_miss",
 }
 
-export type PartialPrompt = Pick<
-  Prompt,
-  "id" | "prompt" | "name" | "version" | "labels"
->;
+export type PartialPrompt = Pick<Prompt, "id" | "prompt" | "name" | "version" | "labels">;
 
 export type PromptReference = Pick<Prompt, "id" | "version" | "name">;
 

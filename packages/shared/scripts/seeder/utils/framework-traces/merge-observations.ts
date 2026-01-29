@@ -14,9 +14,7 @@ import { readFileSync, writeFileSync } from "fs";
 const [baseFile, detailedFile, outputFile] = process.argv.slice(2);
 
 if (!baseFile || !detailedFile || !outputFile) {
-  console.error(
-    "Usage: ts-node merge-observations.ts <base-file> <detailed-obs-file> <output-file>",
-  );
+  console.error("Usage: ts-node merge-observations.ts <base-file> <detailed-obs-file> <output-file>");
   process.exit(1);
 }
 

@@ -25,10 +25,7 @@ export class DatabaseReadStream<EntityType> extends Readable {
   constructor(
     // the delegate function takes care of querying the database in a paginated manner
 
-    private queryDelegate: (
-      pageSize: number,
-      offset: number,
-    ) => Promise<Array<EntityType>>,
+    private queryDelegate: (pageSize: number, offset: number) => Promise<Array<EntityType>>,
     private pageSize: number,
     private maxRecords?: number,
   ) {

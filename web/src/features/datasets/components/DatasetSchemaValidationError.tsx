@@ -20,9 +20,11 @@ type DatasetSchemaValidationErrorProps = {
   errors: ValidationError[];
 };
 
-export const DatasetSchemaValidationError: React.FC<
-  DatasetSchemaValidationErrorProps
-> = ({ projectId, datasetId, errors }) => {
+export const DatasetSchemaValidationError: React.FC<DatasetSchemaValidationErrorProps> = ({
+  projectId,
+  datasetId,
+  errors,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const errorCount = errors.length;
@@ -30,9 +32,7 @@ export const DatasetSchemaValidationError: React.FC<
 
   return (
     <Alert variant="destructive" className="mt-4">
-      <AlertTitle className="text-base font-semibold">
-        Schema Validation Failed
-      </AlertTitle>
+      <AlertTitle className="text-base font-semibold">Schema Validation Failed</AlertTitle>
       <AlertDescription className="mt-2 space-y-3">
         <p className="text-sm">
           {hasMoreThan10
@@ -47,11 +47,7 @@ export const DatasetSchemaValidationError: React.FC<
           onClick={() => setIsExpanded(!isExpanded)}
           className="h-auto p-0 text-sm font-medium hover:bg-transparent"
         >
-          {isExpanded ? (
-            <ChevronDown className="mr-1 h-4 w-4" />
-          ) : (
-            <ChevronRight className="mr-1 h-4 w-4" />
-          )}
+          {isExpanded ? <ChevronDown className="mr-1 h-4 w-4" /> : <ChevronRight className="mr-1 h-4 w-4" />}
           {isExpanded ? "Hide" : "Show"} error details
         </Button>
 
@@ -64,9 +60,7 @@ export const DatasetSchemaValidationError: React.FC<
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-muted-foreground">
-                      #{idx + 1}
-                    </span>
+                    <span className="font-mono text-xs text-muted-foreground">#{idx + 1}</span>
                     <Link
                       href={`/project/${projectId}/datasets/${datasetId}/items/${error.datasetItemId}`}
                       target="_blank"
@@ -85,10 +79,7 @@ export const DatasetSchemaValidationError: React.FC<
                 <ul className="ml-6 space-y-1 text-sm">
                   {error.errors.map((err, errIdx) => (
                     <li key={errIdx} className="text-destructive">
-                      <span className="font-mono text-xs text-muted-foreground">
-                        Path {err.path}
-                      </span>
-                      : {err.message}
+                      <span className="font-mono text-xs text-muted-foreground">Path {err.path}</span>: {err.message}
                     </li>
                   ))}
                 </ul>
@@ -97,8 +88,7 @@ export const DatasetSchemaValidationError: React.FC<
 
             {hasMoreThan10 && (
               <p className="pt-2 text-xs text-muted-foreground">
-                Fix these errors to see if there are additional validation
-                issues.
+                Fix these errors to see if there are additional validation issues.
               </p>
             )}
           </div>

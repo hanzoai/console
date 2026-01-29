@@ -13,13 +13,9 @@ export type HanzoContextProps = {
  * the supplied props (headers, userId, projectId). Existing baggage
  * entries are preserved.
  */
-export const contextWithHanzoProps = (
-  props: HanzoContextProps,
-): opentelemetry.Context => {
+export const contextWithHanzoProps = (props: HanzoContextProps): opentelemetry.Context => {
   const ctx = opentelemetry.context.active();
-  let baggage =
-    opentelemetry.propagation.getBaggage(ctx) ??
-    opentelemetry.propagation.createBaggage();
+  let baggage = opentelemetry.propagation.getBaggage(ctx) ?? opentelemetry.propagation.createBaggage();
 
   if (props.headers) {
     (env.HANZO_LOG_PROPAGATED_HEADERS as string[]).forEach((name) => {
@@ -33,10 +29,7 @@ export const contextWithHanzoProps = (
 
     // get x-hanzo-xxx headers and add them to the span
     Object.keys(props.headers).forEach((name) => {
-      if (
-        name.toLowerCase().startsWith("x-hanzo") ||
-        name.toLowerCase().startsWith("x_hanzo")
-      ) {
+      if (name.toLowerCase().startsWith("x-hanzo") || name.toLowerCase().startsWith("x_hanzo")) {
         const value = props.headers![name];
         if (!value) return;
         const strValue = Array.isArray(value) ? JSON.stringify(value) : value;

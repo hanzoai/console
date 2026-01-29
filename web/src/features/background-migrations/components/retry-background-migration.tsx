@@ -1,11 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { RotateCcw } from "lucide-react";
@@ -23,21 +19,20 @@ export function RetryBackgroundMigration({
   const [adminApiKey, setAdminApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const mutRetryBackgroundMigration =
-    api.backgroundMigrations.retry.useMutation({
-      onSuccess: () => {
-        void utils.backgroundMigrations.invalidate();
-        toast.success("Migration scheduled for retry");
-        setIsOpen(false);
-        setAdminApiKey("");
-      },
-      onError: (error) => {
-        toast.error(error?.message || "Failed to retry migration");
-      },
-      onSettled: () => {
-        setIsLoading(false);
-      },
-    });
+  const mutRetryBackgroundMigration = api.backgroundMigrations.retry.useMutation({
+    onSuccess: () => {
+      void utils.backgroundMigrations.invalidate();
+      toast.success("Migration scheduled for retry");
+      setIsOpen(false);
+      setAdminApiKey("");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to retry migration");
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
+  });
 
   const handleRetry = async () => {
     if (!adminApiKey.trim()) {
@@ -63,12 +58,9 @@ export function RetryBackgroundMigration({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-96">
-        <h2 className="text-md mb-3 font-semibold">
-          Retry Background Migration
-        </h2>
+        <h2 className="text-md mb-3 font-semibold">Retry Background Migration</h2>
         <p className="mb-4 text-sm">
-          This action schedules the migration for retry. Restart the worker
-          containers to re-initiate the migration.
+          This action schedules the migration for retry. Restart the worker containers to re-initiate the migration.
         </p>
 
         <div className="mb-4">
@@ -88,8 +80,7 @@ export function RetryBackgroundMigration({
             name="admin-api-key"
           />
           <p className="mt-1 text-xs text-muted-foreground">
-            Required for security. This key must match your ADMIN_API_KEY
-            environment variable{" ("}
+            Required for security. This key must match your ADMIN_API_KEY environment variable{" ("}
             <a
               href="https://hanzo.com/self-hosting/administration/organization-management-api#authentication"
               target="_blank"
@@ -114,13 +105,7 @@ export function RetryBackgroundMigration({
           >
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="default"
-            loading={isLoading}
-            onClick={handleRetry}
-            disabled={isLoading}
-          >
+          <Button type="button" variant="default" loading={isLoading} onClick={handleRetry} disabled={isLoading}>
             Retry Migration
           </Button>
         </div>

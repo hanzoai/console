@@ -48,8 +48,7 @@ function getSdkInfoFromResourceSpans(resourceSpans: ResourceSpan): SdkInfo {
     // Extract telemetry SDK language from resource attributes
     const resourceAttributes = resourceSpans?.resource?.attributes ?? [];
     const telemetrySdkLanguage =
-      resourceAttributes.find((attr) => attr.key === "telemetry.sdk.language")
-        ?.value?.stringValue ?? null;
+      resourceAttributes.find((attr) => attr.key === "telemetry.sdk.language")?.value?.stringValue ?? null;
 
     return { scopeName, scopeVersion, telemetrySdkLanguage };
   } catch (error) {
@@ -66,10 +65,7 @@ function getSdkInfoFromResourceSpans(resourceSpans: ResourceSpan): SdkInfo {
  * - Python SDK: scope_version >= 3.9.0
  * - JS/JavaScript SDK: scope_version >= 4.4.0
  */
-function checkSdkVersionRequirements(
-  sdkInfo: SdkInfo,
-  isSdkExperimentBatch: boolean,
-): boolean {
+function checkSdkVersionRequirements(sdkInfo: SdkInfo, isSdkExperimentBatch: boolean): boolean {
   const { scopeName, scopeVersion, telemetrySdkLanguage } = sdkInfo;
 
   // Must be a Hanzo SDK
@@ -89,21 +85,14 @@ function checkSdkVersionRequirements(
     }
 
     // JS/JavaScript SDK >= 4.4.0
-    if (
-      (telemetrySdkLanguage === "js" ||
-        telemetrySdkLanguage === "javascript") &&
-      isSdkExperimentBatch
-    ) {
+    if ((telemetrySdkLanguage === "js" || telemetrySdkLanguage === "javascript") && isSdkExperimentBatch) {
       const comparison = compareVersions(scopeVersion, "v4.4.0");
       return comparison === null; // null means current >= latest
     }
 
     return false;
   } catch (error) {
-    logger.warn(
-      `Failed to parse SDK version ${scopeVersion} for language ${telemetrySdkLanguage}`,
-      error,
-    );
+    logger.warn(`Failed to parse SDK version ${scopeVersion} for language ${telemetrySdkLanguage}`, error);
     return false;
   }
 }
@@ -120,14 +109,8 @@ export const otelIngestionQueueProcessor: Processor = async (
     const span = getCurrentSpan();
     if (span) {
       span.setAttribute("messaging.bullmq.job.input.id", job.data.id);
-      span.setAttribute(
-        "messaging.bullmq.job.input.projectId",
-        job.data.payload.authCheck.scope.projectId,
-      );
-      span.setAttribute(
-        "messaging.bullmq.job.input.fileKey",
-        job.data.payload.data.fileKey,
-      );
+      span.setAttribute("messaging.bullmq.job.input.projectId", job.data.payload.authCheck.scope.projectId);
+      span.setAttribute("messaging.bullmq.job.input.fileKey", job.data.payload.data.fileKey);
     }
     logger.debug(`Processing ${fileKey} for project ${projectId}`);
 
@@ -137,9 +120,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     // Easy change, but needs alignment.
 
     // Download file from blob storage
-    const resourceSpans = await getS3EventStorageClient(
-      env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-    ).download(fileKey);
+    const resourceSpans = await getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).download(fileKey);
 
     recordHistogram(
       "hanzo.ingestion.s3_file_size_bytes",
@@ -156,13 +137,10 @@ export const otelIngestionQueueProcessor: Processor = async (
       publicKey,
     });
     const parsedSpans = JSON.parse(resourceSpans);
-    const events: IngestionEventType[] =
-      await processor.processToIngestionEvents(parsedSpans);
+    const events: IngestionEventType[] = await processor.processToIngestionEvents(parsedSpans);
     // Here, we split the events into observations and non-observations.
     // Observations go into the IngestionService directly whereas the non-observations make another run through the processEventBatch method.
-    const traces = events.filter(
-      (e) => getClickhouseEntityType(e.type) !== "observation",
-    );
+    const traces = events.filter((e) => getClickhouseEntityType(e.type) !== "observation");
     // We need to parse each incoming observation through our ingestion schema to make use of its included transformations.
     const ingestionSchema = createIngestionEventSchema();
     const observations = events
@@ -170,10 +148,7 @@ export const otelIngestionQueueProcessor: Processor = async (
       .map((o) => ingestionSchema.safeParse(o))
       .flatMap((o) => {
         if (!o.success) {
-          logger.warn(
-            `Failed to parse otel observation for project ${projectId} in ${fileKey}: ${o.error}`,
-            o.error,
-          );
+          logger.warn(`Failed to parse otel observation for project ${projectId} in ${fileKey}: ${o.error}`, o.error);
           return [];
         }
         return [o.data];
@@ -185,26 +160,15 @@ export const otelIngestionQueueProcessor: Processor = async (
     });
     // Record more stats specific to the Otel processing
     recordDistribution("hanzo.ingestion.otel.trace_count", traces.length);
-    recordDistribution(
-      "hanzo.ingestion.otel.observation_count",
-      observations.length,
-    );
+    recordDistribution("hanzo.ingestion.otel.observation_count", observations.length);
     span?.setAttribute("hanzo.ingestion.otel.trace_count", traces.length);
-    span?.setAttribute(
-      "hanzo.ingestion.otel.observation_count",
-      observations.length,
-    );
+    span?.setAttribute("hanzo.ingestion.otel.observation_count", observations.length);
 
     // Ensure required infra config is present
     if (!redis) throw new Error("Redis not available");
     if (!prisma) throw new Error("Prisma not available");
 
-    const ingestionService = new IngestionService(
-      redis,
-      prisma,
-      ClickhouseWriter.getInstance(),
-      clickhouseClient(),
-    );
+    const ingestionService = new IngestionService(redis, prisma, ClickhouseWriter.getInstance(), clickhouseClient());
 
     // Decide whether observations should be processed via new flow (directly to events table)
     // or via the dual write (staging table and batch job to events).
@@ -222,10 +186,7 @@ export const otelIngestionQueueProcessor: Processor = async (
       parsedSpans.length > 0
         ? getSdkInfoFromResourceSpans(parsedSpans[0])
         : { scopeName: null, scopeVersion: null, telemetrySdkLanguage: null };
-    const useDirectEventWrite = checkSdkVersionRequirements(
-      sdkInfo,
-      hasExperimentEnvironment,
-    );
+    const useDirectEventWrite = checkSdkVersionRequirements(sdkInfo, hasExperimentEnvironment);
 
     const shouldForwardToEventsTable =
       !useDirectEventWrite &&
@@ -260,15 +221,10 @@ export const otelIngestionQueueProcessor: Processor = async (
 
     // If inserts into the events table are enabled AND observations qualify for direct write,
     // run the dedicated processing for the otel spans and move them into the dedicated IngestionService processor.
-    if (
-      env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" &&
-      useDirectEventWrite
-    ) {
+    if (env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" && useDirectEventWrite) {
       try {
         const events = processor.processToEvent(parsedSpans);
-        await Promise.all(
-          events.map((e) => ingestionService.writeEvent(e, fileKey)),
-        );
+        await Promise.all(events.map((e) => ingestionService.writeEvent(e, fileKey)));
       } catch (e) {
         traceException(e); // Mark span as errored
         logger.warn(`Failed to process events for ${projectId}: ${e}`, e);
@@ -282,10 +238,7 @@ export const otelIngestionQueueProcessor: Processor = async (
       return;
     }
 
-    logger.error(
-      `Failed job otel ingestion processing for ${job.data.payload.authCheck.scope.projectId}`,
-      e,
-    );
+    logger.error(`Failed job otel ingestion processing for ${job.data.payload.authCheck.scope.projectId}`, e);
     traceException(e);
     throw e;
   }

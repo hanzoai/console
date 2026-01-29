@@ -19,9 +19,7 @@ const NO_JOB_CONFIG_PREFIX = "hanzo:eval:no-job-configs";
  * @param projectId - The project ID to check cache for
  * @returns Promise<boolean> - true if no eval job configs present
  */
-export const hasNoJobConfigsCache = async (
-  projectId: string,
-): Promise<boolean> => {
+export const hasNoJobConfigsCache = async (projectId: string): Promise<boolean> => {
   if (!redis) {
     return false;
   }
@@ -43,9 +41,7 @@ export const hasNoJobConfigsCache = async (
  *
  * @param projectId - The project ID to cache
  */
-export const setNoJobConfigsCache = async (
-  projectId: string,
-): Promise<void> => {
+export const setNoJobConfigsCache = async (projectId: string): Promise<void> => {
   if (!redis) {
     return;
   }
@@ -65,9 +61,7 @@ export const setNoJobConfigsCache = async (
  *
  * @param projectId - The project ID to clear cache for
  */
-export const clearNoJobConfigsCache = async (
-  projectId: string,
-): Promise<void> => {
+export const clearNoJobConfigsCache = async (projectId: string): Promise<void> => {
   if (!redis) {
     return;
   }

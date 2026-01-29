@@ -1,9 +1,5 @@
 import { prisma } from "../../../db";
-import {
-  HanzoConflictError,
-  HanzoNotFoundError,
-  type OrderByState,
-} from "../../../";
+import { HanzoConflictError, HanzoNotFoundError, type OrderByState } from "../../../";
 import {
   CreateWidgetInput,
   WidgetDomain,
@@ -37,9 +33,7 @@ export class DashboardService {
         where: {
           OR: [{ projectId }, { projectId: null }],
         },
-        orderBy: orderBy
-          ? [{ [orderBy.column]: orderBy.order.toLowerCase() }]
-          : [{ updatedAt: "desc" }],
+        orderBy: orderBy ? [{ [orderBy.column]: orderBy.order.toLowerCase() }] : [{ updatedAt: "desc" }],
         skip,
         take,
       }),
@@ -185,10 +179,7 @@ export class DashboardService {
   /**
    * Gets a dashboard by ID.
    */
-  public static async getDashboard(
-    dashboardId: string,
-    projectId: string,
-  ): Promise<DashboardDomain | null> {
+  public static async getDashboard(dashboardId: string, projectId: string): Promise<DashboardDomain | null> {
     const dashboard = await prisma.dashboard.findFirst({
       where: {
         id: dashboardId,
@@ -209,10 +200,7 @@ export class DashboardService {
   /**
    * Deletes a dashboard.
    */
-  public static async deleteDashboard(
-    dashboardId: string,
-    projectId: string,
-  ): Promise<void> {
+  public static async deleteDashboard(dashboardId: string, projectId: string): Promise<void> {
     await prisma.dashboard.delete({
       where: {
         id: dashboardId,
@@ -240,9 +228,7 @@ export class DashboardService {
         where: {
           projectId,
         },
-        orderBy: orderBy
-          ? [{ [orderBy.column]: orderBy.order.toLowerCase() }]
-          : [{ updatedAt: "desc" }],
+        orderBy: orderBy ? [{ [orderBy.column]: orderBy.order.toLowerCase() }] : [{ updatedAt: "desc" }],
         skip,
         take,
       }),
@@ -299,10 +285,7 @@ export class DashboardService {
   /**
    * Gets a dashboard widget by ID. Look either in the current project or in the Hanzo managed widgets.
    */
-  public static async getWidget(
-    widgetId: string,
-    projectId: string,
-  ): Promise<WidgetDomain | null> {
+  public static async getWidget(widgetId: string, projectId: string): Promise<WidgetDomain | null> {
     const widget = await prisma.dashboardWidget.findFirst({
       where: {
         id: widgetId,
@@ -357,10 +340,7 @@ export class DashboardService {
    * Deletes a dashboard widget.
    * Throws an error if the widget is still referenced in any dashboard.
    */
-  public static async deleteWidget(
-    widgetId: string,
-    projectId: string,
-  ): Promise<void> {
+  public static async deleteWidget(widgetId: string, projectId: string): Promise<void> {
     // First check if this widget is referenced in any dashboard definitions
     const referencingDashboards = await prisma.dashboard.findMany({
       where: {
@@ -377,9 +357,7 @@ export class DashboardService {
     });
 
     if (referencingDashboards.length > 0) {
-      const dashboardNames = referencingDashboards
-        .map((d) => `"${d.name}"`)
-        .join(", ");
+      const dashboardNames = referencingDashboards.map((d) => `"${d.name}"`).join(", ");
 
       throw new HanzoConflictError(
         `Cannot delete widget because it is still used in the following dashboards: ${dashboardNames}. Please remove the widget from these dashboards first.`,
@@ -405,8 +383,7 @@ export class DashboardService {
     placementId: string;
     userId?: string;
   }): Promise<string> {
-    const { sourceWidgetId, projectId, dashboardId, placementId, userId } =
-      props;
+    const { sourceWidgetId, projectId, dashboardId, placementId, userId } = props;
 
     const sourceWidget = await prisma.dashboardWidget.findFirst({
       where: {
@@ -416,9 +393,7 @@ export class DashboardService {
     });
 
     if (!sourceWidget) {
-      throw new HanzoNotFoundError(
-        `Source widget ${sourceWidgetId} not found`,
-      );
+      throw new HanzoNotFoundError(`Source widget ${sourceWidgetId} not found`);
     }
 
     // Duplicate widget and update dashboard definition atomically
@@ -446,9 +421,7 @@ export class DashboardService {
       });
 
       if (!dashboard) {
-        throw new HanzoNotFoundError(
-          `Dashboard ${dashboardId} not found in project ${projectId}`,
-        );
+        throw new HanzoNotFoundError(`Dashboard ${dashboardId} not found in project ${projectId}`);
       }
 
       const definition = (dashboard.definition ?? {

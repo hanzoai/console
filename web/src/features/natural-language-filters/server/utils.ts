@@ -19,9 +19,7 @@ export function getDefaultModelParams() {
 
 const FilterArraySchema = z.array(singleFilter);
 
-export function parseFiltersFromCompletion(
-  completion: string,
-): FilterCondition[] {
+export function parseFiltersFromCompletion(completion: string): FilterCondition[] {
   const arrayMatch = completion.match(/\[[\s\S]*?\]/)?.[0];
   const objectMatch = completion.match(/\{[\s\S]*?\}/)?.[0];
 
@@ -46,11 +44,7 @@ export function parseFiltersFromCompletion(
   return [];
 }
 
-export function getHanzoClient(
-  publicKey: string,
-  secretKey: string,
-  baseUrl?: string,
-): Hanzo {
+export function getHanzoClient(publicKey: string, secretKey: string, baseUrl?: string): Hanzo {
   if (!hanzoClient) {
     hanzoClient = new Hanzo({
       publicKey,

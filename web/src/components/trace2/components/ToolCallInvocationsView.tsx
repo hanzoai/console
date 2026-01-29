@@ -10,11 +10,7 @@ interface ToolCallInvocationsViewProps {
   className?: string;
 }
 
-export function ToolCallInvocationsView({
-  message,
-  toolCallNumbers,
-  className,
-}: ToolCallInvocationsViewProps) {
+export function ToolCallInvocationsView({ message, toolCallNumbers, className }: ToolCallInvocationsViewProps) {
   const toolCalls = message.tool_calls;
 
   if (!toolCalls || !Array.isArray(toolCalls) || toolCalls.length === 0) {
@@ -41,9 +37,7 @@ export function ToolCallInvocationsView({
             key={`${toolCall.id}-${index}`}
             className={cn(
               "w-full border-t px-2 py-2",
-              (message.role === "assistant" ||
-                message.name === "Output" ||
-                message.name === "Model") &&
+              (message.role === "assistant" || message.name === "Output" || message.name === "Model") &&
                 "bg-accent-light-green",
             )}
           >
@@ -53,31 +47,19 @@ export function ToolCallInvocationsView({
               <div className="flex items-center gap-2">
                 <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="font-mono text-xs font-medium text-foreground">
-                  {invocationNumber !== undefined && (
-                    <span className="mr-1">{invocationNumber}.</span>
-                  )}
+                  {invocationNumber !== undefined && <span className="mr-1">{invocationNumber}.</span>}
                   {toolCall.name}
                 </span>
               </div>
 
               {/* Right: Call ID if available */}
-              {toolCall.id && (
-                <span className="font-mono text-xs text-muted-foreground">
-                  {toolCall.id}
-                </span>
-              )}
+              {toolCall.id && <span className="font-mono text-xs text-muted-foreground">{toolCall.id}</span>}
             </div>
 
             {/* Arguments view */}
             <div className="py-2 [&_.io-message-content]:px-0">
-              <div className="mb-1.5 text-xs font-medium text-muted-foreground">
-                Arguments
-              </div>
-              <PrettyJsonView
-                json={parsedArguments}
-                currentView="pretty"
-                codeClassName="text-xs"
-              />
+              <div className="mb-1.5 text-xs font-medium text-muted-foreground">Arguments</div>
+              <PrettyJsonView json={parsedArguments} currentView="pretty" codeClassName="text-xs" />
             </div>
           </div>
         );

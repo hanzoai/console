@@ -1,11 +1,6 @@
 import { CsvColumnsCard } from "./CsvColumnsCard";
 import { MappingCard } from "./MappingCard";
-import {
-  DndContext,
-  closestCenter,
-  MeasuringStrategy,
-  DragOverlay,
-} from "@dnd-kit/core";
+import { DndContext, closestCenter, MeasuringStrategy, DragOverlay } from "@dnd-kit/core";
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
@@ -15,11 +10,7 @@ import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { CsvImportValidationError } from "./CsvImportValidationError";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Label } from "@/src/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { InfoIcon, GripVertical } from "lucide-react";
 import { useCsvMapping } from "@/src/features/datasets/hooks/useCsvMapping";
 import { useCsvDragAndDrop } from "@/src/features/datasets/hooks/useCsvDragAndDrop";
@@ -62,9 +53,7 @@ export function PreviewCsvImport({
 
   // Parse schemas
   const inputSchemaKeys = extractSchemaKeys(dataset?.inputSchema);
-  const expectedOutputSchemaKeys = extractSchemaKeys(
-    dataset?.expectedOutputSchema,
-  );
+  const expectedOutputSchemaKeys = extractSchemaKeys(dataset?.expectedOutputSchema);
 
   // Mapping state
   const mapping = useCsvMapping({
@@ -129,8 +118,7 @@ export function PreviewCsvImport({
     csvImport.reset();
   };
 
-  const isSchemaMode =
-    mapping.input.type === "schema" || mapping.expectedOutput.type === "schema";
+  const isSchemaMode = mapping.input.type === "schema" || mapping.expectedOutput.type === "schema";
 
   return (
     <>
@@ -147,10 +135,7 @@ export function PreviewCsvImport({
             }}
           >
             <div className="grid min-h-0 flex-1 grid-cols-[1fr,2fr] gap-4">
-              <CsvColumnsCard
-                columns={preview.columns}
-                columnCount={preview.totalColumns}
-              />
+              <CsvColumnsCard columns={preview.columns} columnCount={preview.totalColumns} />
               <MappingCard
                 input={mapping.input}
                 expectedOutput={mapping.expectedOutput}
@@ -171,15 +156,9 @@ export function PreviewCsvImport({
                     <div className="flex cursor-grabbing items-center gap-2 rounded-md border bg-background p-2 shadow-xl">
                       <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/70" />
                       <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-                        <span className="truncate text-sm">
-                          {dragAndDrop.activeColumn}
-                        </span>
+                        <span className="truncate text-sm">{dragAndDrop.activeColumn}</span>
                         <span className="shrink-0 text-xs text-muted-foreground">
-                          {
-                            preview.columns.find(
-                              (col) => col.name === dragAndDrop.activeColumn,
-                            )?.inferredType
-                          }
+                          {preview.columns.find((col) => col.name === dragAndDrop.activeColumn)?.inferredType}
                         </span>
                       </div>
                     </div>
@@ -190,9 +169,7 @@ export function PreviewCsvImport({
             )}
           </DndContext>
         </div>
-        {csvImport.validationErrors.length > 0 && (
-          <CsvImportValidationError errors={csvImport.validationErrors} />
-        )}
+        {csvImport.validationErrors.length > 0 && <CsvImportValidationError errors={csvImport.validationErrors} />}
       </DialogBody>
       <DialogFooter>
         {!isSchemaMode && (
@@ -200,14 +177,9 @@ export function PreviewCsvImport({
             <Checkbox
               id="wrapSingleColumn"
               checked={wrapSingleColumn}
-              onCheckedChange={(checked) =>
-                setWrapSingleColumn(checked === true)
-              }
+              onCheckedChange={(checked) => setWrapSingleColumn(checked === true)}
             />
-            <Label
-              htmlFor="wrapSingleColumn"
-              className="cursor-pointer text-sm font-normal"
-            >
+            <Label htmlFor="wrapSingleColumn" className="cursor-pointer text-sm font-normal">
               Force Objects
             </Label>
             <Tooltip>
@@ -215,9 +187,8 @@ export function PreviewCsvImport({
                 <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent className="max-w-[300px]">
-                When a single csv column is mapped to a dataset item field, wrap
-                its value in an object instead of using the raw value. Example:{" "}
-                {`{"columnName": "value"}`} instead of {`"value"`}
+                When a single csv column is mapped to a dataset item field, wrap its value in an object instead of using
+                the raw value. Example: {`{"columnName": "value"}`} instead of {`"value"`}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -226,24 +197,16 @@ export function PreviewCsvImport({
           Cancel
         </Button>
         <Button
-          disabled={
-            mapping.isEmpty() || csvImport.progress.status === "processing"
-          }
+          disabled={mapping.isEmpty() || csvImport.progress.status === "processing"}
           loading={csvImport.progress.status === "processing"}
           onClick={handleImport}
         >
-          {csvImport.progress.status === "processing"
-            ? "Importing..."
-            : "Import"}
+          {csvImport.progress.status === "processing" ? "Importing..." : "Import"}
         </Button>
         {csvImport.progress.status === "processing" && (
           <div className="mt-2">
             <Progress
-              value={
-                (csvImport.progress.processedItems /
-                  csvImport.progress.totalItems) *
-                100
-              }
+              value={(csvImport.progress.processedItems / csvImport.progress.totalItems) * 100}
               className="w-full"
             />
           </div>

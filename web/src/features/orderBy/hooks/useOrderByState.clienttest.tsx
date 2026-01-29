@@ -63,15 +63,11 @@ describe.skip("useOrderByState hook", () => {
     );
 
     expect(result.queryByText(/column Column 2, order ASC/)).toBeTruthy();
-    expect(locationMock.searchParams.get("orderBy")).toBe(
-      "column-Column 2_order-ASC",
-    );
+    expect(locationMock.searchParams.get("orderBy")).toBe("column-Column 2_order-ASC");
   });
 
   test("orderBy reads the given param from the url", () => {
-    locationMock.replace(
-      "https://hanzo.ai?orderBy=column-Column 3_order-DESC",
-    );
+    locationMock.replace("https://hanzo.ai?orderBy=column-Column 3_order-DESC");
 
     const result = render(
       <QueryParamProvider adapter={NextAdapterPages}>

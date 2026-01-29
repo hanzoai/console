@@ -1,9 +1,4 @@
-import {
-  useQueryParams,
-  withDefault,
-  NumberParam,
-  StringParam,
-} from "use-query-params";
+import { useQueryParams, withDefault, NumberParam, StringParam } from "use-query-params";
 
 /**
  * Hook for managing pagination with folder navigation support.

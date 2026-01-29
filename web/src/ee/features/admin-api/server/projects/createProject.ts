@@ -6,11 +6,7 @@ import { projectRetentionSchema } from "@/src/features/auth/lib/projectRetention
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { type ApiAccessScope } from "@hanzo/shared/src/server";
 
-export async function handleCreateProject(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  scope: ApiAccessScope,
-) {
+export async function handleCreateProject(req: NextApiRequest, res: NextApiResponse, scope: ApiAccessScope) {
   try {
     const { name, retention, metadata } = req.body;
 
@@ -52,8 +48,7 @@ export async function handleCreateProject(
 
         if (!hasDataRetentionEntitlement) {
           return res.status(403).json({
-            message:
-              "The data-retention entitlement is required to set a non-zero retention period.",
+            message: "The data-retention entitlement is required to set a non-zero retention period.",
           });
         }
       }

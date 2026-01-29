@@ -17,10 +17,7 @@ import { buildTreeFromJSON } from "./treeStructure";
 describe("treeExpansion", () => {
   describe("toggleNodeExpansion", () => {
     it("should toggle node expansion state", () => {
-      const tree = buildTreeFromJSON(
-        { user: { name: "Alice", age: 25 } },
-        { rootKey: "root", initialExpansion: true },
-      );
+      const tree = buildTreeFromJSON({ user: { name: "Alice", age: 25 } }, { rootKey: "root", initialExpansion: true });
 
       const userNode = tree.rootNode.children[0];
       expect(userNode).toBeDefined();
@@ -59,19 +56,14 @@ describe("treeExpansion", () => {
       toggleNodeExpansion(tree, level2Node!.id);
 
       // Root should have fewer visible descendants now
-      expect(tree.rootNode.visibleDescendantCount).toBeLessThan(
-        initialRootDescendants,
-      );
+      expect(tree.rootNode.visibleDescendantCount).toBeLessThan(initialRootDescendants);
 
       // Level1 should have updated childOffsets
       expect(level1Node!.visibleDescendantCount).toBeLessThan(2);
     });
 
     it("should not toggle non-expandable nodes", () => {
-      const tree = buildTreeFromJSON(
-        { name: "Alice", age: 25 },
-        { rootKey: "root", initialExpansion: true },
-      );
+      const tree = buildTreeFromJSON({ name: "Alice", age: 25 }, { rootKey: "root", initialExpansion: true });
 
       const nameNode = tree.rootNode.children[0]; // Leaf node
       expect(nameNode).toBeDefined();
@@ -117,10 +109,7 @@ describe("treeExpansion", () => {
     });
 
     it("should handle already expanded ancestors", () => {
-      const tree = buildTreeFromJSON(
-        { level1: { level2: "value" } },
-        { rootKey: "root", initialExpansion: true },
-      );
+      const tree = buildTreeFromJSON({ level1: { level2: "value" } }, { rootKey: "root", initialExpansion: true });
 
       const level1Node = tree.rootNode.children[0];
       const level2Node = level1Node!.children[0];
@@ -250,10 +239,7 @@ describe("treeExpansion", () => {
     });
 
     it("should handle boolean expansion state", () => {
-      const tree = buildTreeFromJSON(
-        { user: { name: "Alice" } },
-        { rootKey: "root", initialExpansion: true },
-      );
+      const tree = buildTreeFromJSON({ user: { name: "Alice" } }, { rootKey: "root", initialExpansion: true });
 
       // Apply false (collapse all)
       applyExpansionState(tree, false);

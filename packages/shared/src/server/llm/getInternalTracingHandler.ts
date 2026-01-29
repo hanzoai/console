@@ -17,18 +17,11 @@ export function getInternalTracingHandler(traceSinkParams: TraceSinkParams): {
 
   const processTracedEvents = async () => {
     try {
-      const events = await (handler as any).langfuse._exportLocalEvents(
-        traceSinkParams.targetProjectId,
-      );
+      const events = await (handler as any).langfuse._exportLocalEvents(traceSinkParams.targetProjectId);
 
       // Filter out unnecessary Langchain spans
       const blockedSpanIds = new Set();
-      const blockedSpanNames = [
-        "RunnableLambda",
-        "StructuredOutputParser",
-        "StrOutputParser",
-        "JsonOutputParser",
-      ];
+      const blockedSpanNames = ["RunnableLambda", "StructuredOutputParser", "StrOutputParser", "JsonOutputParser"];
 
       for (const event of events) {
         const eventName = "name" in event.body ? event.body.name : "";

@@ -5,22 +5,15 @@ import { datasetRunsTableUiColumnDefinitions } from "./mapDatasetRunsTable";
 /**
  * Type representing all possible dataset run filter column IDs
  */
-type ExtractLiterals<T> = T extends readonly { uiTableName: infer U }[]
-  ? U
-  : never;
+type ExtractLiterals<T> = T extends readonly { uiTableName: infer U }[] ? U : never;
 
-type DatasetRunFilterColumnLiterals = ExtractLiterals<
-  typeof datasetRunsTableUiColumnDefinitions
->;
+type DatasetRunFilterColumnLiterals = ExtractLiterals<typeof datasetRunsTableUiColumnDefinitions>;
 
 /**
  * Columns that can be filtered using basic PostgreSQL dataset run data
  * (don't require aggregated metrics from ClickHouse)
  */
-const CLICKHOUSE_FILTER_COLUMNS: DatasetRunFilterColumnLiterals[] = [
-  "Scores (categorical)",
-  "Scores (numeric)",
-];
+const CLICKHOUSE_FILTER_COLUMNS: DatasetRunFilterColumnLiterals[] = ["Scores (categorical)", "Scores (numeric)"];
 const CLICKHOUSE_FILTER_COLUMNS_SET = new Set(CLICKHOUSE_FILTER_COLUMNS);
 
 /**

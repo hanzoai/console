@@ -12,16 +12,11 @@ import {
 export type MessagePlaceholderValues = Record<string, unknown[]>;
 export type PromptMessage = z.infer<typeof PromptChatMessageSchema>;
 
-export function isPlaceholder(
-  message: PromptMessage,
-): message is PlaceholderMessage {
+export function isPlaceholder(message: PromptMessage): message is PlaceholderMessage {
   return "type" in message && message.type === ChatMessageType.Placeholder;
 }
 
-function replaceTextVariables(
-  content: string,
-  textVariables: Record<string, string>,
-): string {
+function replaceTextVariables(content: string, textVariables: Record<string, string>): string {
   let result = content;
   for (const [varName, varValue] of Object.entries(textVariables)) {
     // Create regex that handles optional whitespace around variable name
@@ -38,15 +33,11 @@ function expandPlaceholder(
   const replacementMessages = placeholderValues[placeholder.name];
 
   if (!replacementMessages) {
-    throw new Error(
-      `Missing value for message placeholder: ${placeholder.name}`,
-    );
+    throw new Error(`Missing value for message placeholder: ${placeholder.name}`);
   }
 
   if (!Array.isArray(replacementMessages)) {
-    throw new Error(
-      `Placeholder value for '${placeholder.name}' must be an array of messages`,
-    );
+    throw new Error(`Placeholder value for '${placeholder.name}' must be an array of messages`);
   }
 
   // Allow arbitrary objects - just pass them through as ChatMessage
@@ -68,9 +59,7 @@ export function compileChatMessages(
   textVariables?: Record<string, string>,
 ): ChatMessage[] {
   const expandedMessages = messages.flatMap((message) =>
-    isPlaceholder(message)
-      ? expandPlaceholder(message, placeholderValues)
-      : [message as ChatMessage],
+    isPlaceholder(message) ? expandPlaceholder(message, placeholderValues) : [message as ChatMessage],
   );
 
   // substitute text variables
@@ -125,9 +114,6 @@ export function compileChatMessagesWithIds(
 
 export function extractPlaceholderNames(messages: PromptMessage[]): string[] {
   return messages
-    .filter(
-      (msg): msg is PlaceholderMessage =>
-        "type" in msg && msg.type === ChatMessageType.Placeholder,
-    )
+    .filter((msg): msg is PlaceholderMessage => "type" in msg && msg.type === ChatMessageType.Placeholder)
     .map((msg) => msg.name);
 }

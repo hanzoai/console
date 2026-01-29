@@ -27,13 +27,7 @@ export function SubHeaderLabel({ ...props }: HeaderProps) {
   return <BaseHeader {...props} level="h5" />;
 }
 
-function HeaderTitle({
-  level,
-  title,
-}: {
-  level: "h3" | "h4" | "h5";
-  title: string;
-}) {
+function HeaderTitle({ level, title }: { level: "h3" | "h4" | "h5"; title: string }) {
   switch (level) {
     case "h3":
       return <h3 className="text-xl font-bold leading-7">{title}</h3>;
@@ -52,11 +46,7 @@ function BaseHeader({ ...props }: HeaderProps & { level: "h3" | "h4" | "h5" }) {
           <div className="flex min-w-0 flex-row items-center">
             <HeaderTitle title={props.title} level={props.level} />
             {props.help ? (
-              <DocPopup
-                description={props.help.description}
-                href={props.help.href}
-                className={props.help.className}
-              />
+              <DocPopup description={props.help.description} href={props.help.href} className={props.help.className} />
             ) : null}
           </div>
           {props.status && <StatusBadge type={props.status} />}
@@ -66,9 +56,7 @@ function BaseHeader({ ...props }: HeaderProps & { level: "h3" | "h4" | "h5" }) {
             </Link>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          {props.actionButtons ?? null}
-        </div>
+        <div className="flex flex-wrap items-center gap-3">{props.actionButtons ?? null}</div>
       </div>
     </div>
   );

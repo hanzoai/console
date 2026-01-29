@@ -2,10 +2,7 @@ import { z } from "zod/v4";
 import { prisma, PrismaClient } from "@hanzo/shared/src/db";
 import defaultModelPrices from "../constants/default-model-prices.json";
 import { clearFullModelCache, logger } from "@hanzo/shared/src/server";
-import {
-  PricingTierConditionSchema,
-  validatePricingTiers,
-} from "@hanzo/shared";
+import { PricingTierConditionSchema, validatePricingTiers } from "@hanzo/shared";
 
 export const PricingTierSchema = z.object({
   id: z.string(),
@@ -24,9 +21,7 @@ export const DefaultModelPriceSchema = z
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
     pricingTiers: z.array(PricingTierSchema),
-    tokenizerConfig: z
-      .record(z.string(), z.union([z.string(), z.number()]))
-      .nullish(),
+    tokenizerConfig: z.record(z.string(), z.union([z.string(), z.number()])).nullish(),
     tokenizerId: z.string().nullish(),
   })
   .superRefine((data, ctx) => {
@@ -42,8 +37,7 @@ export const DefaultModelPriceSchema = z
 
     if (defaultTiers.length !== 1) {
       ctx.addIssue({
-        message:
-          "Each model must have exactly one default pricing tier (isDefault: true)",
+        message: "Each model must have exactly one default pricing tier (isDefault: true)",
       });
     }
   });
@@ -87,9 +81,7 @@ export const upsertDefaultModelPrices = async (force = false) => {
     let hasUpdates = false;
     logger.debug(`Starting upsert of default model prices (force = ${force})`);
 
-    const parsedDefaultModelPrices = z
-      .array(DefaultModelPriceSchema)
-      .parse(defaultModelPrices);
+    const parsedDefaultModelPrices = z.array(DefaultModelPriceSchema).parse(defaultModelPrices);
 
     // Fetch existing models with their tiers
     const existingModelsQuery = await prisma.$queryRaw`
@@ -107,8 +99,7 @@ export const upsertDefaultModelPrices = async (force = false) => {
         m.project_id IS NULL
     `;
 
-    const existingModels =
-      ExistingModelTierSchema.array().parse(existingModelsQuery);
+    const existingModels = ExistingModelTierSchema.array().parse(existingModelsQuery);
 
     // Build map of existing models with their tiers
     const existingModelsMap = new Map<
@@ -147,10 +138,7 @@ export const upsertDefaultModelPrices = async (force = false) => {
     for (let i = 0; i < numBatches; i++) {
       logger.debug(`Processing batch ${i + 1} of ${numBatches}...`);
 
-      const batch = parsedDefaultModelPrices.slice(
-        i * batchSize,
-        (i + 1) * batchSize,
-      );
+      const batch = parsedDefaultModelPrices.slice(i * batchSize, (i + 1) * batchSize);
 
       const promises = [];
 
@@ -158,11 +146,7 @@ export const upsertDefaultModelPrices = async (force = false) => {
         const existingModel = existingModelsMap.get(defaultModelPrice.id);
 
         // Skip if up-to-date (unless force=true)
-        if (
-          !force &&
-          existingModel &&
-          isModelUpToDate(defaultModelPrice, existingModel)
-        ) {
+        if (!force && existingModel && isModelUpToDate(defaultModelPrice, existingModel)) {
           logger.debug(
             `Default model ${defaultModelPrice.modelName} (${defaultModelPrice.id}) already up to date. Skipping.`,
           );
@@ -171,22 +155,18 @@ export const upsertDefaultModelPrices = async (force = false) => {
 
         // Skip if no tiers defined
         if (defaultModelPrice.pricingTiers.length === 0) {
-          logger.debug(
-            `No pricing tiers for ${defaultModelPrice.modelName} (${defaultModelPrice.id}). Skipping.`,
-          );
+          logger.debug(`No pricing tiers for ${defaultModelPrice.modelName} (${defaultModelPrice.id}). Skipping.`);
           continue;
         }
 
         // Upsert model, tiers, and prices in a transaction
         promises.push(
-          upsertModelWithTiers(defaultModelPrice, existingModel).catch(
-            (error) => {
-              logger.error(
-                `Error upserting default model ${defaultModelPrice.modelName} (${defaultModelPrice.id}): ${error.message}`,
-                { error },
-              );
-            },
-          ),
+          upsertModelWithTiers(defaultModelPrice, existingModel).catch((error) => {
+            logger.error(
+              `Error upserting default model ${defaultModelPrice.modelName} (${defaultModelPrice.id}): ${error.message}`,
+              { error },
+            );
+          }),
         );
       }
 
@@ -203,9 +183,7 @@ export const upsertDefaultModelPrices = async (force = false) => {
       await clearFullModelCache();
     }
 
-    logger.info(
-      `Finished upserting default model prices in ${Date.now() - startTime}ms`,
-    );
+    logger.info(`Finished upserting default model prices in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error(
       `Error upserting default model prices after ${Date.now() - startTime}ms: ${
@@ -262,15 +240,11 @@ async function upsertModelWithTiers(
     });
 
     // 2. Get tier IDs from JSON
-    const jsonTierIds = new Set(
-      defaultModelPrice.pricingTiers.map((t) => t.id),
-    );
+    const jsonTierIds = new Set(defaultModelPrice.pricingTiers.map((t) => t.id));
 
     // 3. Delete tiers that exist in DB but not in JSON (source of truth)
     if (existingModel) {
-      const tiersToDelete = existingModel.tiers
-        .filter((t) => !jsonTierIds.has(t.id))
-        .map((t) => t.id);
+      const tiersToDelete = existingModel.tiers.filter((t) => !jsonTierIds.has(t.id)).map((t) => t.id);
 
       if (tiersToDelete.length > 0) {
         await tx.pricingTier.deleteMany({
@@ -279,9 +253,7 @@ async function upsertModelWithTiers(
             modelId: defaultModelPrice.id,
           },
         });
-        logger.debug(
-          `Deleted ${tiersToDelete.length} obsolete tiers for model ${defaultModelPrice.modelName}`,
-        );
+        logger.debug(`Deleted ${tiersToDelete.length} obsolete tiers for model ${defaultModelPrice.modelName}`);
       }
     }
 
@@ -306,10 +278,7 @@ async function upsertModelWithTiers(
  * Upserts a single pricing tier with its prices
  */
 async function upsertTierWithPrices(
-  tx: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends"
-  >,
+  tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">,
   modelId: string,
   createdAt: Date,
   updatedAt: Date,
@@ -350,9 +319,7 @@ async function upsertTierWithPrices(
   const jsonUsageTypes = new Set(Object.keys(tier.prices));
 
   // Delete prices that exist in DB but not in JSON
-  const usageTypesToDelete = Array.from(existingUsageTypes).filter(
-    (ut) => !jsonUsageTypes.has(ut),
-  );
+  const usageTypesToDelete = Array.from(existingUsageTypes).filter((ut) => !jsonUsageTypes.has(ut));
 
   if (usageTypesToDelete.length > 0) {
     await tx.price.deleteMany({
@@ -412,8 +379,7 @@ function isModelUpToDate(
   },
 ): boolean {
   // Check if updated_at matches
-  const isUpdatedAtSame =
-    existingModel.updatedAt.getTime() === defaultModelPrice.updatedAt.getTime();
+  const isUpdatedAtSame = existingModel.updatedAt.getTime() === defaultModelPrice.updatedAt.getTime();
 
   if (!isUpdatedAtSame) {
     return false;

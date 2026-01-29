@@ -3,10 +3,7 @@ import { handleCallback } from "@/src/features/slack/server/oauth-handlers";
 import { logger } from "@hanzo/shared/src/server";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     await runMiddleware(req, res, cors);
 

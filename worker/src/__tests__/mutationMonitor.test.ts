@@ -43,12 +43,7 @@ describe("MutationMonitor", () => {
     "trace-delete": ["traces", "observations", "scores"],
     "score-delete": ["scores"],
     "dataset-delete": ["dataset_run_items_rmt"],
-    "project-delete": [
-      "traces",
-      "observations",
-      "scores",
-      "dataset_run_items_rmt",
-    ],
+    "project-delete": ["traces", "observations", "scores", "dataset_run_items_rmt"],
     "data-retention-processing-queue": ["traces", "observations", "scores"],
   };
 
@@ -72,18 +67,12 @@ describe("MutationMonitor", () => {
       expect(pauseDecisions).toHaveLength(4);
       expect(pauseDecisions.map((d) => d.queueName)).toContain("trace-delete");
       expect(pauseDecisions.map((d) => d.queueName)).toContain("score-delete");
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "project-delete",
-      );
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "data-retention-processing-queue",
-      );
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("project-delete");
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("data-retention-processing-queue");
 
       // Also resume decision for DatasetDelete (its table is safe)
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
-      expect(resumeDecisions.map((d) => d.queueName)).toContain(
-        "dataset-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).toContain("dataset-delete");
     });
 
     it("should decide to resume all queues when all tables are below SAFE", () => {
@@ -94,12 +83,7 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 5],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // All queues should have resume decisions (all tables safe)
       expect(decisions.every((d) => d.action === "resume")).toBe(true);
@@ -108,9 +92,7 @@ describe("MutationMonitor", () => {
       expect(decisions.map((d) => d.queueName)).toContain("score-delete");
       expect(decisions.map((d) => d.queueName)).toContain("dataset-delete");
       expect(decisions.map((d) => d.queueName)).toContain("project-delete");
-      expect(decisions.map((d) => d.queueName)).toContain(
-        "data-retention-processing-queue",
-      );
+      expect(decisions.map((d) => d.queueName)).toContain("data-retention-processing-queue");
     });
 
     it("should NOT decide to resume queues if ANY of their tables is >= SAFE", () => {
@@ -121,12 +103,7 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 5],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // Only DatasetDelete should have resume (doesn't depend on scores)
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
@@ -134,12 +111,8 @@ describe("MutationMonitor", () => {
       expect(resumeDecisions[0].queueName).toBe("dataset-delete");
 
       // Queues depending on scores should NOT have resume decisions
-      expect(resumeDecisions.map((d) => d.queueName)).not.toContain(
-        "trace-delete",
-      );
-      expect(resumeDecisions.map((d) => d.queueName)).not.toContain(
-        "score-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).not.toContain("trace-delete");
+      expect(resumeDecisions.map((d) => d.queueName)).not.toContain("score-delete");
     });
 
     it("should handle multiple tables over threshold", () => {
@@ -150,29 +123,18 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 5],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // Pause decisions for queues affecting traces/scores
       const pauseDecisions = decisions.filter((d) => d.action === "pause");
       expect(pauseDecisions.map((d) => d.queueName)).toContain("trace-delete");
       expect(pauseDecisions.map((d) => d.queueName)).toContain("score-delete");
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "project-delete",
-      );
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "data-retention-processing-queue",
-      );
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("project-delete");
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("data-retention-processing-queue");
 
       // Resume decision for DatasetDelete (its table is safe)
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
-      expect(resumeDecisions.map((d) => d.queueName)).toContain(
-        "dataset-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).toContain("dataset-delete");
     });
 
     it("should decide to resume ScoreDelete independently", () => {
@@ -183,25 +145,16 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 5],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // ScoreDelete and DatasetDelete should resume (their tables are safe)
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
       expect(resumeDecisions).toHaveLength(2);
       expect(resumeDecisions.map((d) => d.queueName)).toContain("score-delete");
-      expect(resumeDecisions.map((d) => d.queueName)).toContain(
-        "dataset-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).toContain("dataset-delete");
 
       // TraceDelete should NOT resume (traces=20 >= SAFE=15)
-      expect(resumeDecisions.map((d) => d.queueName)).not.toContain(
-        "trace-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).not.toContain("trace-delete");
     });
 
     it("should handle DatasetDelete independently", () => {
@@ -212,30 +165,19 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 50],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // Pause decisions for queues affecting dataset_run_items_rmt
       const pauseDecisions = decisions.filter((d) => d.action === "pause");
       expect(pauseDecisions).toHaveLength(2);
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "dataset-delete",
-      );
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "project-delete",
-      );
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("dataset-delete");
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("project-delete");
 
       // Resume decisions for queues only affecting traces/observations/scores
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
       expect(resumeDecisions.map((d) => d.queueName)).toContain("trace-delete");
       expect(resumeDecisions.map((d) => d.queueName)).toContain("score-delete");
-      expect(resumeDecisions.map((d) => d.queueName)).toContain(
-        "data-retention-processing-queue",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).toContain("data-retention-processing-queue");
     });
 
     it("should handle empty mutation counts", () => {
@@ -246,12 +188,7 @@ describe("MutationMonitor", () => {
         ["dataset_run_items_rmt", 0],
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // All queues should have resume decisions (all tables safe)
       expect(decisions.every((d) => d.action === "resume")).toBe(true);
@@ -264,29 +201,18 @@ describe("MutationMonitor", () => {
         // observations and scores missing (treated as 0)
       ]);
 
-      const decisions = MutationMonitor.makeDecisions(
-        counts,
-        queueTableMapping,
-        40,
-        15,
-      );
+      const decisions = MutationMonitor.makeDecisions(counts, queueTableMapping, 40, 15);
 
       // Pause decisions for queues affecting traces
       const pauseDecisions = decisions.filter((d) => d.action === "pause");
       expect(pauseDecisions.map((d) => d.queueName)).toContain("trace-delete");
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "project-delete",
-      );
-      expect(pauseDecisions.map((d) => d.queueName)).toContain(
-        "data-retention-processing-queue",
-      );
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("project-delete");
+      expect(pauseDecisions.map((d) => d.queueName)).toContain("data-retention-processing-queue");
 
       // Resume decisions for queues not affecting traces
       const resumeDecisions = decisions.filter((d) => d.action === "resume");
       expect(resumeDecisions.map((d) => d.queueName)).toContain("score-delete");
-      expect(resumeDecisions.map((d) => d.queueName)).toContain(
-        "dataset-delete",
-      );
+      expect(resumeDecisions.map((d) => d.queueName)).toContain("dataset-delete");
     });
   });
 
@@ -337,16 +263,12 @@ describe("MutationMonitor", () => {
 
       // TraceDelete should be paused
       expect(mockWorkers.get("trace-delete")?.pause).toHaveBeenCalled();
-      expect(
-        mockWorkers.get("data-retention-processing-queue")?.pause,
-      ).toHaveBeenCalled();
+      expect(mockWorkers.get("data-retention-processing-queue")?.pause).toHaveBeenCalled();
     });
 
     it("should execute resume decisions", async () => {
       // First pause
-      queryClickhouseMock.mockResolvedValueOnce([
-        { database: "default", table: "traces", mutation_count: 50 },
-      ]);
+      queryClickhouseMock.mockResolvedValueOnce([{ database: "default", table: "traces", mutation_count: 50 }]);
 
       MutationMonitor.start();
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -373,10 +295,7 @@ describe("MutationMonitor", () => {
       MutationMonitor.start();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      expect(shared.logger.error).toHaveBeenCalledWith(
-        "Error checking ClickHouse mutations",
-        expect.any(Error),
-      );
+      expect(shared.logger.error).toHaveBeenCalledWith("Error checking ClickHouse mutations", expect.any(Error));
     });
   });
 });

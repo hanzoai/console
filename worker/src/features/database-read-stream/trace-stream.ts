@@ -1,9 +1,4 @@
-import {
-  FilterCondition,
-  ScoreDataTypeEnum,
-  type ScoreDataTypeType,
-  TracingSearchType,
-} from "@hanzo/shared";
+import { FilterCondition, ScoreDataTypeEnum, type ScoreDataTypeType, TracingSearchType } from "@hanzo/shared";
 import {
   getDistinctScoreNames,
   queryClickhouseStream,
@@ -17,11 +12,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { Readable } from "stream";
 import { env } from "../../env";
-import {
-  getChunkWithFlattenedScores,
-  isTraceTimestampFilter,
-  prepareScoresForOutput,
-} from "./getDatabaseReadStream";
+import { getChunkWithFlattenedScores, isTraceTimestampFilter, prepareScoresForOutput } from "./getDatabaseReadStream";
 import { fetchCommentsForExport } from "./fetchCommentsForExport";
 
 const BATCH_SIZE = 1000; // Fetch comments in batches for efficiency
@@ -230,20 +221,20 @@ export const getTraceStream = async (props: {
     }));
 
     // Process categorical scores (format: "name:value")
-    const categoricalScores = (bufferedRow.score_categories ?? []).map(
-      (cat: string) => {
-        const [name, ...valueParts] = cat.split(":");
-        return {
-          name,
-          value: null,
-          dataType: ScoreDataTypeEnum.CATEGORICAL,
-          stringValue: valueParts.join(":"),
-        };
-      },
-    );
+    const categoricalScores = (bufferedRow.score_categories ?? []).map((cat: string) => {
+      const [name, ...valueParts] = cat.split(":");
+      return {
+        name,
+        value: null,
+        dataType: ScoreDataTypeEnum.CATEGORICAL,
+        stringValue: valueParts.join(":"),
+      };
+    });
 
-    const outputScores: Record<string, string[] | number[]> =
-      prepareScoresForOutput([...numericScores, ...categoricalScores]);
+    const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput([
+      ...numericScores,
+      ...categoricalScores,
+    ]);
 
     // Get comments for this trace
     const traceComments = commentsByTrace.get(bufferedRow.id) ?? [];
@@ -281,9 +272,7 @@ export const getTraceStream = async (props: {
 
   return Readable.from(
     (async function* () {
-      let rowBuffer: Awaited<
-        ReturnType<typeof asyncGenerator.next>
-      >["value"][] = [];
+      let rowBuffer: Awaited<ReturnType<typeof asyncGenerator.next>>["value"][] = [];
       let traceIds: string[] = [];
 
       for await (const row of asyncGenerator) {
@@ -293,19 +282,13 @@ export const getTraceStream = async (props: {
         // Process in batches
         if (rowBuffer.length >= BATCH_SIZE) {
           // Fetch comments for this batch
-          const commentsByTrace = await fetchCommentsForExport(
-            projectId,
-            "TRACE",
-            traceIds,
-          );
+          const commentsByTrace = await fetchCommentsForExport(projectId, "TRACE", traceIds);
 
           // Process each row in the buffer
           for (const bufferedRow of rowBuffer) {
             recordsProcessed++;
             if (recordsProcessed % 10000 === 0)
-              logger.info(
-                `Streaming traces for project ${projectId}: processed ${recordsProcessed} rows`,
-              );
+              logger.info(`Streaming traces for project ${projectId}: processed ${recordsProcessed} rows`);
 
             yield processTraceRow(bufferedRow, commentsByTrace);
           }
@@ -318,18 +301,12 @@ export const getTraceStream = async (props: {
 
       // Process remaining rows in buffer
       if (rowBuffer.length > 0) {
-        const commentsByTrace = await fetchCommentsForExport(
-          projectId,
-          "TRACE",
-          traceIds,
-        );
+        const commentsByTrace = await fetchCommentsForExport(projectId, "TRACE", traceIds);
 
         for (const bufferedRow of rowBuffer) {
           recordsProcessed++;
           if (recordsProcessed % 10000 === 0)
-            logger.info(
-              `Streaming traces for project ${projectId}: processed ${recordsProcessed} rows`,
-            );
+            logger.info(`Streaming traces for project ${projectId}: processed ${recordsProcessed} rows`);
 
           yield processTraceRow(bufferedRow, commentsByTrace);
         }

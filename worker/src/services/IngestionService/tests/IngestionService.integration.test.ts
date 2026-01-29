@@ -44,12 +44,7 @@ describe("Ingestion end-to-end tests", () => {
 
     clickhouseWriter = ClickhouseWriter.getInstance();
 
-    ingestionService = new IngestionService(
-      redis,
-      prisma,
-      clickhouseWriter,
-      clickhouseClient(),
-    );
+    ingestionService = new IngestionService(redis, prisma, clickhouseWriter, clickhouseClient());
 
     IngestionEventBatchSchema = z.array(createIngestionEventSchema());
   });
@@ -465,39 +460,38 @@ describe("Ingestion end-to-end tests", () => {
         },
       ];
 
-      const generationEventList: ObservationEvent[] =
-        IngestionEventBatchSchema.parse([
-          {
-            id: randomUUID(),
-            type: "generation-create",
-            timestamp: new Date().toISOString(),
-            body: {
-              id: generationId,
-              traceId: traceId,
-              name: "generation-name",
-              startTime: "2021-01-01T00:00:00.000Z",
-              endTime: "2021-01-01T00:00:00.000Z",
-              modelParameters: { key: "value" },
-              input: { key: "value" },
-              metadata: { key: "value" },
-              version: "2.0.0",
-              environment,
-            },
+      const generationEventList: ObservationEvent[] = IngestionEventBatchSchema.parse([
+        {
+          id: randomUUID(),
+          type: "generation-create",
+          timestamp: new Date().toISOString(),
+          body: {
+            id: generationId,
+            traceId: traceId,
+            name: "generation-name",
+            startTime: "2021-01-01T00:00:00.000Z",
+            endTime: "2021-01-01T00:00:00.000Z",
+            modelParameters: { key: "value" },
+            input: { key: "value" },
+            metadata: { key: "value" },
+            version: "2.0.0",
+            environment,
           },
-          {
-            id: randomUUID(),
-            type: "generation-update",
-            timestamp: new Date().toISOString(),
-            body: {
-              id: generationId,
-              output: { key: "this is a great gpt output" },
-              usage: testConfig.usage,
-              usageDetails: testConfig.usageDetails,
-              costDetails: testConfig.costDetails,
-              environment,
-            },
+        },
+        {
+          id: randomUUID(),
+          type: "generation-update",
+          timestamp: new Date().toISOString(),
+          body: {
+            id: generationId,
+            output: { key: "this is a great gpt output" },
+            usage: testConfig.usage,
+            usageDetails: testConfig.usageDetails,
+            costDetails: testConfig.costDetails,
+            environment,
           },
-        ]);
+        },
+      ]);
 
       const spanEventList: ObservationEvent[] = [
         {
@@ -573,10 +567,7 @@ describe("Ingestion end-to-end tests", () => {
       expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
       expect(trace.tags).toEqual(["tag-1", "tag-2"]);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.id).toBe(generationId);
       expect(generation.trace_id).toBe(traceId);
@@ -593,9 +584,7 @@ describe("Ingestion end-to-end tests", () => {
       expect(generation.metadata).toEqual({ key: "value" });
       expect(generation.version).toBe("2.0.0");
       expect(generation.internal_model_id).toBeNull();
-      expect(generation.usage_details).toMatchObject(
-        testConfig.expectedUsageDetails,
-      );
+      expect(generation.usage_details).toMatchObject(testConfig.expectedUsageDetails);
       expect(generation.output).toEqual(
         JSON.stringify({
           key: "this is a great gpt output",
@@ -812,11 +801,7 @@ describe("Ingestion end-to-end tests", () => {
       ],
     },
   ].forEach((testConfig) => {
-    it(`should match observations to internal models ${JSON.stringify(
-      testConfig,
-      null,
-      2,
-    )}`, async () => {
+    it(`should match observations to internal models ${JSON.stringify(testConfig, null, 2)}`, async () => {
       const traceId = randomUUID();
       const generationId = randomUUID();
 
@@ -833,10 +818,7 @@ describe("Ingestion end-to-end tests", () => {
               tokenizerConfig: {
                 tokensPerMessage: 3,
                 tokensPerName: 1,
-                tokenizerModel:
-                  "tokenizerModel" in model
-                    ? model.tokenizerModel
-                    : model.modelName,
+                tokenizerModel: "tokenizerModel" in model ? model.tokenizerModel : model.modelName,
               },
             },
           }),
@@ -894,29 +876,16 @@ describe("Ingestion end-to-end tests", () => {
       ]);
       await clickhouseWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.id).toBe(generationId);
       expect(generation.trace_id).toBe(traceId);
       expect(generation.name).toBe("generation-name");
-      expect(generation.start_time).toEqual(
-        testConfig.observationStartTime.toISOString(),
-      );
-      expect(generation.provided_model_name).toBe(
-        testConfig.observationExternalModel,
-      );
-      expect(generation.usage_details.input).toBe(
-        testConfig.expectedUsageDetails.input,
-      );
-      expect(generation.usage_details.output).toBe(
-        testConfig.expectedUsageDetails.output,
-      );
-      expect(generation.internal_model_id).toBe(
-        testConfig.expectedInternalModelId,
-      );
+      expect(generation.start_time).toEqual(testConfig.observationStartTime.toISOString());
+      expect(generation.provided_model_name).toBe(testConfig.observationExternalModel);
+      expect(generation.usage_details.input).toBe(testConfig.expectedUsageDetails.input);
+      expect(generation.usage_details.output).toBe(testConfig.expectedUsageDetails.output);
+      expect(generation.internal_model_id).toBe(testConfig.expectedInternalModelId);
     });
   });
 
@@ -1085,10 +1054,7 @@ describe("Ingestion end-to-end tests", () => {
     expect(span.name).toBe("span-name");
     expect(span.trace_id).toBe(traceId);
 
-    const generation = await getClickhouseRecord(
-      TableName.Observations,
-      generationId,
-    );
+    const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
     expect(generation?.id).toBe(generationId);
     expect(generation?.trace_id).toBe(traceId);
@@ -1261,23 +1227,16 @@ describe("Ingestion end-to-end tests", () => {
     await clickhouseWriter.flushAll(true);
 
     // Verify that valid scores were inserted
-    const validScore1 = await getClickhouseRecord(
-      TableName.Scores,
-      validScoreId1,
-    );
+    const validScore1 = await getClickhouseRecord(TableName.Scores, validScoreId1);
     expect(validScore1).toBeDefined();
     expect(validScore1.trace_id).toBe(traceId);
     expect(validScore1.value).toBe(85.5);
     expect(validScore1.config_id).toBe(validScoreConfigId);
 
     // Verify that invalid scores were silently rejected (not inserted)
-    await expect(
-      getClickhouseRecord(TableName.Scores, invalidScoreId1),
-    ).rejects.toThrow();
+    await expect(getClickhouseRecord(TableName.Scores, invalidScoreId1)).rejects.toThrow();
 
-    await expect(
-      getClickhouseRecord(TableName.Scores, invalidScoreId2),
-    ).rejects.toThrow();
+    await expect(getClickhouseRecord(TableName.Scores, invalidScoreId2)).rejects.toThrow();
   });
 
   it("should upsert traces", async () => {
@@ -1345,9 +1304,7 @@ describe("Ingestion end-to-end tests", () => {
       expect(trace.release).toBe("1.0.0");
       expect(trace.version).toBe("2.0.0");
       expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
-      expect(trace.tags.sort()).toEqual(
-        ["tag-1", "tag-2", "tag-3", "tag-4"].sort(),
-      );
+      expect(trace.tags.sort()).toEqual(["tag-1", "tag-2", "tag-3", "tag-4"].sort());
       expect(trace.tags.length).toBe(4);
     });
   });
@@ -1356,9 +1313,7 @@ describe("Ingestion end-to-end tests", () => {
     const traceId = randomUUID();
 
     const latestEvent = new Date();
-    const oldEvent = new Date(latestEvent).setSeconds(
-      latestEvent.getSeconds() - 1,
-    );
+    const oldEvent = new Date(latestEvent).setSeconds(latestEvent.getSeconds() - 1);
 
     const traceEventList: TraceEventType[] = [
       {
@@ -1516,10 +1471,7 @@ describe("Ingestion end-to-end tests", () => {
 
     await clickhouseWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(
-      TableName.Observations,
-      observationId,
-    );
+    const observation = await getClickhouseRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("extract_location");
     expect(observation.provided_usage_details).toStrictEqual({
@@ -1650,10 +1602,7 @@ describe("Ingestion end-to-end tests", () => {
 
     await clickhouseWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(
-      TableName.Observations,
-      observationId,
-    );
+    const observation = await getClickhouseRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("extract_location");
     expect(observation.provided_usage_details).toStrictEqual({
@@ -1727,10 +1676,7 @@ describe("Ingestion end-to-end tests", () => {
     });
     await clickhouseWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(
-      TableName.Observations,
-      observationId,
-    );
+    const observation = await getClickhouseRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("generation-name");
     expect(observation.output).toBe("overwritten");
@@ -1780,10 +1726,7 @@ describe("Ingestion end-to-end tests", () => {
 
     await clickhouseWriter.flushAll(true);
 
-    const generation = await getClickhouseRecord(
-      TableName.Observations,
-      generationId,
-    );
+    const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
     expect(generation.output).toEqual(
       JSON.stringify({
@@ -1792,9 +1735,7 @@ describe("Ingestion end-to-end tests", () => {
     );
     expect(generation.input).toEqual(JSON.stringify({ key: "value" }));
     expect(generation.provided_model_name).toEqual("gpt-3.5");
-    expect(generation.output).toEqual(
-      JSON.stringify({ key: "this is a great gpt output" }),
-    );
+    expect(generation.output).toEqual(JSON.stringify({ key: "this is a great gpt output" }));
   });
 
   it("should correctly set tokens if usage provided as null", async () => {
@@ -1892,10 +1833,7 @@ describe("Ingestion end-to-end tests", () => {
 
     await clickhouseWriter.flushAll(true);
 
-    const generation = await getClickhouseRecord(
-      TableName.Observations,
-      generationId,
-    );
+    const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
     expect(generation.usage_details.input).toEqual(1285);
     expect(generation.usage_details.output).toEqual(513);
@@ -2000,10 +1938,7 @@ describe("Ingestion end-to-end tests", () => {
     expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
     expect(trace.user_id).toBe("user-1");
 
-    const generation = await getClickhouseRecord(
-      TableName.Observations,
-      generationId,
-    );
+    const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
     expect(generation?.output).toEqual(
       JSON.stringify({
@@ -2012,9 +1947,7 @@ describe("Ingestion end-to-end tests", () => {
     );
     expect(generation?.input).toEqual(JSON.stringify({ key: "value" }));
     expect(generation?.provided_model_name).toEqual("gpt-3.5");
-    expect(generation?.output).toEqual(
-      JSON.stringify({ key: "this is a great gpt output" }),
-    );
+    expect(generation?.output).toEqual(JSON.stringify({ key: "this is a great gpt output" }));
     expect(generation?.usage_details.input).toEqual(5);
     expect(generation?.usage_details.output).toEqual(11);
   });
@@ -2100,10 +2033,7 @@ describe("Ingestion end-to-end tests", () => {
     await clickhouseWriter.flushAll(true);
 
     const trace = await getClickhouseRecord(TableName.Traces, traceId);
-    const observation = await getClickhouseRecord(
-      TableName.Observations,
-      generationId,
-    );
+    const observation = await getClickhouseRecord(TableName.Observations, generationId);
 
     expect(observation?.output).toEqual(
       JSON.stringify({
@@ -2112,9 +2042,7 @@ describe("Ingestion end-to-end tests", () => {
     );
     expect(observation?.input).toEqual(JSON.stringify({ key: "value" }));
     expect(observation?.provided_model_name).toEqual("gpt-3.5");
-    expect(observation?.output).toEqual(
-      JSON.stringify({ key: "this is a great gpt output" }),
-    );
+    expect(observation?.output).toEqual(JSON.stringify({ key: "this is a great gpt output" }));
     expect(observation?.usage_details.input).toEqual(5);
     expect(observation?.usage_details.output).toEqual(11);
   });
@@ -2294,10 +2222,7 @@ describe("Ingestion end-to-end tests", () => {
 
       expect(trace.metadata).toEqual(output);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.metadata).toEqual(output);
     });
@@ -2422,10 +2347,7 @@ describe("Ingestion end-to-end tests", () => {
 
       await clickhouseWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
       expect(generation.usage_details.input).toBe(100000);
@@ -2560,10 +2482,7 @@ describe("Ingestion end-to-end tests", () => {
 
       await clickhouseWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
       expect(generation.usage_details.input).toBe(250000);
@@ -2687,10 +2606,7 @@ describe("Ingestion end-to-end tests", () => {
 
       await clickhouseWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
 
@@ -2806,10 +2722,7 @@ describe("Ingestion end-to-end tests", () => {
 
       await clickhouseWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(
-        TableName.Observations,
-        generationId,
-      );
+      const generation = await getClickhouseRecord(TableName.Observations, generationId);
 
       // At exactly 200K, should use default tier (operator is "gt", not "gte")
       expect(generation.usage_pricing_tier_name).toBe("Standard");
@@ -2818,19 +2731,13 @@ describe("Ingestion end-to-end tests", () => {
   });
 });
 
-async function getClickhouseRecord<T extends TableName>(
-  tableName: T,
-  entityId: string,
-): Promise<RecordReadType<T>> {
+async function getClickhouseRecord<T extends TableName>(tableName: T, entityId: string): Promise<RecordReadType<T>> {
   let query = await clickhouseClient().query({
     query: `SELECT * FROM ${tableName} FINAL WHERE project_id = '${projectId}' AND id = '${entityId}'`,
     format: "JSONEachRow",
   });
 
-  if (
-    tableName === "traces" &&
-    env.HANZO_EXPERIMENT_RETURN_NEW_RESULT === "true"
-  ) {
+  if (tableName === "traces" && env.HANZO_EXPERIMENT_RETURN_NEW_RESULT === "true") {
     await new Promise((resolve) => setTimeout(resolve, 100));
     query = await clickhouseClient().query({
       query: `SELECT

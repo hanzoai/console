@@ -9,8 +9,7 @@ const originalEnv = process.env.ENCRYPTION_KEY;
 
 beforeAll(() => {
   // Set a test encryption key (64 hex characters = 32 bytes)
-  process.env.ENCRYPTION_KEY =
-    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  process.env.ENCRYPTION_KEY = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 });
 
 afterAll(() => {
@@ -31,13 +30,10 @@ describe("encryption", () => {
     it("should encrypt with mocked randomness", () => {
       const mockRandomBytes = vi.spyOn(crypto, "randomBytes");
       // Mock IV (12 bytes) - using a fixed value
-      mockRandomBytes.mockReturnValue(
-        Buffer.from("aabbccddeeff00112233", "hex"),
-      );
+      mockRandomBytes.mockReturnValue(Buffer.from("aabbccddeeff00112233", "hex"));
 
       const plainText = "Hello, World!";
-      const expectedEncrypted =
-        "aabbccddeeff00112233:5c40ad18eaeccee16fd195c5a2:fa3fb54e39fd23981ad146fe6ea4ec56";
+      const expectedEncrypted = "aabbccddeeff00112233:5c40ad18eaeccee16fd195c5a2:fa3fb54e39fd23981ad146fe6ea4ec56";
 
       // Test encrypt produces expected output
       const encrypted = encrypt(plainText);
@@ -49,8 +45,7 @@ describe("encryption", () => {
 
   describe("decrypt", () => {
     it("should decrypt known encrypted value", () => {
-      const encryptedValue =
-        "aabbccddeeff00112233:5c40ad18eaeccee16fd195c5a2:fa3fb54e39fd23981ad146fe6ea4ec56";
+      const encryptedValue = "aabbccddeeff00112233:5c40ad18eaeccee16fd195c5a2:fa3fb54e39fd23981ad146fe6ea4ec56";
       const expectedPlainText = "Hello, World!";
 
       const decrypted = decrypt(encryptedValue);

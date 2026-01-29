@@ -29,12 +29,9 @@ export const variableMapping = z
     selectedColumnId: z.string(),
     jsonSelector: z.string().nullish(),
   })
-  .refine(
-    (value) => value.hanzoObject === "trace" || value.objectName !== null,
-    {
-      message: "objectName is required for hanzoObjects other than trace",
-    },
-  );
+  .refine((value) => value.hanzoObject === "trace" || value.objectName !== null, {
+    message: "objectName is required for hanzoObjects other than trace",
+  });
 
 export const variableMappingList = z.array(variableMapping);
 

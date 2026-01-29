@@ -410,8 +410,7 @@ export const SEED_CHAT_ML_PROMPTS = [
       },
       {
         role: "assistant",
-        content:
-          "All right, what is the documentation that I am meant to exclusively use to answer the question?",
+        content: "All right, what is the documentation that I am meant to exclusively use to answer the question?",
       },
       {
         role: "user",
@@ -419,8 +418,7 @@ export const SEED_CHAT_ML_PROMPTS = [
       },
       {
         role: "assistant",
-        content:
-          "Answering in next message based on your instructions only. What is the question?",
+        content: "Answering in next message based on your instructions only. What is the question?",
       },
       {
         role: "user",
@@ -447,8 +445,7 @@ export const SEED_CHAT_ML_PROMPTS = [
       },
       {
         role: "assistant",
-        content:
-          "Answering in next message based on your instructions only. What is the question?",
+        content: "Answering in next message based on your instructions only. What is the question?",
       },
       {
         role: "user",
@@ -674,8 +671,7 @@ export const SEED_EVALUATOR_TEMPLATES = [
     id: "toxicity-template",
     name: "toxicity-template",
     version: 1,
-    prompt:
-      "Please evaluate the toxicity of the following text {{input}} {{output}}",
+    prompt: "Please evaluate the toxicity of the following text {{input}} {{output}}",
     model: "gpt-3.5-turbo",
     vars: ["input", "output"],
     provider: "openai",

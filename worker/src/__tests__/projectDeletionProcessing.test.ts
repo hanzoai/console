@@ -34,8 +34,7 @@ describe("ProjectDeletionProcessingJob", () => {
   let s3Prefix: string | null = null;
   const orgId = "seed-org-id";
 
-  const maybeEventsIt =
-    env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" ? it : it.skip;
+  const maybeEventsIt = env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" ? it : it.skip;
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
@@ -164,9 +163,7 @@ describe("ProjectDeletionProcessingJob", () => {
       projectId,
     });
     expect(trace).toBeUndefined();
-    expect(() =>
-      getObservationById({ id: `${baseId}-observation`, projectId }),
-    ).rejects.toThrowError("not found");
+    expect(() => getObservationById({ id: `${baseId}-observation`, projectId })).rejects.toThrowError("not found");
     const score = await getScoreById({
       projectId,
       scoreId: `${baseId}-score`,
@@ -174,48 +171,39 @@ describe("ProjectDeletionProcessingJob", () => {
     expect(score).toBeUndefined();
   });
 
-  maybeEventsIt(
-    "should delete event data from S3 for the project",
-    async () => {
-      // Setup
-      const projectId = randomUUID();
-      await prisma.project.create({
-        data: {
-          id: projectId,
-          orgId,
-          name: `Project-${randomUUID()}`,
-        },
-      });
+  maybeEventsIt("should delete event data from S3 for the project", async () => {
+    // Setup
+    const projectId = randomUUID();
+    await prisma.project.create({
+      data: {
+        id: projectId,
+        orgId,
+        name: `Project-${randomUUID()}`,
+      },
+    });
 
-      // Use upsertTrace here as this also creates an S3 event record
-      const baseId = randomUUID();
-      await upsertTrace({
-        id: `${baseId}-trace`,
-        project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
-      });
+    // Use upsertTrace here as this also creates an S3 event record
+    const baseId = randomUUID();
+    await upsertTrace({
+      id: `${baseId}-trace`,
+      project_id: projectId,
+      timestamp: convertDateToClickhouseDateTime(new Date()),
+      created_at: convertDateToClickhouseDateTime(new Date()),
+      updated_at: convertDateToClickhouseDateTime(new Date()),
+    });
 
-      // When
-      await projectDeleteProcessor({
-        data: { payload: { projectId, orgId } },
-      } as Job);
+    // When
+    await projectDeleteProcessor({
+      data: { payload: { projectId, orgId } },
+    } as Job);
 
-      // Then
-      const files = await storageService.listFiles("");
-      expect(files.some((file) => file.file.includes(`${baseId}-trace`))).toBe(
-        false,
-      );
+    // Then
+    const files = await storageService.listFiles("");
+    expect(files.some((file) => file.file.includes(`${baseId}-trace`))).toBe(false);
 
-      const eventLogRecord = await getBlobStorageByProjectAndEntityId(
-        projectId,
-        "trace",
-        `${baseId}-trace`,
-      );
-      expect(eventLogRecord).toHaveLength(0);
-    },
-  );
+    const eventLogRecord = await getBlobStorageByProjectAndEntityId(projectId, "trace", `${baseId}-trace`);
+    expect(eventLogRecord).toHaveLength(0);
+  });
 
   it("should delete all media assets for the project", async () => {
     // Setup
@@ -303,22 +291,17 @@ describe("ProjectDeletionProcessingJob", () => {
       expect(result).toBe(false);
     });
 
-    maybeEventsIt(
-      "should return false when no events exist for project",
-      async () => {
-        const emptyProjectId = randomUUID();
-        const result = await deleteEventsByProjectId(emptyProjectId);
-        expect(result).toBe(false);
-      },
-    );
+    maybeEventsIt("should return false when no events exist for project", async () => {
+      const emptyProjectId = randomUUID();
+      const result = await deleteEventsByProjectId(emptyProjectId);
+      expect(result).toBe(false);
+    });
 
     it("should return true and delete when traces exist", async () => {
       const projectId = randomUUID();
       const traceId = randomUUID();
 
-      await createTracesCh([
-        createTrace({ id: traceId, project_id: projectId }),
-      ]);
+      await createTracesCh([createTrace({ id: traceId, project_id: projectId })]);
 
       const traceBefore = await getTraceById({ traceId, projectId });
       expect(traceBefore).toBeDefined();
@@ -343,16 +326,12 @@ describe("ProjectDeletionProcessingJob", () => {
         }),
       ]);
 
-      await expect(
-        getObservationById({ id: observationId, projectId }),
-      ).toBeDefined();
+      await expect(getObservationById({ id: observationId, projectId })).toBeDefined();
 
       const result = await deleteObservationsByProjectId(projectId);
       expect(result).toBe(true);
 
-      await expect(
-        getObservationById({ id: observationId, projectId }),
-      ).rejects.toThrowError("not found");
+      await expect(getObservationById({ id: observationId, projectId })).rejects.toThrowError("not found");
     });
 
     it("should return true and delete when scores exist", async () => {
@@ -461,10 +440,7 @@ describe("ProjectDeletionProcessingJob", () => {
       ]);
 
       // No observations older than cutoff exist, so should return false
-      const result = await deleteObservationsOlderThanDays(
-        projectId,
-        cutoffDate,
-      );
+      const result = await deleteObservationsOlderThanDays(projectId, cutoffDate);
       expect(result).toBe(false);
 
       // Verify the newer observation is still there (retained)
@@ -505,16 +481,11 @@ describe("ProjectDeletionProcessingJob", () => {
       ]);
 
       // Should return true since old data exists
-      const result = await deleteObservationsOlderThanDays(
-        projectId,
-        cutoffDate,
-      );
+      const result = await deleteObservationsOlderThanDays(projectId, cutoffDate);
       expect(result).toBe(true);
 
       // Verify old observation is deleted
-      await expect(
-        getObservationById({ id: oldObservationId, projectId }),
-      ).rejects.toThrowError("not found");
+      await expect(getObservationById({ id: oldObservationId, projectId })).rejects.toThrowError("not found");
 
       // Verify new observation is retained
       const newObservation = await getObservationById({

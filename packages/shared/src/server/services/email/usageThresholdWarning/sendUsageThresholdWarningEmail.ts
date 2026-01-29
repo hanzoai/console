@@ -7,13 +7,7 @@ import { z } from "zod/v4";
 
 export interface UsageThresholdWarningEmailProps {
   env: Partial<
-    Record<
-      | "EMAIL_FROM_ADDRESS"
-      | "SMTP_CONNECTION_URL"
-      | "NEXTAUTH_URL"
-      | "CLOUD_CRM_EMAIL",
-      string | undefined
-    >
+    Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL" | "NEXTAUTH_URL" | "CLOUD_CRM_EMAIL", string | undefined>
   >;
   organizationName: string;
   currentUsage: number;
@@ -33,9 +27,7 @@ export const sendUsageThresholdWarningEmail = async ({
   resetDate,
 }: UsageThresholdWarningEmailProps) => {
   if (!env.EMAIL_FROM_ADDRESS || !env.SMTP_CONNECTION_URL) {
-    logger.error(
-      "Missing environment variables for sending usage notification email.",
-    );
+    logger.error("Missing environment variables for sending usage notification email.");
     return;
   }
 
@@ -74,9 +66,7 @@ export const sendUsageThresholdWarningEmail = async ({
       if (validationResult.success) {
         mailOptions.bcc = validationResult.data;
       } else {
-        logger.warn(
-          `Invalid CLOUD_CRM_EMAIL format: ${env.CLOUD_CRM_EMAIL}. Skipping BCC.`,
-        );
+        logger.warn(`Invalid CLOUD_CRM_EMAIL format: ${env.CLOUD_CRM_EMAIL}. Skipping BCC.`);
       }
     }
 

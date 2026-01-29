@@ -1,9 +1,5 @@
 import { env } from "../../env";
-import {
-  clickhouseClient,
-  convertDateToClickhouseDateTime,
-  PreferredClickhouseService,
-} from "../clickhouse/client";
+import { clickhouseClient, convertDateToClickhouseDateTime, PreferredClickhouseService } from "../clickhouse/client";
 import { logger } from "../logger";
 import { getTracer, instrumentAsync } from "../instrumentation";
 import { randomUUID } from "crypto";
@@ -11,10 +7,7 @@ import { getClickhouseEntityType } from "../clickhouse/schemaUtils";
 import { NodeClickHouseClientConfigOptions } from "@clickhouse/client/dist/config";
 import { context, SpanKind, trace } from "@opentelemetry/api";
 import { backOff } from "exponential-backoff";
-import {
-  StorageService,
-  StorageServiceFactory,
-} from "../services/StorageService";
+import { StorageService, StorageServiceFactory } from "../services/StorageService";
 import { ClickHouseSettings } from "@clickhouse/client";
 
 /**
@@ -62,14 +55,9 @@ export class ClickHouseResourceError extends Error {
     const errorMessage = originalError.message || "";
 
     for (const [type, config] of Object.entries(ERROR_TYPE_CONFIG) as Array<
-      [
-        keyof typeof ERROR_TYPE_CONFIG,
-        (typeof ERROR_TYPE_CONFIG)[keyof typeof ERROR_TYPE_CONFIG],
-      ]
+      [keyof typeof ERROR_TYPE_CONFIG, (typeof ERROR_TYPE_CONFIG)[keyof typeof ERROR_TYPE_CONFIG]]
     >) {
-      const hasDiscriminator = config.discriminators.some((discriminator) =>
-        errorMessage.includes(discriminator),
-      );
+      const hasDiscriminator = config.discriminators.some((discriminator) => errorMessage.includes(discriminator));
 
       if (hasDiscriminator) {
         return new ClickHouseResourceError(type, originalError);
@@ -98,110 +86,98 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   return s3StorageServiceClient;
 };
 
-export async function upsertClickhouse<
-  T extends Record<string, unknown>,
->(opts: {
+export async function upsertClickhouse<T extends Record<string, unknown>>(opts: {
   table: "scores" | "traces" | "observations" | "traces_null";
   records: T[];
   eventBodyMapper: (body: T) => Record<string, unknown>;
   tags?: Record<string, string>;
 }): Promise<void> {
-  return await instrumentAsync(
-    { name: "clickhouse-upsert", spanKind: SpanKind.CLIENT },
-    async (span) => {
-      // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
-      span.setAttribute("ch.query.table", opts.table);
-      span.setAttribute("db.system", "clickhouse");
-      span.setAttribute("db.operation.name", "UPSERT");
+  return await instrumentAsync({ name: "clickhouse-upsert", spanKind: SpanKind.CLIENT }, async (span) => {
+    // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
+    span.setAttribute("ch.query.table", opts.table);
+    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.operation.name", "UPSERT");
 
-      await Promise.all(
-        opts.records.map(async (record) => {
-          // drop trailing s and pretend it's always a create.
-          // Only applicable to scores and traces.
-          let eventType = `${opts.table.slice(0, -1)}-create`;
-          if (opts.table === "observations") {
-            // @ts-ignore - If it's an observation we now that `type` is a string
-            eventType = `${record["type"].toLowerCase()}-create`;
-          }
-
-          const eventId = randomUUID();
-          const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getClickhouseEntityType(eventType)}/${record.id}/${eventId}.json`;
-
-          if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
-            // Write new file directly to ClickHouse. We don't use the ClickHouse writer here as we expect more limited traffic
-            // and are not worried that much about latency.
-            await clickhouseClient().insert({
-              table: "blob_storage_file_log",
-              values: [
-                {
-                  id: randomUUID(),
-                  project_id: record.project_id,
-                  entity_type: getClickhouseEntityType(eventType),
-                  entity_id: record.id,
-                  event_id: eventId,
-                  bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-                  bucket_path: bucketPath,
-                  event_ts: convertDateToClickhouseDateTime(new Date()),
-                  is_deleted: 0,
-                },
-              ],
-              format: "JSONEachRow",
-              clickhouse_settings: {
-                log_comment: JSON.stringify(opts.tags ?? {}),
-              },
-            });
-          }
-
-          return getS3StorageServiceClient(
-            env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-          ).uploadJson(bucketPath, [
-            {
-              id: eventId,
-              timestamp: new Date().toISOString(),
-              type: eventType,
-              body: opts.eventBodyMapper(record),
-            },
-          ]);
-        }),
-      );
-
-      const res = await clickhouseClient().insert({
-        table: opts.table,
-        values: opts.records.map((record) => ({
-          ...record,
-          event_ts: convertDateToClickhouseDateTime(new Date()),
-        })),
-        format: "JSONEachRow",
-        clickhouse_settings: {
-          log_comment: JSON.stringify(opts.tags ?? {}),
-        },
-      });
-      // same logic as for prisma. we want to see queries in development
-      if (env.NODE_ENV === "development") {
-        logger.info(`clickhouse:insert ${res.query_id} ${opts.table}`);
-      }
-
-      span.setAttribute("ch.queryId", res.query_id);
-
-      // add summary headers to the span. Helps to tune performance
-      const summaryHeader = res.response_headers["x-clickhouse-summary"];
-      if (summaryHeader) {
-        try {
-          const summary = Array.isArray(summaryHeader)
-            ? JSON.parse(summaryHeader[0])
-            : JSON.parse(summaryHeader);
-          for (const key in summary) {
-            span.setAttribute(`ch.${key}`, summary[key]);
-          }
-        } catch (error) {
-          logger.debug(
-            `Failed to parse clickhouse summary header ${summaryHeader}`,
-            error,
-          );
+    await Promise.all(
+      opts.records.map(async (record) => {
+        // drop trailing s and pretend it's always a create.
+        // Only applicable to scores and traces.
+        let eventType = `${opts.table.slice(0, -1)}-create`;
+        if (opts.table === "observations") {
+          // @ts-ignore - If it's an observation we now that `type` is a string
+          eventType = `${record["type"].toLowerCase()}-create`;
         }
+
+        const eventId = randomUUID();
+        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getClickhouseEntityType(eventType)}/${record.id}/${eventId}.json`;
+
+        if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
+          // Write new file directly to ClickHouse. We don't use the ClickHouse writer here as we expect more limited traffic
+          // and are not worried that much about latency.
+          await clickhouseClient().insert({
+            table: "blob_storage_file_log",
+            values: [
+              {
+                id: randomUUID(),
+                project_id: record.project_id,
+                entity_type: getClickhouseEntityType(eventType),
+                entity_id: record.id,
+                event_id: eventId,
+                bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+                bucket_path: bucketPath,
+                event_ts: convertDateToClickhouseDateTime(new Date()),
+                is_deleted: 0,
+              },
+            ],
+            format: "JSONEachRow",
+            clickhouse_settings: {
+              log_comment: JSON.stringify(opts.tags ?? {}),
+            },
+          });
+        }
+
+        return getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, [
+          {
+            id: eventId,
+            timestamp: new Date().toISOString(),
+            type: eventType,
+            body: opts.eventBodyMapper(record),
+          },
+        ]);
+      }),
+    );
+
+    const res = await clickhouseClient().insert({
+      table: opts.table,
+      values: opts.records.map((record) => ({
+        ...record,
+        event_ts: convertDateToClickhouseDateTime(new Date()),
+      })),
+      format: "JSONEachRow",
+      clickhouse_settings: {
+        log_comment: JSON.stringify(opts.tags ?? {}),
+      },
+    });
+    // same logic as for prisma. we want to see queries in development
+    if (env.NODE_ENV === "development") {
+      logger.info(`clickhouse:insert ${res.query_id} ${opts.table}`);
+    }
+
+    span.setAttribute("ch.queryId", res.query_id);
+
+    // add summary headers to the span. Helps to tune performance
+    const summaryHeader = res.response_headers["x-clickhouse-summary"];
+    if (summaryHeader) {
+      try {
+        const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
+        for (const key in summary) {
+          span.setAttribute(`ch.${key}`, summary[key]);
+        }
+      } catch (error) {
+        logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
       }
-    },
-  );
+    }
+  });
 }
 
 export async function* queryClickhouseStream<T>(opts: {
@@ -226,10 +202,7 @@ export async function* queryClickhouseStream<T>(opts: {
         span.setAttribute("db.query.text", opts.query);
         span.setAttribute("db.operation.name", "SELECT");
 
-        const res = await clickhouseClient(
-          opts.clickhouseConfigs,
-          opts.preferredClickhouseService,
-        ).query({
+        const res = await clickhouseClient(opts.clickhouseConfigs, opts.preferredClickhouseService).query({
           query: opts.query,
           format: "JSONEachRow",
           query_params: opts.params,
@@ -250,17 +223,12 @@ export async function* queryClickhouseStream<T>(opts: {
         const summaryHeader = res.response_headers["x-clickhouse-summary"];
         if (summaryHeader) {
           try {
-            const summary = Array.isArray(summaryHeader)
-              ? JSON.parse(summaryHeader[0])
-              : JSON.parse(summaryHeader);
+            const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
             for (const key in summary) {
               span.setAttribute(`ch.${key}`, summary[key]);
             }
           } catch (error) {
-            logger.debug(
-              `Failed to parse clickhouse summary header ${summaryHeader}`,
-              error,
-            );
+            logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
           }
         }
         return res;
@@ -310,10 +278,7 @@ function handleExceptionRow<T>(parsedRow: T): T {
   ) {
     const potentialException = (parsedRow as { exception: string }).exception;
     if (potentialException.match(/^Code: (\d+)/)) {
-      logger.error(
-        `[clickhouse] Exception row detected: ${potentialException}`,
-        parsedRow,
-      );
+      logger.error(`[clickhouse] Exception row detected: ${potentialException}`, parsedRow);
       throw new Error(potentialException);
     }
   }
@@ -350,97 +315,83 @@ export async function queryClickhouse<T>(opts: {
   preferredClickhouseService?: PreferredClickhouseService;
   clickhouseSettings?: ClickHouseSettings;
 }): Promise<T[]> {
-  return await instrumentAsync(
-    { name: "clickhouse-query", spanKind: SpanKind.CLIENT },
-    async (span) => {
-      // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
-      span.setAttribute("ch.query.text", opts.query);
-      span.setAttribute("db.system", "clickhouse");
-      span.setAttribute("db.query.text", opts.query);
-      span.setAttribute("db.operation.name", "SELECT");
+  return await instrumentAsync({ name: "clickhouse-query", spanKind: SpanKind.CLIENT }, async (span) => {
+    // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
+    span.setAttribute("ch.query.text", opts.query);
+    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.query.text", opts.query);
+    span.setAttribute("db.operation.name", "SELECT");
 
-      // Retry logic for socket hang up and other network errors
-      return await backOff(
-        async () => {
-          // same logic as for prisma. we want to see queries in development
-          if (env.NODE_ENV === "development") {
-            logger.info(`clickhouse:query ${opts.query}`);
-          }
-          const res = await clickhouseClient(
-            opts.clickhouseConfigs,
-            opts.preferredClickhouseService,
-          ).query({
-            query: opts.query,
-            format: "JSONEachRow",
-            query_params: opts.params,
-            clickhouse_settings: {
-              asterisk_include_alias_columns: 1,
-              asterisk_include_materialized_columns: 1,
-              ...opts.clickhouseSettings,
-              log_comment: JSON.stringify(opts.tags ?? {}),
-            },
-          });
-
-          span.setAttribute("ch.queryId", res.query_id);
-
-          // add summary headers to the span. Helps to tune performance
-          const summaryHeader = res.response_headers["x-clickhouse-summary"];
-          if (summaryHeader) {
-            try {
-              const summary = Array.isArray(summaryHeader)
-                ? JSON.parse(summaryHeader[0])
-                : JSON.parse(summaryHeader);
-              for (const key in summary) {
-                span.setAttribute(`ch.${key}`, summary[key]);
-              }
-            } catch (error) {
-              logger.debug(
-                `Failed to parse clickhouse summary header ${summaryHeader}`,
-                error,
-              );
-            }
-          }
-
-          return (await res.json<T>()).map(handleExceptionRow);
-        },
-        {
-          numOfAttempts: env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS,
-          retry: (error: Error, attemptNumber: number) => {
-            const shouldRetry = isRetryableError(error);
-            if (shouldRetry) {
-              logger.warn(
-                `ClickHouse query failed with retryable error (attempt ${attemptNumber}/${env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS}): ${error.message}`,
-                {
-                  error: error.message,
-                  attemptNumber,
-                  tags: opts.tags,
-                },
-              );
-              span.addEvent("clickhouse-query-retry", {
-                "retry.attempt": attemptNumber,
-                "retry.error": error.message,
-              });
-            } else {
-              logger.error(
-                `ClickHouse query failed with non-retryable error: ${error.message}`,
-                {
-                  error: error.message,
-                  tags: opts.tags,
-                },
-              );
-            }
-            return shouldRetry;
+    // Retry logic for socket hang up and other network errors
+    return await backOff(
+      async () => {
+        // same logic as for prisma. we want to see queries in development
+        if (env.NODE_ENV === "development") {
+          logger.info(`clickhouse:query ${opts.query}`);
+        }
+        const res = await clickhouseClient(opts.clickhouseConfigs, opts.preferredClickhouseService).query({
+          query: opts.query,
+          format: "JSONEachRow",
+          query_params: opts.params,
+          clickhouse_settings: {
+            asterisk_include_alias_columns: 1,
+            asterisk_include_materialized_columns: 1,
+            ...opts.clickhouseSettings,
+            log_comment: JSON.stringify(opts.tags ?? {}),
           },
-          startingDelay: 100,
-          timeMultiple: 1,
-          maxDelay: 100,
+        });
+
+        span.setAttribute("ch.queryId", res.query_id);
+
+        // add summary headers to the span. Helps to tune performance
+        const summaryHeader = res.response_headers["x-clickhouse-summary"];
+        if (summaryHeader) {
+          try {
+            const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
+            for (const key in summary) {
+              span.setAttribute(`ch.${key}`, summary[key]);
+            }
+          } catch (error) {
+            logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
+          }
+        }
+
+        return (await res.json<T>()).map(handleExceptionRow);
+      },
+      {
+        numOfAttempts: env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS,
+        retry: (error: Error, attemptNumber: number) => {
+          const shouldRetry = isRetryableError(error);
+          if (shouldRetry) {
+            logger.warn(
+              `ClickHouse query failed with retryable error (attempt ${attemptNumber}/${env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS}): ${error.message}`,
+              {
+                error: error.message,
+                attemptNumber,
+                tags: opts.tags,
+              },
+            );
+            span.addEvent("clickhouse-query-retry", {
+              "retry.attempt": attemptNumber,
+              "retry.error": error.message,
+            });
+          } else {
+            logger.error(`ClickHouse query failed with non-retryable error: ${error.message}`, {
+              error: error.message,
+              tags: opts.tags,
+            });
+          }
+          return shouldRetry;
         },
-      ).catch((error) => {
-        // Transform resource errors to provide actionable advice
-        throw ClickHouseResourceError.wrapIfResourceError(error as Error);
-      });
-    },
-  );
+        startingDelay: 100,
+        timeMultiple: 1,
+        maxDelay: 100,
+      },
+    ).catch((error) => {
+      // Transform resource errors to provide actionable advice
+      throw ClickHouseResourceError.wrapIfResourceError(error as Error);
+    });
+  });
 }
 
 export async function commandClickhouse(opts: {
@@ -451,53 +402,43 @@ export async function commandClickhouse(opts: {
   clickhouseSettings?: ClickHouseSettings;
   abortSignal?: AbortSignal;
 }): Promise<void> {
-  return await instrumentAsync(
-    { name: "clickhouse-command", spanKind: SpanKind.CLIENT },
-    async (span) => {
-      // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
-      span.setAttribute("ch.query.text", opts.query);
-      span.setAttribute("db.system", "clickhouse");
-      span.setAttribute("db.query.text", opts.query);
-      span.setAttribute("db.operation.name", "COMMAND");
+  return await instrumentAsync({ name: "clickhouse-command", spanKind: SpanKind.CLIENT }, async (span) => {
+    // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
+    span.setAttribute("ch.query.text", opts.query);
+    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.query.text", opts.query);
+    span.setAttribute("db.operation.name", "COMMAND");
 
-      const res = await clickhouseClient(opts.clickhouseConfigs).command({
-        query: opts.query,
-        query_params: opts.params,
-        ...(opts.tags?.queryId
-          ? { query_id: opts.tags.queryId as string }
-          : {}),
-        ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
-        clickhouse_settings: {
-          ...opts.clickhouseSettings,
-          log_comment: JSON.stringify(opts.tags ?? {}),
-        },
-      });
-      // same logic as for prisma. we want to see queries in development
-      if (env.NODE_ENV === "development") {
-        logger.info(`clickhouse:query ${res.query_id} ${opts.query}`);
-      }
+    const res = await clickhouseClient(opts.clickhouseConfigs).command({
+      query: opts.query,
+      query_params: opts.params,
+      ...(opts.tags?.queryId ? { query_id: opts.tags.queryId as string } : {}),
+      ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
+      clickhouse_settings: {
+        ...opts.clickhouseSettings,
+        log_comment: JSON.stringify(opts.tags ?? {}),
+      },
+    });
+    // same logic as for prisma. we want to see queries in development
+    if (env.NODE_ENV === "development") {
+      logger.info(`clickhouse:query ${res.query_id} ${opts.query}`);
+    }
 
-      span.setAttribute("ch.queryId", res.query_id);
+    span.setAttribute("ch.queryId", res.query_id);
 
-      // add summary headers to the span. Helps to tune performance
-      const summaryHeader = res.response_headers["x-clickhouse-summary"];
-      if (summaryHeader) {
-        try {
-          const summary = Array.isArray(summaryHeader)
-            ? JSON.parse(summaryHeader[0])
-            : JSON.parse(summaryHeader);
-          for (const key in summary) {
-            span.setAttribute(`ch.${key}`, summary[key]);
-          }
-        } catch (error) {
-          logger.debug(
-            `Failed to parse clickhouse summary header ${summaryHeader}`,
-            error,
-          );
+    // add summary headers to the span. Helps to tune performance
+    const summaryHeader = res.response_headers["x-clickhouse-summary"];
+    if (summaryHeader) {
+      try {
+        const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
+        for (const key in summary) {
+          span.setAttribute(`ch.${key}`, summary[key]);
         }
+      } catch (error) {
+        logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
       }
-    },
-  );
+    }
+  });
 }
 
 export function parseClickhouseUTCDateTimeFormat(dateStr: string): Date {

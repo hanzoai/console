@@ -26,24 +26,13 @@ export function CategoricalChart(props: {
   const colors = getColorsForCategories(props.chartLabels);
 
   const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
-    <Tooltip
-      {...tooltipProps}
-      formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()}
-    />
+    <Tooltip {...tooltipProps} formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()} />
   );
 
   return isEmptyChart({ data: props.chartData }) ? (
-    <NoDataOrLoading
-      isLoading={props.isLoading ?? false}
-      className={props.chartClass}
-    />
+    <NoDataOrLoading isLoading={props.isLoading ?? false} className={props.chartClass} />
   ) : (
-    <Card
-      className={cn(
-        "max-h-full min-h-0 min-w-0 max-w-full flex-1 rounded-tremor-default border",
-        props.className,
-      )}
-    >
+    <Card className={cn("max-h-full min-h-0 min-w-0 max-w-full flex-1 rounded-tremor-default border", props.className)}>
       <BarChart
         className={cn(
           "max-h-full min-h-0 min-w-0 max-w-full [&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground",
@@ -53,9 +42,7 @@ export function CategoricalChart(props: {
         index="binLabel"
         categories={props.chartLabels}
         colors={colors}
-        valueFormatter={(number: number) =>
-          Intl.NumberFormat("en-US").format(number).toString()
-        }
+        valueFormatter={(number: number) => Intl.NumberFormat("en-US").format(number).toString()}
         yAxisWidth={48}
         barCategoryGap={barCategoryGap(props.chartData.length)}
         stack={props.stack ?? true}
@@ -76,12 +63,7 @@ export function NumericChart(props: {
 
   const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
     <div className="max-w-56">
-      <Tooltip
-        {...tooltipProps}
-        formatter={(value) =>
-          compactNumberFormatter(value, props.maxFractionDigits)
-        }
-      />
+      <Tooltip {...tooltipProps} formatter={(value) => compactNumberFormatter(value, props.maxFractionDigits)} />
     </div>
   );
 

@@ -43,11 +43,7 @@ export class Hanzo {
   /**
    * Fetches a prompt from the Hanzo prompt management service.
    */
-  async getPrompt(
-    name: string,
-    version?: number,
-    options?: PromptOptions
-  ): Promise<PromptResponse> {
+  async getPrompt(name: string, version?: number, options?: PromptOptions): Promise<PromptResponse> {
     const url = new URL(`/api/public/v2/prompts/${encodeURIComponent(name)}`, this.baseUrl);
     if (version !== undefined) {
       url.searchParams.set("version", String(version));
@@ -83,7 +79,7 @@ export class Hanzo {
       // Handle text prompts (single string) - wrap in user message
       const substituted = substituteVariables(
         typeof promptContent === "string" ? promptContent : JSON.stringify(promptContent),
-        variables
+        variables,
       );
 
       return [{ role: "user", content: substituted }];
@@ -100,12 +96,7 @@ export class Hanzo {
   /**
    * Creates a trace for observability.
    */
-  trace(options: {
-    name?: string;
-    userId?: string;
-    sessionId?: string;
-    metadata?: Record<string, unknown>;
-  }) {
+  trace(options: { name?: string; userId?: string; sessionId?: string; metadata?: Record<string, unknown> }) {
     // Placeholder for trace creation - can be expanded later
     return {
       id: generateTraceId(),
@@ -122,10 +113,7 @@ export class Hanzo {
 /**
  * Substitutes {{variable}} placeholders in a string with values from the variables object.
  */
-function substituteVariables(
-  template: string,
-  variables: Record<string, string>
-): string {
+function substituteVariables(template: string, variables: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     return variables[key] ?? match;
   });

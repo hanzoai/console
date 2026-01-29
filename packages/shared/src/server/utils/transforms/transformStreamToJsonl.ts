@@ -5,11 +5,7 @@ export function transformStreamToJsonl(): Transform {
   return new Transform({
     objectMode: true,
 
-    transform(
-      row: Record<string, any>,
-      encoding: BufferEncoding,
-      callback: TransformCallback,
-    ): void {
+    transform(row: Record<string, any>, encoding: BufferEncoding, callback: TransformCallback): void {
       this.push(stringify(row) + "\n");
       callback();
     },

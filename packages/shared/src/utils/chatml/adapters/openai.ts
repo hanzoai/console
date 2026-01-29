@@ -1,10 +1,5 @@
 import type { NormalizerContext, ProviderAdapter } from "../types";
-import {
-  removeNullFields,
-  stringifyToolResultContent,
-  parseMetadata,
-  isRichToolResult,
-} from "../helpers";
+import { removeNullFields, stringifyToolResultContent, parseMetadata, isRichToolResult } from "../helpers";
 import { z } from "zod/v4";
 
 /**
@@ -140,10 +135,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
     const toolCall: Record<string, unknown> = {
       id: working.call_id || working.id || "",
       name: working.name,
-      arguments:
-        typeof working.arguments === "string"
-          ? working.arguments
-          : JSON.stringify(working.arguments ?? {}),
+      arguments: typeof working.arguments === "string" ? working.arguments : JSON.stringify(working.arguments ?? {}),
       type: "function",
     };
 
@@ -167,10 +159,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   // Format: { type: "function_call_output", call_id: "...", output: "..." }
   // Convert to: { role: "tool", tool_call_id: "...", content: "..." }
   if (working.type === "function_call_output") {
-    const content =
-      typeof working.output === "string"
-        ? working.output
-        : JSON.stringify(working.output ?? "");
+    const content = typeof working.output === "string" ? working.output : JSON.stringify(working.output ?? "");
 
     const { type: _type, call_id, output: _output, ...rest } = working;
 
@@ -187,11 +176,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
 
   // Extract text from OpenAI Agents output_text format
   // Format: content: [{type: "output_text", text: "..."}]
-  if (
-    normalized.content &&
-    Array.isArray(normalized.content) &&
-    normalized.content.length > 0
-  ) {
+  if (normalized.content && Array.isArray(normalized.content) && normalized.content.length > 0) {
     const firstItem = normalized.content[0];
     if (
       firstItem &&
@@ -215,8 +200,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   // Convert to: { id, name, arguments, type }
   if (normalized.tool_calls && Array.isArray(normalized.tool_calls)) {
     const sanitizedToolCalls = (normalized.tool_calls as unknown[]).filter(
-      (tc): tc is Record<string, unknown> =>
-        Boolean(tc) && typeof tc === "object",
+      (tc): tc is Record<string, unknown> => Boolean(tc) && typeof tc === "object",
     );
 
     normalized.tool_calls = sanitizedToolCalls.map((tc) => {
@@ -225,10 +209,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
         return {
           id: tc.id,
           name: func.name,
-          arguments:
-            typeof func.arguments === "string"
-              ? func.arguments
-              : JSON.stringify(func.arguments ?? {}),
+          arguments: typeof func.arguments === "string" ? func.arguments : JSON.stringify(func.arguments ?? {}),
           type: tc.type || "function",
           index: tc.index,
         };
@@ -236,10 +217,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
       // Already flat format, just ensure arguments is stringified
       return {
         ...tc,
-        arguments:
-          typeof tc.arguments === "string"
-            ? tc.arguments
-            : JSON.stringify(tc.arguments ?? {}),
+        arguments: typeof tc.arguments === "string" ? tc.arguments : JSON.stringify(tc.arguments ?? {}),
       };
     });
   }
@@ -329,11 +307,7 @@ function preprocessData(data: unknown): unknown {
     const obj = data as Record<string, unknown>;
     if (Array.isArray(obj.choices) && obj.choices.length > 0) {
       const firstChoice = obj.choices[0] as Record<string, unknown>;
-      if (
-        firstChoice &&
-        typeof firstChoice === "object" &&
-        "message" in firstChoice
-      ) {
+      if (firstChoice && typeof firstChoice === "object" && "message" in firstChoice) {
         return normalizeMessage(firstChoice.message);
       }
     }
@@ -349,9 +323,7 @@ function preprocessData(data: unknown): unknown {
     const obj = data as Record<string, unknown>;
     return {
       ...obj,
-      messages: Array.isArray(obj.messages)
-        ? obj.messages.map(normalizeMessage)
-        : obj.messages,
+      messages: Array.isArray(obj.messages) ? obj.messages.map(normalizeMessage) : obj.messages,
     };
   }
 
@@ -385,20 +357,13 @@ export const openAIAdapter: ProviderAdapter = {
       // Semantic Kernel (scope.name starts with Microsoft.SemanticKernel)
       if ("scope" in meta && typeof meta.scope === "object") {
         const scope = meta.scope as Record<string, unknown>;
-        if (
-          typeof scope.name === "string" &&
-          scope.name.startsWith("Microsoft.SemanticKernel")
-        ) {
+        if (typeof scope.name === "string" && scope.name.startsWith("Microsoft.SemanticKernel")) {
           return false;
         }
       }
 
       // LangChain (type without role)
-      if (
-        ctx.metadata &&
-        typeof ctx.metadata === "object" &&
-        "messages" in ctx.metadata
-      ) {
+      if (ctx.metadata && typeof ctx.metadata === "object" && "messages" in ctx.metadata) {
         const messages = (ctx.metadata as Record<string, unknown>).messages;
         if (Array.isArray(messages)) {
           const hasLangChainType = messages.some((msg: unknown) => {
@@ -437,33 +402,24 @@ export const openAIAdapter: ProviderAdapter = {
     }
 
     // STRUCTURAL: Schema-based detection on metadata
-    if (OpenAIInputChatCompletionsSchema.safeParse(ctx.metadata).success)
-      return true;
+    if (OpenAIInputChatCompletionsSchema.safeParse(ctx.metadata).success) return true;
     if (OpenAIInputMessagesSchema.safeParse(ctx.metadata).success) return true;
-    if (OpenAIOutputResponsesSchema.safeParse(ctx.metadata).success)
-      return true;
+    if (OpenAIOutputResponsesSchema.safeParse(ctx.metadata).success) return true;
     if (OpenAIOutputChoicesSchema.safeParse(ctx.metadata).success) return true;
-    if (OpenAIOutputSingleMessageSchema.safeParse(ctx.metadata).success)
-      return true;
+    if (OpenAIOutputSingleMessageSchema.safeParse(ctx.metadata).success) return true;
 
     // finally, test on data if available. we might've done this already if we passed
     // data into metadata. we only do this last due to performance concerns.
-    if (OpenAIInputChatCompletionsSchema.safeParse(ctx.data).success)
-      return true;
+    if (OpenAIInputChatCompletionsSchema.safeParse(ctx.data).success) return true;
     if (OpenAIInputMessagesSchema.safeParse(ctx.data).success) return true;
     if (OpenAIOutputResponsesSchema.safeParse(ctx.data).success) return true;
     if (OpenAIOutputChoicesSchema.safeParse(ctx.data).success) return true;
-    if (OpenAIOutputSingleMessageSchema.safeParse(ctx.data).success)
-      return true;
+    if (OpenAIOutputSingleMessageSchema.safeParse(ctx.data).success) return true;
 
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    _ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", _ctx: NormalizerContext): unknown {
     return preprocessData(data);
   },
 };

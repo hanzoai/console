@@ -12,9 +12,7 @@ export function removeNullFields(obj: unknown): Record<string, unknown> {
   return cleaned;
 }
 
-export function stringifyToolCallArgs(
-  toolCall: Record<string, unknown>,
-): Record<string, unknown> {
+export function stringifyToolCallArgs(toolCall: Record<string, unknown>): Record<string, unknown> {
   if (!toolCall?.function) return toolCall;
 
   const func = toolCall.function as Record<string, unknown>;
@@ -22,10 +20,7 @@ export function stringifyToolCallArgs(
     ...toolCall,
     function: {
       ...func,
-      arguments:
-        typeof func.arguments === "string"
-          ? func.arguments
-          : JSON.stringify(func.arguments ?? {}),
+      arguments: typeof func.arguments === "string" ? func.arguments : JSON.stringify(func.arguments ?? {}),
     },
   };
 }
@@ -66,9 +61,7 @@ export function isRichToolResult(content: unknown): boolean {
   return false;
 }
 
-export function parseMetadata(
-  metadata: unknown,
-): Record<string, unknown> | null {
+export function parseMetadata(metadata: unknown): Record<string, unknown> | null {
   if (!metadata) return null;
 
   if (typeof metadata === "string") {
@@ -86,10 +79,7 @@ export function parseMetadata(
   return null;
 }
 
-export function getNestedProperty(
-  obj: Record<string, unknown> | null | undefined,
-  ...path: string[]
-): unknown {
+export function getNestedProperty(obj: Record<string, unknown> | null | undefined, ...path: string[]): unknown {
   let current: unknown = obj;
   for (const key of path) {
     if (!current || typeof current !== "object") return undefined;

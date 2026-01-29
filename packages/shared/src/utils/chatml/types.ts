@@ -25,10 +25,6 @@ export type ToolEvent =
 export interface ProviderAdapter {
   id: string;
   detect(ctx: NormalizerContext): boolean;
-  preprocess(
-    data: unknown,
-    kind: "input" | "output",
-    ctx: NormalizerContext,
-  ): unknown;
+  preprocess(data: unknown, kind: "input" | "output", ctx: NormalizerContext): unknown;
   extractToolEvents?(message: Record<string, unknown>): ToolEvent[];
 }

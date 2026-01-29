@@ -19,17 +19,10 @@
 import { type TreeNode, type TraceSearchListItem } from "./types";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 import Decimal from "decimal.js";
-import {
-  type ObservationLevelType,
-  ObservationLevel,
-  type TraceDomain,
-} from "@hanzo/shared";
+import { type ObservationLevelType, ObservationLevel, type TraceDomain } from "@hanzo/shared";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
-type TraceType = Omit<
-  WithStringifiedMetadata<TraceDomain>,
-  "input" | "output"
-> & {
+type TraceType = Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
   input: string | null;
   output: string | null;
   latency?: number;
@@ -79,13 +72,10 @@ function filterAndPrepareObservations(
   sortedObservations: ObservationReturnType[];
   hiddenObservationsCount: number;
 } {
-  if (list.length === 0)
-    return { sortedObservations: [], hiddenObservationsCount: 0 };
+  if (list.length === 0) return { sortedObservations: [], hiddenObservationsCount: 0 };
 
   // Filter for observations with minimum level
-  const mutableList = list.filter((o) =>
-    getObservationLevels(minLevel).includes(o.level),
-  );
+  const mutableList = list.filter((o) => getObservationLevels(minLevel).includes(o.level));
   const hiddenObservationsCount = list.length - mutableList.length;
 
   // Build a Set of all observation IDs for O(1) lookup
@@ -93,18 +83,13 @@ function filterAndPrepareObservations(
 
   // Remove parentObservationId if parent doesn't exist
   mutableList.forEach((observation) => {
-    if (
-      observation.parentObservationId &&
-      !observationIds.has(observation.parentObservationId)
-    ) {
+    if (observation.parentObservationId && !observationIds.has(observation.parentObservationId)) {
       observation.parentObservationId = null;
     }
   });
 
   // Sort by start time
-  const sortedObservations = mutableList.sort(
-    (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-  );
+  const sortedObservations = mutableList.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
   return {
     sortedObservations,
@@ -226,10 +211,8 @@ function buildTreeNodesBottomUp(
         nodeCost = cost;
       }
     } else if (obs.inputCost != null || obs.outputCost != null) {
-      const inputCost =
-        obs.inputCost != null ? new Decimal(obs.inputCost) : new Decimal(0);
-      const outputCost =
-        obs.outputCost != null ? new Decimal(obs.outputCost) : new Decimal(0);
+      const inputCost = obs.inputCost != null ? new Decimal(obs.inputCost) : new Decimal(0);
+      const outputCost = obs.outputCost != null ? new Decimal(obs.outputCost) : new Decimal(0);
       const combinedCost = inputCost.plus(outputCost);
       if (!combinedCost.isZero()) {
         nodeCost = combinedCost;
@@ -237,31 +220,23 @@ function buildTreeNodesBottomUp(
     }
 
     // Sum children's total costs (already computed bottom-up)
-    const childrenTotalCost = childTreeNodes.reduce<Decimal | undefined>(
-      (acc, child) => {
-        if (!child.totalCost) return acc;
-        return acc ? acc.plus(child.totalCost) : child.totalCost;
-      },
-      undefined,
-    );
+    const childrenTotalCost = childTreeNodes.reduce<Decimal | undefined>((acc, child) => {
+      if (!child.totalCost) return acc;
+      return acc ? acc.plus(child.totalCost) : child.totalCost;
+    }, undefined);
 
     // Total = node cost + children costs
-    const totalCost =
-      nodeCost && childrenTotalCost
-        ? nodeCost.plus(childrenTotalCost)
-        : nodeCost || childrenTotalCost;
+    const totalCost = nodeCost && childrenTotalCost ? nodeCost.plus(childrenTotalCost) : nodeCost || childrenTotalCost;
 
     // Calculate temporal and structural properties
-    const startTimeSinceTrace =
-      obs.startTime.getTime() - traceStartTime.getTime();
+    const startTimeSinceTrace = obs.startTime.getTime() - traceStartTime.getTime();
 
     let startTimeSinceParentStart: number | null = null;
 
     if (obs.parentObservationId) {
       const parentNode = nodeRegistry.get(obs.parentObservationId);
       if (parentNode) {
-        startTimeSinceParentStart =
-          obs.startTime.getTime() - parentNode.observation.startTime.getTime();
+        startTimeSinceParentStart = obs.startTime.getTime() - parentNode.observation.startTime.getTime();
       }
     }
 
@@ -271,10 +246,7 @@ function buildTreeNodesBottomUp(
     // Calculate childrenDepth (max depth of subtree rooted at this node)
     // Leaf nodes have childrenDepth = 0
     // Parent nodes have childrenDepth = max(children.childrenDepth) + 1
-    const childrenDepth =
-      childTreeNodes.length > 0
-        ? Math.max(...childTreeNodes.map((c) => c.childrenDepth)) + 1
-        : 0;
+    const childrenDepth = childTreeNodes.length > 0 ? Math.max(...childTreeNodes.map((c) => c.childrenDepth)) + 1 : 0;
 
     // Create TreeNode
     const treeNode: TreeNode = {
@@ -341,8 +313,7 @@ function buildTraceTree(
   nodeMap: Map<string, TreeNode>;
 } {
   // Phase 1: Filter and prepare observations
-  const { sortedObservations, hiddenObservationsCount } =
-    filterAndPrepareObservations(observations, minLevel);
+  const { sortedObservations, hiddenObservationsCount } = filterAndPrepareObservations(observations, minLevel);
 
   // Handle empty case
   if (sortedObservations.length === 0) {
@@ -377,12 +348,7 @@ function buildTraceTree(
 
   // Phase 3: Build TreeNodes bottom-up with cost aggregation
   const nodeMap = new Map<string, TreeNode>();
-  const rootIds = buildTreeNodesBottomUp(
-    nodeRegistry,
-    leafIds,
-    nodeMap,
-    trace.timestamp,
-  );
+  const rootIds = buildTreeNodesBottomUp(nodeRegistry, leafIds, nodeMap, trace.timestamp);
 
   // Phase 4: Build roots array
   const rootTreeNodes: TreeNode[] = [];
@@ -404,19 +370,13 @@ function buildTraceTree(
   // Traditional traces: wrap in TRACE node
 
   // Calculate trace root total cost
-  const traceTotalCost = rootTreeNodes.reduce<Decimal | undefined>(
-    (acc, child) => {
-      if (!child.totalCost) return acc;
-      return acc ? acc.plus(child.totalCost) : child.totalCost;
-    },
-    undefined,
-  );
+  const traceTotalCost = rootTreeNodes.reduce<Decimal | undefined>((acc, child) => {
+    if (!child.totalCost) return acc;
+    return acc ? acc.plus(child.totalCost) : child.totalCost;
+  }, undefined);
 
   // Calculate trace root childrenDepth
-  const traceChildrenDepth =
-    rootTreeNodes.length > 0
-      ? Math.max(...rootTreeNodes.map((c) => c.childrenDepth)) + 1
-      : 0;
+  const traceChildrenDepth = rootTreeNodes.length > 0 ? Math.max(...rootTreeNodes.map((c) => c.childrenDepth)) + 1 : 0;
 
   // Create trace root node
   const traceNode: TreeNode = {
@@ -459,11 +419,7 @@ export function buildTraceUiData(
   searchItems: TraceSearchListItem[];
   nodeMap: Map<string, TreeNode>;
 } {
-  const { roots, hiddenObservationsCount, nodeMap } = buildTraceTree(
-    trace,
-    observations,
-    minLevel,
-  );
+  const { roots, hiddenObservationsCount, nodeMap } = buildTraceTree(trace, observations, minLevel);
 
   // Handle empty roots case
   if (roots.length === 0) {
@@ -481,11 +437,7 @@ export function buildTraceUiData(
     roots.length > 0
       ? Math.max(
           ...roots.map((r) =>
-            r.latency
-              ? r.latency * 1000
-              : r.endTime
-                ? r.endTime.getTime() - r.startTime.getTime()
-                : 0,
+            r.latency ? r.latency * 1000 : r.endTime ? r.endTime.getTime() - r.startTime.getTime() : 0,
           ),
         )
       : undefined;

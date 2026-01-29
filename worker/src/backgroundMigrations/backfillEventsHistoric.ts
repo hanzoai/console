@@ -98,26 +98,17 @@ export class ConcurrentQueryManager<T extends BaseChunkTodo> {
                 await onComplete(todo, true);
                 await scheduleNext(); // Immediately schedule next
               } catch (err) {
-                logger.error(
-                  `[Backfill Events] Error in onComplete/scheduleNext for completed chunk ${todo.id}`,
-                  err,
-                );
+                logger.error(`[Backfill Events] Error in onComplete/scheduleNext for completed chunk ${todo.id}`, err);
                 throw err;
               }
             } else if (status === "failed" || status === "not_found") {
               this.activeQueries.delete(queryId);
-              const error =
-                status === "failed"
-                  ? await getQueryError(queryId)
-                  : "Query not found in query_log";
+              const error = status === "failed" ? await getQueryError(queryId) : "Query not found in query_log";
               try {
                 await onComplete(todo, false, error);
                 await scheduleNext();
               } catch (err) {
-                logger.error(
-                  `[Backfill Events] Error in onComplete/scheduleNext for failed chunk ${todo.id}`,
-                  err,
-                );
+                logger.error(`[Backfill Events] Error in onComplete/scheduleNext for failed chunk ${todo.id}`, err);
                 throw err;
               }
             }
@@ -134,10 +125,7 @@ export class ConcurrentQueryManager<T extends BaseChunkTodo> {
         }
       } catch (error) {
         // Unexpected error outside individual query handling
-        logger.error(
-          "[Backfill Events] Unexpected error during poll cycle",
-          error,
-        );
+        logger.error("[Backfill Events] Unexpected error during poll cycle", error);
       } finally {
         this.isPolling = false;
       }
@@ -226,12 +214,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     valid: boolean;
     reason?: string;
   }> {
-    const requiredTables = [
-      "observations_pid_tid_sorting",
-      "traces_pid_tid_sorting",
-      "events",
-      "backfill_chunks",
-    ];
+    const requiredTables = ["observations_pid_tid_sorting", "traces_pid_tid_sorting", "events", "backfill_chunks"];
 
     for (const table of requiredTables) {
       try {
@@ -266,8 +249,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     if (chunksCount[0].count === "0") {
       return {
         valid: false,
-        reason:
-          "backfill_chunks table is empty - populate chunk boundaries first",
+        reason: "backfill_chunks table is empty - populate chunk boundaries first",
       };
     }
 
@@ -331,9 +313,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
       }
     }
 
-    logger.info(
-      `[Backfill Events] Loaded ${todos.length} chunks from backfill_chunks table`,
-    );
+    logger.info(`[Backfill Events] Loaded ${todos.length} chunks from backfill_chunks table`);
 
     return todos;
   }
@@ -346,20 +326,14 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
    * Recovers in-progress todos from a previous run.
    * Returns an array of todos that are still running and should be added to the query manager.
    */
-  private async recoverInProgressTodos(
-    state: MigrationState,
-  ): Promise<ChunkTodo[]> {
-    const inProgress = state.todos.filter(
-      (t) => t.status === "in_progress" && t.queryId,
-    );
+  private async recoverInProgressTodos(state: MigrationState): Promise<ChunkTodo[]> {
+    const inProgress = state.todos.filter((t) => t.status === "in_progress" && t.queryId);
 
     if (inProgress.length === 0) {
       return [];
     }
 
-    logger.info(
-      `[Backfill Events] Recovering ${inProgress.length} in-progress chunks`,
-    );
+    logger.info(`[Backfill Events] Recovering ${inProgress.length} in-progress chunks`);
 
     const stillRunning: ChunkTodo[] = [];
 
@@ -508,11 +482,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
   // Fire Query (with tracking)
   // ============================================================================
 
-  private async fireQuery(
-    query: string,
-    queryId: string,
-    retryCount: number = 0,
-  ): Promise<void> {
+  private async fireQuery(query: string, queryId: string, retryCount: number = 0): Promise<void> {
     logger.info(`[Backfill Events] Firing query ${queryId}`);
 
     // Create AbortController to abort HTTP connection after query starts on server.
@@ -576,33 +546,23 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
         }
       }
     } catch (error) {
-      logger.error(
-        `[Backfill Events] Error verifying query ${queryId} started`,
-        error,
-      );
+      logger.error(`[Backfill Events] Error verifying query ${queryId} started`, error);
       throw error; // Re-throw so the caller knows the query failed to start
     }
 
     // Abort the HTTP connection now that the query is confirmed running on the server.
     // This prevents "Broken pipe" errors from the connection timing out.
     // The query continues executing on ClickHouse - we track completion via polling.
-    logger.info(
-      `[Backfill Events] Query ${queryId} confirmed running, aborting HTTP connection`,
-    );
+    logger.info(`[Backfill Events] Query ${queryId} confirmed running, aborting HTTP connection`);
     abortController.abort();
 
     // Handle the expected abort error
     queryPromise.catch((err) => {
       // Abort errors are expected - log at debug level
       if (err?.name === "AbortError" || err?.message?.includes("aborted")) {
-        logger.debug(
-          `[Backfill Events] Query ${queryId} HTTP connection aborted as expected`,
-        );
+        logger.debug(`[Backfill Events] Query ${queryId} HTTP connection aborted as expected`);
       } else {
-        logger.info(
-          `[Backfill Events] Query ${queryId} promise rejected: ${err?.message}`,
-          err,
-        );
+        logger.info(`[Backfill Events] Query ${queryId} promise rejected: ${err?.message}`, err);
       }
     });
   }
@@ -630,15 +590,10 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     });
 
     // Check if ClickHouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "ClickHouse credentials must be configured to perform migration",
+        invalidReason: "ClickHouse credentials must be configured to perform migration",
       };
     }
 
@@ -651,9 +606,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     if (!tableNames.some((r) => r.name === "events")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(
-          `ClickHouse events table does not exist. Retrying in 10s...`,
-        );
+        logger.info(`ClickHouse events table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -690,14 +643,11 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     // Parse config from args
     const config: MigrationState["config"] = {
       concurrency: migrationArgs.concurrency ?? DEFAULT_CONFIG.concurrency,
-      pollIntervalMs:
-        migrationArgs.pollIntervalMs ?? DEFAULT_CONFIG.pollIntervalMs,
+      pollIntervalMs: migrationArgs.pollIntervalMs ?? DEFAULT_CONFIG.pollIntervalMs,
       maxRetries: migrationArgs.maxRetries ?? DEFAULT_CONFIG.maxRetries,
     };
 
-    logger.info(
-      `[Backfill Events] Starting historic event backfill with config: ${JSON.stringify(config)}`,
-    );
+    logger.info(`[Backfill Events] Starting historic event backfill with config: ${JSON.stringify(config)}`);
 
     // Load or initialize state
     let state = await this.loadState();
@@ -725,9 +675,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
       state = await this.loadState();
       const failedChunks = state.todos.filter((t) => t.status === "failed");
       if (failedChunks.length > 0) {
-        logger.info(
-          `[Backfill Events] Resetting ${failedChunks.length} failed chunks to pending`,
-        );
+        logger.info(`[Backfill Events] Resetting ${failedChunks.length} failed chunks to pending`);
         for (const todo of state.todos) {
           if (todo.status === "failed") {
             todo.status = "pending";
@@ -774,65 +722,38 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
       // Fire the query
       try {
         const query = this.buildQuery(state.todos[todoIndex]);
-        await this.fireQuery(
-          query,
-          state.todos[todoIndex].queryId!,
-          state.todos[todoIndex].retryCount || 0,
-        );
-        manager.addQuery(
-          state.todos[todoIndex],
-          state.todos[todoIndex].queryId!,
-        );
-        logger.info(
-          `[Backfill Events] Started chunk ${nextTodo.id} with query ${state.todos[todoIndex].queryId}`,
-        );
+        await this.fireQuery(query, state.todos[todoIndex].queryId!, state.todos[todoIndex].retryCount || 0);
+        manager.addQuery(state.todos[todoIndex], state.todos[todoIndex].queryId!);
+        logger.info(`[Backfill Events] Started chunk ${nextTodo.id} with query ${state.todos[todoIndex].queryId}`);
       } catch (err) {
-        logger.error(
-          `[Backfill Events] Failed to start query for ${nextTodo.id}`,
-          err,
-        );
+        logger.error(`[Backfill Events] Failed to start query for ${nextTodo.id}`, err);
         state.todos[todoIndex].status = "pending"; // Will retry on next scheduleNext
         state.todos[todoIndex].queryId = undefined;
-        state.activeQueries = state.activeQueries.filter(
-          (q) => q !== state.todos[todoIndex].queryId,
-        );
+        state.activeQueries = state.activeQueries.filter((q) => q !== state.todos[todoIndex].queryId);
         await this.updateState(state);
       }
     };
 
-    const onComplete = async (
-      todo: ChunkTodo,
-      success: boolean,
-      error?: string,
-    ): Promise<void> => {
+    const onComplete = async (todo: ChunkTodo, success: boolean, error?: string): Promise<void> => {
       state = await this.loadState();
       const todoIndex = state.todos.findIndex((t) => t.id === todo.id);
       if (todoIndex === -1) return;
 
       // Remove from activeQueries
-      state.activeQueries = state.activeQueries.filter(
-        (q) => q !== todo.queryId,
-      );
+      state.activeQueries = state.activeQueries.filter((q) => q !== todo.queryId);
 
       if (success) {
         state.todos[todoIndex].status = "completed";
         state.todos[todoIndex].completedAt = new Date().toISOString();
-        const completed = state.todos.filter(
-          (t) => t.status === "completed",
-        ).length;
+        const completed = state.todos.filter((t) => t.status === "completed").length;
         const total = state.todos.length;
-        logger.info(
-          `[Backfill Events] Completed chunk ${todo.id} (${completed}/${total})`,
-        );
+        logger.info(`[Backfill Events] Completed chunk ${todo.id} (${completed}/${total})`);
       } else {
-        state.todos[todoIndex].retryCount =
-          (state.todos[todoIndex].retryCount || 0) + 1;
+        state.todos[todoIndex].retryCount = (state.todos[todoIndex].retryCount || 0) + 1;
         if (state.todos[todoIndex].retryCount >= config.maxRetries!) {
           state.todos[todoIndex].status = "failed";
           state.todos[todoIndex].error = error;
-          logger.error(
-            `[Backfill Events] Chunk ${todo.id} failed permanently: ${error}`,
-          );
+          logger.error(`[Backfill Events] Chunk ${todo.id} failed permanently: ${error}`);
         } else {
           state.todos[todoIndex].status = "pending"; // Retry
           logger.warn(
@@ -850,9 +771,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     // This prevents scheduling new queries on top of already-running ones after a restart
     for (const todo of stillRunningTodos) {
       manager.addQuery(todo, todo.queryId!);
-      logger.info(
-        `[Backfill Events] Added recovered running query ${todo.queryId} for chunk ${todo.id} to manager`,
-      );
+      logger.info(`[Backfill Events] Added recovered running query ${todo.queryId} for chunk ${todo.id} to manager`);
     }
 
     // Schedule initial batch up to concurrency limit (minus already-running recovered queries)
@@ -864,9 +783,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     // Wait for all queries to complete
     while (!this.isAborted) {
       state = await this.loadState();
-      const pending = state.todos.filter(
-        (t) => t.status === "pending" || t.status === "in_progress",
-      );
+      const pending = state.todos.filter((t) => t.status === "pending" || t.status === "in_progress");
       if (pending.length === 0) break;
       await sleep(config.pollIntervalMs!);
     }
@@ -874,18 +791,14 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     manager.stopPolling();
 
     if (this.isAborted) {
-      logger.info(
-        `[Backfill Events] Migration aborted. Can be resumed from current state.`,
-      );
+      logger.info(`[Backfill Events] Migration aborted. Can be resumed from current state.`);
       return;
     }
 
     // Check for failed chunks
     const failed = state.todos.filter((t) => t.status === "failed");
     if (failed.length > 0) {
-      logger.error(
-        `[Backfill Events] Migration completed with ${failed.length} failed chunks`,
-      );
+      logger.error(`[Backfill Events] Migration completed with ${failed.length} failed chunks`);
     }
 
     logger.info(
@@ -906,21 +819,15 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
 async function main() {
   // Global error handlers for better exit diagnostics
   process.on("unhandledRejection", (reason) => {
-    logger.error(
-      "[Backfill Events] Unhandled promise rejection - process will exit",
-      {
-        reason: reason instanceof Error ? reason.message : String(reason),
-        stack: reason instanceof Error ? reason.stack : undefined,
-      },
-    );
+    logger.error("[Backfill Events] Unhandled promise rejection - process will exit", {
+      reason: reason instanceof Error ? reason.message : String(reason),
+      stack: reason instanceof Error ? reason.stack : undefined,
+    });
     process.exit(1);
   });
 
   process.on("uncaughtException", (error) => {
-    logger.error(
-      "[Backfill Events] Uncaught exception - process will exit",
-      error,
-    );
+    logger.error("[Backfill Events] Uncaught exception - process will exit", error);
     process.exit(1);
   });
 

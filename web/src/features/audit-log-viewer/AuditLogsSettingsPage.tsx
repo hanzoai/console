@@ -13,15 +13,12 @@ export function AuditLogsSettingsPage(props: { projectId: string }) {
 
   const body = !hasEntitlement ? (
     <p className="text-sm text-muted-foreground">
-      Audit logs are an Enterprise feature. Upgrade your plan to track all
-      changes made to your project.
+      Audit logs are an Enterprise feature. Upgrade your plan to track all changes made to your project.
     </p>
   ) : !hasAccess ? (
     <Alert>
       <AlertTitle>Access Denied</AlertTitle>
-      <AlertDescription>
-        Contact your project administrator to request access.
-      </AlertDescription>
+      <AlertDescription>Contact your project administrator to request access.</AlertDescription>
     </Alert>
   ) : (
     <AuditLogsTable scope="project" projectId={props.projectId} />
@@ -31,9 +28,8 @@ export function AuditLogsSettingsPage(props: { projectId: string }) {
     <>
       <Header title="Audit Logs" />
       <p className="mb-2 text-sm text-muted-foreground">
-        Track who changed what in your project and when. Monitor settings,
-        configurations, and data changes over time. Reach out to the HanzoCloud
-        team if you require more detailed/filtered audit logs.
+        Track who changed what in your project and when. Monitor settings, configurations, and data changes over time.
+        Reach out to the HanzoCloud team if you require more detailed/filtered audit logs.
       </p>
       {body}
     </>

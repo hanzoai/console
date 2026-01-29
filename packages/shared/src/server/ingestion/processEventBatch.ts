@@ -2,11 +2,7 @@ import { randomUUID } from "crypto";
 import { z } from "zod/v4";
 
 import { env } from "../../env";
-import {
-  InvalidRequestError,
-  HanzoNotFoundError,
-  UnauthorizedError,
-} from "../../errors";
+import { InvalidRequestError, HanzoNotFoundError, UnauthorizedError } from "../../errors";
 import { AuthHeaderValidVerificationResultIngestion } from "../auth/types";
 import { getClickhouseEntityType } from "../clickhouse/schemaUtils";
 import {
@@ -20,20 +16,10 @@ import { logger } from "../logger";
 import { QueueJobs } from "../queues";
 import { IngestionQueue } from "../redis/ingestionQueue";
 import { redis } from "../redis/redis";
-import {
-  eventTypes,
-  createIngestionEventSchema,
-  IngestionEventType,
-} from "./types";
-import {
-  StorageService,
-  StorageServiceFactory,
-} from "../services/StorageService";
+import { eventTypes, createIngestionEventSchema, IngestionEventType } from "./types";
+import { StorageService, StorageServiceFactory } from "../services/StorageService";
 import { isTraceIdInSample } from "./sampling";
-import {
-  isS3SlowDownError,
-  markProjectS3Slowdown,
-} from "../redis/s3SlowdownTracking";
+import { isS3SlowDownError, markProjectS3Slowdown } from "../redis/s3SlowdownTracking";
 
 let s3StorageServiceClient: StorageService;
 
@@ -117,12 +103,7 @@ export const processEventBatch = async (
   if (input.length === 0) {
     return { successes: [], errors: [] };
   }
-  const {
-    delay = null,
-    source = "api",
-    isHanzoInternal = false,
-    forwardToEventsTable,
-  } = options;
+  const { delay = null, source = "api", isHanzoInternal = false, forwardToEventsTable } = options;
 
   // add context of api call to the span
   const currentSpan = getCurrentSpan();
@@ -132,14 +113,9 @@ export const processEventBatch = async (
   });
 
   currentSpan?.setAttribute("hanzo.ingestion.batch_size", input.length);
-  currentSpan?.setAttribute(
-    "hanzo.project.id",
-    authCheck.scope.projectId ?? "",
-  );
-  if (authCheck.scope.orgId)
-    currentSpan?.setAttribute("hanzo.org.id", authCheck.scope.orgId);
-  if (authCheck.scope.plan)
-    currentSpan?.setAttribute("hanzo.org.plan", authCheck.scope.plan);
+  currentSpan?.setAttribute("hanzo.project.id", authCheck.scope.projectId ?? "");
+  if (authCheck.scope.orgId) currentSpan?.setAttribute("hanzo.org.id", authCheck.scope.orgId);
+  if (authCheck.scope.plan) currentSpan?.setAttribute("hanzo.org.plan", authCheck.scope.plan);
 
   /**************
    * VALIDATION *
@@ -235,9 +211,7 @@ export const processEventBatch = async (
         // write operations on S3.
         const { data, key, type, eventBodyId } = sortedBatchByEventBodyId[id];
         const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
-        return getS3StorageServiceClient(
-          env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-        ).uploadJson(bucketPath, data);
+        return getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, data);
       }),
     );
     results.forEach((result) => {
@@ -246,13 +220,10 @@ export const processEventBatch = async (
 
         // Check if this is a SlowDown error and mark the project for secondary queue
         if (isS3SlowDownError(result.reason)) {
-          logger.warn(
-            "S3 SlowDown error during upload, marking project for secondary queue",
-            {
-              projectId: authCheck.scope.projectId,
-              error: result.reason,
-            },
-          );
+          logger.warn("S3 SlowDown error during upload, marking project for secondary queue", {
+            projectId: authCheck.scope.projectId,
+            error: result.reason,
+          });
           // Fire and forget - don't await, don't block the error flow
           markProjectS3Slowdown(authCheck.scope.projectId!).catch(() => {});
         }
@@ -266,17 +237,14 @@ export const processEventBatch = async (
 
   // Send each event individually to IngestionQueue for ClickHouse processing
   if (s3UploadErrored) {
-    throw new Error(
-      "Failed to upload events to blob storage, aborting event processing",
-    );
+    throw new Error("Failed to upload events to blob storage, aborting event processing");
   }
 
   if (!redis) {
     throw new Error("Redis not initialized, aborting event processing");
   }
 
-  const projectIdsToSkipS3List =
-    env.HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS?.split(",") ?? [];
+  const projectIdsToSkipS3List = env.HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS?.split(",") ?? [];
 
   await Promise.all(
     Object.keys(sortedBatchByEventBodyId).map(async (id) => {
@@ -284,18 +252,14 @@ export const processEventBatch = async (
       const shardingKey = `${authCheck.scope.projectId}-${eventData.eventBodyId}`;
       const queue = IngestionQueue.getInstance({ shardingKey });
 
-      const isDatasetRunItemEvent =
-        getClickhouseEntityType(eventData.type) === "dataset_run_item";
-      const isObservationEvent =
-        getClickhouseEntityType(eventData.type) === "observation";
+      const isDatasetRunItemEvent = getClickhouseEntityType(eventData.type) === "dataset_run_item";
+      const isObservationEvent = getClickhouseEntityType(eventData.type) === "observation";
 
       const isOtelOrSkipS3Project =
         authCheck.scope.projectId !== null &&
-        (source === "otel" ||
-          projectIdsToSkipS3List.includes(authCheck.scope.projectId));
+        (source === "otel" || projectIdsToSkipS3List.includes(authCheck.scope.projectId));
 
-      const shouldSkipS3List =
-        isDatasetRunItemEvent || (isObservationEvent && isOtelOrSkipS3Project);
+      const shouldSkipS3List = isDatasetRunItemEvent || (isObservationEvent && isOtelOrSkipS3Project);
 
       const { isSampled, isSamplingConfigured } = isTraceIdInSample({
         projectId: authCheck.scope.projectId,
@@ -355,19 +319,13 @@ export const processEventBatch = async (
   );
 };
 
-const isAuthorized = (
-  event: IngestionEventType,
-  authScope: AuthHeaderValidVerificationResultIngestion,
-): boolean => {
+const isAuthorized = (event: IngestionEventType, authScope: AuthHeaderValidVerificationResultIngestion): boolean => {
   if (event.type === eventTypes.SDK_LOG) {
     return true;
   }
 
   if (event.type === eventTypes.SCORE_CREATE) {
-    return (
-      authScope.scope.accessLevel === "scores" ||
-      authScope.scope.accessLevel === "project"
-    );
+    return authScope.scope.accessLevel === "scores" || authScope.scope.accessLevel === "project";
   }
 
   return authScope.scope.accessLevel === "project";

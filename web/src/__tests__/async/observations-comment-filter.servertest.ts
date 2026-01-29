@@ -17,8 +17,7 @@ import { env } from "@/src/env.mjs";
 
 describe("Observations Comment Filtering", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
-  const useEventsTable =
-    env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true";
+  const useEventsTable = env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS === "true";
 
   const session: Session = {
     expires: "1",
@@ -57,12 +56,7 @@ describe("Observations Comment Filtering", () => {
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   // Helper to create observation data in the appropriate format
-  const createObservationData = (data: {
-    id: string;
-    project_id: string;
-    trace_id: string;
-    type: string;
-  }) => {
+  const createObservationData = (data: { id: string; project_id: string; trace_id: string; type: string }) => {
     if (useEventsTable) {
       return createEvent({
         ...data,

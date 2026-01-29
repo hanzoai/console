@@ -1,11 +1,5 @@
 import { env } from "@/src/env.mjs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {
   Dialog,
@@ -41,21 +35,21 @@ const regions =
             hostname: "cloud.hanzo.ai",
             flag: "🇺🇸",
             location: "MCI",
-            regionId: "us-central-1"
+            regionId: "us-central-1",
           },
           {
             name: "CA",
             hostname: "cloud.hanzo.ai",
             flag: "🇨🇦",
             location: "YVR",
-            regionId: "ca-west-1"
+            regionId: "ca-west-1",
           },
           {
             name: "EU",
             hostname: "cloud.hanzo.ai",
             flag: "🇪🇺",
             location: "BCN",
-            regionId: "eu-west-1"
+            regionId: "eu-west-1",
           },
           {
             name: "HIPAA",
@@ -64,11 +58,7 @@ const regions =
           },
         ];
 
-export function CloudRegionSwitch({
-  isSignUpPage,
-}: {
-  isSignUpPage?: boolean;
-}) {
+export function CloudRegionSwitch({ isSignUpPage }: { isSignUpPage?: boolean }) {
   const capture = usePostHogClientCapture();
   const { isHanzoCloud, region: cloudRegion } = useHanzoCloudRegion();
 
@@ -85,9 +75,7 @@ export function CloudRegionSwitch({
             <DataRegionInfo />
           </span>
           {isSignUpPage && cloudRegion === "HIPAA" ? (
-            <p className="text-xs text-muted-foreground">
-              Demo project is not available in the HIPAA data region.
-            </p>
+            <p className="text-xs text-muted-foreground">Demo project is not available in the HIPAA data region.</p>
           ) : null}
         </div>
         <Select
@@ -125,8 +113,7 @@ export function CloudRegionSwitch({
         {cloudRegion === "HIPAA" && (
           <div className="mt-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
             <p>
-              The Business Associate Agreement (BAA) is only effective on the
-              Cloud Pro and Teams plans.{" "}
+              The Business Associate Agreement (BAA) is only effective on the Cloud Pro and Teams plans.{" "}
               <a
                 href="https://hanzo.com/security/hipaa"
                 target="_blank"
@@ -165,20 +152,13 @@ const DataRegionInfo = () => (
           <ul className="list-disc pl-5">
             <li>US: Oregon (AWS us-west-2)</li>
             <li>EU: Ireland (AWS eu-west-1)</li>
-            <li>
-              HIPAA: Oregon (AWS us-west-2) - HIPAA-compliant region (available
-              with Pro and Teams plans)
-            </li>
+            <li>HIPAA: Oregon (AWS us-west-2) - HIPAA-compliant region (available with Pro and Teams plans)</li>
           </ul>
           <p>
-            Regions are strictly separated, and no data is shared across
-            regions. Choosing a region close to you can help improve speed and
-            comply with local data residency laws and privacy regulations.
+            Regions are strictly separated, and no data is shared across regions. Choosing a region close to you can
+            help improve speed and comply with local data residency laws and privacy regulations.
           </p>
-          <p>
-            You can have accounts in multiple regions. Each region requires a
-            separate subscription.
-          </p>
+          <p>You can have accounts in multiple regions. Each region requires a separate subscription.</p>
           <p>
             Learn more about{" "}
             <a

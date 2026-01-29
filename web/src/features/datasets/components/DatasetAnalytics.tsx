@@ -27,9 +27,7 @@ export function DatasetAnalytics(props: {
             capture("dataset_run:charts_view_added");
           } else {
             capture("dataset_run:charts_view_removed");
-            props.setSelectedMetrics(
-              props.selectedMetrics.filter((key) => key !== changedValue),
-            );
+            props.setSelectedMetrics(props.selectedMetrics.filter((key) => key !== changedValue));
           }
         }
       }}

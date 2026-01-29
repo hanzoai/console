@@ -3,15 +3,9 @@ import { TraceRecordExtraFieldsType, TraceRecordReadType } from "./definitions";
 import { convertDateToClickhouseDateTime } from "../clickhouse/client";
 import { TraceDomain } from "../../domain";
 import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
-import {
-  RenderingProps,
-  DEFAULT_RENDERING_PROPS,
-  applyInputOutputRendering,
-} from "../utils/rendering";
+import { RenderingProps, DEFAULT_RENDERING_PROPS, applyInputOutputRendering } from "../utils/rendering";
 
-export const convertTraceDomainToClickhouse = (
-  trace: TraceDomain,
-): TraceRecordReadType => {
+export const convertTraceDomainToClickhouse = (trace: TraceDomain): TraceRecordReadType => {
   return {
     id: trace.id,
     timestamp: convertDateToClickhouseDateTime(trace.timestamp),

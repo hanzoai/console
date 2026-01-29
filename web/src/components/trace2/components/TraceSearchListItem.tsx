@@ -20,23 +20,14 @@ interface TraceSearchListItemProps {
   onHover?: () => void;
 }
 
-export function TraceSearchListItem({
-  item,
-  isSelected,
-  onSelect,
-  onHover,
-}: TraceSearchListItemProps) {
+export function TraceSearchListItem({ item, isSelected, onSelect, onHover }: TraceSearchListItemProps) {
   const { node, parentTotalCost, parentTotalDuration } = item;
   const { comments } = useTraceData();
 
   // Format relative timestamps
-  const traceRelativeTime = formatIntervalSeconds(
-    node.startTimeSinceTrace / 1000,
-  );
+  const traceRelativeTime = formatIntervalSeconds(node.startTimeSinceTrace / 1000);
   const parentRelativeTime =
-    node.startTimeSinceParentStart !== null
-      ? formatIntervalSeconds(node.startTimeSinceParentStart / 1000)
-      : null;
+    node.startTimeSinceParentStart !== null ? formatIntervalSeconds(node.startTimeSinceParentStart / 1000) : null;
 
   return (
     <div
@@ -60,8 +51,7 @@ export function TraceSearchListItem({
         {node.type !== "TRACE" && (
           <div className="text-xs text-muted-foreground/70">
             depth {node.depth} • +{traceRelativeTime}
-            {parentRelativeTime !== null &&
-              ` • +${parentRelativeTime} from parent`}
+            {parentRelativeTime !== null && ` • +${parentRelativeTime} from parent`}
           </div>
         )}
       </div>

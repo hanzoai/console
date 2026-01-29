@@ -67,10 +67,7 @@ async function getMediaCount(projectId: string): Promise<number> {
  * Helper to run processBatch until no more work exists for a specific project.
  * This handles test isolation when other projects might have expired media.
  */
-async function processUntilProjectComplete(
-  projectId: string,
-  maxIterations = 10,
-): Promise<void> {
+async function processUntilProjectComplete(projectId: string, maxIterations = 10): Promise<void> {
   for (let i = 0; i < maxIterations; i++) {
     await MediaRetentionCleaner.processBatch();
     const count = await getMediaCount(projectId);
@@ -127,9 +124,7 @@ describe("MediaRetentionCleaner", () => {
       expect(await getMediaCount(projectId)).toBe(0);
 
       // Verify our media was deleted from S3
-      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap(
-        (call) => call[0] as string[],
-      );
+      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap((call) => call[0] as string[]);
       expect(allDeletedPaths).toContain(media.bucketPath);
     });
 
@@ -195,9 +190,7 @@ describe("MediaRetentionCleaner", () => {
       expect(await getMediaCount(projectB)).toBe(1);
 
       // Verify project A's media was deleted from S3
-      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap(
-        (call) => call[0] as string[],
-      );
+      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap((call) => call[0] as string[]);
       expect(allDeletedPaths).toContain(mediaA.bucketPath);
     });
 
@@ -412,10 +405,7 @@ describe("MediaRetentionCleaner", () => {
       await MediaRetentionCleaner.processBatch();
 
       // Keep running until both our projects are processed
-      while (
-        !processedProjects.includes(projectMany) ||
-        !processedProjects.includes(projectFew)
-      ) {
+      while (!processedProjects.includes(projectMany) || !processedProjects.includes(projectFew)) {
         await MediaRetentionCleaner.processBatch();
         if (processedProjects.length > 10) break; // Safety limit
       }

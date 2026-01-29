@@ -2,12 +2,7 @@ import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { type BaseActionHandler } from "./BaseActionHandler";
 import { SlackActionForm } from "./SlackActionForm";
-import {
-  type AutomationDomain,
-  type SlackActionConfig,
-  type ActionCreate,
-  type ActionDomain,
-} from "@hanzo/shared";
+import { type AutomationDomain, type SlackActionConfig, type ActionCreate, type ActionDomain } from "@hanzo/shared";
 import { z } from "zod/v4";
 
 // Define the form schema for Slack actions
@@ -23,9 +18,7 @@ export const SlackActionFormSchema = z.object({
 
 type SlackActionFormData = z.infer<typeof SlackActionFormSchema>;
 
-export class SlackActionHandler
-  implements BaseActionHandler<SlackActionFormData>
-{
+export class SlackActionHandler implements BaseActionHandler<SlackActionFormData> {
   actionType = "SLACK" as const;
 
   getDefaultValues(automation?: AutomationDomain): SlackActionFormData {

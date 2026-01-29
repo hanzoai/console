@@ -46,15 +46,10 @@ export const SlackConnectButton: React.FC<SlackConnectButtonProps> = ({
   const [isConnecting, setIsConnecting] = useState(false);
   const popupRef = useRef<Window | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(
-    null,
-  );
+  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
 
   // Get integration status
-  const { data: integrationStatus } = api.slack.getIntegrationStatus.useQuery(
-    { projectId },
-    { enabled: !!projectId },
-  );
+  const { data: integrationStatus } = api.slack.getIntegrationStatus.useQuery({ projectId }, { enabled: !!projectId });
 
   // Cleanup effect for component unmount
   useEffect(() => {
@@ -168,8 +163,7 @@ export const SlackConnectButton: React.FC<SlackConnectButtonProps> = ({
       intervalRef.current = checkClosed;
     } catch (error) {
       setIsConnecting(false);
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to connect to Slack";
+      const errorMessage = error instanceof Error ? error.message : "Failed to connect to Slack";
       onError?.(new Error(errorMessage));
       showErrorToast("Connection Failed", errorMessage);
     }

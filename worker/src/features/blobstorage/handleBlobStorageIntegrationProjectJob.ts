@@ -16,11 +16,7 @@ import {
   queryClickhouse,
   QueueJobs,
 } from "@hanzo/shared/src/server";
-import {
-  BlobStorageIntegrationType,
-  BlobStorageIntegrationFileType,
-  BlobStorageExportMode,
-} from "@hanzo/shared";
+import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/shared";
 import { decrypt } from "@hanzo/shared/encryption";
 import { randomUUID } from "crypto";
 import { env } from "../../env";
@@ -81,9 +77,7 @@ const getMinTimestampForExport = async (
         }
 
         // If no data exists, use current time as a fallback
-        logger.info(
-          `[BLOB INTEGRATION] No historical data found for project ${projectId}, using current time`,
-        );
+        logger.info(`[BLOB INTEGRATION] No historical data found for project ${projectId}, using current time`);
         return new Date(0);
       } catch (error) {
         logger.error(
@@ -158,9 +152,7 @@ const processBlobStorageExport = async (config: {
   table: "traces" | "observations" | "scores";
   fileType: BlobStorageIntegrationFileType;
 }) => {
-  logger.info(
-    `[BLOB INTEGRATION] Processing ${config.table} export for project ${config.projectId}`,
-  );
+  logger.info(`[BLOB INTEGRATION] Processing ${config.table} export for project ${config.projectId}`);
 
   // Initialize the storage service
   // KMS SSE is not supported for this integration.
@@ -180,10 +172,7 @@ const processBlobStorageExport = async (config: {
     const blobStorageProps = getFileTypeProperties(config.fileType);
 
     // Create the file path with prefix if available
-    const timestamp = config.maxTimestamp
-      .toISOString()
-      .replace(/:/g, "-")
-      .substring(0, 19);
+    const timestamp = config.maxTimestamp.toISOString().replace(/:/g, "-").substring(0, 19);
     const filePath = `${config.prefix ?? ""}${config.projectId}/${config.table}/${timestamp}.${blobStorageProps.extension}`;
 
     // Fetch data based on table type
@@ -191,42 +180,23 @@ const processBlobStorageExport = async (config: {
 
     switch (config.table) {
       case "traces":
-        dataStream = getTracesForBlobStorageExport(
-          config.projectId,
-          config.minTimestamp,
-          config.maxTimestamp,
-        );
+        dataStream = getTracesForBlobStorageExport(config.projectId, config.minTimestamp, config.maxTimestamp);
         break;
       case "observations":
-        dataStream = getObservationsForBlobStorageExport(
-          config.projectId,
-          config.minTimestamp,
-          config.maxTimestamp,
-        );
+        dataStream = getObservationsForBlobStorageExport(config.projectId, config.minTimestamp, config.maxTimestamp);
         break;
       case "scores":
-        dataStream = getScoresForBlobStorageExport(
-          config.projectId,
-          config.minTimestamp,
-          config.maxTimestamp,
-        );
+        dataStream = getScoresForBlobStorageExport(config.projectId, config.minTimestamp, config.maxTimestamp);
         break;
       default:
         throw new Error(`Unsupported table type: ${config.table}`);
     }
 
-    const fileStream = pipeline(
-      dataStream,
-      streamTransformations[config.fileType](),
-      (err) => {
-        if (err) {
-          logger.error(
-            "[BLOB INTEGRATION] Getting data from DB for blob storage integration failed: ",
-            err,
-          );
-        }
-      },
-    );
+    const fileStream = pipeline(dataStream, streamTransformations[config.fileType](), (err) => {
+      if (err) {
+        logger.error("[BLOB INTEGRATION] Getting data from DB for blob storage integration failed: ", err);
+      }
+    });
 
     // Upload the file to cloud storage
     // For CSV exports, use larger part size to handle big files
@@ -240,14 +210,9 @@ const processBlobStorageExport = async (config: {
       partSize: 100 * 1024 * 1024, // 100 MB part size
     });
 
-    logger.info(
-      `[BLOB INTEGRATION] Successfully exported ${config.table} records for project ${config.projectId}`,
-    );
+    logger.info(`[BLOB INTEGRATION] Successfully exported ${config.table} records for project ${config.projectId}`);
   } catch (error) {
-    logger.error(
-      `[BLOB INTEGRATION] Error exporting ${config.table} for project ${config.projectId}`,
-      error,
-    );
+    logger.error(`[BLOB INTEGRATION] Error exporting ${config.table} for project ${config.projectId}`, error);
     throw error;
   }
 };
@@ -263,28 +228,20 @@ export const handleBlobStorageIntegrationProjectJob = async (
     span.setAttribute("messaging.bullmq.job.input.projectId", projectId);
   }
 
-  logger.info(
-    `[BLOB INTEGRATION] Processing blob storage integration for project ${projectId}`,
-  );
+  logger.info(`[BLOB INTEGRATION] Processing blob storage integration for project ${projectId}`);
 
-  const blobStorageIntegration = await prisma.blobStorageIntegration.findUnique(
-    {
-      where: {
-        projectId,
-      },
+  const blobStorageIntegration = await prisma.blobStorageIntegration.findUnique({
+    where: {
+      projectId,
     },
-  );
+  });
 
   if (!blobStorageIntegration) {
-    logger.warn(
-      `[BLOB INTEGRATION] Blob storage integration not found for project ${projectId}`,
-    );
+    logger.warn(`[BLOB INTEGRATION] Blob storage integration not found for project ${projectId}`);
     return;
   }
   if (!blobStorageIntegration.enabled) {
-    logger.info(
-      `[BLOB INTEGRATION] Blob storage integration is disabled for project ${projectId}`,
-    );
+    logger.info(`[BLOB INTEGRATION] Blob storage integration is disabled for project ${projectId}`);
     return;
   }
 
@@ -303,18 +260,11 @@ export const handleBlobStorageIntegrationProjectJob = async (
 
   const now = new Date();
   const uncappedMaxTimestamp = new Date(now.getTime() - 30 * 60 * 1000); // 30-minute lag buffer
-  const frequencyIntervalMs = getFrequencyIntervalMs(
-    blobStorageIntegration.exportFrequency,
-  );
+  const frequencyIntervalMs = getFrequencyIntervalMs(blobStorageIntegration.exportFrequency);
 
   // Cap maxTimestamp to one frequency period ahead of minTimestamp
   // This ensures large historic exports are broken into manageable chunks
-  const maxTimestamp = new Date(
-    Math.min(
-      minTimestamp.getTime() + frequencyIntervalMs,
-      uncappedMaxTimestamp.getTime(),
-    ),
-  );
+  const maxTimestamp = new Date(Math.min(minTimestamp.getTime() + frequencyIntervalMs, uncappedMaxTimestamp.getTime()));
 
   logger.info(
     `[BLOB INTEGRATION] Calculated maxTimestamp for project ${projectId}: ${maxTimestamp}, isValid: ${!isNaN(maxTimestamp.getTime())}, getTime: ${maxTimestamp.getTime()}, frequencyIntervalMs: ${frequencyIntervalMs}`,
@@ -348,10 +298,7 @@ export const handleBlobStorageIntegrationProjectJob = async (
     };
 
     // Check if this project should only export traces
-    const isTraceOnlyProject =
-      env.HANZO_BLOB_STORAGE_EXPORT_TRACE_ONLY_PROJECT_IDS.includes(
-        projectId,
-      );
+    const isTraceOnlyProject = env.HANZO_BLOB_STORAGE_EXPORT_TRACE_ONLY_PROJECT_IDS.includes(projectId);
 
     if (isTraceOnlyProject) {
       // Only process traces table for projects in the trace-only list
@@ -412,20 +359,13 @@ export const handleBlobStorageIntegrationProjectJob = async (
           },
           { jobId },
         );
-        logger.info(
-          `[BLOB INTEGRATION] Queued next catch-up chunk for project ${projectId} with jobId ${jobId}`,
-        );
+        logger.info(`[BLOB INTEGRATION] Queued next catch-up chunk for project ${projectId} with jobId ${jobId}`);
       }
     }
 
-    logger.info(
-      `[BLOB INTEGRATION] Successfully processed blob storage integration for project ${projectId}`,
-    );
+    logger.info(`[BLOB INTEGRATION] Successfully processed blob storage integration for project ${projectId}`);
   } catch (error) {
-    logger.error(
-      `[BLOB INTEGRATION] Error processing blob storage integration for project ${projectId}`,
-      error,
-    );
+    logger.error(`[BLOB INTEGRATION] Error processing blob storage integration for project ${projectId}`, error);
     throw error; // Rethrow to trigger retries
   }
 };

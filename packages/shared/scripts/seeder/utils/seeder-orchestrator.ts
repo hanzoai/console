@@ -1,8 +1,4 @@
-import {
-  FileContent,
-  SeederOptions,
-  getTotalObservationsForMode,
-} from "./types";
+import { FileContent, SeederOptions, getTotalObservationsForMode } from "./types";
 import { DataGenerator } from "./data-generators";
 import { ClickHouseQueryBuilder } from "./clickhouse-builder";
 import { FrameworkTraceLoader } from "./framework-traces/framework-trace-loader";
@@ -21,11 +17,7 @@ import path from "path";
 import { readFileSync } from "fs";
 
 const DATASET_SCORE_NAMES = ["score-1", "score-2", "score-3"];
-const DATASET_RUN_SCORE_NAMES = [
-  "dataset-run-score-1",
-  "dataset-run-score-2",
-  "dataset-run-score-3",
-];
+const DATASET_RUN_SCORE_NAMES = ["dataset-run-score-1", "dataset-run-score-2", "dataset-run-score-3"];
 
 /**
  * Orchestrates seeding operations across ClickHouse and PostgreSQL.
@@ -53,13 +45,9 @@ export class SeederOrchestrator {
       const heavyMarkdownPath = path.join(__dirname, "./markdown.txt");
       const chatMlJsonPath = path.join(__dirname, "./chat_ml_json.json");
 
-      const nestedJsonContent = JSON.parse(
-        readFileSync(nestedJsonPath, "utf-8"),
-      );
+      const nestedJsonContent = JSON.parse(readFileSync(nestedJsonPath, "utf-8"));
       const heavyMarkdownContent = readFileSync(heavyMarkdownPath, "utf-8");
-      const chatMlJsonContent = JSON.parse(
-        readFileSync(chatMlJsonPath, "utf-8"),
-      );
+      const chatMlJsonContent = JSON.parse(readFileSync(chatMlJsonPath, "utf-8"));
 
       // Truncate large content for reasonable test data size
       const truncatedNestedJson = {
@@ -80,10 +68,7 @@ export class SeederOrchestrator {
 
       this.dataGenerator.setFileContent(this.fileContent);
     } catch (error) {
-      logger.warn(
-        "Could not load file content for seeding, using fallback data",
-        error,
-      );
+      logger.warn("Could not load file content for seeding, using fallback data", error);
     }
   }
 
@@ -91,13 +76,8 @@ export class SeederOrchestrator {
    * Creates dataset experiment data for A/B testing and prompt comparisons.
    * Use for: Experiment tracking, dataset-based evaluations, prompt testing.
    */
-  async createDatasetExperimentData(
-    projectIds: string[],
-    opts: SeederOptions,
-  ): Promise<void> {
-    logger.info(
-      `Creating dataset experiment data for ${projectIds.length} projects.`,
-    );
+  async createDatasetExperimentData(projectIds: string[], opts: SeederOptions): Promise<void> {
+    logger.info(`Creating dataset experiment data for ${projectIds.length} projects.`);
 
     for (const projectId of projectIds) {
       logger.info(`Processing project ${projectId}`);
@@ -105,9 +85,7 @@ export class SeederOrchestrator {
       const numberOfRuns = opts.numberOfRuns || 1;
 
       for (let runNumber = 0; runNumber < numberOfRuns; runNumber++) {
-        logger.info(
-          `Processing run ${runNumber + 1}/${numberOfRuns} for project ${projectId}`,
-        );
+        logger.info(`Processing run ${runNumber + 1}/${numberOfRuns} for project ${projectId}`);
         const now = Date.now();
 
         const traces: TraceRecordInsertType[] = [];
@@ -213,10 +191,7 @@ export class SeederOrchestrator {
       const evalObservationsPerTrace = 10;
 
       // Generate evaluation traces
-      const traces = this.dataGenerator.generateEvaluationTraces(
-        projectId,
-        evalTracesPerProject,
-      );
+      const traces = this.dataGenerator.generateEvaluationTraces(projectId, evalTracesPerProject);
 
       // Generate evaluation observations
       const observations = this.dataGenerator.generateEvaluationObservations(
@@ -226,11 +201,7 @@ export class SeederOrchestrator {
       );
 
       // Generate scores - exactly one score per evaluation trace
-      const scores = this.dataGenerator.generateEvaluationScores(
-        traces,
-        observations,
-        projectId,
-      );
+      const scores = this.dataGenerator.generateEvaluationScores(traces, observations, projectId);
 
       await this.queryBuilder.executeTracesInsert(traces);
       await this.queryBuilder.executeObservationsInsert(observations);
@@ -242,10 +213,7 @@ export class SeederOrchestrator {
    * Creates large-scale synthetic data for performance testing and demos.
    * Use for: Load testing, dashboard demos, realistic usage simulation.
    */
-  async createSyntheticData(
-    projectIds: string[],
-    opts: SeederOptions,
-  ): Promise<void> {
+  async createSyntheticData(projectIds: string[], opts: SeederOptions): Promise<void> {
     const totalObservations = getTotalObservationsForMode(opts.mode);
 
     logger.info(
@@ -256,9 +224,7 @@ export class SeederOrchestrator {
       logger.info(`Processing synthetic data for project ${projectId}`);
 
       const observationsPerTrace = 15;
-      const tracesPerProject = Math.floor(
-        totalObservations / observationsPerTrace,
-      );
+      const tracesPerProject = Math.floor(totalObservations / observationsPerTrace);
       const scoresPerTrace = 10;
 
       if (opts.mode === "bulk") {
@@ -293,19 +259,9 @@ export class SeederOrchestrator {
         await this.executeQuery(scoreQuery);
       } else {
         // Use detailed generation for smaller datasets
-        const traces = this.dataGenerator.generateSyntheticTraces(
-          projectId,
-          tracesPerProject,
-        );
-        const observations = this.dataGenerator.generateSyntheticObservations(
-          traces,
-          observationsPerTrace,
-        );
-        const scores = this.dataGenerator.generateSyntheticScores(
-          traces,
-          observations,
-          scoresPerTrace,
-        );
+        const traces = this.dataGenerator.generateSyntheticTraces(projectId, tracesPerProject);
+        const observations = this.dataGenerator.generateSyntheticObservations(traces, observationsPerTrace);
+        const scores = this.dataGenerator.generateSyntheticScores(traces, observations, scoresPerTrace);
 
         await this.queryBuilder.executeTracesInsert(traces);
         await this.queryBuilder.executeObservationsInsert(observations);
@@ -318,10 +274,7 @@ export class SeederOrchestrator {
    * Executes complete seeding: datasets + evaluation + synthetic data.
    * Use for: Full system setup, comprehensive testing, complete data reset.
    */
-  async executeFullSeed(
-    projectIds: string[],
-    opts: SeederOptions,
-  ): Promise<void> {
+  async executeFullSeed(projectIds: string[], opts: SeederOptions): Promise<void> {
     logger.info("Starting full seed process");
 
     try {
@@ -391,10 +344,7 @@ export class SeederOrchestrator {
           format: "TabSeparated",
         });
 
-        logger.info(
-          `${table.charAt(0).toUpperCase() + table.slice(1)} per Project: \n` +
-            (await result.text()),
-        );
+        logger.info(`${table.charAt(0).toUpperCase() + table.slice(1)} per Project: \n` + (await result.text()));
       } catch (error) {
         logger.warn(`Could not log statistics for ${table}:`, error);
       }
@@ -402,16 +352,13 @@ export class SeederOrchestrator {
   }
 
   async createSupportChatSessionTraces(projectIds: string[]): Promise<void> {
-    logger.info(
-      `Creating support chat session data for ${projectIds.length} projects.`,
-    );
+    logger.info(`Creating support chat session data for ${projectIds.length} projects.`);
 
     for (const projectId of projectIds) {
       logger.info(`Processing support chat session for project ${projectId}`);
 
       // Generate data using the data generator
-      const { traces, observations, scores } =
-        this.dataGenerator.generateSupportChatSessionData(projectId);
+      const { traces, observations, scores } = this.dataGenerator.generateSupportChatSessionData(projectId);
 
       try {
         await this.queryBuilder.executeTracesInsert(traces);
@@ -434,8 +381,7 @@ export class SeederOrchestrator {
     for (const projectId of projectIds) {
       logger.info(`Processing framework traces for project ${projectId}`);
 
-      const { traces, observations, scores } =
-        loader.loadTracesForProject(projectId);
+      const { traces, observations, scores } = loader.loadTracesForProject(projectId);
 
       try {
         if (traces.length > 0) {
@@ -459,9 +405,7 @@ export class SeederOrchestrator {
    * Use for: Testing media rendering in the trace detail view.
    */
   async createMediaTestTraces(projectIds: string[]): Promise<void> {
-    logger.info(
-      `Creating media test traces for ${projectIds.length} projects.`,
-    );
+    logger.info(`Creating media test traces for ${projectIds.length} projects.`);
 
     const now = Date.now();
 
@@ -516,13 +460,11 @@ export class SeederOrchestrator {
           input: JSON.stringify([
             {
               role: "system",
-              content:
-                "You are a helpful assistant that can analyze images, documents, and audio files.",
+              content: "You are a helpful assistant that can analyze images, documents, and audio files.",
             },
             {
               role: "user",
-              content:
-                "Please analyze the attached image and describe what you see.",
+              content: "Please analyze the attached image and describe what you see.",
             },
           ]),
           output: JSON.stringify([
@@ -546,9 +488,7 @@ export class SeederOrchestrator {
 
       try {
         await this.queryBuilder.executeTracesInsert(traces);
-        logger.info(
-          `✓ Created ${traces.length} media test traces for project ${projectId}`,
-        );
+        logger.info(`✓ Created ${traces.length} media test traces for project ${projectId}`);
       } catch (error) {
         logger.error(`✗ Media test traces insert failed:`, error);
         throw error;

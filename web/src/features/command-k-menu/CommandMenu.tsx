@@ -21,11 +21,7 @@ import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { api } from "@/src/utils/api";
 import { type NavigationItem } from "@/src/components/layouts/utilities/routes";
 
-export function CommandMenu({
-  mainNavigation,
-}: {
-  mainNavigation: NavigationItem[];
-}) {
+export function CommandMenu({ mainNavigation }: { mainNavigation: NavigationItem[] }) {
   const { open, setOpen } = useCommandMenu();
   const router = useRouter();
   const { allProjectItems } = useNavigationItems();
@@ -109,11 +105,7 @@ export function CommandMenu({
     dashboardsQuery.data?.dashboards.map((d) => ({
       title: `Dashboard > ${d.name}`,
       url: `/project/${project?.id}/dashboards/${d.id}`,
-      keywords: [
-        "dashboard",
-        d.name.toLowerCase(),
-        (d.description ?? "").toLowerCase(),
-      ],
+      keywords: ["dashboard", d.name.toLowerCase(), (d.description ?? "").toLowerCase()],
       active: router.query.dashboardId === d.id,
     })) ?? [];
 
@@ -140,11 +132,7 @@ export function CommandMenu({
       filter={(value, search, keywords) => {
         const extendValue = value + " " + keywords?.join(" ");
         const searchTerms = search.toLowerCase().split(" ");
-        return searchTerms.every((term) =>
-          extendValue.toLowerCase().includes(term),
-        )
-          ? 1
-          : 0;
+        return searchTerms.every((term) => extendValue.toLowerCase().includes(term)) ? 1 : 0;
       }}
     >
       <CommandInput
@@ -315,9 +303,7 @@ export const useNavigationItems = () => {
   const truncatePathBeforeDynamicSegments = (path: string) => {
     const allowlistedIds = ["[projectId]", "[organizationId]", "[page]"];
     const segments = router.route.split("/");
-    const idSegments = segments.filter(
-      (segment) => segment.startsWith("[") && segment.endsWith("]"),
-    );
+    const idSegments = segments.filter((segment) => segment.startsWith("[") && segment.endsWith("]"));
     const stopSegment = idSegments.filter((id) => !allowlistedIds.includes(id));
     if (stopSegment.length === 0) return path;
     const stopIndex = segments.indexOf(stopSegment[0]);
@@ -327,10 +313,7 @@ export const useNavigationItems = () => {
 
   const getProjectPath = (projectId: string) =>
     router.query.projectId
-      ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-          router.query.projectId as string,
-          projectId,
-        )
+      ? truncatePathBeforeDynamicSegments(router.asPath).replace(router.query.projectId as string, projectId)
       : `/project/${projectId}`;
 
   const allProjectItems = organizations
@@ -348,11 +331,7 @@ export const useNavigationItems = () => {
             title: `${org.name} > ${proj.name}`,
             url: getProjectPath(proj.id),
             active: router.query.projectId === proj.id,
-            keywords: [
-              "project",
-              org.name.toLowerCase(),
-              proj.name.toLowerCase(),
-            ],
+            keywords: ["project", org.name.toLowerCase(), proj.name.toLowerCase()],
           })),
         )
     : [];

@@ -37,11 +37,7 @@ export default function Sessions() {
       scrollable={showOnboarding}
     >
       {/* Show onboarding screen if user has no sessions */}
-      {showOnboarding ? (
-        <SessionsOnboarding />
-      ) : (
-        <SessionsTable projectId={projectId} />
-      )}
+      {showOnboarding ? <SessionsOnboarding /> : <SessionsTable projectId={projectId} />}
     </Page>
   );
 }

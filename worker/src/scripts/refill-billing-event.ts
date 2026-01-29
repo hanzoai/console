@@ -1,9 +1,6 @@
 // This script can be used to manually retrigger the metering job.
 // Execute with caution in production.
-import {
-  QueueJobs,
-  CloudUsageMeteringQueue,
-} from "@hanzo/shared/src/server";
+import { QueueJobs, CloudUsageMeteringQueue } from "@hanzo/shared/src/server";
 import { logger } from "@hanzo/shared/src/server";
 import { redis } from "@hanzo/shared/src/server";
 

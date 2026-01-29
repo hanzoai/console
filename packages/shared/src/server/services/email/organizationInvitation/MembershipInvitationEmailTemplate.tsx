@@ -59,15 +59,9 @@ export const MembershipInvitationTemplate = ({
             <Text className="text-sm leading-6 text-black">Hello,</Text>
             <Text className="text-sm leading-6 text-black">
               <strong>{invitedByUsername}</strong> (
-              <span className="text-blue-600 no-underline">
-                {invitedByUserEmail}
-              </span>
-              ) has invited you to join the <strong>{orgName}</strong>{" "}
-              organization on
-              {hanzoCloudRegion
-                ? ` Hanzo Cloud (${hanzoCloudRegion} data region)`
-                : " HanzoCloud"}
-              .
+              <span className="text-blue-600 no-underline">{invitedByUserEmail}</span>) has invited you to join the{" "}
+              <strong>{orgName}</strong> organization on
+              {hanzoCloudRegion ? ` Hanzo Cloud (${hanzoCloudRegion} data region)` : " HanzoCloud"}.
             </Text>
             <Section className="mb-4 mt-8 text-center">
               {/* Note: inviteLink always refers to a root hanzo url and is not vulnerable to hyperlink injection attacks */}
@@ -89,11 +83,9 @@ export const MembershipInvitationTemplate = ({
             </Text>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-xs leading-6 text-[#666666]">
-              This invitation was intended for{" "}
-              <span className="text-black">{receiverEmail}</span>. This invite
-              was sent from{" "}
-              <span className="text-black">{emailFromAddress}</span>. If you
-              were not expecting this invitation, you can ignore this email.
+              This invitation was intended for <span className="text-black">{receiverEmail}</span>. This invite was sent
+              from <span className="text-black">{emailFromAddress}</span>. If you were not expecting this invitation,
+              you can ignore this email.
             </Text>
           </Container>
         </Body>

@@ -15,13 +15,7 @@ import * as path from "path";
 import * as readline from "readline";
 import { parse } from "csv-parse";
 import { randomUUID } from "crypto";
-import {
-  getQueue,
-  OtelIngestionQueue,
-  QueueJobs,
-  QueueName,
-  TQueueJobTypes,
-} from "@hanzo/shared/src/server";
+import { getQueue, OtelIngestionQueue, QueueJobs, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 
 const INPUT_FILE = "events.csv";
 const OUTPUT_FILE = "events_filtered.csv";
@@ -71,10 +65,7 @@ interface OTelJsonOutputItem {
   };
 }
 
-async function filterCsvFile(
-  inputPath: string,
-  outputPath: string,
-): Promise<void> {
+async function filterCsvFile(inputPath: string, outputPath: string): Promise<void> {
   console.log(`🚀 Starting to process ${inputPath}...`);
   console.log(`📝 Output will be written to ${outputPath}`);
 
@@ -131,11 +122,7 @@ async function filterCsvFile(
         row
           .map((field) => {
             // Escape quotes and wrap in quotes if contains comma, quote, or newline
-            if (
-              field.includes(",") ||
-              field.includes('"') ||
-              field.includes("\n")
-            ) {
+            if (field.includes(",") || field.includes('"') || field.includes("\n")) {
               return `"${field.replace(/"/g, '""')}"`;
             }
             return field;
@@ -157,12 +144,8 @@ async function filterCsvFile(
       // Handle header row
       if (!isHeaderProcessed) {
         headers = row;
-        operationColumnIndex = headers.findIndex(
-          (header) => header.toLowerCase().trim() === "operation",
-        );
-        keyColumnIndex = headers.findIndex(
-          (header) => header.toLowerCase().trim() === "key",
-        );
+        operationColumnIndex = headers.findIndex((header) => header.toLowerCase().trim() === "operation");
+        keyColumnIndex = headers.findIndex((header) => header.toLowerCase().trim() === "key");
 
         if (operationColumnIndex === -1) {
           clearInterval(progressInterval);
@@ -176,13 +159,9 @@ async function filterCsvFile(
           return;
         }
 
-        console.log(
-          `🎯 Found operation column at index ${operationColumnIndex}`,
-        );
+        console.log(`🎯 Found operation column at index ${operationColumnIndex}`);
         console.log(`🗝️  Found key column at index ${keyColumnIndex}`);
-        console.log(
-          `📋 Headers: ${headers.slice(0, 5).join(", ")}${headers.length > 5 ? "..." : ""}`,
-        );
+        console.log(`📋 Headers: ${headers.slice(0, 5).join(", ")}${headers.length > 5 ? "..." : ""}`);
 
         // Write header to output
         outputStream.write(formatCsvRow(row));
@@ -213,25 +192,15 @@ async function filterCsvFile(
         const outputFileSizeGB = (outputFileStats.size / 1024 ** 3).toFixed(2);
 
         console.log("\n🎉 === Processing Complete ===");
-        console.log(
-          `📊 Total rows processed: ${stats.totalRows.toLocaleString()}`,
-        );
-        console.log(
-          `✅ Rows matching filter: ${stats.filteredRows.toLocaleString()}`,
-        );
-        console.log(
-          `❌ Rows removed: ${(stats.totalRows - stats.filteredRows).toLocaleString()}`,
-        );
-        console.log(
-          `⏱️  Processing time: ${(stats.processingTimeMs / 60000).toFixed(1)} minutes`,
-        );
+        console.log(`📊 Total rows processed: ${stats.totalRows.toLocaleString()}`);
+        console.log(`✅ Rows matching filter: ${stats.filteredRows.toLocaleString()}`);
+        console.log(`❌ Rows removed: ${(stats.totalRows - stats.filteredRows).toLocaleString()}`);
+        console.log(`⏱️  Processing time: ${(stats.processingTimeMs / 60000).toFixed(1)} minutes`);
         console.log(
           `🚀 Average speed: ${Math.round(stats.totalRows / (stats.processingTimeMs / 1000)).toLocaleString()} rows/second`,
         );
         console.log(`📁 Output file size: ${outputFileSizeGB} GB`);
-        console.log(
-          `📉 Size reduction: ${((1 - outputFileStats.size / inputFileStats.size) * 100).toFixed(1)}%`,
-        );
+        console.log(`📉 Size reduction: ${((1 - outputFileStats.size / inputFileStats.size) * 100).toFixed(1)}%`);
 
         resolve();
       });
@@ -242,11 +211,7 @@ async function filterCsvFile(
   });
 }
 
-async function convertCsvToJsonl(
-  csvPath: string,
-  jsonlPath: string,
-  otelJsonlPath: string,
-): Promise<void> {
+async function convertCsvToJsonl(csvPath: string, jsonlPath: string, otelJsonlPath: string): Promise<void> {
   console.log(`🔄 Converting ${csvPath} to JSONL format...`);
   console.log(`📝 JSONL output will be written to ${jsonlPath}`);
   console.log(`📝 OTEL JSONL output will be written to ${otelJsonlPath}`);
@@ -303,9 +268,7 @@ async function convertCsvToJsonl(
       // Handle header row
       if (!isHeaderProcessed) {
         headers = row;
-        keyColumnIndex = headers.findIndex(
-          (header) => header.toLowerCase().trim() === "key",
-        );
+        keyColumnIndex = headers.findIndex((header) => header.toLowerCase().trim() === "key");
 
         if (keyColumnIndex === -1) {
           clearInterval(progressInterval);
@@ -324,9 +287,7 @@ async function convertCsvToJsonl(
       // Extract the key value
       const keyValue = row[keyColumnIndex]?.trim();
       if (!keyValue) {
-        console.warn(
-          `⚠️  Empty key value at row ${processedRows}, skipping...`,
-        );
+        console.warn(`⚠️  Empty key value at row ${processedRows}, skipping...`);
         return;
       }
 
@@ -335,14 +296,10 @@ async function convertCsvToJsonl(
       // 2. otel/projectId/yyyy/mm/dd/hh/mm/eventId.json (OTEL-style)
 
       // Match OTEL-style: otel/projectId/yyyy/mm/dd/hh/mm/eventId.json
-      const otelMatch = keyValue.match(
-        /^otel\/([^/]+)\/(\d{4})\/(\d{2})\/(\d{2})\/(\d{2})\/(\d{2})\/([^.]+)\.json$/,
-      );
+      const otelMatch = keyValue.match(/^otel\/([^/]+)\/(\d{4})\/(\d{2})\/(\d{2})\/(\d{2})\/(\d{2})\/([^.]+)\.json$/);
 
       // Match original format
-      const regularMatch = keyValue.match(
-        /^([^/]+)\/([^/]+)\/(.+)\/([^/]+)\.json$/,
-      );
+      const regularMatch = keyValue.match(/^([^/]+)\/([^/]+)\/(.+)\/([^/]+)\.json$/);
 
       if (otelMatch) {
         const [, projectId] = otelMatch;
@@ -385,9 +342,7 @@ async function convertCsvToJsonl(
         outputStream.write(JSON.stringify(jsonObject) + "\n");
         writtenObjects++;
       } else {
-        console.warn(
-          `⚠️  Invalid key format at row ${processedRows}: ${keyValue}, skipping...`,
-        );
+        console.warn(`⚠️  Invalid key format at row ${processedRows}: ${keyValue}, skipping...`);
         return;
       }
     });
@@ -405,27 +360,14 @@ async function convertCsvToJsonl(
           const processingTimeMs = Date.now() - startTime;
           const outputFileStats = fs.statSync(jsonlPath);
           const otelOutputFileStats = fs.statSync(otelJsonlPath);
-          const outputFileSizeGB = (outputFileStats.size / 1024 ** 3).toFixed(
-            2,
-          );
-          const otelOutputFileSizeGB = (
-            otelOutputFileStats.size /
-            1024 ** 3
-          ).toFixed(2);
+          const outputFileSizeGB = (outputFileStats.size / 1024 ** 3).toFixed(2);
+          const otelOutputFileSizeGB = (otelOutputFileStats.size / 1024 ** 3).toFixed(2);
 
           console.log("\n🎉 === JSONL Conversion Complete ===");
-          console.log(
-            `📊 Total rows converted: ${processedRows.toLocaleString()}`,
-          );
-          console.log(
-            `📝 JSON objects written: ${writtenObjects.toLocaleString()}`,
-          );
-          console.log(
-            `📝 OTEL objects written: ${writtenOtelObjects.toLocaleString()}`,
-          );
-          console.log(
-            `⏱️  Conversion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`,
-          );
+          console.log(`📊 Total rows converted: ${processedRows.toLocaleString()}`);
+          console.log(`📝 JSON objects written: ${writtenObjects.toLocaleString()}`);
+          console.log(`📝 OTEL objects written: ${writtenOtelObjects.toLocaleString()}`);
+          console.log(`⏱️  Conversion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`);
           console.log(
             `🚀 Average speed: ${Math.round(processedRows / (processingTimeMs / 1000)).toLocaleString()} rows/second`,
           );
@@ -511,9 +453,7 @@ async function ingestEventsToQueue(jsonlPath: string): Promise<void> {
 
   console.log("\n🎉 === Event Ingestion Complete ===");
   console.log(`📊 Total events ingested: ${processedEvents.toLocaleString()}`);
-  console.log(
-    `⏱️  Ingestion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`,
-  );
+  console.log(`⏱️  Ingestion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`);
   console.log(
     `🚀 Average speed: ${Math.round(processedEvents / (processingTimeMs / 1000)).toLocaleString()} events/second`,
   );
@@ -542,9 +482,7 @@ async function processQueueBatch(
   await queue.addBulk(jobs);
 
   // Log progress
-  console.log(
-    `✅ Added batch ${batchNumber} (${processedEvents + batch.length} events) to queue`,
-  );
+  console.log(`✅ Added batch ${batchNumber} (${processedEvents + batch.length} events) to queue`);
 
   // Log sample event from each batch for tracking
   if (batch.length > 0) {
@@ -553,9 +491,7 @@ async function processQueueBatch(
 }
 
 async function ingestEventsToOtelQueue(otelJsonlPath: string): Promise<void> {
-  console.log(
-    `🚀 Starting to ingest OTEL events from ${otelJsonlPath} to BullMQ...`,
-  );
+  console.log(`🚀 Starting to ingest OTEL events from ${otelJsonlPath} to BullMQ...`);
 
   // Check if JSONL file exists
   if (!fs.existsSync(otelJsonlPath)) {
@@ -620,9 +556,7 @@ async function ingestEventsToOtelQueue(otelJsonlPath: string): Promise<void> {
 
   console.log("\n🎉 === OTEL Event Ingestion Complete ===");
   console.log(`📊 Total events ingested: ${processedEvents.toLocaleString()}`);
-  console.log(
-    `⏱️  Ingestion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`,
-  );
+  console.log(`⏱️  Ingestion time: ${(processingTimeMs / 1000).toFixed(1)} seconds`);
   console.log(
     `🚀 Average speed: ${Math.round(processedEvents / (processingTimeMs / 1000)).toLocaleString()} events/second`,
   );
@@ -654,9 +588,7 @@ async function processOtelQueueBatch(
   await queue.addBulk(jobs);
 
   // Log progress
-  console.log(
-    `✅ Added OTEL batch ${batchNumber} (${processedEvents + batch.length} events) to queue`,
-  );
+  console.log(`✅ Added OTEL batch ${batchNumber} (${processedEvents + batch.length} events) to queue`);
 
   // Log sample event from each batch for tracking
   if (batch.length > 0) {

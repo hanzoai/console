@@ -6,9 +6,7 @@ import {
   DatasetQueueEventType,
 } from "@hanzo/shared/src/server";
 
-export const processClickhouseDatasetDelete = async (
-  jobPayload: DatasetQueueEventType,
-) => {
+export const processClickhouseDatasetDelete = async (jobPayload: DatasetQueueEventType) => {
   const { deletionType, projectId, datasetId } = jobPayload;
 
   logger.info(
@@ -37,9 +35,7 @@ export const processClickhouseDatasetDelete = async (
   } catch (e) {
     logger.error(
       `Error deleting dataset run items for dataset ${datasetId} ${
-        deletionType === "dataset-runs"
-          ? `runs ${jobPayload.datasetRunIds}`
-          : ""
+        deletionType === "dataset-runs" ? `runs ${jobPayload.datasetRunIds}` : ""
       } in project ${projectId} from ClickHouse`,
       e,
     );

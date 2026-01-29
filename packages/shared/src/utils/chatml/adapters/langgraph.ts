@@ -1,10 +1,5 @@
 import type { NormalizerContext, ProviderAdapter } from "../types";
-import {
-  removeNullFields,
-  stringifyToolResultContent,
-  parseMetadata,
-  isRichToolResult,
-} from "../helpers";
+import { removeNullFields, stringifyToolResultContent, parseMetadata, isRichToolResult } from "../helpers";
 import { z } from "zod/v4";
 
 // Detection schemas for LangChain/LangGraph formats
@@ -77,8 +72,7 @@ function extractToolDefinitions(messages: unknown[]): Array<{
 }> {
   return messages.filter(isLangGraphToolDefinition).map((msg) => {
     const message = msg as Record<string, unknown>;
-    const func = (message.content as Record<string, unknown>)
-      .function as Record<string, unknown>;
+    const func = (message.content as Record<string, unknown>).function as Record<string, unknown>;
 
     const toolDef: Record<string, unknown> = {
       name: (func.name as string) || "",
@@ -119,14 +113,8 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   }
 
   // LangGraph: tool_calls in additional_kwargs → top level
-  if (
-    normalized.additional_kwargs &&
-    typeof normalized.additional_kwargs === "object"
-  ) {
-    const additionalKwargs = normalized.additional_kwargs as Record<
-      string,
-      unknown
-    >;
+  if (normalized.additional_kwargs && typeof normalized.additional_kwargs === "object") {
+    const additionalKwargs = normalized.additional_kwargs as Record<string, unknown>;
 
     // Handle tool_calls from additional_kwargs
     if (additionalKwargs.tool_calls) {
@@ -154,8 +142,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   // Convert to flat format: {id, name, arguments, type}
   if (normalized.tool_calls && Array.isArray(normalized.tool_calls)) {
     const sanitizedToolCalls = (normalized.tool_calls as unknown[]).filter(
-      (tc): tc is Record<string, unknown> =>
-        Boolean(tc) && typeof tc === "object",
+      (tc): tc is Record<string, unknown> => Boolean(tc) && typeof tc === "object",
     );
 
     normalized.tool_calls = sanitizedToolCalls.map((tc) => {
@@ -165,10 +152,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
         return {
           id: tc.id,
           name: func.name,
-          arguments:
-            typeof func.arguments === "string"
-              ? func.arguments
-              : JSON.stringify(func.arguments ?? {}),
+          arguments: typeof func.arguments === "string" ? func.arguments : JSON.stringify(func.arguments ?? {}),
           type: tc.type || "function",
           ...(tc.index !== undefined ? { index: tc.index } : {}),
         };
@@ -179,10 +163,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
       return {
         ...tc,
         name: tc.name,
-        arguments:
-          typeof argsValue === "string"
-            ? argsValue
-            : JSON.stringify(argsValue ?? {}),
+        arguments: typeof argsValue === "string" ? argsValue : JSON.stringify(argsValue ?? {}),
       };
     });
   }
@@ -210,9 +191,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
 }
 
 function filterAndNormalizeMessages(data: unknown[]): unknown[] {
-  return data
-    .filter((msg) => !isLangGraphToolDefinition(msg))
-    .map(normalizeMessage);
+  return data.filter((msg) => !isLangGraphToolDefinition(msg)).map(normalizeMessage);
 }
 
 function preprocessData(data: unknown): unknown {
@@ -287,16 +266,12 @@ export const langgraphAdapter: ProviderAdapter = {
         // Reject OpenAI Agents SDK
         if (
           scope.name === "openinference.instrumentation.openai_agents" ||
-          (typeof scope.name === "string" &&
-            scope.name.includes("openai_agents"))
+          (typeof scope.name === "string" && scope.name.includes("openai_agents"))
         ) {
           return false;
         }
 
-        if (
-          typeof scope.name === "string" &&
-          scope.name.startsWith("Microsoft.SemanticKernel")
-        ) {
+        if (typeof scope.name === "string" && scope.name.startsWith("Microsoft.SemanticKernel")) {
           return false;
         }
       }
@@ -304,11 +279,7 @@ export const langgraphAdapter: ProviderAdapter = {
       // Check attributes["operation.name"] for AI SDK pattern
       if ("attributes" in meta && typeof meta.attributes === "object") {
         const attrs = meta.attributes as Record<string, unknown> | null;
-        if (
-          attrs &&
-          typeof attrs["operation.name"] === "string" &&
-          attrs["operation.name"].startsWith("ai.")
-        ) {
+        if (attrs && typeof attrs["operation.name"] === "string" && attrs["operation.name"].startsWith("ai.")) {
           return false;
         }
       }
@@ -329,9 +300,7 @@ export const langgraphAdapter: ProviderAdapter = {
       }
 
       // LangSmith/LangChain markers (ls_ prefix indicates LangChain ecosystem)
-      const hasLangChainMarkers = Object.keys(meta).some((key) =>
-        key.startsWith("ls_"),
-      );
+      const hasLangChainMarkers = Object.keys(meta).some((key) => key.startsWith("ls_"));
       if (hasLangChainMarkers) {
         return true;
       }
@@ -348,10 +317,8 @@ export const langgraphAdapter: ProviderAdapter = {
       if (Array.isArray(wrapped.tools)) {
         return false;
       }
-      if (LangChainMessageSchema.safeParse(wrapped.messages).success)
-        return true;
-      if (LangGraphMessageSchema.safeParse(wrapped.messages).success)
-        return true;
+      if (LangChainMessageSchema.safeParse(wrapped.messages).success) return true;
+      if (LangGraphMessageSchema.safeParse(wrapped.messages).success) return true;
     }
 
     // finally Schema-based detection on data b/c of performance
@@ -365,20 +332,14 @@ export const langgraphAdapter: ProviderAdapter = {
       if (Array.isArray(wrapped.tools)) {
         return false;
       }
-      if (LangChainMessageSchema.safeParse(wrapped.messages).success)
-        return true;
-      if (LangGraphMessageSchema.safeParse(wrapped.messages).success)
-        return true;
+      if (LangChainMessageSchema.safeParse(wrapped.messages).success) return true;
+      if (LangGraphMessageSchema.safeParse(wrapped.messages).success) return true;
     }
 
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    _ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", _ctx: NormalizerContext): unknown {
     return preprocessData(data);
   },
 };

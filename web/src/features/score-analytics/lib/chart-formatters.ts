@@ -22,11 +22,7 @@ import {
  * @param timeRange - The time range (relative or absolute)
  * @returns Formatted timestamp string for axis label
  */
-export function formatChartTimestamp(
-  date: Date,
-  interval: IntervalConfig,
-  timeRange: TimeRange,
-): string {
+export function formatChartTimestamp(date: Date, interval: IntervalConfig, timeRange: TimeRange): string {
   const formatString = getChartAxisFormat(interval, timeRange);
   return format(date, formatString);
 }
@@ -47,11 +43,7 @@ export function formatChartTimestamp(
  * @param timeRange - The time range (relative or absolute)
  * @returns Formatted timestamp string for tooltip
  */
-export function formatChartTooltipTimestamp(
-  date: Date,
-  interval: IntervalConfig,
-  timeRange: TimeRange,
-): string {
+export function formatChartTooltipTimestamp(date: Date, interval: IntervalConfig, timeRange: TimeRange): string {
   const formatString = getChartTooltipFormat(interval, timeRange);
   return format(date, formatString);
 }

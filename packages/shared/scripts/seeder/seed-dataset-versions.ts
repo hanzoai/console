@@ -23,10 +23,7 @@ interface VersionData {
   }>;
 }
 
-export async function seedDatasetVersions(
-  prismaClient: PrismaClient,
-  projectIds: string[],
-) {
+export async function seedDatasetVersions(prismaClient: PrismaClient, projectIds: string[]) {
   logger.info("Starting dataset version test data generation");
 
   for (const projectId of projectIds) {
@@ -72,27 +69,19 @@ export async function seedDatasetVersions(
       versions.push({ timestamp, operations });
     }
 
-    logger.info(
-      `Created ${BULK_VERSIONS} bulk versions with ${ITEMS_PER_BULK_VERSION} items each`,
-    );
+    logger.info(`Created ${BULK_VERSIONS} bulk versions with ${ITEMS_PER_BULK_VERSION} items each`);
 
     // Create additional versions with mixed operations
-    const existingItemIds = Array.from(
-      { length: BULK_VERSIONS * ITEMS_PER_BULK_VERSION },
-      (_, i) => `item-${i}`,
-    );
+    const existingItemIds = Array.from({ length: BULK_VERSIONS * ITEMS_PER_BULK_VERSION }, (_, i) => `item-${i}`);
 
     for (let v = 0; v < ADDITIONAL_VERSIONS; v++) {
-      const timestamp = new Date(
-        baseTime.getTime() + (BULK_VERSIONS + v) * 60 * 60 * 1000,
-      );
+      const timestamp = new Date(baseTime.getTime() + (BULK_VERSIONS + v) * 60 * 60 * 1000);
       const operations = [];
       const operationCount = Math.floor(Math.random() * 100) + 50; // 50-150 operations per version
 
       for (let i = 0; i < operationCount; i++) {
         const rand = Math.random();
-        const itemId =
-          existingItemIds[Math.floor(Math.random() * existingItemIds.length)];
+        const itemId = existingItemIds[Math.floor(Math.random() * existingItemIds.length)];
 
         if (rand < 0.7) {
           // 70% updates
@@ -134,9 +123,7 @@ export async function seedDatasetVersions(
       versions.push({ timestamp, operations });
     }
 
-    logger.info(
-      `Created ${ADDITIONAL_VERSIONS} additional versions with mixed operations`,
-    );
+    logger.info(`Created ${ADDITIONAL_VERSIONS} additional versions with mixed operations`);
 
     // Insert all data
     logger.info("Starting bulk insert...");
@@ -200,9 +187,7 @@ export async function seedDatasetVersions(
       }
     }
 
-    logger.info(
-      `✅ Complete! Inserted ${totalInserts} total version rows into dataset_items`,
-    );
+    logger.info(`✅ Complete! Inserted ${totalInserts} total version rows into dataset_items`);
     logger.info(`   Dataset: ${TEST_DATASET_NAME}`);
     logger.info(`   Versions: ${TOTAL_VERSIONS}`);
     logger.info(`   Unique items: ~${ITEM_COUNT}`);

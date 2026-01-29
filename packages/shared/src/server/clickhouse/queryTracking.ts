@@ -22,10 +22,7 @@ export function sleep(ms: number): Promise<void> {
  * Polls ClickHouse to determine the status of a query by its query_id.
  * First checks system.processes for running queries, then system.query_log for completed/failed.
  */
-export async function pollQueryStatus(
-  queryId: string,
-  tags?: Record<string, string>,
-): Promise<QueryStatus> {
+export async function pollQueryStatus(queryId: string, tags?: Record<string, string>): Promise<QueryStatus> {
   const tagsWithDefaults = {
     feature: "query-tracking",
     operation: "pollQueryStatus",
@@ -83,11 +80,7 @@ export async function pollQueryStatus(
     return "running";
   }
 
-  if (
-    type === "ExceptionBeforeStart" ||
-    type === "ExceptionWhileProcessing" ||
-    parseInt(exception_code, 10) !== 0
-  ) {
+  if (type === "ExceptionBeforeStart" || type === "ExceptionWhileProcessing" || parseInt(exception_code, 10) !== 0) {
     return "failed";
   }
 
@@ -101,9 +94,7 @@ export async function pollQueryStatus(
 /**
  * Gets the error message for a failed query from system.query_log.
  */
-export async function getQueryError(
-  queryId: string,
-): Promise<string | undefined> {
+export async function getQueryError(queryId: string): Promise<string | undefined> {
   const result = await queryClickhouse<{ exception_message: string }>({
     query: `
       SELECT exception as exception_message

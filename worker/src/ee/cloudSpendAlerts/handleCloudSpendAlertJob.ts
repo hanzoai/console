@@ -7,9 +7,8 @@ import { Job } from "bullmq";
 import { logger } from "@hanzo/shared/src/server";
 
 export const handleCloudSpendAlertJob = async (job: Job<{ orgId: string }>) => {
-  logger.debug(
-    "[CLOUD SPEND ALERTS] Cloud spend alerts are not available in community edition",
-    { orgId: job.data.orgId }
-  );
+  logger.debug("[CLOUD SPEND ALERTS] Cloud spend alerts are not available in community edition", {
+    orgId: job.data.orgId,
+  });
   return;
 };

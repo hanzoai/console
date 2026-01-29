@@ -18,9 +18,7 @@ type MigrationState = {
 
 const backgroundMigrationId = "c19b91d9-f9a2-468b-8209-95578f970c5b";
 
-export default class MigrateEventLogToBlobStorageRefTable
-  implements IBackgroundMigration
-{
+export default class MigrateEventLogToBlobStorageRefTable implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -29,15 +27,10 @@ export default class MigrateEventLogToBlobStorageRefTable
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // Check if Clickhouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Clickhouse credentials must be configured to perform migration",
       };
     }
 
@@ -52,9 +45,7 @@ export default class MigrateEventLogToBlobStorageRefTable
     ) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(
-          `ClickHouse event_log or blob_storage_file_log tables do not exist. Retrying in 10s...`,
-        );
+        logger.info(`ClickHouse event_log or blob_storage_file_log tables do not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -63,8 +54,7 @@ export default class MigrateEventLogToBlobStorageRefTable
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason:
-          "ClickHouse event_log or blob_storage_file_log tables do not exist",
+        invalidReason: "ClickHouse event_log or blob_storage_file_log tables do not exist",
       };
     }
 
@@ -73,9 +63,7 @@ export default class MigrateEventLogToBlobStorageRefTable
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(
-      `Migrating from event_log table to blob_storage_file_log with ${JSON.stringify(args)}`,
-    );
+    logger.info(`Migrating from event_log table to blob_storage_file_log with ${JSON.stringify(args)}`);
 
     // @ts-ignore
     const initialMigrationState: {
@@ -99,29 +87,19 @@ export default class MigrateEventLogToBlobStorageRefTable
       data: { state: initialState },
     });
     let processedRows = 0;
-    while (
-      !this.isAborted &&
-      !this.isFinished &&
-      processedRows < maxRowsToProcess
-    ) {
+    while (!this.isAborted && !this.isFinished && processedRows < maxRowsToProcess) {
       const fetchStart = Date.now();
 
       // @ts-ignore
-      const migrationState: { state: MigrationState } =
-        await prisma.backgroundMigration.findUniqueOrThrow({
-          where: { id: backgroundMigrationId },
-          select: { state: true },
-        });
+      const migrationState: { state: MigrationState } = await prisma.backgroundMigration.findUniqueOrThrow({
+        where: { id: backgroundMigrationId },
+        select: { state: true },
+      });
 
       // ordered by time ascending.
-      await insertIntoS3RefsTableFromEventLog(
-        batchSize,
-        migrationState.state.offset,
-      );
+      await insertIntoS3RefsTableFromEventLog(batchSize, migrationState.state.offset);
 
-      logger.info(
-        `Inserted up to ${batchSize} records into blob_storage_file_log in ${Date.now() - fetchStart}ms`,
-      );
+      logger.info(`Inserted up to ${batchSize} records into blob_storage_file_log in ${Date.now() - fetchStart}ms`);
 
       const lastEventLogPrimaryKey = await getLastEventLogPrimaryKey();
 
@@ -154,9 +132,7 @@ export default class MigrateEventLogToBlobStorageRefTable
       return;
     }
 
-    logger.info(
-      `Finished migration of event_log table to blob storage log in ${Date.now() - start}ms`,
-    );
+    logger.info(`Finished migration of event_log table to blob storage log in ${Date.now() - start}ms`);
   }
 
   async abort(): Promise<void> {

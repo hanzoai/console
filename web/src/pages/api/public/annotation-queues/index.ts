@@ -71,9 +71,7 @@ export default withMiddlewares({
             },
           })) >= 1
         ) {
-          throw new MethodNotAllowedError(
-            "Maximum number of annotation queues reached on Hobby plan.",
-          );
+          throw new MethodNotAllowedError("Maximum number of annotation queues reached on Hobby plan.");
         }
       }
 
@@ -100,9 +98,7 @@ export default withMiddlewares({
       });
       const scoreConfigIdSet = new Set(scoreConfigs.map((config) => config.id));
       if (body.scoreConfigIds.some((id) => !scoreConfigIdSet.has(id))) {
-        throw new InvalidRequestError(
-          "At least one of the score config IDs cannot be found for the given project.",
-        );
+        throw new InvalidRequestError("At least one of the score config IDs cannot be found for the given project.");
       }
 
       const queue = await prisma.annotationQueue.create({

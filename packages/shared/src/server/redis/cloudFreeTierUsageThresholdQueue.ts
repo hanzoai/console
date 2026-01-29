@@ -1,11 +1,7 @@
 import { Queue } from "bullmq";
 import { env } from "../../env";
 import { QueueName, QueueJobs } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 
 export class CloudFreeTierUsageThresholdQueue {
@@ -48,15 +44,12 @@ export class CloudFreeTierUsageThresholdQueue {
 
     if (CloudFreeTierUsageThresholdQueue.instance) {
       // Schedule recurring job - runs every hour at minute 35 (30 minutes after cloudUsageMetering at :05)
-      logger.info(
-        "[CloudFreeTierUsageThresholdQueue] Scheduling recurring job",
-        {
-          pattern: "35 * * * *",
-          jobId: "free-tier-usage-threshold-hourly",
-          description: "Every hour at minute 35",
-          timestamp: new Date().toISOString(),
-        },
-      );
+      logger.info("[CloudFreeTierUsageThresholdQueue] Scheduling recurring job", {
+        pattern: "35 * * * *",
+        jobId: "free-tier-usage-threshold-hourly",
+        description: "Every hour at minute 35",
+        timestamp: new Date().toISOString(),
+      });
 
       CloudFreeTierUsageThresholdQueue.instance.add(
         QueueJobs.CloudFreeTierUsageThresholdJob,
@@ -69,14 +62,11 @@ export class CloudFreeTierUsageThresholdQueue {
 
       // Optional: Bootstrap job for immediate execution on startup
       // This ensures usage thresholds are processed immediately when service starts
-      logger.info(
-        "[CloudFreeTierUsageThresholdQueue] Scheduling bootstrap job (commented out for now)",
-        {
-          jobId: "free-tier-usage-threshold-bootstrap",
-          description: "Immediate execution on startup",
-          timestamp: new Date().toISOString(),
-        },
-      );
+      logger.info("[CloudFreeTierUsageThresholdQueue] Scheduling bootstrap job (commented out for now)", {
+        jobId: "free-tier-usage-threshold-bootstrap",
+        description: "Immediate execution on startup",
+        timestamp: new Date().toISOString(),
+      });
 
       // Note: disabled for now
       // ------------------------------------------------------------

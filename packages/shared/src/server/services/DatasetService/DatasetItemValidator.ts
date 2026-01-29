@@ -16,10 +16,7 @@ type ValidateAndNormalizeResult =
   | {
       success: true;
       input: Prisma.NullTypes.DbNull | Prisma.InputJsonValue | undefined;
-      expectedOutput:
-        | Prisma.NullTypes.DbNull
-        | Prisma.InputJsonValue
-        | undefined;
+      expectedOutput: Prisma.NullTypes.DbNull | Prisma.InputJsonValue | undefined;
       metadata: Prisma.NullTypes.DbNull | Prisma.InputJsonValue | undefined;
     }
   | PayloadError;
@@ -90,9 +87,7 @@ export class DatasetItemValidator {
       return data.map(this.sanitizeJsonValue);
     }
     if (data && typeof data === "object") {
-      return Object.fromEntries(
-        Object.entries(data).map(([k, v]) => [k, this.sanitizeJsonValue(v)]),
-      );
+      return Object.fromEntries(Object.entries(data).map(([k, v]) => [k, this.sanitizeJsonValue(v)]));
     }
     return data;
   };
@@ -143,10 +138,7 @@ export class DatasetItemValidator {
         return parsed;
       }
     } catch (e) {
-      logger.info(
-        "[DatasetItemValidator.normalize] failed to parse dataset item data",
-        e,
-      );
+      logger.info("[DatasetItemValidator.normalize] failed to parse dataset item data", e);
 
       return undefined;
     }
@@ -204,10 +196,7 @@ export class DatasetItemValidator {
   }): ValidateAndNormalizeResult {
     // If we have a create operation, input cannot be undefined / null
     // Use explicit null check (not falsy) to allow valid JSON values like 0, false, ""
-    if (
-      params.validateOpts.normalizeUndefinedToNull &&
-      (params.input === null || params.input === undefined)
-    ) {
+    if (params.validateOpts.normalizeUndefinedToNull && (params.input === null || params.input === undefined)) {
       return {
         success: false,
         message: "Dataset item input cannot be null",
@@ -224,14 +213,8 @@ export class DatasetItemValidator {
 
     // 1. Normalize IO
     const normalizedInput = this.normalize(params.input, params.normalizeOpts);
-    const normalizedExpectedOutput = this.normalize(
-      params.expectedOutput,
-      params.normalizeOpts,
-    );
-    const normalizedMetadata = this.normalize(
-      params.metadata,
-      params.normalizeOpts,
-    );
+    const normalizedExpectedOutput = this.normalize(params.expectedOutput, params.normalizeOpts);
+    const normalizedMetadata = this.normalize(params.metadata, params.normalizeOpts);
 
     // 2. Validate IO against schema
     const result = this.validateDatasetItemData({
@@ -243,9 +226,7 @@ export class DatasetItemValidator {
     if (!result.isValid) {
       const errorMessages: string[] = [];
       if (result.inputErrors) {
-        errorMessages.push(
-          `Input validation failed: ${result.inputErrors.map((e) => e.message).join(", ")}`,
-        );
+        errorMessages.push(`Input validation failed: ${result.inputErrors.map((e) => e.message).join(", ")}`);
       }
       if (result.expectedOutputErrors) {
         errorMessages.push(

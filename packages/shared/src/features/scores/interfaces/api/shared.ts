@@ -3,10 +3,7 @@ import { publicApiPaginationZod } from "../../../../utils/zod";
 import { stringDateTime } from "../../../../utils/typeChecks";
 import { applyScoreValidation } from "../../../../utils/scores";
 import { PostScoreBodyFoundationSchema } from "../shared";
-import {
-  ScoreDataTypeDomain,
-  ScoreSourceDomain,
-} from "../../../../domain/scores";
+import { ScoreDataTypeDomain, ScoreSourceDomain } from "../../../../domain/scores";
 
 const operators = ["<", ">", "<=", ">=", "!=", "="] as const;
 
@@ -77,8 +74,7 @@ export const PostScoresBody = applyScoreValidation(
       }),
       z.object({
         value: z.number().refine((value) => value === 0 || value === 1, {
-          message:
-            "Value must be a number equal to either 0 or 1 for data type BOOLEAN",
+          message: "Value must be a number equal to either 0 or 1 for data type BOOLEAN",
         }),
         dataType: z.literal("BOOLEAN"),
         configId: z.string().nullish(),

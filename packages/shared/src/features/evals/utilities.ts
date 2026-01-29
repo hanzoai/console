@@ -10,11 +10,7 @@ export const parseUnknownToString = (value: unknown): string => {
   if (value === null || value === undefined) {
     return "";
   }
-  if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
-  ) {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return value.toString();
   }
   if (typeof value === "object") {
@@ -86,10 +82,7 @@ export function extractValueFromObject(
     try {
       jsonSelectedColumn = jsonParser(selectedColumn, mapping.jsonSelector);
     } catch (err) {
-      error =
-        err instanceof Error
-          ? err
-          : new Error("There was an unknown error parsing the JSON");
+      error = err instanceof Error ? err : new Error("There was an unknown error parsing the JSON");
       jsonSelectedColumn = selectedColumn; // Fallback to original value
     }
   } else {

@@ -41,39 +41,32 @@ export async function retryObservationNotFound(
 ): Promise<boolean> {
   try {
     const currentAttempt = (job.data.retryBaggage?.attempt ?? 0) + 1;
-    const originalTimestamp =
-      job.data.retryBaggage?.originalJobTimestamp ?? new Date();
+    const originalTimestamp = job.data.retryBaggage?.originalJobTimestamp ?? new Date();
 
     // Check if job is older than max age
     const ageMs = Date.now() - new Date(originalTimestamp).getTime();
     if (ageMs > MAX_AGE_MS) {
-      logger.warn(
-        `Observation ${error.observationId} not found after ${MAX_AGE_MS / 1000}s. Giving up.`,
-        {
-          projectId: job.data.projectId,
-          datasetItemId: job.data.datasetItemId,
-          observationId: error.observationId,
-          traceId: job.data.traceId,
-          ageMs,
-          attempts: currentAttempt,
-        },
-      );
+      logger.warn(`Observation ${error.observationId} not found after ${MAX_AGE_MS / 1000}s. Giving up.`, {
+        projectId: job.data.projectId,
+        datasetItemId: job.data.datasetItemId,
+        observationId: error.observationId,
+        traceId: job.data.traceId,
+        ageMs,
+        attempts: currentAttempt,
+      });
       return false; // Max age reached, don't retry
     }
 
     // Check if max attempts reached
     if (currentAttempt >= MAX_RETRY_ATTEMPTS) {
-      logger.warn(
-        `Observation ${error.observationId} not found after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`,
-        {
-          projectId: job.data.projectId,
-          datasetItemId: job.data.datasetItemId,
-          observationId: error.observationId,
-          traceId: job.data.traceId,
-          ageMs,
-          attempts: currentAttempt,
-        },
-      );
+      logger.warn(`Observation ${error.observationId} not found after ${MAX_RETRY_ATTEMPTS} attempts. Giving up.`, {
+        projectId: job.data.projectId,
+        datasetItemId: job.data.datasetItemId,
+        observationId: error.observationId,
+        traceId: job.data.traceId,
+        ageMs,
+        attempts: currentAttempt,
+      });
       return false; // Max attempts reached, don't retry
     }
 

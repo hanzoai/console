@@ -1,9 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import {
-  clickhouseClient,
-  convertPostgresDatasetRunItemToInsert,
-  logger,
-} from "@hanzo/shared/src/server";
+import { clickhouseClient, convertPostgresDatasetRunItemToInsert, logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
@@ -11,9 +7,7 @@ import { env } from "../env";
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "9f32e84c-7b1d-4f59-a803-d67ae5c9b2e8";
 
-export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
-  implements IBackgroundMigration
-{
+export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -22,15 +16,10 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // Check if Clickhouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Clickhouse credentials must be configured to perform migration",
       };
     }
 
@@ -42,9 +31,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
     if (!tableNames.some((r) => r.name === "dataset_run_items_rmt")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(
-          `ClickHouse dataset_run_items_rmt table does not exist. Retrying in 10s...`,
-        );
+        logger.info(`ClickHouse dataset_run_items_rmt table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -62,9 +49,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(
-      `Migrating dataset run items from postgres to clickhouse with ${JSON.stringify(args)}`,
-    );
+    logger.info(`Migrating dataset run items from postgres to clickhouse with ${JSON.stringify(args)}`);
 
     // @ts-ignore
     const initialMigrationState: { state: { maxDate: string | undefined } } =
@@ -85,23 +70,16 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
     });
 
     let processedRows = 0;
-    while (
-      !this.isAborted &&
-      !this.isFinished &&
-      processedRows < maxRowsToProcess
-    ) {
+    while (!this.isAborted && !this.isFinished && processedRows < maxRowsToProcess) {
       const fetchStart = Date.now();
 
       // @ts-ignore
-      const migrationState: { state: { maxDate: string } } =
-        await prisma.backgroundMigration.findUniqueOrThrow({
-          where: { id: backgroundMigrationId },
-          select: { state: true },
-        });
+      const migrationState: { state: { maxDate: string } } = await prisma.backgroundMigration.findUniqueOrThrow({
+        where: { id: backgroundMigrationId },
+        select: { state: true },
+      });
 
-      const datasetRunItems = await prisma.$queryRaw<
-        Array<Record<string, any>>
-      >(Prisma.sql`
+      const datasetRunItems = await prisma.$queryRaw<Array<Record<string, any>>>(Prisma.sql`
         WITH latest_dataset_items AS (
           SELECT DISTINCT ON (id, project_id)
             id,
@@ -155,9 +133,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
         break;
       }
 
-      logger.info(
-        `Got ${datasetRunItems.length} records from Postgres in ${Date.now() - fetchStart}ms`,
-      );
+      logger.info(`Got ${datasetRunItems.length} records from Postgres in ${Date.now() - fetchStart}ms`);
 
       const insertStart = Date.now();
       await clickhouseClient().insert({
@@ -174,9 +150,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
         where: { id: backgroundMigrationId },
         data: {
           state: {
-            maxDate: new Date(
-              datasetRunItems[datasetRunItems.length - 1].created_at,
-            ),
+            maxDate: new Date(datasetRunItems[datasetRunItems.length - 1].created_at),
           },
         },
       });
@@ -199,15 +173,11 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt
       return;
     }
 
-    logger.info(
-      `Finished migration of dataset run items from Postgres to Clickhouse in ${Date.now() - start}ms`,
-    );
+    logger.info(`Finished migration of dataset run items from Postgres to Clickhouse in ${Date.now() - start}ms`);
   }
 
   async abort(): Promise<void> {
-    logger.info(
-      `Aborting migration of dataset run items from Postgres to clickhouse`,
-    );
+    logger.info(`Aborting migration of dataset run items from Postgres to clickhouse`);
     this.isAborted = true;
   }
 }

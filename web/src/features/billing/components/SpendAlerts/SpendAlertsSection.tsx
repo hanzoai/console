@@ -36,8 +36,8 @@ export function SpendAlertsSection({ orgId }: SpendAlertsSectionProps) {
           <div>
             <h3 className="text-large font-medium">Spend Alerts</h3>
             <p className="max-w-prose text-sm text-muted-foreground">
-              Get notified when your organization&apos;s spending exceeds
-              configured thresholds. Alerts may be delayed by up to 90 minutes.
+              Get notified when your organization&apos;s spending exceeds configured thresholds. Alerts may be delayed
+              by up to 90 minutes.
             </p>
             <p className="max-w-prose text-sm text-muted-foreground"></p>
           </div>

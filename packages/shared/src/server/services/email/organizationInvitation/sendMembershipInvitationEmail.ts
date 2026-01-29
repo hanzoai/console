@@ -15,10 +15,7 @@ const hanzoUrls = {
 type SendMembershipInvitationParams = {
   env: Partial<
     Record<
-      | "EMAIL_FROM_ADDRESS"
-      | "SMTP_CONNECTION_URL"
-      | "NEXT_PUBLIC_HANZO_CLOUD_REGION"
-      | "NEXTAUTH_URL",
+      "EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL" | "NEXT_PUBLIC_HANZO_CLOUD_REGION" | "NEXTAUTH_URL",
       string | undefined
     >
   >;
@@ -40,9 +37,7 @@ export const sendMembershipInvitationEmail = async ({
   userExists,
 }: SendMembershipInvitationParams) => {
   if (!env.EMAIL_FROM_ADDRESS || !env.SMTP_CONNECTION_URL) {
-    logger.error(
-      "Missing environment variables for sending membership invitation email.",
-    );
+    logger.error("Missing environment variables for sending membership invitation email.");
     return;
   }
 
@@ -56,9 +51,7 @@ export const sendMembershipInvitationEmail = async ({
 
   const authUrl = getAuthURL();
   if (!authUrl) {
-    logger.error(
-      "Missing NEXTAUTH_URL or NEXT_PUBLIC_HANZO_CLOUD_REGION environment variable.",
-    );
+    logger.error("Missing NEXTAUTH_URL or NEXT_PUBLIC_HANZO_CLOUD_REGION environment variable.");
     return;
   }
 

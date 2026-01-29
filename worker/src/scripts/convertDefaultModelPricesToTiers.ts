@@ -41,9 +41,7 @@ const OldDefaultModelPriceSchema = z.object({
   created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
   prices: z.record(z.string(), z.number()),
-  tokenizer_config: z
-    .record(z.string(), z.union([z.string(), z.number()]))
-    .nullish(),
+  tokenizer_config: z.record(z.string(), z.union([z.string(), z.number()])).nullish(),
   tokenizer_id: z.string().nullish(),
 });
 
@@ -70,9 +68,7 @@ const NewDefaultModelPriceSchema = z.object({
   match_pattern: z.string(),
   created_at: z.string(), // ISO string in JSON
   updated_at: z.string(), // ISO string in JSON
-  tokenizer_config: z
-    .record(z.string(), z.union([z.string(), z.number()]))
-    .nullish(),
+  tokenizer_config: z.record(z.string(), z.union([z.string(), z.number()])).nullish(),
   tokenizer_id: z.string().nullish(),
   pricing_tiers: z.array(PricingTierSchema),
 });
@@ -114,18 +110,9 @@ function convertToTieredFormat(oldModel: OldModelPrice): NewModelPrice {
  * Main conversion function
  */
 async function convertFile() {
-  const inputPath = path.join(
-    __dirname,
-    "../constants/default-model-prices.json",
-  );
-  const outputPath = path.join(
-    __dirname,
-    "../constants/default-model-prices-new.json",
-  );
-  const backupPath = path.join(
-    __dirname,
-    "../constants/default-model-prices.backup.json",
-  );
+  const inputPath = path.join(__dirname, "../constants/default-model-prices.json");
+  const outputPath = path.join(__dirname, "../constants/default-model-prices-new.json");
+  const backupPath = path.join(__dirname, "../constants/default-model-prices.backup.json");
 
   console.log("Reading old format from:", inputPath);
 
@@ -155,9 +142,7 @@ async function convertFile() {
   console.log("\nNEW:", JSON.stringify(newModels[0], null, 2));
 
   console.log("\n✅ Conversion complete!");
-  console.log(
-    `\nTo replace the original file, run:\n  mv ${outputPath} ${inputPath}`,
-  );
+  console.log(`\nTo replace the original file, run:\n  mv ${outputPath} ${inputPath}`);
 }
 
 // Run conversion

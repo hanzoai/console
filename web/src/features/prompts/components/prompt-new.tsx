@@ -50,9 +50,7 @@ export const NewPrompt = () => {
       withPadding
       scrollable
       headerProps={{
-        title: initialPrompt
-          ? `${initialPrompt.name} \u2014 New version`
-          : "Create new prompt",
+        title: initialPrompt ? `${initialPrompt.name} \u2014 New version` : "Create new prompt",
         help: {
           description:
             "Manage and version your prompts in HanzoCloud. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
@@ -63,8 +61,7 @@ export const NewPrompt = () => {
     >
       {initialPrompt ? (
         <p className="text-sm text-muted-foreground">
-          Prompts are immutable in HanzoCloud. To update a prompt, create a new
-          version.
+          Prompts are immutable in HanzoCloud. To update a prompt, create a new version.
         </p>
       ) : null}
       <div className="my-8">

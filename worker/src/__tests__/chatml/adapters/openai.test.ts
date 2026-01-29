@@ -1,16 +1,10 @@
 import { describe, it, expect } from "vitest";
-import {
-  openAIAdapter,
-  normalizeInput,
-  normalizeOutput,
-} from "@hanzo/shared";
+import { openAIAdapter, normalizeInput, normalizeOutput } from "@hanzo/shared";
 
 describe("OpenAI Adapter", () => {
   describe("detection", () => {
     it("should detect OpenAI and reject LangGraph", () => {
-      expect(
-        openAIAdapter.detect({ observationName: "OpenAI-generation" }),
-      ).toBe(true);
+      expect(openAIAdapter.detect({ observationName: "OpenAI-generation" })).toBe(true);
 
       expect(
         openAIAdapter.detect({
@@ -18,9 +12,7 @@ describe("OpenAI Adapter", () => {
         }),
       ).toBe(true);
 
-      expect(
-        openAIAdapter.detect({ metadata: { framework: "langgraph" } }),
-      ).toBe(false);
+      expect(openAIAdapter.detect({ metadata: { framework: "langgraph" } })).toBe(false);
 
       expect(
         openAIAdapter.detect({
@@ -92,9 +84,7 @@ describe("OpenAI Adapter", () => {
       };
 
       // Should not throw TypeError when detecting
-      expect(() =>
-        openAIAdapter.detect({ metadata: messagesWithNull }),
-      ).not.toThrow();
+      expect(() => openAIAdapter.detect({ metadata: messagesWithNull })).not.toThrow();
 
       // Should still successfully detect as OpenAI format despite null items
       expect(openAIAdapter.detect({ metadata: messagesWithNull })).toBe(true);
@@ -217,9 +207,7 @@ describe("OpenAI Adapter", () => {
     expect(result.success).toBe(true);
     // Simple objects (< 5 keys) get stringified, not spread
     expect(typeof result.data?.[0].content).toBe("string");
-    expect(result.data?.[0].content).toBe(
-      '{"temperature":72,"conditions":"sunny"}',
-    );
+    expect(result.data?.[0].content).toBe('{"temperature":72,"conditions":"sunny"}');
     expect(result.data?.[0].tool_call_id).toBe("call_123");
   });
 
@@ -354,9 +342,7 @@ describe("OpenAI Adapter", () => {
 
       // Tool calls flattened
       expect(result.data?.[0].tool_calls?.[0].name).toBe("get_weather");
-      expect(result.data?.[0].tool_calls?.[0].arguments).toBe(
-        '{"location":"NYC"}',
-      );
+      expect(result.data?.[0].tool_calls?.[0].arguments).toBe('{"location":"NYC"}');
     });
 
     it("should handle request format with multiple tools and multiple messages", () => {
@@ -429,9 +415,7 @@ describe("OpenAI Adapter", () => {
       expect(result.success).toBe(true);
 
       expect(result.data?.[0].tool_calls?.[0].name).toBe("query_db");
-      expect(result.data?.[0].tool_calls?.[0].arguments).toBe(
-        '{"query":"test"}',
-      );
+      expect(result.data?.[0].tool_calls?.[0].arguments).toBe('{"query":"test"}');
     });
   });
 });

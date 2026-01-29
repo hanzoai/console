@@ -80,13 +80,9 @@ describe("applyFieldMapping", () => {
     });
 
     it("should extract nested values using JSON path", () => {
-      expect(
-        evaluateJsonPath(sampleObservation.input, "$.messages[0].content"),
-      ).toBe("You are a helpful assistant");
+      expect(evaluateJsonPath(sampleObservation.input, "$.messages[0].content")).toBe("You are a helpful assistant");
 
-      expect(
-        evaluateJsonPath(sampleObservation.input, "$.messages[1].content"),
-      ).toBe("What is 2+2?");
+      expect(evaluateJsonPath(sampleObservation.input, "$.messages[1].content")).toBe("What is 2+2?");
     });
 
     it("should return the root object for $ path", () => {
@@ -95,21 +91,13 @@ describe("applyFieldMapping", () => {
     });
 
     it("should extract simple fields", () => {
-      expect(evaluateJsonPath(sampleObservation.input, "$.model")).toBe(
-        "gpt-4",
-      );
-      expect(evaluateJsonPath(sampleObservation.input, "$.temperature")).toBe(
-        0.7,
-      );
+      expect(evaluateJsonPath(sampleObservation.input, "$.model")).toBe("gpt-4");
+      expect(evaluateJsonPath(sampleObservation.input, "$.temperature")).toBe(0.7);
     });
 
     it("should return undefined for non-existent paths", () => {
-      expect(
-        evaluateJsonPath(sampleObservation.input, "$.nonExistent"),
-      ).toBeUndefined();
-      expect(
-        evaluateJsonPath(sampleObservation.input, "$.messages[99]"),
-      ).toBeUndefined();
+      expect(evaluateJsonPath(sampleObservation.input, "$.nonExistent")).toBeUndefined();
+      expect(evaluateJsonPath(sampleObservation.input, "$.messages[99]")).toBeUndefined();
     });
 
     it("should handle string data (auto-parse JSON)", () => {
@@ -118,21 +106,13 @@ describe("applyFieldMapping", () => {
     });
 
     it("should return undefined for invalid JSON paths gracefully", () => {
-      expect(
-        evaluateJsonPath(sampleObservation.input, "invalid"),
-      ).toBeUndefined();
+      expect(evaluateJsonPath(sampleObservation.input, "invalid")).toBeUndefined();
     });
 
     it("should extract array elements", () => {
-      expect(evaluateJsonPath(sampleObservation.metadata, "$.tags[0]")).toBe(
-        "math",
-      );
-      expect(evaluateJsonPath(sampleObservation.metadata, "$.tags[1]")).toBe(
-        "simple",
-      );
-      expect(
-        evaluateJsonPath(sampleObservation.metadata, "$.tags[1:]"),
-      ).toEqual(["simple", "hello"]);
+      expect(evaluateJsonPath(sampleObservation.metadata, "$.tags[0]")).toBe("math");
+      expect(evaluateJsonPath(sampleObservation.metadata, "$.tags[1]")).toBe("simple");
+      expect(evaluateJsonPath(sampleObservation.metadata, "$.tags[1:]")).toEqual(["simple", "hello"]);
     });
   });
 

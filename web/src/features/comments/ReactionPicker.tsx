@@ -1,9 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { SmilePlusIcon } from "lucide-react";
 import { useState } from "react";
 import { EmojiPicker } from "@ferrucc-io/emoji-picker";
@@ -13,10 +9,7 @@ interface ReactionPickerProps {
   disabled?: boolean;
 }
 
-export function ReactionPicker({
-  onEmojiSelect,
-  disabled = false,
-}: ReactionPickerProps) {
+export function ReactionPicker({ onEmojiSelect, disabled = false }: ReactionPickerProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -32,10 +25,7 @@ export function ReactionPicker({
           <SmilePlusIcon className="h-3.5 w-3.5" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-fit border-none bg-transparent p-0"
-        align="start"
-      >
+      <PopoverContent className="w-fit border-none bg-transparent p-0" align="start">
         <EmojiPicker
           onEmojiSelect={(emoji) => {
             onEmojiSelect(emoji);

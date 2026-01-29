@@ -63,15 +63,11 @@ export type ScoreToAggregate =
  * Boolean scores are treated as categorical since they share the same
  * aggregation logic (value counting vs numeric averaging).
  */
-export const resolveAggregateType = (
-  dataType: AggregatableScoreDataType,
-): "NUMERIC" | "CATEGORICAL" => {
+export const resolveAggregateType = (dataType: AggregatableScoreDataType): "NUMERIC" | "CATEGORICAL" => {
   return dataType === "BOOLEAN" ? "CATEGORICAL" : dataType;
 };
 
-export const aggregateScores = <T extends ScoreToAggregate>(
-  scores: T[],
-): ScoreAggregate => {
+export const aggregateScores = <T extends ScoreToAggregate>(scores: T[]): ScoreAggregate => {
   const groupedScores: Record<string, T[]> = scores.reduce(
     (acc, score) => {
       const key = composeAggregateScoreKey({

@@ -42,14 +42,8 @@ const addToQueue = async ({
   }
 };
 
-export const processAddTracesToQueue = async (
-  projectId: string,
-  traceIds: string[],
-  targetId: string,
-) => {
-  logger.info(
-    `Adding traces ${JSON.stringify(traceIds)} to annotation queue ${targetId} in project ${projectId}`,
-  );
+export const processAddTracesToQueue = async (projectId: string, traceIds: string[], targetId: string) => {
+  logger.info(`Adding traces ${JSON.stringify(traceIds)} to annotation queue ${targetId} in project ${projectId}`);
   try {
     await addToQueue({
       projectId,
@@ -67,14 +61,8 @@ export const processAddTracesToQueue = async (
   }
 };
 
-export const processAddSessionsToQueue = async (
-  projectId: string,
-  sessionIds: string[],
-  targetId: string,
-) => {
-  logger.info(
-    `Adding sessions ${JSON.stringify(sessionIds)} to annotation queue ${targetId} in project ${projectId}`,
-  );
+export const processAddSessionsToQueue = async (projectId: string, sessionIds: string[], targetId: string) => {
+  logger.info(`Adding sessions ${JSON.stringify(sessionIds)} to annotation queue ${targetId} in project ${projectId}`);
 
   try {
     await addToQueue({
@@ -93,11 +81,7 @@ export const processAddSessionsToQueue = async (
   }
 };
 
-export const processAddObservationsToQueue = async (
-  projectId: string,
-  observationIds: string[],
-  targetId: string,
-) => {
+export const processAddObservationsToQueue = async (projectId: string, observationIds: string[], targetId: string) => {
   logger.info(
     `Adding observations ${JSON.stringify(observationIds)} to annotation queue ${targetId} in project ${projectId}`,
   );

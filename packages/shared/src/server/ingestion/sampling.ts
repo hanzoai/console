@@ -3,20 +3,18 @@ import { logger } from "../logger";
 import { env } from "../../env";
 import { IngestionEventType } from "./types";
 
-export function isTraceIdInSample(params: {
-  projectId: string | null;
-  event: IngestionEventType;
-}): { isSampled: boolean; isSamplingConfigured: boolean } {
+export function isTraceIdInSample(params: { projectId: string | null; event: IngestionEventType }): {
+  isSampled: boolean;
+  isSamplingConfigured: boolean;
+} {
   const { projectId, event } = params;
 
   const sampledProjects = env.HANZO_INGESTION_PROCESSING_SAMPLED_PROJECTS;
 
-  if (!projectId || !sampledProjects.has(projectId))
-    return { isSampled: true, isSamplingConfigured: false };
+  if (!projectId || !sampledProjects.has(projectId)) return { isSampled: true, isSamplingConfigured: false };
 
   const sampleRate = sampledProjects.get(projectId);
-  if (sampleRate === undefined)
-    return { isSampled: true, isSamplingConfigured: true };
+  if (sampleRate === undefined) return { isSampled: true, isSamplingConfigured: true };
 
   const traceId = parseTraceId(event);
   if (!traceId) return { isSampled: true, isSamplingConfigured: true };

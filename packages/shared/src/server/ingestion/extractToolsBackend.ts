@@ -11,9 +11,7 @@ export const ClickhouseToolDefinitionSchema = z.object({
   description: z.string().optional(),
   parameters: z.string().optional(), // JSON string of parameters schema
 });
-export type ClickhouseToolDefinition = z.infer<
-  typeof ClickhouseToolDefinitionSchema
->;
+export type ClickhouseToolDefinition = z.infer<typeof ClickhouseToolDefinitionSchema>;
 
 /**
  * ClickHouse storage schema for tool calls (invocations).
@@ -30,9 +28,7 @@ export const ClickhouseToolArgumentSchema = z.object({
   type: z.string().optional(),
   index: z.number().optional(),
 });
-export type ClickhouseToolArgument = z.infer<
-  typeof ClickhouseToolArgumentSchema
->;
+export type ClickhouseToolArgument = z.infer<typeof ClickhouseToolArgumentSchema>;
 
 /**
  * Flatten tool definition from nested or flat format.
@@ -52,10 +48,7 @@ function flattenToolDefinition(tool: unknown): {
   return {
     name: toolData.name as string | undefined,
     description: (toolData.description ?? toolData.desc) as string | undefined,
-    parameters:
-      toolData.parameters ??
-      toolData.parameters_json_schema ??
-      toolData.inputSchema,
+    parameters: toolData.parameters ?? toolData.parameters_json_schema ?? toolData.inputSchema,
   };
 }
 
@@ -77,8 +70,7 @@ function flattenToolCall(call: unknown): {
   const func = c.function as Record<string, unknown> | undefined;
   const name = (func?.name ?? c.name ?? c.toolName) as string | undefined;
   const rawArgs = func?.arguments ?? c.arguments ?? c.args;
-  const args =
-    typeof rawArgs === "string" ? rawArgs : JSON.stringify(rawArgs ?? {});
+  const args = typeof rawArgs === "string" ? rawArgs : JSON.stringify(rawArgs ?? {});
 
   return {
     id: (c.id ?? c.toolCallId ?? c.call_id) as string | undefined,
@@ -92,19 +84,14 @@ function flattenToolCall(call: unknown): {
 /**
  * Helper to add a tool definition, deduplicating by name.
  */
-function addToolDefinition(
-  definitions: ClickhouseToolDefinition[],
-  tool: unknown,
-): void {
+function addToolDefinition(definitions: ClickhouseToolDefinition[], tool: unknown): void {
   const flattened = flattenToolDefinition(tool);
   if (!flattened.name) return; // Skip invalid tools
 
   const normalized: ClickhouseToolDefinition = {
     name: flattened.name,
     description: flattened.description,
-    parameters: flattened.parameters
-      ? JSON.stringify(flattened.parameters)
-      : undefined,
+    parameters: flattened.parameters ? JSON.stringify(flattened.parameters) : undefined,
   };
 
   // Deduplicate by name
@@ -132,15 +119,10 @@ function addToolArgument(args: ClickhouseToolArgument[], call: unknown): void {
 /**
  * Extract tool definitions from raw input data (top-level tools array).
  */
-function extractToolsFromRawInput(
-  input: unknown,
-  definitions: ClickhouseToolDefinition[],
-): void {
+function extractToolsFromRawInput(input: unknown, definitions: ClickhouseToolDefinition[]): void {
   if (!input || typeof input !== "object") return;
 
-  const obj = Array.isArray(input)
-    ? { messages: input }
-    : (input as Record<string, unknown>);
+  const obj = Array.isArray(input) ? { messages: input } : (input as Record<string, unknown>);
 
   // Top-level tools array (OpenAI request format)
   if (Array.isArray(obj.tools)) {
@@ -177,10 +159,7 @@ function extractToolsFromRawInput(
 /**
  * Extract tool calls from raw output data.
  */
-function extractToolCallsFromRawOutput(
-  output: unknown,
-  args: ClickhouseToolArgument[],
-): void {
+function extractToolCallsFromRawOutput(output: unknown, args: ClickhouseToolArgument[]): void {
   if (!output) return;
 
   // Array of messages
@@ -221,11 +200,7 @@ function extractToolCallsFromRawOutput(
   // Anthropic tool_use in content array: {content: [{type: "tool_use", ...}]}
   if (Array.isArray(obj.content)) {
     for (const part of obj.content) {
-      if (
-        part &&
-        typeof part === "object" &&
-        (part as Record<string, unknown>).type === "tool_use"
-      ) {
+      if (part && typeof part === "object" && (part as Record<string, unknown>).type === "tool_use") {
         const p = part as Record<string, unknown>;
         addToolArgument(args, {
           id: p.id,
@@ -238,9 +213,7 @@ function extractToolCallsFromRawOutput(
   }
 
   // LangChain additional_kwargs: {additional_kwargs: {tool_calls: [...]}}
-  const additionalKwargs = obj.additional_kwargs as
-    | Record<string, unknown>
-    | undefined;
+  const additionalKwargs = obj.additional_kwargs as Record<string, unknown> | undefined;
   if (additionalKwargs && Array.isArray(additionalKwargs.tool_calls)) {
     for (const call of additionalKwargs.tool_calls) {
       addToolArgument(args, call);
@@ -251,10 +224,7 @@ function extractToolCallsFromRawOutput(
 /**
  * Extract tool calls from a single message object.
  */
-function extractToolCallsFromMessage(
-  msg: Record<string, unknown>,
-  args: ClickhouseToolArgument[],
-): void {
+function extractToolCallsFromMessage(msg: Record<string, unknown>, args: ClickhouseToolArgument[]): void {
   if (Array.isArray(msg.tool_calls)) {
     for (const call of msg.tool_calls) {
       addToolArgument(args, call);
@@ -264,11 +234,7 @@ function extractToolCallsFromMessage(
   // Anthropic content array
   if (Array.isArray(msg.content)) {
     for (const part of msg.content) {
-      if (
-        part &&
-        typeof part === "object" &&
-        (part as Record<string, unknown>).type === "tool_use"
-      ) {
+      if (part && typeof part === "object" && (part as Record<string, unknown>).type === "tool_use") {
         const p = part as Record<string, unknown>;
         addToolArgument(args, {
           id: p.id,
@@ -340,9 +306,7 @@ export function extractToolsFromObservation(
  * Convert array of tool definitions to Map format for ClickHouse.
  * Key: tool name, Value: JSON string of {description, parameters}
  */
-export function convertDefinitionsToMap(
-  definitions: ClickhouseToolDefinition[],
-): Record<string, string> {
+export function convertDefinitionsToMap(definitions: ClickhouseToolDefinition[]): Record<string, string> {
   const map: Record<string, string> = {};
   for (const def of definitions) {
     // Last definition wins if duplicate names (shouldn't happen after dedup)

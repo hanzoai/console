@@ -45,9 +45,7 @@ export function AppLayout(props: PropsWithChildren) {
   const { organization } = useQueryProjectOrOrganization();
 
   // Determine layout configuration
-  const { variant, hideNavigation, isPublishable } = useLayoutConfiguration(
-    session.data ?? null,
-  );
+  const { variant, hideNavigation, isPublishable } = useLayoutConfiguration(session.data ?? null);
 
   // Check authentication and redirects
   const authGuard = useAuthGuard(session, hideNavigation);
@@ -58,9 +56,7 @@ export function AppLayout(props: PropsWithChildren) {
   // IMPORTANT: Call all hooks before any conditional returns
   // Load navigation and metadata (even if not used in all render paths)
   const navigation = useFilteredNavigation(session.data ?? null, organization);
-  const activePathName = navigation.navigation.find(
-    (item) => item.isActive,
-  )?.title;
+  const activePathName = navigation.navigation.find((item) => item.isActive)?.title;
   const metadata = useLayoutMetadata(activePathName, navigation.navigation);
 
   // Handle auth guard actions (redirect or sign-out)
@@ -73,11 +69,7 @@ export function AppLayout(props: PropsWithChildren) {
   }, [authGuard, router]);
 
   // Loading or redirecting state
-  if (
-    authGuard.action === "loading" ||
-    authGuard.action === "redirect" ||
-    authGuard.action === "sign-out"
-  ) {
+  if (authGuard.action === "loading" || authGuard.action === "redirect" || authGuard.action === "sign-out") {
     return <LoadingLayout message={authGuard.message} />;
   }
 
@@ -136,12 +128,7 @@ export function AppLayout(props: PropsWithChildren) {
   };
 
   return (
-    <AuthenticatedLayout
-      session={session.data}
-      navigation={navigation}
-      metadata={metadata}
-      onSignOut={handleSignOut}
-    >
+    <AuthenticatedLayout session={session.data} navigation={navigation} metadata={metadata} onSignOut={handleSignOut}>
       {props.children}
     </AuthenticatedLayout>
   );

@@ -1,17 +1,6 @@
-import {
-  createObservation,
-  createTrace,
-  createTracesCh,
-  createEvent,
-} from "@hanzo/shared/src/server";
-import {
-  createObservationsCh,
-  createEventsCh,
-} from "@hanzo/shared/src/server";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-} from "@/src/__tests__/test-utils";
+import { createObservation, createTrace, createTracesCh, createEvent } from "@hanzo/shared/src/server";
+import { createObservationsCh, createEventsCh } from "@hanzo/shared/src/server";
+import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationsV1Response } from "@/src/features/public-api/types/observations";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
@@ -60,9 +49,7 @@ const createObservationData = (
       output: data.output !== undefined ? data.output : "Hello John",
       metadata: data.metadata ?? { source: "API", server: "Node" },
       metadata_names: data.metadata ? Object.keys(data.metadata) : undefined,
-      metadata_raw_values: data.metadata
-        ? Object.values(data.metadata)
-        : undefined,
+      metadata_raw_values: data.metadata ? Object.values(data.metadata) : undefined,
       provided_model_name: data.provided_model_name,
       provided_usage_details: data.provided_usage_details,
       provided_cost_details: data.provided_cost_details,
@@ -101,9 +88,7 @@ const createAndInsertObservations = async (
 ) => {
   await createTracesCh([trace]);
 
-  const data = observations.map((obs) =>
-    createObservationData(useEventsTable, obs, trace),
-  );
+  const data = observations.map((obs) => createObservationData(useEventsTable, obs, trace));
 
   if (useEventsTable) {
     await createEventsCh(data as any);
@@ -115,18 +100,14 @@ const createAndInsertObservations = async (
 describe("/api/public/observations API Endpoint", () => {
   // Test suite factory to run tests against both implementations
   const runTestSuite = (useEventsTable: boolean) => {
-    const suiteName = useEventsTable
-      ? "with events table"
-      : "with observations table";
+    const suiteName = useEventsTable ? "with events table" : "with observations table";
     const queryParam = useEventsTable ? "?useEventsTable=true&" : "?";
 
     describe(`GET /api/public/observations ${suiteName}`, () => {
       it("should fetch all observations with basic data structure", async () => {
         const traceId = randomUUID();
         const timestamp = new Date();
-        const timeValue = useEventsTable
-          ? timestamp.getTime() * 1000
-          : timestamp.getTime();
+        const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
         const timeMultiplier = useEventsTable ? 1000 : 1;
 
         // Create a trace first
@@ -286,15 +267,11 @@ describe("/api/public/observations API Endpoint", () => {
         expect(response.body.data.length).toBeGreaterThanOrEqual(10);
 
         // Find our created observations in the response
-        const createdObservations = response.body.data.filter(
-          (obs) => obs.traceId === traceId,
-        );
+        const createdObservations = response.body.data.filter((obs) => obs.traceId === traceId);
         expect(createdObservations.length).toBe(10);
 
         // Verify data structure and content
-        const generationObs = createdObservations.find(
-          (obs) => obs.type === "GENERATION",
-        );
+        const generationObs = createdObservations.find((obs) => obs.type === "GENERATION");
         expect(generationObs).toBeDefined();
         expect(generationObs?.name).toBe("generation-observation");
         expect(generationObs?.level).toBe("DEFAULT");
@@ -311,9 +288,7 @@ describe("/api/public/observations API Endpoint", () => {
         expect(spanObs?.input).toBe("Processing request");
         expect(spanObs?.output).toBe("Request processed successfully");
 
-        const eventObs = createdObservations.find(
-          (obs) => obs.type === "EVENT",
-        );
+        const eventObs = createdObservations.find((obs) => obs.type === "EVENT");
         expect(eventObs).toBeDefined();
         expect(eventObs?.name).toBe("event-observation");
         expect(eventObs?.level).toBe("WARNING");
@@ -324,9 +299,7 @@ describe("/api/public/observations API Endpoint", () => {
         });
 
         // Verify new observation types exist and have correct type
-        const agentObs = createdObservations.find(
-          (obs) => obs.type === "AGENT",
-        );
+        const agentObs = createdObservations.find((obs) => obs.type === "AGENT");
         expect(agentObs).toBeDefined();
         expect(agentObs?.name).toBe("agent-observation");
 
@@ -334,21 +307,15 @@ describe("/api/public/observations API Endpoint", () => {
         expect(toolObs).toBeDefined();
         expect(toolObs?.name).toBe("tool-observation");
 
-        const chainObs = createdObservations.find(
-          (obs) => obs.type === "CHAIN",
-        );
+        const chainObs = createdObservations.find((obs) => obs.type === "CHAIN");
         expect(chainObs).toBeDefined();
         expect(chainObs?.name).toBe("chain-observation");
 
-        const retrieverObs = createdObservations.find(
-          (obs) => obs.type === "RETRIEVER",
-        );
+        const retrieverObs = createdObservations.find((obs) => obs.type === "RETRIEVER");
         expect(retrieverObs).toBeDefined();
         expect(retrieverObs?.name).toBe("retriever-observation");
 
-        const evaluatorObs = createdObservations.find(
-          (obs) => obs.type === "EVALUATOR",
-        );
+        const evaluatorObs = createdObservations.find((obs) => obs.type === "EVALUATOR");
         expect(evaluatorObs).toBeDefined();
         expect(evaluatorObs?.name).toBe("evaluator-observation");
         // Test that input, output, and endTime can be null (optional fields)
@@ -356,15 +323,11 @@ describe("/api/public/observations API Endpoint", () => {
         expect(evaluatorObs?.output).toBeNull();
         expect(evaluatorObs?.endTime).toBeNull();
 
-        const embeddingObs = createdObservations.find(
-          (obs) => obs.type === "EMBEDDING",
-        );
+        const embeddingObs = createdObservations.find((obs) => obs.type === "EMBEDDING");
         expect(embeddingObs).toBeDefined();
         expect(embeddingObs?.name).toBe("embedding-observation");
 
-        const guardrailObs = createdObservations.find(
-          (obs) => obs.type === "GUARDRAIL",
-        );
+        const guardrailObs = createdObservations.find((obs) => obs.type === "GUARDRAIL");
         expect(guardrailObs).toBeDefined();
         expect(guardrailObs?.name).toBe("guardrail-observation");
 
@@ -400,9 +363,7 @@ describe("/api/public/observations API Endpoint", () => {
       it("should filter observations by level parameter", async () => {
         const traceId = randomUUID();
         const timestamp = new Date();
-        const timeValue = useEventsTable
-          ? timestamp.getTime() * 1000
-          : timestamp.getTime();
+        const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
         const timeMultiplier = useEventsTable ? 1000 : 1;
 
         // Create a trace
@@ -508,9 +469,7 @@ describe("/api/public/observations API Endpoint", () => {
       it("should return empty results when filtering by level with no matches", async () => {
         const traceId = randomUUID();
         const timestamp = new Date();
-        const timeValue = useEventsTable
-          ? timestamp.getTime() * 1000
-          : timestamp.getTime();
+        const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
         const timeMultiplier = useEventsTable ? 1000 : 1;
 
         // Create a trace
@@ -563,18 +522,14 @@ describe("/api/public/observations API Endpoint", () => {
   // Advanced Filtering Tests
   describe("Advanced Filtering", () => {
     const runAdvancedFilterTestSuite = (useEventsTable: boolean) => {
-      const suiteName = useEventsTable
-        ? "with events table"
-        : "with observations table";
+      const suiteName = useEventsTable ? "with events table" : "with observations table";
       const queryParam = useEventsTable ? "?useEventsTable=true&" : "?";
 
       describe(`${suiteName}`, () => {
         it("should support metadata field filtering with contains", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
 
           const createdTrace = createTrace({
             id: traceId,
@@ -626,9 +581,7 @@ describe("/api/public/observations API Endpoint", () => {
         it("should merge non-conflicting simple and advanced filters", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
 
           const createdTrace = createTrace({
             id: traceId,
@@ -695,9 +648,7 @@ describe("/api/public/observations API Endpoint", () => {
         it("should handle empty string filter parameter", async () => {
           const traceId = randomUUID();
           const timestamp = new Date();
-          const timeValue = useEventsTable
-            ? timestamp.getTime() * 1000
-            : timestamp.getTime();
+          const timeValue = useEventsTable ? timestamp.getTime() * 1000 : timestamp.getTime();
 
           const createdTrace = createTrace({
             id: traceId,
@@ -730,9 +681,7 @@ describe("/api/public/observations API Endpoint", () => {
           const traceId = randomUUID();
           const timestamp = new Date();
           const baseTimestamp = timestamp.getTime();
-          const timeValue = useEventsTable
-            ? baseTimestamp * 1000
-            : baseTimestamp;
+          const timeValue = useEventsTable ? baseTimestamp * 1000 : baseTimestamp;
 
           const createdTrace = createTrace({
             id: traceId,
@@ -770,9 +719,7 @@ describe("/api/public/observations API Endpoint", () => {
 
           expect(response.status).toBe(500); // TODO 400
           // Score filter should be ignored, so some observations should be returned
-          expect(JSON.stringify(response.body)).toContain(
-            "does not match a UI / CH table mapping",
-          );
+          expect(JSON.stringify(response.body)).toContain("does not match a UI / CH table mapping");
         });
 
         it("should filter by userId (trace field)", async () => {
@@ -780,9 +727,7 @@ describe("/api/public/observations API Endpoint", () => {
           const trace2Id = randomUUID();
           const timestamp = new Date();
           const baseTimestamp = timestamp.getTime();
-          const timeValue = useEventsTable
-            ? baseTimestamp * 1000
-            : baseTimestamp;
+          const timeValue = useEventsTable ? baseTimestamp * 1000 : baseTimestamp;
 
           // Create two traces with different userIds
           const trace1 = createTrace({
@@ -875,13 +820,9 @@ describe("/api/public/observations API Endpoint", () => {
 
           expect(response.status).toBe(200);
           // Should only return observations from trace1
-          const matchingObs = response.body.data.filter(
-            (obs) => obs.traceId === trace1Id || obs.traceId === trace2Id,
-          );
+          const matchingObs = response.body.data.filter((obs) => obs.traceId === trace1Id || obs.traceId === trace2Id);
           expect(matchingObs.length).toBeGreaterThanOrEqual(2); // events path picks up top level trace itself
-          expect(matchingObs.every((obs) => obs.traceId === trace1Id)).toBe(
-            true,
-          );
+          expect(matchingObs.every((obs) => obs.traceId === trace1Id)).toBe(true);
         });
       });
     };

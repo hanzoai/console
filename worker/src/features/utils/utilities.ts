@@ -1,10 +1,7 @@
 import crypto from "node:crypto";
 import { logger } from "@hanzo/shared/src/server";
 
-export function compileTemplateString(
-  template: string,
-  context: Record<string, any>,
-): string {
+export function compileTemplateString(template: string, context: Record<string, any>): string {
   try {
     return template.replace(/{{\s*([\w.]+)\s*}}/g, (match, key) => {
       if (key in context) {
@@ -55,9 +52,6 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
  * Calculate the retention cutoff date for a given number of retention days.
  * Returns a Date representing the timestamp before which data should be deleted.
  */
-export const getRetentionCutoffDate = (
-  retentionDays: number,
-  referenceDate: Date = new Date(),
-): Date => {
+export const getRetentionCutoffDate = (retentionDays: number, referenceDate: Date = new Date()): Date => {
   return new Date(referenceDate.getTime() - retentionDays * MS_PER_DAY);
 };

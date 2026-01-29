@@ -1,12 +1,7 @@
 import { Cluster, Redis } from "ioredis";
 import { v4 } from "uuid";
 import { Decimal } from "decimal.js";
-import {
-  Model,
-  ObservationLevel,
-  PrismaClient,
-  Prompt,
-} from "@hanzo/shared";
+import { Model, ObservationLevel, PrismaClient, Prompt } from "@hanzo/shared";
 import {
   ClickhouseClientType,
   convertDateToClickhouseDateTime,
@@ -174,29 +169,9 @@ const immutableEntityKeys: {
   [TableName.Observations]: (keyof ObservationRecordInsertType)[];
   [TableName.DatasetRunItems]: (keyof DatasetRunItemRecordInsertType)[];
 } = {
-  [TableName.Traces]: [
-    "id",
-    "project_id",
-    "timestamp",
-    "created_at",
-    "environment",
-  ],
-  [TableName.Scores]: [
-    "id",
-    "project_id",
-    "timestamp",
-    "trace_id",
-    "created_at",
-    "environment",
-  ],
-  [TableName.Observations]: [
-    "id",
-    "project_id",
-    "trace_id",
-    "start_time",
-    "created_at",
-    "environment",
-  ],
+  [TableName.Traces]: ["id", "project_id", "timestamp", "created_at", "environment"],
+  [TableName.Scores]: ["id", "project_id", "timestamp", "trace_id", "created_at", "environment"],
+  [TableName.Observations]: ["id", "project_id", "trace_id", "start_time", "created_at", "environment"],
   // We do not accept updates, hence this list is currently not used.
   [TableName.DatasetRunItems]: [
     "id",
@@ -239,9 +214,7 @@ export class IngestionService {
     events: IngestionEventType[],
     forwardToEventsTable: boolean,
   ): Promise<void> {
-    logger.debug(
-      `Merging ingestion ${eventType} event for project ${projectId} and event ${eventBodyId}`,
-    );
+    logger.debug(`Merging ingestion ${eventType} event for project ${projectId} and event ${eventBodyId}`);
 
     switch (eventType) {
       case "trace":
@@ -287,13 +260,8 @@ export class IngestionService {
    * @param eventData - The event data to write
    * @param fileKey - The file key where the raw event data is stored
    */
-  public async writeEvent(
-    eventData: EventInput,
-    fileKey: string,
-  ): Promise<void> {
-    logger.debug(
-      `Writing event for project ${eventData.projectId} and span ${eventData.spanId}`,
-    );
+  public async writeEvent(eventData: EventInput, fileKey: string): Promise<void> {
+    logger.debug(`Writing event for project ${eventData.projectId} and span ${eventData.spanId}`);
 
     // Perform lookups for prompt and model/usage enrichment
     const [prompt, generationUsage] = await Promise.all([
@@ -390,11 +358,9 @@ export class IngestionService {
 
       // Usage & Cost
       provided_usage_details: eventData.providedUsageDetails ?? {},
-      usage_details:
-        generationUsage?.usage_details ?? eventData.usageDetails ?? {},
+      usage_details: generationUsage?.usage_details ?? eventData.usageDetails ?? {},
       provided_cost_details: eventData.providedCostDetails ?? {},
-      cost_details:
-        generationUsage?.cost_details ?? eventData.costDetails ?? {},
+      cost_details: generationUsage?.cost_details ?? eventData.costDetails ?? {},
 
       usage_pricing_tier_id: generationUsage?.usage_pricing_tier_id,
       usage_pricing_tier_name: generationUsage?.usage_pricing_tier_name,
@@ -438,10 +404,8 @@ export class IngestionService {
       experiment_item_version: eventData.experimentItemVersion,
       experiment_item_root_span_id: eventData.experimentItemRootSpanId,
       experiment_item_expected_output: eventData.experimentItemExpectedOutput,
-      experiment_item_metadata_names:
-        eventData.experimentItemMetadataNames ?? [],
-      experiment_item_metadata_values:
-        eventData.experimentItemMetadataValues ?? [],
+      experiment_item_metadata_names: eventData.experimentItemMetadataNames ?? [],
+      experiment_item_metadata_values: eventData.experimentItemMetadataValues ?? [],
 
       // System timestamps
       created_at: now,
@@ -466,9 +430,7 @@ export class IngestionService {
     const finalDatasetRunItemRecords: DatasetRunItemRecordInsertType[] = (
       await Promise.all(
         datasetRunItemEventList.map(
-          async (
-            event: DatasetRunItemEventType,
-          ): Promise<DatasetRunItemRecordInsertType[]> => {
+          async (event: DatasetRunItemEventType): Promise<DatasetRunItemRecordInsertType[]> => {
             const [runData, itemData] = await Promise.all([
               this.prisma.datasetRuns.findFirst({
                 where: {
@@ -493,13 +455,9 @@ export class IngestionService {
 
             if (!runData || !itemData) return [];
 
-            const timestamp = event.body.createdAt
-              ? new Date(event.body.createdAt).getTime()
-              : new Date().getTime();
+            const timestamp = event.body.createdAt ? new Date(event.body.createdAt).getTime() : new Date().getTime();
 
-            const datasetItemVersion = itemData.validFrom
-              ? itemData.validFrom.getTime()
-              : null;
+            const datasetItemVersion = itemData.validFrom ? itemData.validFrom.getTime() : null;
 
             return [
               {
@@ -518,19 +476,13 @@ export class IngestionService {
                 // enriched with run data
                 dataset_run_name: runData.name,
                 dataset_run_description: runData.description,
-                dataset_run_metadata: runData.metadata
-                  ? convertPostgresJsonToMetadataRecord(runData.metadata)
-                  : {},
+                dataset_run_metadata: runData.metadata ? convertPostgresJsonToMetadataRecord(runData.metadata) : {},
                 dataset_run_created_at: runData.createdAt.getTime(),
                 // enriched with item data
                 dataset_item_version: datasetItemVersion,
                 dataset_item_input: JSON.stringify(itemData.input),
-                dataset_item_expected_output: JSON.stringify(
-                  itemData.expectedOutput,
-                ),
-                dataset_item_metadata: itemData.metadata
-                  ? convertPostgresJsonToMetadataRecord(itemData.metadata)
-                  : {},
+                dataset_item_expected_output: JSON.stringify(itemData.expectedOutput),
+                dataset_item_metadata: itemData.metadata ? convertPostgresJsonToMetadataRecord(itemData.metadata) : {},
               },
             ];
           },
@@ -554,27 +506,19 @@ export class IngestionService {
     const { projectId, entityId, createdAtTimestamp, scoreEventList } = params;
     if (scoreEventList.length === 0) return;
 
-    const timeSortedEvents =
-      IngestionService.toTimeSortedEventList(scoreEventList);
+    const timeSortedEvents = IngestionService.toTimeSortedEventList(scoreEventList);
 
     const minTimestamp = Math.min(
-      ...timeSortedEvents.flatMap((e) =>
-        e.timestamp ? [new Date(e.timestamp).getTime()] : [],
-      ),
+      ...timeSortedEvents.flatMap((e) => (e.timestamp ? [new Date(e.timestamp).getTime()] : [])),
     );
-    const timestamp =
-      minTimestamp === Infinity
-        ? undefined
-        : convertDateToClickhouseDateTime(new Date(minTimestamp));
+    const timestamp = minTimestamp === Infinity ? undefined : convertDateToClickhouseDateTime(new Date(minTimestamp));
     const [clickhouseScoreRecord, scoreRecords] = await Promise.all([
       this.getClickhouseRecord({
         projectId,
         entityId,
         table: TableName.Scores,
         additionalFilters: {
-          whereCondition: timestamp
-            ? " AND timestamp >= {timestamp: DateTime64(3)} "
-            : "",
+          whereCondition: timestamp ? " AND timestamp >= {timestamp: DateTime64(3)} " : "",
           params: { timestamp },
         },
       }),
@@ -602,9 +546,7 @@ export class IngestionService {
               observation_id: validatedScore.observationId,
               config_id: validatedScore.configId,
               comment: validatedScore.comment,
-              metadata: scoreEvent.body.metadata
-                ? convertJsonSchemaToRecord(scoreEvent.body.metadata)
-                : {},
+              metadata: scoreEvent.body.metadata ? convertJsonSchemaToRecord(scoreEvent.body.metadata) : {},
               string_value: validatedScore.stringValue,
               long_string_value: validatedScore.longStringValue,
               execution_trace_id: validatedScore.executionTraceId,
@@ -623,11 +565,7 @@ export class IngestionService {
             return null;
           }
         }),
-      ).then((results) =>
-        results.filter(
-          (record): record is NonNullable<typeof record> => record !== null,
-        ),
-      ),
+      ).then((results) => results.filter((record): record is NonNullable<typeof record> => record !== null)),
     ]);
 
     if (clickhouseScoreRecord) {
@@ -637,13 +575,11 @@ export class IngestionService {
       });
     }
 
-    const finalScoreRecord: ScoreRecordInsertType =
-      await this.mergeScoreRecords({
-        clickhouseScoreRecord,
-        scoreRecords,
-      });
-    finalScoreRecord.created_at =
-      clickhouseScoreRecord?.created_at ?? createdAtTimestamp.getTime();
+    const finalScoreRecord: ScoreRecordInsertType = await this.mergeScoreRecords({
+      clickhouseScoreRecord,
+      scoreRecords,
+    });
+    finalScoreRecord.created_at = clickhouseScoreRecord?.created_at ?? createdAtTimestamp.getTime();
 
     this.clickHouseWriter.addToQueue(TableName.Scores, finalScoreRecord);
   }
@@ -655,17 +591,10 @@ export class IngestionService {
     traceEventList: TraceEventType[];
     createEventTraceRecord: boolean;
   }) {
-    const {
-      projectId,
-      entityId,
-      createdAtTimestamp,
-      traceEventList,
-      createEventTraceRecord,
-    } = params;
+    const { projectId, entityId, createdAtTimestamp, traceEventList, createEventTraceRecord } = params;
     if (traceEventList.length === 0) return;
 
-    const timeSortedEvents =
-      IngestionService.toTimeSortedEventList(traceEventList);
+    const timeSortedEvents = IngestionService.toTimeSortedEventList(traceEventList);
 
     const traceRecords = this.mapTraceEventsToRecords({
       projectId,
@@ -677,31 +606,20 @@ export class IngestionService {
     // Fallback to the ClickHouse input/output if none are found within the events list.
     const reversedRawRecords = timeSortedEvents.slice().reverse();
     const finalIO = {
-      input: this.stringify(
-        reversedRawRecords.find((record) => record?.body?.input)?.body?.input,
-      ),
-      output: this.stringify(
-        reversedRawRecords.find((record) => record?.body?.output)?.body?.output,
-      ),
+      input: this.stringify(reversedRawRecords.find((record) => record?.body?.input)?.body?.input),
+      output: this.stringify(reversedRawRecords.find((record) => record?.body?.output)?.body?.output),
     };
 
     const minTimestamp = Math.min(
-      ...timeSortedEvents.flatMap((e) =>
-        e.body?.timestamp ? [new Date(e.body.timestamp).getTime()] : [],
-      ),
+      ...timeSortedEvents.flatMap((e) => (e.body?.timestamp ? [new Date(e.body.timestamp).getTime()] : [])),
     );
-    const timestamp =
-      minTimestamp === Infinity
-        ? undefined
-        : convertDateToClickhouseDateTime(new Date(minTimestamp));
+    const timestamp = minTimestamp === Infinity ? undefined : convertDateToClickhouseDateTime(new Date(minTimestamp));
     const clickhouseTraceRecord = await this.getClickhouseRecord({
       projectId,
       entityId,
       table: TableName.Traces,
       additionalFilters: {
-        whereCondition: timestamp
-          ? " AND timestamp >= {timestamp: DateTime64(3)} "
-          : "",
+        whereCondition: timestamp ? " AND timestamp >= {timestamp: DateTime64(3)} " : "",
         params: { timestamp },
       },
     });
@@ -717,8 +635,7 @@ export class IngestionService {
       clickhouseTraceRecord,
       traceRecords,
     });
-    finalTraceRecord.created_at =
-      clickhouseTraceRecord?.created_at ?? createdAtTimestamp.getTime();
+    finalTraceRecord.created_at = clickhouseTraceRecord?.created_at ?? createdAtTimestamp.getTime();
 
     finalTraceRecord.input = finalIO.input ?? clickhouseTraceRecord?.input;
     finalTraceRecord.output = finalIO.output ?? clickhouseTraceRecord?.output;
@@ -739,10 +656,7 @@ export class IngestionService {
           DO NOTHING
         `;
       } catch (e) {
-        logger.error(
-          `Failed to upsert session ${traceRecordWithSession.session_id}`,
-          e,
-        );
+        logger.error(`Failed to upsert session ${traceRecordWithSession.session_id}`, e);
         throw e;
       }
     }
@@ -754,19 +668,14 @@ export class IngestionService {
         finalTraceRecord,
         this.getPartitionAwareTimestamp(createdAtTimestamp),
       );
-      this.clickHouseWriter.addToQueue(
-        TableName.ObservationsBatchStaging,
-        traceAsStagingObservation,
-      );
+      this.clickHouseWriter.addToQueue(TableName.ObservationsBatchStaging, traceAsStagingObservation);
     }
 
     // Add trace into trace upsert queue for eval processing
     // First check if we already know this project has no job configurations
     const hasNoJobConfigs = await hasNoJobConfigsCache(projectId);
     if (hasNoJobConfigs) {
-      logger.debug(
-        `Skipping TraceUpsert queue for project ${projectId} - no job configs cached`,
-      );
+      logger.debug(`Skipping TraceUpsert queue for project ${projectId} - no job configs cached`);
       return;
     } else {
       // Job configs present, so we add to the TraceUpsert queue.
@@ -797,28 +706,16 @@ export class IngestionService {
     observationEventList: ObservationEvent[];
     writeToStagingTables: boolean;
   }) {
-    const {
-      projectId,
-      entityId,
-      createdAtTimestamp,
-      observationEventList,
-      writeToStagingTables,
-    } = params;
+    const { projectId, entityId, createdAtTimestamp, observationEventList, writeToStagingTables } = params;
     if (observationEventList.length === 0) return;
 
-    const timeSortedEvents =
-      IngestionService.toTimeSortedEventList(observationEventList);
+    const timeSortedEvents = IngestionService.toTimeSortedEventList(observationEventList);
 
     const type = this.getObservationType(observationEventList[0]);
     const minStartTime = Math.min(
-      ...observationEventList.flatMap((e) =>
-        e.body?.startTime ? [new Date(e.body.startTime).getTime()] : [],
-      ),
+      ...observationEventList.flatMap((e) => (e.body?.startTime ? [new Date(e.body.startTime).getTime()] : [])),
     );
-    const startTime =
-      minStartTime === Infinity
-        ? undefined
-        : convertDateToClickhouseDateTime(new Date(minStartTime));
+    const startTime = minStartTime === Infinity ? undefined : convertDateToClickhouseDateTime(new Date(minStartTime));
 
     const [clickhouseObservationRecord, prompt] = await Promise.all([
       this.getClickhouseRecord({
@@ -855,43 +752,32 @@ export class IngestionService {
       observationRecords,
       clickhouseObservationRecord,
     });
-    mergedObservationRecord.created_at =
-      clickhouseObservationRecord?.created_at ?? createdAtTimestamp.getTime();
+    mergedObservationRecord.created_at = clickhouseObservationRecord?.created_at ?? createdAtTimestamp.getTime();
     mergedObservationRecord.level = mergedObservationRecord.level ?? "DEFAULT";
 
     // Search for the first non-null input and output in the observation events and set them on the merged result.
     // Fallback to the ClickHouse input/output if none are found within the events list.
     const reversedRawRecords = timeSortedEvents.slice().reverse();
     mergedObservationRecord.input = this.stringify(
-      reversedRawRecords.find((record) => record?.body?.input)?.body?.input ??
-        clickhouseObservationRecord?.input,
+      reversedRawRecords.find((record) => record?.body?.input)?.body?.input ?? clickhouseObservationRecord?.input,
     );
     mergedObservationRecord.output = this.stringify(
-      reversedRawRecords.find((record) => record?.body?.output)?.body?.output ??
-        clickhouseObservationRecord?.output,
+      reversedRawRecords.find((record) => record?.body?.output)?.body?.output ?? clickhouseObservationRecord?.output,
     );
 
     // Extract tool definitions and calls from raw input/output
     try {
-      const rawInput = reversedRawRecords.find((record) => record?.body?.input)
-        ?.body?.input;
-      const rawOutput = reversedRawRecords.find(
-        (record) => record?.body?.output,
-      )?.body?.output;
+      const rawInput = reversedRawRecords.find((record) => record?.body?.input)?.body?.input;
+      const rawOutput = reversedRawRecords.find((record) => record?.body?.output)?.body?.output;
 
-      const { toolDefinitions, toolArguments } = extractToolsFromObservation(
-        rawInput,
-        rawOutput,
-      );
+      const { toolDefinitions, toolArguments } = extractToolsFromObservation(rawInput, rawOutput);
 
       if (toolDefinitions.length > 0) {
-        mergedObservationRecord.tool_definitions =
-          convertDefinitionsToMap(toolDefinitions);
+        mergedObservationRecord.tool_definitions = convertDefinitionsToMap(toolDefinitions);
       }
 
       if (toolArguments.length > 0) {
-        const { tool_calls, tool_call_names } =
-          convertCallsToArrays(toolArguments);
+        const { tool_calls, tool_call_names } = convertCallsToArrays(toolArguments);
         mergedObservationRecord.tool_calls = tool_calls;
         mergedObservationRecord.tool_call_names = tool_call_names;
       }
@@ -930,10 +816,7 @@ export class IngestionService {
       finalObservationRecord.trace_id = finalObservationRecord.id;
     }
 
-    this.clickHouseWriter.addToQueue(
-      TableName.Observations,
-      finalObservationRecord,
-    );
+    this.clickHouseWriter.addToQueue(TableName.Observations, finalObservationRecord);
 
     // Dual-write to staging table for batch propagation to events table
     // Here, we add some additional logic around the first seen timestamp.
@@ -945,13 +828,9 @@ export class IngestionService {
     if (writeToStagingTables) {
       const stagingRecord = {
         ...finalObservationRecord,
-        s3_first_seen_timestamp:
-          this.getPartitionAwareTimestamp(createdAtTimestamp),
+        s3_first_seen_timestamp: this.getPartitionAwareTimestamp(createdAtTimestamp),
       };
-      this.clickHouseWriter.addToQueue(
-        TableName.ObservationsBatchStaging,
-        stagingRecord,
-      );
+      this.clickHouseWriter.addToQueue(TableName.ObservationsBatchStaging, stagingRecord);
     }
   }
 
@@ -962,19 +841,12 @@ export class IngestionService {
     const { scoreRecords, clickhouseScoreRecord } = params;
 
     // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [clickhouseScoreRecord, ...scoreRecords].filter(
-      Boolean,
-    ) as ScoreRecordInsertType[];
+    const recordsToMerge = [clickhouseScoreRecord, ...scoreRecords].filter(Boolean) as ScoreRecordInsertType[];
 
-    const mergedRecord = this.mergeRecords(
-      recordsToMerge,
-      immutableEntityKeys[TableName.Scores],
-    );
+    const mergedRecord = this.mergeRecords(recordsToMerge, immutableEntityKeys[TableName.Scores]);
 
     // If metadata exists, it is an object due to previous parsing
-    mergedRecord.metadata = convertRecordValuesToString(
-      (mergedRecord.metadata as Record<string, unknown>) ?? {},
-    );
+    mergedRecord.metadata = convertRecordValuesToString((mergedRecord.metadata as Record<string, unknown>) ?? {});
 
     return scoreRecordInsertSchema.parse(mergedRecord);
   }
@@ -986,19 +858,12 @@ export class IngestionService {
     const { traceRecords, clickhouseTraceRecord } = params;
 
     // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [clickhouseTraceRecord, ...traceRecords].filter(
-      Boolean,
-    ) as TraceRecordInsertType[];
+    const recordsToMerge = [clickhouseTraceRecord, ...traceRecords].filter(Boolean) as TraceRecordInsertType[];
 
-    const mergedRecord = this.mergeRecords(
-      recordsToMerge,
-      immutableEntityKeys[TableName.Traces],
-    );
+    const mergedRecord = this.mergeRecords(recordsToMerge, immutableEntityKeys[TableName.Traces]);
 
     // If metadata exists, it is an object due to previous parsing
-    mergedRecord.metadata = convertRecordValuesToString(
-      (mergedRecord.metadata as Record<string, unknown>) ?? {},
-    );
+    mergedRecord.metadata = convertRecordValuesToString((mergedRecord.metadata as Record<string, unknown>) ?? {});
 
     return traceRecordInsertSchema.parse(mergedRecord);
   }
@@ -1011,39 +876,26 @@ export class IngestionService {
     const { observationRecords, clickhouseObservationRecord } = params;
 
     // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [
-      clickhouseObservationRecord,
-      ...observationRecords,
-    ].filter(Boolean) as ObservationRecordInsertType[];
+    const recordsToMerge = [clickhouseObservationRecord, ...observationRecords].filter(
+      Boolean,
+    ) as ObservationRecordInsertType[];
 
-    const mergedRecord = this.mergeRecords(
-      recordsToMerge,
-      immutableEntityKeys[TableName.Observations],
-    );
+    const mergedRecord = this.mergeRecords(recordsToMerge, immutableEntityKeys[TableName.Observations]);
 
     // If metadata exists, it is an object due to previous parsing
-    mergedRecord.metadata = convertRecordValuesToString(
-      (mergedRecord.metadata as Record<string, unknown>) ?? {},
-    );
+    mergedRecord.metadata = convertRecordValuesToString((mergedRecord.metadata as Record<string, unknown>) ?? {});
 
-    const parsedObservationRecord =
-      observationRecordInsertSchema.parse(mergedRecord);
+    const parsedObservationRecord = observationRecordInsertSchema.parse(mergedRecord);
 
     // Override endTimes that are before startTimes with the startTime
-    if (
-      parsedObservationRecord.end_time &&
-      parsedObservationRecord.end_time < parsedObservationRecord.start_time
-    ) {
+    if (parsedObservationRecord.end_time && parsedObservationRecord.end_time < parsedObservationRecord.start_time) {
       parsedObservationRecord.end_time = parsedObservationRecord.start_time;
     }
 
     return parsedObservationRecord;
   }
 
-  private mergeRecords<T extends InsertRecord>(
-    records: T[],
-    immutableEntityKeys: string[],
-  ): Record<string, unknown> {
+  private mergeRecords<T extends InsertRecord>(records: T[], immutableEntityKeys: string[]): Record<string, unknown> {
     if (records.length === 0) {
       throw new Error("No records to merge");
     }
@@ -1063,9 +915,9 @@ export class IngestionService {
     return result;
   }
 
-  private static toTimeSortedEventList<
-    T extends TraceEventType | ScoreEventType | ObservationEvent,
-  >(eventList: T[]): T[] {
+  private static toTimeSortedEventList<T extends TraceEventType | ScoreEventType | ObservationEvent>(
+    eventList: T[],
+  ): T[] {
     return eventList.slice().sort((a, b) => {
       const aTimestamp = new Date(a.timestamp).getTime();
       const bTimestamp = new Date(b.timestamp).getTime();
@@ -1082,15 +934,11 @@ export class IngestionService {
     projectId: string,
     observationEventList: ObservationEvent[],
   ): Promise<ObservationPrompt | null> {
-    const lastObservationWithPromptInfo = observationEventList
-      .slice()
-      .reverse()
-      .find(this.hasPromptInformation);
+    const lastObservationWithPromptInfo = observationEventList.slice().reverse().find(this.hasPromptInformation);
 
     if (!lastObservationWithPromptInfo) return null;
 
-    const { promptName, promptVersion: version } =
-      lastObservationWithPromptInfo.body;
+    const { promptName, promptVersion: version } = lastObservationWithPromptInfo.body;
 
     return this.promptService.getPrompt({
       projectId,
@@ -1100,9 +948,7 @@ export class IngestionService {
     });
   }
 
-  private hasPromptInformation(
-    event: ObservationEvent,
-  ): event is ObservationEvent & {
+  private hasPromptInformation(event: ObservationEvent): event is ObservationEvent & {
     body: { promptName: string; promptVersion: number };
   } {
     return (
@@ -1139,18 +985,14 @@ export class IngestionService {
     >
   > {
     const { projectId, observationRecord } = params;
-    const { model: internalModel, pricingTiers } =
-      observationRecord.provided_model_name
-        ? await findModel({
-            projectId,
-            model: observationRecord.provided_model_name,
-          })
-        : { model: null, pricingTiers: [] };
+    const { model: internalModel, pricingTiers } = observationRecord.provided_model_name
+      ? await findModel({
+          projectId,
+          model: observationRecord.provided_model_name,
+        })
+      : { model: null, pricingTiers: [] };
 
-    const final_usage_details = await this.getUsageUnits(
-      observationRecord,
-      internalModel,
-    );
+    const final_usage_details = await this.getUsageUnits(observationRecord, internalModel);
 
     // Match pricing tier based on usage_details
     let modelPrices: Array<{ usageType: string; price: Decimal }> = [];
@@ -1158,22 +1000,17 @@ export class IngestionService {
     let usage_pricing_tier_name: string | null = null;
 
     if (pricingTiers.length > 0 && final_usage_details.usage_details) {
-      const matchedTier = matchPricingTier(
-        pricingTiers,
-        final_usage_details.usage_details,
-      );
+      const matchedTier = matchPricingTier(pricingTiers, final_usage_details.usage_details);
 
       if (matchedTier) {
         usage_pricing_tier_id = matchedTier.pricingTierId;
         usage_pricing_tier_name = matchedTier.pricingTierName;
 
         // Convert matched tier prices to simple format for calculateUsageCosts
-        modelPrices = Object.entries(matchedTier.prices).map(
-          ([usageType, price]) => ({
-            usageType,
-            price,
-          }),
-        );
+        modelPrices = Object.entries(matchedTier.prices).map(([usageType, price]) => ({
+          usageType,
+          price,
+        }));
       }
     }
 
@@ -1183,14 +1020,11 @@ export class IngestionService {
       final_usage_details.usage_details ?? {},
     );
 
-    logger.debug(
-      `Calculated costs and usage for observation ${observationRecord.id}`,
-      {
-        cost: final_cost_details.cost_details,
-        usage: final_usage_details.usage_details,
-        pricingTier: usage_pricing_tier_name,
-      },
-    );
+    logger.debug(`Calculated costs and usage for observation ${observationRecord.id}`, {
+      cost: final_cost_details.cost_details,
+      usage: final_usage_details.usage_details,
+      pricingTier: usage_pricing_tier_name,
+    });
 
     return {
       ...final_usage_details,
@@ -1207,18 +1041,11 @@ export class IngestionService {
       "provided_usage_details" | "level" | "input" | "output" | "id"
     >,
     model: Model | null | undefined,
-  ): Promise<
-    Pick<
-      ObservationRecordInsertType,
-      "usage_details" | "provided_usage_details"
-    >
-  > {
+  ): Promise<Pick<ObservationRecordInsertType, "usage_details" | "provided_usage_details">> {
     // Convert all values to numbers to handle cases where ClickHouse returns UInt64 as strings.
     // This prevents string concatenation bugs like "100" + "200" = "100200" instead of 300.
     const providedUsageDetails: Record<string, number> = {};
-    for (const [key, value] of Object.entries(
-      observationRecord.provided_usage_details,
-    )) {
+    for (const [key, value] of Object.entries(observationRecord.provided_usage_details)) {
       if (value != null) {
         const numValue = Number(value);
         if (!isNaN(numValue) && numValue >= 0) {
@@ -1253,10 +1080,7 @@ export class IngestionService {
                 }),
               ]);
             } catch (error) {
-              logger.warn(
-                `Async tokenization has failed. Falling back to synchronous tokenization`,
-                error,
-              );
+              logger.warn(`Async tokenization has failed. Falling back to synchronous tokenization`, error);
               newInputCount = tokenCount({
                 text: observationRecord.input,
                 model,
@@ -1268,30 +1092,13 @@ export class IngestionService {
             }
 
             // Tracing
-            newInputCount
-              ? span.setAttribute(
-                  "hanzo.tokenization.input-count",
-                  newInputCount,
-                )
-              : undefined;
-            newOutputCount
-              ? span.setAttribute(
-                  "hanzo.tokenization.output-count",
-                  newOutputCount,
-                )
-              : undefined;
+            newInputCount ? span.setAttribute("hanzo.tokenization.input-count", newInputCount) : undefined;
+            newOutputCount ? span.setAttribute("hanzo.tokenization.output-count", newOutputCount) : undefined;
             newInputCount || newOutputCount
-              ? span.setAttribute(
-                  "hanzo.tokenization.tokenizer",
-                  model.tokenizerId || "unknown",
-                )
+              ? span.setAttribute("hanzo.tokenization.tokenizer", model.tokenizerId || "unknown")
               : undefined;
-            newInputCount
-              ? recordIncrement("hanzo.tokenisedTokens", newInputCount)
-              : undefined;
-            newOutputCount
-              ? recordIncrement("hanzo.tokenisedTokens", newOutputCount)
-              : undefined;
+            newInputCount ? recordIncrement("hanzo.tokenisedTokens", newInputCount) : undefined;
+            newOutputCount ? recordIncrement("hanzo.tokenisedTokens", newOutputCount) : undefined;
           },
         );
 
@@ -1300,9 +1107,7 @@ export class IngestionService {
         );
 
         const newTotalCount =
-          newInputCount || newOutputCount
-            ? (newInputCount ?? 0) + (newOutputCount ?? 0)
-            : undefined;
+          newInputCount || newOutputCount ? (newInputCount ?? 0) + (newOutputCount ?? 0) : undefined;
 
         const usage_details: Record<string, number> = {};
 
@@ -1327,10 +1132,7 @@ export class IngestionService {
 
     const usageDetails = { ...providedUsageDetails };
     if (Object.keys(usageDetails).length > 0 && !("total" in usageDetails)) {
-      usageDetails.total = Object.values(providedUsageDetails).reduce(
-        (acc, value) => acc + value,
-        0,
-      );
+      usageDetails.total = Object.values(providedUsageDetails).reduce((acc, value) => acc + value, 0);
     }
 
     return {
@@ -1340,14 +1142,8 @@ export class IngestionService {
   }
 
   static calculateUsageCosts(
-    modelPrices:
-      | Array<{ usageType: string; price: Decimal }>
-      | null
-      | undefined,
-    observationRecord: Pick<
-      ObservationRecordInsertType,
-      "provided_cost_details"
-    >,
+    modelPrices: Array<{ usageType: string; price: Decimal }> | null | undefined,
+    observationRecord: Pick<ObservationRecordInsertType, "provided_cost_details">,
     usageUnits: UsageCostType,
   ): Pick<ObservationRecordInsertType, "cost_details" | "total_cost"> {
     const { provided_cost_details } = observationRecord;
@@ -1363,14 +1159,10 @@ export class IngestionService {
         (provided_cost_details ?? {})["total"] ??
         // Use provided input and output cost if available, but only if no other cost points are provided
         (providedCostKeys.every((key) => ["input", "output"].includes(key))
-          ? ((provided_cost_details ?? {})["input"] ?? 0) +
-            ((provided_cost_details ?? {})["output"] ?? 0)
+          ? ((provided_cost_details ?? {})["input"] ?? 0) + ((provided_cost_details ?? {})["output"] ?? 0)
           : undefined);
 
-      if (
-        !Object.prototype.hasOwnProperty.call(cost_details, "total") &&
-        finalTotalCost != null
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(cost_details, "total") && finalTotalCost != null) {
         cost_details.total = finalTotalCost;
       }
 
@@ -1393,16 +1185,10 @@ export class IngestionService {
     const finalCostDetails = Object.fromEntries(finalCostEntries);
 
     let finalTotalCost;
-    if (
-      Object.prototype.hasOwnProperty.call(finalCostDetails, "total") &&
-      finalCostDetails.total != null
-    ) {
+    if (Object.prototype.hasOwnProperty.call(finalCostDetails, "total") && finalCostDetails.total != null) {
       finalTotalCost = finalCostDetails.total;
     } else if (finalCostEntries.length > 0) {
-      finalTotalCost = finalCostEntries.reduce(
-        (acc, [_, cost]) => acc + cost,
-        0,
-      );
+      finalTotalCost = finalCostEntries.reduce((acc, [_, cost]) => acc + cost, 0);
 
       finalCostDetails.total = finalTotalCost;
     }
@@ -1452,11 +1238,7 @@ export class IngestionService {
       params: Record<string, unknown>;
     };
   }) {
-    if (
-      await ClickhouseReadSkipCache.getInstance(
-        this.prisma,
-      ).shouldSkipClickHouseRead(params.projectId)
-    ) {
+    if (await ClickhouseReadSkipCache.getInstance(this.prisma).shouldSkipClickHouseRead(params.projectId)) {
       recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
         skipped: "true",
         table: params.table,
@@ -1475,15 +1257,13 @@ export class IngestionService {
     };
     const { projectId, entityId, table, additionalFilters } = params;
 
-    return await instrumentAsync(
-      { name: `get-clickhouse-${table}`, spanKind: SpanKind.CLIENT },
-      async (span) => {
-        span.setAttribute("ch.query.table", table);
-        span.setAttribute("db.system", "clickhouse");
-        span.setAttribute("db.operation.name", "SELECT");
-        span.setAttribute("projectId", projectId);
-        const queryResult = await this.clickhouseClient.query({
-          query: `
+    return await instrumentAsync({ name: `get-clickhouse-${table}`, spanKind: SpanKind.CLIENT }, async (span) => {
+      span.setAttribute("ch.query.table", table);
+      span.setAttribute("db.system", "clickhouse");
+      span.setAttribute("db.operation.name", "SELECT");
+      span.setAttribute("projectId", projectId);
+      const queryResult = await this.clickhouseClient.query({
+        query: `
             SELECT *
             FROM ${table}
             WHERE project_id = {projectId: String}
@@ -1492,80 +1272,59 @@ export class IngestionService {
             ORDER BY event_ts DESC
             LIMIT 1 BY id, project_id SETTINGS use_query_cache = false;
           `,
-          format: "JSONEachRow",
-          query_params: { projectId, entityId, ...additionalFilters.params },
-          clickhouse_settings: {
-            log_comment: JSON.stringify({
-              feature: "ingestion",
-              projectId,
-            }),
-          },
-        });
+        format: "JSONEachRow",
+        query_params: { projectId, entityId, ...additionalFilters.params },
+        clickhouse_settings: {
+          log_comment: JSON.stringify({
+            feature: "ingestion",
+            projectId,
+          }),
+        },
+      });
 
-        span.setAttribute("ch.queryId", queryResult.query_id);
-        const summaryHeader =
-          queryResult.response_headers["x-clickhouse-summary"];
-        if (summaryHeader) {
-          try {
-            const summary = Array.isArray(summaryHeader)
-              ? JSON.parse(summaryHeader[0])
-              : JSON.parse(summaryHeader);
-            for (const key in summary) {
-              span.setAttribute(`ch.${key}`, summary[key]);
-            }
-          } catch (error) {
-            logger.debug(
-              `Failed to parse clickhouse summary header ${summaryHeader}`,
-              error,
-            );
+      span.setAttribute("ch.queryId", queryResult.query_id);
+      const summaryHeader = queryResult.response_headers["x-clickhouse-summary"];
+      if (summaryHeader) {
+        try {
+          const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
+          for (const key in summary) {
+            span.setAttribute(`ch.${key}`, summary[key]);
           }
+        } catch (error) {
+          logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
         }
+      }
 
-        const result = await queryResult.json();
+      const result = await queryResult.json();
 
-        if (result.length === 0) return null;
+      if (result.length === 0) return null;
 
-        switch (table) {
-          case TableName.Traces:
-            return convertTraceReadToInsert(
-              recordParser[table].parse(result[0]),
-            );
-          case TableName.Scores:
-            return convertScoreReadToInsert(
-              recordParser[table].parse(result[0]),
-            );
-          case TableName.Observations:
-            return convertObservationReadToInsert(
-              recordParser[table].parse(result[0]),
-            );
-          default:
-            throw new Error(`Unsupported table name: ${table}`);
-        }
-      },
-    );
+      switch (table) {
+        case TableName.Traces:
+          return convertTraceReadToInsert(recordParser[table].parse(result[0]));
+        case TableName.Scores:
+          return convertScoreReadToInsert(recordParser[table].parse(result[0]));
+        case TableName.Observations:
+          return convertObservationReadToInsert(recordParser[table].parse(result[0]));
+        default:
+          throw new Error(`Unsupported table name: ${table}`);
+      }
+    });
   }
 
-  private mapTraceEventsToRecords(params: {
-    traceEventList: TraceEventType[];
-    projectId: string;
-    entityId: string;
-  }) {
+  private mapTraceEventsToRecords(params: { traceEventList: TraceEventType[]; projectId: string; entityId: string }) {
     const { traceEventList, projectId, entityId } = params;
 
     return traceEventList.map((trace) => {
       const traceRecord: TraceRecordInsertType = {
         id: entityId,
-        timestamp: this.getMillisecondTimestamp(
-          trace.body.timestamp ?? trace.timestamp,
-        ),
+        timestamp: this.getMillisecondTimestamp(trace.body.timestamp ?? trace.timestamp),
         // timestamp: ("timestamp" in trace.body && trace.body.timestamp
         //   ? this.getMillisecondTimestamp(trace.body.timestamp)
         //   : undefined) as number, // Casting here is dirty, but our requirement is to have a start_time _after_ the merge
         name: trace.body.name,
         user_id: trace.body.userId,
-        metadata: trace.body.metadata
-          ? convertJsonSchemaToRecord(trace.body.metadata)
-          : {},
+        metadata: trace.body.metadata ? convertJsonSchemaToRecord(trace.body.metadata) : {},
         release: trace.body.release,
         version: trace.body.version,
         project_id: projectId,
@@ -1641,17 +1400,13 @@ export class IngestionService {
     return observationEventList.map((obs) => {
       const observationType = this.getObservationType(obs);
 
-      const newInputCount =
-        "usage" in obs.body ? obs.body.usage?.input : undefined;
+      const newInputCount = "usage" in obs.body ? obs.body.usage?.input : undefined;
 
-      const newOutputCount =
-        "usage" in obs.body ? obs.body.usage?.output : undefined;
+      const newOutputCount = "usage" in obs.body ? obs.body.usage?.output : undefined;
 
       const newTotalCount =
         ("usage" in obs.body ? obs.body.usage?.total : undefined) ||
-        (Object.keys(
-          "usageDetails" in obs.body ? (obs.body.usageDetails ?? {}) : {},
-        ).length === 0
+        (Object.keys("usageDetails" in obs.body ? (obs.body.usageDetails ?? {}) : {}).length === 0
           ? newInputCount && newOutputCount
             ? newInputCount + newOutputCount
             : (newInputCount ?? newOutputCount)
@@ -1660,17 +1415,14 @@ export class IngestionService {
       let provided_usage_details: Record<string, number> = {};
 
       if (newInputCount != null) provided_usage_details.input = newInputCount;
-      if (newOutputCount != null)
-        provided_usage_details.output = newOutputCount;
+      if (newOutputCount != null) provided_usage_details.output = newOutputCount;
       if (newTotalCount != null) provided_usage_details.total = newTotalCount;
 
       provided_usage_details = {
         ...provided_usage_details,
         ...("usageDetails" in obs.body
           ? (Object.fromEntries(
-              Object.entries(obs.body.usageDetails ?? {}).filter(
-                ([_, val]) => val != null,
-              ),
+              Object.entries(obs.body.usageDetails ?? {}).filter(([_, val]) => val != null),
             ) as Record<string, number>)
           : {}),
       };
@@ -1688,11 +1440,10 @@ export class IngestionService {
       provided_cost_details = {
         ...provided_cost_details,
         ...("costDetails" in obs.body
-          ? (Object.fromEntries(
-              Object.entries(obs.body.costDetails ?? {}).filter(
-                ([_, val]) => val != null,
-              ),
-            ) as Record<string, number>)
+          ? (Object.fromEntries(Object.entries(obs.body.costDetails ?? {}).filter(([_, val]) => val != null)) as Record<
+              string,
+              number
+            >)
           : {}),
       };
 
@@ -1701,25 +1452,18 @@ export class IngestionService {
         trace_id: obs.body.traceId ?? v4(),
         type: observationType,
         name: obs.body.name,
-        environment:
-          "environment" in obs.body ? obs.body.environment : "default",
-        start_time: this.getMillisecondTimestamp(
-          obs.body.startTime ?? obs.timestamp,
-        ),
+        environment: "environment" in obs.body ? obs.body.environment : "default",
+        start_time: this.getMillisecondTimestamp(obs.body.startTime ?? obs.timestamp),
         // start_time: ("startTime" in obs.body && obs.body.startTime
         //   ? this.getMillisecondTimestamp(obs.body.startTime)
         //   : undefined) as number, // Casting here is dirty, but our requirement is to have a start_time _after_ the merge
         end_time:
-          "endTime" in obs.body && obs.body.endTime
-            ? this.getMillisecondTimestamp(obs.body.endTime)
-            : undefined,
+          "endTime" in obs.body && obs.body.endTime ? this.getMillisecondTimestamp(obs.body.endTime) : undefined,
         completion_start_time:
           "completionStartTime" in obs.body && obs.body.completionStartTime
             ? this.getMillisecondTimestamp(obs.body.completionStartTime)
             : undefined,
-        metadata: obs.body.metadata
-          ? convertJsonSchemaToRecord(obs.body.metadata)
-          : {},
+        metadata: obs.body.metadata ? convertJsonSchemaToRecord(obs.body.metadata) : {},
         provided_model_name: "model" in obs.body ? obs.body.model : undefined,
         model_parameters:
           "modelParameters" in obs.body
@@ -1753,9 +1497,7 @@ export class IngestionService {
     });
   }
 
-  private stringify(
-    obj: string | object | number | boolean | undefined | null,
-  ): string | undefined {
+  private stringify(obj: string | object | number | boolean | undefined | null): string | undefined {
     if (obj == null) return; // return undefined on undefined or null
 
     return typeof obj === "string" ? obj : JSON.stringify(obj);

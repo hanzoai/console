@@ -15,9 +15,7 @@ type AllowStringAsValue<T> = {
   [K in keyof T]: K extends "value" ? string | T[K] : T[K];
 };
 
-export type WipFilterCondition = AllowStringAsValue<
-  MakeOptional<FilterCondition>
->;
+export type WipFilterCondition = AllowStringAsValue<MakeOptional<FilterCondition>>;
 export type WipFilterState = WipFilterCondition[];
 
 export type FilterOption = {

@@ -7,13 +7,7 @@ import { api } from "@/src/utils/api";
 import * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
 import {
   Dialog,
   DialogBody,
@@ -35,10 +29,7 @@ import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { env } from "@/src/env.mjs";
 
 const displayNameSchema = z.object({
-  name: StringNoHTML.min(1, "Name cannot be empty").max(
-    100,
-    "Name must be at most 100 characters",
-  ),
+  name: StringNoHTML.min(1, "Name cannot be empty").max(100, "Name must be at most 100 characters"),
 });
 
 function UpdateDisplayName() {
@@ -95,11 +86,7 @@ function UpdateDisplayName() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      placeholder={session?.user?.name ?? ""}
-                      {...field}
-                      className="flex-1"
-                    />
+                    <Input placeholder={session?.user?.name ?? ""} {...field} className="flex-1" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,15 +157,12 @@ function DeleteAccountButton() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Delete Account
-          </DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Delete Account</DialogTitle>
           <DialogDescription>
             {!canDelete && blockingOrganizations.length > 0 ? (
               <div>
                 <p className="mb-2">
-                  You cannot delete your account because you are the last owner
-                  of the following organization(s):
+                  You cannot delete your account because you are the last owner of the following organization(s):
                 </p>
                 <ul className="list-inside list-disc space-y-1">
                   {blockingOrganizations.map((org) => (
@@ -193,8 +177,7 @@ function DeleteAccountButton() {
                   ))}
                 </ul>
                 <p className="mt-2">
-                  Please add another owner or delete these organizations before
-                  deleting your account.
+                  Please add another owner or delete these organizations before deleting your account.
                 </p>
               </div>
             ) : (
@@ -256,17 +239,7 @@ const getAccountSettingsPages = (userEmail: string): AccountSettingsPage[] => [
   {
     title: "General",
     slug: "index",
-    cmdKKeywords: [
-      "account",
-      "user",
-      "profile",
-      "email",
-      "password",
-      "name",
-      "display",
-      "delete",
-      "remove",
-    ],
+    cmdKKeywords: ["account", "user", "profile", "email", "password", "name", "display", "delete", "remove"],
     content: (
       <div className="flex flex-col gap-6">
         <div>
@@ -282,16 +255,11 @@ const getAccountSettingsPages = (userEmail: string): AccountSettingsPage[] => [
           <Header title="Password" />
           <Card className="p-3">
             <p className="mb-4 text-sm text-primary">
-              To change your password, we will send you a secure link to your
-              email address. Click the button below to start the password reset
-              process.
+              To change your password, we will send you a secure link to your email address. Click the button below to
+              start the password reset process.
             </p>
             <Button asChild variant="secondary">
-              <Link
-                href={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/reset-password`}
-              >
-                Change Password
-              </Link>
+              <Link href={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/reset-password`}>Change Password</Link>
             </Button>
           </Card>
         </div>
@@ -323,10 +291,7 @@ export default function AccountSettingsPage() {
         title: "Account Settings",
       }}
     >
-      <PagedSettingsContainer
-        activeSlug={router.query.page as string | undefined}
-        pages={pages}
-      />
+      <PagedSettingsContainer activeSlug={router.query.page as string | undefined} pages={pages} />
     </ContainerPage>
   );
 }

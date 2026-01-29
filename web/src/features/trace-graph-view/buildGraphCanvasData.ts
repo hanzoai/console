@@ -13,13 +13,9 @@ export interface GraphParseResult {
   nodeToObservationsMap: Record<string, string[]>;
 }
 
-export function transformLanggraphToGeneralized(
-  data: AgentGraphDataResponse[],
-): AgentGraphDataResponse[] {
+export function transformLanggraphToGeneralized(data: AgentGraphDataResponse[]): AgentGraphDataResponse[] {
   // can't draw nodes without `node` property set for LangGraph
-  const filteredData = data.filter(
-    (obs) => obs.node && obs.node.trim().length > 0,
-  );
+  const filteredData = data.filter((obs) => obs.node && obs.node.trim().length > 0);
 
   const transformedData = filteredData.map((obs) => {
     let transformedObs = {
@@ -41,12 +37,8 @@ export function transformLanggraphToGeneralized(
   });
 
   // Add Hanzo system nodes if they don't exist
-  const hasStartNode = transformedData.some(
-    (obs) => obs.name === HANZO_START_NODE_NAME,
-  );
-  const hasEndNode = transformedData.some(
-    (obs) => obs.name === HANZO_END_NODE_NAME,
-  );
+  const hasStartNode = transformedData.some((obs) => obs.name === HANZO_START_NODE_NAME);
+  const hasEndNode = transformedData.some((obs) => obs.name === HANZO_END_NODE_NAME);
 
   const systemNodes: AgentGraphDataResponse[] = [];
 
@@ -83,9 +75,7 @@ export function transformLanggraphToGeneralized(
   return [...transformedData, ...systemNodes];
 }
 
-export function buildGraphFromStepData(
-  data: AgentGraphDataResponse[],
-): GraphParseResult {
+export function buildGraphFromStepData(data: AgentGraphDataResponse[]): GraphParseResult {
   if (data.length === 0) {
     return {
       graph: { nodes: [], edges: [] },
@@ -140,16 +130,11 @@ export function buildGraphFromStepData(
   });
 
   // Build nodes from step mapping
-  const allStepNodes = Array.from(stepToNodesMap.values()).flatMap((set) =>
-    Array.from(set),
-  );
+  const allStepNodes = Array.from(stepToNodesMap.values()).flatMap((set) => Array.from(set));
   const nodeNames = [...new Set([...allStepNodes, HANZO_END_NODE_NAME])];
 
   const nodes: GraphNodeData[] = nodeNames.map((nodeName) => {
-    if (
-      nodeName === HANZO_END_NODE_NAME ||
-      nodeName === HANZO_START_NODE_NAME
-    ) {
+    if (nodeName === HANZO_END_NODE_NAME || nodeName === HANZO_START_NODE_NAME) {
       return {
         id: nodeName,
         label: nodeName,
@@ -172,26 +157,19 @@ export function buildGraphFromStepData(
   };
 }
 
-function generateEdgesWithParallelBranches(
-  stepToNodesMap: Map<number, Set<string>>,
-) {
+function generateEdgesWithParallelBranches(stepToNodesMap: Map<number, Set<string>>) {
   // generate edges with proper parallel branch handling
   const sortedSteps = [...stepToNodesMap.entries()].sort(([a], [b]) => a - b);
   const edges: Array<{ from: string; to: string }> = [];
 
   sortedSteps.forEach(([, currentNodes], i) => {
     const isLastStep = i === sortedSteps.length - 1;
-    const targetNodes = isLastStep
-      ? [HANZO_END_NODE_NAME]
-      : Array.from(sortedSteps[i + 1][1]);
+    const targetNodes = isLastStep ? [HANZO_END_NODE_NAME] : Array.from(sortedSteps[i + 1][1]);
 
     // connect all current nodes to all target nodes
     Array.from(currentNodes).forEach((currentNode) => {
       // end nodes should be terminal -> don't draw edges from them
-      if (
-        currentNode === HANZO_END_NODE_NAME ||
-        currentNode === LANGGRAPH_END_NODE_NAME
-      ) {
+      if (currentNode === HANZO_END_NODE_NAME || currentNode === LANGGRAPH_END_NODE_NAME) {
         return;
       }
 

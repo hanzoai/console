@@ -1,8 +1,5 @@
 import { useMemo } from "react";
-import {
-  Combobox,
-  type ComboboxOptionGroup,
-} from "@/src/components/ui/combobox";
+import { Combobox, type ComboboxOptionGroup } from "@/src/components/ui/combobox";
 import { Button } from "@/src/components/ui/button";
 import { X } from "lucide-react";
 
@@ -96,13 +93,7 @@ export function ScoreCombobox({
       />
 
       {value && !disabled && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleClear}
-          title="Clear selection"
-          className="h-6 w-6 shrink-0"
-        >
+        <Button variant="ghost" size="icon" onClick={handleClear} title="Clear selection" className="h-6 w-6 shrink-0">
           <X className="h-3 w-3" />
         </Button>
       )}

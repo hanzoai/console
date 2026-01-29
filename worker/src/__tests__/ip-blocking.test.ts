@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  isIPBlocked,
-  isIPAddress,
-  isHostnameBlocked,
-} from "@hanzo/shared/src/server";
+import { isIPBlocked, isIPAddress, isHostnameBlocked } from "@hanzo/shared/src/server";
 
 describe("IP Blocking Module", () => {
   describe("isIPBlocked", () => {
@@ -76,9 +72,7 @@ describe("IP Blocking Module", () => {
 
       it("should block Teredo addresses", () => {
         expect(isIPBlocked("2001::1", [], [])).toBe(true);
-        expect(
-          isIPBlocked("2001:0000:4136:e378:8000:63bf:3fff:fdd2", [], []),
-        ).toBe(true);
+        expect(isIPBlocked("2001:0000:4136:e378:8000:63bf:3fff:fdd2", [], [])).toBe(true);
       });
     });
 
@@ -108,20 +102,12 @@ describe("IP Blocking Module", () => {
     describe("whitelisted IPs", () => {
       it("should allow whitelisted IPv4 addresses that would normally be blocked", () => {
         // These IPs would normally be blocked but should be allowed due to whitelist
-        expect(
-          isIPBlocked("127.0.0.1", ["127.0.0.1", "192.168.1.100"], []),
-        ).toBe(false);
-        expect(
-          isIPBlocked("192.168.1.100", ["127.0.0.1", "192.168.1.100"], []),
-        ).toBe(false);
+        expect(isIPBlocked("127.0.0.1", ["127.0.0.1", "192.168.1.100"], [])).toBe(false);
+        expect(isIPBlocked("192.168.1.100", ["127.0.0.1", "192.168.1.100"], [])).toBe(false);
 
         // Non-whitelisted IPs should still be blocked normally
-        expect(
-          isIPBlocked("192.168.1.1", ["127.0.0.1", "192.168.1.100"], []),
-        ).toBe(true);
-        expect(
-          isIPBlocked("10.0.0.1", ["127.0.0.1", "192.168.1.100"], []),
-        ).toBe(true);
+        expect(isIPBlocked("192.168.1.1", ["127.0.0.1", "192.168.1.100"], [])).toBe(true);
+        expect(isIPBlocked("10.0.0.1", ["127.0.0.1", "192.168.1.100"], [])).toBe(true);
       });
 
       it("should allow whitelisted IPv6 addresses that would normally be blocked", () => {
@@ -145,9 +131,7 @@ describe("IP Blocking Module", () => {
       it("should allow whitelisted IPv4 Segment that would normally be blocked", () => {
         // These IPs would normally be blocked but should be allowed due to whitelist
         expect(isIPBlocked("127.0.0.1", [], ["127.0.0.1/32"])).toBe(false);
-        expect(isIPBlocked("192.168.1.100", [], ["192.168.1.0/24"])).toBe(
-          false,
-        );
+        expect(isIPBlocked("192.168.1.100", [], ["192.168.1.0/24"])).toBe(false);
 
         // Non-whitelisted IPs should still be blocked normally
         expect(isIPBlocked("192.168.1.1", [], ["10.0.0.0/8"])).toBe(true);
@@ -168,9 +152,7 @@ describe("IP Blocking Module", () => {
         expect(isIPBlocked("172.16.0.1", [], [])).toBe(true);
 
         // Public IPs should not be blocked
-        expect(isIPBlocked("8.8.8.8", ["127.0.0.1"], ["192.168.1.0/24"])).toBe(
-          false,
-        );
+        expect(isIPBlocked("8.8.8.8", ["127.0.0.1"], ["192.168.1.0/24"])).toBe(false);
       });
     });
   });

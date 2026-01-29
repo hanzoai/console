@@ -29,9 +29,7 @@ export const CustomMappingConfigSchema = z.object({
   rootConfig: RootMappingConfigSchema.optional(),
   keyValueMapConfig: z
     .object({
-      entries: z
-        .array(KeyValueMappingEntrySchema)
-        .min(1, "At least one entry is required"),
+      entries: z.array(KeyValueMappingEntrySchema).min(1, "At least one entry is required"),
     })
     .optional(),
 });
@@ -65,6 +63,4 @@ export type KeyValueMappingEntry = z.infer<typeof KeyValueMappingEntrySchema>;
 export type CustomMappingConfig = z.infer<typeof CustomMappingConfigSchema>;
 export type FieldMappingConfig = z.infer<typeof FieldMappingConfigSchema>;
 export type AddToDatasetMapping = z.infer<typeof AddToDatasetMappingSchema>;
-export type ObservationAddToDatasetConfig = z.infer<
-  typeof ObservationAddToDatasetConfigSchema
->;
+export type ObservationAddToDatasetConfig = z.infer<typeof ObservationAddToDatasetConfigSchema>;

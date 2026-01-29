@@ -4,15 +4,8 @@
  * using browser URLSearchParams APIs to simulate real-world usage.
  */
 
-import {
-  type FilterState,
-  tracesTableCols,
-  observationsTableCols,
-} from "@hanzo/shared";
-import {
-  encodeFiltersGeneric,
-  decodeFiltersGeneric,
-} from "./lib/filter-query-encoding";
+import { type FilterState, tracesTableCols, observationsTableCols } from "@hanzo/shared";
+import { encodeFiltersGeneric, decodeFiltersGeneric } from "./lib/filter-query-encoding";
 import { validateFilters } from "@/src/components/table/table-view-presets/validation";
 import { traceFilterConfig } from "./config/traces-config";
 import { observationFilterConfig } from "./config/observations-config";
@@ -114,8 +107,7 @@ describe("Filter Query Encoding Integration (Full URL Lifecycle)", () => {
 
   it("should handle backwards compatibility with legacy URL-encoded operators", () => {
     // Verify legacy bookmarked URLs with %3E%3D (>=), %3C%3D (<=), %3D (=) still work
-    const legacyUrl =
-      "filter=length;number;;%3E%3D;5,length;number;;%3C%3D;10,extinct;boolean;;%3D;true";
+    const legacyUrl = "filter=length;number;;%3E%3D;5,length;number;;%3C%3D;10,extinct;boolean;;%3D;true";
     const params = new URLSearchParams(legacyUrl);
     const decoded = decodeFiltersGeneric(params.get("filter") || "");
 
@@ -320,9 +312,7 @@ describe("Saved View Validation (Backward & Forward Compatibility)", () => {
   it("should demonstrate BUG: restore fails with filtered column definitions", () => {
     // This simulates the CURRENT BUG in traces.tsx:1131
     // where transformedFilterOptions filters out environment/timestamp
-    const filteredCols = tracesTableCols.filter(
-      (c) => c.id !== "environment" && c.id !== "timestamp",
-    );
+    const filteredCols = tracesTableCols.filter((c) => c.id !== "environment" && c.id !== "timestamp");
 
     // Load a view with environment filter (valid in new system)
     const savedView: FilterState = [
@@ -425,9 +415,7 @@ describe("Saved View Validation (Backward & Forward Compatibility)", () => {
 
     // Should successfully encode (not drop the filter!)
     expect(encoded).toBeTruthy();
-    expect(encoded).toContain(
-      "metadata;stringObject;projectName;contains;myproject",
-    );
+    expect(encoded).toContain("metadata;stringObject;projectName;contains;myproject");
 
     // 3. Decode: should restore correctly
     const decoded = decodeFiltersGeneric(encoded);
@@ -471,9 +459,7 @@ describe("Saved View Validation (Backward & Forward Compatibility)", () => {
     const encoded = encodeFiltersGeneric(validated);
 
     expect(encoded).toBeTruthy();
-    expect(encoded).toContain(
-      "score_categories;categoryOptions;hallucination;any of;high",
-    );
+    expect(encoded).toContain("score_categories;categoryOptions;hallucination;any of;high");
     expect(encoded).toContain("scores_avg;numberObject;accuracy");
 
     // 3. Round-trip: decode should restore
@@ -489,18 +475,14 @@ describe("Config Validation of old saved views", () => {
   it("should validate traces config uses column IDs not display names", () => {
     // Validate all keys in columnToQueryKey exist as column IDs
     const columnIds = new Set(tracesTableCols.map((col) => col.id));
-    const invalidFacets = traceFilterConfig.facets.filter(
-      (facet) => !columnIds.has(facet.column),
-    );
+    const invalidFacets = traceFilterConfig.facets.filter((facet) => !columnIds.has(facet.column));
 
     expect(invalidFacets).toEqual([]);
   });
 
   it("should validate observations config uses column IDs not display names", () => {
     const columnIds = new Set(observationsTableCols.map((col) => col.id));
-    const invalidFacets = observationFilterConfig.facets.filter(
-      (facet) => !columnIds.has(facet.column),
-    );
+    const invalidFacets = observationFilterConfig.facets.filter((facet) => !columnIds.has(facet.column));
 
     expect(invalidFacets).toEqual([]);
   });
@@ -510,13 +492,9 @@ describe("Filter Flow: URL → Decode → Normalize → Transform", () => {
   it("should preserve multiple string contains filters from URL", () => {
     // environment contains "e" AND environment contains "a"
     // These create valid SQL: WHERE env LIKE '%e%' AND env LIKE '%a%'
-    const urlFilter =
-      "environment;string;;contains;e,environment;string;;contains;a";
+    const urlFilter = "environment;string;;contains;e,environment;string;;contains;a";
 
-    const normalized = decodeAndNormalizeFilters(
-      urlFilter,
-      sessionFilterConfig.columnDefinitions,
-    );
+    const normalized = decodeAndNormalizeFilters(urlFilter, sessionFilterConfig.columnDefinitions);
 
     const result = transformFiltersForBackend(normalized, {});
 
@@ -530,10 +508,7 @@ describe("Filter Flow: URL → Decode → Normalize → Transform", () => {
     // Observations/traces table: "tags" (frontend) → "traceTags" (ClickHouse backend)
     const urlFilter = "tags;arrayOptions;;any of;tag1";
 
-    const normalized = decodeAndNormalizeFilters(
-      urlFilter,
-      traceFilterConfig.columnDefinitions,
-    );
+    const normalized = decodeAndNormalizeFilters(urlFilter, traceFilterConfig.columnDefinitions);
 
     const result = transformFiltersForBackend(normalized, {
       tags: "traceTags",

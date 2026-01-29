@@ -19,21 +19,14 @@ import {
 export class WorkerManager {
   private static workers: { [key: string]: Worker } = {};
 
-  private static metricWrapper(
-    processor: Processor,
-    queueName: QueueName,
-  ): Processor {
+  private static metricWrapper(processor: Processor, queueName: QueueName): Processor {
     return async (job: Job) => {
       const startTime = Date.now();
       const waitTime = Date.now() - job.timestamp;
       recordIncrement(convertQueueNameToMetricName(queueName) + ".request");
-      recordHistogram(
-        convertQueueNameToMetricName(queueName) + ".wait_time",
-        waitTime,
-        {
-          unit: "milliseconds",
-        },
-      );
+      recordHistogram(convertQueueNameToMetricName(queueName) + ".wait_time", waitTime, {
+        unit: "milliseconds",
+      });
       const result = await processor(job);
       const queue = queueName.startsWith(QueueName.IngestionQueue)
         ? IngestionQueue.getInstance({ shardName: queueName })
@@ -44,48 +37,34 @@ export class WorkerManager {
             : getQueue(
                 queueName as Exclude<
                   QueueName,
-                  | QueueName.IngestionQueue
-                  | QueueName.TraceUpsert
-                  | QueueName.OtelIngestionQueue
+                  QueueName.IngestionQueue | QueueName.TraceUpsert | QueueName.OtelIngestionQueue
                 >,
               );
       Promise.allSettled([
         // Here we only consider waiting jobs instead of the default ("waiting" or "delayed"
         // or "prioritized" or "waiting-children") that count provides
         queue?.getWaitingCount().then((count) => {
-          recordGauge(
-            convertQueueNameToMetricName(queueName) + ".length",
-            count,
-            {
-              unit: "records",
-            },
-          );
+          recordGauge(convertQueueNameToMetricName(queueName) + ".length", count, {
+            unit: "records",
+          });
         }),
         queue?.getFailedCount().then((count) => {
-          recordGauge(
-            convertQueueNameToMetricName(queueName) + ".dlq_length",
-            count,
-            {
-              unit: "records",
-            },
-          );
+          recordGauge(convertQueueNameToMetricName(queueName) + ".dlq_length", count, {
+            unit: "records",
+          });
         }),
       ]).catch((err) => {
         logger.error("Failed to record queue length", err);
       });
-      recordHistogram(
-        convertQueueNameToMetricName(queueName) + ".processing_time",
-        Date.now() - startTime,
-        { unit: "milliseconds" },
-      );
+      recordHistogram(convertQueueNameToMetricName(queueName) + ".processing_time", Date.now() - startTime, {
+        unit: "milliseconds",
+      });
       return result;
     };
   }
 
   public static async closeWorkers(): Promise<void> {
-    await Promise.all(
-      Object.values(WorkerManager.workers).map((worker) => worker.close()),
-    );
+    await Promise.all(Object.values(WorkerManager.workers).map((worker) => worker.close()));
     logger.info("All workers have been closed.");
   }
 
@@ -111,32 +90,22 @@ export class WorkerManager {
     }
 
     // Register worker
-    const worker = new Worker(
-      queueName,
-      WorkerManager.metricWrapper(processor, queueName),
-      {
-        connection: redisInstance,
-        prefix: getQueuePrefix(queueName),
-        ...additionalOptions,
-      },
-    );
+    const worker = new Worker(queueName, WorkerManager.metricWrapper(processor, queueName), {
+      connection: redisInstance,
+      prefix: getQueuePrefix(queueName),
+      ...additionalOptions,
+    });
     WorkerManager.workers[queueName] = worker;
     logger.info(`${queueName} executor started: ${worker.isRunning()}`);
 
     // Add error handling
     worker.on("failed", (job: Job | undefined, err: Error) => {
-      logger.error(
-        `Queue job ${job?.name} with id ${job?.id} in ${queueName} failed`,
-        err,
-      );
+      logger.error(`Queue job ${job?.name} with id ${job?.id} in ${queueName} failed`, err);
       traceException(err);
       recordIncrement(convertQueueNameToMetricName(queueName) + ".failed");
     });
     worker.on("error", (failedReason: Error) => {
-      logger.error(
-        `Queue job ${queueName} errored: ${failedReason}`,
-        failedReason,
-      );
+      logger.error(`Queue job ${queueName} errored: ${failedReason}`, failedReason);
       traceException(failedReason);
       recordIncrement(convertQueueNameToMetricName(queueName) + ".error");
     });

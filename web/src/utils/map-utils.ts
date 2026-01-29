@@ -25,9 +25,7 @@ export function castToNumberMap(
   if (mapOrRecord instanceof Map) {
     return mapOrRecord as Map<string, number>;
   }
-  return new Map(
-    Object.entries(mapOrRecord).map(([key, value]) => [key, Number(value)]),
-  );
+  return new Map(Object.entries(mapOrRecord).map(([key, value]) => [key, Number(value)]));
 }
 
 /**

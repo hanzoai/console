@@ -1,20 +1,9 @@
 import { z } from "zod/v4";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { orderBy, singleFilter, optionalPaginationZod } from "@hanzo/shared";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  DashboardWidgetChartType,
-  DashboardWidgetViews,
-} from "@hanzo/shared/src/db";
-import {
-  DashboardService,
-  DimensionSchema,
-  MetricSchema,
-  ChartConfigSchema,
-} from "@hanzo/shared/src/server";
+import { DashboardWidgetChartType, DashboardWidgetViews } from "@hanzo/shared/src/db";
+import { DashboardService, DimensionSchema, MetricSchema, ChartConfigSchema } from "@hanzo/shared/src/server";
 import { views } from "@/src/features/query";
 import { TRPCError } from "@trpc/server";
 import { HanzoConflictError } from "@hanzo/shared";
@@ -74,106 +63,95 @@ const reverseViewMapping: Record<DashboardWidgetViews, string> = {
 };
 
 export const dashboardWidgetRouter = createTRPCRouter({
-  create: protectedProjectProcedure
-    .input(CreateDashboardWidgetInput)
-    .mutation(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
+  create: protectedProjectProcedure.input(CreateDashboardWidgetInput).mutation(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
+
+    // Create the widget using the DashboardService
+    const widget = await DashboardService.createWidget(
+      input.projectId,
+      { ...input, view: viewMapping[input.view] },
+      ctx.session.user?.id,
+    );
+
+    return {
+      success: true,
+      widget,
+    };
+  }),
+
+  all: protectedProjectProcedure.input(ListDashboardWidgetsInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const result = await DashboardService.listWidgets({
+      projectId: input.projectId,
+      limit: input.limit,
+      page: input.page,
+      orderBy: input.orderBy,
+    });
+
+    return result;
+  }),
+
+  get: protectedProjectProcedure.input(GetDashboardWidgetInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const widget = await DashboardService.getWidget(input.widgetId, input.projectId);
+
+    if (!widget) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Widget not found",
       });
+    }
 
-      // Create the widget using the DashboardService
-      const widget = await DashboardService.createWidget(
-        input.projectId,
-        { ...input, view: viewMapping[input.view] },
-        ctx.session.user?.id,
-      );
+    return {
+      ...widget,
+      view: reverseViewMapping[widget.view],
+      owner: widget.owner,
+    };
+  }),
 
-      return {
-        success: true,
-        widget,
-      };
-    }),
+  update: protectedProjectProcedure.input(UpdateDashboardWidgetInput).mutation(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
 
-  all: protectedProjectProcedure
-    .input(ListDashboardWidgetsInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
-      });
+    // Update the widget using the DashboardService
+    const widget = await DashboardService.updateWidget(
+      input.projectId,
+      input.widgetId,
+      {
+        name: input.name,
+        description: input.description,
+        view: viewMapping[input.view],
+        dimensions: input.dimensions,
+        metrics: input.metrics,
+        filters: input.filters,
+        chartType: input.chartType,
+        chartConfig: input.chartConfig,
+      },
+      ctx.session.user?.id,
+    );
 
-      const result = await DashboardService.listWidgets({
-        projectId: input.projectId,
-        limit: input.limit,
-        page: input.page,
-        orderBy: input.orderBy,
-      });
-
-      return result;
-    }),
-
-  get: protectedProjectProcedure
-    .input(GetDashboardWidgetInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
-      });
-
-      const widget = await DashboardService.getWidget(
-        input.widgetId,
-        input.projectId,
-      );
-
-      if (!widget) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Widget not found",
-        });
-      }
-
-      return {
-        ...widget,
-        view: reverseViewMapping[widget.view],
-        owner: widget.owner,
-      };
-    }),
-
-  update: protectedProjectProcedure
-    .input(UpdateDashboardWidgetInput)
-    .mutation(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
-      });
-
-      // Update the widget using the DashboardService
-      const widget = await DashboardService.updateWidget(
-        input.projectId,
-        input.widgetId,
-        {
-          name: input.name,
-          description: input.description,
-          view: viewMapping[input.view],
-          dimensions: input.dimensions,
-          metrics: input.metrics,
-          filters: input.filters,
-          chartType: input.chartType,
-          chartConfig: input.chartConfig,
-        },
-        ctx.session.user?.id,
-      );
-
-      return {
-        success: true,
-        widget,
-      };
-    }),
+    return {
+      success: true,
+      widget,
+    };
+  }),
 
   copyToProject: protectedProjectProcedure
     .input(

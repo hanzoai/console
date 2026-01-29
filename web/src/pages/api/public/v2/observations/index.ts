@@ -18,9 +18,7 @@ export default withMiddlewares({
     responseSchema: GetObservationsV2Response,
     fn: async ({ query, auth }) => {
       if (env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS !== "true") {
-        throw new NotImplementedError(
-          "v2 APIs are currently in beta and only available on Hanzo Cloud",
-        );
+        throw new NotImplementedError("v2 APIs are currently in beta and only available on Hanzo Cloud");
       }
 
       // Extract field groups and metadata expansion keys

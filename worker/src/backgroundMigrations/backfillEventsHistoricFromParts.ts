@@ -1,24 +1,11 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import {
-  clickhouseClient,
-  commandClickhouse,
-  logger,
-  queryClickhouse,
-} from "@hanzo/shared/src/server";
+import { clickhouseClient, commandClickhouse, logger, queryClickhouse } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import { parseArgs } from "node:util";
-import {
-  BaseChunkTodo,
-  ConcurrentQueryManager,
-  generateQueryId,
-} from "./backfillEventsHistoric";
+import { BaseChunkTodo, ConcurrentQueryManager, generateQueryId } from "./backfillEventsHistoric";
 
-import {
-  getQueryError,
-  pollQueryStatus,
-  sleep,
-} from "@hanzo/shared/src/server";
+import { getQueryError, pollQueryStatus, sleep } from "@hanzo/shared/src/server";
 
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "d08146bd-3841-4ed3-a42c-5f43ff94b14e";
@@ -57,9 +44,7 @@ const DEFAULT_CONFIG: MigrationState["config"] = {
 // Migration Class
 // ============================================================================
 
-export default class BackfillEventsHistoricFromParts
-  implements IBackgroundMigration
-{
+export default class BackfillEventsHistoricFromParts implements IBackgroundMigration {
   private isAborted = false;
 
   // ============================================================================
@@ -113,11 +98,7 @@ export default class BackfillEventsHistoricFromParts
     valid: boolean;
     reason?: string;
   }> {
-    const requiredTables = [
-      "observations_pid_tid_sorting",
-      "traces_pid_tid_sorting",
-      "events",
-    ];
+    const requiredTables = ["observations_pid_tid_sorting", "traces_pid_tid_sorting", "events"];
 
     for (const table of requiredTables) {
       try {
@@ -168,9 +149,7 @@ export default class BackfillEventsHistoricFromParts
       },
     });
 
-    logger.info(
-      `[Backfill Events] Loaded ${parts.length} parts from clickhouse system table`,
-    );
+    logger.info(`[Backfill Events] Loaded ${parts.length} parts from clickhouse system table`);
 
     return parts.map((part) => ({
       id: part.name,
@@ -228,20 +207,14 @@ export default class BackfillEventsHistoricFromParts
    * Recovers in-progress todos from a previous run.
    * Returns an array of todos that are still running and should be added to the query manager.
    */
-  private async recoverInProgressTodos(
-    state: MigrationState,
-  ): Promise<ChunkTodo[]> {
-    const inProgress = state.todos.filter(
-      (t) => t.status === "in_progress" && t.queryId,
-    );
+  private async recoverInProgressTodos(state: MigrationState): Promise<ChunkTodo[]> {
+    const inProgress = state.todos.filter((t) => t.status === "in_progress" && t.queryId);
 
     if (inProgress.length === 0) {
       return [];
     }
 
-    logger.info(
-      `[Backfill Events] Recovering ${inProgress.length} in-progress part`,
-    );
+    logger.info(`[Backfill Events] Recovering ${inProgress.length} in-progress part`);
 
     const stillRunning: ChunkTodo[] = [];
 
@@ -251,16 +224,12 @@ export default class BackfillEventsHistoricFromParts
       if (status === "completed") {
         todo.status = "completed";
         todo.completedAt = new Date().toISOString();
-        logger.info(
-          `[Backfill Events] Recovered part ${todo.partId} as completed`,
-        );
+        logger.info(`[Backfill Events] Recovered part ${todo.partId} as completed`);
       } else if (status === "failed") {
         todo.status = "pending"; // Will retry
         todo.retryCount = (todo.retryCount || 0) + 1;
         const error = await getQueryError(todo.queryId!);
-        logger.warn(
-          `[Backfill Events] Recovered part ${todo.partId} as failed, will retry: ${error}`,
-        );
+        logger.warn(`[Backfill Events] Recovered part ${todo.partId} as failed, will retry: ${error}`);
       } else if (status === "running") {
         // Query is still running on ClickHouse - track it in the manager
         logger.info(
@@ -270,9 +239,7 @@ export default class BackfillEventsHistoricFromParts
       } else {
         // not_found - query was lost
         todo.status = "pending";
-        logger.warn(
-          `[Backfill Events] Recovered part ${todo.partId} as not_found, resetting to pending`,
-        );
+        logger.warn(`[Backfill Events] Recovered part ${todo.partId} as not_found, resetting to pending`);
       }
     }
 
@@ -358,11 +325,7 @@ export default class BackfillEventsHistoricFromParts
   // Fire Query (with tracking)
   // ============================================================================
 
-  private async fireQuery(
-    query: string,
-    queryId: string,
-    retryCount: number = 0,
-  ): Promise<void> {
+  private async fireQuery(query: string, queryId: string, retryCount: number = 0): Promise<void> {
     logger.info(`[Backfill Events] Firing query ${queryId}`);
 
     // Create AbortController to abort HTTP connection after query starts on server.
@@ -437,23 +400,16 @@ export default class BackfillEventsHistoricFromParts
     // Abort the HTTP connection now that the query is confirmed running on the server.
     // This prevents "Broken pipe" errors from the connection timing out.
     // The query continues executing on ClickHouse - we track completion via polling.
-    logger.info(
-      `[Backfill Events] Query ${queryId} confirmed running, aborting HTTP connection`,
-    );
+    logger.info(`[Backfill Events] Query ${queryId} confirmed running, aborting HTTP connection`);
     abortController.abort();
 
     // Handle the expected abort error
     queryPromise.catch((err) => {
       // Abort errors are expected - log at debug level
       if (err?.name === "AbortError" || err?.message?.includes("aborted")) {
-        logger.debug(
-          `[Backfill Events] Query ${queryId} HTTP connection aborted as expected`,
-        );
+        logger.debug(`[Backfill Events] Query ${queryId} HTTP connection aborted as expected`);
       } else {
-        logger.info(
-          `[Backfill Events] Query ${queryId} promise rejected: ${err?.message}`,
-          err,
-        );
+        logger.info(`[Backfill Events] Query ${queryId} promise rejected: ${err?.message}`, err);
       }
     });
   }
@@ -481,15 +437,10 @@ export default class BackfillEventsHistoricFromParts
     });
 
     // Check if ClickHouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "ClickHouse credentials must be configured to perform migration",
+        invalidReason: "ClickHouse credentials must be configured to perform migration",
       };
     }
 
@@ -502,9 +453,7 @@ export default class BackfillEventsHistoricFromParts
     if (!tableNames.some((r) => r.name === "events")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(
-          `ClickHouse events table does not exist. Retrying in 10s...`,
-        );
+        logger.info(`ClickHouse events table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -541,15 +490,12 @@ export default class BackfillEventsHistoricFromParts
     // Parse config from args
     const config: MigrationState["config"] = {
       concurrency: migrationArgs.concurrency ?? DEFAULT_CONFIG.concurrency,
-      pollIntervalMs:
-        migrationArgs.pollIntervalMs ?? DEFAULT_CONFIG.pollIntervalMs,
+      pollIntervalMs: migrationArgs.pollIntervalMs ?? DEFAULT_CONFIG.pollIntervalMs,
       maxRetries: migrationArgs.maxRetries ?? DEFAULT_CONFIG.maxRetries,
       retryFailed: migrationArgs.retryFailed ?? DEFAULT_CONFIG.retryFailed,
     };
 
-    logger.info(
-      `[Backfill Events] Starting historic event backfill with config: ${JSON.stringify(config)}`,
-    );
+    logger.info(`[Backfill Events] Starting historic event backfill with config: ${JSON.stringify(config)}`);
 
     // Load or initialize state
     let state = await this.loadState();
@@ -577,9 +523,7 @@ export default class BackfillEventsHistoricFromParts
       state = await this.loadState();
       const failedChunks = state.todos.filter((t) => t.status === "failed");
       if (failedChunks.length > 0) {
-        logger.info(
-          `[Backfill Events] Resetting ${failedChunks.length} failed chunks to pending`,
-        );
+        logger.info(`[Backfill Events] Resetting ${failedChunks.length} failed chunks to pending`);
         for (const todo of state.todos) {
           if (todo.status === "failed") {
             todo.status = "pending";
@@ -614,9 +558,7 @@ export default class BackfillEventsHistoricFromParts
       if (!nextTodo) return;
 
       // Mark as in_progress
-      const todoIndex = state.todos.findIndex(
-        (t) => t.partId === nextTodo.partId,
-      );
+      const todoIndex = state.todos.findIndex((t) => t.partId === nextTodo.partId);
       if (todoIndex === -1) return;
 
       state.todos[todoIndex].status = "in_progress";
@@ -628,45 +570,25 @@ export default class BackfillEventsHistoricFromParts
       // Fire the query
       try {
         const query = this.buildQuery(state.todos[todoIndex]);
-        await this.fireQuery(
-          query,
-          state.todos[todoIndex].queryId!,
-          state.todos[todoIndex].retryCount || 0,
-        );
-        manager.addQuery(
-          state.todos[todoIndex],
-          state.todos[todoIndex].queryId!,
-        );
-        logger.info(
-          `[Backfill Events] Started chunk ${nextTodo.partId} with query ${state.todos[todoIndex].queryId}`,
-        );
+        await this.fireQuery(query, state.todos[todoIndex].queryId!, state.todos[todoIndex].retryCount || 0);
+        manager.addQuery(state.todos[todoIndex], state.todos[todoIndex].queryId!);
+        logger.info(`[Backfill Events] Started chunk ${nextTodo.partId} with query ${state.todos[todoIndex].queryId}`);
       } catch (err) {
-        logger.error(
-          `[Backfill Events] Failed to start query for ${nextTodo.partId}`,
-          err,
-        );
+        logger.error(`[Backfill Events] Failed to start query for ${nextTodo.partId}`, err);
         state.todos[todoIndex].status = "pending"; // Will retry on next scheduleNext
-        state.activeQueries = state.activeQueries.filter(
-          (q) => q !== state.todos[todoIndex].queryId,
-        );
+        state.activeQueries = state.activeQueries.filter((q) => q !== state.todos[todoIndex].queryId);
         state.todos[todoIndex].queryId = undefined;
         await this.updateState(state);
       }
     };
 
-    const onComplete = async (
-      todo: ChunkTodo,
-      success: boolean,
-      error?: string,
-    ): Promise<void> => {
+    const onComplete = async (todo: ChunkTodo, success: boolean, error?: string): Promise<void> => {
       state = await this.loadState();
       const todoIndex = state.todos.findIndex((t) => t.partId === todo.partId);
       if (todoIndex === -1) return;
 
       // Remove from activeQueries
-      state.activeQueries = state.activeQueries.filter(
-        (q) => q !== todo.queryId,
-      );
+      state.activeQueries = state.activeQueries.filter((q) => q !== todo.queryId);
 
       if (success) {
         // Verify the part still exists before marking as completed
@@ -678,8 +600,7 @@ export default class BackfillEventsHistoricFromParts
               `Data may be incomplete. Aborting migration.`,
           );
           state.todos[todoIndex].status = "failed";
-          state.todos[todoIndex].error =
-            "Part no longer active after processing - possible data loss";
+          state.todos[todoIndex].error = "Part no longer active after processing - possible data loss";
           await this.updateState(state);
           this.isAborted = true;
           return;
@@ -687,22 +608,15 @@ export default class BackfillEventsHistoricFromParts
 
         state.todos[todoIndex].status = "completed";
         state.todos[todoIndex].completedAt = new Date().toISOString();
-        const completed = state.todos.filter(
-          (t) => t.status === "completed",
-        ).length;
+        const completed = state.todos.filter((t) => t.status === "completed").length;
         const total = state.todos.length;
-        logger.info(
-          `[Backfill Events] Completed part ${todo.partId} (${completed}/${total})`,
-        );
+        logger.info(`[Backfill Events] Completed part ${todo.partId} (${completed}/${total})`);
       } else {
-        state.todos[todoIndex].retryCount =
-          (state.todos[todoIndex].retryCount || 0) + 1;
+        state.todos[todoIndex].retryCount = (state.todos[todoIndex].retryCount || 0) + 1;
         if (state.todos[todoIndex].retryCount >= config.maxRetries!) {
           state.todos[todoIndex].status = "failed";
           state.todos[todoIndex].error = error;
-          logger.error(
-            `[Backfill Events] Part ${todo.partId} failed permanently: ${error}`,
-          );
+          logger.error(`[Backfill Events] Part ${todo.partId} failed permanently: ${error}`);
         } else {
           state.todos[todoIndex].status = "pending"; // Retry
           logger.warn(
@@ -720,9 +634,7 @@ export default class BackfillEventsHistoricFromParts
     // This prevents scheduling new queries on top of already-running ones after a restart
     for (const todo of stillRunningTodos) {
       manager.addQuery(todo, todo.queryId!);
-      logger.info(
-        `[Backfill Events] Added recovered running query ${todo.queryId} for part ${todo.partId} to manager`,
-      );
+      logger.info(`[Backfill Events] Added recovered running query ${todo.queryId} for part ${todo.partId} to manager`);
     }
 
     // Schedule initial batch up to concurrency limit (minus already-running recovered queries)
@@ -734,9 +646,7 @@ export default class BackfillEventsHistoricFromParts
     // Wait for all queries to complete
     while (!this.isAborted) {
       state = await this.loadState();
-      const pending = state.todos.filter(
-        (t) => t.status === "pending" || t.status === "in_progress",
-      );
+      const pending = state.todos.filter((t) => t.status === "pending" || t.status === "in_progress");
       if (pending.length === 0) break;
       await sleep(config.pollIntervalMs!);
     }
@@ -744,30 +654,22 @@ export default class BackfillEventsHistoricFromParts
     manager.stopPolling();
 
     if (this.isAborted) {
-      logger.info(
-        `[Backfill Events] Migration aborted. Can be resumed from current state.`,
-      );
+      logger.info(`[Backfill Events] Migration aborted. Can be resumed from current state.`);
       return;
     }
 
     // Check for failed chunks
     const failed = state.todos.filter((t) => t.status === "failed");
     if (failed.length > 0) {
-      logger.error(
-        `[Backfill Events] Migration completed with ${failed.length} failed chunks`,
-      );
+      logger.error(`[Backfill Events] Migration completed with ${failed.length} failed chunks`);
     }
 
     // Final verification: ensure all processed parts still exist
     const completedTodos = state.todos.filter((t) => t.status === "completed");
     if (completedTodos.length > 0) {
-      logger.info(
-        `[Backfill Events] Running final verification for ${completedTodos.length} completed parts...`,
-      );
+      logger.info(`[Backfill Events] Running final verification for ${completedTodos.length} completed parts...`);
       const activePartIds = await this.getActivePartIds();
-      const missingParts = completedTodos.filter(
-        (t) => !activePartIds.has(t.partId),
-      );
+      const missingParts = completedTodos.filter((t) => !activePartIds.has(t.partId));
 
       if (missingParts.length > 0) {
         logger.error(
@@ -782,9 +684,7 @@ export default class BackfillEventsHistoricFromParts
           `Migration completed but ${missingParts.length} parts are no longer active - data integrity compromised`,
         );
       }
-      logger.info(
-        `[Backfill Events] Final verification passed - all ${completedTodos.length} parts still active`,
-      );
+      logger.info(`[Backfill Events] Final verification passed - all ${completedTodos.length} parts still active`);
     }
 
     logger.info(

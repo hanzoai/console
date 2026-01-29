@@ -1,9 +1,5 @@
 import { ObservationLevelType } from "./domain";
-import {
-  type SingleValueOption,
-  type ColumnDefinition,
-  MultiValueOption,
-} from "./tableDefinitions";
+import { type SingleValueOption, type ColumnDefinition, MultiValueOption } from "./tableDefinitions";
 import { formatColumnOptions } from "./tableDefinitions/typeHelpers";
 
 // to be used server side
@@ -71,8 +67,7 @@ export const observationsTableCols: ColumnDefinition[] = [
     name: "Time To First Token (s)",
     id: "timeToFirstToken",
     type: "number",
-    internal:
-      'EXTRACT(EPOCH FROM (o."completion_start_time" - o."start_time"))',
+    internal: 'EXTRACT(EPOCH FROM (o."completion_start_time" - o."start_time"))',
     nullable: true,
   },
   {
@@ -114,12 +109,9 @@ export const observationsTableCols: ColumnDefinition[] = [
     id: "level",
     type: "stringOptions",
     internal: 'o."level"::text',
-    options: [
-      { value: "DEBUG" },
-      { value: "DEFAULT" },
-      { value: "WARNING" },
-      { value: "ERROR" },
-    ] as { value: ObservationLevelType }[],
+    options: [{ value: "DEBUG" }, { value: "DEFAULT" }, { value: "WARNING" }, { value: "ERROR" }] as {
+      value: ObservationLevelType;
+    }[],
   },
   {
     name: "Status Message",
@@ -281,9 +273,7 @@ export type ObservationOptions = {
   calledToolNames: Array<SingleValueOption>;
 };
 
-export function observationsTableColsWithOptions(
-  options?: ObservationOptions,
-): ColumnDefinition[] {
+export function observationsTableColsWithOptions(options?: ObservationOptions): ColumnDefinition[] {
   return observationsTableCols.map((col) => {
     if (col.id === "model") {
       return formatColumnOptions(col, options?.model ?? []);

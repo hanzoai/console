@@ -80,9 +80,7 @@ export function VirtualizedTreeNodeWrapper({
           <div className="flex flex-shrink-0">
             {Array.from({ length: depth - 1 }, (_, i) => (
               <div key={i} className="relative w-5">
-                {treeLines[i] && (
-                  <div className="absolute bottom-0 left-3 top-0 w-px bg-border" />
-                )}
+                {treeLines[i] && <div className="absolute bottom-0 left-3 top-0 w-px bg-border" />}
               </div>
             ))}
           </div>
@@ -93,16 +91,9 @@ export function VirtualizedTreeNodeWrapper({
           <div className="relative w-5 flex-shrink-0">
             <>
               {/* Vertical bar connecting upwards */}
-              <div
-                className={cn(
-                  "absolute left-3 top-0 w-px bg-border",
-                  isLastSibling ? "h-3" : "bottom-3",
-                )}
-              />
+              <div className={cn("absolute left-3 top-0 w-px bg-border", isLastSibling ? "h-3" : "bottom-3")} />
               {/* Vertical bar connecting downwards if not last sibling */}
-              {!isLastSibling && (
-                <div className="absolute bottom-0 left-3 top-3 w-px bg-border" />
-              )}
+              {!isLastSibling && <div className="absolute bottom-0 left-3 top-3 w-px bg-border" />}
               {/* Horizontal bar connecting to icon */}
               <div className="absolute left-3 top-3 h-px w-2 bg-border" />
             </>
@@ -115,9 +106,7 @@ export function VirtualizedTreeNodeWrapper({
             <ItemBadge type={nodeType} isSmall className="!size-3" />
           </div>
           {/* Vertical bar downwards if there are expanded children */}
-          {hasChildren && !isCollapsed && (
-            <div className="absolute bottom-0 left-1/2 top-3 w-px bg-border" />
-          )}
+          {hasChildren && !isCollapsed && <div className="absolute bottom-0 left-1/2 top-3 w-px bg-border" />}
           {/* Root node downward connector */}
           {depth === 0 && hasChildren && !isCollapsed && (
             <div className="absolute bottom-0 left-1/2 top-3 w-px bg-border" />

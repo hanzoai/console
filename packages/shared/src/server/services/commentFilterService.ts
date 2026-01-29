@@ -20,10 +20,7 @@ export const COMMENT_FILTER_THRESHOLD = 50000;
  * Validates that the number of object IDs is within acceptable limits.
  * Throws a user-friendly error if threshold is exceeded.
  */
-export function validateObjectIdCount(
-  objectIds: string[],
-  objectType: CommentObjectType,
-): void {
+export function validateObjectIdCount(objectIds: string[], objectType: CommentObjectType): void {
   if (objectIds.length > COMMENT_FILTER_THRESHOLD) {
     const objectTypePlural = objectType.toLowerCase() + "s";
     throw new Error(
@@ -41,12 +38,8 @@ export function validateObjectIdCount(
  * When true, we need to use exclusion logic instead of inclusion logic,
  * since items with 0 comments don't exist in the comments table.
  */
-function filterRangeIncludesZero(
-  filters: Array<{ type: string; operator: string; value: number }>,
-): boolean {
-  const lowerBoundFilters = filters.filter(
-    (f) => f.type === "number" && (f.operator === ">=" || f.operator === ">"),
-  );
+function filterRangeIncludesZero(filters: Array<{ type: string; operator: string; value: number }>): boolean {
+  const lowerBoundFilters = filters.filter((f) => f.type === "number" && (f.operator === ">=" || f.operator === ">"));
 
   // No lower bound = includes 0
   if (lowerBoundFilters.length === 0) {
@@ -54,11 +47,7 @@ function filterRangeIncludesZero(
   }
 
   // Check if any lower bound allows 0
-  return lowerBoundFilters.some(
-    (f) =>
-      (f.operator === ">=" && f.value <= 0) ||
-      (f.operator === ">" && f.value < 0),
-  );
+  return lowerBoundFilters.some((f) => (f.operator === ">=" && f.value <= 0) || (f.operator === ">" && f.value < 0));
 }
 
 /**
@@ -105,13 +94,9 @@ export async function applyCommentFilters({
 }> {
   // Extract comment filters from filterState
   const commentCountFilters = filterState.filter(
-    (f) =>
-      (f.type === "number" || f.type === "datetime") &&
-      f.column === "commentCount",
+    (f) => (f.type === "number" || f.type === "datetime") && f.column === "commentCount",
   );
-  const commentContentFilter = filterState.find(
-    (f) => f.type === "string" && f.column === "commentContent",
-  );
+  const commentContentFilter = filterState.find((f) => f.type === "string" && f.column === "commentContent");
 
   // If no comment filters, return original filter state
   if (commentCountFilters.length === 0 && !commentContentFilter) {
@@ -129,8 +114,7 @@ export async function applyCommentFilters({
   const updatedFilterState = filterState.filter(
     (f) =>
       !(
-        ((f.type === "number" || f.type === "datetime") &&
-          f.column === "commentCount") ||
+        ((f.type === "number" || f.type === "datetime") && f.column === "commentCount") ||
         (f.type === "string" && f.column === "commentContent")
       ),
   );
@@ -150,9 +134,7 @@ export async function applyCommentFilters({
     if (filterRangeIncludesZero(numberFilters)) {
       // When range includes zero, use EXCLUSION logic instead of inclusion
       // Find the upper bound filter (if any)
-      const upperBoundFilter = numberFilters.find(
-        (f) => f.operator === "<=" || f.operator === "<",
-      );
+      const upperBoundFilter = numberFilters.find((f) => f.operator === "<=" || f.operator === "<");
 
       if (!upperBoundFilter) {
         // No upper bound + includes zero = match everything, skip comment count filter
@@ -196,9 +178,7 @@ export async function applyCommentFilters({
           // won't be in contentObjectIds (they have no comments to search)
           // So we can only return items that HAVE comments matching content
           // and also don't exceed the upper bound
-          const matchingIds = contentObjectIds.filter(
-            (id) => !idsToExclude.includes(id),
-          );
+          const matchingIds = contentObjectIds.filter((id) => !idsToExclude.includes(id));
 
           if (matchingIds.length === 0) {
             return {
@@ -268,9 +248,7 @@ export async function applyCommentFilters({
             objectIdsFromComments = filterObjectIds;
             isFirstCommentCountFilter = false;
           } else {
-            objectIdsFromComments = objectIdsFromComments.filter((id) =>
-              filterObjectIds.includes(id),
-            );
+            objectIdsFromComments = objectIdsFromComments.filter((id) => filterObjectIds.includes(id));
           }
         }
       }
@@ -292,9 +270,7 @@ export async function applyCommentFilters({
     // Intersect with comment count results if present
     if (hasCommentCountFilters) {
       // Always intersect if comment count filters were processed
-      objectIdsFromComments = objectIdsFromComments.filter((id) =>
-        contentObjectIds.includes(id),
-      );
+      objectIdsFromComments = objectIdsFromComments.filter((id) => contentObjectIds.includes(id));
     } else {
       objectIdsFromComments = contentObjectIds;
     }

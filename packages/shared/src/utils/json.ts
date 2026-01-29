@@ -58,10 +58,7 @@ export interface DeepParseJsonOptions {
  * @param options Options to control parsing behavior
  * @returns Parsed JSON object
  */
-export function deepParseJson(
-  json: unknown,
-  options: DeepParseJsonOptions = {},
-): unknown {
+export function deepParseJson(json: unknown, options: DeepParseJsonOptions = {}): unknown {
   const { maxSize = 500_000, maxDepth = 3 } = options;
 
   // Size check: skip parsing for large objects to prevent UI freeze
@@ -81,11 +78,7 @@ export function deepParseJson(
 /**
  * Internal recursive implementation with depth tracking
  */
-function deepParseJsonRecursive(
-  json: unknown,
-  currentDepth: number,
-  maxDepth: number,
-): unknown {
+function deepParseJsonRecursive(json: unknown, currentDepth: number, maxDepth: number): unknown {
   // Stop recursing if we've hit max depth
   if (currentDepth >= maxDepth) {
     return json;
@@ -162,10 +155,7 @@ interface ParseStackEntry {
  * @param options Options to control parsing behavior
  * @returns Parsed JSON object
  */
-export function deepParseJsonIterative(
-  json: unknown,
-  options: DeepParseJsonOptions = {},
-): unknown {
+export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOptions = {}): unknown {
   const { maxSize = 500_000, maxDepth = 3 } = options;
 
   // Size check: skip parsing for large objects to prevent UI freeze
@@ -288,8 +278,7 @@ export function deepParseJsonIterative(
       if (!entry.childrenResults) {
         (entry as any).childrenResults = [];
       }
-      const childrenResults = (entry as any)
-        .childrenResults as ParseStackEntry[];
+      const childrenResults = (entry as any).childrenResults as ParseStackEntry[];
 
       // If we haven't added children yet, add them now
       if (childrenResults.length === 0) {
@@ -330,9 +319,7 @@ export function deepParseJsonIterative(
       }
 
       // Check if all children are processed
-      const allChildrenProcessed = childrenResults.every((child) =>
-        processed.has(child),
-      );
+      const allChildrenProcessed = childrenResults.every((child) => processed.has(child));
       if (!allChildrenProcessed) {
         // Not ready yet, will come back
         continue;
@@ -340,14 +327,10 @@ export function deepParseJsonIterative(
 
       // All children processed, reconstruct this level
       // Check if any children changed
-      const anyChildChanged = childrenResults.some(
-        (child) => child.output !== child.input,
-      );
+      const anyChildChanged = childrenResults.some((child) => child.output !== child.input);
 
       // Check if input object has dangerous keys that need filtering
-      const hasDangerousKeys =
-        !isArray &&
-        Object.keys(input as object).some((key) => DANGEROUS_KEYS.has(key));
+      const hasDangerousKeys = !isArray && Object.keys(input as object).some((key) => DANGEROUS_KEYS.has(key));
 
       if (!anyChildChanged && !hasDangerousKeys) {
         // No children changed and no dangerous keys, reuse input
@@ -381,9 +364,7 @@ export function deepParseJsonIterative(
   return rootEntry.output;
 }
 
-export const parseJsonPrioritised = (
-  json: string,
-): JsonNested | string | undefined => {
+export const parseJsonPrioritised = (json: string): JsonNested | string | undefined => {
   try {
     return parse(json, null, (value) => {
       if (isNumber(value)) {

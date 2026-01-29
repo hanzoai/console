@@ -24,10 +24,7 @@ export default function UserPage() {
     userId,
   });
 
-  const [currentTab, setCurrentTab] = useQueryParam(
-    "tab",
-    withDefault(StringParam, tabs[0]),
-  );
+  const [currentTab, setCurrentTab] = useQueryParam("tab", withDefault(StringParam, tabs[0]));
 
   const renderTabContent = () => {
     switch (currentTab as (typeof tabs)[number]) {
@@ -70,9 +67,7 @@ export default function UserPage() {
             </ActionButton>
             <DetailPageNav
               currentId={encodeURIComponent(userId)}
-              path={(entry) =>
-                `/project/${projectId}/users/${encodeURIComponent(entry.id)}`
-              }
+              path={(entry) => `/project/${projectId}/users/${encodeURIComponent(entry.id)}`}
               listKey="users"
             />
           </>
@@ -82,16 +77,9 @@ export default function UserPage() {
       <>
         {user.data && (
           <div className="flex flex-wrap gap-2 px-4 py-4">
-            <Badge variant="outline">
-              Observations:{" "}
-              {compactNumberFormatter(user.data.totalObservations)}
-            </Badge>
-            <Badge variant="outline">
-              Traces: {compactNumberFormatter(user.data.totalTraces)}
-            </Badge>
-            <Badge variant="outline">
-              Total Tokens: {compactNumberFormatter(user.data.totalTokens)}
-            </Badge>
+            <Badge variant="outline">Observations: {compactNumberFormatter(user.data.totalObservations)}</Badge>
+            <Badge variant="outline">Traces: {compactNumberFormatter(user.data.totalTraces)}</Badge>
+            <Badge variant="outline">Total Tokens: {compactNumberFormatter(user.data.totalTokens)}</Badge>
             <Badge variant="outline">
               <span className="flex items-center gap-1">
                 Total Cost: {usdFormatter(user.data.sumCalculatedTotalCost)}
@@ -159,31 +147,13 @@ type TabProps = {
 };
 
 function ScoresTab({ userId, projectId }: TabProps) {
-  return (
-    <ScoresTable
-      projectId={projectId}
-      userId={userId}
-      omittedFilter={["User ID"]}
-    />
-  );
+  return <ScoresTable projectId={projectId} userId={userId} omittedFilter={["User ID"]} />;
 }
 
 function TracesTab({ userId, projectId }: TabProps) {
-  return (
-    <TracesTable
-      projectId={projectId}
-      userId={userId}
-      omittedFilter={["User ID"]}
-    />
-  );
+  return <TracesTable projectId={projectId} userId={userId} omittedFilter={["User ID"]} />;
 }
 
 function SessionsTab({ userId, projectId }: TabProps) {
-  return (
-    <SessionsTable
-      projectId={projectId}
-      userId={userId}
-      omittedFilter={["User IDs"]}
-    />
-  );
+  return <SessionsTable projectId={projectId} userId={userId} omittedFilter={["User IDs"]} />;
 }

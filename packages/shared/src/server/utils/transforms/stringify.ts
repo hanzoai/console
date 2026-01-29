@@ -5,8 +5,7 @@ export const stringify = (data: any, key?: string): string => {
 
   return JSON.stringify(
     data,
-    (k, value) =>
-      typeof value === "bigint" ? Number.parseInt(value.toString()) : value,
+    (k, value) => (typeof value === "bigint" ? Number.parseInt(value.toString()) : value),
     indent,
   );
 };

@@ -9,9 +9,7 @@ export function GitHubEnterpriseProvider<P extends GithubProfile>(
   },
 ): OAuthConfig<P> {
   const baseUrl = options?.enterprise?.baseUrl ?? "https://github.com";
-  const apiBaseUrl = options?.enterprise?.baseUrl
-    ? `${options?.enterprise?.baseUrl}/api/v3`
-    : "https://api.github.com";
+  const apiBaseUrl = options?.enterprise?.baseUrl ? `${options?.enterprise?.baseUrl}/api/v3` : "https://api.github.com";
 
   return {
     id: "github-enterprise",

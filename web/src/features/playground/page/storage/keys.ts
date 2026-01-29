@@ -10,11 +10,8 @@ const getPrefixedKey = (prefix: string, windowId: string) => {
   return `${prefix}${effectiveWindowId}`;
 };
 
-export const getCacheKey = (windowId: string) =>
-  getPrefixedKey("hanzo-playgroundCache_", windowId);
+export const getCacheKey = (windowId: string) => getPrefixedKey("hanzo-playgroundCache_", windowId);
 
-export const getModelNameKey = (windowId: string) =>
-  getPrefixedKey("hanzo-llmModelName_", windowId);
+export const getModelNameKey = (windowId: string) => getPrefixedKey("hanzo-llmModelName_", windowId);
 
-export const getModelProviderKey = (windowId: string) =>
-  getPrefixedKey("hanzo-llmModelProvider_", windowId);
+export const getModelProviderKey = (windowId: string) => getPrefixedKey("hanzo-llmModelProvider_", windowId);

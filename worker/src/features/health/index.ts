@@ -6,14 +6,9 @@ import { Response } from "express";
  * Check the health of the container.
  * If failOnSigterm is true, the health check will fail if a SIGTERM signal has been received.
  */
-export const checkContainerHealth = async (
-  res: Response,
-  failOnSigterm: boolean,
-) => {
+export const checkContainerHealth = async (res: Response, failOnSigterm: boolean) => {
   if (failOnSigterm && isSigtermReceived()) {
-    logger.info(
-      "Health check failed: SIGTERM / SIGINT received, shutting down.",
-    );
+    logger.info("Health check failed: SIGTERM / SIGINT received, shutting down.");
     return res.status(500).json({
       status: "SIGTERM / SIGINT received, shutting down",
     });
@@ -28,12 +23,7 @@ export const checkContainerHealth = async (
 
   await Promise.race([
     redis?.ping(),
-    new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error("Redis ping timeout after 2 seconds")),
-        2000,
-      ),
-    ),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Redis ping timeout after 2 seconds")), 2000)),
   ]);
 
   res.json({

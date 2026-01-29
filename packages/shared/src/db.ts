@@ -4,12 +4,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { env } from "process";
 import kyselyExtension from "prisma-extension-kysely";
-import {
-  Kysely,
-  PostgresAdapter,
-  PostgresIntrospector,
-  PostgresQueryCompiler,
-} from "kysely";
+import { Kysely, PostgresAdapter, PostgresIntrospector, PostgresQueryCompiler } from "kysely";
 import { DB } from ".";
 import { logger } from "./server";
 
@@ -28,10 +23,7 @@ export class PrismaClientSingleton {
 }
 
 const createPrismaInstance = () => {
-  const client = new PrismaClient<
-    Prisma.PrismaClientOptions,
-    "warn" | "error" | "query"
-  >({
+  const client = new PrismaClient<Prisma.PrismaClientOptions, "warn" | "error" | "query">({
     log: [
       { emit: "event", level: "query" },
       { emit: "event", level: "error" },
@@ -108,9 +100,7 @@ if (process.env.NODE_ENV === "development") {
   );
 }
 
-export const prisma =
-  globalThis.prismaGlobal ?? PrismaClientSingleton.getInstance();
-export const kyselyPrisma =
-  globalThis.kyselyPrismaGlobal ?? KyselySingleton.getInstance();
+export const prisma = globalThis.prismaGlobal ?? PrismaClientSingleton.getInstance();
+export const kyselyPrisma = globalThis.kyselyPrismaGlobal ?? KyselySingleton.getInstance();
 
 export * from "@prisma/client";

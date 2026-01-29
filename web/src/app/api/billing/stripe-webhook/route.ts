@@ -9,8 +9,5 @@ export const fetchCache = "force-no-store";
  * Billing features are only available in the enterprise/cloud edition.
  */
 export const POST = async () => {
-  return NextResponse.json(
-    { error: "Billing features are not available in community edition" },
-    { status: 501 }
-  );
+  return NextResponse.json({ error: "Billing features are not available in community edition" }, { status: 501 });
 };

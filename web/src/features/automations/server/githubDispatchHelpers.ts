@@ -6,10 +6,7 @@ import {
   type GitHubDispatchActionCreate,
   isGitHubDispatchActionConfig,
 } from "@hanzo/shared";
-import {
-  getActionByIdWithSecrets,
-  validateWebhookURL,
-} from "@hanzo/shared/src/server";
+import { getActionByIdWithSecrets, validateWebhookURL } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 interface GitHubDispatchConfigOptions {
@@ -32,16 +29,12 @@ export async function processGitHubDispatchActionConfig({
 
   const gitHubDispatchConfig = actionConfig as GitHubDispatchActionCreate;
 
-  const existingAction = actionId
-    ? await getActionByIdWithSecrets({ projectId, actionId })
-    : undefined;
+  const existingAction = actionId ? await getActionByIdWithSecrets({ projectId, actionId }) : undefined;
 
   let existingActionConfig: GitHubDispatchActionConfigWithSecrets | undefined;
   if (existingAction) {
     if (!isGitHubDispatchActionConfig(existingAction.config)) {
-      throw new Error(
-        `Existing action ${actionId} does not have valid GitHub dispatch configuration`,
-      );
+      throw new Error(`Existing action ${actionId} does not have valid GitHub dispatch configuration`);
     }
     existingActionConfig = existingAction.config;
   }
@@ -69,10 +62,8 @@ export async function processGitHubDispatchActionConfig({
   }
 
   // Validate GitHub API URL format
-  const urlPattern =
-    /^https:\/\/api\.github\.com\/repos\/[^\/]+\/[^\/]+\/dispatches$/;
-  const enterprisePattern =
-    /^https:\/\/[^\/]+\/api\/v3\/repos\/[^\/]+\/[^\/]+\/dispatches$/;
+  const urlPattern = /^https:\/\/api\.github\.com\/repos\/[^\/]+\/[^\/]+\/dispatches$/;
+  const enterprisePattern = /^https:\/\/[^\/]+\/api\/v3\/repos\/[^\/]+\/[^\/]+\/dispatches$/;
 
   if (!urlPattern.test(urlToUse) && !enterprisePattern.test(urlToUse)) {
     throw new TRPCError({
@@ -84,10 +75,7 @@ export async function processGitHubDispatchActionConfig({
 
   // Determine event type to use
   let eventTypeToUse: string;
-  if (
-    gitHubDispatchConfig.eventType &&
-    gitHubDispatchConfig.eventType.trim() !== ""
-  ) {
+  if (gitHubDispatchConfig.eventType && gitHubDispatchConfig.eventType.trim() !== "") {
     eventTypeToUse = gitHubDispatchConfig.eventType;
   } else if (existingActionConfig?.eventType) {
     eventTypeToUse = existingActionConfig.eventType;
@@ -102,10 +90,7 @@ export async function processGitHubDispatchActionConfig({
   let displayToken: string;
   let returnToken: string | undefined;
 
-  if (
-    gitHubDispatchConfig.githubToken &&
-    gitHubDispatchConfig.githubToken.trim() !== ""
-  ) {
+  if (gitHubDispatchConfig.githubToken && gitHubDispatchConfig.githubToken.trim() !== "") {
     tokenToUse = gitHubDispatchConfig.githubToken;
     displayToken = maskGitHubToken(tokenToUse);
     returnToken = tokenToUse;

@@ -14,32 +14,22 @@ import {
   ForbiddenError,
   GetPromptSchema,
   LegacyCreatePromptSchema,
-  PRODUCTION_LABEL } from "@hanzo/shared";
+  PRODUCTION_LABEL,
+} from "@hanzo/shared";
 import { redis, traceException, logger } from "@hanzo/shared/src/server";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { telemetry } from "@/src/features/telemetry";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
 
   try {
     // Authentication and authorization
-    const authCheck = await new ApiAuthService(
-      prisma,
-      redis,
-    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
 
     if (!authCheck.validKey) throw new UnauthorizedError(authCheck.error);
-    if (
-      authCheck.scope.accessLevel !== "project" ||
-      !authCheck.scope.projectId
-    ) {
-      throw new ForbiddenError(
-        `Access denied: Bearer auth and org api keys are not allowed to access`,
-      );
+    if (authCheck.scope.accessLevel !== "project" || !authCheck.scope.projectId) {
+      throw new ForbiddenError(`Access denied: Bearer auth and org api keys are not allowed to access`);
     }
 
     await telemetry();
@@ -52,11 +42,7 @@ export default async function handler(
       const version = searchParams.version ?? undefined;
       const shouldResolve = searchParams.resolve ?? true; // Default to true for backward compatibility
 
-      const rateLimitCheck =
-        await RateLimitService.getInstance().rateLimitRequest(
-          authCheck.scope,
-          "prompts",
-        );
+      const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "prompts");
 
       if (rateLimitCheck?.isRateLimited()) {
         return rateLimitCheck.sendRestResponseIfLimited(res);
@@ -66,13 +52,15 @@ export default async function handler(
         promptName,
         projectId,
         version,
-        resolve: shouldResolve });
+        resolve: shouldResolve,
+      });
 
       if (!prompt) throw new HanzoNotFoundError("Prompt not found");
 
       return res.status(200).json({
         ...prompt,
-        isActive: prompt.labels.includes(PRODUCTION_LABEL) });
+        isActive: prompt.labels.includes(PRODUCTION_LABEL),
+      });
     }
 
     // Handle POST requests
@@ -86,11 +74,13 @@ export default async function handler(
         config: input.config ?? {}, // Config can be null in which case zod default value is not used
         projectId: authCheck.scope.projectId,
         createdBy: "API",
-        prisma: prisma });
+        prisma: prisma,
+      });
 
       return res.status(201).json({
         ...prompt,
-        isActive: prompt.labels.includes(PRODUCTION_LABEL) });
+        isActive: prompt.labels.includes(PRODUCTION_LABEL),
+      });
     }
 
     throw new MethodNotAllowedError();
@@ -101,23 +91,26 @@ export default async function handler(
     if (error instanceof BaseError) {
       return res.status(error.httpCode).json({
         error: error.name,
-        message: error.message });
+        message: error.message,
+      });
     }
 
     if (isPrismaException(error)) {
       return res.status(500).json({
-        error: "Internal Server Error" });
+        error: "Internal Server Error",
+      });
     }
 
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         message: "Invalid request data",
-        error: error.issues });
+        error: error.issues,
+      });
     }
 
     return res.status(500).json({
       message: "Invalid request data",
-      error:
-        error instanceof Error ? error.message : "An unknown error occurred" });
+      error: error instanceof Error ? error.message : "An unknown error occurred",
+    });
   }
 }

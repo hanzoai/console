@@ -20,12 +20,7 @@ export type OrgUpdateData = {
  * Action taken during threshold processing
  */
 export type ThresholdProcessingResult = {
-  actionTaken:
-    | "BLOCKED"
-    | "WARNING"
-    | "PAID_PLAN"
-    | "ENFORCEMENT_DISABLED"
-    | "NONE";
+  actionTaken: "BLOCKED" | "WARNING" | "PAID_PLAN" | "ENFORCEMENT_DISABLED" | "NONE";
   emailSent: boolean;
   emailFailed: boolean;
   updateData: OrgUpdateData;

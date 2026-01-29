@@ -1,9 +1,7 @@
 import { filterOperators } from "../../../interfaces/filters";
 import { clickhouseCompliantRandomCharacters } from "../../repositories";
 
-export type ClickhouseOperator =
-  | (typeof filterOperators)[keyof typeof filterOperators][number]
-  | "!=";
+export type ClickhouseOperator = (typeof filterOperators)[keyof typeof filterOperators][number] | "!=";
 export interface Filter {
   apply(): ClickhouseFilter;
   clickhouseTable: string;

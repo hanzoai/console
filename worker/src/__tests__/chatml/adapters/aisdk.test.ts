@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  aisdkAdapter,
-  normalizeInput,
-  type NormalizerContext,
-} from "@hanzo/shared";
+import { aisdkAdapter, normalizeInput, type NormalizerContext } from "@hanzo/shared";
 
 describe("AI SDK Adapter", () => {
   describe("detection", () => {
@@ -134,9 +130,7 @@ describe("AI SDK Adapter", () => {
       expect(openaiResult.success).toBe(true);
       expect(openaiResult.data?.[0].tool_calls?.[0].id).toBe("call_abc");
       expect(openaiResult.data?.[0].tool_calls?.[0].name).toBe("get_weather");
-      expect(openaiResult.data?.[0].tool_calls?.[0].arguments).toBe(
-        '{"city":"NYC"}',
-      );
+      expect(openaiResult.data?.[0].tool_calls?.[0].arguments).toBe('{"city":"NYC"}');
 
       // Bedrock uses 'args' field
       const bedrockInput = {
@@ -163,15 +157,9 @@ describe("AI SDK Adapter", () => {
       });
       expect(bedrockResult.success).toBe(true);
       expect(bedrockResult.data?.[0].tool_calls?.[0].id).toBe("tooluse_abc");
-      expect(bedrockResult.data?.[0].tool_calls?.[0].name).toBe(
-        "agentResponse",
-      );
-      expect(bedrockResult.data?.[0].tool_calls?.[0].arguments).toContain(
-        "response",
-      );
-      expect(bedrockResult.data?.[0].tool_calls?.[0].arguments).toContain(
-        "reasoning",
-      );
+      expect(bedrockResult.data?.[0].tool_calls?.[0].name).toBe("agentResponse");
+      expect(bedrockResult.data?.[0].tool_calls?.[0].arguments).toContain("response");
+      expect(bedrockResult.data?.[0].tool_calls?.[0].arguments).toContain("reasoning");
     });
 
     it("should normalize tool results (output/result variants)", () => {
@@ -277,9 +265,7 @@ describe("AI SDK Adapter", () => {
       });
       expect(bedrockResult.success).toBe(true);
       expect(bedrockResult.data?.[0].role).toBe("system");
-      expect(bedrockResult.data?.[0].content).toBe(
-        "You are a helpful assistant",
-      );
+      expect(bedrockResult.data?.[0].content).toBe("You are a helpful assistant");
       expect(bedrockResult.data?.[0]).not.toHaveProperty("providerMetadata");
     });
   });

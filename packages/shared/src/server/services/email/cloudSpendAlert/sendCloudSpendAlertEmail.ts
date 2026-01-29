@@ -5,12 +5,7 @@ import { CloudSpendAlertEmailTemplate } from "./CloudSpendAlertEmailTemplate";
 import { logger } from "../../../logger";
 
 export interface CloudSpendAlertEmailProps {
-  env: Partial<
-    Record<
-      "EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL" | "NEXTAUTH_URL",
-      string | undefined
-    >
-  >;
+  env: Partial<Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL" | "NEXTAUTH_URL", string | undefined>>;
   orgId: string;
   orgName: string;
   alertTitle: string;
@@ -31,9 +26,7 @@ export const sendCloudSpendAlertEmail = async ({
   recipients,
 }: CloudSpendAlertEmailProps) => {
   if (!env.EMAIL_FROM_ADDRESS || !env.SMTP_CONNECTION_URL) {
-    logger.error(
-      "Missing environment variables for sending cloud spend alert email.",
-    );
+    logger.error("Missing environment variables for sending cloud spend alert email.");
     return;
   }
 
@@ -72,19 +65,12 @@ export const sendCloudSpendAlertEmail = async ({
         html: emailHtml,
       });
 
-      logger.info(
-        `Sent cloud spend alert email to ${recipient} for org ${orgId}`,
-      );
+      logger.info(`Sent cloud spend alert email to ${recipient} for org ${orgId}`);
     }
 
-    logger.info(
-      `Successfully sent cloud spend alert emails to ${recipients.length} recipients for org ${orgId}`,
-    );
+    logger.info(`Successfully sent cloud spend alert emails to ${recipients.length} recipients for org ${orgId}`);
   } catch (error) {
-    logger.error(
-      `Failed to send cloud spend alert email for org ${orgId}`,
-      error,
-    );
+    logger.error(`Failed to send cloud spend alert email for org ${orgId}`, error);
     throw error;
   }
 };

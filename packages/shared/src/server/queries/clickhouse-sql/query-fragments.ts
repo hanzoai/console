@@ -18,9 +18,7 @@ interface EventsTracesAggregationParams {
  * Note: This is a temporary solution until we fully migrate to using only the events table.
  *       Some legacy fields are still included for compatibility and should be removed in the future.
  */
-export const eventsTracesAggregation = (
-  params: EventsTracesAggregationParams,
-): EventsAggregationQueryBuilder => {
+export const eventsTracesAggregation = (params: EventsTracesAggregationParams): EventsAggregationQueryBuilder => {
   return (
     new EventsAggregationQueryBuilder({ projectId: params.projectId })
       // we always use this as CTE, no need to be smart here.
@@ -65,9 +63,7 @@ const buildScoresAggregationCTE = (
   // Trace level: project_id + trace_id
   const primaryKey = isTraceLevel ? "project_id" : "observation_id";
   const additionalInnerCols = isTraceLevel ? ["id"] : ["comment"];
-  const additionalOuterCols = isTraceLevel
-    ? ["groupUniqArray(id) as score_ids"]
-    : [];
+  const additionalOuterCols = isTraceLevel ? ["groupUniqArray(id) as score_ids"] : [];
   const observationFilter = isTraceLevel ? "AND observation_id IS NULL" : "";
   const orderBy = isTraceLevel ? "" : "ORDER BY trace_id";
 

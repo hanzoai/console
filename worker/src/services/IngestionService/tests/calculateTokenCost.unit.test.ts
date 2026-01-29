@@ -123,11 +123,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      prices as any,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(prices as any, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBe(1.0); // 100 tokens * 0.01
     expect(costs.cost_details.output).toBe(4.0); // 200 tokens * 0.02
@@ -276,11 +272,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      null,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(null, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBeUndefined();
     expect(costs.cost_details.output).toBeUndefined();
@@ -307,11 +299,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      prices as any,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(prices as any, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBe(0); // 0 tokens * 0.01
     expect(costs.cost_details.output).toBe(0); // 0 tokens * 0.02
@@ -338,11 +326,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      prices as any,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(prices as any, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBeUndefined();
     expect(costs.cost_details.output).toBeUndefined();
@@ -369,11 +353,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      prices as any,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(prices as any, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBeCloseTo(1.505); // 150.5 tokens * 0.01
     expect(costs.cost_details.output).toBeCloseTo(5.005); // 250.25 tokens * 0.02
@@ -400,11 +380,7 @@ describe("Token Cost Calculation", () => {
       total: null,
     };
 
-    const costs = (IngestionService as any).calculateUsageCosts(
-      prices as any,
-      userProvidedCosts,
-      usageUnits,
-    );
+    const costs = (IngestionService as any).calculateUsageCosts(prices as any, userProvidedCosts, usageUnits);
 
     expect(costs.cost_details.input).toBe(10000); // 1e6 tokens * 0.01
     expect(costs.cost_details.output).toBe(40000); // 2e6 tokens * 0.02
@@ -462,15 +438,9 @@ describe("Token Cost Calculation", () => {
     expect(generation.provided_cost_details.total).toBeUndefined();
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage.usage.input * modelPrices[0].price.toNumber(),
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage.usage.output * modelPrices[1].price.toNumber(),
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage.usage.total * modelPrices[2].price.toNumber(),
-    );
+    expect(generation.cost_details.input).toBe(generationUsage.usage.input * modelPrices[0].price.toNumber());
+    expect(generation.cost_details.output).toBe(generationUsage.usage.output * modelPrices[1].price.toNumber());
+    expect(generation.cost_details.total).toBe(generationUsage.usage.total * modelPrices[2].price.toNumber());
     expect(generation.usage_details.input).toBe(generationUsage.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage.usage.total);
@@ -543,15 +513,9 @@ describe("Token Cost Calculation", () => {
     expect(generation.provided_cost_details.total).toBeUndefined();
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage2.usage.input * modelPrices[0].price.toNumber(),
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.output * modelPrices[1].price.toNumber(),
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage2.usage.total * modelPrices[2].price.toNumber(),
-    );
+    expect(generation.cost_details.input).toBe(generationUsage2.usage.input * modelPrices[0].price.toNumber());
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.output * modelPrices[1].price.toNumber());
+    expect(generation.cost_details.total).toBe(generationUsage2.usage.total * modelPrices[2].price.toNumber());
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -622,15 +586,9 @@ describe("Token Cost Calculation", () => {
     expect(generation.provided_cost_details.total).toBeUndefined();
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage2.usage.input * modelPrices[0].price.toNumber(),
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.output * modelPrices[1].price.toNumber(),
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage2.usage.total * modelPrices[2].price.toNumber(),
-    );
+    expect(generation.cost_details.input).toBe(generationUsage2.usage.input * modelPrices[0].price.toNumber());
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.output * modelPrices[1].price.toNumber());
+    expect(generation.cost_details.total).toBe(generationUsage2.usage.total * modelPrices[2].price.toNumber());
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -703,15 +661,9 @@ describe("Token Cost Calculation", () => {
     expect(generation.provided_cost_details.total).toBeUndefined();
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage2.usage.input * modelPrices[0].price.toNumber(),
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.output * modelPrices[1].price.toNumber(),
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage2.usage.total * modelPrices[2].price.toNumber(),
-    );
+    expect(generation.cost_details.input).toBe(generationUsage2.usage.input * modelPrices[0].price.toNumber());
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.output * modelPrices[1].price.toNumber());
+    expect(generation.cost_details.total).toBe(generationUsage2.usage.total * modelPrices[2].price.toNumber());
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -782,26 +734,14 @@ describe("Token Cost Calculation", () => {
     expect(generation.internal_model_id).toBe(tokenModelData.id);
 
     // User provided cost
-    expect(generation.provided_cost_details.input).toBe(
-      generationUsage2.usage.inputCost,
-    );
-    expect(generation.provided_cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
-    expect(generation.provided_cost_details.total).toBe(
-      generationUsage2.usage.totalCost,
-    );
+    expect(generation.provided_cost_details.input).toBe(generationUsage2.usage.inputCost);
+    expect(generation.provided_cost_details.output).toBe(generationUsage2.usage.outputCost);
+    expect(generation.provided_cost_details.total).toBe(generationUsage2.usage.totalCost);
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage2.usage.inputCost,
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage2.usage.totalCost,
-    );
+    expect(generation.cost_details.input).toBe(generationUsage2.usage.inputCost);
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.outputCost);
+    expect(generation.cost_details.total).toBe(generationUsage2.usage.totalCost);
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -872,26 +812,14 @@ describe("Token Cost Calculation", () => {
     expect(generation.internal_model_id).toBe(tokenModelData.id);
 
     // User provided cost
-    expect(generation.provided_cost_details.input).toBe(
-      generationUsage2.usage.inputCost,
-    );
-    expect(generation.provided_cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
-    expect(generation.provided_cost_details.total).toBe(
-      generationUsage2.usage.totalCost,
-    );
+    expect(generation.provided_cost_details.input).toBe(generationUsage2.usage.inputCost);
+    expect(generation.provided_cost_details.output).toBe(generationUsage2.usage.outputCost);
+    expect(generation.provided_cost_details.total).toBe(generationUsage2.usage.totalCost);
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage2.usage.inputCost,
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage2.usage.totalCost,
-    );
+    expect(generation.cost_details.input).toBe(generationUsage2.usage.inputCost);
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.outputCost);
+    expect(generation.cost_details.total).toBe(generationUsage2.usage.totalCost);
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -958,16 +886,12 @@ describe("Token Cost Calculation", () => {
 
     // User provided cost
     expect(generation.provided_cost_details.input).toBe(undefined);
-    expect(generation.provided_cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
+    expect(generation.provided_cost_details.output).toBe(generationUsage2.usage.outputCost);
     expect(generation.provided_cost_details.total).toBe(undefined);
 
     // Calculated cost
     expect(generation.cost_details.input).toBe(undefined);
-    expect(generation.cost_details.output).toBe(
-      generationUsage2.usage.outputCost,
-    );
+    expect(generation.cost_details.output).toBe(generationUsage2.usage.outputCost);
     expect(generation.cost_details.total).toBe(1);
     expect(generation.usage_details.input).toBe(generationUsage1.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage1.usage.output);
@@ -1039,26 +963,14 @@ describe("Token Cost Calculation", () => {
     expect(generation.internal_model_id).toBe(tokenModelData.id);
 
     // User provided cost
-    expect(generation.provided_cost_details.input).toBe(
-      generationUsage1.usage.inputCost,
-    );
-    expect(generation.provided_cost_details.output).toBe(
-      generationUsage1.usage.outputCost,
-    );
-    expect(generation.provided_cost_details.total).toBe(
-      generationUsage1.usage.totalCost,
-    );
+    expect(generation.provided_cost_details.input).toBe(generationUsage1.usage.inputCost);
+    expect(generation.provided_cost_details.output).toBe(generationUsage1.usage.outputCost);
+    expect(generation.provided_cost_details.total).toBe(generationUsage1.usage.totalCost);
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage1.usage.inputCost,
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage1.usage.outputCost,
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage1.usage.totalCost,
-    );
+    expect(generation.cost_details.input).toBe(generationUsage1.usage.inputCost);
+    expect(generation.cost_details.output).toBe(generationUsage1.usage.outputCost);
+    expect(generation.cost_details.total).toBe(generationUsage1.usage.totalCost);
     expect(generation.usage_details.input).toBe(generationUsage2.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage2.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage2.usage.total);
@@ -1202,15 +1114,9 @@ describe("Token Cost Calculation", () => {
     expect(generation.provided_cost_details.total).toBeUndefined();
 
     // Calculated cost
-    expect(generation.cost_details.input).toBe(
-      generationUsage1.usage.input * modelPrices[0].price.toNumber(),
-    );
-    expect(generation.cost_details.output).toBe(
-      generationUsage1.usage.output * modelPrices[1].price.toNumber(),
-    );
-    expect(generation.cost_details.total).toBe(
-      generationUsage1.usage.total * modelPrices[2].price.toNumber(),
-    );
+    expect(generation.cost_details.input).toBe(generationUsage1.usage.input * modelPrices[0].price.toNumber());
+    expect(generation.cost_details.output).toBe(generationUsage1.usage.output * modelPrices[1].price.toNumber());
+    expect(generation.cost_details.total).toBe(generationUsage1.usage.total * modelPrices[2].price.toNumber());
     expect(generation.usage_details.input).toBe(generationUsage1.usage.input);
     expect(generation.usage_details.output).toBe(generationUsage1.usage.output);
     expect(generation.usage_details.total).toBe(generationUsage1.usage.total);

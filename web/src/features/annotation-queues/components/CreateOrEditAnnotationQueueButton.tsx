@@ -10,14 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,11 +18,7 @@ import { Edit, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/src/components/ui/form";
 import { Textarea } from "@/src/components/ui/textarea";
-import {
-  type CreateQueueWithAssignments,
-  CreateQueueWithAssignmentsData,
-  type ScoreConfigDomain,
-} from "@hanzo/shared";
+import { type CreateQueueWithAssignments, CreateQueueWithAssignmentsData, type ScoreConfigDomain } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";
@@ -38,11 +27,7 @@ import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { ActionButton } from "@/src/components/ActionButton";
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/src/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { UserAssignmentSection } from "@/src/features/annotation-queues/components/UserAssignmentSection";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
@@ -87,9 +72,7 @@ export const CreateOrEditAnnotationQueueButton = ({
       form.reset({
         name: queueQuery.data.name,
         description: queueQuery.data.description || undefined,
-        scoreConfigIds: queueQuery.data.scoreConfigs.map(
-          (config: ScoreConfigDomain) => config.id,
-        ),
+        scoreConfigIds: queueQuery.data.scoreConfigs.map((config: ScoreConfigDomain) => config.id),
         newAssignmentUserIds: [],
       });
     } else {
@@ -106,13 +89,9 @@ export const CreateOrEditAnnotationQueueButton = ({
 
   const createQueueMutation = api.annotationQueues.create.useMutation();
   const editQueueMutation = api.annotationQueues.update.useMutation();
-  const createQueueAssignmentsMutation =
-    api.annotationQueueAssignments.createMany.useMutation();
+  const createQueueAssignmentsMutation = api.annotationQueueAssignments.createMany.useMutation();
 
-  const queueCountData = api.annotationQueues.count.useQuery(
-    { projectId },
-    { enabled: hasQueueAccess },
-  );
+  const queueCountData = api.annotationQueues.count.useQuery({ projectId }, { enabled: hasQueueAccess });
 
   const configsData = api.scoreConfigs.all.useQuery(
     {
@@ -129,9 +108,7 @@ export const CreateOrEditAnnotationQueueButton = ({
   );
 
   const allQueueNames = useMemo(() => {
-    return !queueId && allQueueNamesAndIds.data
-      ? allQueueNamesAndIds.data.map((queue) => ({ value: queue.name }))
-      : [];
+    return !queueId && allQueueNamesAndIds.data ? allQueueNamesAndIds.data.map((queue) => ({ value: queue.name })) : [];
   }, [allQueueNamesAndIds.data, queueId]);
 
   useUniqueNameValidation({
@@ -178,19 +155,13 @@ export const CreateOrEditAnnotationQueueButton = ({
       }
 
       // Step 3: Success handling
-      await Promise.all([
-        utils.annotationQueues.invalidate(),
-        utils.annotationQueueAssignments.invalidate(),
-      ]);
+      await Promise.all([utils.annotationQueues.invalidate(), utils.annotationQueueAssignments.invalidate()]);
       form.reset();
       setIsOpen(false);
 
       // capture posthog event
     } catch {
-      showErrorToast(
-        "Operation failed",
-        "Failed to create or update queue or assign users. Please try again.",
-      );
+      showErrorToast("Operation failed", "Failed to create or update queue or assign users. Please try again.");
     }
   };
 
@@ -229,20 +200,15 @@ export const CreateOrEditAnnotationQueueButton = ({
           limit={queueLimit}
           size={size}
         >
-          <span className="ml-1 text-sm font-normal">
-            {queueId ? "Edit" : "New queue"}
-          </span>
+          <span className="ml-1 text-sm font-normal">{queueId ? "Edit" : "New queue"}</span>
         </ActionButton>
       </DialogTrigger>
       {configsData.data && (
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {queueId ? "Edit" : "New"} annotation queue
-            </DialogTitle>
+            <DialogTitle>{queueId ? "Edit" : "New"} annotation queue</DialogTitle>
             <DialogDescription>
-              {queueId ? "Edit" : "Create a new"} queue to manage your
-              annotation workflows.
+              {queueId ? "Edit" : "Create a new"} queue to manage your annotation workflows.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -259,9 +225,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                           {...field}
                           type="text"
                           className="text-xs"
-                          onBlur={(e) =>
-                            field.onChange(e.target.value.trimEnd())
-                          }
+                          onBlur={(e) => field.onChange(e.target.value.trimEnd())}
                         />
                       </FormControl>
                       <FormMessage />
@@ -292,8 +256,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                     <FormItem>
                       <FormLabel>Score Configs</FormLabel>
                       <FormDescription>
-                        Define which dimensions annotators should score for the
-                        given queue.
+                        Define which dimensions annotators should score for the given queue.
                       </FormDescription>
                       <FormControl>
                         <MultiSelectKeyValues
@@ -310,26 +273,17 @@ export const CreateOrEditAnnotationQueueButton = ({
                               isArchived: config.isArchived,
                             }))}
                           values={field.value.map((configId) => {
-                            const config = configs.find(
-                              (config) => config.id === configId,
-                            );
+                            const config = configs.find((config) => config.id === configId);
                             return {
-                              value: config
-                                ? `${getScoreDataTypeIcon(config.dataType)} ${config.name}`
-                                : `${configId}`,
+                              value: config ? `${getScoreDataTypeIcon(config.dataType)} ${config.name}` : `${configId}`,
                               key: configId,
                             };
                           })}
                           controlButtons={
                             <DropdownMenuItem
                               onSelect={() => {
-                                capture(
-                                  "score_configs:manage_configs_item_click",
-                                  { source: "AnnotationQueue" },
-                                );
-                                router.push(
-                                  `/project/${projectId}/settings/scores`,
-                                );
+                                capture("score_configs:manage_configs_item_click", { source: "AnnotationQueue" });
+                                router.push(`/project/${projectId}/settings/scores`);
                               }}
                             >
                               Manage score configs
@@ -372,9 +326,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                                 ) : (
                                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                                 )}
-                                <span className="text-sm font-medium">
-                                  User Assignment
-                                </span>
+                                <span className="text-sm font-medium">User Assignment</span>
                               </div>
                             </Button>
                           </CollapsibleTrigger>

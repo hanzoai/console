@@ -27,9 +27,7 @@ export function createDisplayHeaders(
   for (const [key, headerObj] of Object.entries(mergedHeaders)) {
     displayHeaders[key] = {
       secret: headerObj.secret,
-      value: headerObj.secret
-        ? maskSecretValue(headerObj.value)
-        : headerObj.value,
+      value: headerObj.secret ? maskSecretValue(headerObj.value) : headerObj.value,
     };
   }
 
@@ -39,10 +37,7 @@ export function createDisplayHeaders(
 export function encryptSecretHeaders(
   headers: Record<string, { secret: boolean; value: string }>,
 ): Record<string, { secret: boolean; value: string }> {
-  const processedRequestHeaders: Record<
-    string,
-    { secret: boolean; value: string }
-  > = {};
+  const processedRequestHeaders: Record<string, { secret: boolean; value: string }> = {};
 
   for (const [key, headerObj] of Object.entries(headers)) {
     if (headerObj.secret) {
@@ -61,10 +56,7 @@ export function encryptSecretHeaders(
 export function decryptSecretHeaders(
   requestHeaders: Record<string, { secret: boolean; value: string }>,
 ): Record<string, { secret: boolean; value: string }> {
-  const decryptedRequestHeaders: Record<
-    string,
-    { secret: boolean; value: string }
-  > = {};
+  const decryptedRequestHeaders: Record<string, { secret: boolean; value: string }> = {};
 
   for (const [key, headerObj] of Object.entries(requestHeaders)) {
     if (headerObj.secret) {

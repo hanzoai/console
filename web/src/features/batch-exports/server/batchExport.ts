@@ -1,81 +1,68 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
-import {
-  BatchExportStatus,
-  CreateBatchExportSchema,
-  paginationZod,
-} from "@hanzo/shared";
-import {
-  BatchExportQueue,
-  logger,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import { BatchExportStatus, CreateBatchExportSchema, paginationZod } from "@hanzo/shared";
+import { BatchExportQueue, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 
 export const batchExportRouter = createTRPCRouter({
-  create: protectedProjectProcedure
-    .input(CreateBatchExportSchema)
-    .mutation(async ({ input, ctx }) => {
-      try {
-        // Check permissions, esp. projectId
-        throwIfNoProjectAccess({
-          session: ctx.session,
-          projectId: input.projectId,
-          scope: "batchExports:create",
-        });
+  create: protectedProjectProcedure.input(CreateBatchExportSchema).mutation(async ({ input, ctx }) => {
+    try {
+      // Check permissions, esp. projectId
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "batchExports:create",
+      });
 
-        const { projectId, query, format, name } = input;
-        logger.info("[TRPC] Creating export job", { job: input });
-        const userId = ctx.session.user.id;
+      const { projectId, query, format, name } = input;
+      logger.info("[TRPC] Creating export job", { job: input });
+      const userId = ctx.session.user.id;
 
-        // Create export job
-        const exportJob = await ctx.prisma.batchExport.create({
-          data: {
-            projectId,
-            userId,
-            status: BatchExportStatus.QUEUED,
-            name,
-            format,
-            query,
-          },
-        });
-
-        // Create audit log
-        await auditLog({
-          session: ctx.session,
-          resourceType: "batchExport",
-          resourceId: exportJob.id,
+      // Create export job
+      const exportJob = await ctx.prisma.batchExport.create({
+        data: {
           projectId,
-          action: "create",
-          after: exportJob,
-        });
+          userId,
+          status: BatchExportStatus.QUEUED,
+          name,
+          format,
+          query,
+        },
+      });
 
-        // Notify worker
-        await BatchExportQueue.getInstance()?.add(QueueJobs.BatchExportJob, {
-          id: exportJob.id, // Use the batchExportId to deduplicate when the same job is sent multiple times
-          name: QueueJobs.BatchExportJob,
-          timestamp: new Date(),
-          payload: {
-            batchExportId: exportJob.id,
-            projectId,
-          },
-        });
-      } catch (e) {
-        logger.error(e);
-        if (e instanceof TRPCError) {
-          throw e;
-        }
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Creating export job failed.",
-        });
+      // Create audit log
+      await auditLog({
+        session: ctx.session,
+        resourceType: "batchExport",
+        resourceId: exportJob.id,
+        projectId,
+        action: "create",
+        after: exportJob,
+      });
+
+      // Notify worker
+      await BatchExportQueue.getInstance()?.add(QueueJobs.BatchExportJob, {
+        id: exportJob.id, // Use the batchExportId to deduplicate when the same job is sent multiple times
+        name: QueueJobs.BatchExportJob,
+        timestamp: new Date(),
+        payload: {
+          batchExportId: exportJob.id,
+          projectId,
+        },
+      });
+    } catch (e) {
+      logger.error(e);
+      if (e instanceof TRPCError) {
+        throw e;
       }
-    }),
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Creating export job failed.",
+      });
+    }
+  }),
   cancel: protectedProjectProcedure
     .input(
       z.object({

@@ -15,9 +15,7 @@ export const createTracesCh = async (trace: TraceRecordInsertType[]) => {
   });
 };
 
-export const createObservationsCh = async (
-  observations: ObservationRecordInsertType[],
-) => {
+export const createObservationsCh = async (observations: ObservationRecordInsertType[]) => {
   return await clickhouseClient().insert({
     table: "observations",
     format: "JSONEachRow",
@@ -41,9 +39,7 @@ export const createScoresCh = async (scores: ScoreRecordInsertType[]) => {
   });
 };
 
-export const createDatasetRunItemsCh = async (
-  datasetRunItems: DatasetRunItemRecordInsertType[],
-) => {
+export const createDatasetRunItemsCh = async (datasetRunItems: DatasetRunItemRecordInsertType[]) => {
   return await clickhouseClient().insert({
     table: "dataset_run_items_rmt",
     format: "JSONEachRow",

@@ -1,8 +1,4 @@
-import {
-  decrypt,
-  encrypt,
-  generateWebhookSecret,
-} from "@hanzo/shared/encryption";
+import { decrypt, encrypt, generateWebhookSecret } from "@hanzo/shared/encryption";
 import {
   type ActionCreate,
   type ActionConfig,
@@ -25,11 +21,7 @@ interface WebhookConfigOptions {
   projectId: string;
 }
 
-export async function processWebhookActionConfig({
-  actionConfig,
-  actionId,
-  projectId,
-}: WebhookConfigOptions): Promise<{
+export async function processWebhookActionConfig({ actionConfig, actionId, projectId }: WebhookConfigOptions): Promise<{
   finalActionConfig: ActionConfig;
   newUnencryptedWebhookSecret?: string; // For one-time display
 }> {
@@ -47,9 +39,7 @@ export async function processWebhookActionConfig({
   let existingActionConfig: WebhookActionConfigWithSecrets | undefined;
   if (existingAction) {
     if (!isWebhookActionConfig(existingAction.config)) {
-      throw new Error(
-        `Existing action ${actionId} does not have valid webhook configuration`,
-      );
+      throw new Error(`Existing action ${actionId} does not have valid webhook configuration`);
     }
     existingActionConfig = existingAction.config;
   }
@@ -63,24 +53,17 @@ export async function processWebhookActionConfig({
     });
   }
 
-  const { secretKey: newSecretKey, displaySecretKey: newDisplaySecretKey } =
-    generateWebhookSecret();
+  const { secretKey: newSecretKey, displaySecretKey: newDisplaySecretKey } = generateWebhookSecret();
 
   // Process headers and generate final action config
-  const finalActionConfig = processWebhookHeaders(
-    actionConfig,
-    existingActionConfig,
-  );
+  const finalActionConfig = processWebhookHeaders(actionConfig, existingActionConfig);
   return {
     finalActionConfig: {
       ...finalActionConfig,
       secretKey: existingActionConfig?.secretKey ?? encrypt(newSecretKey),
-      displaySecretKey:
-        existingActionConfig?.displaySecretKey ?? newDisplaySecretKey,
+      displaySecretKey: existingActionConfig?.displaySecretKey ?? newDisplaySecretKey,
     },
-    newUnencryptedWebhookSecret: existingActionConfig?.secretKey
-      ? undefined
-      : newSecretKey,
+    newUnencryptedWebhookSecret: existingActionConfig?.secretKey ? undefined : newSecretKey,
   };
 }
 
@@ -99,19 +82,13 @@ function processWebhookHeaders(
   // Get existing headers for comparison
   const existingLegacyHeaders = existingConfig?.headers ?? {}; // legacy headers
   const existingRequestHeaders = existingConfig?.requestHeaders ?? {}; // new headers
-  const mergedExistingHeaders = mergeHeaders(
-    existingLegacyHeaders,
-    existingRequestHeaders,
-  );
+  const mergedExistingHeaders = mergeHeaders(existingLegacyHeaders, existingRequestHeaders);
 
   // Process new headers from input
   const inputRequestHeaders = actionConfig.requestHeaders || {};
 
   // Start with empty headers - only include what's in the input
-  const finalRequestHeaders: Record<
-    string,
-    { secret: boolean; value: string }
-  > = {};
+  const finalRequestHeaders: Record<string, { secret: boolean; value: string }> = {};
 
   // If no headers are provided in input, preserve all existing headers
   // This allows URL-only updates without requiring all headers to be resent
@@ -125,11 +102,7 @@ function processWebhookHeaders(
       const existingHeader = mergedExistingHeaders[key];
 
       // Validate secret toggle: can only change secret status when providing a value
-      if (
-        headerObj.secret &&
-        headerObj.value.trim() === "" &&
-        !existingHeader
-      ) {
+      if (headerObj.secret && headerObj.value.trim() === "" && !existingHeader) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Header "${key}" cannot be made secret without providing a value`,
@@ -137,11 +110,7 @@ function processWebhookHeaders(
       }
 
       // If changing secret status, ensure a value is provided
-      if (
-        existingHeader &&
-        headerObj.secret !== existingHeader.secret &&
-        headerObj.value.trim() === ""
-      ) {
+      if (existingHeader && headerObj.secret !== existingHeader.secret && headerObj.value.trim() === "") {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Header "${key}" secret status can only be changed when providing a value`,
@@ -173,9 +142,7 @@ function processWebhookHeaders(
 /**
  * Extracts webhook secret for one-time display after creation
  */
-export function extractWebhookSecret(
-  actionConfig: ActionConfig,
-): string | undefined {
+export function extractWebhookSecret(actionConfig: ActionConfig): string | undefined {
   if (actionConfig.type !== "WEBHOOK" || !actionConfig.secretKey) {
     return undefined;
   }

@@ -17,17 +17,9 @@
  */
 
 import { randomUUID } from "crypto";
-import {
-  createTrace,
-  createTracesCh,
-  createObservation,
-  createObservationsCh,
-} from "@hanzo/shared/src/server";
+import { createTrace, createTracesCh, createObservation, createObservationsCh } from "@hanzo/shared/src/server";
 import { type QueryType } from "@/src/features/query/types";
-import {
-  transformToPivotTable,
-  type DatabaseRow,
-} from "@/src/features/widgets/utils/pivot-table-utils";
+import { transformToPivotTable, type DatabaseRow } from "@/src/features/widgets/utils/pivot-table-utils";
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 
@@ -213,10 +205,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       });
 
       // Sum all counts to verify total
-      const totalCount = result.reduce(
-        (sum, row) => sum + Number(row.count_count),
-        0,
-      );
+      const totalCount = result.reduce((sum, row) => sum + Number(row.count_count), 0);
       expect(totalCount).toBe(testDataStats.totalTraces);
     });
 
@@ -265,15 +254,9 @@ describe("Dashboard Router - Pivot Table Integration", () => {
         {} as Record<string, number>,
       );
 
-      expect(environmentTotals["production"]).toBe(
-        testDataStats.environmentCounts["production"],
-      );
-      expect(environmentTotals["development"]).toBe(
-        testDataStats.environmentCounts["development"],
-      );
-      expect(environmentTotals["staging"]).toBe(
-        testDataStats.environmentCounts["staging"],
-      );
+      expect(environmentTotals["production"]).toBe(testDataStats.environmentCounts["production"]);
+      expect(environmentTotals["development"]).toBe(testDataStats.environmentCounts["development"]);
+      expect(environmentTotals["staging"]).toBe(testDataStats.environmentCounts["staging"]);
     });
 
     it("should execute two-dimension pivot table query with environment and model grouping", async () => {
@@ -320,10 +303,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       });
 
       // Verify total observation count matches test data
-      const totalObservations = result.reduce(
-        (sum, row) => sum + Number(row.count_count),
-        0,
-      );
+      const totalObservations = result.reduce((sum, row) => sum + Number(row.count_count), 0);
       expect(totalObservations).toBe(testDataStats.totalObservations);
     });
 
@@ -378,10 +358,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       };
 
       const queryBuilder = new QueryBuilder(query.chartConfig);
-      const { query: sql, parameters } = await queryBuilder.build(
-        query,
-        projectId,
-      );
+      const { query: sql, parameters } = await queryBuilder.build(query, projectId);
 
       // Verify SQL generation
       expect(sql).toBeDefined();
@@ -415,10 +392,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       };
 
       const queryBuilder = new QueryBuilder(query.chartConfig);
-      const { query: sql, parameters } = await queryBuilder.build(
-        query,
-        projectId,
-      );
+      const { query: sql, parameters } = await queryBuilder.build(query, projectId);
 
       // Verify SQL generation
       expect(sql).toBeDefined();
@@ -458,10 +432,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       };
 
       const queryBuilder = new QueryBuilder(query.chartConfig);
-      const { query: sql, parameters } = await queryBuilder.build(
-        query,
-        projectId,
-      );
+      const { query: sql, parameters } = await queryBuilder.build(query, projectId);
 
       // Verify SQL generation
       expect(sql).toBeDefined();
@@ -606,9 +577,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
 
       // Should have nested structure with data rows, subtotals, and grand total
       const dataRows = pivotTableData.filter((row) => row.type === "data");
-      const subtotalRows = pivotTableData.filter(
-        (row) => row.type === "subtotal",
-      );
+      const subtotalRows = pivotTableData.filter((row) => row.type === "subtotal");
       const totalRow = pivotTableData.find((row) => row.type === "total");
 
       expect(dataRows.length).toBeGreaterThan(0);

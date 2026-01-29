@@ -34,10 +34,7 @@ describe("InMemoryFilterService", () => {
   };
 
   // Simple field mapper for testing
-  const fieldMapper = (
-    data: typeof mockData,
-    column: keyof typeof mockData,
-  ): any => {
+  const fieldMapper = (data: typeof mockData, column: keyof typeof mockData): any => {
     switch (column) {
       case "id":
         return data.id;
@@ -76,11 +73,7 @@ describe("InMemoryFilterService", () => {
 
   describe("evaluateFilter", () => {
     test("returns true for empty filter", () => {
-      const result = InMemoryFilterService.evaluateFilter(
-        mockData,
-        [],
-        fieldMapper,
-      );
+      const result = InMemoryFilterService.evaluateFilter(mockData, [], fieldMapper);
       expect(result).toBe(true);
     });
 

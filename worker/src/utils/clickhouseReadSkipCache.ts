@@ -51,19 +51,13 @@ export class ClickhouseReadSkipCache {
 
   private async performInitialization(): Promise<void> {
     if (!env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE) {
-      logger.info(
-        "No min project create date set, ClickhouseReadSkipCache will not pre-populate",
-      );
+      logger.info("No min project create date set, ClickhouseReadSkipCache will not pre-populate");
       return;
     }
 
-    const cutoffDate = new Date(
-      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE,
-    );
+    const cutoffDate = new Date(env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE);
 
-    logger.info(
-      `Initializing ClickhouseReadSkipCache with cutoff date: ${cutoffDate.toISOString()}`,
-    );
+    logger.info(`Initializing ClickhouseReadSkipCache with cutoff date: ${cutoffDate.toISOString()}`);
 
     try {
       const projects = await this.prisma.project.findMany({
@@ -99,25 +93,17 @@ export class ClickhouseReadSkipCache {
     }
   }
 
-  public async shouldSkipClickHouseRead(
-    projectId: string,
-    minProjectCreateDate?: string,
-  ): Promise<boolean> {
+  public async shouldSkipClickHouseRead(projectId: string, minProjectCreateDate?: string): Promise<boolean> {
     // Check explicit project ID list first
     if (
       env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS &&
-      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS.split(
-        ",",
-      ).includes(projectId)
+      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS.split(",").includes(projectId)
     ) {
       return true;
     }
 
     // If no cutoff date configuration, don't skip
-    if (
-      !env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE &&
-      !minProjectCreateDate
-    ) {
+    if (!env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE && !minProjectCreateDate) {
       return false;
     }
 
@@ -151,9 +137,7 @@ export class ClickhouseReadSkipCache {
       }
 
       const cutoffDate = new Date(
-        env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE ??
-          minProjectCreateDate ??
-          new Date(), // Fallback to today. Should never apply.
+        env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE ?? minProjectCreateDate ?? new Date(), // Fallback to today. Should never apply.
       );
 
       const shouldSkip = project.createdAt >= cutoffDate;
@@ -163,10 +147,7 @@ export class ClickhouseReadSkipCache {
 
       return shouldSkip;
     } catch (error) {
-      logger.error(
-        `Failed to fetch project ${projectId} for ClickHouse skip check`,
-        error,
-      );
+      logger.error(`Failed to fetch project ${projectId} for ClickHouse skip check`, error);
       throw error;
     }
   }

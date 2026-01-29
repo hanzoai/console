@@ -39,9 +39,7 @@ export const datasetRunTableMetricsSchema = z.object({
 });
 
 export type DatasetRunsTableInput = z.infer<typeof datasetRunsTableSchema>;
-export type DatasetRunTableMetricsInput = z.infer<
-  typeof datasetRunTableMetricsSchema
->;
+export type DatasetRunTableMetricsInput = z.infer<typeof datasetRunTableMetricsSchema>;
 
 export type DatasetRunItemsTableInput = {
   projectId: string;
@@ -104,34 +102,25 @@ export const getRunItemsByRunIdOrItemId = async <WithIO extends boolean = true>(
       .sort((a, b) => a.getTime() - b.getTime())
       .shift();
   // We assume that all events started at most 24h before the earliest run item.
-  const filterTimestamp = minTimestamp
-    ? new Date(minTimestamp.getTime() - 24 * 60 * 60 * 1000)
-    : undefined;
+  const filterTimestamp = minTimestamp ? new Date(minTimestamp.getTime() - 24 * 60 * 60 * 1000) : undefined;
   const traceIds = runItems.map((ri) => ri.traceId);
-  const observationLevelRunItems = runItems.filter(
-    (ri) => ri.observationId !== null,
-  );
+  const observationLevelRunItems = runItems.filter((ri) => ri.observationId !== null);
 
-  const [traceScores, observationsByTraceId, traceAggregate] =
-    await Promise.all([
-      getScoresForTraces({
-        projectId,
-        traceIds,
-        timestamp: filterTimestamp,
-        includeHasMetadata: true,
-        excludeMetadata: true,
-      }),
-      getObservationsGroupedByTraceId(
-        projectId,
-        observationLevelRunItems.map((ri) => ri.traceId),
-        filterTimestamp,
-      ),
-      getLatencyAndTotalCostForObservationsByTraces(
-        projectId,
-        traceIds,
-        filterTimestamp,
-      ),
-    ]);
+  const [traceScores, observationsByTraceId, traceAggregate] = await Promise.all([
+    getScoresForTraces({
+      projectId,
+      traceIds,
+      timestamp: filterTimestamp,
+      includeHasMetadata: true,
+      excludeMetadata: true,
+    }),
+    getObservationsGroupedByTraceId(
+      projectId,
+      observationLevelRunItems.map((ri) => ri.traceId),
+      filterTimestamp,
+    ),
+    getLatencyAndTotalCostForObservationsByTraces(projectId, traceIds, filterTimestamp),
+  ]);
 
   // Calculate recursive metrics for observation-level run items
   const observationAggregates = calculateRecursiveMetricsForRunItems<WithIO>(
@@ -178,9 +167,7 @@ export const getRunItemsByRunIdOrItemId = async <WithIO extends boolean = true>(
           }
         : undefined);
 
-    const scores = aggregateScores([
-      ...validatedTraceScores.filter((s) => s.traceId === ri.traceId),
-    ]);
+    const scores = aggregateScores([...validatedTraceScores.filter((s) => s.traceId === ri.traceId)]);
 
     return {
       id: ri.id,
@@ -203,17 +190,11 @@ export const enrichAndMapToDatasetItemId = async (
   const runItemsByRunId = groupBy(datasetRunItems, "datasetRunId");
 
   // Step 2: Parallel enrichment per run (with timestamp)
-  const enrichmentPromises = Object.entries(runItemsByRunId).map(
-    async ([_runId, items]) => {
-      const timestamp = items[0].datasetRunCreatedAt;
-      const enriched = await getRunItemsByRunIdOrItemId<false>(
-        projectId,
-        items,
-        timestamp,
-      );
-      return enriched;
-    },
-  );
+  const enrichmentPromises = Object.entries(runItemsByRunId).map(async ([_runId, items]) => {
+    const timestamp = items[0].datasetRunCreatedAt;
+    const enriched = await getRunItemsByRunIdOrItemId<false>(projectId, items, timestamp);
+    return enriched;
+  });
   const enrichedRunItems = await Promise.all(enrichmentPromises);
 
   // Step 3: Group by dataset item ID -> Record of runId -> enriched data
@@ -224,8 +205,7 @@ export const enrichAndMapToDatasetItemId = async (
       result.set(enrichedItem.datasetItemId, {});
     }
 
-    result.get(enrichedItem.datasetItemId)![enrichedItem.datasetRunId] =
-      enrichedItem;
+    result.get(enrichedItem.datasetItemId)![enrichedItem.datasetRunId] = enrichedItem;
   });
 
   return result;

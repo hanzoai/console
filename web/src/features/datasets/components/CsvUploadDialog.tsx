@@ -1,18 +1,9 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { PreviewCsvImport } from "@/src/features/datasets/components/PreviewCsvImport";
 import { UploadDatasetCsv } from "@/src/features/datasets/components/UploadDatasetCsv";
 import type { CsvPreviewResult } from "@/src/features/datasets/lib/csv/types";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { File } from "lucide-react";
 
 type CsvUploadDialogProps = {
@@ -23,13 +14,7 @@ type CsvUploadDialogProps = {
   children?: React.ReactNode;
 };
 
-export function CsvUploadDialog({
-  open,
-  onOpenChange,
-  projectId,
-  datasetId,
-  children,
-}: CsvUploadDialogProps) {
+export function CsvUploadDialog({ open, onOpenChange, projectId, datasetId, children }: CsvUploadDialogProps) {
   const [preview, setPreview] = useState<CsvPreviewResult | null>(null);
   const [csvFile, setCsvFile] = useState<File | null>(null);
 
@@ -54,9 +39,7 @@ export function CsvUploadDialog({
                 <TooltipTrigger asChild>
                   <File className="h-4 w-4 text-muted-foreground" />
                 </TooltipTrigger>
-                <TooltipContent className="max-w-[300px]">
-                  {csvFile.name}
-                </TooltipContent>
+                <TooltipContent className="max-w-[300px]">{csvFile.name}</TooltipContent>
               </Tooltip>
             )}
           </DialogTitle>

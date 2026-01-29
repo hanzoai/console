@@ -43,9 +43,7 @@ export const _handleGetScoreById = async ({
       projectId,
       scoreId,
       ...(source !== undefined ? { source } : {}),
-      ...(scoreDataTypes
-        ? { scoreDataTypes: scoreDataTypes.map((d) => d.toString()) }
-        : {}),
+      ...(scoreDataTypes ? { scoreDataTypes: scoreDataTypes.map((d) => d.toString()) } : {}),
     },
     tags: {
       feature: "tracing",

@@ -18,9 +18,7 @@ type ValidateAndInflateScoreParams = {
   body: ScoreEventType["body"];
 };
 
-export async function validateAndInflateScore(
-  params: ValidateAndInflateScoreParams,
-) {
+export async function validateAndInflateScore(params: ValidateAndInflateScoreParams) {
   const { body, projectId, scoreId } = params;
 
   if (body.configId) {
@@ -32,9 +30,7 @@ export async function validateAndInflateScore(
     });
 
     if (!config || !validateDbScoreConfigSafe(config).success)
-      throw new HanzoNotFoundError(
-        "The configId you provided does not match a valid config in this project",
-      );
+      throw new HanzoNotFoundError("The configId you provided does not match a valid config in this project");
 
     // Override some fields in the score body with config fields
     // We ignore the set fields in the body
@@ -72,23 +68,14 @@ export async function validateAndInflateScore(
 }
 
 function inferDataType(value: string | number): ScoreDataTypeType {
-  return typeof value === "number"
-    ? ScoreDataTypeEnum.NUMERIC
-    : ScoreDataTypeEnum.CATEGORICAL;
+  return typeof value === "number" ? ScoreDataTypeEnum.NUMERIC : ScoreDataTypeEnum.CATEGORICAL;
 }
 
-function mapStringValueToNumericValue(
-  config: ScoreConfigDomain,
-  label: string,
-): number {
-  return (
-    config.categories?.find((category) => category.label === label)?.value ?? 0
-  );
+function mapStringValueToNumericValue(config: ScoreConfigDomain, label: string): number {
+  return config.categories?.find((category) => category.label === label)?.value ?? 0;
 }
 
-function inflateScoreBody(
-  params: ValidateAndInflateScoreParams & { config?: ScoreConfigDomain },
-) {
+function inflateScoreBody(params: ValidateAndInflateScoreParams & { config?: ScoreConfigDomain }) {
   const { body, projectId, scoreId, config } = params;
 
   const relevantDataType = config?.dataType ?? body.dataType;
@@ -159,15 +146,11 @@ type ScoreBodyWithContext =
       context: "ANNOTATION";
     };
 
-function resolveScoreValueIngestion(
-  body: ScoreEventType["body"],
-): string | number | null {
+function resolveScoreValueIngestion(body: ScoreEventType["body"]): string | number | null {
   return body.value;
 }
 
-function resolveScoreValueAnnotation(
-  body: ScoreDomain,
-): string | number | null {
+function resolveScoreValueAnnotation(body: ScoreDomain): string | number | null {
   switch (body.dataType) {
     case ScoreDataTypeEnum.NUMERIC:
     case ScoreDataTypeEnum.BOOLEAN:
@@ -183,11 +166,7 @@ type ValidateConfigAgainstBodyParams = {
   config: ScoreConfigDomain;
 } & ScoreBodyWithContext;
 
-export function validateConfigAgainstBody({
-  body,
-  config,
-  context,
-}: ValidateConfigAgainstBodyParams): void {
+export function validateConfigAgainstBody({ body, config, context }: ValidateConfigAgainstBodyParams): void {
   const { maxValue, minValue, categories, dataType: configDataType } = config;
 
   if (body.dataType && body.dataType !== configDataType) {
@@ -203,16 +182,11 @@ export function validateConfigAgainstBody({
   }
 
   if (config.name !== body.name) {
-    throw new InvalidRequestError(
-      `Name mismatch based on config: expected ${config.name}, got ${body.name}`,
-    );
+    throw new InvalidRequestError(`Name mismatch based on config: expected ${config.name}, got ${body.name}`);
   }
 
   const relevantDataType = configDataType ?? body.dataType;
-  const scoreValue =
-    context === "INGESTION"
-      ? resolveScoreValueIngestion(body)
-      : resolveScoreValueAnnotation(body);
+  const scoreValue = context === "INGESTION" ? resolveScoreValueIngestion(body) : resolveScoreValueAnnotation(body);
 
   const rangeValidation = ScorePropsAgainstConfig.safeParse({
     value: scoreValue,
@@ -227,8 +201,6 @@ export function validateConfigAgainstBody({
       .map((error) => `${error.path.join(".")} - ${error.message}`)
       .join(", ");
 
-    throw new InvalidRequestError(
-      `Ingested score body not valid against provided config: ${errorDetails}`,
-    );
+    throw new InvalidRequestError(`Ingested score body not valid against provided config: ${errorDetails}`);
   }
 }

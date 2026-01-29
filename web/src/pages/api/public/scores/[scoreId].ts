@@ -6,11 +6,9 @@ import {
   GetScoreQueryV1,
   GetScoreResponseV1,
   InternalServerError,
-  HanzoNotFoundError } from "@hanzo/shared";
-import {
-  logger,
-  traceException,
-  ScoreDeleteQueue } from "@hanzo/shared/src/server";
+  HanzoNotFoundError,
+} from "@hanzo/shared";
+import { logger, traceException, ScoreDeleteQueue } from "@hanzo/shared/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
@@ -25,7 +23,8 @@ export default withMiddlewares({
       const scoresApiService = new ScoresApiService("v1");
       const score = await scoresApiService.getScoreById({
         projectId: auth.scope.projectId,
-        scoreId: query.scoreId });
+        scoreId: query.scoreId,
+      });
 
       if (!score) {
         throw new HanzoNotFoundError("Score not found");
@@ -40,7 +39,8 @@ export default withMiddlewares({
       }
 
       return parsedScore.data;
-    } }),
+    },
+  }),
   DELETE: createAuthedProjectAPIRoute({
     name: "Delete Score",
     querySchema: DeleteScoreQueryV1,
@@ -60,15 +60,20 @@ export default withMiddlewares({
         resourceId: scoreId,
         projectId: auth.scope.projectId,
         orgId: auth.scope.orgId,
-        apiKeyId: auth.scope.apiKeyId });
+        apiKeyId: auth.scope.apiKeyId,
+      });
 
       await scoreDeleteQueue.add(QueueJobs.ScoreDelete, {
         timestamp: new Date(),
         id: randomUUID(),
         payload: {
           projectId: auth.scope.projectId,
-          scoreIds: [scoreId] },
-        name: QueueJobs.ScoreDelete });
+          scoreIds: [scoreId],
+        },
+        name: QueueJobs.ScoreDelete,
+      });
 
       return { message: "Score deletion queued successfully" };
-    } }) });
+    },
+  }),
+});

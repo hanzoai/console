@@ -7,12 +7,8 @@ export type UseTraceCommentsParams = {
   traceId: string;
 };
 
-export function useTraceComments({
-  projectId,
-  traceId,
-}: UseTraceCommentsParams) {
-  const isAuthenticatedAndProjectMember =
-    useIsAuthenticatedAndProjectMember(projectId);
+export function useTraceComments({ projectId, traceId }: UseTraceCommentsParams) {
+  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(projectId);
 
   const observationCommentCounts = api.comments.getCountByObjectType.useQuery(
     {
@@ -38,9 +34,7 @@ export function useTraceComments({
   );
 
   // Extract trace comment count from the Map response
-  const traceCommentCountMap = traceCommentCounts.data
-    ? castToNumberMap(traceCommentCounts.data)
-    : undefined;
+  const traceCommentCountMap = traceCommentCounts.data ? castToNumberMap(traceCommentCounts.data) : undefined;
   const traceCount = traceCommentCountMap?.get(traceId) ?? 0;
 
   return {
@@ -48,7 +42,6 @@ export function useTraceComments({
       ? castToNumberMap(observationCommentCounts.data)
       : new Map<string, number>(),
     traceCommentCount: traceCount,
-    isLoading:
-      observationCommentCounts.isLoading || traceCommentCounts.isLoading,
+    isLoading: observationCommentCounts.isLoading || traceCommentCounts.isLoading,
   };
 }

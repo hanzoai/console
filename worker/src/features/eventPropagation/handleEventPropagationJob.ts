@@ -12,8 +12,7 @@ import {
 import { Job } from "bullmq";
 import { env } from "../../env";
 
-const LAST_PROCESSED_PARTITION_KEY =
-  "hanzo:event-propagation:last-processed-partition";
+const LAST_PROCESSED_PARTITION_KEY = "hanzo:event-propagation:last-processed-partition";
 
 /**
  * Get the last processed partition timestamp from Redis.
@@ -32,19 +31,12 @@ export const getLastProcessedPartition = async (): Promise<string | null> => {
  * Update the last processed partition timestamp in Redis.
  * This is called after successfully processing a partition.
  */
-export const updateLastProcessedPartition = async (
-  partition: string,
-): Promise<void> => {
+export const updateLastProcessedPartition = async (partition: string): Promise<void> => {
   try {
     await redis!.set(LAST_PROCESSED_PARTITION_KEY, partition);
-    logger.info(
-      `[DUAL WRITE] Updated last processed partition to ${partition}`,
-    );
+    logger.info(`[DUAL WRITE] Updated last processed partition to ${partition}`);
   } catch (error) {
-    logger.error(
-      "[DUAL WRITE] Failed to update last processed partition",
-      error,
-    );
+    logger.error("[DUAL WRITE] Failed to update last processed partition", error);
     // Don't throw - allow processing to continue
   }
 };
@@ -55,27 +47,18 @@ export const updateLastProcessedPartition = async (
  * the last processed partition and always processes the next partition in order.
  * Relies on table TTL for partition cleanup instead of explicit DROP PARTITION.
  */
-export const handleEventPropagationJob = async (
-  job: Job<TQueueJobTypes[QueueName.EventPropagationQueue]>,
-) => {
-  getCurrentSpan()?.setAttribute(
-    "messaging.bullmq.job.input.jobId",
-    job.data.id,
-  );
+export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueName.EventPropagationQueue]>) => {
+  getCurrentSpan()?.setAttribute("messaging.bullmq.job.input.jobId", job.data.id);
 
   if (env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB === "true") {
-    logger.info(
-      "[DUAL WRITE] Early exit for event propagation job due to experiment flag",
-    );
+    logger.info("[DUAL WRITE] Early exit for event propagation job due to experiment flag");
     return;
   }
 
   try {
     // Step 1: Get the last processed partition from Redis and find the next one to process
     const lastProcessedPartition = await getLastProcessedPartition();
-    logger.info(
-      `[DUAL WRITE] Last processed partition: ${lastProcessedPartition ?? "none"}`,
-    );
+    logger.info(`[DUAL WRITE] Last processed partition: ${lastProcessedPartition ?? "none"}`);
 
     // Query for the next partition after the last processed one
     // Filter for partitions older than 6 minutes and order by partition ASC to get the oldest first
@@ -96,10 +79,7 @@ export const handleEventPropagationJob = async (
       },
     });
 
-    recordGauge(
-      "hanzo.event_propagation.partition_backlog",
-      partitions.length,
-    );
+    recordGauge("hanzo.event_propagation.partition_backlog", partitions.length);
 
     if (partitions.length === 0) {
       logger.info(
@@ -109,9 +89,7 @@ export const handleEventPropagationJob = async (
     }
 
     const partitionToProcess = partitions[0].partition;
-    logger.info(
-      `[DUAL WRITE] Processing partition ${partitionToProcess} for events table fill`,
-    );
+    logger.info(`[DUAL WRITE] Processing partition ${partitionToProcess} for events table fill`);
 
     // Step 2: Join observations_batch_staging with traces and insert into events
     // Use a time window for traces to limit the join scope
@@ -298,10 +276,7 @@ export const handleEventPropagationJob = async (
     // This allows the next job to continue from where we left off
     await updateLastProcessedPartition(partitionToProcess);
   } catch (error) {
-    logger.error(
-      "[DUAL WRITE] Failed to process event propagation batch",
-      error,
-    );
+    logger.error("[DUAL WRITE] Failed to process event propagation batch", error);
     traceException(error);
     throw error;
   }

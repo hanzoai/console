@@ -1,8 +1,5 @@
 import { prisma } from "../../../db";
-import {
-  TableViewPresetTableName,
-  type TableViewPresetDomain,
-} from "../../../domain/table-view-presets";
+import { TableViewPresetTableName, type TableViewPresetDomain } from "../../../domain/table-view-presets";
 import { HanzoNotFoundError } from "../../../errors";
 import {
   TableViewPresetsNamesCreatorList,
@@ -115,10 +112,7 @@ export class TableViewService {
   /**
    * Deletes a table view preset
    */
-  public static async deleteTableViewPresets(
-    TableViewPresetsId: string,
-    projectId: string,
-  ): Promise<void> {
+  public static async deleteTableViewPresets(TableViewPresetsId: string, projectId: string): Promise<void> {
     await prisma.tableViewPreset.delete({
       where: {
         id: TableViewPresetsId,
@@ -158,10 +152,7 @@ export class TableViewService {
   /**
    * Gets a table view preset by id
    */
-  public static async getTableViewPresetsById(
-    id: string,
-    projectId: string,
-  ): Promise<TableViewPresetDomain> {
+  public static async getTableViewPresetsById(id: string, projectId: string): Promise<TableViewPresetDomain> {
     const tableViewPresets = await prisma.tableViewPreset.findUnique({
       where: {
         id,
@@ -170,9 +161,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new HanzoNotFoundError(
-        `Saved table view preset not found for id ${id} in project ${projectId}`,
-      );
+      throw new HanzoNotFoundError(`Saved table view preset not found for id ${id} in project ${projectId}`);
     }
 
     return tableViewPresets as unknown as TableViewPresetDomain;

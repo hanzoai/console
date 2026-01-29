@@ -171,19 +171,11 @@ describe("BackfillValidToForDatasetItems", () => {
     expect(result1.lastProcessedProjectId).toBe("A");
 
     // Second batch: Process remaining item from project A
-    const result2 = await backfillValidToForDatasetItems(
-      result1.lastProcessedProjectId!,
-      result1.lastProcessedId!,
-      2,
-    );
+    const result2 = await backfillValidToForDatasetItems(result1.lastProcessedProjectId!, result1.lastProcessedId!, 2);
     expect(result2.lastProcessedProjectId).toBe("A");
 
     // Third batch: Should move to project B
-    const result3 = await backfillValidToForDatasetItems(
-      result2.lastProcessedProjectId!,
-      result2.lastProcessedId!,
-      2,
-    );
+    const result3 = await backfillValidToForDatasetItems(result2.lastProcessedProjectId!, result2.lastProcessedId!, 2);
     expect(result3.lastProcessedProjectId).toBe("B");
   });
 
@@ -199,11 +191,7 @@ describe("BackfillValidToForDatasetItems", () => {
     const maxIterations = 10;
 
     while (iterations < maxIterations) {
-      const result = await backfillValidToForDatasetItems(
-        lastProjectId,
-        lastId,
-        1,
-      );
+      const result = await backfillValidToForDatasetItems(lastProjectId, lastId, 1);
 
       if (result.completed) break;
 
@@ -270,11 +258,7 @@ describe("BackfillValidToForDatasetItems", () => {
     let iterations = 0;
 
     while (iterations < 20) {
-      const result = await backfillValidToForDatasetItems(
-        lastProjectId,
-        lastId,
-        2,
-      );
+      const result = await backfillValidToForDatasetItems(lastProjectId, lastId, 2);
 
       if (result.completed) break;
 
@@ -316,9 +300,7 @@ describe("BackfillValidToForDatasetItems", () => {
   it("should handle items with single version correctly", async () => {
     // Items with single version (should not change)
     const singleVersionItems = items.filter(
-      (item) =>
-        item.projectId === "B" &&
-        (item.id === "5" || item.id === "6" || item.id === "1"),
+      (item) => item.projectId === "B" && (item.id === "5" || item.id === "6" || item.id === "1"),
     );
 
     await prisma.datasetItem.createMany({

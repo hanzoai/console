@@ -2,19 +2,11 @@ import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { type LegendProps } from "recharts";
 import { MoreVertical } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { cn } from "@/src/utils/tailwind";
-import {
-  useChart,
-  getPayloadConfigFromPayload,
-} from "@/src/components/ui/chart";
+import { useChart, getPayloadConfigFromPayload } from "@/src/components/ui/chart";
 
-export interface ScoreChartLegendContentProps
-  extends Pick<LegendProps, "payload" | "verticalAlign"> {
+export interface ScoreChartLegendContentProps extends Pick<LegendProps, "payload" | "verticalAlign"> {
   /** Enable interactive click-to-toggle functionality */
   interactive?: boolean;
   /** Visibility state for each legend item (key -> visible) */
@@ -43,14 +35,7 @@ interface LegendItemProps {
 /**
  * Individual legend item component with interactive toggle support
  */
-const LegendItem = ({
-  color,
-  label,
-  visible,
-  interactive,
-  onClick,
-  noTruncate = false,
-}: LegendItemProps) => {
+const LegendItem = ({ color, label, visible, interactive, onClick, noTruncate = false }: LegendItemProps) => {
   return (
     <button
       type="button"
@@ -72,9 +57,7 @@ const LegendItem = ({
         )}
         style={{
           color: color,
-          ...(visible
-            ? { backgroundColor: color }
-            : { borderColor: color, backgroundColor: "transparent" }),
+          ...(visible ? { backgroundColor: color } : { borderColor: color, backgroundColor: "transparent" }),
         }}
       />
       <span
@@ -100,10 +83,7 @@ const LegendItem = ({
  * - Click-to-toggle series visibility
  * - Accessibility support (keyboard, ARIA)
  */
-export const ScoreChartLegendContent = React.forwardRef<
-  HTMLDivElement,
-  ScoreChartLegendContentProps
->(
+export const ScoreChartLegendContent = React.forwardRef<HTMLDivElement, ScoreChartLegendContentProps>(
   (
     {
       payload,
@@ -154,10 +134,7 @@ export const ScoreChartLegendContent = React.forwardRef<
         // Skip if size hasn't changed significantly (prevent feedback loops)
         const currentWidth = container.clientWidth;
         const currentHeight = container.scrollHeight;
-        if (
-          Math.abs(currentWidth - lastWidth) < 10 &&
-          Math.abs(currentHeight - lastHeight) < 10
-        ) {
+        if (Math.abs(currentWidth - lastWidth) < 10 && Math.abs(currentHeight - lastHeight) < 10) {
           return;
         }
 
@@ -167,9 +144,7 @@ export const ScoreChartLegendContent = React.forwardRef<
 
         // First, render all items to detect if overflow occurs
         const containerHeight = container.scrollHeight;
-        const lineHeight = parseInt(
-          window.getComputedStyle(container).lineHeight || "24",
-        );
+        const lineHeight = parseInt(window.getComputedStyle(container).lineHeight || "24");
         const twoLines = lineHeight * 2;
 
         // Add 6px tolerance for sub-pixel rendering
@@ -199,9 +174,7 @@ export const ScoreChartLegendContent = React.forwardRef<
         const buttonWidthWithGap = buttonWidth + gapX;
 
         // Get all legend item elements currently rendered
-        const items = Array.from(
-          container.querySelectorAll("button[aria-pressed]"),
-        ) as HTMLElement[];
+        const items = Array.from(container.querySelectorAll("button[aria-pressed]")) as HTMLElement[];
 
         if (items.length === 0) {
           // Fallback: use percentage-based estimate
@@ -238,8 +211,7 @@ export const ScoreChartLegendContent = React.forwardRef<
 
         for (let i = itemsFitInLine; i < items.length; i++) {
           const itemWidth = items[i]!.offsetWidth;
-          const widthWithGap =
-            i === itemsFitInLine ? itemWidth : itemWidth + gapX;
+          const widthWithGap = i === itemsFitInLine ? itemWidth : itemWidth + gapX;
 
           if (lineTwoCumulativeWidth + widthWithGap <= lineTwoAvailable) {
             lineTwoCumulativeWidth += widthWithGap;
@@ -312,8 +284,7 @@ export const ScoreChartLegendContent = React.forwardRef<
         if (key.includes("-")) {
           const prefix = key.split("-")[0];
           if (prefix) {
-            groupName =
-              prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
+            groupName = prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
           }
         }
 
@@ -361,9 +332,7 @@ export const ScoreChartLegendContent = React.forwardRef<
 
       // Pattern: "camelCase" → "Camel Case"
       if (/[a-z][A-Z]/.test(label)) {
-        return label
-          .replace(/([a-z])([A-Z])/g, "$1 $2")
-          .replace(/^./, (str) => str.toUpperCase());
+        return label.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (str) => str.toUpperCase());
       }
 
       // Default: capitalize first letter
@@ -416,9 +385,7 @@ export const ScoreChartLegendContent = React.forwardRef<
             const visible = visibilityState?.[key] ?? true;
             const color =
               item.color ||
-              (typeof item.payload === "object" &&
-              item.payload &&
-              "fill" in item.payload
+              (typeof item.payload === "object" && item.payload && "fill" in item.payload
                 ? (item.payload as { fill: string }).fill
                 : "hsl(var(--chart-1))");
 
@@ -446,66 +413,49 @@ export const ScoreChartLegendContent = React.forwardRef<
                   aria-label={`Show all ${payload.length} categories`}
                 >
                   <span>Show all {payload.length}</span>
-                  {hiddenCount > 0 && (
-                    <span className="font-medium">(+{hiddenCount})</span>
-                  )}
+                  {hiddenCount > 0 && <span className="font-medium">(+{hiddenCount})</span>}
                   <MoreVertical className="h-3 w-3" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="w-80"
-                align="end"
-                side={verticalAlign === "top" ? "bottom" : "top"}
-              >
+              <PopoverContent className="w-80" align="end" side={verticalAlign === "top" ? "bottom" : "top"}>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">All Categories</p>
-                    <span className="text-xs text-muted-foreground">
-                      {payload.length} total
-                    </span>
+                    <span className="text-xs text-muted-foreground">{payload.length} total</span>
                   </div>
                   <div className="space-y-3">
-                    {Object.entries(groupedItems).map(
-                      ([groupName, items], _groupIndex) => (
-                        <div key={groupName}>
-                          {/* Only show subheader if there are multiple groups */}
-                          {Object.keys(groupedItems).length > 1 && (
-                            <h4 className="mb-2 text-xs font-medium text-muted-foreground">
-                              {groupName}
-                            </h4>
-                          )}
-                          <div className="space-y-1">
-                            {items.map((item) => {
-                              const key = `${nameKey || item.dataKey || "value"}`;
-                              const visible = visibilityState?.[key] ?? true;
-                              const color =
-                                item.color ||
-                                (typeof item.payload === "object" &&
-                                item.payload &&
-                                "fill" in item.payload
-                                  ? (item.payload as { fill: string }).fill
-                                  : "hsl(var(--chart-1))");
+                    {Object.entries(groupedItems).map(([groupName, items], _groupIndex) => (
+                      <div key={groupName}>
+                        {/* Only show subheader if there are multiple groups */}
+                        {Object.keys(groupedItems).length > 1 && (
+                          <h4 className="mb-2 text-xs font-medium text-muted-foreground">{groupName}</h4>
+                        )}
+                        <div className="space-y-1">
+                          {items.map((item) => {
+                            const key = `${nameKey || item.dataKey || "value"}`;
+                            const visible = visibilityState?.[key] ?? true;
+                            const color =
+                              item.color ||
+                              (typeof item.payload === "object" && item.payload && "fill" in item.payload
+                                ? (item.payload as { fill: string }).fill
+                                : "hsl(var(--chart-1))");
 
-                              return (
-                                <div
-                                  key={key}
-                                  className="rounded-sm px-2 py-1.5 hover:bg-accent/50"
-                                >
-                                  <LegendItem
-                                    color={color}
-                                    label={getFormattedLabel(item)}
-                                    visible={visible}
-                                    interactive={interactive}
-                                    onClick={() => handleItemClick(key)}
-                                    noTruncate={true}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
+                            return (
+                              <div key={key} className="rounded-sm px-2 py-1.5 hover:bg-accent/50">
+                                <LegendItem
+                                  color={color}
+                                  label={getFormattedLabel(item)}
+                                  visible={visible}
+                                  interactive={interactive}
+                                  onClick={() => handleItemClick(key)}
+                                  noTruncate={true}
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
-                      ),
-                    )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </PopoverContent>

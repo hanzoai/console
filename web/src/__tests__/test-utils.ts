@@ -14,10 +14,7 @@ import { type z } from "zod/v4";
 
 export const ensureTestDatabaseExists = async () => {
   // Only create test database if we're in test environment with test database URL
-  if (
-    !env.DATABASE_URL.includes("hanzo_test") ||
-    process.env.NODE_ENV !== "test"
-  ) {
+  if (!env.DATABASE_URL.includes("hanzo_test") || process.env.NODE_ENV !== "test") {
     return; // Not using test database or not in test environment, skip
   }
 
@@ -103,10 +100,7 @@ export const pruneDatabase = async () => {
 };
 export const getQueues = () => {
   const queues: string[] = Object.values(QueueName);
-  queues.push(
-    ...IngestionQueue.getShardNames(),
-    ...TraceUpsertQueue.getShardNames(),
-  );
+  queues.push(...IngestionQueue.getShardNames(), ...TraceUpsertQueue.getShardNames());
 
   const listOfQueuesToIgnore = [
     QueueName.DataRetentionQueue,
@@ -117,9 +111,7 @@ export const getQueues = () => {
   ];
 
   return queues
-    .filter(
-      (queueName) => !listOfQueuesToIgnore.includes(queueName as QueueName),
-    )
+    .filter((queueName) => !listOfQueuesToIgnore.includes(queueName as QueueName))
     .map((queueName) =>
       queueName.startsWith(QueueName.IngestionQueue)
         ? IngestionQueue.getInstance({ shardName: queueName })
@@ -130,9 +122,7 @@ export const getQueues = () => {
             : getQueue(
                 queueName as Exclude<
                   QueueName,
-                  | QueueName.IngestionQueue
-                  | QueueName.TraceUpsert
-                  | QueueName.OtelIngestionQueue
+                  QueueName.IngestionQueue | QueueName.TraceUpsert | QueueName.OtelIngestionQueue
                 >,
               ),
     );
@@ -159,15 +149,9 @@ export const truncateClickhouseTables = async () => {
 
   // Additional safety check for test database
   if (env.CLICKHOUSE_DB === "test") {
-    console.log(
-      "Running tests against test ClickHouse database:",
-      env.CLICKHOUSE_DB,
-    );
+    console.log("Running tests against test ClickHouse database:", env.CLICKHOUSE_DB);
   } else if (env.CLICKHOUSE_DB !== "default") {
-    console.log(
-      "Running tests against ClickHouse database:",
-      env.CLICKHOUSE_DB,
-    );
+    console.log("Running tests against ClickHouse database:", env.CLICKHOUSE_DB);
   }
 
   await clickhouseClient().command({
@@ -206,8 +190,7 @@ export async function makeAPICall<T = IngestionAPIResponse>(
   customHeaders?: Record<string, string>,
 ): Promise<{ body: T; status: number }> {
   const finalUrl = `http://localhost:3000${url.startsWith("/") ? url : `/${url}`}`;
-  const authorization =
-    auth || createBasicAuthHeader("pk-hz-1234567890", "sk-hz-1234567890");
+  const authorization = auth || createBasicAuthHeader("pk-hz-1234567890", "sk-hz-1234567890");
   const options = {
     method: method,
     headers: {
@@ -216,8 +199,7 @@ export async function makeAPICall<T = IngestionAPIResponse>(
       Authorization: authorization,
       ...customHeaders,
     },
-    ...(method !== "GET" &&
-      body !== undefined && { body: JSON.stringify(body) }),
+    ...(method !== "GET" && body !== undefined && { body: JSON.stringify(body) }),
   };
   const response = await fetch(finalUrl, options);
 

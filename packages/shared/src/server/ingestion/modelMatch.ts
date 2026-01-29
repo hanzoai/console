@@ -1,13 +1,5 @@
 import { Model, Prisma } from "../../";
-import {
-  instrumentAsync,
-  instrumentSync,
-  logger,
-  recordIncrement,
-  redis,
-  safeMultiDel,
-  scanKeys,
-} from "../";
+import { instrumentAsync, instrumentSync, logger, recordIncrement, redis, safeMultiDel, scanKeys } from "../";
 import { env } from "../../env";
 import { Decimal } from "decimal.js";
 import { prisma } from "../../db";
@@ -82,27 +74,21 @@ export async function findModel(p: ModelMatchProps): Promise<ModelWithPrices> {
           span.setAttribute("model_cache_set", "true");
         }
 
-        logger.debug(
-          `Model not found for project ${p.projectId} and model ${p.model}`,
-        );
+        logger.debug(`Model not found for project ${p.projectId} and model ${p.model}`);
         return { model: null, pricingTiers: [] };
       }
     },
   );
 }
 
-const getModelWithPricesFromRedis = async (
-  p: ModelMatchProps,
-): Promise<ModelWithPrices | null> => {
+const getModelWithPricesFromRedis = async (p: ModelMatchProps): Promise<ModelWithPrices | null> => {
   if (env.HANZO_CACHE_MODEL_MATCH_ENABLED === "false") {
     return null;
   }
 
   try {
     if (await isModelMatchCacheLocked()) {
-      logger.info(
-        "Model match cache is locked. Skipping model lookup from Redis.",
-      );
+      logger.info("Model match cache is locked. Skipping model lookup from Redis.");
 
       return null;
     }
@@ -134,36 +120,27 @@ const getModelWithPricesFromRedis = async (
 
     if (parsed.model !== undefined && parsed.pricingTiers !== undefined) {
       const model = redisModelToPrismaModel(parsed.model);
-      const pricingTiers: PricingTierWithPrices[] = parsed.pricingTiers.map(
-        (tier: any) => ({
-          ...tier,
-          prices: Object.entries(tier.prices).map(([usageType, price]) => ({
-            usageType,
-            price: new Decimal(price as string),
-          })),
-        }),
-      );
+      const pricingTiers: PricingTierWithPrices[] = parsed.pricingTiers.map((tier: any) => ({
+        ...tier,
+        prices: Object.entries(tier.prices).map(([usageType, price]) => ({
+          usageType,
+          price: new Decimal(price as string),
+        })),
+      }));
 
       return { model, pricingTiers };
     }
 
     // Unknown format
-    logger.warn(
-      `Unknown cache format for model match: ${JSON.stringify(parsed)}`,
-    );
+    logger.warn(`Unknown cache format for model match: ${JSON.stringify(parsed)}`);
     return null;
   } catch (error) {
-    logger.error(
-      `Error getting model for ${JSON.stringify(p)} from Redis`,
-      error,
-    );
+    logger.error(`Error getting model for ${JSON.stringify(p)} from Redis`, error);
     return null;
   }
 };
 
-export async function findPricingTiersForModel(
-  modelId: string,
-): Promise<PricingTierWithPrices[]> {
+export async function findPricingTiersForModel(modelId: string): Promise<PricingTierWithPrices[]> {
   if (!modelId) return [];
 
   const tiers = await prisma.pricingTier.findMany({
@@ -189,15 +166,11 @@ export async function findPricingTiersForModel(
   }));
 }
 
-export async function findModelInPostgres(
-  p: ModelMatchProps,
-): Promise<Model | null> {
+export async function findModelInPostgres(p: ModelMatchProps): Promise<Model | null> {
   const { projectId, model } = p;
   // either get the model from the existing observation
   // or match pattern on the user provided model name
-  const modelCondition = model
-    ? Prisma.sql`AND ${model} ~ match_pattern`
-    : undefined;
+  const modelCondition = model ? Prisma.sql`AND ${model} ~ match_pattern` : undefined;
   if (!modelCondition) return null;
 
   const sql = Prisma.sql`
@@ -236,17 +209,9 @@ const NOT_FOUND_TOKEN = "HANZO_MODEL_MATCH_NOT_FOUND" as const;
 const addModelNotFoundTokenToRedis = async (p: ModelMatchProps) => {
   try {
     const key = getRedisModelKey(p);
-    await redis?.set(
-      key,
-      NOT_FOUND_TOKEN,
-      "EX",
-      env.HANZO_CACHE_MODEL_MATCH_TTL_SECONDS,
-    );
+    await redis?.set(key, NOT_FOUND_TOKEN, "EX", env.HANZO_CACHE_MODEL_MATCH_TTL_SECONDS);
   } catch (error) {
-    logger.error(
-      `Error adding model not found token for ${JSON.stringify(p)} to Redis`,
-      error,
-    );
+    logger.error(`Error adding model not found token for ${JSON.stringify(p)} to Redis`, error);
   }
 };
 
@@ -261,9 +226,7 @@ const addModelWithPricingTiersToRedis = async (
     const cachedPricingTiers = pricingTiers.map((tier) => {
       return {
         ...tier,
-        prices: Object.fromEntries(
-          tier.prices.map((p) => [p.usageType, p.price]),
-        ),
+        prices: Object.fromEntries(tier.prices.map((p) => [p.usageType, p.price])),
       };
     });
 
@@ -274,10 +237,7 @@ const addModelWithPricingTiersToRedis = async (
       env.HANZO_CACHE_MODEL_MATCH_TTL_SECONDS,
     );
   } catch (error) {
-    logger.error(
-      `Error adding model with pricing tiers for ${JSON.stringify(p)} to Redis`,
-      error,
-    );
+    logger.error(`Error adding model with pricing tiers for ${JSON.stringify(p)} to Redis`, error);
   }
 };
 
@@ -301,27 +261,19 @@ export const redisModelToPrismaModel = (redisModel: Model): Model => {
     createdAt: new Date(redisModel.createdAt),
     updatedAt: new Date(redisModel.updatedAt),
     inputPrice:
-      redisModel.inputPrice !== null && redisModel.inputPrice !== undefined
-        ? new Decimal(redisModel.inputPrice)
-        : null,
+      redisModel.inputPrice !== null && redisModel.inputPrice !== undefined ? new Decimal(redisModel.inputPrice) : null,
     outputPrice:
       redisModel.outputPrice !== null && redisModel.outputPrice !== undefined
         ? new Decimal(redisModel.outputPrice)
         : null,
     totalPrice:
-      redisModel.totalPrice !== null && redisModel.totalPrice !== undefined
-        ? new Decimal(redisModel.totalPrice)
-        : null,
+      redisModel.totalPrice !== null && redisModel.totalPrice !== undefined ? new Decimal(redisModel.totalPrice) : null,
     startDate:
-      redisModel.startDate !== null && redisModel.startDate !== undefined
-        ? new Date(redisModel.startDate)
-        : null,
+      redisModel.startDate !== null && redisModel.startDate !== undefined ? new Date(redisModel.startDate) : null,
   };
 };
 
-export async function clearModelCacheForProject(
-  projectId: string,
-): Promise<void> {
+export async function clearModelCacheForProject(projectId: string): Promise<void> {
   if (env.HANZO_CACHE_MODEL_MATCH_ENABLED === "false" || !redis) {
     return;
   }
@@ -332,14 +284,10 @@ export async function clearModelCacheForProject(
 
     if (keys.length > 0) {
       await safeMultiDel(redis, keys);
-      logger.info(
-        `Cleared ${keys.length} model cache entries for project ${projectId}`,
-      );
+      logger.info(`Cleared ${keys.length} model cache entries for project ${projectId}`);
     }
   } catch (error) {
-    logger.error(
-      `Error clearing model cache for project ${projectId}: ${error}`,
-    );
+    logger.error(`Error clearing model cache for project ${projectId}: ${error}`);
   }
 }
 
@@ -371,11 +319,7 @@ export async function clearFullModelCache() {
     logger.info("Clearing full model cache...");
 
     const tenMinutesInSeconds = 60 * 10;
-    await redis.setex(
-      MODEL_MATCH_CACHE_LOCKED_KEY,
-      tenMinutesInSeconds,
-      "locked",
-    );
+    await redis.setex(MODEL_MATCH_CACHE_LOCKED_KEY, tenMinutesInSeconds, "locked");
 
     const pattern = getModelMatchKeyPrefix() + "*";
 
@@ -383,9 +327,7 @@ export async function clearFullModelCache() {
 
     if (keys.length > 0) {
       await safeMultiDel(redis, keys);
-      logger.info(
-        `Cleared full model cache with ${keys.length} keys in ${Date.now() - startTime}ms.`,
-      );
+      logger.info(`Cleared full model cache with ${keys.length} keys in ${Date.now() - startTime}ms.`);
     } else {
       logger.info(`No keys found for match pattern '${pattern}'`);
     }

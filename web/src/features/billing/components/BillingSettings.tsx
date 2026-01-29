@@ -22,9 +22,7 @@ import { Receipt, CreditCard } from "lucide-react";
 export const BillingSettings = () => {
   const router = useRouter();
   const orgId = router.query.organizationId as string | undefined;
-  const [activeView, setActiveView] = useState<"history" | "payment">(
-    "history",
-  );
+  const [activeView, setActiveView] = useState<"history" | "payment">("history");
 
   const hasAccess = useHasOrganizationAccess({
     organizationId: orgId,
@@ -39,8 +37,7 @@ export const BillingSettings = () => {
       <Alert>
         <AlertTitle>Access Denied</AlertTitle>
         <AlertDescription>
-          You do not have permission to view the billing settings of this
-          organization.
+          You do not have permission to view the billing settings of this organization.
         </AlertDescription>
       </Alert>
     );

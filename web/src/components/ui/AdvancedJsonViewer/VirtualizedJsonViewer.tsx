@@ -64,28 +64,20 @@ export const VirtualizedJsonViewer = memo(function VirtualizedJsonViewer({
   const rowCount = tree ? 1 + tree.rootNode.visibleDescendantCount : 0;
 
   // Layout calculations (widths, heights, column sizes)
-  const {
-    maxLineNumberDigits,
-    fixedColumnWidth,
-    scrollableMinWidth,
-    scrollableMaxWidth,
-    estimateSize,
-  } = useJsonViewerLayout({
-    tree,
-    expansionVersion,
-    theme,
-    showLineNumbers,
-    totalLineCount,
-    stringWrapMode,
-    truncateStringsAt,
-    charWidth,
-  });
+  const { maxLineNumberDigits, fixedColumnWidth, scrollableMinWidth, scrollableMaxWidth, estimateSize } =
+    useJsonViewerLayout({
+      tree,
+      expansionVersion,
+      theme,
+      showLineNumbers,
+      totalLineCount,
+      stringWrapMode,
+      truncateStringsAt,
+      charWidth,
+    });
 
   // Search-related calculations
-  const { matchMap, currentMatch, currentMatchIndexInRow } = useJsonSearch(
-    searchMatches,
-    currentMatchIndex,
-  );
+  const { matchMap, currentMatch, currentMatchIndexInRow } = useJsonSearch(searchMatches, currentMatchIndex);
 
   // Initialize virtualizer
   // NOTE: We provide getItemKey using node IDs so the virtualizer can detect when
@@ -96,10 +88,7 @@ export const VirtualizedJsonViewer = memo(function VirtualizedJsonViewer({
     getScrollElement: () => scrollContainerRef?.current || parentRef.current,
     estimateSize,
     overscan: 500, // Render 500 extra rows above/below viewport
-    measureElement:
-      typeof window !== "undefined"
-        ? (element) => element.getBoundingClientRect().height
-        : undefined,
+    measureElement: typeof window !== "undefined" ? (element) => element.getBoundingClientRect().height : undefined,
     getItemKey: (index) => {
       if (!tree) return index;
       const node = getNodeByIndex(tree.rootNode, index);
@@ -112,11 +101,7 @@ export const VirtualizedJsonViewer = memo(function VirtualizedJsonViewer({
 
   // Scroll to match when search navigation occurs
   useEffect(() => {
-    if (
-      scrollToIndex !== undefined &&
-      scrollToIndex >= 0 &&
-      scrollToIndex < rowCount
-    ) {
+    if (scrollToIndex !== undefined && scrollToIndex >= 0 && scrollToIndex < rowCount) {
       rowVirtualizer.scrollToIndex(scrollToIndex, {
         align: "center",
         behavior: "auto", // Use "auto" instead of "smooth" for dynamic sizing
@@ -211,9 +196,7 @@ export const VirtualizedJsonViewer = memo(function VirtualizedJsonViewer({
                   searchMatch={searchMatch}
                   isCurrentMatch={isCurrentMatch}
                   matchCount={matchCount}
-                  currentMatchIndexInRow={
-                    isCurrentMatch ? currentMatchIndexInRow : undefined
-                  }
+                  currentMatchIndexInRow={isCurrentMatch ? currentMatchIndexInRow : undefined}
                   onToggleExpansion={finalHandleToggleExpansion}
                   stringWrapMode={stringWrapMode}
                 />
@@ -223,12 +206,8 @@ export const VirtualizedJsonViewer = memo(function VirtualizedJsonViewer({
               <div
                 style={{
                   width: "fit-content",
-                  minWidth: scrollableMinWidth
-                    ? `${scrollableMinWidth}px`
-                    : undefined,
-                  maxWidth: scrollableMaxWidth
-                    ? `${scrollableMaxWidth}px`
-                    : undefined,
+                  minWidth: scrollableMinWidth ? `${scrollableMinWidth}px` : undefined,
+                  maxWidth: scrollableMaxWidth ? `${scrollableMaxWidth}px` : undefined,
                 }}
               >
                 <JsonRowScrollable

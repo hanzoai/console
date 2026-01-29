@@ -1,8 +1,4 @@
-import {
-  commandClickhouse,
-  queryClickhouse,
-  queryClickhouseStream,
-} from "./clickhouse";
+import { commandClickhouse, queryClickhouse, queryClickhouseStream } from "./clickhouse";
 import { BlobStorageFileRefRecordReadType } from "./definitions";
 import { convertDateToClickhouseDateTime } from "../clickhouse/client";
 
@@ -34,9 +30,7 @@ export const getBlobStorageByProjectAndEntityId = async (
   });
 };
 
-export const getBlobStorageByProjectId = (
-  projectId: string,
-): AsyncGenerator<BlobStorageFileRefRecordReadType> => {
+export const getBlobStorageByProjectId = (projectId: string): AsyncGenerator<BlobStorageFileRefRecordReadType> => {
   const query = `
     select *
     from blob_storage_file_log FINAL
@@ -179,10 +173,7 @@ export const getBlobStorageByProjectIdAndTraceIds = (
 };
 
 // this function is only used for the background migration from event_log to blob_storage_file_log
-export const insertIntoS3RefsTableFromEventLog = async (
-  limit: number,
-  offset: number,
-) => {
+export const insertIntoS3RefsTableFromEventLog = async (limit: number, offset: number) => {
   const query = `
     INSERT INTO blob_storage_file_log
     SELECT

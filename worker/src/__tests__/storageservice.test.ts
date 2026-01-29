@@ -1,17 +1,7 @@
-import {
-  expect,
-  test,
-  describe,
-  beforeAll,
-  beforeEach,
-  afterEach,
-} from "vitest";
+import { expect, test, describe, beforeAll, beforeEach, afterEach } from "vitest";
 import { env } from "../env";
 import { randomUUID } from "crypto";
-import {
-  StorageService,
-  StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+import { StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
 
 const { Readable } = require("stream");
 
@@ -137,10 +127,7 @@ describe("StorageService", () => {
     });
 
     // When
-    const signedUrl = await storageService.getSignedUrl(
-      fileName,
-      expiresInSeconds,
-    );
+    const signedUrl = await storageService.getSignedUrl(fileName, expiresInSeconds);
 
     // Then
     expect(signedUrl).toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
@@ -162,10 +149,7 @@ describe("StorageService", () => {
     });
 
     // When
-    const signedUrl = await storageService.getSignedUrl(
-      fileName,
-      expiresInSeconds,
-    );
+    const signedUrl = await storageService.getSignedUrl(fileName, expiresInSeconds);
 
     // Then
     expect(signedUrl).toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
@@ -187,10 +171,7 @@ describe("StorageService", () => {
     });
 
     // When
-    const signedUrl = await storageServiceWithExternalEndpoint.getSignedUrl(
-      fileName,
-      expiresInSeconds,
-    );
+    const signedUrl = await storageServiceWithExternalEndpoint.getSignedUrl(fileName, expiresInSeconds);
 
     // Then
     expect(signedUrl).toContain("external-endpoint.example.com");
@@ -228,14 +209,13 @@ describe("StorageService", () => {
     const contentLength = 100;
 
     // When
-    const signedUrl =
-      await storageServiceWithExternalEndpoint.getSignedUploadUrl({
-        path,
-        ttlSeconds,
-        sha256Hash,
-        contentType,
-        contentLength,
-      });
+    const signedUrl = await storageServiceWithExternalEndpoint.getSignedUploadUrl({
+      path,
+      ttlSeconds,
+      sha256Hash,
+      contentType,
+      contentLength,
+    });
 
     // Then
     expect(signedUrl).toContain("external-endpoint.example.com");
@@ -250,20 +230,16 @@ describe("StorageService", () => {
     const expiresInSeconds = 3600;
 
     // When
-    const result = await storageServiceWithExternalEndpoint.uploadWithSignedUrl(
-      {
-        fileName,
-        fileType,
-        data,
-        expiresInSeconds,
-      },
-    );
+    const result = await storageServiceWithExternalEndpoint.uploadWithSignedUrl({
+      fileName,
+      fileType,
+      data,
+      expiresInSeconds,
+    });
 
     // Then
     expect(result.signedUrl).toContain("external-endpoint.example.com");
-    expect(result.signedUrl).not.toContain(
-      env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-    );
+    expect(result.signedUrl).not.toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
 
     // Verify the file was uploaded correctly
     const file = await storageService.download(fileName);

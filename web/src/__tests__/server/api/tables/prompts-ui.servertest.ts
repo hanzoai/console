@@ -1,12 +1,6 @@
-import {
-  createObservation,
-  createObservationsCh,
-} from "@hanzo/shared/src/server";
+import { createObservation, createObservationsCh } from "@hanzo/shared/src/server";
 import { pruneDatabase } from "@/src/__tests__/test-utils";
-import {
-  getObservationMetricsForPrompts,
-  getObservationsWithPromptName,
-} from "@hanzo/shared/src/server";
+import { getObservationMetricsForPrompts, getObservationsWithPromptName } from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
@@ -66,16 +60,9 @@ describe("UI Prompts Table", () => {
       id: v4(),
       prompt_name: null,
     };
-    await createObservationsCh([
-      observation,
-      secondObservation,
-      thirdObservation,
-    ]);
+    await createObservationsCh([observation, secondObservation, thirdObservation]);
 
-    const result = await getObservationsWithPromptName(projectId, [
-      "Test Prompt",
-      "Test Prompt 2",
-    ]);
+    const result = await getObservationsWithPromptName(projectId, ["Test Prompt", "Test Prompt 2"]);
 
     expect(result).toEqual(
       expect.arrayContaining([
@@ -137,16 +124,9 @@ describe("UI Prompts Table", () => {
       prompt_name: "folder2/another-prompt", // Different folder
     };
 
-    await createObservationsCh([
-      folderedObservation,
-      secondFolderedObservation,
-      thirdFolderedObservation,
-    ]);
+    await createObservationsCh([folderedObservation, secondFolderedObservation, thirdFolderedObservation]);
 
-    const result = await getObservationsWithPromptName(projectId, [
-      "folder1/my-prompt",
-      "folder2/another-prompt",
-    ]);
+    const result = await getObservationsWithPromptName(projectId, ["folder1/my-prompt", "folder2/another-prompt"]);
 
     expect(result).toEqual(
       expect.arrayContaining([
@@ -214,15 +194,9 @@ describe("UI Prompts Table", () => {
       prompt_version: 2,
       cost_details: { input: 234, output: 755 },
     });
-    await createObservationsCh([
-      observation,
-      secondObservation,
-      thirdObservation,
-    ]);
+    await createObservationsCh([observation, secondObservation, thirdObservation]);
 
-    const result = await getObservationMetricsForPrompts(projectId, [
-      "some-prompt-id",
-    ]);
+    const result = await getObservationMetricsForPrompts(projectId, ["some-prompt-id"]);
 
     expect(result).toEqual(
       expect.arrayContaining([

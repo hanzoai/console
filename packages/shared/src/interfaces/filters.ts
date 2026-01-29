@@ -8,13 +8,7 @@ export const filterOperators = {
   categoryOptions: ["any of", "none of"],
   arrayOptions: ["any of", "none of", "all of"],
   number: ["=", ">", "<", ">=", "<="],
-  stringObject: [
-    "=",
-    "contains",
-    "does not contain",
-    "starts with",
-    "ends with",
-  ],
+  stringObject: ["=", "contains", "does not contain", "starts with", "ends with"],
   numberObject: ["=", ">", "<", ">=", "<="],
   boolean: ["=", "<>"],
   null: ["is null", "is not null"],
@@ -53,8 +47,7 @@ export const arrayOptionsFilter = z
     type: z.literal("arrayOptions"),
   })
   .refine((data) => data.operator === "all of" || data.value.length > 0, {
-    message:
-      "Value array must not be empty unless operator is 'all of' (which represents waiting for selection)",
+    message: "Value array must not be empty unless operator is 'all of' (which represents waiting for selection)",
   });
 export const stringObjectFilter = z.object({
   type: z.literal("stringObject"),

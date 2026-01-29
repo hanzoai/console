@@ -16,7 +16,4 @@ export const PromptNameSchema = withFolderPathValidation(
     PROMPT_NAME_PIPE_RESTRICTION_ERROR,
   ),
   // Note: we use "new" as a special name for the new prompt form
-).refine(
-  (name) => name !== RESERVED_PROMPT_NAME_NEW,
-  `Prompt name cannot be '${RESERVED_PROMPT_NAME_NEW}'`,
-);
+).refine((name) => name !== RESERVED_PROMPT_NAME_NEW, `Prompt name cannot be '${RESERVED_PROMPT_NAME_NEW}'`);

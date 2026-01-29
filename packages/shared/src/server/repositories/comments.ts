@@ -11,9 +11,7 @@ export type CommentObjectType = "TRACE" | "OBSERVATION" | "SESSION" | "PROMPT";
  * Operators for comment count filters.
  * Extends filterOperators.number with "!=" for additional filtering capability.
  */
-export type CommentCountOperator =
-  | (typeof filterOperators.number)[number]
-  | "!=";
+export type CommentCountOperator = (typeof filterOperators.number)[number] | "!=";
 
 /**
  * Operators for comment content filters.
@@ -49,14 +47,7 @@ export async function getObjectIdsByCommentCount({
   value: number;
 }): Promise<string[]> {
   // Validate operator to prevent SQL injection
-  const validOperators: CommentCountOperator[] = [
-    ">=",
-    "<=",
-    "=",
-    ">",
-    "<",
-    "!=",
-  ];
+  const validOperators: CommentCountOperator[] = [">=", "<=", "=", ">", "<", "!="];
   if (!validOperators.includes(operator)) {
     throw new Error(`Invalid operator: ${operator}`);
   }

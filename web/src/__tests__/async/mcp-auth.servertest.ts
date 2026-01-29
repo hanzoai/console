@@ -22,9 +22,7 @@ const MCP_ENDPOINT = "/api/public/mcp";
 describe("MCP Authentication", () => {
   describe("HTTP status codes for auth errors", () => {
     it("should return 401 for invalid credentials", async () => {
-      const invalidAuth = Buffer.from("pk-invalid:sk-invalid").toString(
-        "base64",
-      );
+      const invalidAuth = Buffer.from("pk-invalid:sk-invalid").toString("base64");
 
       const response = await fetch(`http://localhost:3000${MCP_ENDPOINT}`, {
         method: "POST",

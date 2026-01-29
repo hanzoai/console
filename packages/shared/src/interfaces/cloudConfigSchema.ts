@@ -18,8 +18,7 @@ export const CloudConfigSchema = z.object({
     })
     .transform((data) => ({
       ...data,
-      isLegacySubscription:
-        data?.activeProductId != null && data?.activeUsageProductId == null,
+      isLegacySubscription: data?.activeProductId != null && data?.activeUsageProductId == null,
     }))
     .nullish(),
 

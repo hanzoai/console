@@ -2,10 +2,7 @@ import { z } from "zod/v4";
 
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { decrypt, encrypt } from "@hanzo/shared/encryption";
 import { posthogIntegrationFormSchema } from "@/src/features/posthog-integration/types";
 import { TRPCError } from "@trpc/server";
@@ -13,38 +10,36 @@ import { env } from "@/src/env.mjs";
 import { validateWebhookURL } from "@hanzo/shared/src/server";
 
 export const posthogIntegrationRouter = createTRPCRouter({
-  get: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "integrations:CRUD",
+  get: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "integrations:CRUD",
+    });
+    try {
+      const dbConfig = await ctx.prisma.posthogIntegration.findFirst({
+        where: {
+          projectId: input.projectId,
+        },
       });
-      try {
-        const dbConfig = await ctx.prisma.posthogIntegration.findFirst({
-          where: {
-            projectId: input.projectId,
-          },
-        });
 
-        if (!dbConfig) {
-          return null;
-        }
-
-        const { encryptedPosthogApiKey, ...config } = dbConfig;
-
-        return {
-          ...config,
-          posthogApiKey: decrypt(encryptedPosthogApiKey),
-        };
-      } catch (e) {
-        console.error("posthog integration get", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      if (!dbConfig) {
+        return null;
       }
-    }),
+
+      const { encryptedPosthogApiKey, ...config } = dbConfig;
+
+      return {
+        ...config,
+        posthogApiKey: decrypt(encryptedPosthogApiKey),
+      };
+    } catch (e) {
+      console.error("posthog integration get", e);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 
   update: protectedProjectProcedure
     .input(posthogIntegrationFormSchema.extend({ projectId: z.string() }))
@@ -75,10 +70,7 @@ export const posthogIntegrationRouter = createTRPCRouter({
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message:
-            error instanceof Error
-              ? `Invalid PostHog hostname: ${error.message}`
-              : "Invalid PostHog hostname",
+          message: error instanceof Error ? `Invalid PostHog hostname: ${error.message}` : "Invalid PostHog hostname",
         });
       }
 
@@ -109,32 +101,30 @@ export const posthogIntegrationRouter = createTRPCRouter({
         },
       });
     }),
-  delete: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      try {
-        throwIfNoProjectAccess({
-          session: ctx.session,
-          projectId: input.projectId,
-          scope: "integrations:CRUD",
-        });
-        await auditLog({
-          session: ctx.session,
-          action: "delete",
-          resourceType: "posthogIntegration",
-          resourceId: input.projectId,
-        });
+  delete: protectedProjectProcedure.input(z.object({ projectId: z.string() })).mutation(async ({ input, ctx }) => {
+    try {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "integrations:CRUD",
+      });
+      await auditLog({
+        session: ctx.session,
+        action: "delete",
+        resourceType: "posthogIntegration",
+        resourceId: input.projectId,
+      });
 
-        await ctx.prisma.posthogIntegration.delete({
-          where: {
-            projectId: input.projectId,
-          },
-        });
-      } catch (e) {
-        console.log("posthog integration delete", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
-    }),
+      await ctx.prisma.posthogIntegration.delete({
+        where: {
+          projectId: input.projectId,
+        },
+      });
+    } catch (e) {
+      console.log("posthog integration delete", e);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 });

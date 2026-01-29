@@ -23,15 +23,9 @@ export const UpdateTableViewPresetsNameInput = z.object({
   projectId: z.string(),
 });
 
-export type CreateTableViewPresetsInput = z.infer<
-  typeof CreateTableViewPresetsInput
->;
-export type UpdateTableViewPresetsInput = z.infer<
-  typeof UpdateTableViewPresetsInput
->;
-export type UpdateTableViewPresetsNameInput = z.infer<
-  typeof UpdateTableViewPresetsNameInput
->;
+export type CreateTableViewPresetsInput = z.infer<typeof CreateTableViewPresetsInput>;
+export type UpdateTableViewPresetsInput = z.infer<typeof UpdateTableViewPresetsInput>;
+export type UpdateTableViewPresetsNameInput = z.infer<typeof UpdateTableViewPresetsNameInput>;
 
 export const TableViewPresetsNamesCreatorListSchema = z.array(
   z.object({
@@ -47,6 +41,4 @@ export const TableViewPresetsNamesCreatorListSchema = z.array(
   }),
 );
 
-export type TableViewPresetsNamesCreatorList = z.infer<
-  typeof TableViewPresetsNamesCreatorListSchema
->;
+export type TableViewPresetsNamesCreatorList = z.infer<typeof TableViewPresetsNamesCreatorListSchema>;

@@ -6,17 +6,8 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatVertexAI } from "@langchain/google-vertexai";
 import { ChatBedrockConverse } from "@langchain/aws";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import {
-  AIMessage,
-  BaseMessage,
-  HumanMessage,
-  SystemMessage,
-  ToolMessage,
-} from "@langchain/core/messages";
-import {
-  BytesOutputParser,
-  StringOutputParser,
-} from "@langchain/core/output_parsers";
+import { AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
+import { BytesOutputParser, StringOutputParser } from "@langchain/core/output_parsers";
 import { IterableReadableStream } from "@langchain/core/utils/stream";
 import { ChatOpenAI, AzureChatOpenAI } from "@langchain/openai";
 import { env } from "../../env";
@@ -58,13 +49,9 @@ const PROVIDERS_WITH_REQUIRED_USER_MESSAGE = [
   LLMAdapter.Bedrock,
 ];
 
-const transformSystemMessageToUserMessage = (
-  messages: ChatMessage[],
-): BaseMessage[] => {
+const transformSystemMessageToUserMessage = (messages: ChatMessage[]): BaseMessage[] => {
   const safeContent =
-    typeof messages[0].content === "string"
-      ? messages[0].content
-      : JSON.stringify(messages[0].content);
+    typeof messages[0].content === "string" ? messages[0].content : JSON.stringify(messages[0].content);
   return [new HumanMessage(safeContent)];
 };
 
@@ -119,12 +106,7 @@ export async function fetchLLMCompletion(
 
 export async function fetchLLMCompletion(
   params: FetchLLMCompletionParams,
-): Promise<
-  | string
-  | IterableReadableStream<Uint8Array>
-  | Record<string, unknown>
-  | ToolCallResponse
-> {
+): Promise<string | IterableReadableStream<Uint8Array> | Record<string, unknown> | ToolCallResponse> {
   const {
     messages,
     tools,
@@ -149,13 +131,10 @@ export async function fetchLLMCompletion(
     // This prevents infinite eval loops (user trace → eval → eval trace → another eval)
     // See corresponding check in worker/src/features/evaluation/evalService.ts createEvalJobs()
     if (!traceSinkParams.environment?.startsWith("hanzo")) {
-      logger.warn(
-        "Skipping trace creation: internal traces must use HanzoInternalTraceEnvironment enum",
-        {
-          environment: traceSinkParams.environment,
-          traceId: traceSinkParams.traceId,
-        },
-      );
+      logger.warn("Skipping trace creation: internal traces must use HanzoInternalTraceEnvironment enum", {
+        environment: traceSinkParams.environment,
+        traceId: traceSinkParams.traceId,
+      });
     } else {
       const internalTracingHandler = getInternalTracingHandler(traceSinkParams);
       processTracedEvents = internalTracingHandler.processTracedEvents;
@@ -177,29 +156,17 @@ export async function fetchLLMCompletion(
 
   let finalMessages: BaseMessage[];
   // Some providers require at least 1 user message
-  if (
-    messages.length === 1 &&
-    PROVIDERS_WITH_REQUIRED_USER_MESSAGE.includes(modelParams.adapter)
-  ) {
+  if (messages.length === 1 && PROVIDERS_WITH_REQUIRED_USER_MESSAGE.includes(modelParams.adapter)) {
     // Ensure provider schema compliance
     finalMessages = transformSystemMessageToUserMessage(messages);
   } else {
     finalMessages = messages.map((message, idx) => {
       // For arbitrary content types, convert to string safely
-      const safeContent =
-        typeof message.content === "string"
-          ? message.content
-          : safeStringify(message.content);
+      const safeContent = typeof message.content === "string" ? message.content : safeStringify(message.content);
 
-      if (message.role === ChatMessageRole.User)
-        return new HumanMessage(safeContent);
-      if (
-        message.role === ChatMessageRole.System ||
-        message.role === ChatMessageRole.Developer
-      )
-        return idx === 0
-          ? new SystemMessage(safeContent)
-          : new HumanMessage(safeContent);
+      if (message.role === ChatMessageRole.User) return new HumanMessage(safeContent);
+      if (message.role === ChatMessageRole.System || message.role === ChatMessageRole.Developer)
+        return idx === 0 ? new SystemMessage(safeContent) : new HumanMessage(safeContent);
 
       if (message.type === ChatMessageType.ToolResult) {
         return new ToolMessage({
@@ -210,29 +177,19 @@ export async function fetchLLMCompletion(
 
       return new AIMessage({
         content: safeContent,
-        tool_calls:
-          message.type === ChatMessageType.AssistantToolCall
-            ? (message.toolCalls as any)
-            : undefined,
+        tool_calls: message.type === ChatMessageType.AssistantToolCall ? (message.toolCalls as any) : undefined,
       });
     });
   }
 
-  finalMessages = finalMessages.filter(
-    (m) => m.content.length > 0 || "tool_calls" in m,
-  );
+  finalMessages = finalMessages.filter((m) => m.content.length > 0 || "tool_calls" in m);
 
   // Common proxy configuration for all adapters
   const proxyUrl = env.HTTPS_PROXY;
   const proxyAgent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
   const timeoutMs = env.HANZO_FETCH_LLM_COMPLETION_TIMEOUT_MS;
 
-  let chatModel:
-    | ChatOpenAI
-    | ChatAnthropic
-    | ChatBedrockConverse
-    | ChatVertexAI
-    | ChatGoogleGenerativeAI;
+  let chatModel: ChatOpenAI | ChatAnthropic | ChatBedrockConverse | ChatVertexAI | ChatGoogleGenerativeAI;
   if (modelParams.adapter === LLMAdapter.Anthropic) {
     const isClaude45Family =
       modelParams.model?.includes("claude-sonnet-4-5") ||
@@ -265,17 +222,11 @@ export async function fetchLLMCompletion(
 
       // TopP and temperature cannot be specified both,
       // but Langchain is setting placeholder values despite that
-      if (
-        modelParams.temperature !== undefined &&
-        modelParams.top_p === undefined
-      ) {
+      if (modelParams.temperature !== undefined && modelParams.top_p === undefined) {
         chatModel.topP = undefined;
       }
 
-      if (
-        modelParams.top_p !== undefined &&
-        modelParams.temperature === undefined
-      ) {
+      if (modelParams.top_p !== undefined && modelParams.temperature === undefined) {
         chatModel.temperature = undefined;
       }
     }
@@ -331,8 +282,7 @@ export async function fetchLLMCompletion(
     // Only allow default provider chain in self-hosted or internal AI features
     const isSelfHosted = !isHanzoCloud;
     const credentials =
-      apiKey === BEDROCK_USE_DEFAULT_CREDENTIALS &&
-      (isSelfHosted || shouldUseHanzoAPIKey)
+      apiKey === BEDROCK_USE_DEFAULT_CREDENTIALS && (isSelfHosted || shouldUseHanzoAPIKey)
         ? undefined // undefined = use AWS SDK default credential provider chain
         : BedrockCredentialSchema.parse(JSON.parse(apiKey));
 
@@ -349,14 +299,11 @@ export async function fetchLLMCompletion(
       additionalModelRequestFields: modelParams.providerOptions as any,
     });
   } else if (modelParams.adapter === LLMAdapter.VertexAI) {
-    const { location } = config
-      ? VertexAIConfigSchema.parse(config)
-      : { location: undefined };
+    const { location } = config ? VertexAIConfigSchema.parse(config) : { location: undefined };
 
     // Handle both explicit credentials and default provider chain (ADC)
     // Only allow default provider chain in self-hosted or internal AI features
-    const shouldUseDefaultCredentials =
-      apiKey === VERTEXAI_USE_DEFAULT_CREDENTIALS && !isHanzoCloud;
+    const shouldUseDefaultCredentials = apiKey === VERTEXAI_USE_DEFAULT_CREDENTIALS && !isHanzoCloud;
 
     // When using ADC, authOptions must be undefined to use google-auth-library's default credential chain
     // This supports: GKE Workload Identity, Cloud Run service accounts, GCE metadata service, gcloud auth
@@ -366,8 +313,7 @@ export async function fetchLLMCompletion(
       ? undefined // Always use ADC auto-detection, never allow user-specified projectId
       : {
           credentials: GCPServiceAccountKeySchema.parse(JSON.parse(apiKey)),
-          projectId: GCPServiceAccountKeySchema.parse(JSON.parse(apiKey))
-            .project_id,
+          projectId: GCPServiceAccountKeySchema.parse(JSON.parse(apiKey)).project_id,
         };
 
     // Requests time out after 60 seconds for both public and private endpoints by default
@@ -401,9 +347,7 @@ export async function fetchLLMCompletion(
     });
   } else {
     const _exhaustiveCheck: never = modelParams.adapter;
-    throw new Error(
-      `This model provider is not supported: ${_exhaustiveCheck}`,
-    );
+    throw new Error(`This model provider is not supported: ${_exhaustiveCheck}`);
   }
 
   const runConfig = {
@@ -429,9 +373,7 @@ export async function fetchLLMCompletion(
         function: tool,
       }));
 
-      const result = await chatModel
-        .bindTools(langchainTools)
-        .invoke(finalMessages, runConfig);
+      const result = await chatModel.bindTools(langchainTools).invoke(finalMessages, runConfig);
 
       const parsed = ToolCallResponseSchema.safeParse(result);
       if (!parsed.success) throw Error("Failed to parse LLM tool call result");
@@ -439,19 +381,13 @@ export async function fetchLLMCompletion(
       return parsed.data;
     }
 
-    if (streaming)
-      return chatModel
-        .pipe(new BytesOutputParser())
-        .stream(finalMessages, runConfig);
+    if (streaming) return chatModel.pipe(new BytesOutputParser()).stream(finalMessages, runConfig);
 
-    const completion = await chatModel
-      .pipe(new StringOutputParser())
-      .invoke(finalMessages, runConfig);
+    const completion = await chatModel.pipe(new StringOutputParser()).invoke(finalMessages, runConfig);
 
     return completion;
   } catch (e) {
-    const responseStatusCode =
-      (e as any)?.response?.status ?? (e as any)?.status ?? 500;
+    const responseStatusCode = (e as any)?.response?.status ?? (e as any)?.status ?? 500;
     const message = e instanceof Error ? e.message : String(e);
 
     // Check for non-retryable error patterns in message
@@ -462,9 +398,7 @@ export async function fetchLLMCompletion(
       "TypeError",
     ];
 
-    const hasNonRetryablePattern = nonRetryablePatterns.some((pattern) =>
-      message.includes(pattern),
-    );
+    const hasNonRetryablePattern = nonRetryablePatterns.some((pattern) => message.includes(pattern));
 
     // Determine retryability:
     // - 429 (rate limit): retryable with custom delay
@@ -473,10 +407,7 @@ export async function fetchLLMCompletion(
     // - Non-retryable patterns: not retryable
     let isRetryable = false;
 
-    if (
-      e instanceof Error &&
-      (e.name === "InsufficientQuotaError" || e.name === "ThrottlingException")
-    ) {
+    if (e instanceof Error && (e.name === "InsufficientQuotaError" || e.name === "ThrottlingException")) {
       // Explicit 429 handling
       isRetryable = true;
     } else if (responseStatusCode >= 500) {

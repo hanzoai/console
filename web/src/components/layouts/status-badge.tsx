@@ -11,8 +11,7 @@ const statusCategories = {
   partial: ["partial"],
 };
 
-export type Status =
-  (typeof statusCategories)[keyof typeof statusCategories][number];
+export type Status = (typeof statusCategories)[keyof typeof statusCategories][number];
 
 export const StatusBadge = ({
   type,
@@ -27,7 +26,6 @@ export const StatusBadge = ({
   showText?: boolean;
   children?: ReactNode;
 }) => {
-
   let badgeColor = "bg-muted-gray text-primary";
   let dotColor = "bg-muted-foreground";
   let dotPingColor = "bg-muted-foreground";
@@ -59,29 +57,13 @@ export const StatusBadge = ({
   }
 
   // Safely handle undefined or null type
-  
+
   return (
-    <div
-      className={cn(
-        "inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs",
-        badgeColor,
-        className,
-      )}
-    >
-            {showDot && (
+    <div className={cn("inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs", badgeColor, className)}>
+      {showDot && (
         <span className="relative inline-flex h-2 w-2">
-          <span
-            className={cn(
-              "absolute inline-flex h-full w-full rounded-full opacity-75",
-              dotColor,
-            )}
-          ></span>
-          <span
-            className={cn(
-              "relative inline-flex h-2 w-2 rounded-full",
-              dotPingColor,
-            )}
-          ></span>
+          <span className={cn("absolute inline-flex h-full w-full rounded-full opacity-75", dotColor)}></span>
+          <span className={cn("relative inline-flex h-2 w-2 rounded-full", dotPingColor)}></span>
         </span>
       )}
       {showText && type && <span>{type[0].toUpperCase() + type.slice(1)}</span>}

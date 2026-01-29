@@ -9,19 +9,10 @@ import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 
-export function SessionBadge({
-  sessionId,
-  projectId,
-}: {
-  sessionId: string | null;
-  projectId: string;
-}) {
+export function SessionBadge({ sessionId, projectId }: { sessionId: string | null; projectId: string }) {
   if (!sessionId) return null;
   return (
-    <Link
-      href={`/project/${projectId}/sessions/${encodeURIComponent(sessionId)}`}
-      className="inline-flex"
-    >
+    <Link href={`/project/${projectId}/sessions/${encodeURIComponent(sessionId)}`} className="inline-flex">
       <Badge>
         <span className="truncate">Session: {sessionId}</span>
         <ExternalLinkIcon className="ml-1 h-3 w-3" />
@@ -30,19 +21,10 @@ export function SessionBadge({
   );
 }
 
-export function UserIdBadge({
-  userId,
-  projectId,
-}: {
-  userId: string | null;
-  projectId: string;
-}) {
+export function UserIdBadge({ userId, projectId }: { userId: string | null; projectId: string }) {
   if (!userId) return null;
   return (
-    <Link
-      href={`/project/${projectId}/users/${encodeURIComponent(userId)}`}
-      className="inline-flex"
-    >
+    <Link href={`/project/${projectId}/users/${encodeURIComponent(userId)}`} className="inline-flex">
       <Badge>
         <span className="truncate">User ID: {userId}</span>
         <ExternalLinkIcon className="ml-1 h-3 w-3" />
@@ -51,11 +33,7 @@ export function UserIdBadge({
   );
 }
 
-export function EnvironmentBadge({
-  environment,
-}: {
-  environment: string | null;
-}) {
+export function EnvironmentBadge({ environment }: { environment: string | null }) {
   if (!environment) return null;
   return <Badge variant="tertiary">Env: {environment}</Badge>;
 }

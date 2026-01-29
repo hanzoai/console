@@ -10,10 +10,7 @@ const executionWrapper = async <T, Y>(
   const startTime = Date.now();
   const res = await fn(input);
   const duration = Date.now() - startTime;
-  span?.setAttribute(
-    `hanzo.experiment.amts.${attributePrefix}-duration`,
-    duration,
-  );
+  span?.setAttribute(`hanzo.experiment.amts.${attributePrefix}-duration`, duration);
   return [res, duration];
 };
 

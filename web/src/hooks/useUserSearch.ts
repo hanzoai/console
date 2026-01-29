@@ -9,12 +9,7 @@ interface UseUserSearchProps {
   enabled?: boolean;
 }
 
-export function useUserSearch({
-  projectId,
-  excludeUserIds,
-  limit = 50,
-  enabled = true,
-}: UseUserSearchProps) {
+export function useUserSearch({ projectId, excludeUserIds, limit = 50, enabled = true }: UseUserSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
@@ -39,19 +34,14 @@ export function useUserSearch({
       searchQuery: debouncedSearchQuery || undefined,
       page: 0,
       limit,
-      excludeUserIds:
-        excludeUserIds && excludeUserIds.length > 0
-          ? excludeUserIds
-          : undefined,
+      excludeUserIds: excludeUserIds && excludeUserIds.length > 0 ? excludeUserIds : undefined,
     },
     {
       enabled: hasProjectMembersReadAccess && enabled,
     },
   );
 
-  const hasMoreResults =
-    searchResults.data &&
-    searchResults.data.totalCount > searchResults.data.users.length;
+  const hasMoreResults = searchResults.data && searchResults.data.totalCount > searchResults.data.users.length;
 
   return {
     searchQuery,

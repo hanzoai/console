@@ -1,11 +1,7 @@
 import { z } from "zod/v4";
 import { prisma } from "@hanzo/shared/src/db";
 import hanzoDashboards from "../constants/hanzo-dashboards.json";
-import {
-  logger,
-  WidgetDomainSchema,
-  DashboardDomainSchema,
-} from "@hanzo/shared/src/server";
+import { logger, WidgetDomainSchema, DashboardDomainSchema } from "@hanzo/shared/src/server";
 
 /**
  * JSON STRUCTURE & SCHEMAS
@@ -61,9 +57,7 @@ export const upsertHanzoDashboards = async (force = false) => {
     await upsertWidgets(parsed.widgets, force);
     await upsertDashboards(parsed.dashboards, force);
 
-    logger.info(
-      `Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`,
-    );
+    logger.info(`Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error(
       `Error upserting Hanzo dashboards after ${Date.now() - startTime}ms: ${
@@ -90,11 +84,7 @@ async function upsertWidgets(widgets: ParsedWidgets, force: boolean) {
 
   const upsertPromises = widgets.map((widget) => {
     const existingUpdatedAt = existingMap.get(widget.id);
-    if (
-      !force &&
-      existingUpdatedAt &&
-      existingUpdatedAt.getTime() === widget.updatedAt.getTime()
-    ) {
+    if (!force && existingUpdatedAt && existingUpdatedAt.getTime() === widget.updatedAt.getTime()) {
       logger.debug(`Widget ${widget.name} already up to date. Skipping.`);
       return Promise.resolve();
     }
@@ -126,10 +116,7 @@ async function upsertWidgets(widgets: ParsedWidgets, force: boolean) {
       })
       .then(() => logger.info(`Upserted widget ${widget.name} (${widget.id})`))
       .catch((error) => {
-        logger.error(
-          `Error upserting widget ${widget.name} (${widget.id}): ${error.message}`,
-          { error },
-        );
+        logger.error(`Error upserting widget ${widget.name} (${widget.id}): ${error.message}`, { error });
       });
   });
 
@@ -151,11 +138,7 @@ async function upsertDashboards(dashboards: ParsedDashboards, force: boolean) {
 
   const promises = dashboards.map((dashboard) => {
     const existingUpdatedAt = existingMap.get(dashboard.id);
-    if (
-      !force &&
-      existingUpdatedAt &&
-      existingUpdatedAt.getTime() === dashboard.updatedAt.getTime()
-    ) {
+    if (!force && existingUpdatedAt && existingUpdatedAt.getTime() === dashboard.updatedAt.getTime()) {
       logger.debug(`Dashboard ${dashboard.name} already up to date. Skipping.`);
       return Promise.resolve();
     }
@@ -180,14 +163,9 @@ async function upsertDashboards(dashboards: ParsedDashboards, force: boolean) {
           ...baseDashboard,
         },
       })
-      .then(() =>
-        logger.info(`Upserted dashboard ${dashboard.name} (${dashboard.id})`),
-      )
+      .then(() => logger.info(`Upserted dashboard ${dashboard.name} (${dashboard.id})`))
       .catch((error) => {
-        logger.error(
-          `Error upserting dashboard ${dashboard.name} (${dashboard.id}): ${error.message}`,
-          { error },
-        );
+        logger.error(`Error upserting dashboard ${dashboard.name} (${dashboard.id}): ${error.message}`, { error });
       });
   });
 

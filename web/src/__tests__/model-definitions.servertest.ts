@@ -1,11 +1,7 @@
 /** @jest-environment node */
 
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-  pruneDatabase,
-} from "@/src/__tests__/test-utils";
+import { makeAPICall, makeZodVerifiedAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import {
   DeleteModelV1Response,
   GetModelV1Response,
@@ -122,13 +118,7 @@ describe("/models API Endpoints", () => {
   afterEach(async () => await pruneDatabase());
 
   it("GET /models", async () => {
-    const models = await makeZodVerifiedAPICall(
-      GetModelsV1Response,
-      "GET",
-      "/api/public/models",
-      undefined,
-      auth,
-    );
+    const models = await makeZodVerifiedAPICall(GetModelsV1Response, "GET", "/api/public/models", undefined, auth);
     expect(models.status).toBe(200);
     expect(models.body.data.length).toBe(2);
     expect(models.body.data[0]).toMatchObject({
@@ -182,13 +172,7 @@ describe("/models API Endpoints", () => {
       output: { price: 0.004 },
     });
 
-    const models = await makeZodVerifiedAPICall(
-      GetModelsV1Response,
-      "GET",
-      "/api/public/models",
-      undefined,
-      auth,
-    );
+    const models = await makeZodVerifiedAPICall(GetModelsV1Response, "GET", "/api/public/models", undefined, auth);
     expect(models.body.data.length).toBe(3);
 
     const getModel = await makeZodVerifiedAPICall(
@@ -286,21 +270,10 @@ describe("/models API Endpoints", () => {
   });
 
   it("Cannot delete built-in models", async () => {
-    const models = await makeZodVerifiedAPICall(
-      GetModelsV1Response,
-      "GET",
-      "/api/public/models",
-      undefined,
-      auth,
-    );
+    const models = await makeZodVerifiedAPICall(GetModelsV1Response, "GET", "/api/public/models", undefined, auth);
     expect(models.body.data.length).toBe(2);
 
-    const deleteModel = await makeAPICall(
-      "DELETE",
-      `/api/public/models/${models.body.data[0].id}`,
-      undefined,
-      auth,
-    );
+    const deleteModel = await makeAPICall("DELETE", `/api/public/models/${models.body.data[0].id}`, undefined, auth);
     expect(deleteModel.status).toBe(404);
   });
 
@@ -321,13 +294,7 @@ describe("/models API Endpoints", () => {
       auth,
     );
 
-    const models = await makeZodVerifiedAPICall(
-      GetModelsV1Response,
-      "GET",
-      "/api/public/models",
-      undefined,
-      auth,
-    );
+    const models = await makeZodVerifiedAPICall(GetModelsV1Response, "GET", "/api/public/models", undefined, auth);
     expect(models.body.data.length).toBe(3);
 
     await makeZodVerifiedAPICall(

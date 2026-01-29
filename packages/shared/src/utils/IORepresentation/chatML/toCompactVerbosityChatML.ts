@@ -38,12 +38,7 @@ export function toCompactVerbosityChatML(io: unknown): {
       const obj = io as Record<string, unknown>;
 
       // Check for direct role+content structure
-      if (
-        "role" in obj &&
-        typeof obj.role === "string" &&
-        "content" in obj &&
-        obj.content !== undefined
-      ) {
+      if ("role" in obj && typeof obj.role === "string" && "content" in obj && obj.content !== undefined) {
         return { success: true, data: JSON.stringify(obj.content) ?? null };
       }
 

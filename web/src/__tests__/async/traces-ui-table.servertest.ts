@@ -1,8 +1,5 @@
 import { v4 } from "uuid";
-import {
-  createObservationsCh,
-  createTracesCh,
-} from "@hanzo/shared/src/server";
+import { createObservationsCh, createTracesCh } from "@hanzo/shared/src/server";
 import { createObservation, createTrace } from "@hanzo/shared/src/server";
 import {
   getTracesTable,
@@ -118,10 +115,7 @@ describe("Traces table API test", () => {
   [
     {
       traceInput: {},
-      observationInput: [
-        { cost_details: { total: 100 } },
-        { cost_details: { total: 200 } },
-      ],
+      observationInput: [{ cost_details: { total: 100 } }, { cost_details: { total: 200 } }],
       filterstate: [
         {
           column: "totalCost",
@@ -134,10 +128,7 @@ describe("Traces table API test", () => {
     },
     {
       traceInput: {},
-      observationInput: [
-        { usage_details: { total: 100 } },
-        { usage_details: { total: 200 } },
-      ],
+      observationInput: [{ usage_details: { total: 100 } }, { usage_details: { total: 200 } }],
       filterstate: [
         {
           column: "totalTokens",
@@ -191,16 +182,12 @@ describe("Traces table API test", () => {
       const obs1 = createObservation({
         trace_id,
         project_id,
-        ...(testConfig.observationInput.length > 0
-          ? testConfig.observationInput[0]
-          : {}),
+        ...(testConfig.observationInput.length > 0 ? testConfig.observationInput[0] : {}),
       });
       const obs2 = createObservation({
         trace_id,
         project_id,
-        ...(testConfig.observationInput.length > 1
-          ? testConfig.observationInput[1]
-          : {}),
+        ...(testConfig.observationInput.length > 1 ? testConfig.observationInput[1] : {}),
       });
       await createObservationsCh([obs1, obs2]);
 

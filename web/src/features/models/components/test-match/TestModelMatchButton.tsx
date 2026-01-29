@@ -11,10 +11,7 @@ type TestModelMatchButtonProps = {
 
 export type { TestModelMatchButtonProps };
 
-export function TestModelMatchButton({
-  projectId,
-  variant,
-}: TestModelMatchButtonProps) {
+export function TestModelMatchButton({ projectId, variant }: TestModelMatchButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,11 +25,7 @@ export function TestModelMatchButton({
         Test Model Match
       </ActionButton>
 
-      <TestModelMatchDialog
-        projectId={projectId}
-        open={open}
-        onOpenChange={setOpen}
-      />
+      <TestModelMatchDialog projectId={projectId} open={open} onOpenChange={setOpen} />
     </>
   );
 }

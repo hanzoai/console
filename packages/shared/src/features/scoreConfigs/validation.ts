@@ -1,9 +1,6 @@
 import { z } from "zod/v4";
 import { ScoreConfig as ScoreConfigDbType } from "@prisma/client";
-import {
-  ScoreConfigDomain,
-  ScoreConfigSchema,
-} from "../../domain/score-configs";
+import { ScoreConfigDomain, ScoreConfigSchema } from "../../domain/score-configs";
 
 /**
  * Use this function when pulling a list of score configs from the database before using in the application to ensure type safety.
@@ -32,9 +29,8 @@ export const filterAndValidateDbScoreConfigList = (
  * @returns validated score config
  * @throws error if score fails validation
  */
-export const validateDbScoreConfig = (
-  scoreConfig: ScoreConfigDbType,
-): ScoreConfigDomain => ScoreConfigSchema.parse(scoreConfig);
+export const validateDbScoreConfig = (scoreConfig: ScoreConfigDbType): ScoreConfigDomain =>
+  ScoreConfigSchema.parse(scoreConfig);
 
 /**
  * Use this function when pulling a single score config from the database before using in the application to ensure type safety.
@@ -45,5 +41,4 @@ export const validateDbScoreConfig = (
  * - data: the validated score config if success is true
  * - error: the error object if success is false
  */
-export const validateDbScoreConfigSafe = (scoreConfig: ScoreConfigDbType) =>
-  ScoreConfigSchema.safeParse(scoreConfig);
+export const validateDbScoreConfigSafe = (scoreConfig: ScoreConfigDbType) => ScoreConfigSchema.safeParse(scoreConfig);

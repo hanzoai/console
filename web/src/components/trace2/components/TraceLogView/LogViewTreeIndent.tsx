@@ -31,19 +31,12 @@ export const LogViewTreeIndent = memo(function LogViewTreeIndent({
       {/* Vertical lines for each ancestor level */}
       {treeLines.map((hasLine, index) => (
         <div key={index} className="relative w-3">
-          {hasLine && (
-            <div className="absolute bottom-0 left-1.5 top-0 w-px bg-border" />
-          )}
+          {hasLine && <div className="absolute bottom-0 left-1.5 top-0 w-px bg-border" />}
         </div>
       ))}
       {/* Current level connector */}
       <div className="relative w-3">
-        <div
-          className={cn(
-            "absolute left-1.5 top-0 w-px bg-border",
-            isLastSibling ? "h-1/2" : "h-full",
-          )}
-        />
+        <div className={cn("absolute left-1.5 top-0 w-px bg-border", isLastSibling ? "h-1/2" : "h-full")} />
         <div className="absolute left-1.5 top-1/2 h-px w-1.5 bg-border" />
       </div>
     </div>

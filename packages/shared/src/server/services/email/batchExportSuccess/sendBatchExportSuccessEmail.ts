@@ -6,9 +6,7 @@ import { BatchExportSuccessEmailTemplate } from "./BatchExportSuccessEmailTempla
 import { logger } from "../../../logger";
 
 type SendBatchExportSuccessParams = {
-  env: Partial<
-    Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL", string | undefined>
-  >;
+  env: Partial<Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL", string | undefined>>;
   receiverEmail: string;
   downloadLink: string;
   userName: string;

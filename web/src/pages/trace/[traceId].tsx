@@ -44,13 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const TraceRedirectPage = ({
-  notFound,
-  duplicatesFound,
-}: {
-  notFound?: boolean;
-  duplicatesFound?: boolean;
-}) => {
+const TraceRedirectPage = ({ notFound, duplicatesFound }: { notFound?: boolean; duplicatesFound?: boolean }) => {
   const router = useRouter();
   if (router.isFallback) {
     return <div className="p-3">Loading...</div>;
@@ -70,12 +64,7 @@ const TraceRedirectPage = ({
   }
 
   if (duplicatesFound) {
-    return (
-      <ErrorPage
-        title="Trace not found"
-        message="Please upgrade the SDK as the URL schema has changed."
-      />
-    );
+    return <ErrorPage title="Trace not found" message="Please upgrade the SDK as the URL schema has changed." />;
   }
 
   return null;

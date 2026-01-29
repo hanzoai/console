@@ -1,14 +1,9 @@
 import { env } from "@/src/env.mjs";
-import {
-  type StorageService,
-  StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+import { type StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
 
 let s3StorageServiceClient: StorageService;
 
-export const getMediaStorageServiceClient = (
-  bucketName: string,
-): StorageService => {
+export const getMediaStorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,

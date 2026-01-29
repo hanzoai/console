@@ -12,13 +12,7 @@ export type EvaluatorStatusType = z.infer<typeof EvaluatorStatusSchema>;
 
 export type PartialConfig = Pick<
   JobConfiguration,
-  | "scoreName"
-  | "targetObject"
-  | "filter"
-  | "variableMapping"
-  | "sampling"
-  | "delay"
-  | "timeScope"
+  "scoreName" | "targetObject" | "filter" | "variableMapping" | "sampling" | "delay" | "timeScope"
 > & { id?: string };
 
 export const RAGAS_TEMPLATE_PREFIX = "__ragas__";

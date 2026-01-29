@@ -1,10 +1,6 @@
 import React from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { PRODUCTION_LABEL, LATEST_PROMPT_LABEL } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
@@ -99,10 +95,7 @@ export function TruncatedLabels({
                     <StatusBadge
                       type={label}
                       key={label}
-                      className={cn(
-                        "break-all sm:break-normal",
-                        badgeClassName,
-                      )}
+                      className={cn("break-all sm:break-normal", badgeClassName)}
                       isLive={label === PRODUCTION_LABEL}
                     />
                   ),

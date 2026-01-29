@@ -20,23 +20,14 @@ export function useDashboardDateRange(
     defaultRelativeAggregation?: DashboardDateRangeAggregationOption;
   } = {},
 ): UseDashboardDateRangeOutput {
-  const fallbackAggregation =
-    options.defaultRelativeAggregation ??
-    DEFAULT_DASHBOARD_AGGREGATION_SELECTION;
+  const fallbackAggregation = options.defaultRelativeAggregation ?? DEFAULT_DASHBOARD_AGGREGATION_SELECTION;
 
   const [queryParams, setQueryParams] = useQueryParams({
-    dateRange: withDefault(
-      StringParam,
-      getAbbreviatedTimeRange(fallbackAggregation),
-    ),
+    dateRange: withDefault(StringParam, getAbbreviatedTimeRange(fallbackAggregation)),
   });
 
   return useMemo(() => {
-    const timeRange = rangeFromString(
-      queryParams.dateRange,
-      DASHBOARD_AGGREGATION_OPTIONS,
-      fallbackAggregation,
-    );
+    const timeRange = rangeFromString(queryParams.dateRange, DASHBOARD_AGGREGATION_OPTIONS, fallbackAggregation);
 
     const setTimeRange = (timeRange: TimeRange) => {
       setQueryParams({ dateRange: rangeToString(timeRange) });

@@ -1,8 +1,4 @@
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { SelectItem } from "@/src/components/ui/select";
 import { Role } from "@hanzo/shared";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
@@ -10,19 +6,10 @@ import {
   organizationRoleAccessRights,
   orgNoneRoleComment,
 } from "@/src/features/rbac/constants/organizationAccessRights";
-import {
-  projectNoneRoleComment,
-  projectRoleAccessRights,
-} from "@/src/features/rbac/constants/projectAccessRights";
+import { projectNoneRoleComment, projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
 
-export const RoleSelectItem = ({
-  role,
-  isProjectRole,
-}: {
-  role: Role;
-  isProjectRole?: boolean;
-}) => {
+export const RoleSelectItem = ({ role, isProjectRole }: { role: Role; isProjectRole?: boolean }) => {
   const isProjectNoneRole = role === Role.NONE && isProjectRole;
   const isOrgNoneRole = role === Role.NONE && !isProjectRole;
   const orgScopes = reduceScopesToListItems(organizationRoleAccessRights, role);
@@ -52,9 +39,7 @@ export const RoleSelectItem = ({
               <p className="mt-2 text-xs font-semibold">Project Scopes</p>
               <ul className="list-inside list-disc text-xs">{projectScopes}</ul>
               <p className="mt-2 border-t pt-2 text-xs">
-                Note:{" "}
-                <span className="text-muted-foreground">Muted scopes</span> are
-                inherited from lower role.
+                Note: <span className="text-muted-foreground">Muted scopes</span> are inherited from lower role.
               </p>
             </>
           )}
@@ -64,14 +49,11 @@ export const RoleSelectItem = ({
   );
 };
 
-const reduceScopesToListItems = (
-  accessRights: Record<string, string[]>,
-  role: Role,
-) => {
+const reduceScopesToListItems = (accessRights: Record<string, string[]>, role: Role) => {
   const currentRoleLevel = orderedRoles[role];
-  const lowerRole = Object.entries(orderedRoles).find(
-    ([_role, level]) => level === currentRoleLevel - 1,
-  )?.[0] as Role | undefined;
+  const lowerRole = Object.entries(orderedRoles).find(([_role, level]) => level === currentRoleLevel - 1)?.[0] as
+    | Role
+    | undefined;
   const inheritedScopes = lowerRole ? accessRights[lowerRole] : [];
 
   return accessRights[role].length > 0 ? (
@@ -89,12 +71,8 @@ const reduceScopesToListItems = (
           {} as Record<string, string[]>,
         ),
       ).map(([resource, actions]) => {
-        const inheritedActions = actions.filter((action) =>
-          inheritedScopes.includes(`${resource}:${action}`),
-        );
-        const newActions = actions.filter(
-          (action) => !inheritedScopes.includes(`${resource}:${action}`),
-        );
+        const inheritedActions = actions.filter((action) => inheritedScopes.includes(`${resource}:${action}`));
+        const newActions = actions.filter((action) => !inheritedScopes.includes(`${resource}:${action}`));
 
         return (
           <li key={resource}>
@@ -103,9 +81,7 @@ const reduceScopesToListItems = (
               {inheritedActions.length > 0 ? inheritedActions.join(", ") : ""}
               {newActions.length > 0 && inheritedActions.length > 0 ? ", " : ""}
             </span>
-            <span className="font-semibold">
-              {newActions.length > 0 ? newActions.join(", ") : ""}
-            </span>
+            <span className="font-semibold">{newActions.length > 0 ? newActions.join(", ") : ""}</span>
           </li>
         );
       })}

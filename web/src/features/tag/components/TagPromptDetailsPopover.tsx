@@ -39,10 +39,7 @@ export function TagPromptDetailsPopover({
       setIsLoading(false);
       //trpcErrorToast(err);
       // Rollback to the previous value if mutation fails
-      utils.prompts.allVersions.setData(
-        { projectId: projectId, name: promptName },
-        context?.prev,
-      );
+      utils.prompts.allVersions.setData({ projectId: projectId, name: promptName }, context?.prev);
     },
     onSettled: (data, error, { projectId: projectId, tags }) => {
       setIsLoading(false);
@@ -51,13 +48,9 @@ export function TagPromptDetailsPopover({
         (oldQueryData: RouterOutput["prompts"]["allVersions"] | undefined) => {
           return oldQueryData
             ? {
-                promptVersions: oldQueryData.promptVersions.map(
-                  (prompt: any) => {
-                    return prompt.name === promptName
-                      ? { ...prompt, tags }
-                      : prompt;
-                  },
-                ),
+                promptVersions: oldQueryData.promptVersions.map((prompt: any) => {
+                  return prompt.name === promptName ? { ...prompt, tags } : prompt;
+                }),
                 totalCount: oldQueryData.totalCount,
               }
             : undefined;

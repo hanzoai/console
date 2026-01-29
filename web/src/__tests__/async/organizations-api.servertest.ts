@@ -1,16 +1,10 @@
 /** @jest-environment node */
 
-import {
-  makeZodVerifiedAPICall,
-  makeAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
 import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
-import {
-  createAndAddApiKeysToDb,
-  createBasicAuthHeader,
-} from "@hanzo/shared/src/server";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
 
 // Schema for organization project response
 const OrganizationProjectSchema = z.object({
@@ -225,13 +219,11 @@ describe("Admin Organizations API", () => {
       expect(Array.isArray(response.body.organizations)).toBe(true);
       expect(response.body.organizations.length).toBeGreaterThan(0);
       // Verify the test organization is in the list
-      expect(
-        response.body.organizations.some((org) => org.id === testOrgId),
-      ).toBe(true);
-      expect(
-        response.body.organizations.find((org) => org.id === testOrgId)
-          ?.metadata,
-      ).toEqual({ tier: "testing", users: 5 });
+      expect(response.body.organizations.some((org) => org.id === testOrgId)).toBe(true);
+      expect(response.body.organizations.find((org) => org.id === testOrgId)?.metadata).toEqual({
+        tier: "testing",
+        users: 5,
+      });
       // Verify projects field is present for all organizations
       response.body.organizations.forEach((org) => {
         expect(org.projects).toBeDefined();
@@ -431,13 +423,9 @@ describe("Admin Organizations API", () => {
     });
 
     it("should return 401 when no authorization header is provided", async () => {
-      const result = await makeAPICall(
-        "PUT",
-        `/api/admin/organizations/${testOrgId}`,
-        {
-          name: "New Name",
-        },
-      );
+      const result = await makeAPICall("PUT", `/api/admin/organizations/${testOrgId}`, {
+        name: "New Name",
+      });
 
       expect(result.status).toBe(401);
       expect(result.body.error).toContain("Unauthorized");
@@ -530,9 +518,7 @@ describe("Admin Organizations API", () => {
       );
 
       expect(result.status).toBe(400);
-      expect(result.body.error).toContain(
-        "Cannot delete organization with existing projects",
-      );
+      expect(result.body.error).toContain("Cannot delete organization with existing projects");
 
       // Clean up the project
       await prisma.project.deleteMany({
@@ -541,10 +527,7 @@ describe("Admin Organizations API", () => {
     });
 
     it("should return 401 when no authorization header is provided", async () => {
-      const result = await makeAPICall(
-        "DELETE",
-        `/api/admin/organizations/${testOrgId}`,
-      );
+      const result = await makeAPICall("DELETE", `/api/admin/organizations/${testOrgId}`);
 
       expect(result.status).toBe(401);
       expect(result.body.error).toContain("Unauthorized");
@@ -687,13 +670,9 @@ describe("Admin Organizations API", () => {
     });
 
     it("should return 401 when no authorization header is provided", async () => {
-      const result = await makeAPICall(
-        "POST",
-        `/api/admin/organizations/${testOrgId}/apiKeys`,
-        {
-          note: "Test API Key",
-        },
-      );
+      const result = await makeAPICall("POST", `/api/admin/organizations/${testOrgId}/apiKeys`, {
+        note: "Test API Key",
+      });
 
       expect(result.status).toBe(401);
       expect(result.body.error).toContain("Unauthorized");
@@ -789,10 +768,7 @@ describe("Admin Organizations API", () => {
     });
 
     it("should return 401 when no authorization header is provided", async () => {
-      const result = await makeAPICall(
-        "DELETE",
-        `/api/admin/organizations/${testOrgId}/apiKeys/${testApiKeyId}`,
-      );
+      const result = await makeAPICall("DELETE", `/api/admin/organizations/${testOrgId}/apiKeys/${testApiKeyId}`);
 
       expect(result.status).toBe(401);
       expect(result.body.error).toContain("Unauthorized");
@@ -800,12 +776,7 @@ describe("Admin Organizations API", () => {
   });
 
   it("should return 405 for non-supported methods", async () => {
-    const result = await makeAPICall(
-      "PATCH",
-      "/api/admin/organizations",
-      undefined,
-      `Bearer ${ADMIN_API_KEY}`,
-    );
+    const result = await makeAPICall("PATCH", "/api/admin/organizations", undefined, `Bearer ${ADMIN_API_KEY}`);
     expect(result.status).toBe(405);
     expect(result.body.error).toContain("Method Not Allowed");
   });
@@ -899,9 +870,7 @@ describe("Public Organizations API", () => {
         expect(projectIds).toContain(testProject2Id);
 
         // Verify project structure
-        const project1 = response.body.projects.find(
-          (p) => p.id === testProject1Id,
-        );
+        const project1 = response.body.projects.find((p) => p.id === testProject1Id);
         expect(project1).toBeDefined();
         expect(project1?.name).toBeTruthy();
         expect(project1?.metadata).toEqual({
@@ -911,9 +880,7 @@ describe("Public Organizations API", () => {
         expect(project1?.createdAt).toBeTruthy();
         expect(project1?.updatedAt).toBeTruthy();
 
-        const project2 = response.body.projects.find(
-          (p) => p.id === testProject2Id,
-        );
+        const project2 = response.body.projects.find((p) => p.id === testProject2Id);
         expect(project2).toBeDefined();
         expect(project2?.metadata).toEqual({
           type: "test",
@@ -938,15 +905,10 @@ describe("Public Organizations API", () => {
           "GET",
           `/api/public/organizations/projects`,
           undefined,
-          createBasicAuthHeader(
-            projectApiKey.publicKey,
-            projectApiKey.secretKey,
-          ),
+          createBasicAuthHeader(projectApiKey.publicKey, projectApiKey.secretKey),
         );
         expect(result.status).toBe(403);
-        expect(result.body.error).toContain(
-          "Organization-scoped API key required",
-        );
+        expect(result.body.error).toContain("Organization-scoped API key required");
 
         // Clean up
         await prisma.apiKey.delete({
@@ -1043,10 +1005,7 @@ describe("Public Organizations API", () => {
           "GET",
           `/api/public/organizations/projects`,
           undefined,
-          createBasicAuthHeader(
-            emptyOrgApiKey.publicKey,
-            emptyOrgApiKey.secretKey,
-          ),
+          createBasicAuthHeader(emptyOrgApiKey.publicKey, emptyOrgApiKey.secretKey),
           200,
         );
 
@@ -1081,9 +1040,7 @@ describe("Public Organizations API", () => {
         );
 
         expect(response.status).toBe(200);
-        const nullMetadataProject = response.body.projects.find(
-          (p) => p.id === projectWithNullMetadata.id,
-        );
+        const nullMetadataProject = response.body.projects.find((p) => p.id === projectWithNullMetadata.id);
         expect(nullMetadataProject).toBeDefined();
         expect(nullMetadataProject?.metadata).toBeNull();
       });
@@ -1258,9 +1215,7 @@ describe("Public Organizations API", () => {
       );
 
       expect(response.status).toBe(403);
-      expect(response.body.error).toContain(
-        "Organization-scoped API key required",
-      );
+      expect(response.body.error).toContain("Organization-scoped API key required");
 
       // Clean up
       await prisma.apiKey.delete({

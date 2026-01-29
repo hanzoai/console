@@ -154,9 +154,7 @@ export function generateRowId(
  * @param metrics - Array of metric field names
  * @returns Object with all metrics initialized to 0
  */
-export function createEmptyMetricValues(
-  metrics: string[],
-): Record<string, number> {
+export function createEmptyMetricValues(metrics: string[]): Record<string, number> {
   return metrics.reduce(
     (acc, metric) => {
       acc[metric] = 0;
@@ -198,8 +196,7 @@ function processLevelRecursively(
       const metricValues = extractMetricValues(row, metrics);
 
       // Create label from dimension path (all parent dimension values)
-      const label =
-        dimensionPath.length > 0 ? dimensionPath.join(" - ") : "Data";
+      const label = dimensionPath.length > 0 ? dimensionPath.join(" - ") : "Data";
 
       return {
         id: `data-${dataLevel}-${dimensionPath.join("-")}-${index}`,
@@ -217,9 +214,7 @@ function processLevelRecursively(
   // Recursive case: process current dimension and recurse on remaining dimensions
   const [currentDimension, ...nextDimensions] = remainingDimensions;
   const groups = groupDataByDimension(data, currentDimension!);
-  const sortedGroups = Object.entries(groups).sort(([a], [b]) =>
-    a.localeCompare(b),
-  );
+  const sortedGroups = Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
 
   for (const [dimensionValue, groupData] of sortedGroups) {
     const newDimensionPath = [...dimensionPath, dimensionValue];
@@ -237,13 +232,7 @@ function processLevelRecursively(
     }
 
     // Recursively process remaining dimensions for this group
-    const childRows = processLevelRecursively(
-      groupData,
-      nextDimensions,
-      metrics,
-      totalDimensions,
-      newDimensionPath,
-    );
+    const childRows = processLevelRecursively(groupData, nextDimensions, metrics, totalDimensions, newDimensionPath);
 
     rows.push(...childRows);
   }
@@ -294,10 +283,7 @@ function processLevelRecursively(
  * // 3. Grand total row for all data
  * ```
  */
-export function transformToPivotTable(
-  data: DatabaseRow[],
-  config: PivotTableConfig,
-): PivotTableRow[] {
+export function transformToPivotTable(data: DatabaseRow[], config: PivotTableConfig): PivotTableRow[] {
   // Validate configuration
   validatePivotTableConfig(config);
 
@@ -341,10 +327,7 @@ export function transformToPivotTable(
  * @param dimensions - Array of dimension field names to extract
  * @returns Object containing only dimension field values
  */
-export function extractDimensionValues(
-  row: DatabaseRow,
-  dimensions: string[],
-): Record<string, string> {
+export function extractDimensionValues(row: DatabaseRow, dimensions: string[]): Record<string, string> {
   return dimensions.reduce(
     (acc, dimension) => {
       const value = row[dimension];
@@ -363,10 +346,7 @@ export function extractDimensionValues(
  * @param metrics - Array of metric field names to extract
  * @returns Object containing only metric field values
  */
-export function extractMetricValues(
-  row: DatabaseRow,
-  metrics: string[],
-): Record<string, number> {
+export function extractMetricValues(row: DatabaseRow, metrics: string[]): Record<string, number> {
   return metrics.reduce(
     (acc, metric) => {
       const value = row[metric];
@@ -422,14 +402,10 @@ export function isTotalRow(row: PivotTableRow): boolean {
  * @param dimensionField - Field name to group by
  * @returns Object with dimension values as keys and arrays of rows as values
  */
-export function groupDataByDimension(
-  data: DatabaseRow[],
-  dimensionField: string,
-): Record<string, DatabaseRow[]> {
+export function groupDataByDimension(data: DatabaseRow[], dimensionField: string): Record<string, DatabaseRow[]> {
   return data.reduce(
     (acc, row) => {
-      const dimensionValue =
-        (row[dimensionField]?.toString() ?? "").trim() || "n/a";
+      const dimensionValue = (row[dimensionField]?.toString() ?? "").trim() || "n/a";
       if (!acc[dimensionValue]) {
         acc[dimensionValue] = [];
       }
@@ -522,17 +498,12 @@ function applyAggregation(values: number[], aggregationType: string): number {
  * @param metrics - Array of metric field names to aggregate
  * @returns Object with metric names as keys and calculated totals as values
  */
-export function calculateSubtotals(
-  data: DatabaseRow[],
-  metrics: string[],
-): Record<string, number> {
+export function calculateSubtotals(data: DatabaseRow[], metrics: string[]): Record<string, number> {
   const subtotals: Record<string, number> = {};
 
   for (const metric of metrics) {
     // Extract all values for this metric using the utility function
-    const values = data
-      .map((row) => extractMetricValues(row, [metric])[metric])
-      .filter(isNotNullOrUndefined);
+    const values = data.map((row) => extractMetricValues(row, [metric])[metric]).filter(isNotNullOrUndefined);
 
     // Detect aggregation type and apply correct function
     const aggregationType = detectAggregationType(metric);
@@ -553,10 +524,7 @@ export function calculateSubtotals(
  * @param metrics - Array of metric field names to aggregate
  * @returns Object with metric names as keys and calculated grand totals as values
  */
-export function calculateGrandTotals(
-  data: DatabaseRow[],
-  metrics: string[],
-): Record<string, number> {
+export function calculateGrandTotals(data: DatabaseRow[], metrics: string[]): Record<string, number> {
   return calculateSubtotals(data, metrics);
 }
 
@@ -595,10 +563,7 @@ export function createSubtotalRow(
  * @param grandTotalValues - Calculated grand total values for metrics
  * @returns Formatted pivot table grand total row
  */
-export function createGrandTotalRow(
-  metrics: string[],
-  grandTotalValues: Record<string, number>,
-): PivotTableRow {
+export function createGrandTotalRow(metrics: string[], grandTotalValues: Record<string, number>): PivotTableRow {
   const dimensionValues = { total: "grand" };
 
   return {
@@ -745,19 +710,14 @@ export function sortPivotTableRows(
  * @param subtotalRows - Array of all subtotal rows
  * @returns The parent subtotal row or null if not found
  */
-function findParentGroup(
-  dataRow: PivotTableRow,
-  subtotalRows: PivotTableRow[],
-): PivotTableRow | null {
+function findParentGroup(dataRow: PivotTableRow, subtotalRows: PivotTableRow[]): PivotTableRow | null {
   // For now, use a simple approach: find subtotal row with matching level
   // This can be enhanced later for more complex grouping logic
   const parentLevel = dataRow.level - 1;
 
   return (
     subtotalRows.find(
-      (subtotal) =>
-        subtotal.level === parentLevel &&
-        subtotal.label.includes(dataRow.label.split(" - ")[0]), // Simple matching
+      (subtotal) => subtotal.level === parentLevel && subtotal.label.includes(dataRow.label.split(" - ")[0]), // Simple matching
     ) || null
   );
 }
@@ -786,18 +746,12 @@ export function getNextSortState(
   }
 
   // Column other than the default column, go back to default
-  if (
-    currentSort.order === "ASC" &&
-    currentSort.column !== defaultSort?.column
-  ) {
+  if (currentSort.order === "ASC" && currentSort.column !== defaultSort?.column) {
     return defaultSort || null;
   }
 
   // Default column, flip back to DESC
-  if (
-    currentSort.order === "ASC" &&
-    currentSort.column === defaultSort?.column
-  ) {
+  if (currentSort.order === "ASC" && currentSort.column === defaultSort?.column) {
     return { column, order: "DESC" };
   }
 

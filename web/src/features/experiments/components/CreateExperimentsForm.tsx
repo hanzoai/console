@@ -2,21 +2,9 @@ import React, { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Code2, Wand2, Cog, Zap } from "lucide-react";
 import { api } from "@/src/utils/api";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/src/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle, CardContent, CardFooter } from "@/src/components/ui/card";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogBody,
-} from "@/src/components/ui/dialog";
+import { DialogHeader, DialogTitle, DialogDescription, DialogBody } from "@/src/components/ui/dialog";
 import Link from "next/link";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { type CreateExperiment } from "@/src/features/experiments/types";
@@ -57,12 +45,8 @@ export const CreateExperimentsForm = ({
 }) => {
   const capture = usePostHogClientCapture();
   const [showPromptForm, setShowPromptForm] = useState(false);
-  const [showRemoteExperimentUpsertForm, setShowRemoteExperimentUpsertForm] =
-    useState(false);
-  const [
-    showRemoteExperimentTriggerModal,
-    setShowRemoteExperimentTriggerModal,
-  ] = useState(false);
+  const [showRemoteExperimentUpsertForm, setShowRemoteExperimentUpsertForm] = useState(false);
+  const [showRemoteExperimentTriggerModal, setShowRemoteExperimentTriggerModal] = useState(false);
 
   const hasExperimentWriteAccess = useHasProjectAccess({
     projectId,
@@ -89,24 +73,15 @@ export const CreateExperimentsForm = ({
     return <Skeleton className="h-48 w-full" />;
   }
 
-  if (
-    showSDKRunInfoPage &&
-    !showPromptForm &&
-    !showRemoteExperimentUpsertForm &&
-    !showRemoteExperimentTriggerModal
-  ) {
+  if (showSDKRunInfoPage && !showPromptForm && !showRemoteExperimentUpsertForm && !showRemoteExperimentTriggerModal) {
     return (
       <>
         <DialogHeader>
           <DialogTitle>Run Experiment</DialogTitle>
           <DialogDescription>
-            Experiments allow you to test iterations of your application or
-            prompt on a dataset. Learn more about experiments{" "}
-            <Link
-              href="https://hanzo.com/docs/evaluation/dataset-runs/datasets"
-              target="_blank"
-              className="underline"
-            >
+            Experiments allow you to test iterations of your application or prompt on a dataset. Learn more about
+            experiments{" "}
+            <Link href="https://hanzo.com/docs/evaluation/dataset-runs/datasets" target="_blank" className="underline">
               here
             </Link>
             .
@@ -120,9 +95,7 @@ export const CreateExperimentsForm = ({
                   <Wand2 className="size-4" />
                   via User Interface
                 </CardTitle>
-                <CardDescription>
-                  Test single prompts and model configurations via Hanzo UI
-                </CardDescription>
+                <CardDescription>Test single prompts and model configurations via Hanzo UI</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc space-y-2 pl-4 text-sm text-muted-foreground">
@@ -132,23 +105,16 @@ export const CreateExperimentsForm = ({
                 </ul>
               </CardContent>
               <CardFooter className="mt-auto flex flex-row gap-2">
-                <Button
-                  className="w-full"
-                  onClick={() => setShowPromptForm(true)}
-                >
+                <Button className="w-full" onClick={() => setShowPromptForm(true)}>
                   Configure
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full"
                   asChild
-                  onClick={() =>
-                    capture("dataset_run:view_prompt_experiment_docs")
-                  }
+                  onClick={() => capture("dataset_run:view_prompt_experiment_docs")}
                 >
-                  <Link href="https://hanzo.com/docs/evaluation/dataset-runs/native-run">
-                    View Docs
-                  </Link>
+                  <Link href="https://hanzo.com/docs/evaluation/dataset-runs/native-run">View Docs</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -159,9 +125,7 @@ export const CreateExperimentsForm = ({
                   <Code2 className="size-4" />
                   via SDK / API
                 </CardTitle>
-                <CardDescription>
-                  Start any dataset run via the Hanzo SDKs
-                </CardDescription>
+                <CardDescription>Start any dataset run via the Hanzo SDKs</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc space-y-2 pl-4 text-sm text-muted-foreground">
@@ -173,10 +137,7 @@ export const CreateExperimentsForm = ({
               <CardFooter className="mt-auto flex flex-row gap-2">
                 {!!existingRemoteExperiment.data && datasetId && (
                   <div className="flex items-start">
-                    <Button
-                      className="rounded-r-none"
-                      onClick={() => setShowRemoteExperimentTriggerModal(true)}
-                    >
+                    <Button className="rounded-r-none" onClick={() => setShowRemoteExperimentTriggerModal(true)}>
                       Run
                     </Button>
                     <Button
@@ -193,14 +154,9 @@ export const CreateExperimentsForm = ({
                   className="flex-1"
                   variant="outline"
                   asChild
-                  onClick={() =>
-                    capture("dataset_run:view_custom_experiment_docs")
-                  }
+                  onClick={() => capture("dataset_run:view_custom_experiment_docs")}
                 >
-                  <Link
-                    href="https://hanzo.com/docs/evaluation/dataset-runs/remote-run"
-                    target="_blank"
-                  >
+                  <Link href="https://hanzo.com/docs/evaluation/dataset-runs/remote-run" target="_blank">
                     View Docs
                   </Link>
                 </Button>
@@ -223,11 +179,7 @@ export const CreateExperimentsForm = ({
     );
   }
 
-  if (
-    showRemoteExperimentTriggerModal &&
-    datasetId &&
-    existingRemoteExperiment.data
-  ) {
+  if (showRemoteExperimentTriggerModal && datasetId && existingRemoteExperiment.data) {
     return (
       <RemoteExperimentTriggerModal
         projectId={projectId}

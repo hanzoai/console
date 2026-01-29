@@ -5,6 +5,4 @@ export const CreateNaturalLanguageFilterCompletion = z.object({
   prompt: z.string().min(1).max(2048),
 });
 
-export type CreateNaturalLanguageFilterCompletionInput = z.infer<
-  typeof CreateNaturalLanguageFilterCompletion
->;
+export type CreateNaturalLanguageFilterCompletionInput = z.infer<typeof CreateNaturalLanguageFilterCompletion>;

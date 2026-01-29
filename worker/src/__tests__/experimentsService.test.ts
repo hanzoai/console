@@ -163,10 +163,7 @@ describe("create experiment jobs", () => {
     expect(result).toEqual({ success: true });
 
     // Verify that an error was logged during validation failure
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      "Failed to validate and setup experiment",
-      expect.any(Error),
-    );
+    expect(mockLogger.error).toHaveBeenCalledWith("Failed to validate and setup experiment", expect.any(Error));
   });
 
   test("handles prompt with variables without throwing", async () => {
@@ -325,10 +322,7 @@ describe("create experiment jobs with placeholders", () => {
     vi.clearAllMocks();
   });
 
-  const setupPlaceholderTest = async (
-    promptConfig: any,
-    datasetItemInput: any,
-  ) => {
+  const setupPlaceholderTest = async (promptConfig: any, datasetItemInput: any) => {
     const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
     const datasetId = randomUUID();
     const runId = randomUUID();

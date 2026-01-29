@@ -1,10 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import {
-  clickhouseClient,
-  convertDateToClickhouseDateTime,
-  logger,
-  queryClickhouse,
-} from "@hanzo/shared/src/server";
+import { clickhouseClient, convertDateToClickhouseDateTime, logger, queryClickhouse } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import {
@@ -54,9 +49,7 @@ interface MigrationArgs {
 // Migration Class
 // ============================================================================
 
-export default class BackfillExperimentsHistoric
-  implements IBackgroundMigration
-{
+export default class BackfillExperimentsHistoric implements IBackgroundMigration {
   private isAborted = false;
 
   // --------------------------------------------------------------------------
@@ -194,10 +187,7 @@ export default class BackfillExperimentsHistoric
   // Span Fetching
   // --------------------------------------------------------------------------
 
-  private async fetchObservationsForTraces(
-    projectIds: string[],
-    traceIds: string[],
-  ): Promise<SpanRecord[]> {
+  private async fetchObservationsForTraces(projectIds: string[], traceIds: string[]): Promise<SpanRecord[]> {
     if (projectIds.length === 0 || traceIds.length === 0) {
       return [];
     }
@@ -264,10 +254,7 @@ export default class BackfillExperimentsHistoric
     });
   }
 
-  private async fetchTracesForTraces(
-    projectIds: string[],
-    traceIds: string[],
-  ): Promise<SpanRecord[]> {
+  private async fetchTracesForTraces(projectIds: string[], traceIds: string[]): Promise<SpanRecord[]> {
     if (projectIds.length === 0 || traceIds.length === 0) {
       return [];
     }
@@ -351,15 +338,10 @@ export default class BackfillExperimentsHistoric
     });
 
     // Check ClickHouse credentials
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "ClickHouse credentials must be configured to perform migration",
+        invalidReason: "ClickHouse credentials must be configured to perform migration",
       };
     }
 
@@ -372,14 +354,9 @@ export default class BackfillExperimentsHistoric
     for (const tableName of requiredTables) {
       if (!tableNames.some((r) => r.name === tableName)) {
         if (attempts > 0) {
-          logger.info(
-            `[Backfill Experiments] Table ${tableName} does not exist. Retrying in 10s...`,
-          );
+          logger.info(`[Backfill Experiments] Table ${tableName} does not exist. Retrying in 10s...`);
           return new Promise((resolve) => {
-            setTimeout(
-              () => resolve(this.validate(args, attempts - 1)),
-              10_000,
-            );
+            setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
           });
         }
 
@@ -401,15 +378,9 @@ export default class BackfillExperimentsHistoric
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
     const migrationArgs = args as MigrationArgs;
-    const chunkSize = parseInt(
-      migrationArgs.chunkSize ?? String(DEFAULT_CHUNK_SIZE),
-    );
-    const batchTimeoutMs = parseInt(
-      migrationArgs.batchTimeoutMs ?? String(DEFAULT_BATCH_TIMEOUT_MS),
-    );
-    const maxDate = migrationArgs.maxDate
-      ? new Date(migrationArgs.maxDate)
-      : new Date(); // Process everything up to now
+    const chunkSize = parseInt(migrationArgs.chunkSize ?? String(DEFAULT_CHUNK_SIZE));
+    const batchTimeoutMs = parseInt(migrationArgs.batchTimeoutMs ?? String(DEFAULT_BATCH_TIMEOUT_MS));
+    const maxDate = migrationArgs.maxDate ? new Date(migrationArgs.maxDate) : new Date(); // Process everything up to now
 
     logger.info(
       `[Backfill Experiments] Starting historic experiment backfill with args: ${JSON.stringify({ chunkSize, batchTimeoutMs })}`,
@@ -422,9 +393,7 @@ export default class BackfillExperimentsHistoric
     if (state.totalDRIs === null) {
       state.totalDRIs = await this.countTotalDRIs(maxDate);
       await this.updateState(state);
-      logger.info(
-        `[Backfill Experiments] Total DRIs to process: ${state.totalDRIs.toLocaleString()}`,
-      );
+      logger.info(`[Backfill Experiments] Total DRIs to process: ${state.totalDRIs.toLocaleString()}`);
     }
 
     // Main processing loop
@@ -433,9 +402,7 @@ export default class BackfillExperimentsHistoric
       const dris = await this.fetchDRIsChunk(state.cursor, chunkSize, maxDate);
 
       if (dris.length === 0) {
-        logger.info(
-          "[Backfill Experiments] No more DRIs to process. Migration complete!",
-        );
+        logger.info("[Backfill Experiments] No more DRIs to process. Migration complete!");
         break;
       }
 
@@ -453,9 +420,7 @@ export default class BackfillExperimentsHistoric
         this.fetchTracesForTraces(projectIds, traceIds),
       ]);
 
-      logger.info(
-        `[Backfill Experiments] Fetched ${observations.length} observations and ${traces.length} traces`,
-      );
+      logger.info(`[Backfill Experiments] Fetched ${observations.length} observations and ${traces.length} traces`);
 
       // Build span maps
       const allSpans = [...observations, ...traces];
@@ -486,9 +451,7 @@ export default class BackfillExperimentsHistoric
         const rootSpan = spanMap.get(rootSpanId);
 
         if (!rootSpan) {
-          logger.warn(
-            `[Backfill Experiments] Root span ${rootSpanId} not found for DRI ${dri.id}, skipping`,
-          );
+          logger.warn(`[Backfill Experiments] Root span ${rootSpanId} not found for DRI ${dri.id}, skipping`);
           skippedCount++;
           continue;
         }
@@ -496,12 +459,7 @@ export default class BackfillExperimentsHistoric
         const traceProperties = tracePropertiesMap.get(dri.trace_id);
         const childSpans = findAllChildren(rootSpanId, childMap);
 
-        const enrichedSpans = enrichSpansWithExperiment(
-          rootSpan,
-          childSpans,
-          dri,
-          traceProperties,
-        );
+        const enrichedSpans = enrichSpansWithExperiment(rootSpan, childSpans, dri, traceProperties);
 
         allEnrichedSpans.push(...enrichedSpans);
 
@@ -513,17 +471,13 @@ export default class BackfillExperimentsHistoric
       }
 
       if (skippedCount > 0) {
-        logger.warn(
-          `[Backfill Experiments] Skipped ${skippedCount} DRIs due to missing root spans`,
-        );
+        logger.warn(`[Backfill Experiments] Skipped ${skippedCount} DRIs due to missing root spans`);
       }
 
       // Write enriched spans to events table
       if (allEnrichedSpans.length > 0) {
         await writeEnrichedSpans(allEnrichedSpans);
-        logger.info(
-          `[Backfill Experiments] Wrote ${allEnrichedSpans.length} enriched spans to events table`,
-        );
+        logger.info(`[Backfill Experiments] Wrote ${allEnrichedSpans.length} enriched spans to events table`);
       }
 
       // Update cursor to last DRI in this chunk
@@ -540,9 +494,7 @@ export default class BackfillExperimentsHistoric
     }
 
     if (this.isAborted) {
-      logger.info(
-        `[Backfill Experiments] Migration aborted. Can be resumed from current state.`,
-      );
+      logger.info(`[Backfill Experiments] Migration aborted. Can be resumed from current state.`);
       return;
     }
 

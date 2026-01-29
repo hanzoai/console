@@ -1,19 +1,6 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  beforeAll,
-  afterAll,
-  vi,
-} from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
 import { v4 } from "uuid";
-import {
-  ActionExecutionStatus,
-  JobConfigState,
-  PromptDomain,
-  SlackActionConfig,
-} from "@hanzo/shared";
+import { ActionExecutionStatus, JobConfigState, PromptDomain, SlackActionConfig } from "@hanzo/shared";
 import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { encrypt } from "@hanzo/shared/encryption";
@@ -180,9 +167,7 @@ describe("Slack Processor", () => {
 
       // Verify SlackService was called correctly
       expect(SlackService.getInstance).toHaveBeenCalled();
-      expect(mockSlackService.getWebClientForProject).toHaveBeenCalledWith(
-        projectId,
-      );
+      expect(mockSlackService.getWebClientForProject).toHaveBeenCalledWith(projectId);
       expect(mockSlackService.sendMessage).toHaveBeenCalledWith({
         client: expect.any(Object),
         channelId: "C123456",
@@ -357,9 +342,7 @@ describe("Slack Processor", () => {
       const { SlackService } = await import("@hanzo/shared/src/server");
 
       // Mock SlackService to throw errors
-      mockSlackService.sendMessage.mockRejectedValue(
-        new Error("Slack API error"),
-      );
+      mockSlackService.sendMessage.mockRejectedValue(new Error("Slack API error"));
 
       const fullPrompt = await prisma.prompt.findUnique({
         where: { id: promptId },
@@ -420,9 +403,7 @@ describe("Slack Processor", () => {
       const { SlackService } = await import("@hanzo/shared/src/server");
 
       // Mock SlackService to throw an error
-      mockSlackService.getWebClientForProject.mockRejectedValue(
-        new Error("Failed to get Slack client"),
-      );
+      mockSlackService.getWebClientForProject.mockRejectedValue(new Error("Failed to get Slack client"));
 
       const fullPrompt = await prisma.prompt.findUnique({
         where: { id: promptId },

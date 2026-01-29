@@ -52,9 +52,7 @@ export class FrameworkTraceLoader {
       observations.push(...adapted.observations);
       scores.push(...adapted.scores);
 
-      logger.info(
-        `Loaded 1 trace with ${adapted.observations.length} observations from ${frameworkName}`,
-      );
+      logger.info(`Loaded 1 trace with ${adapted.observations.length} observations from ${frameworkName}`);
     }
 
     return { traces, observations, scores };
@@ -124,19 +122,11 @@ export class FrameworkTraceLoader {
       const newObsId = obsIdMap.get(obs.id)!;
 
       // Map parent observation ID
-      const parentObservationId = obs.parentObservationId
-        ? obsIdMap.get(obs.parentObservationId) || null
-        : null;
+      const parentObservationId = obs.parentObservationId ? obsIdMap.get(obs.parentObservationId) || null : null;
 
       // Convert input/output to strings, preserving null
-      const input =
-        obs.input === undefined || obs.input === null
-          ? obs.input
-          : JSON.stringify(obs.input);
-      const output =
-        obs.output === undefined || obs.output === null
-          ? obs.output
-          : JSON.stringify(obs.output);
+      const input = obs.input === undefined || obs.input === null ? obs.input : JSON.stringify(obs.input);
+      const output = obs.output === undefined || obs.output === null ? obs.output : JSON.stringify(obs.output);
 
       // Parse metadata if it's a string
       let obsMetadata = obs.metadata;
@@ -183,9 +173,7 @@ export class FrameworkTraceLoader {
           input,
           output,
           provided_model_name: obs.model,
-          model_parameters: obs.modelParameters
-            ? JSON.stringify(obs.modelParameters)
-            : undefined,
+          model_parameters: obs.modelParameters ? JSON.stringify(obs.modelParameters) : undefined,
           prompt_name: obs.promptName,
           prompt_version: obs.promptVersion,
           usage_details: usageDetails,

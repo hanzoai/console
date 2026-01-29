@@ -15,9 +15,7 @@ import { prisma } from "@hanzo/shared/src/db";
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const _backgroundMigrationId = "3445cac4-d9d5-4750-8b65-351135c1b85e";
 
-export default class PatchLLMToolAndLLMSchemaAuditLogs
-  implements IBackgroundMigration
-{
+export default class PatchLLMToolAndLLMSchemaAuditLogs implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -30,9 +28,7 @@ export default class PatchLLMToolAndLLMSchemaAuditLogs
 
   async run(): Promise<void> {
     const start = Date.now();
-    logger.info(
-      `[Background Migration] Patching audit logs for LLMTool and LLMSchema`,
-    );
+    logger.info(`[Background Migration] Patching audit logs for LLMTool and LLMSchema`);
 
     const failedInferenceIds = new Set<String>();
 
@@ -65,9 +61,7 @@ export default class PatchLLMToolAndLLMSchemaAuditLogs
             auditLog.resourceType = "llmTool";
           }
         } catch (error) {
-          logger.warn(
-            `[Background Migration] Failed to parse 'before' field for audit log ${auditLog.id}: ${error}`,
-          );
+          logger.warn(`[Background Migration] Failed to parse 'before' field for audit log ${auditLog.id}: ${error}`);
         }
 
         try {
@@ -79,9 +73,7 @@ export default class PatchLLMToolAndLLMSchemaAuditLogs
             auditLog.resourceType = "llmTool";
           }
         } catch (error) {
-          logger.warn(
-            `[Background Migration] Failed to parse 'after' field for audit log ${auditLog.id}: ${error}`,
-          );
+          logger.warn(`[Background Migration] Failed to parse 'after' field for audit log ${auditLog.id}: ${error}`);
         }
         // If the resourceType is still "project", we cannot infer it
         if (auditLog.resourceType === "project") {
@@ -120,9 +112,7 @@ export default class PatchLLMToolAndLLMSchemaAuditLogs
   }
 
   async abort(): Promise<void> {
-    logger.info(
-      `[Background Migration] Aborting patching of LLMTool and LLMSchema audit logs`,
-    );
+    logger.info(`[Background Migration] Aborting patching of LLMTool and LLMSchema audit logs`);
     this.isAborted = true;
   }
 }

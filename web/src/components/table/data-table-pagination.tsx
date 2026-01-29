@@ -1,19 +1,8 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { type Table } from "@tanstack/react-table";
 
 import { Button } from "@/src/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "@/src/components/ui/input";
@@ -82,12 +71,8 @@ export function DataTablePagination<TData>({
       </div>
       <div className="flex flex-wrap items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="whitespace-nowrap text-sm font-medium md:hidden">
-            Rows
-          </p>
-          <p className="hidden whitespace-nowrap text-sm font-medium md:block">
-            Rows per page
-          </p>
+          <p className="whitespace-nowrap text-sm font-medium md:hidden">Rows</p>
+          <p className="hidden whitespace-nowrap text-sm font-medium md:block">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {

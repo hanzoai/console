@@ -3,17 +3,11 @@ import { traceException, logger } from "@hanzo/shared/src/server";
 import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
 
-export const batchActionQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.BatchActionQueue]>,
-) => {
+export const batchActionQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.BatchActionQueue]>) => {
   try {
-    logger.info(
-      `Executing Batch Action job ${JSON.stringify(job.data.payload.actionId)}`,
-    );
+    logger.info(`Executing Batch Action job ${JSON.stringify(job.data.payload.actionId)}`);
     await handleBatchActionJob(job.data);
-    logger.info(
-      `Finished Batch Action Job ${JSON.stringify(job.data.payload.actionId)}`,
-    );
+    logger.info(`Finished Batch Action Job ${JSON.stringify(job.data.payload.actionId)}`);
 
     return true;
   } catch (e) {

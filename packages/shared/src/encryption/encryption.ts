@@ -53,11 +53,7 @@ export function decrypt(text: string): string {
   );
   decipher.setAuthTag(new Uint8Array(authTag));
 
-  let decrypted = decipher.update(
-    new Uint8Array(encryptedText),
-    undefined,
-    "utf8",
-  );
+  let decrypted = decipher.update(new Uint8Array(encryptedText), undefined, "utf8");
   decrypted += decipher.final("utf8");
 
   return decrypted.toString();

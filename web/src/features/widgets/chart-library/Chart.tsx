@@ -103,24 +103,14 @@ export const Chart = ({
       <AlertCircle className="mb-4 h-12 w-12" />
       <h3 className="mb-2 text-lg font-semibold">Large Dataset Warning</h3>
       <p className="mb-6 text-sm text-muted-foreground">
-        This chart has more than 2,000 unique data points. Rendering it may be
-        slow or may crash your browser. Try to reduce the number of dimensions
-        by adding more selective filters or choosing a coarser breakdown
-        dimension.
+        This chart has more than 2,000 unique data points. Rendering it may be slow or may crash your browser. Try to
+        reduce the number of dimensions by adding more selective filters or choosing a coarser breakdown dimension.
       </p>
-      <Button
-        variant="outline"
-        onClick={() => setForceRender(true)}
-        className="font-medium"
-      >
+      <Button variant="outline" onClick={() => setForceRender(true)} className="font-medium">
         I understand, proceed to render the chart
       </Button>
     </div>
   );
 
-  return (
-    <CardContent className="h-full p-0">
-      {shouldWarn ? renderWarning() : renderChart()}
-    </CardContent>
-  );
+  return <CardContent className="h-full p-0">{shouldWarn ? renderWarning() : renderChart()}</CardContent>;
 };

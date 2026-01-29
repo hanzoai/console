@@ -1,11 +1,7 @@
 import { logger, traceException } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { createManyDatasetItems } from "@hanzo/shared/src/server";
-import {
-  applyFullMapping,
-  BatchActionStatus,
-  type ObservationAddToDatasetConfig,
-} from "@hanzo/shared";
+import { applyFullMapping, BatchActionStatus, type ObservationAddToDatasetConfig } from "@hanzo/shared";
 
 // Chunk size for batch processing. Smaller than the default 1000 because:
 // 1. Each observation requires JSON path evaluation and mapping transformation
@@ -64,8 +60,7 @@ async function processChunk(params: {
         processed: 0,
         failed: items.length,
         errors: result.validationErrors.map(
-          (e) =>
-            `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
+          (e) => `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
         ),
       };
     }
@@ -73,8 +68,7 @@ async function processChunk(params: {
     // Success (possibly partial)
     const errors = result.validationErrors
       ? result.validationErrors.map(
-          (e) =>
-            `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
+          (e) => `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
         )
       : [];
 
@@ -89,9 +83,7 @@ async function processChunk(params: {
     return {
       processed: 0,
       failed: items.length,
-      errors: [
-        `Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`,
-      ],
+      errors: [`Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`],
     };
   }
 }
@@ -148,11 +140,7 @@ export async function processAddObservationsToDataset(params: {
 
   // Determine final status
   const finalStatus =
-    failed === 0
-      ? BatchActionStatus.Completed
-      : processed === 0
-        ? BatchActionStatus.Failed
-        : BatchActionStatus.Partial;
+    failed === 0 ? BatchActionStatus.Completed : processed === 0 ? BatchActionStatus.Failed : BatchActionStatus.Partial;
 
   // Aggregate error summary
   const errorSummary =

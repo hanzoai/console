@@ -3,18 +3,7 @@
  */
 
 import * as React from "react";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Img,
-  Preview,
-  Section,
-  Tailwind,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Img, Preview, Section, Tailwind, Text } from "@react-email/components";
 import { createTransport } from "nodemailer";
 import { render } from "@react-email/render";
 import { type SendVerificationRequestParams } from "next-auth/providers/email";
@@ -47,14 +36,11 @@ const ResetPasswordTemplate = ({ token }: ResetPasswordTemplateProps) => {
               It happens to the best of us.
             </Heading>
             <Section className="mb-8 mt-8 text-center">
-              <Text className="text-center text-sm font-semibold">
-                Your one time passcode:
-              </Text>
+              <Text className="text-center text-sm font-semibold">Your one time passcode:</Text>
               <Heading className="text-3xl mt-2">{token}</Heading>
             </Section>
             <Text className="text-center text-xs leading-6 text-[#666666]">
-              This code is valid for 3 minutes. If you did not request a reset,
-              you can ignore this email.
+              This code is valid for 3 minutes. If you did not request a reset, you can ignore this email.
             </Text>
           </Container>
         </Body>
@@ -63,11 +49,8 @@ const ResetPasswordTemplate = ({ token }: ResetPasswordTemplateProps) => {
   );
 };
 
-export async function sendResetPasswordVerificationRequest(
-  params: SendVerificationRequestParams,
-) {
-  const { identifier, token, provider } =
-    params as SendVerificationRequestParams & { token: string };
+export async function sendResetPasswordVerificationRequest(params: SendVerificationRequestParams) {
+  const { identifier, token, provider } = params as SendVerificationRequestParams & { token: string };
   const transport = createTransport(provider.server);
   const htmlTemplate = await render(<ResetPasswordTemplate token={token} />);
 

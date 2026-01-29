@@ -15,10 +15,7 @@ import type { ExpansionState } from "../types";
 import { getJSONType, isExpandable, getChildren } from "./jsonTypes";
 import { joinPath } from "./pathUtils";
 import { debugLog } from "./debug";
-import {
-  calculateNodeWidth,
-  type WidthEstimatorConfig,
-} from "./calculateWidth";
+import { calculateNodeWidth, type WidthEstimatorConfig } from "./calculateWidth";
 
 /**
  * Size threshold for sync vs Web Worker
@@ -37,14 +34,7 @@ export interface TreeNode {
 
   // Value
   value: unknown; // The actual JSON value
-  type:
-    | "null"
-    | "boolean"
-    | "number"
-    | "string"
-    | "array"
-    | "object"
-    | "undefined";
+  type: "null" | "boolean" | "number" | "string" | "array" | "object" | "undefined";
 
   // Structure
   depth: number; // Nesting level (0 = root)
@@ -68,12 +58,7 @@ export interface TreeNode {
   isLastChild: boolean; // Is this the last child of parent?
 
   // Multi-section support (optional, only for multi-root trees)
-  nodeType?:
-    | "meta"
-    | "section-header"
-    | "section-footer"
-    | "section-spacer"
-    | "json"; // Type discriminator
+  nodeType?: "meta" | "section-header" | "section-footer" | "section-spacer" | "json"; // Type discriminator
   sectionKey?: string; // Which section this belongs to
   backgroundColor?: string; // Section background color
   sectionLineNumber?: number; // Line number within section (resets per section)
@@ -351,11 +336,7 @@ function assignLineNumbersAndBuildAllNodes(rootNode: TreeNode): TreeNode[] {
  * @param expansionState - Boolean or per-path expansion state
  * @param expandDepth - Optional depth to expand to (overrides expansionState)
  */
-function applyExpansionStateIterative(
-  rootNode: TreeNode,
-  expansionState: ExpansionState,
-  expandDepth?: number,
-): void {
+function applyExpansionStateIterative(rootNode: TreeNode, expansionState: ExpansionState, expandDepth?: number): void {
   // Convert expansion state to collapsed paths set (for O(1) lookup)
   const collapsedPaths = new Set<string>();
   if (typeof expansionState === "boolean") {
@@ -426,9 +407,7 @@ function computeOffsetsIterative(rootNode: TreeNode): void {
   // We'll use two passes: first collect nodes in post-order, then process
 
   const postOrder: TreeNode[] = [];
-  const stack: { node: TreeNode; visited: boolean }[] = [
-    { node: rootNode, visited: false },
-  ];
+  const stack: { node: TreeNode; visited: boolean }[] = [{ node: rootNode, visited: false }];
 
   // Collect nodes in post-order
   while (stack.length > 0) {
@@ -537,21 +516,14 @@ export function buildTreeFromJSON(
   const totalStartTime = performance.now();
 
   // PASS 1: Build structure
-  const { rootNode, nodeMap } = buildTreeStructureIterative(
-    data,
-    config.rootKey,
-  );
+  const { rootNode, nodeMap } = buildTreeStructureIterative(data, config.rootKey);
 
   // PASS 1.5: Assign line numbers and rebuild allNodes in pre-order
   // (must happen after structure is complete)
   const allNodes = assignLineNumbersAndBuildAllNodes(rootNode);
 
   // PASS 2: Apply expansion state
-  applyExpansionStateIterative(
-    rootNode,
-    config.initialExpansion,
-    config.expandDepth,
-  );
+  applyExpansionStateIterative(rootNode, config.initialExpansion, config.expandDepth);
 
   // PASS 3: Compute offsets
   computeOffsetsIterative(rootNode);
@@ -564,10 +536,7 @@ export function buildTreeFromJSON(
     indentSizePx: 16,
     extraBufferPx: 50,
   };
-  const { maxDepth, maxContentWidth } = calculateTreeDimensions(
-    allNodes,
-    widthConfig,
-  );
+  const { maxDepth, maxContentWidth } = calculateTreeDimensions(allNodes, widthConfig);
 
   const totalTime = performance.now() - totalStartTime;
   debugLog("[buildTreeFromJSON] Completed four-pass build:", {

@@ -2,10 +2,7 @@ import { api } from "@/src/utils/api";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { type HanzoColumnDef } from "@/src/components/table/types";
-import {
-  DataTableControlsProvider,
-  DataTableControls,
-} from "@/src/components/table/data-table-controls";
+import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { TokenUsageBadge } from "@/src/components/token-usage-badge";
@@ -70,10 +67,7 @@ import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import { AddObservationsToDatasetDialog } from "@/src/features/batch-actions/components/AddObservationsToDatasetDialog/index";
 import useSessionStorage from "@/src/components/useSessionStorage";
-import {
-  type RefreshInterval,
-  REFRESH_INTERVALS,
-} from "@/src/components/table/data-table-refresh-button";
+import { type RefreshInterval, REFRESH_INTERVALS } from "@/src/components/table/data-table-refresh-button";
 
 export type ObservationsTableRow = {
   // Shown by default
@@ -128,29 +122,21 @@ export type ObservationsTableProps = {
   omittedFilter?: string[];
 };
 
-export default function ObservationsTable({
-  projectId,
-  promptName,
-  promptVersion,
-  modelId,
-}: ObservationsTableProps) {
+export default function ObservationsTable({ projectId, promptName, promptVersion, modelId }: ObservationsTableProps) {
   const router = useRouter();
   const { viewId } = router.query;
   const utils = api.useUtils();
 
   const { setDetailPageList } = useDetailPageLists();
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
-  const [rawRefreshInterval, setRawRefreshInterval] =
-    useSessionStorage<RefreshInterval>(
-      `tableRefreshInterval-${projectId}`,
-      null,
-    );
+  const [rawRefreshInterval, setRawRefreshInterval] = useSessionStorage<RefreshInterval>(
+    `tableRefreshInterval-${projectId}`,
+    null,
+  );
 
   // Validate session storage value against allowed intervals to prevent too small intervals
   const allowedValues = REFRESH_INTERVALS.map((i) => i.value);
-  const refreshInterval = allowedValues.includes(rawRefreshInterval)
-    ? rawRefreshInterval
-    : null;
+  const refreshInterval = allowedValues.includes(rawRefreshInterval) ? rawRefreshInterval : null;
   const setRefreshInterval = useCallback(
     (value: RefreshInterval) => {
       if (allowedValues.includes(value)) {
@@ -180,8 +166,7 @@ export default function ObservationsTable({
       utils.projects.environmentFilterOptions.invalidate(),
     ]);
   }, [utils]);
-  const { searchQuery, searchType, setSearchQuery, setSearchType } =
-    useFullTextSearch();
+  const { searchQuery, searchType, setSearchQuery, setSearchType } = useFullTextSearch();
 
   const { selectAll, setSelectAll } = useSelectAll(projectId, "observations");
   const [showAddToDatasetDialog, setShowAddToDatasetDialog] = useState(false);
@@ -191,10 +176,7 @@ export default function ObservationsTable({
     pageSize: withDefault(NumberParam, 50),
   });
 
-  const [rowHeight, setRowHeight] = useRowHeightLocalStorage(
-    "generations",
-    "s",
-  );
+  const [rowHeight, setRowHeight] = useRowHeightLocalStorage("generations", "s");
 
   const [inputFilterState] = useQueryFilterState(
     // If the user loads saved table view presets, we should not apply the default type filter
@@ -204,16 +186,7 @@ export default function ObservationsTable({
             column: "type",
             type: "stringOptions",
             operator: "any of",
-            value: [
-              "GENERATION",
-              "AGENT",
-              "TOOL",
-              "CHAIN",
-              "RETRIEVER",
-              "EVALUATOR",
-              "EMBEDDING",
-              "GUARDRAIL",
-            ],
+            value: ["GENERATION", "AGENT", "TOOL", "CHAIN", "RETRIEVER", "EVALUATOR", "EMBEDDING", "GUARDRAIL"],
           },
         ]
       : [],
@@ -289,38 +262,29 @@ export default function ObservationsTable({
       ]
     : [];
 
-  const environmentFilterOptions =
-    api.projects.environmentFilterOptions.useQuery(
-      {
-        projectId,
-        fromTimestamp: dateRange?.from,
-      },
-      {
-        trpc: { context: { skipBatch: true } },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity,
-      },
-    );
-
-  const oldFilterState = inputFilterState.concat(
-    dateRangeFilter,
-    promptNameFilter,
-    promptVersionFilter,
-    modelIdFilter,
+  const environmentFilterOptions = api.projects.environmentFilterOptions.useQuery(
+    {
+      projectId,
+      fromTimestamp: dateRange?.from,
+    },
+    {
+      trpc: { context: { skipBatch: true } },
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: Infinity,
+    },
   );
 
+  const oldFilterState = inputFilterState.concat(dateRangeFilter, promptNameFilter, promptVersionFilter, modelIdFilter);
+
   const startTimeFilters = oldFilterState.filter(
-    (f) =>
-      (f.column === "Start Time" || f.column === "startTime") &&
-      f.type === "datetime",
+    (f) => (f.column === "Start Time" || f.column === "startTime") && f.type === "datetime",
   ) as TimeFilter[];
   const filterOptions = api.generations.filterOptions.useQuery(
     {
       projectId,
-      startTimeFilter:
-        startTimeFilters.length > 0 ? startTimeFilters : undefined,
+      startTimeFilter: startTimeFilters.length > 0 ? startTimeFilters : undefined,
     },
     {
       trpc: {
@@ -348,9 +312,7 @@ export default function ObservationsTable({
     const scoresNumeric = filterOptions.data?.scores_avg ?? undefined;
 
     return {
-      environment:
-        environmentFilterOptions.data?.map((value) => value.environment) ??
-        undefined,
+      environment: environmentFilterOptions.data?.map((value) => value.environment) ?? undefined,
       name:
         filterOptions.data?.name?.map((n) => ({
           value: n.value,
@@ -422,10 +384,7 @@ export default function ObservationsTable({
   const queryFilterRef = useRef(queryFilter);
   queryFilterRef.current = queryFilter;
 
-  const setFiltersWrapper = useCallback(
-    (filters: FilterState) => queryFilterRef.current?.setFilterState(filters),
-    [],
-  );
+  const setFiltersWrapper = useCallback((filters: FilterState) => queryFilterRef.current?.setFilterState(filters), []);
 
   const filterState = queryFilter.filterState.concat(
     dateRangeFilter,
@@ -497,13 +456,12 @@ export default function ObservationsTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generations.isSuccess, generations.data]);
 
-  const { scoreColumns, isLoading: isColumnLoading } =
-    useScoreColumns<ObservationsTableRow>({
-      scoreColumnKey: "scores",
-      projectId,
-      filter: scoreFilters.forObservations(),
-      fromTimestamp: dateRange?.from,
-    });
+  const { scoreColumns, isLoading: isColumnLoading } = useScoreColumns<ObservationsTableRow>({
+    scoreColumnKey: "scores",
+    projectId,
+    filter: scoreFilters.forObservations(),
+    fromTimestamp: dateRange?.from,
+  });
 
   const { selectActionColumn } = TableSelectionManager<ObservationsTableRow>({
     projectId,
@@ -511,16 +469,9 @@ export default function ObservationsTable({
     setSelectedRows,
   });
 
-  const handleAddToAnnotationQueue = async ({
-    projectId,
-    targetId,
-  }: {
-    projectId: string;
-    targetId: string;
-  }) => {
-    const selectedGenerationIds = Object.keys(selectedRows).filter(
-      (generationId) =>
-        generations.data?.generations.map((g) => g.id).includes(generationId),
+  const handleAddToAnnotationQueue = async ({ projectId, targetId }: { projectId: string; targetId: string }) => {
+    const selectedGenerationIds = Object.keys(selectedRows).filter((generationId) =>
+      generations.data?.generations.map((g) => g.id).includes(generationId),
     );
 
     await addToQueueMutation.mutateAsync({
@@ -657,13 +608,7 @@ export default function ObservationsTable({
       cell({ row }) {
         const value: ObservationLevelType | undefined = row.getValue("level");
         return value ? (
-          <span
-            className={cn(
-              "rounded-sm p-0.5 text-xs",
-              LevelColors[value].bg,
-              LevelColors[value].text,
-            )}
-          >
+          <span className={cn("rounded-sm p-0.5 text-xs", LevelColors[value].bg, LevelColors[value].text)}>
             {value}
           </span>
         ) : undefined;
@@ -676,8 +621,7 @@ export default function ObservationsTable({
       id: "statusMessage",
       size: 150,
       headerTooltip: {
-        description:
-          "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
+        description: "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
         href: "https://hanzo.com/docs/observability/features/log-levels",
       },
       enableHiding: true,
@@ -690,9 +634,7 @@ export default function ObservationsTable({
       size: 100,
       cell: ({ row }) => {
         const latency: number | undefined = row.getValue("latency");
-        return latency !== undefined ? (
-          <span>{formatIntervalSeconds(latency)}</span>
-        ) : undefined;
+        return latency !== undefined ? <span>{formatIntervalSeconds(latency)}</span> : undefined;
       },
       enableHiding: true,
       enableSorting: true,
@@ -731,9 +673,7 @@ export default function ObservationsTable({
       defaultHidden: true,
       cell: ({ row }) => {
         const value: number | undefined = row.getValue("toolDefinitions");
-        return value !== undefined ? (
-          <span>{numberFormatter(value, 0)}</span>
-        ) : undefined;
+        return value !== undefined ? <span>{numberFormatter(value, 0)}</span> : undefined;
       },
     },
     {
@@ -746,9 +686,7 @@ export default function ObservationsTable({
       defaultHidden: true,
       cell: ({ row }) => {
         const value: number | undefined = row.getValue("toolCalls");
-        return value !== undefined ? (
-          <span>{numberFormatter(value, 0)}</span>
-        ) : undefined;
+        return value !== undefined ? <span>{numberFormatter(value, 0)}</span> : undefined;
       },
     },
     {
@@ -759,14 +697,9 @@ export default function ObservationsTable({
       enableHiding: true,
       enableSorting: true,
       cell: ({ row }) => {
-        const timeToFirstToken: number | undefined =
-          row.getValue("timeToFirstToken");
+        const timeToFirstToken: number | undefined = row.getValue("timeToFirstToken");
 
-        return (
-          <span>
-            {timeToFirstToken ? formatIntervalSeconds(timeToFirstToken) : "-"}
-          </span>
-        );
+        return <span>{timeToFirstToken ? formatIntervalSeconds(timeToFirstToken) : "-"}</span>;
       },
     },
     {
@@ -775,9 +708,7 @@ export default function ObservationsTable({
       id: "tokens",
       size: 150,
       cell: ({ row }) => {
-        const aggregatedUsage = calculateAggregatedUsage(
-          row.original.usageDetails,
-        );
+        const aggregatedUsage = calculateAggregatedUsage(row.original.usageDetails);
         return (
           <BreakdownTooltip
             details={row.original.usageDetails}
@@ -867,13 +798,9 @@ export default function ObservationsTable({
       size: 150,
       enableHiding: true,
       cell: ({ row }) => {
-        const value: ObservationsTableRow["environment"] =
-          row.getValue("environment");
+        const value: ObservationsTableRow["environment"] = row.getValue("environment");
         return value ? (
-          <Badge
-            variant="secondary"
-            className="max-w-fit truncate rounded-sm px-1 font-normal"
-          >
+          <Badge variant="secondary" className="max-w-fit truncate rounded-sm px-1 font-normal">
             {value}
           </Badge>
         ) : null;
@@ -889,12 +816,7 @@ export default function ObservationsTable({
         const traceTags: string[] | undefined = row.getValue("traceTags");
         return (
           traceTags && (
-            <div
-              className={cn(
-                "flex gap-x-2 gap-y-1",
-                rowHeight !== "s" && "flex-wrap",
-              )}
-            >
+            <div className={cn("flex gap-x-2 gap-y-1", rowHeight !== "s" && "flex-wrap")}>
               <TagList selectedTags={traceTags} isLoading={false} />
             </div>
           )
@@ -960,8 +882,7 @@ export default function ObservationsTable({
       cell: ({ row }) => {
         const observationId = row.getValue("id");
         const traceId = row.getValue("traceId");
-        return typeof observationId === "string" &&
-          typeof traceId === "string" ? (
+        return typeof observationId === "string" && typeof traceId === "string" ? (
           <TableIdOrName value={observationId} />
         ) : null;
       },
@@ -982,9 +903,7 @@ export default function ObservationsTable({
       size: 100,
       cell: ({ row }) => {
         const value = row.getValue("traceId");
-        return typeof value === "string" ? (
-          <TableIdOrName value={value} />
-        ) : undefined;
+        return typeof value === "string" ? <TableIdOrName value={value} /> : undefined;
       },
       enableSorting: true,
       enableHiding: true,
@@ -1018,9 +937,7 @@ export default function ObservationsTable({
       enableHiding: true,
       defaultHidden: true,
       cell: () => {
-        return generations.isPending ? (
-          <Skeleton className="h-3 w-1/2" />
-        ) : null;
+        return generations.isPending ? <Skeleton className="h-3 w-1/2" /> : null;
       },
       columns: [
         {
@@ -1035,12 +952,9 @@ export default function ObservationsTable({
               completionTokens: number;
               totalTokens: number;
             } = row.getValue("usage");
-            return latency !== undefined &&
-              (usage.completionTokens !== 0 || usage.totalTokens !== 0) ? (
+            return latency !== undefined && (usage.completionTokens !== 0 || usage.totalTokens !== 0) ? (
               <span>
-                {usage.completionTokens && latency
-                  ? Number((usage.completionTokens / latency).toFixed(1))
-                  : undefined}
+                {usage.completionTokens && latency ? Number((usage.completionTokens / latency).toFixed(1)) : undefined}
               </span>
             ) : undefined;
           },
@@ -1108,9 +1022,7 @@ export default function ObservationsTable({
       enableHiding: true,
       defaultHidden: true,
       cell: () => {
-        return generations.isPending ? (
-          <Skeleton className="h-3 w-1/2" />
-        ) : null;
+        return generations.isPending ? <Skeleton className="h-3 w-1/2" /> : null;
       },
       columns: [
         {
@@ -1124,9 +1036,7 @@ export default function ObservationsTable({
               outputCost: number | undefined;
             } = row.getValue("cost");
 
-            return value.inputCost !== undefined ? (
-              <span>{usdFormatter(value.inputCost)}</span>
-            ) : undefined;
+            return value.inputCost !== undefined ? <span>{usdFormatter(value.inputCost)}</span> : undefined;
           },
           enableHiding: true,
           defaultHidden: true,
@@ -1143,9 +1053,7 @@ export default function ObservationsTable({
               outputCost: number | undefined;
             } = row.getValue("cost");
 
-            return value.outputCost !== undefined ? (
-              <span>{usdFormatter(value.outputCost)}</span>
-            ) : undefined;
+            return value.outputCost !== undefined ? <span>{usdFormatter(value.outputCost)}</span> : undefined;
           },
           enableHiding: true,
           defaultHidden: true,
@@ -1155,11 +1063,10 @@ export default function ObservationsTable({
     },
   ];
 
-  const [columnVisibility, setColumnVisibilityState] =
-    useColumnVisibility<ObservationsTableRow>(
-      `observationColumnVisibility-${projectId}`,
-      columns,
-    );
+  const [columnVisibility, setColumnVisibilityState] = useColumnVisibility<ObservationsTableRow>(
+    `observationColumnVisibility-${projectId}`,
+    columns,
+  );
 
   const [columnOrder, setColumnOrder] = useColumnOrder<ObservationsTableRow>(
     `observationsColumnOrder-${projectId}`,
@@ -1302,9 +1209,7 @@ export default function ObservationsTable({
               key="batchExport"
             />,
             Object.keys(selectedRows).filter((generationId) =>
-              generations.data?.generations
-                .map((g) => g.id)
-                .includes(generationId),
+              generations.data?.generations.map((g) => g.id).includes(generationId),
             ).length > 0 ? (
               <TableActionMenu
                 key="observations-multi-select-actions"
@@ -1323,9 +1228,7 @@ export default function ObservationsTable({
             selectAll,
             setSelectAll,
             selectedRowIds: Object.keys(selectedRows).filter((generationId) =>
-              generations.data?.generations
-                .map((g) => g.id)
-                .includes(generationId),
+              generations.data?.generations.map((g) => g.id).includes(generationId),
             ),
             setRowSelection: setSelectedRows,
             totalCount,
@@ -1430,9 +1333,7 @@ export default function ObservationsTable({
               generations.data?.generations.map((g) => g.id).includes(id),
             );
             const firstId = selectedIds[0];
-            const firstGen = generations.data?.generations.find(
-              (g) => g.id === firstId,
-            );
+            const firstGen = generations.data?.generations.find((g) => g.id === firstId);
             return {
               id: firstGen?.id ?? "",
               traceId: firstGen?.traceId ?? "",
@@ -1487,10 +1388,7 @@ const GenerationsDynamicCell = ({
     <MemoizedIOTableCell
       isLoading={observation.isPending}
       data={data}
-      className={cn(
-        col === "output" && "bg-accent-light-green",
-        col === "input" && "bg-muted/50",
-      )}
+      className={cn(col === "output" && "bg-accent-light-green", col === "input" && "bg-muted/50")}
       singleLine={singleLine}
     />
   );

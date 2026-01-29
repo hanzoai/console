@@ -1,8 +1,4 @@
-import {
-  type ColumnDefinition,
-  type SingleValueOption,
-  type MultiValueOption,
-} from "../tableDefinitions/types";
+import { type ColumnDefinition, type SingleValueOption, type MultiValueOption } from "../tableDefinitions/types";
 import { formatColumnOptions } from "./typeHelpers";
 
 export const sessionsViewCols: ColumnDefinition[] = [
@@ -132,9 +128,7 @@ export type SessionOptions = {
   score_categories?: Array<MultiValueOption>;
 };
 
-export function sessionsTableColsWithOptions(
-  options?: SessionOptions,
-): ColumnDefinition[] {
+export function sessionsTableColsWithOptions(options?: SessionOptions): ColumnDefinition[] {
   return sessionsViewCols.map((col) => {
     if (col.id === "userIds") {
       return formatColumnOptions(col, options?.userIds ?? []);

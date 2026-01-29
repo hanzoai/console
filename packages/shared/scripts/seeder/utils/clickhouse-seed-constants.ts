@@ -105,12 +105,7 @@ export const REALISTIC_AGENT_NAMES = [
   "SmartCoordinator",
 ];
 
-export const REALISTIC_TOOL_NAMES = [
-  "WebSearchTool",
-  "CalculatorTool",
-  "WeatherForecastTool",
-  "EmailSenderTool",
-];
+export const REALISTIC_TOOL_NAMES = ["WebSearchTool", "CalculatorTool", "WeatherForecastTool", "EmailSenderTool"];
 
 export const REALISTIC_CHAIN_NAMES = [
   "DataTransformationChain",
@@ -135,12 +130,7 @@ export const REALISTIC_EVALUATOR_NAMES = [
   "ContentScorer",
 ];
 
-export const REALISTIC_EMBEDDING_NAMES = [
-  "TextEmbedding",
-  "DocumentEncoder",
-  "SemanticEncoder",
-  "VectorEmbedding",
-];
+export const REALISTIC_EMBEDDING_NAMES = ["TextEmbedding", "DocumentEncoder", "SemanticEncoder", "VectorEmbedding"];
 
 export const REALISTIC_GUARDRAIL_NAMES = [
   "SafetyChecker",

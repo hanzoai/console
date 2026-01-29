@@ -17,10 +17,7 @@ import { env } from "../../src/env";
 import { logger, StorageServiceFactory } from "../../src/server";
 
 // Test file paths (relative to monorepo root)
-const TEST_FILES_DIR = path.join(
-  __dirname,
-  "../../../../web/src/__tests__/static",
-);
+const TEST_FILES_DIR = path.join(__dirname, "../../../../web/src/__tests__/static");
 
 interface MediaFile {
   name: string;
@@ -42,10 +39,7 @@ const MEDIA_FILES: Record<string, MediaFile> = {
   audio: {
     name: "sounds-of-mars.wav",
     contentType: "audio/wav",
-    filePath: path.join(
-      TEST_FILES_DIR,
-      "sounds-of-mars-one-small-step-earth.wav",
-    ),
+    filePath: path.join(TEST_FILES_DIR, "sounds-of-mars-one-small-step-earth.wav"),
   },
 };
 
@@ -67,11 +61,7 @@ function getMediaIdFromHash(sha256Hash: string): string {
 /**
  * Get bucket path for a media file
  */
-function getBucketPath(
-  projectId: string,
-  mediaId: string,
-  contentType: string,
-): string {
+function getBucketPath(projectId: string, mediaId: string, contentType: string): string {
   const extensionMap: Record<string, string> = {
     "image/png": "png",
     "image/jpeg": "jpg",
@@ -95,25 +85,18 @@ async function uploadAndCreateMediaRecord(
 ): Promise<void> {
   // Check if bucket is configured
   if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
-    logger.warn(
-      "[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
-    );
+    logger.warn("[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding");
     return;
   }
 
   // Check if file exists
   if (!fs.existsSync(mediaFile.filePath)) {
-    logger.warn(
-      `[seed-media] Test file not found: ${mediaFile.filePath}, skipping`,
-    );
+    logger.warn(`[seed-media] Test file not found: ${mediaFile.filePath}, skipping`);
     return;
   }
 
   const fileBytes = fs.readFileSync(mediaFile.filePath);
-  const sha256Hash = crypto
-    .createHash("sha256")
-    .update(fileBytes)
-    .digest("base64");
+  const sha256Hash = crypto.createHash("sha256").update(fileBytes).digest("base64");
   const mediaId = getMediaIdFromHash(sha256Hash);
   const bucketPath = getBucketPath(projectId, mediaId, mediaFile.contentType);
 
@@ -128,9 +111,7 @@ async function uploadAndCreateMediaRecord(
   });
 
   if (existingMedia && existingMedia.uploadHttpStatus === 200) {
-    logger.debug(
-      `[seed-media] Media already exists for ${mediaFile.name}, creating TraceMedia link only`,
-    );
+    logger.debug(`[seed-media] Media already exists for ${mediaFile.name}, creating TraceMedia link only`);
 
     // Just create the TraceMedia link
     await prisma.$queryRaw`
@@ -207,9 +188,7 @@ async function uploadAndCreateMediaRecord(
     ON CONFLICT DO NOTHING;
   `;
 
-  logger.info(
-    `[seed-media] Created media record for ${mediaFile.name} -> ${field}`,
-  );
+  logger.info(`[seed-media] Created media record for ${mediaFile.name} -> ${field}`);
 }
 
 /**
@@ -224,62 +203,25 @@ export async function seedMediaTraces(projectId: string): Promise<void> {
 
   // Check if bucket is configured
   if (!env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
-    logger.warn(
-      "[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding",
-    );
+    logger.warn("[seed-media] HANZO_S3_MEDIA_UPLOAD_BUCKET not configured, skipping media seeding");
     return;
   }
 
   // Trace 1: Image only (input)
   const trace1Id = MEDIA_TEST_TRACE_IDS.imageOnly;
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace1Id,
-    "input",
-    MEDIA_FILES.image,
-  );
+  await uploadAndCreateMediaRecord(projectId, trace1Id, "input", MEDIA_FILES.image);
 
   // Trace 2: All media types
   const trace2Id = MEDIA_TEST_TRACE_IDS.allTypes;
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace2Id,
-    "input",
-    MEDIA_FILES.image,
-  );
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace2Id,
-    "output",
-    MEDIA_FILES.pdf,
-  );
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace2Id,
-    "metadata",
-    MEDIA_FILES.audio,
-  );
+  await uploadAndCreateMediaRecord(projectId, trace2Id, "input", MEDIA_FILES.image);
+  await uploadAndCreateMediaRecord(projectId, trace2Id, "output", MEDIA_FILES.pdf);
+  await uploadAndCreateMediaRecord(projectId, trace2Id, "metadata", MEDIA_FILES.audio);
 
   // Trace 3: All media types with ChatML format (pretty-rendered)
   const trace3Id = MEDIA_TEST_TRACE_IDS.allTypesChatML;
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace3Id,
-    "input",
-    MEDIA_FILES.image,
-  );
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace3Id,
-    "output",
-    MEDIA_FILES.pdf,
-  );
-  await uploadAndCreateMediaRecord(
-    projectId,
-    trace3Id,
-    "metadata",
-    MEDIA_FILES.audio,
-  );
+  await uploadAndCreateMediaRecord(projectId, trace3Id, "input", MEDIA_FILES.image);
+  await uploadAndCreateMediaRecord(projectId, trace3Id, "output", MEDIA_FILES.pdf);
+  await uploadAndCreateMediaRecord(projectId, trace3Id, "metadata", MEDIA_FILES.audio);
 
   logger.info("[seed-media] Media seeding completed");
 }

@@ -4,46 +4,32 @@ import { prisma } from "@hanzo/shared/src/db";
 import { redis } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import {
-  HanzoNotFoundError,
-  UnauthorizedError,
-  ForbiddenError } from "@hanzo/shared";
+import { HanzoNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
 
 export default withMiddlewares({
-  DELETE: handleDeleteBlobStorageIntegration });
+  DELETE: handleDeleteBlobStorageIntegration,
+});
 
-async function handleDeleteBlobStorageIntegration(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+async function handleDeleteBlobStorageIntegration(req: NextApiRequest, res: NextApiResponse) {
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(
-    prisma,
-    redis,
-  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     throw new UnauthorizedError(authCheck.error ?? "Unauthorized");
   }
 
   // Check if using an organization API key
-  if (
-    authCheck.scope.accessLevel !== "organization" ||
-    !authCheck.scope.orgId
-  ) {
-    throw new ForbiddenError(
-      "Organization-scoped API key required for this operation.",
-    );
+  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
+    throw new ForbiddenError("Organization-scoped API key required for this operation.");
   }
 
   // Check scheduled-blob-exports entitlement
   if (
     !hasEntitlementBasedOnPlan({
       plan: authCheck.scope.plan,
-      entitlement: "scheduled-blob-exports" })
+      entitlement: "scheduled-blob-exports",
+    })
   ) {
-    throw new ForbiddenError(
-      "scheduled-blob-exports entitlement required for this feature.",
-    );
+    throw new ForbiddenError("scheduled-blob-exports entitlement required for this feature.");
   }
   const { id } = req.query;
 
@@ -56,7 +42,10 @@ async function handleDeleteBlobStorageIntegration(
     where: { projectId: id },
     include: {
       project: {
-        select: { orgId: true } } } });
+        select: { orgId: true },
+      },
+    },
+  });
 
   if (!integration || integration.project.orgId !== authCheck.scope.orgId) {
     throw new HanzoNotFoundError("Blob storage integration not found");
@@ -64,8 +53,10 @@ async function handleDeleteBlobStorageIntegration(
 
   // Delete the integration
   await prisma.blobStorageIntegration.delete({
-    where: { projectId: id } });
+    where: { projectId: id },
+  });
 
   return res.status(200).json({
-    message: "Blob storage integration successfully deleted" });
+    message: "Blob storage integration successfully deleted",
+  });
 }

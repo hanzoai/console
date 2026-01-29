@@ -29,9 +29,7 @@ export const InvoiceHistory = () => {
   if (!orgId) {
     return (
       <Card className="mt-6">
-        <div className="p-6 text-center text-muted-foreground">
-          No organization selected
-        </div>
+        <div className="p-6 text-center text-muted-foreground">No organization selected</div>
       </Card>
     );
   }
@@ -52,9 +50,7 @@ export const InvoiceHistory = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-medium">Invoice History</h3>
-            <p className="text-sm text-muted-foreground">
-              View and download past invoices
-            </p>
+            <p className="text-sm text-muted-foreground">View and download past invoices</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled>
@@ -69,28 +65,16 @@ export const InvoiceHistory = () => {
 
         <div className="mt-6 overflow-x-auto">
           {invoices.length === 0 ? (
-            <p className="text-center text-muted-foreground">
-              No invoice history available
-            </p>
+            <p className="text-center text-muted-foreground">No invoice history available</p>
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">
-                    Invoice
-                  </th>
-                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">
-                    Date
-                  </th>
-                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">
-                    Amount
-                  </th>
-                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="pb-2 text-right text-sm font-medium text-muted-foreground">
-                    Actions
-                  </th>
+                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Invoice</th>
+                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Date</th>
+                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Amount</th>
+                  <th className="pb-2 text-left text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="pb-2 text-right text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,13 +82,10 @@ export const InvoiceHistory = () => {
                   <tr key={invoice.id} className="border-b">
                     <td className="py-4 text-sm">{invoice.number || invoice.id}</td>
                     <td className="py-4 text-sm">
-                      {invoice.created
-                        ? new Date(invoice.created * 1000).toLocaleDateString()
-                        : "N/A"}
+                      {invoice.created ? new Date(invoice.created * 1000).toLocaleDateString() : "N/A"}
                     </td>
                     <td className="py-4 text-sm">
-                      {invoice.currency?.toUpperCase()}{" "}
-                      {(invoice.breakdown.totalCents / 100).toFixed(2)}
+                      {invoice.currency?.toUpperCase()} {(invoice.breakdown.totalCents / 100).toFixed(2)}
                     </td>
                     <td className="py-4">
                       <span
@@ -116,18 +97,11 @@ export const InvoiceHistory = () => {
                               : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {invoice.status
-                          ? invoice.status.charAt(0).toUpperCase() +
-                            invoice.status.slice(1)
-                          : "Unknown"}
+                        {invoice.status ? invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1) : "Unknown"}
                       </span>
                     </td>
                     <td className="py-4 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownloadInvoice(invoice.invoicePdfUrl)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(invoice.invoicePdfUrl)}>
                         <Download className="h-4 w-4" />
                       </Button>
                     </td>

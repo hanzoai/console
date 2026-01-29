@@ -12,10 +12,7 @@ export type TriggerEventAction = z.infer<typeof EventActionSchema>;
 
 export const TriggerEventSourceSchema = z.enum([TriggerEventSource.Prompt]);
 
-export type TriggerDomain = Omit<
-  Trigger,
-  "filter" | "eventSource" | "eventActions"
-> & {
+export type TriggerDomain = Omit<Trigger, "filter" | "eventSource" | "eventActions"> & {
   filter: FilterState;
   eventSource: TriggerEventSource;
   eventActions: TriggerEventAction[];
@@ -38,10 +35,7 @@ export type ActionDomainWithSecrets = Omit<Action, "config"> & {
 
 export const ActionTypeSchema = z.enum(["WEBHOOK", "SLACK", "GITHUB_DISPATCH"]);
 
-export const AvailableWebhookApiSchema = z.record(
-  z.enum(["prompt"]),
-  z.enum(["v1"]),
-);
+export const AvailableWebhookApiSchema = z.record(z.enum(["prompt"]), z.enum(["v1"]));
 
 export const RequestHeaderSchema = z.object({
   secret: z.boolean(),
@@ -66,9 +60,7 @@ export const SafeWebhookActionConfigSchema = WebhookActionConfigSchema.omit({
   requestHeaders: true,
 });
 
-export type SafeWebhookActionConfig = z.infer<
-  typeof SafeWebhookActionConfigSchema
->;
+export type SafeWebhookActionConfig = z.infer<typeof SafeWebhookActionConfigSchema>;
 
 export const WebhookActionCreateSchema = WebhookActionConfigSchema.omit({
   secretKey: true,
@@ -95,14 +87,11 @@ export const GitHubDispatchActionConfigSchema = z.object({
   lastFailingExecutionId: z.string().nullish(),
 });
 
-export const SafeGitHubDispatchActionConfigSchema =
-  GitHubDispatchActionConfigSchema.omit({
-    githubToken: true,
-  });
+export const SafeGitHubDispatchActionConfigSchema = GitHubDispatchActionConfigSchema.omit({
+  githubToken: true,
+});
 
-export type SafeGitHubDispatchActionConfig = z.infer<
-  typeof SafeGitHubDispatchActionConfigSchema
->;
+export type SafeGitHubDispatchActionConfig = z.infer<typeof SafeGitHubDispatchActionConfigSchema>;
 
 export const GitHubDispatchActionCreateSchema = z.object({
   type: z.literal("GITHUB_DISPATCH"),
@@ -111,12 +100,8 @@ export const GitHubDispatchActionCreateSchema = z.object({
   githubToken: z.string().optional(), // Optional for updates, validated in helper
 });
 
-export type GitHubDispatchActionCreate = z.infer<
-  typeof GitHubDispatchActionCreateSchema
->;
-export type GitHubDispatchActionConfigWithSecrets = z.infer<
-  typeof GitHubDispatchActionConfigSchema
->;
+export type GitHubDispatchActionCreate = z.infer<typeof GitHubDispatchActionCreateSchema>;
+export type GitHubDispatchActionConfigWithSecrets = z.infer<typeof GitHubDispatchActionConfigSchema>;
 
 export const ActionConfigSchema = z.discriminatedUnion("type", [
   WebhookActionConfigSchema,
@@ -142,9 +127,7 @@ export type ActionCreate = z.infer<typeof ActionCreateSchema>;
 export type SafeActionConfig = z.infer<typeof SafeActionConfigSchema>;
 
 export type WebhookActionCreate = z.infer<typeof WebhookActionCreateSchema>;
-export type WebhookActionConfigWithSecrets = z.infer<
-  typeof WebhookActionConfigSchema
->;
+export type WebhookActionConfigWithSecrets = z.infer<typeof WebhookActionConfigSchema>;
 
 export type ActionConfigWithSecrets = z.infer<typeof ActionConfigSchema>;
 
@@ -154,18 +137,14 @@ export type ActionConfigWithSecrets = z.infer<typeof ActionConfigSchema>;
 /**
  * Type guard to check if a config is a valid webhook configuration with secrets
  */
-export function isWebhookActionConfig(
-  config: unknown,
-): config is WebhookActionConfigWithSecrets {
+export function isWebhookActionConfig(config: unknown): config is WebhookActionConfigWithSecrets {
   return WebhookActionConfigSchema.safeParse(config).success;
 }
 
 /**
  * Type guard to check if a config is a valid Slack configuration
  */
-export function isSlackActionConfig(
-  config: unknown,
-): config is SlackActionConfig {
+export function isSlackActionConfig(config: unknown): config is SlackActionConfig {
   return SlackActionConfigSchema.safeParse(config).success;
 }
 
@@ -182,18 +161,14 @@ export function isWebhookAction(action: {
 /**
  * Type guard for safe webhook config (without secrets)
  */
-export function isSafeWebhookActionConfig(
-  config: unknown,
-): config is SafeWebhookActionConfig {
+export function isSafeWebhookActionConfig(config: unknown): config is SafeWebhookActionConfig {
   return SafeWebhookActionConfigSchema.safeParse(config).success;
 }
 
 /**
  * Converts webhook config with secrets to safe config by only including allowed fields
  */
-export function convertToSafeWebhookConfig(
-  webhookConfig: WebhookActionConfigWithSecrets,
-): SafeWebhookActionConfig {
+export function convertToSafeWebhookConfig(webhookConfig: WebhookActionConfigWithSecrets): SafeWebhookActionConfig {
   return {
     type: webhookConfig.type,
     url: webhookConfig.url,
@@ -207,34 +182,24 @@ export function convertToSafeWebhookConfig(
 /**
  * Type guard to check if a config is a valid GitHub dispatch configuration with secrets
  */
-export function isGitHubDispatchActionConfig(
-  config: unknown,
-): config is GitHubDispatchActionConfigWithSecrets {
+export function isGitHubDispatchActionConfig(config: unknown): config is GitHubDispatchActionConfigWithSecrets {
   return GitHubDispatchActionConfigSchema.safeParse(config).success;
 }
 
 /**
  * Type guard to check if an entire action has valid GitHub dispatch configuration
  */
-export function isGitHubDispatchAction(action: {
-  type: string;
-  config: unknown;
-}): action is {
+export function isGitHubDispatchAction(action: { type: string; config: unknown }): action is {
   type: "GITHUB_DISPATCH";
   config: GitHubDispatchActionConfigWithSecrets;
 } {
-  return (
-    action.type === "GITHUB_DISPATCH" &&
-    isGitHubDispatchActionConfig(action.config)
-  );
+  return action.type === "GITHUB_DISPATCH" && isGitHubDispatchActionConfig(action.config);
 }
 
 /**
  * Type guard for safe GitHub dispatch config (without secrets)
  */
-export function isSafeGitHubDispatchActionConfig(
-  config: unknown,
-): config is SafeGitHubDispatchActionConfig {
+export function isSafeGitHubDispatchActionConfig(config: unknown): config is SafeGitHubDispatchActionConfig {
   return SafeGitHubDispatchActionConfigSchema.safeParse(config).success;
 }
 

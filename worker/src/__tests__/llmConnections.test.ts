@@ -191,9 +191,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!),
         },
       });
 
@@ -223,9 +221,7 @@ describe("LLM Connection Tests", () => {
         },
         structuredOutputSchema: evalOutputSchema,
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!),
         },
       });
 
@@ -259,9 +255,7 @@ describe("LLM Connection Tests", () => {
         },
         tools: [weatherTool],
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!),
         },
       });
 
@@ -428,8 +422,7 @@ describe("LLM Connection Tests", () => {
       checkEnvVars();
       return JSON.stringify({
         accessKeyId: process.env.HANZO_LLM_CONNECTION_BEDROCK_ACCESS_KEY_ID!,
-        secretAccessKey:
-          process.env.HANZO_LLM_CONNECTION_BEDROCK_SECRET_ACCESS_KEY!,
+        secretAccessKey: process.env.HANZO_LLM_CONNECTION_BEDROCK_SECRET_ACCESS_KEY!,
       });
     };
 
@@ -681,9 +674,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!),
         },
       });
 
@@ -713,9 +704,7 @@ describe("LLM Connection Tests", () => {
         },
         structuredOutputSchema: evalOutputSchema,
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!),
         },
       });
 
@@ -749,9 +738,7 @@ describe("LLM Connection Tests", () => {
         },
         tools: [weatherTool],
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!),
         },
       });
 
@@ -785,9 +772,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(
-            process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
-          ),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!),
         },
       });
 

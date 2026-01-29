@@ -1,8 +1,4 @@
-import {
-  logger,
-  QueueName,
-  recordHistogram,
-} from "@hanzo/shared/src/server";
+import { logger, QueueName, recordHistogram } from "@hanzo/shared/src/server";
 import { getQueue } from "@hanzo/shared/src/server";
 
 export class DlqRetryService {
@@ -16,11 +12,7 @@ export class DlqRetryService {
 
   // called each 10 minutes, defined by the bull cron job
   public static async retryDeadLetterQueue() {
-    logger.info(
-      `Retrying dead letter queues for queues: ${DlqRetryService.retryQueues.join(
-        ", ",
-      )}`,
-    );
+    logger.info(`Retrying dead letter queues for queues: ${DlqRetryService.retryQueues.join(", ")}`);
     const retryQueues = DlqRetryService.retryQueues;
     for (const queueName of retryQueues) {
       const queue = getQueue(queueName);
@@ -32,9 +24,7 @@ export class DlqRetryService {
 
       // Find failed jobs
       const failedJobs = await queue.getFailed();
-      logger.info(
-        `Found ${failedJobs.length} failed jobs in queue ${queueName}`,
-      );
+      logger.info(`Found ${failedJobs.length} failed jobs in queue ${queueName}`);
       for (const job of failedJobs) {
         try {
           const projectId = job.data.payload.projectId;
@@ -49,14 +39,9 @@ export class DlqRetryService {
           });
 
           await job.retry();
-          logger.info(
-            `Retried job ${JSON.stringify(job)} in queue ${queueName}`,
-          );
+          logger.info(`Retried job ${JSON.stringify(job)} in queue ${queueName}`);
         } catch (error) {
-          logger.error(
-            `Failed to retry job ${JSON.stringify(job)} in queue ${queueName}:`,
-            error,
-          );
+          logger.error(`Failed to retry job ${JSON.stringify(job)} in queue ${queueName}:`, error);
         }
       }
     }

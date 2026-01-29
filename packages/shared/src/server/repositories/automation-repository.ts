@@ -1,11 +1,4 @@
-import {
-  Action,
-  ActionExecutionStatus,
-  JobConfigState,
-  Prisma,
-  prisma,
-  Trigger,
-} from "../../db";
+import { Action, ActionExecutionStatus, JobConfigState, Prisma, prisma, Trigger } from "../../db";
 import {
   TriggerEventSource,
   TriggerDomain,
@@ -45,9 +38,7 @@ export const getActionByIdWithSecrets = async ({
 
     // Decrypt secret headers for webhook execution using new structure
     const decryptedHeaders = config.requestHeaders
-      ? decryptSecretHeaders(
-          mergeHeaders(config.headers, config.requestHeaders),
-        )
+      ? decryptSecretHeaders(mergeHeaders(config.headers, config.requestHeaders))
       : config.headers
         ? Object.entries(config.headers).reduce(
             (acc, [key, value]) => {
@@ -265,10 +256,7 @@ export const getConsecutiveAutomationFailures = async ({
   };
 
   // If there's a lastFailingExecutionId, we need to get executions that are newer than that execution
-  if (
-    isSafeWebhookActionConfig(automation.action.config) &&
-    automation.action.config.lastFailingExecutionId
-  ) {
+  if (isSafeWebhookActionConfig(automation.action.config) && automation.action.config.lastFailingExecutionId) {
     // First get the timestamp of the last failing execution
     const lastFailingExecution = await prisma.automationExecution.findUnique({
       where: {

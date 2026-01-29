@@ -35,12 +35,7 @@ export const ObservationLevel = {
   WARNING: "WARNING",
   ERROR: "ERROR",
 } as const;
-export const ObservationLevelDomain = z.enum([
-  "DEBUG",
-  "DEFAULT",
-  "WARNING",
-  "ERROR",
-]);
+export const ObservationLevelDomain = z.enum(["DEBUG", "DEFAULT", "WARNING", "ERROR"]);
 export type ObservationLevelType = z.infer<typeof ObservationLevelDomain>;
 
 export const ObservationDomain = z.object({
@@ -115,8 +110,7 @@ export type EventsObservation = z.infer<typeof EventsObservationSchema>;
 
 export type PartialObservation = Partial<Observation> & ObservationCoreFields;
 
-export type PartialEventsObservation = Partial<EventsObservation> &
-  ObservationCoreFields;
+export type PartialEventsObservation = Partial<EventsObservation> & ObservationCoreFields;
 
 /**
  * Returns true if an observation type is generation-like, meaning it could include LLM calls

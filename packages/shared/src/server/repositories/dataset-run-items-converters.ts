@@ -2,10 +2,7 @@ import { DatasetRunItemDomain } from "../../domain/dataset-run-items";
 import { convertDateToClickhouseDateTime } from "../clickhouse/client";
 import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
 import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
-import {
-  DatasetRunItemRecordReadType,
-  DatasetRunItemRecord,
-} from "./definitions";
+import { DatasetRunItemRecordReadType, DatasetRunItemRecord } from "./definitions";
 
 export const convertToDatasetRunMetrics = (row: any) => {
   return {
@@ -37,39 +34,26 @@ export const convertDatasetRunItemDomainToClickhouse = (
     dataset_run_id: datasetRunItem.datasetRunId,
     dataset_run_name: datasetRunItem.datasetRunName,
     dataset_run_description: datasetRunItem.datasetRunDescription,
-    dataset_run_metadata: datasetRunItem.datasetRunMetadata as Record<
-      string,
-      string
-    >,
+    dataset_run_metadata: datasetRunItem.datasetRunMetadata as Record<string, string>,
     dataset_item_id: datasetRunItem.datasetItemId,
     dataset_item_input: datasetRunItem.datasetItemInput as string,
-    dataset_item_expected_output:
-      datasetRunItem.datasetItemExpectedOutput as string,
-    dataset_item_metadata: datasetRunItem.datasetItemMetadata as Record<
-      string,
-      string
-    >,
+    dataset_item_expected_output: datasetRunItem.datasetItemExpectedOutput as string,
+    dataset_item_metadata: datasetRunItem.datasetItemMetadata as Record<string, string>,
     created_at: convertDateToClickhouseDateTime(datasetRunItem.createdAt),
     updated_at: convertDateToClickhouseDateTime(datasetRunItem.updatedAt),
     event_ts: convertDateToClickhouseDateTime(new Date()),
     is_deleted: 0,
-    dataset_run_created_at: convertDateToClickhouseDateTime(
-      datasetRunItem.datasetRunCreatedAt,
-    ),
+    dataset_run_created_at: convertDateToClickhouseDateTime(datasetRunItem.datasetRunCreatedAt),
     error: datasetRunItem.error,
   };
 };
 
 // Function overloads for clean type discrimination
-export function convertDatasetRunItemClickhouseToDomain(
-  row: DatasetRunItemRecord<true>,
-): DatasetRunItemDomain<true>;
-export function convertDatasetRunItemClickhouseToDomain(
-  row: DatasetRunItemRecord<false>,
-): DatasetRunItemDomain<false>;
-export function convertDatasetRunItemClickhouseToDomain<
-  WithIO extends boolean = true,
->(row: DatasetRunItemRecord<WithIO>): DatasetRunItemDomain<WithIO> {
+export function convertDatasetRunItemClickhouseToDomain(row: DatasetRunItemRecord<true>): DatasetRunItemDomain<true>;
+export function convertDatasetRunItemClickhouseToDomain(row: DatasetRunItemRecord<false>): DatasetRunItemDomain<false>;
+export function convertDatasetRunItemClickhouseToDomain<WithIO extends boolean = true>(
+  row: DatasetRunItemRecord<WithIO>,
+): DatasetRunItemDomain<WithIO> {
   const baseConversion = {
     id: row.id,
     projectId: row.project_id,
@@ -78,9 +62,7 @@ export function convertDatasetRunItemClickhouseToDomain<
     datasetRunId: row.dataset_run_id,
     datasetRunName: row.dataset_run_name,
     datasetRunDescription: row.dataset_run_description ?? null,
-    datasetRunCreatedAt: parseClickhouseUTCDateTimeFormat(
-      row.dataset_run_created_at,
-    ),
+    datasetRunCreatedAt: parseClickhouseUTCDateTimeFormat(row.dataset_run_created_at),
     datasetItemId: row.dataset_item_id,
     createdAt: parseClickhouseUTCDateTimeFormat(row.created_at),
     updatedAt: parseClickhouseUTCDateTimeFormat(row.updated_at),
@@ -92,14 +74,10 @@ export function convertDatasetRunItemClickhouseToDomain<
   if ("dataset_item_input" in row) {
     return {
       ...baseConversion,
-      datasetRunMetadata:
-        parseMetadataCHRecordToDomain((row as any).dataset_run_metadata) ??
-        null,
+      datasetRunMetadata: parseMetadataCHRecordToDomain((row as any).dataset_run_metadata) ?? null,
       datasetItemInput: (row as any).dataset_item_input,
       datasetItemExpectedOutput: (row as any).dataset_item_expected_output,
-      datasetItemMetadata: parseMetadataCHRecordToDomain(
-        (row as any).dataset_item_metadata,
-      ),
+      datasetItemMetadata: parseMetadataCHRecordToDomain((row as any).dataset_item_metadata),
     } as DatasetRunItemDomain<WithIO>;
   } else {
     return baseConversion as DatasetRunItemDomain<WithIO>;

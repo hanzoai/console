@@ -50,12 +50,7 @@ describe("PromptService", () => {
 
     mockMetricIncrementer = jest.fn();
 
-    promptService = new PromptService(
-      mockPrisma,
-      mockRedis,
-      mockMetricIncrementer,
-      true,
-    );
+    promptService = new PromptService(mockPrisma, mockRedis, mockMetricIncrementer, true);
   });
 
   describe("getPrompt", () => {
@@ -88,22 +83,11 @@ describe("PromptService", () => {
 
       expect(result).toEqual(mockPrompt);
       expect(mockPrisma.prompt.findFirst).toHaveBeenCalled();
-      expect(mockMetricIncrementer).toHaveBeenCalledWith(
-        "prompt_cache_miss",
-        1,
-      );
+      expect(mockMetricIncrementer).toHaveBeenCalledWith("prompt_cache_miss", 1);
 
-      expect(mockRedis.set).toHaveBeenCalledWith(
-        "prompt:project1:testPrompt:1",
-        JSON.stringify(mockPrompt),
-        "EX",
-        300,
-      );
+      expect(mockRedis.set).toHaveBeenCalledWith("prompt:project1:testPrompt:1", JSON.stringify(mockPrompt), "EX", 300);
 
-      expect(mockRedis.sadd).toHaveBeenCalledWith(
-        "prompt_key_index:project1",
-        "prompt:project1:testPrompt:1",
-      );
+      expect(mockRedis.sadd).toHaveBeenCalledWith("prompt_key_index:project1", "prompt:project1:testPrompt:1");
     });
 
     it("should not use cache if locked", async () => {
@@ -130,11 +114,7 @@ describe("PromptService", () => {
         promptName: "testPrompt",
       });
 
-      expect(mockRedis.setex).toHaveBeenCalledWith(
-        "LOCK:prompt:project1",
-        30,
-        "locked",
-      );
+      expect(mockRedis.setex).toHaveBeenCalledWith("LOCK:prompt:project1", 30, "locked");
     });
   });
 
@@ -157,24 +137,15 @@ describe("PromptService", () => {
       });
 
       // Legacy index
-      expect(mockRedis.smembers).toHaveBeenCalledWith(
-        "prompt_key_index:project1:testPrompt",
-      );
+      expect(mockRedis.smembers).toHaveBeenCalledWith("prompt_key_index:project1:testPrompt");
 
-      expect(mockRedis.smembers).toHaveBeenCalledWith(
-        "prompt_key_index:project1",
-      );
+      expect(mockRedis.smembers).toHaveBeenCalledWith("prompt_key_index:project1");
     });
   });
 
   describe("caching disabled", () => {
     beforeEach(() => {
-      promptService = new PromptService(
-        mockPrisma,
-        mockRedis,
-        mockMetricIncrementer,
-        false,
-      );
+      promptService = new PromptService(mockPrisma, mockRedis, mockMetricIncrementer, false);
     });
 
     it("should not use cache when disabled", async () => {
@@ -196,11 +167,7 @@ describe("PromptService", () => {
 
   describe("null Redis instance", () => {
     beforeEach(() => {
-      promptService = new PromptService(
-        mockPrisma,
-        null,
-        mockMetricIncrementer,
-      );
+      promptService = new PromptService(mockPrisma, null, mockMetricIncrementer);
     });
 
     it("should not use cache with null Redis instance", async () => {
@@ -233,10 +200,7 @@ describe("PromptService", () => {
 
       expect(result).toEqual(mockPrompt);
       expect(mockPrisma.prompt.findFirst).toHaveBeenCalled();
-      expect(mockMetricIncrementer).toHaveBeenCalledWith(
-        "prompt_cache_miss",
-        1,
-      );
+      expect(mockMetricIncrementer).toHaveBeenCalledWith("prompt_cache_miss", 1);
     });
 
     it("should fallback to database if Redis.getex throws an error", async () => {
@@ -253,10 +217,7 @@ describe("PromptService", () => {
 
       expect(result).toEqual(mockPrompt);
       expect(mockPrisma.prompt.findFirst).toHaveBeenCalled();
-      expect(mockMetricIncrementer).toHaveBeenCalledWith(
-        "prompt_cache_miss",
-        1,
-      );
+      expect(mockMetricIncrementer).toHaveBeenCalledWith("prompt_cache_miss", 1);
     });
 
     it("should not cache if Redis.set throws an error after database fetch", async () => {
@@ -274,10 +235,7 @@ describe("PromptService", () => {
 
       expect(result).toEqual(mockPrompt);
       expect(mockPrisma.prompt.findFirst).toHaveBeenCalled();
-      expect(mockMetricIncrementer).toHaveBeenCalledWith(
-        "prompt_cache_miss",
-        1,
-      );
+      expect(mockMetricIncrementer).toHaveBeenCalledWith("prompt_cache_miss", 1);
     });
   });
 

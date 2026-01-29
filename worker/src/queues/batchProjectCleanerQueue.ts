@@ -1,14 +1,6 @@
 import { Processor } from "bullmq";
-import {
-  logger,
-  QueueJobs,
-  BatchProjectCleanerJobType,
-  BATCH_DELETION_TABLES,
-} from "@hanzo/shared/src/server";
-import {
-  BatchProjectCleaner,
-  BatchDeletionTable,
-} from "../features/batch-project-cleaner";
+import { logger, QueueJobs, BatchProjectCleanerJobType, BATCH_DELETION_TABLES } from "@hanzo/shared/src/server";
+import { BatchProjectCleaner, BatchDeletionTable } from "../features/batch-project-cleaner";
 
 export const batchProjectCleanerProcessor: Processor = async (job) => {
   if (job.name === QueueJobs.BatchProjectCleanerJob) {

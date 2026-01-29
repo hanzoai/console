@@ -26,18 +26,12 @@ import { prisma } from "@hanzo/shared/src/db";
 import z from "zod/v4";
 import { UnrecoverableError } from "../../errors/UnrecoverableError";
 
-export const parseDatasetItemInput = (
-  itemInput: Prisma.JsonObject,
-  variables: string[],
-): Prisma.JsonObject => {
+export const parseDatasetItemInput = (itemInput: Prisma.JsonObject, variables: string[]): Prisma.JsonObject => {
   try {
     const filteredInput = Object.fromEntries(
       Object.entries(itemInput)
         .filter(([key]) => variables.includes(key))
-        .map(([key, value]) => [
-          key,
-          value === null ? null : stringifyValue(value),
-        ]),
+        .map(([key, value]) => [key, value === null ? null : stringifyValue(value)]),
     );
 
     return filteredInput;
@@ -48,10 +42,7 @@ export const parseDatasetItemInput = (
   }
 };
 
-export const fetchDatasetRun = async (
-  datasetRunId: string,
-  projectId: string,
-) => {
+export const fetchDatasetRun = async (datasetRunId: string, projectId: string) => {
   return await prisma.datasetRuns.findFirst({
     where: {
       id: datasetRunId,
@@ -83,9 +74,7 @@ export const replaceVariablesInPrompt = (
   const processContent = (content: string) => {
     // Extract only template variables from itemInput (exclude message placeholders)
     const filteredContext = Object.fromEntries(
-      Object.entries(itemInput).filter(
-        ([key]) => variables.includes(key) && !placeholderNames.includes(key),
-      ),
+      Object.entries(itemInput).filter(([key]) => variables.includes(key) && !placeholderNames.includes(key)),
     );
 
     // Apply template ONLY if the content contains `{{variable}}` pattern
@@ -117,36 +106,24 @@ export const replaceVariablesInPrompt = (
       try {
         actualValue = JSON.parse(value);
       } catch (_e) {
-        throw new Error(
-          `Invalid placeholder value for '${placeholderName}': unable to parse JSON`,
-        );
+        throw new Error(`Invalid placeholder value for '${placeholderName}': unable to parse JSON`);
       }
     }
     if (!Array.isArray(actualValue)) {
-      throw new Error(
-        `Placeholder '${placeholderName}' must be an array of messages`,
-      );
+      throw new Error(`Placeholder '${placeholderName}' must be an array of messages`);
     }
     // Allow arbitrary objects - e.g. for users who want to pass ChatML messages.
     // Used to validate for role and content key existence here.
-    const validMessages = actualValue.every(
-      (msg) => typeof msg === "object" && msg !== null,
-    );
+    const validMessages = actualValue.every((msg) => typeof msg === "object" && msg !== null);
     if (!validMessages) {
-      throw new Error(
-        `Invalid placeholder value for '${placeholderName}': all items must be objects`,
-      );
+      throw new Error(`Invalid placeholder value for '${placeholderName}': all items must be objects`);
     }
     placeholderValues[placeholderName] = actualValue.map((msg) => ({
       ...msg,
       type: ChatMessageType.PublicAPICreated as const,
     }));
   }
-  const compiledMessages = compileChatMessages(
-    prompt as PromptMessage[],
-    placeholderValues,
-    {},
-  );
+  const compiledMessages = compileChatMessages(prompt as PromptMessage[], placeholderValues, {});
   return compiledMessages.map((message) => ({
     ...message,
     // Only process content if it exists as string (for standard ChatMessages)
@@ -157,12 +134,8 @@ export const replaceVariablesInPrompt = (
   }));
 };
 
-export type PromptExperimentConfig = Awaited<
-  ReturnType<typeof validateAndSetupExperiment>
->;
-export async function validateAndSetupExperiment(
-  event: z.infer<typeof ExperimentCreateEventSchema>,
-) {
+export type PromptExperimentConfig = Awaited<ReturnType<typeof validateAndSetupExperiment>>;
+export async function validateAndSetupExperiment(event: z.infer<typeof ExperimentCreateEventSchema>) {
   const { datasetId, projectId, runId } = event;
 
   // Validate dataset run exists
@@ -174,17 +147,14 @@ export async function validateAndSetupExperiment(
   }
 
   // Validate experiment metadata
-  const validatedRunMetadata = ExperimentMetadataSchema.safeParse(
-    datasetRun.metadata,
-  );
+  const validatedRunMetadata = ExperimentMetadataSchema.safeParse(datasetRun.metadata);
   if (!validatedRunMetadata.success) {
     throw new UnrecoverableError(
       "Hanzo in-app experiments require prompt and model configurations in dataset run metadata",
     );
   }
 
-  const { prompt_id, provider, model, model_params } =
-    validatedRunMetadata.data;
+  const { prompt_id, provider, model, model_params } = validatedRunMetadata.data;
 
   // Fetch and validate prompt
   const prompt = await fetchPrompt(prompt_id, projectId);
@@ -211,9 +181,7 @@ export async function validateAndSetupExperiment(
 
   // Extract variables from prompt
   const extractedVariables = extractVariables(
-    prompt?.type === PromptType.Text
-      ? (prompt.prompt?.toString() ?? "")
-      : JSON.stringify(prompt.prompt),
+    prompt?.type === PromptType.Text ? (prompt.prompt?.toString() ?? "") : JSON.stringify(prompt.prompt),
   );
 
   const placeholderNames =

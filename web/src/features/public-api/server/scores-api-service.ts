@@ -4,10 +4,7 @@ import {
   convertScoreToPublicApi,
   type ScoreQueryType,
 } from "@/src/features/public-api/server/scores";
-import {
-  AGGREGATABLE_SCORE_TYPES,
-  type ScoreSourceType,
-} from "@hanzo/shared";
+import { AGGREGATABLE_SCORE_TYPES, type ScoreSourceType } from "@hanzo/shared";
 import { _handleGetScoreById } from "@hanzo/shared/src/server";
 
 export class ScoresApiService {
@@ -18,22 +15,13 @@ export class ScoresApiService {
    * v1: Only returns aggregatable scores (NUMERIC, BOOLEAN, CATEGORICAL) - excludes CORRECTION
    * v2: Returns all score types including CORRECTION
    */
-  async getScoreById({
-    projectId,
-    scoreId,
-    source,
-  }: {
-    projectId: string;
-    scoreId: string;
-    source?: ScoreSourceType;
-  }) {
+  async getScoreById({ projectId, scoreId, source }: { projectId: string; scoreId: string; source?: ScoreSourceType }) {
     const score = await _handleGetScoreById({
       projectId,
       scoreId,
       source,
       scoreScope: this.apiVersion === "v1" ? "traces_only" : "all",
-      scoreDataTypes:
-        this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
+      scoreDataTypes: this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
       preferredClickhouseService: "ReadOnly",
     });
 
@@ -53,8 +41,7 @@ export class ScoresApiService {
     return _handleGenerateScoresForPublicApi({
       props,
       scoreScope: this.apiVersion === "v1" ? "traces_only" : "all",
-      scoreDataTypes:
-        this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
+      scoreDataTypes: this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
     });
   }
 
@@ -67,8 +54,7 @@ export class ScoresApiService {
     return _handleGetScoresCountForPublicApi({
       props,
       scoreScope: this.apiVersion === "v1" ? "traces_only" : "all",
-      scoreDataTypes:
-        this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
+      scoreDataTypes: this.apiVersion === "v1" ? AGGREGATABLE_SCORE_TYPES : undefined,
     });
   }
 }

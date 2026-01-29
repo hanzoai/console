@@ -12,9 +12,7 @@ export const prepareClickhouse = async (
     numberOfRuns?: number;
   },
 ) => {
-  logger.info(
-    `Preparing ClickHouse for ${projectIds.length} projects and ${opts.numberOfDays} days.`,
-  );
+  logger.info(`Preparing ClickHouse for ${projectIds.length} projects and ${opts.numberOfDays} days.`);
 
   const formattedOpts: SeederOptions = {
     mode: "bulk",

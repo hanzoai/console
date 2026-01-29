@@ -5,22 +5,12 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState, useMemo } from "react";
 import { Form } from "@/src/components/ui/form";
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
 import type { DatasetItemDomain } from "@hanzo/shared";
 import { DatasetItemFields } from "./DatasetItemFields";
-import {
-  stringifyDatasetItemData,
-  type DatasetSchema,
-} from "../utils/datasetItemUtils";
+import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
 
 const formSchema = z.object({
   input: z.string().refine(
@@ -34,8 +24,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   expectedOutput: z.string().refine(
@@ -49,8 +38,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   metadata: z.string().refine(
@@ -64,8 +52,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
 });
@@ -123,11 +110,7 @@ export const EditDatasetItemDialog = ({
   }, [dataset]);
 
   // Validate against dataset schemas
-  const validation = useDatasetItemValidation(
-    inputValue,
-    expectedOutputValue,
-    datasets,
-  );
+  const validation = useDatasetItemValidation(inputValue, expectedOutputValue, datasets);
 
   const updateDatasetItemMutation = api.datasets.updateDatasetItem.useMutation({
     onSuccess: () => {
@@ -156,10 +139,7 @@ export const EditDatasetItemDialog = ({
           <DialogTitle>Edit Dataset Item</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex h-full flex-col"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-full flex-col">
             <DialogBody>
               {formError ? (
                 <p className="mb-4 text-destructive">
@@ -187,11 +167,7 @@ export const EditDatasetItemDialog = ({
               <Button
                 type="submit"
                 loading={updateDatasetItemMutation.isPending}
-                disabled={
-                  !form.formState.isDirty ||
-                  !hasAccess ||
-                  (validation.hasSchemas && !validation.isValid)
-                }
+                disabled={!form.formState.isDirty || !hasAccess || (validation.hasSchemas && !validation.isValid)}
               >
                 Save changes
               </Button>

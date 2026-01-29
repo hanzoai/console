@@ -57,9 +57,7 @@ export async function createMcpTestSetup(): Promise<{
  * Creates a mock ServerContext for testing.
  * Use this when you need a context but don't want to create actual DB records.
  */
-export function mockServerContext(
-  overrides?: Partial<ServerContext>,
-): ServerContext {
+export function mockServerContext(overrides?: Partial<ServerContext>): ServerContext {
   return {
     projectId: overrides?.projectId ?? "test-project-id",
     orgId: overrides?.orgId ?? "test-org-id",
@@ -74,9 +72,7 @@ export function mockServerContext(
  * Verifies that a response follows the MCP content block format.
  * MCP tools return { content: [{ type: "text", text: "..." }] }
  */
-export function verifyMcpResponseFormat(
-  response: unknown,
-): asserts response is {
+export function verifyMcpResponseFormat(response: unknown): asserts response is {
   content: Array<{ type: "text"; text: string }>;
 } {
   if (!response || typeof response !== "object") {
@@ -101,9 +97,7 @@ export function verifyMcpResponseFormat(
     const blockTyped = block as Record<string, unknown>;
 
     if (blockTyped.type !== "text") {
-      throw new Error(
-        `Content block type must be 'text', got: ${blockTyped.type}`,
-      );
+      throw new Error(`Content block type must be 'text', got: ${blockTyped.type}`);
     }
 
     if (typeof blockTyped.text !== "string") {
@@ -116,9 +110,7 @@ export function verifyMcpResponseFormat(
  * Extracts the text content from an MCP tool response.
  * Assumes the response has been validated with verifyMcpResponseFormat.
  */
-export function extractMcpResponseText(response: {
-  content: Array<{ type: "text"; text: string }>;
-}): string {
+export function extractMcpResponseText(response: { content: Array<{ type: "text"; text: string }> }): string {
   return response.content.map((block) => block.text).join("");
 }
 
@@ -126,9 +118,7 @@ export function extractMcpResponseText(response: {
  * Parses JSON from an MCP tool response text.
  * Handles the common case where tool responses are JSON strings.
  */
-export function parseMcpResponseJson<T = unknown>(response: {
-  content: Array<{ type: "text"; text: string }>;
-}): T {
+export function parseMcpResponseJson<T = unknown>(response: { content: Array<{ type: "text"; text: string }> }): T {
   const text = extractMcpResponseText(response);
   return JSON.parse(text) as T;
 }
@@ -166,9 +156,7 @@ export async function verifyAuditLog(params: {
   });
 
   if (auditLogs.length === 0) {
-    throw new Error(
-      `No audit log found for ${params.action} ${params.resourceType} in project ${params.projectId}`,
-    );
+    throw new Error(`No audit log found for ${params.action} ${params.resourceType} in project ${params.projectId}`);
   }
 
   const log = auditLogs[0];
@@ -245,9 +233,7 @@ export function verifyToolAnnotations(
   }
 
   if (expectedAnnotations.destructiveHint !== undefined) {
-    expect(annotations.destructiveHint).toBe(
-      expectedAnnotations.destructiveHint,
-    );
+    expect(annotations.destructiveHint).toBe(expectedAnnotations.destructiveHint);
   }
 
   if (expectedAnnotations.expensiveHint !== undefined) {

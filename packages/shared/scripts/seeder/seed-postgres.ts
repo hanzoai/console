@@ -266,10 +266,7 @@ async function main() {
       });
     }
 
-    const configIdsAndNames = await generateConfigsForProject([
-      project1,
-      project2,
-    ]);
+    const configIdsAndNames = await generateConfigsForProject([project1, project2]);
 
     await generateQueuesForProject([project1, project2], configIdsAndNames);
     await generatePromptsForProject([project1, project2]);
@@ -290,9 +287,7 @@ async function main() {
         },
       });
     } else {
-      logger.warn(
-        "No OPENAI_API_KEY found in environment. Skipping seeding LLM API key.",
-      );
+      logger.warn("No OPENAI_API_KEY found in environment. Skipping seeding LLM API key.");
     }
 
     // add eval objects
@@ -384,8 +379,7 @@ async function main() {
             properties: {
               expression: {
                 type: "string",
-                description:
-                  "The mathematical expression to evaluate, e.g. '2 + 2'",
+                description: "The mathematical expression to evaluate, e.g. '2 + 2'",
               },
             },
             required: ["expression"],
@@ -532,10 +526,7 @@ export async function createDatasets(
 
       for (let index = 0; index < data.items.length; index++) {
         const item = data.items[index];
-        const sourceTraceId =
-          Math.random() > 0.3
-            ? `${Math.floor(Math.random() * 100)}`
-            : undefined;
+        const sourceTraceId = Math.random() > 0.3 ? `${Math.floor(Math.random() * 100)}` : undefined;
 
         const itemId = generateDatasetItemId(datasetName, index, projectId);
         datasetItemIds.push(itemId);
@@ -580,13 +571,7 @@ export async function createDatasets(
             name: `demo-dataset-run-${datasetRunNumber}-${datasetName}`,
             description: Math.random() > 0.5 ? "Dataset run description" : "",
             datasetId: dataset.id,
-            metadata: [
-              undefined,
-              "string",
-              100,
-              { key: "value" },
-              ["tag1", "tag2"],
-            ][datasetRunNumber % 5],
+            metadata: [undefined, "string", 100, { key: "value" }, ["tag1", "tag2"]][datasetRunNumber % 5],
           },
           update: {},
         });
@@ -595,40 +580,22 @@ export async function createDatasets(
   }
 }
 
-async function generateEvalJobExecutions(
-  projects: Project[],
-  evalJobConfigurations: Partial<JobConfiguration>[],
-) {
+async function generateEvalJobExecutions(projects: Project[], evalJobConfigurations: Partial<JobConfiguration>[]) {
   for (const project of projects) {
     for (let i = 0; i < EVAL_TRACE_COUNT; i++) {
-      const jobConfiguration =
-        evalJobConfigurations[i % evalJobConfigurations.length];
+      const jobConfiguration = evalJobConfigurations[i % evalJobConfigurations.length];
 
       const isFailed = i % FAILED_EVAL_TRACE_INTERVAL === 0;
       await prisma.jobExecution.create({
         data: {
           projectId: project.id,
           jobTemplateId: jobConfiguration.evalTemplateId,
-          jobInputTraceId: generateEvalTraceId(
-            jobConfiguration.evalTemplateId!,
-            i,
-            project.id,
-          ),
+          jobInputTraceId: generateEvalTraceId(jobConfiguration.evalTemplateId!, i, project.id),
           jobConfigurationId: jobConfiguration.id!,
-          status: isFailed
-            ? JobExecutionStatus.ERROR
-            : JobExecutionStatus.COMPLETED,
+          status: isFailed ? JobExecutionStatus.ERROR : JobExecutionStatus.COMPLETED,
           error: isFailed ? "Error message" : undefined,
-          jobOutputScoreId: generateEvalScoreId(
-            jobConfiguration.evalTemplateId!,
-            i,
-            project.id,
-          ),
-          jobInputObservationId: generateEvalObservationId(
-            jobConfiguration.evalTemplateId!,
-            i,
-            project.id,
-          ),
+          jobOutputScoreId: generateEvalScoreId(jobConfiguration.evalTemplateId!, i, project.id),
+          jobInputObservationId: generateEvalObservationId(jobConfiguration.evalTemplateId!, i, project.id),
         },
       });
     }
@@ -841,8 +808,7 @@ async function generateConfigs(project: Project) {
         { label: "True", value: 1 },
         { label: "False", value: 0 },
       ],
-      description:
-        "Used to indicate if text was harmful or offensive in nature.",
+      description: "Used to indicate if text was harmful or offensive in nature.",
       isArchived: false,
     },
   ];
@@ -894,10 +860,7 @@ async function generateQueuesForProject(
 
   await Promise.all(
     projects.map(async (project) => {
-      const queueIds = await generateQueues(
-        project,
-        configIdsAndNames.get(project.id) ?? [],
-      );
+      const queueIds = await generateQueues(project, configIdsAndNames.get(project.id) ?? []);
       projectIdsToQueues.set(project.id, queueIds);
     }),
   );

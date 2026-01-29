@@ -15,8 +15,6 @@ export class ObservationNotFoundError extends Error {
   }
 }
 
-export function isObservationNotFoundError(
-  e: any,
-): e is ObservationNotFoundError {
+export function isObservationNotFoundError(e: any): e is ObservationNotFoundError {
   return e instanceof Error && e.name === ObservationNotFoundErrorName;
 }

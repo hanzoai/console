@@ -23,10 +23,7 @@ import { debugTime, debugTimeEnd } from "./debug";
  * @param nodeId - ID of node to toggle
  * @returns Updated tree state (mutates in place for performance)
  */
-export function toggleNodeExpansion(
-  tree: TreeState,
-  nodeId: string,
-): TreeState {
+export function toggleNodeExpansion(tree: TreeState, nodeId: string): TreeState {
   const node = tree.nodeMap.get(nodeId);
   if (!node || !node.isExpandable) {
     return tree; // Can't toggle non-expandable nodes
@@ -103,10 +100,7 @@ function propagateOffsetsUpward(node: TreeNode | null): void {
  * @param nodeId - ID of node whose descendants to expand
  * @returns Updated tree state
  */
-export function expandAllDescendants(
-  tree: TreeState,
-  nodeId: string,
-): TreeState {
+export function expandAllDescendants(tree: TreeState, nodeId: string): TreeState {
   debugTime("[expandAllDescendants]");
 
   const node = tree.nodeMap.get(nodeId);
@@ -149,10 +143,7 @@ export function expandAllDescendants(
  * @param nodeId - ID of node whose descendants to collapse
  * @returns Updated tree state
  */
-export function collapseAllDescendants(
-  tree: TreeState,
-  nodeId: string,
-): TreeState {
+export function collapseAllDescendants(tree: TreeState, nodeId: string): TreeState {
   debugTime("[collapseAllDescendants]");
 
   const node = tree.nodeMap.get(nodeId);
@@ -263,10 +254,7 @@ export function exportExpansionState(tree: TreeState): Record<string, boolean> {
  * @param expansionState - New expansion state
  * @returns Updated tree state
  */
-export function applyExpansionState(
-  tree: TreeState,
-  expansionState: ExpansionState,
-): TreeState {
+export function applyExpansionState(tree: TreeState, expansionState: ExpansionState): TreeState {
   debugTime("[applyExpansionState]");
 
   // Convert to collapsed/expanded paths sets
@@ -299,9 +287,7 @@ export function applyExpansionState(
 
   // Apply to all nodes (bottom-up for correct offset computation)
   const postOrder: TreeNode[] = [];
-  const stack: { node: TreeNode; visited: boolean }[] = [
-    { node: tree.rootNode, visited: false },
-  ];
+  const stack: { node: TreeNode; visited: boolean }[] = [{ node: tree.rootNode, visited: false }];
 
   // Collect nodes in post-order
   while (stack.length > 0) {
@@ -377,9 +363,7 @@ export function expandToDepth(tree: TreeState, depth: number): TreeState {
 
   // Iterate through all nodes (bottom-up for offset computation)
   const postOrder: TreeNode[] = [];
-  const stack: { node: TreeNode; visited: boolean }[] = [
-    { node: tree.rootNode, visited: false },
-  ];
+  const stack: { node: TreeNode; visited: boolean }[] = [{ node: tree.rootNode, visited: false }];
 
   while (stack.length > 0) {
     const current = stack.pop()!;

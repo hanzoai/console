@@ -58,9 +58,7 @@ describe("Cohen's Kappa Calculation", () => {
   });
 
   it("should handle confusion matrix with zero total count", () => {
-    const confusionMatrix: ConfusionMatrixRow[] = [
-      { rowCategory: "A", colCategory: "A", count: 0 },
-    ];
+    const confusionMatrix: ConfusionMatrixRow[] = [{ rowCategory: "A", colCategory: "A", count: 0 }];
 
     const kappa = calculateCohensKappa(confusionMatrix);
     expect(kappa).toBeNull();
@@ -116,9 +114,7 @@ describe("Weighted F1 Score Calculation", () => {
   });
 
   it("should handle zero total count", () => {
-    const confusionMatrix: ConfusionMatrixRow[] = [
-      { rowCategory: "A", colCategory: "A", count: 0 },
-    ];
+    const confusionMatrix: ConfusionMatrixRow[] = [{ rowCategory: "A", colCategory: "A", count: 0 }];
 
     const f1 = calculateWeightedF1Score(confusionMatrix);
     expect(f1).toBeNull();
@@ -200,9 +196,7 @@ describe("Overall Agreement Calculation", () => {
   });
 
   it("should handle zero total count", () => {
-    const confusionMatrix: ConfusionMatrixRow[] = [
-      { rowCategory: "A", colCategory: "A", count: 0 },
-    ];
+    const confusionMatrix: ConfusionMatrixRow[] = [{ rowCategory: "A", colCategory: "A", count: 0 }];
 
     const agreement = calculateOverallAgreement(confusionMatrix);
     expect(agreement).toBeNull();

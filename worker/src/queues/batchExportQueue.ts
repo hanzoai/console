@@ -1,19 +1,13 @@
 import { Job } from "bullmq";
 
-import {
-  BaseError,
-  BatchExportStatus,
-  HanzoNotFoundError,
-} from "@hanzo/shared";
+import { BaseError, BatchExportStatus, HanzoNotFoundError } from "@hanzo/shared";
 import { kyselyPrisma } from "@hanzo/shared/src/db";
 
 import { traceException, logger } from "@hanzo/shared/src/server";
 import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { handleBatchExportJob } from "../features/batchExport/handleBatchExportJob";
 
-export const batchExportQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.BatchExport]>,
-) => {
+export const batchExportQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.BatchExport]>) => {
   try {
     logger.info("Executing Batch Export Job", job.data.payload);
     await handleBatchExportJob(job.data.payload);
@@ -23,13 +17,10 @@ export const batchExportQueueProcessor = async (
     return true;
   } catch (e) {
     if (e instanceof HanzoNotFoundError) {
-      logger.warn(
-        `Batch export ${job.data.payload.batchExportId} not found. Job will be skipped.`,
-      );
+      logger.warn(`Batch export ${job.data.payload.batchExportId} not found. Job will be skipped.`);
       return true;
     }
-    const displayError =
-      e instanceof BaseError ? e.message : "An internal error occurred";
+    const displayError = e instanceof BaseError ? e.message : "An internal error occurred";
 
     await kyselyPrisma.$kysely
       .updateTable("batch_exports")

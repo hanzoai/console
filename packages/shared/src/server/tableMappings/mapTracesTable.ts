@@ -121,8 +121,7 @@ export const tracesTableUiColumnDefinitions: UiColumnMappings = [
     uiTableName: "Input Tokens",
     uiTableId: "inputTokens",
     clickhouseTableName: "observations",
-    clickhouseSelect:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, o.usage_details)))",
+    clickhouseSelect: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, o.usage_details)))",
     clickhouseTypeOverwrite: "Decimal64(3)",
   },
   {
@@ -137,16 +136,14 @@ export const tracesTableUiColumnDefinitions: UiColumnMappings = [
     uiTableName: "Total Tokens",
     uiTableId: "totalTokens",
     clickhouseTableName: "observations",
-    clickhouseSelect:
-      "if(mapExists((k, v) -> (k = 'total'), o.usage_details), o.usage_details['total'], NULL)",
+    clickhouseSelect: "if(mapExists((k, v) -> (k = 'total'), o.usage_details), o.usage_details['total'], NULL)",
     clickhouseTypeOverwrite: "Decimal64(3)",
   },
   {
     uiTableName: "Tokens",
     uiTableId: "tokens",
     clickhouseTableName: "observations",
-    clickhouseSelect:
-      "if(mapExists((k, v) -> (k = 'total'), o.usage_details), o.usage_details['total'], NULL)",
+    clickhouseSelect: "if(mapExists((k, v) -> (k = 'total'), o.usage_details), o.usage_details['total'], NULL)",
     clickhouseTypeOverwrite: "Decimal64(3)",
   },
   // Scores column duplicated to allow renaming column name. Will be removed once session storage cache is outdated
@@ -182,15 +179,13 @@ export const tracesTableUiColumnDefinitions: UiColumnMappings = [
     uiTableName: "Input Cost ($)",
     uiTableId: "inputCost",
     clickhouseTableName: "observations",
-    clickhouseSelect:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, o.cost_details)))",
+    clickhouseSelect: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'input') > 0, o.cost_details)))",
   },
   {
     uiTableName: "Output Cost ($)",
     uiTableId: "outputCost",
     clickhouseTableName: "observations",
-    clickhouseSelect:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, o.cost_details)))",
+    clickhouseSelect: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, o.cost_details)))",
   },
   {
     uiTableName: "Total Cost ($)",

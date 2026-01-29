@@ -91,16 +91,14 @@ const DatasetAggregateCellContent = ({
   );
 
   const data = value.observation === undefined ? trace.data : observation.data;
-  const isLoading =
-    value.observation === undefined ? trace.isLoading : observation.isLoading;
+  const isLoading = value.observation === undefined ? trace.isLoading : observation.isLoading;
 
   const { isSilentError } = useTrpcError(
     value.observation === undefined ? trace.error : observation.error,
     silentHttpCodes,
   );
 
-  const { latency, totalCost, latencyDiff, totalCostDiff } =
-    useResourceMetricsDiff(value, baselineRunValue);
+  const { latency, totalCost, latencyDiff, totalCostDiff } = useResourceMetricsDiff(value, baselineRunValue);
 
   // Note that we implement custom handling for opening peek view from cell
   const handleOpenPeek = () => {
@@ -135,9 +133,7 @@ const DatasetAggregateCellContent = ({
     });
   };
 
-  const isActiveCell =
-    activeCell?.traceId === value.trace.id &&
-    activeCell?.observationId === value.observation?.id;
+  const isActiveCell = activeCell?.traceId === value.trace.id && activeCell?.observationId === value.observation?.id;
 
   return (
     <div
@@ -154,10 +150,7 @@ const DatasetAggregateCellContent = ({
         )}
       >
         {isSilentError ? (
-          <NotFoundCard
-            itemType={value.observation ? "observation" : "trace"}
-            singleLine={false}
-          />
+          <NotFoundCard itemType={value.observation ? "observation" : "trace"} singleLine={false} />
         ) : (
           <MemoizedIOTableCell
             isLoading={isLoading || !data}
@@ -170,10 +163,7 @@ const DatasetAggregateCellContent = ({
       </div>
       {/* Displays scores */}
       <div
-        className={cn(
-          "flex min-h-0 flex-1 overflow-hidden px-1 py-2",
-          !selectedFields.includes("scores") && "hidden",
-        )}
+        className={cn("flex min-h-0 flex-1 overflow-hidden px-1 py-2", !selectedFields.includes("scores") && "hidden")}
       >
         <div className="w-full min-w-0 overflow-hidden @container">
           <div className="grid max-h-full w-full grid-cols-1 gap-1 overflow-y-auto @[500px]:grid-cols-2">
@@ -197,12 +187,7 @@ const DatasetAggregateCellContent = ({
       {/* Displays resource metrics and action buttons */}
       {!isLoading && (
         <div className="mt-auto flex min-h-6 flex-shrink-0 items-center justify-between gap-2 px-1 pb-1">
-          <div
-            className={cn(
-              "flex flex-row flex-wrap gap-1",
-              !selectedFields.includes("resourceMetrics") && "hidden",
-            )}
-          >
+          <div className={cn("flex flex-row flex-wrap gap-1", !selectedFields.includes("resourceMetrics") && "hidden")}>
             {!!latency &&
               (latencyDiff ? (
                 <DiffLabel
@@ -214,9 +199,7 @@ const DatasetAggregateCellContent = ({
               ) : (
                 <Badge variant="tertiary" size="sm" className="font-normal">
                   <ClockIcon className="mb-0.5 mr-1 h-3 w-3" />
-                  <span className="capitalize">
-                    {formatIntervalSeconds(latency)}
-                  </span>
+                  <span className="capitalize">{formatIntervalSeconds(latency)}</span>
                 </Badge>
               ))}
             {totalCost &&
@@ -274,11 +257,7 @@ const DatasetAggregateCellAgainstBaseline = ({
   baselineRunValue: EnrichedDatasetRunItem;
 }) => {
   // Merge cached score writes into aggregates for optimistic display
-  const displayScores = useMergedAggregates(
-    value.scores,
-    value.trace.id,
-    value.observation?.id,
-  );
+  const displayScores = useMergedAggregates(value.scores, value.trace.id, value.observation?.id);
 
   const baselineScores = useMergedAggregates(
     baselineRunValue.scores,
@@ -287,10 +266,7 @@ const DatasetAggregateCellAgainstBaseline = ({
   );
 
   // Compute diffs between current and baseline scores
-  const scoreDiffs = useMemo(
-    () => computeScoreDiffs(displayScores, baselineScores),
-    [displayScores, baselineScores],
-  );
+  const scoreDiffs = useMemo(() => computeScoreDiffs(displayScores, baselineScores), [displayScores, baselineScores]);
 
   return (
     <DatasetAggregateCellContent
@@ -314,11 +290,7 @@ const DatasetAggregateCell = ({
   serverScoreColumns: ScoreColumn[];
 }) => {
   // Merge cached score writes into aggregates for optimistic display
-  const displayScores = useMergedAggregates(
-    value.scores,
-    value.trace.id,
-    value.observation?.id,
-  );
+  const displayScores = useMergedAggregates(value.scores, value.trace.id, value.observation?.id);
 
   return (
     <DatasetAggregateCellContent
@@ -353,10 +325,6 @@ export const DatasetAggregateTableCell = ({
       baselineRunValue={baselineRunValue}
     />
   ) : (
-    <DatasetAggregateCell
-      projectId={projectId}
-      value={value}
-      serverScoreColumns={serverScoreColumns}
-    />
+    <DatasetAggregateCell projectId={projectId} value={value} serverScoreColumns={serverScoreColumns} />
   );
 };

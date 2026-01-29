@@ -41,17 +41,11 @@ type AdvancedJsonExpansionState = Record<string, boolean>; // Prefixed paths lik
 interface JsonExpansionContextValue {
   // Formatted view state (per-field, path-based expansion)
   formattedExpansion: FormattedExpansionState;
-  setFormattedFieldExpansion: (
-    field: string,
-    expansion: Record<string, boolean>,
-  ) => void;
+  setFormattedFieldExpansion: (field: string, expansion: Record<string, boolean>) => void;
 
   // JSON view state (boolean per field - collapsed/expanded)
   jsonExpansion: JsonExpansionState;
-  setJsonFieldExpansion: (
-    field: "input" | "output" | "metadata",
-    expanded: boolean,
-  ) => void;
+  setJsonFieldExpansion: (field: "input" | "output" | "metadata", expanded: boolean) => void;
 
   // Advanced JSON view state (prefixed paths)
   advancedJsonExpansion: AdvancedJsonExpansionState;
@@ -91,10 +85,7 @@ export function readFormattedExpansion(field: string): Record<string, boolean> {
 /**
  * Write formatted expansion state directly to sessionStorage
  */
-export function writeFormattedExpansion(
-  field: string,
-  state: Record<string, boolean>,
-): void {
+export function writeFormattedExpansion(field: string, state: Record<string, boolean>): void {
   if (typeof window === "undefined") return;
 
   try {
@@ -112,27 +103,27 @@ export function writeFormattedExpansion(
 
 export function JsonExpansionProvider({ children }: { children: ReactNode }) {
   // Formatted view state (per-field, path-based)
-  const [formattedExpansion, setFormattedExpansion] =
-    useSessionStorage<FormattedExpansionState>(STORAGE_KEYS.formatted, {
+  const [formattedExpansion, setFormattedExpansion] = useSessionStorage<FormattedExpansionState>(
+    STORAGE_KEYS.formatted,
+    {
       input: {},
       output: {},
       metadata: {},
-    });
+    },
+  );
 
   // JSON view state (boolean per field)
-  const [jsonExpansion, setJsonExpansion] =
-    useSessionStorage<JsonExpansionState>(STORAGE_KEYS.json, {
-      input: true, // Default expanded
-      output: true,
-      metadata: true,
-    });
+  const [jsonExpansion, setJsonExpansion] = useSessionStorage<JsonExpansionState>(STORAGE_KEYS.json, {
+    input: true, // Default expanded
+    output: true,
+    metadata: true,
+  });
 
   // Advanced JSON view state (prefixed paths)
-  const [advancedJsonExpansion, setAdvancedJsonExpansion] =
-    useSessionStorage<AdvancedJsonExpansionState>(
-      STORAGE_KEYS.advancedJson,
-      {},
-    );
+  const [advancedJsonExpansion, setAdvancedJsonExpansion] = useSessionStorage<AdvancedJsonExpansionState>(
+    STORAGE_KEYS.advancedJson,
+    {},
+  );
 
   const setFormattedFieldExpansion = useCallback(
     (field: string, expansion: Record<string, boolean>) => {

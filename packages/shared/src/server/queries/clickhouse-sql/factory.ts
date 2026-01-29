@@ -28,10 +28,7 @@ export class QueryBuilderError extends Error {
 // This function ensures that the user only selects valid columns from the clickhouse schema.
 // The filter property in this column needs to be zod verified.
 // User input for values (e.g. project_id = <value>) are sent to Clickhouse as parameters to prevent SQL injection
-export const createFilterFromFilterState = (
-  filter: FilterCondition[],
-  columnMapping: UiColumnMappings,
-) => {
+export const createFilterFromFilterState = (filter: FilterCondition[], columnMapping: UiColumnMappings) => {
   return filter.map((frontEndFilter) => {
     // checks if the column exists in the clickhouse schema
     const column = matchAndVerifyTracesUiColumn(frontEndFilter, columnMapping);
@@ -129,26 +126,18 @@ export const createFilterFromFilterState = (
   });
 };
 
-const matchAndVerifyTracesUiColumn = (
-  filter: z.infer<typeof singleFilter>,
-  uiTableDefinitions: UiColumnMappings,
-) => {
+const matchAndVerifyTracesUiColumn = (filter: z.infer<typeof singleFilter>, uiTableDefinitions: UiColumnMappings) => {
   // tries to match the column name to the clickhouse table name
   const uiTable = uiTableDefinitions.find(
-    (col) =>
-      col.uiTableName === filter.column || col.uiTableId === filter.column, // matches on the NAME of the column in the UI.
+    (col) => col.uiTableName === filter.column || col.uiTableId === filter.column, // matches on the NAME of the column in the UI.
   );
 
   if (!uiTable) {
-    throw new QueryBuilderError(
-      `Column ${filter.column} does not match a UI / CH table mapping.`,
-    );
+    throw new QueryBuilderError(`Column ${filter.column} does not match a UI / CH table mapping.`);
   }
 
   if (!isValidTableName(uiTable.clickhouseTableName)) {
-    throw new QueryBuilderError(
-      `Invalid clickhouse table name: ${uiTable.clickhouseTableName}`,
-    );
+    throw new QueryBuilderError(`Invalid clickhouse table name: ${uiTable.clickhouseTableName}`);
   }
 
   return uiTable;

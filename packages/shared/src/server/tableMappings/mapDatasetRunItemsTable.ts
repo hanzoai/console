@@ -51,10 +51,7 @@ export const mapDatasetRunItemFilterColumn = (
   column: string,
 ): unknown => {
   const columnDef = datasetRunItemsTableUiColumnDefinitions.find(
-    (col) =>
-      col.uiTableId === column ||
-      col.uiTableName === column ||
-      col.clickhouseSelect === column,
+    (col) => col.uiTableId === column || col.uiTableName === column || col.clickhouseSelect === column,
   );
   if (!columnDef) {
     throw new Error(`Unhandled column for dataset run items filter: ${column}`);
@@ -65,8 +62,6 @@ export const mapDatasetRunItemFilterColumn = (
     case "datasetId":
       return dataset.datasetId;
     default:
-      throw new Error(
-        `Unhandled column in dataset run items filter mapping: ${column}`,
-      );
+      throw new Error(`Unhandled column in dataset run items filter mapping: ${column}`);
   }
 };

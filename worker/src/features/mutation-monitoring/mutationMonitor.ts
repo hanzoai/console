@@ -1,8 +1,4 @@
-import {
-  logger,
-  queryClickhouse,
-  QueueName,
-} from "@hanzo/shared/src/server";
+import { logger, queryClickhouse, QueueName } from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { WorkerManager } from "../../queues/workerManager";
 import { PeriodicRunner } from "../../utils/PeriodicRunner";
@@ -60,19 +56,12 @@ export class MutationMonitor {
   private static pausedQueues: Set<QueueName> = new Set();
 
   // Mapping of which ClickHouse tables each deletion queue affects
-  private static readonly QUEUE_TABLE_MAPPING: Partial<
-    Record<QueueName, string[]>
-  > = {
+  private static readonly QUEUE_TABLE_MAPPING: Partial<Record<QueueName, string[]>> = {
     [QueueName.TraceDelete]: ["traces", "observations", "scores", "events"],
     [QueueName.ScoreDelete]: ["scores"],
     [QueueName.DatasetDelete]: ["dataset_run_items_rmt"],
     [QueueName.ProjectDelete]: ["scores", "dataset_run_items_rmt"],
-    [QueueName.DataRetentionProcessingQueue]: [
-      "traces",
-      "observations",
-      "scores",
-      "events",
-    ],
+    [QueueName.DataRetentionProcessingQueue]: ["traces", "observations", "scores", "events"],
   };
 
   private static readonly TABLES_TO_MONITOR = Array.from(
@@ -121,17 +110,18 @@ export class MutationMonitor {
       .filter(([, count]) => count >= maxThreshold)
       .map(([table]) => table);
 
-    const tableToQueuesMap: Map<string, QueueName[]> = Object.entries(
-      queueTableMapping,
-    ).reduce((map, [queue, tables]) => {
-      for (const table of tables) {
-        if (!map.has(table)) {
-          map.set(table, []);
+    const tableToQueuesMap: Map<string, QueueName[]> = Object.entries(queueTableMapping).reduce(
+      (map, [queue, tables]) => {
+        for (const table of tables) {
+          if (!map.has(table)) {
+            map.set(table, []);
+          }
+          map.get(table)!.push(queue as QueueName);
         }
-        map.get(table)!.push(queue as QueueName);
-      }
-      return map;
-    }, new Map());
+        return map;
+      },
+      new Map(),
+    );
 
     // Decision 1: Pause queues affecting over-threshold tables
     for (const table of tablesOverMax) {
@@ -150,9 +140,7 @@ export class MutationMonitor {
 
     // Decision 2: Resume queues where ALL tables are safe
     for (const [queue, tables] of Object.entries(queueTableMapping)) {
-      const allSafe = tables.every(
-        (table) => (mutationCounts.get(table) ?? 0) < safeThreshold,
-      );
+      const allSafe = tables.every((table) => (mutationCounts.get(table) ?? 0) < safeThreshold);
 
       if (allSafe) {
         if (!decisionMap.has(queue as QueueName)) {

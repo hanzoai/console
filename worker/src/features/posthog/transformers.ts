@@ -1,9 +1,5 @@
 import { v5 } from "uuid";
-import type {
-  AnalyticsTraceEvent,
-  AnalyticsGenerationEvent,
-  AnalyticsScoreEvent,
-} from "@hanzo/shared/src/server";
+import type { AnalyticsTraceEvent, AnalyticsGenerationEvent, AnalyticsScoreEvent } from "@hanzo/shared/src/server";
 
 // UUID v5 namespace for PostHog
 const POSTHOG_UUID_NAMESPACE = "0f6c91df-d035-4813-b838-9741ba38ef0b";
@@ -16,10 +12,7 @@ type PostHogEvent = {
   uuid: string;
 };
 
-export const transformTraceForPostHog = (
-  trace: AnalyticsTraceEvent,
-  projectId: string,
-): PostHogEvent => {
+export const transformTraceForPostHog = (trace: AnalyticsTraceEvent, projectId: string): PostHogEvent => {
   const uuid = v5(`${projectId}-${trace.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
@@ -27,9 +20,7 @@ export const transformTraceForPostHog = (
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = trace;
 
   return {
-    distinctId: trace.hanzo_user_id
-      ? (trace.hanzo_user_id as string)
-      : uuid,
+    distinctId: trace.hanzo_user_id ? (trace.hanzo_user_id as string) : uuid,
     event: "hanzo trace",
     properties: {
       ...otherProps,
@@ -54,19 +45,14 @@ export const transformGenerationForPostHog = (
   generation: AnalyticsGenerationEvent,
   projectId: string,
 ): PostHogEvent => {
-  const uuid = v5(
-    `${projectId}-${generation.hanzo_id}`,
-    POSTHOG_UUID_NAMESPACE,
-  );
+  const uuid = v5(`${projectId}-${generation.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
 
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = generation;
 
   return {
-    distinctId: generation.hanzo_user_id
-      ? (generation.hanzo_user_id as string)
-      : uuid,
+    distinctId: generation.hanzo_user_id ? (generation.hanzo_user_id as string) : uuid,
     event: "hanzo generation",
     properties: {
       ...otherProps,
@@ -87,10 +73,7 @@ export const transformGenerationForPostHog = (
   };
 };
 
-export const transformScoreForPostHog = (
-  score: AnalyticsScoreEvent,
-  projectId: string,
-): PostHogEvent => {
+export const transformScoreForPostHog = (score: AnalyticsScoreEvent, projectId: string): PostHogEvent => {
   const uuid = v5(`${projectId}-${score.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
@@ -98,9 +81,7 @@ export const transformScoreForPostHog = (
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = score;
 
   return {
-    distinctId: score.hanzo_user_id
-      ? (score.hanzo_user_id as string)
-      : uuid,
+    distinctId: score.hanzo_user_id ? (score.hanzo_user_id as string) : uuid,
     event: "hanzo score",
     properties: {
       ...otherProps,

@@ -68,11 +68,7 @@ function preprocessData(data: unknown): unknown {
   if (!data) return data;
 
   // Handle Google output format: {candidates: [{content: {parts, role}}]}
-  if (
-    typeof data === "object" &&
-    "candidates" in data &&
-    Array.isArray((data as Record<string, unknown>).candidates)
-  ) {
+  if (typeof data === "object" && "candidates" in data && Array.isArray((data as Record<string, unknown>).candidates)) {
     const obj = data as Record<string, unknown>;
     const candidate = (obj.candidates as Record<string, unknown>[])[0];
     if (candidate?.content) {
@@ -131,9 +127,7 @@ function preprocessData(data: unknown): unknown {
 
     return {
       ...obj,
-      messages: Array.isArray(messages)
-        ? messages.map(normalizeGoogleMessage)
-        : messages,
+      messages: Array.isArray(messages) ? messages.map(normalizeGoogleMessage) : messages,
     };
   }
 
@@ -152,11 +146,7 @@ export const genericAdapter: ProviderAdapter = {
     return true; // fallback
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    _ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", _ctx: NormalizerContext): unknown {
     return preprocessData(data);
   },
 };

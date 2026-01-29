@@ -1,8 +1,4 @@
-import {
-  AggregatableScoreDataType,
-  MetadataDomain,
-  ScoreSourceType,
-} from "../../../../domain";
+import { AggregatableScoreDataType, MetadataDomain, ScoreSourceType } from "../../../../domain";
 
 export type BaseAggregate = {
   comment?: string | null;

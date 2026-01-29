@@ -18,10 +18,7 @@ import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
  * @param navigation - Full navigation array for finding active item
  * @returns Metadata object with title and icon paths
  */
-export function useLayoutMetadata(
-  activePathName: string | undefined,
-  _navigation: NavigationItem[],
-) {
+export function useLayoutMetadata(activePathName: string | undefined, _navigation: NavigationItem[]) {
   const { region } = useHanzoCloudRegion();
 
   return useMemo(() => {
@@ -32,8 +29,7 @@ export function useLayoutMetadata(
 
     // Use dev favicon in DEV region for visual distinction
     // Using SVG for modern browsers with PNG fallback specified in sizes
-    const faviconPath =
-      region === "DEV" ? `${basePath}/icon-dev.svg` : `${basePath}/icon.svg`;
+    const faviconPath = region === "DEV" ? `${basePath}/icon-dev.svg` : `${basePath}/icon.svg`;
 
     return {
       title,

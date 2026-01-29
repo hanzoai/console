@@ -5,10 +5,7 @@ export const initialSurveyState: SurveyState = {
   currentStep: 0,
 };
 
-export function surveyReducer(
-  state: SurveyState,
-  action: SurveyAction,
-): SurveyState {
+export function surveyReducer(state: SurveyState, action: SurveyAction): SurveyState {
   switch (action.type) {
     case "next":
       return {

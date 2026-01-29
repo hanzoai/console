@@ -17,9 +17,7 @@ export async function checkHasProtectedLabels(
     })
   ).map((l) => l.label);
 
-  const hasProtectedLabels = labelsToCheck.some((label) =>
-    protectedLabels.includes(label),
-  );
+  const hasProtectedLabels = labelsToCheck.some((label) => protectedLabels.includes(label));
 
   return { hasProtectedLabels, protectedLabels };
 }

@@ -5,19 +5,14 @@ import { CloudStatus } from "@/src/features/cloud-status-notification/types";
 import { z } from "zod/v4";
 
 // Cache the response for 1 minute
-let statusCache: { status: CloudStatus | null; timestamp: number } | null =
-  null;
+let statusCache: { status: CloudStatus | null; timestamp: number } | null = null;
 const CACHE_TTL = 60 * 1000; // 1 minute in milliseconds
 
 // incident.io widget API response schema
 const IncidentIoWidgetResponse = z.object({
   ongoing_incidents: z.array(
     z.object({
-      current_worst_impact: z.enum([
-        "partial_outage",
-        "degraded_performance",
-        "full_outage",
-      ]),
+      current_worst_impact: z.enum(["partial_outage", "degraded_performance", "full_outage"]),
     }),
   ),
   in_progress_maintenances: z.array(z.object({})),
@@ -46,14 +41,10 @@ export const cloudStatusRouter = createTRPCRouter({
 
       try {
         // incident.io widget API for status.hanzo.com
-        const response = await fetch(
-          "https://status.hanzo.com/api/v1/summary",
-        );
+        const response = await fetch("https://status.hanzo.com/api/v1/summary");
 
         if (!response.ok) {
-          logger.error(
-            `Failed to fetch status from incident.io: ${response.statusText}`,
-          );
+          logger.error(`Failed to fetch status from incident.io: ${response.statusText}`);
           statusCache = {
             status: null,
             timestamp: Date.now(),
@@ -73,20 +64,13 @@ export const cloudStatusRouter = createTRPCRouter({
         if (parsed.ongoing_incidents.length > 0) {
           const worstImpact = parsed.ongoing_incidents.reduce(
             (worst, incident) => {
-              if (incident.current_worst_impact === "full_outage")
-                return "full_outage";
-              if (
-                incident.current_worst_impact === "partial_outage" &&
-                worst !== "full_outage"
-              )
+              if (incident.current_worst_impact === "full_outage") return "full_outage";
+              if (incident.current_worst_impact === "partial_outage" && worst !== "full_outage")
                 return "partial_outage";
               if (worst === "degraded_performance") return worst;
               return incident.current_worst_impact;
             },
-            "degraded_performance" as
-              | "degraded_performance"
-              | "partial_outage"
-              | "full_outage",
+            "degraded_performance" as "degraded_performance" | "partial_outage" | "full_outage",
           );
 
           if (worstImpact === "full_outage") {
@@ -96,10 +80,7 @@ export const cloudStatusRouter = createTRPCRouter({
           }
         }
         // Check for in-progress or scheduled maintenances
-        else if (
-          parsed.in_progress_maintenances.length > 0 ||
-          parsed.scheduled_maintenances.length > 0
-        ) {
+        else if (parsed.in_progress_maintenances.length > 0 || parsed.scheduled_maintenances.length > 0) {
           newStatus = "maintenance";
         }
 

@@ -43,9 +43,7 @@ export class DefaultEvalModelService {
     });
 
     if (!llmApiKey) {
-      throw new HanzoNotFoundError(
-        `API key for provider ${provider} in project ${projectId} not found`,
-      );
+      throw new HanzoNotFoundError(`API key for provider ${provider} in project ${projectId} not found`);
     }
 
     try {
@@ -60,9 +58,7 @@ export class DefaultEvalModelService {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      throw new ForbiddenError(
-        `Model configuration not valid for evaluation. ${message}`,
-      );
+      throw new ForbiddenError(`Model configuration not valid for evaluation. ${message}`);
     }
 
     // Create or update the default model
@@ -107,11 +103,7 @@ export class DefaultEvalModelService {
     if (config.modelParams) {
       const result = ZodModelConfig.safeParse(config.modelParams);
       if (!result.success) {
-        errors.push(
-          ...result.error.issues.map(
-            (err) => `Model parameter error: ${err.message}`,
-          ),
-        );
+        errors.push(...result.error.issues.map((err) => `Model parameter error: ${err.message}`));
         return false;
       }
     }

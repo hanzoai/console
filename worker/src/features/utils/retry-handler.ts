@@ -1,9 +1,4 @@
-import {
-  convertQueueNameToMetricName,
-  logger,
-  recordDistribution,
-  RetryBaggage,
-} from "@hanzo/shared/src/server";
+import { convertQueueNameToMetricName, logger, recordDistribution, RetryBaggage } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import { kyselyPrisma } from "@hanzo/shared/src/db";
 
@@ -59,9 +54,7 @@ export async function retryLLMRateLimitError(
       .executeTakeFirstOrThrow();
 
     if (record.created_at < new Date(Date.now() - ONE_DAY_IN_MS)) {
-      logger.info(
-        `Job ${jobId} is rate limited for more than 24h. Stop retrying.`,
-      );
+      logger.info(`Job ${jobId} is rate limited for more than 24h. Stop retrying.`);
 
       return; // Don't retry
     }
@@ -71,28 +64,21 @@ export async function retryLLMRateLimitError(
 
     const retryBaggage: RetryBaggage | undefined = job.data.retryBaggage
       ? {
-          originalJobTimestamp: new Date(
-            job.data.retryBaggage.originalJobTimestamp,
-          ),
+          originalJobTimestamp: new Date(job.data.retryBaggage.originalJobTimestamp),
           attempt: job.data.retryBaggage.attempt + 1,
         }
       : undefined;
 
     // Record retry attempt distribution per queue
     if (retryBaggage) {
-      recordDistribution(
-        `${convertQueueNameToMetricName(config.queueName)}.retries`,
-        retryBaggage.attempt,
-        {
-          queue: config.queueName,
-        },
-      );
+      recordDistribution(`${convertQueueNameToMetricName(config.queueName)}.retries`, retryBaggage.attempt, {
+        queue: config.queueName,
+      });
 
       // Record delay distribution per queue
       recordDistribution(
         `${convertQueueNameToMetricName(config.queueName)}.total_retry_delay_ms`,
-        new Date().getTime() -
-          new Date(retryBaggage.originalJobTimestamp).getTime(), // this is the total delay
+        new Date().getTime() - new Date(retryBaggage.originalJobTimestamp).getTime(), // this is the total delay
         {
           queue: config.queueName,
           unit: "milliseconds",
@@ -117,10 +103,7 @@ export async function retryLLMRateLimitError(
     );
   } catch (innerErr) {
     const jobId = job.data.payload[config.idField];
-    logger.error(
-      `Failed to handle 429 retry for ${jobId}. Continuing regular processing.`,
-      innerErr,
-    );
+    logger.error(`Failed to handle 429 retry for ${jobId}. Continuing regular processing.`, innerErr);
 
     throw innerErr;
   }

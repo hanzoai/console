@@ -6,11 +6,7 @@ export type UseTraceDataParams = {
   timestamp?: Date;
 };
 
-export function useTraceData({
-  traceId,
-  projectId,
-  timestamp,
-}: UseTraceDataParams) {
+export function useTraceData({ traceId, projectId, timestamp }: UseTraceDataParams) {
   const query = api.traces.byIdWithObservationsAndScores.useQuery(
     {
       traceId,
@@ -19,11 +15,7 @@ export function useTraceData({
     },
     {
       retry(failureCount, error) {
-        if (
-          error.data?.code === "UNAUTHORIZED" ||
-          error.data?.code === "NOT_FOUND"
-        )
-          return false;
+        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
         return failureCount < 3;
       },
     },

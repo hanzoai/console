@@ -1,10 +1,6 @@
 import { Queue } from "bullmq";
 import { QueueName, QueueJobs } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 import { env } from "../../env";
 
@@ -56,10 +52,7 @@ export class MeteringDataPostgresExportQueue {
           },
         )
         .catch((err) => {
-          logger.error(
-            "Error adding MeteringDataPostgresExportJob schedule",
-            err,
-          );
+          logger.error("Error adding MeteringDataPostgresExportJob schedule", err);
         });
     }
 

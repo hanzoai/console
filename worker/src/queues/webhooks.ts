@@ -13,11 +13,7 @@ import {
 } from "@hanzo/shared";
 import { decrypt, createSignatureHeader } from "@hanzo/shared/encryption";
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  validateWebhookURL,
-  whitelistFromEnv,
-  fetchWithSecureRedirects,
-} from "@hanzo/shared/src/server";
+import { validateWebhookURL, whitelistFromEnv, fetchWithSecureRedirects } from "@hanzo/shared/src/server";
 import {
   TQueueJobTypes,
   QueueName,
@@ -35,9 +31,7 @@ import { env } from "../env";
 import { SlackMessageBuilder } from "../features/slack/slackMessageBuilder";
 
 // Handles both webhook and slack actions
-export const webhookProcessor: Processor = async (
-  job: Job<TQueueJobTypes[QueueName.WebhookQueue]>,
-) => {
+export const webhookProcessor: Processor = async (job: Job<TQueueJobTypes[QueueName.WebhookQueue]>) => {
   try {
     return await executeWebhook(job.data.payload);
   } catch (error) {
@@ -47,10 +41,7 @@ export const webhookProcessor: Processor = async (
 };
 
 // TODO: Webhook outgoing API versioning
-export const executeWebhook = async (
-  input: WebhookInput,
-  options?: { skipValidation?: boolean },
-) => {
+export const executeWebhook = async (input: WebhookInput, options?: { skipValidation?: boolean }) => {
   const { projectId, automationId } = input;
 
   try {
@@ -62,9 +53,7 @@ export const executeWebhook = async (
     });
 
     if (!automation) {
-      logger.warn(
-        `Automation ${automationId} not found for project ${projectId}. We ack the job and will not retry.`,
-      );
+      logger.warn(`Automation ${automationId} not found for project ${projectId}. We ack the job and will not retry.`);
       return;
     }
 
@@ -87,14 +76,10 @@ export const executeWebhook = async (
         skipValidation: options?.skipValidation,
       });
     } else {
-      throw new InternalServerError(
-        `Unsupported action type: ${automation.action.type}`,
-      );
+      throw new InternalServerError(`Unsupported action type: ${automation.action.type}`);
     }
 
-    logger.debug(
-      `Action executed successfully for action ${automation.action.id}`,
-    );
+    logger.debug(`Action executed successfully for action ${automation.action.id}`);
   } catch (error) {
     logger.error("Error executing action", error);
     throw error;
@@ -133,9 +118,7 @@ async function executeHttpAction({
     // Execute HTTP request with retries
     await backOff(
       async () => {
-        logger.info(
-          `Sending HTTP request to ${url} for action ${automation.action.id}`,
-        );
+        logger.info(`Sending HTTP request to ${url} for action ${automation.action.id}`);
 
         // Create AbortController for timeout
         const abortController = new AbortController();
@@ -227,9 +210,7 @@ async function executeHttpAction({
     logger.error("Error executing HTTP action", error);
 
     // Handle action failure with retry logic and trigger disabling
-    const shouldRetryJob =
-      error instanceof HanzoNotFoundError ||
-      error instanceof InternalServerError;
+    const shouldRetryJob = error instanceof HanzoNotFoundError || error instanceof InternalServerError;
 
     if (shouldRetryJob) {
       logger.warn(`Retrying BullMQ for action ${automation.action.id}`);
@@ -285,10 +266,7 @@ async function executeHttpAction({
 
         // Update action config to store the failing execution ID
         // Type guard to ensure we only update webhook or GitHub dispatch configs
-        if (
-          isWebhookAction(actionConfig) ||
-          isGitHubDispatchAction(actionConfig)
-        ) {
+        if (isWebhookAction(actionConfig) || isGitHubDispatchAction(actionConfig)) {
           await tx.action.update({
             where: { id: automation.action.id, projectId },
             data: {
@@ -306,9 +284,7 @@ async function executeHttpAction({
       }
     });
 
-    logger.debug(
-      `HTTP action failed for action ${automation.action.id} in project ${projectId}`,
-    );
+    logger.debug(`HTTP action failed for action ${automation.action.id} in project ${projectId}`);
 
     // Error has been handled - don't rethrow
     // Return empty response to indicate failure was handled
@@ -343,9 +319,7 @@ async function executeWebhookAction({
   }
 
   if (!isWebhookAction(actionConfig)) {
-    throw new InternalServerError(
-      "Action config is not a valid webhook configuration",
-    );
+    throw new InternalServerError("Action config is not a valid webhook configuration");
   }
 
   const webhookConfig = actionConfig.config;
@@ -361,9 +335,7 @@ async function executeWebhookAction({
   });
 
   if (!validatedPayload.success) {
-    throw new InternalServerError(
-      `Invalid webhook payload: ${validatedPayload.error.message}`,
-    );
+    throw new InternalServerError(`Invalid webhook payload: ${validatedPayload.error.message}`);
   }
 
   // Prepare webhook payload with prompt always last
@@ -393,10 +365,7 @@ async function executeWebhookAction({
     const signature = createSignatureHeader(webhookPayload, decryptedSecret);
     requestHeaders["x-hanzo-signature"] = signature;
   } catch (error) {
-    logger.error(
-      "Failed to decrypt webhook secret or generate signature",
-      error,
-    );
+    logger.error("Failed to decrypt webhook secret or generate signature", error);
     throw new InternalServerError("Failed to generate webhook signature");
   }
 
@@ -441,9 +410,7 @@ async function executeGitHubDispatchAction({
   }
 
   if (!isGitHubDispatchAction(actionConfig)) {
-    throw new InternalServerError(
-      "Action config is not a valid GitHub dispatch configuration",
-    );
+    throw new InternalServerError("Action config is not a valid GitHub dispatch configuration");
   }
 
   const githubConfig = actionConfig.config;
@@ -459,9 +426,7 @@ async function executeGitHubDispatchAction({
   });
 
   if (!validatedPayload.success) {
-    throw new InternalServerError(
-      `Invalid webhook payload: ${validatedPayload.error.message}`,
-    );
+    throw new InternalServerError(`Invalid webhook payload: ${validatedPayload.error.message}`);
   }
 
   // Use configured event_type (required field)
@@ -539,9 +504,7 @@ async function executeSlackAction({
     }
 
     if (!isSlackActionConfig(actionConfig.config)) {
-      throw new InternalServerError(
-        "Action config is not a valid Slack configuration",
-      );
+      throw new InternalServerError("Action config is not a valid Slack configuration");
     }
 
     const slackConfig = actionConfig.config;
@@ -553,28 +516,22 @@ async function executeSlackAction({
     if (slackConfig.messageTemplate) {
       try {
         blocks = JSON.parse(slackConfig.messageTemplate);
-        logger.debug(
-          `Using custom message template for action ${automation.action.id}`,
-        );
+        logger.debug(`Using custom message template for action ${automation.action.id}`);
       } catch (error) {
-        logger.warn(
-          `Invalid Slack messageTemplate JSON for action ${automation.action.id}. Using default format`,
-          { error: error instanceof Error ? error.message : "Unknown error" },
-        );
+        logger.warn(`Invalid Slack messageTemplate JSON for action ${automation.action.id}. Using default format`, {
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
     // Use predefined message format if no custom template or template failed
     if (blocks.length === 0) {
       blocks = SlackMessageBuilder.buildMessage(input.payload);
-      logger.debug(
-        `Using predefined message format for action ${automation.action.id}`,
-      );
+      logger.debug(`Using predefined message format for action ${automation.action.id}`);
     }
 
     // Get Slack WebClient for project via centralized SlackService
-    const client =
-      await SlackService.getInstance().getWebClientForProject(projectId);
+    const client = await SlackService.getInstance().getWebClientForProject(projectId);
 
     // Send message
     const sendResult = await SlackService.getInstance().sendMessage({
@@ -651,13 +608,9 @@ async function executeSlackAction({
         },
       });
 
-      logger.warn(
-        `Automation ${automation.trigger.id} disabled after 1 failure in project ${projectId}`,
-      );
+      logger.warn(`Automation ${automation.trigger.id} disabled after 1 failure in project ${projectId}`);
     });
 
-    logger.debug(
-      `Slack action failed for action ${automation.action.id} in project ${projectId}`,
-    );
+    logger.debug(`Slack action failed for action ${automation.action.id} in project ${projectId}`);
   }
 }

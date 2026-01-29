@@ -1,9 +1,6 @@
 import { LlmApiKeys } from "@prisma/client";
 import z from "zod/v4";
-import {
-  BedrockConfigSchema,
-  VertexAIConfigSchema,
-} from "../../interfaces/customLLMProviderConfigSchemas";
+import { BedrockConfigSchema, VertexAIConfigSchema } from "../../interfaces/customLLMProviderConfigSchemas";
 import { JSONObjectSchema } from "../../utils/zod";
 
 // disable lint as this is exported and used in web/worker
@@ -183,9 +180,7 @@ export const AssistantToolCallMessageSchema = z.object({
   content: z.string(),
   toolCalls: z.array(LLMToolCallSchema),
 });
-export type AssistantToolCallMessage = z.infer<
-  typeof AssistantToolCallMessageSchema
->;
+export type AssistantToolCallMessage = z.infer<typeof AssistantToolCallMessageSchema>;
 
 export const ToolResultMessageSchema = z.object({
   type: z.literal(ChatMessageType.ToolResult),
@@ -229,9 +224,7 @@ export const ChatMessageSchema = z.union([
 ]);
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
-export type ChatMessageWithId =
-  | (ChatMessage & { id: string })
-  | (PlaceholderMessage & { id: string });
+export type ChatMessageWithId = (ChatMessage & { id: string }) | (PlaceholderMessage & { id: string });
 export type ChatMessageWithIdNoPlaceholders = ChatMessage & { id: string };
 
 export const PromptChatMessageSchema = z.union([
@@ -256,10 +249,7 @@ export enum LLMAdapter {
 
 export const TextPromptContentSchema = z.string().min(1, "Enter a prompt");
 
-export const PromptContentSchema = z.union([
-  PromptChatMessageListSchema,
-  TextPromptContentSchema,
-]);
+export const PromptContentSchema = z.union([PromptChatMessageListSchema, TextPromptContentSchema]);
 export type PromptContent = z.infer<typeof PromptContentSchema>;
 
 export type ModelParams = {
@@ -498,10 +488,7 @@ export const LLMApiKeySchema = z
   // https://github.com/colinhacks/zod?tab=readme-ov-file#strict
   .strict();
 
-export type LLMApiKey =
-  z.infer<typeof LLMApiKeySchema> extends LlmApiKeys
-    ? z.infer<typeof LLMApiKeySchema>
-    : never;
+export type LLMApiKey = z.infer<typeof LLMApiKeySchema> extends LlmApiKeys ? z.infer<typeof LLMApiKeySchema> : never;
 
 export enum HanzoInternalTraceEnvironment {
   PromptExperiments = "hanzo-prompt-experiment",

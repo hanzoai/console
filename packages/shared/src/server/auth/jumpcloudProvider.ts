@@ -9,9 +9,7 @@ interface JumpCloudProfile extends Record<string, any> {
   name?: string;
 }
 
-export function JumpCloudProvider<P extends JumpCloudProfile>(
-  options: OAuthUserConfig<P>,
-): OAuthConfig<P> {
+export function JumpCloudProvider<P extends JumpCloudProfile>(options: OAuthUserConfig<P>): OAuthConfig<P> {
   return {
     id: "jumpcloud",
     name: "JumpCloud",
@@ -24,9 +22,7 @@ export function JumpCloudProvider<P extends JumpCloudProfile>(
     profile(profile) {
       // JumpCloud provides given_name and family_name separately
       // Combine them if name is not directly provided
-      const name =
-        profile.name ??
-        `${profile.given_name ?? ""} ${profile.family_name ?? ""}`.trim();
+      const name = profile.name ?? `${profile.given_name ?? ""} ${profile.family_name ?? ""}`.trim();
 
       return {
         id: profile.sub,

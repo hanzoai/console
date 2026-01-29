@@ -1,10 +1,6 @@
 import { Queue } from "bullmq";
 import { QueueName, QueueJobs } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 
 export class EventPropagationQueue {
@@ -44,9 +40,7 @@ export class EventPropagationQueue {
       // Enforce global concurrency of 1 to ensure sequential partition processing.
       // This works together with cursor-based tracking to guarantee ordered processing.
       EventPropagationQueue.instance.setGlobalConcurrency(1).catch(() => {
-        logger.warn(
-          "Failed to set global concurrency for EventPropagationQueue",
-        );
+        logger.warn("Failed to set global concurrency for EventPropagationQueue");
       });
 
       logger.debug("Scheduling jobs for EventPropagationQueue");

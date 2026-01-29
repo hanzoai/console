@@ -13,10 +13,7 @@ describe("processEventBatch", () => {
       },
     };
 
-    assert.doesNotThrow(
-      async () => await processEventBatch([], authCheck, {}),
-      "UnauthorizedError",
-    );
+    assert.doesNotThrow(async () => await processEventBatch([], authCheck, {}), "UnauthorizedError");
 
     const res = await processEventBatch([], authCheck, {});
     expect(res.successes).toEqual([]);

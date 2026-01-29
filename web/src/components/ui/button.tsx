@@ -11,20 +11,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         "destructive-secondary":
           "bg-secondary text-secondary-foreground border border-destructive disabled:hover:bg-secondary disabled:hover:text-secondary-foreground hover:bg-destructive/90 hover:text-destructive-foreground",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        tertiary:
-          "bg-tertiary text-tertiary-foreground hover:bg-tertiary/80 text-xs font-medium",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        tertiary: "bg-tertiary text-tertiary-foreground hover:bg-tertiary/80 text-xs font-medium",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        errorNotification:
-          "bg-destructive-foreground/90 text-destructive hover:bg-destructive-foreground/80",
+        errorNotification: "bg-destructive-foreground/90 text-destructive hover:bg-destructive-foreground/80",
       },
       size: {
         default: "h-8 px-3 py-1",
@@ -44,27 +39,13 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      disabled,
-      onClick,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
+  ({ className, variant, size, asChild = false, loading = false, disabled, onClick, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp

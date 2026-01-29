@@ -7,11 +7,7 @@ import {
   TriggerEventAction,
   PromptType,
 } from "@hanzo/shared";
-import {
-  createOrgProjectAndApiKey,
-  redis,
-  EntityChangeEventType,
-} from "@hanzo/shared/src/server";
+import { createOrgProjectAndApiKey, redis, EntityChangeEventType } from "@hanzo/shared/src/server";
 import { ActionType, prisma } from "@hanzo/shared/src/db";
 import { promptVersionProcessor } from "../features/entityChange/promptVersionProcessor";
 

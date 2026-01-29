@@ -27,28 +27,22 @@ export type SupportRequestMetadataInput = {
  * - title
  * - compact components (ditch rows, use markdown link, copy buttons)
  */
-export function buildPlainEventSupportRequestMetadataComponents(
-  input: SupportRequestMetadataInput,
-): { title: string; components: EventComponentInput[] } {
+export function buildPlainEventSupportRequestMetadataComponents(input: SupportRequestMetadataInput): {
+  title: string;
+  components: EventComponentInput[];
+} {
   const components: EventComponentInput[] = [];
 
   // Helpers (avoid null props)
-  const pushText = (
-    text: string,
-    size?: ComponentTextSize,
-    color?: ComponentTextColor,
-  ) => {
+  const pushText = (text: string, size?: ComponentTextSize, color?: ComponentTextColor) => {
     const payload: Record<string, unknown> = { text };
     if (size) payload.textSize = size;
     if (color) payload.textColor = color;
     components.push({ componentText: payload as any });
   };
-  const pushLabel = (text: string) =>
-    pushText(text, ComponentTextSize.S, ComponentTextColor.Muted);
-  const pushPlain = (plainText: string) =>
-    components.push({ componentPlainText: { plainText } });
-  const pushSpacer = (size: ComponentSpacerSize) =>
-    components.push({ componentSpacer: { spacerSize: size } });
+  const pushLabel = (text: string) => pushText(text, ComponentTextSize.S, ComponentTextColor.Muted);
+  const pushPlain = (plainText: string) => components.push({ componentPlainText: { plainText } });
+  const pushSpacer = (size: ComponentSpacerSize) => components.push({ componentSpacer: { spacerSize: size } });
   const pushDivider = (size: ComponentDividerSpacingSize) =>
     components.push({ componentDivider: { dividerSpacingSize: size } });
 
@@ -64,11 +58,7 @@ export function buildPlainEventSupportRequestMetadataComponents(
   // ---------- Identifiers ----------
   if (input.organizationId || input.projectId) {
     pushLabel("Identifiers");
-    pushText(
-      `Organization: ${input.organizationId ?? "—"}  |  Project: ${
-        input.projectId ?? "—"
-      }`,
-    );
+    pushText(`Organization: ${input.organizationId ?? "—"}  |  Project: ${input.projectId ?? "—"}`);
   }
 
   // ---------- Environment  ----------
@@ -86,9 +76,7 @@ export function buildPlainEventSupportRequestMetadataComponents(
   if (typeof input.browserMetadata !== "undefined") {
     pushLabel("Browser");
     const json =
-      typeof input.browserMetadata === "string"
-        ? input.browserMetadata
-        : JSON.stringify(input.browserMetadata);
+      typeof input.browserMetadata === "string" ? input.browserMetadata : JSON.stringify(input.browserMetadata);
     pushPlain(json);
   }
 

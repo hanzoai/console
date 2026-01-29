@@ -8,9 +8,7 @@ export type AuthorizeRequestResult = {
   userId: string;
 };
 
-export const authorizeRequestOrThrow = async (
-  projectId: string,
-): Promise<AuthorizeRequestResult> => {
+export const authorizeRequestOrThrow = async (projectId: string): Promise<AuthorizeRequestResult> => {
   const authOptions = await getAuthOptions();
   const session = await getServerSession(authOptions);
   if (!session?.user) throw new UnauthorizedError("Unauthenticated");

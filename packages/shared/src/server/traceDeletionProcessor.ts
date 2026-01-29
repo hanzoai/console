@@ -9,10 +9,7 @@ export interface TraceDeletionProcessorOptions {
   delayMs?: number; // Default from HANZO_TRACE_DELETE_DELAY_MS env var
 }
 
-export async function shouldSkipTraceDeletionFor(
-  projectId: string,
-  traceIds: string[],
-): Promise<boolean> {
+export async function shouldSkipTraceDeletionFor(projectId: string, traceIds: string[]): Promise<boolean> {
   // Check if project is in skip list
   if (env.HANZO_TRACE_DELETE_SKIP_PROJECT_IDS.includes(projectId)) {
     logger.info(
@@ -78,14 +75,11 @@ export async function traceDeletionProcessor(
     return;
   }
 
-  logger.info(
-    `Processing trace deletion for ${traceIds.length} traces in project ${projectId}`,
-    {
-      projectId,
-      traceIds,
-      delayMs,
-    },
-  );
+  logger.info(`Processing trace deletion for ${traceIds.length} traces in project ${projectId}`, {
+    projectId,
+    traceIds,
+    delayMs,
+  });
 
   if (await shouldSkipTraceDeletionFor(projectId, traceIds)) {
     return; // Early return - don't create pending_deletions or queue job

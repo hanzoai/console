@@ -10,12 +10,8 @@ export class ServerPosthog {
   constructor() {
     const telemetryEnabled = env.TELEMETRY_ENABLED !== "false";
 
-    const apiKey =
-      env.NEXT_PUBLIC_POSTHOG_KEY ??
-      (telemetryEnabled ? FALLBACK_POSTHOG_KEY : null);
-    const host =
-      env.NEXT_PUBLIC_POSTHOG_HOST ??
-      (telemetryEnabled ? FALLBACK_POSTHOG_HOST : null);
+    const apiKey = env.NEXT_PUBLIC_POSTHOG_KEY ?? (telemetryEnabled ? FALLBACK_POSTHOG_KEY : null);
+    const host = env.NEXT_PUBLIC_POSTHOG_HOST ?? (telemetryEnabled ? FALLBACK_POSTHOG_HOST : null);
 
     if (apiKey && host) {
       this.posthog = new PostHog(apiKey, { host });

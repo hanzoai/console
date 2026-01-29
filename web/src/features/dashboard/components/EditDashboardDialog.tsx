@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { api } from "@/src/utils/api";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogBody,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -74,12 +67,7 @@ export function EditDashboardDialog({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Dashboard name"
-              />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Dashboard name" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
@@ -95,18 +83,10 @@ export function EditDashboardDialog({
         </DialogBody>
         <DialogFooter>
           <div className="flex gap-2">
-            <Button
-              onClick={() => onOpenChange(false)}
-              variant="outline"
-              type="button"
-            >
+            <Button onClick={() => onOpenChange(false)} variant="outline" type="button">
               Cancel
             </Button>
-            <Button
-              onClick={handleSave}
-              type="button"
-              loading={updateDashboard.isPending}
-            >
+            <Button onClick={handleSave} type="button" loading={updateDashboard.isPending}>
               Save Changes
             </Button>
           </div>

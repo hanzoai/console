@@ -9,15 +9,7 @@ export default tseslint.config(
   // Global ignores
   {
     name: "hanzo/ignores",
-    ignores: [
-      "**/node_modules/",
-      "**/dist/",
-      "**/build/",
-      "**/coverage/",
-      "**/.next/",
-      "**/.*",
-      "eslint.config.mjs",
-    ],
+    ignores: ["**/node_modules/", "**/dist/", "**/build/", "**/coverage/", "**/.next/", "**/.*", "eslint.config.mjs"],
   },
 
   // Base JS rules (same as eslint v8 library.js)

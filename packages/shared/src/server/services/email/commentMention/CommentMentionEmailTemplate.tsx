@@ -57,9 +57,7 @@ export const CommentMentionEmailTemplate = ({
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-2xl font-normal text-black">
-              {authorName
-                ? `${authorName} mentioned you`
-                : "You were mentioned in a comment"}
+              {authorName ? `${authorName} mentioned you` : "You were mentioned in a comment"}
             </Heading>
             <Text className="text-sm leading-6 text-black">
               Hello <strong>{mentionedUserName}</strong>
@@ -67,21 +65,16 @@ export const CommentMentionEmailTemplate = ({
             <Text className="text-sm leading-6 text-black">
               {authorName ? (
                 <>
-                  <strong>{authorName}</strong> mentioned you in a comment in{" "}
-                  <strong>{projectName}</strong>:
+                  <strong>{authorName}</strong> mentioned you in a comment in <strong>{projectName}</strong>:
                 </>
               ) : (
                 <>
-                  You were mentioned in a comment in{" "}
-                  <strong>{projectName}</strong>:
+                  You were mentioned in a comment in <strong>{projectName}</strong>:
                 </>
               )}
             </Text>
             <Section className="my-6 rounded border border-solid border-[#eaeaea] bg-[#f8f9fa] p-4">
-              <Text
-                className="m-0 text-sm leading-6 text-[#333333]"
-                style={{ whiteSpace: "pre-wrap" }}
-              >
+              <Text className="m-0 text-sm leading-6 text-[#333333]" style={{ whiteSpace: "pre-wrap" }}>
                 {commentLines.map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
@@ -100,13 +93,8 @@ export const CommentMentionEmailTemplate = ({
             </Section>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-xs leading-6 text-[#666666]">
-              This email was sent to{" "}
-              <span className="text-black">{mentionedUserEmail}</span>. You can{" "}
-              <a
-                href={settingsLink}
-                className="text-[#666666] underline"
-                target="_blank"
-              >
+              This email was sent to <span className="text-black">{mentionedUserEmail}</span>. You can{" "}
+              <a href={settingsLink} className="text-[#666666] underline" target="_blank">
                 manage your notification preferences
               </a>{" "}
               in your project settings.

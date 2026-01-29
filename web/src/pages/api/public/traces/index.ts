@@ -19,10 +19,7 @@ import {
 import { v4 } from "uuid";
 import { telemetry } from "@/src/features/telemetry";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import {
-  generateTracesForPublicApi,
-  getTracesCountForPublicApi,
-} from "@/src/features/public-api/server/traces";
+import { generateTracesForPublicApi, getTracesCountForPublicApi } from "@/src/features/public-api/server/traces";
 import { env } from "@/src/env.mjs";
 
 export default withMiddlewares({
@@ -45,9 +42,7 @@ export default withMiddlewares({
       const result = await processEventBatch([event], auth);
       if (result.errors.length > 0) {
         const error = result.errors[0];
-        res
-          .status(error.status)
-          .json({ message: error.error ?? error.message });
+        res.status(error.status).json({ message: error.error ?? error.message });
         return { id: "" }; // dummy return
       }
       if (result.successes.length !== 1) {

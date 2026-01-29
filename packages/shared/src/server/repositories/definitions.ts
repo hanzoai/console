@@ -9,25 +9,23 @@ export const clickhouseStringDateSchema = z
 
 //https://clickhouse.com/docs/en/integrations/javascript#integral-types-int64-int128-int256-uint64-uint128-uint256
 // clickhouse returns int64 as string
-export const UsageCostSchema = z
-  .record(z.string(), z.coerce.string().nullable())
-  .transform((val, ctx) => {
-    const result: Record<string, number> = {};
-    for (const key in val) {
-      if (val[key] !== null && val[key] !== undefined) {
-        const parsed = Number(val[key]);
-        if (isNaN(parsed)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Key ${key} is not a number`,
-          });
-        } else {
-          result[key] = parsed;
-        }
+export const UsageCostSchema = z.record(z.string(), z.coerce.string().nullable()).transform((val, ctx) => {
+  const result: Record<string, number> = {};
+  for (const key in val) {
+    if (val[key] !== null && val[key] !== undefined) {
+      const parsed = Number(val[key]);
+      if (isNaN(parsed)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Key ${key} is not a number`,
+        });
+      } else {
+        result[key] = parsed;
       }
     }
-    return result;
-  });
+  }
+  return result;
+});
 export type UsageCostType = z.infer<typeof UsageCostSchema>;
 
 export const observationRecordBaseSchema = z.object({
@@ -71,52 +69,39 @@ export const observationRecordReadSchema = observationRecordBaseSchema.extend({
   usage_details: UsageCostSchema,
   cost_details: UsageCostSchema,
 });
-export type ObservationRecordReadType = z.infer<
-  typeof observationRecordReadSchema
->;
+export type ObservationRecordReadType = z.infer<typeof observationRecordReadSchema>;
 
-export const observationRecordInsertSchema = observationRecordBaseSchema.extend(
-  {
-    created_at: z.number(),
-    updated_at: z.number(),
-    start_time: z.number(),
-    end_time: z.number().nullish(),
-    completion_start_time: z.number().nullish(),
-    event_ts: z.number(),
-    provided_usage_details: UsageCostSchema,
-    provided_cost_details: UsageCostSchema,
-    usage_details: UsageCostSchema,
-    cost_details: UsageCostSchema,
-  },
-);
-export type ObservationRecordInsertType = z.infer<
-  typeof observationRecordInsertSchema
->;
+export const observationRecordInsertSchema = observationRecordBaseSchema.extend({
+  created_at: z.number(),
+  updated_at: z.number(),
+  start_time: z.number(),
+  end_time: z.number().nullish(),
+  completion_start_time: z.number().nullish(),
+  event_ts: z.number(),
+  provided_usage_details: UsageCostSchema,
+  provided_cost_details: UsageCostSchema,
+  usage_details: UsageCostSchema,
+  cost_details: UsageCostSchema,
+});
+export type ObservationRecordInsertType = z.infer<typeof observationRecordInsertSchema>;
 
-export const observationBatchStagingRecordInsertSchema =
-  observationRecordInsertSchema.extend({
-    s3_first_seen_timestamp: z.number(),
-  });
-export type ObservationBatchStagingRecordInsertType = z.infer<
-  typeof observationBatchStagingRecordInsertSchema
->;
+export const observationBatchStagingRecordInsertSchema = observationRecordInsertSchema.extend({
+  s3_first_seen_timestamp: z.number(),
+});
+export type ObservationBatchStagingRecordInsertType = z.infer<typeof observationBatchStagingRecordInsertSchema>;
 
 // Events-specific observation schema (includes user_id and session_id)
 // These fields are only available in the events table, not in historical observations
-export const eventsObservationRecordBaseSchema =
-  observationRecordBaseSchema.extend({
-    user_id: z.string().nullish(),
-    session_id: z.string().nullish(),
-  });
+export const eventsObservationRecordBaseSchema = observationRecordBaseSchema.extend({
+  user_id: z.string().nullish(),
+  session_id: z.string().nullish(),
+});
 
-export const eventsObservationRecordReadSchema =
-  observationRecordReadSchema.extend({
-    user_id: z.string().nullish(),
-    session_id: z.string().nullish(),
-  });
-export type EventsObservationRecordReadType = z.infer<
-  typeof eventsObservationRecordReadSchema
->;
+export const eventsObservationRecordReadSchema = observationRecordReadSchema.extend({
+  user_id: z.string().nullish(),
+  session_id: z.string().nullish(),
+});
+export type EventsObservationRecordReadType = z.infer<typeof eventsObservationRecordReadSchema>;
 
 export const traceRecordBaseSchema = z.object({
   id: z.string(),
@@ -197,9 +182,7 @@ export const traceNullRecordInsertSchema = z.object({
   updated_at: z.number(),
   event_ts: z.number(),
 });
-export type TraceNullRecordInsertType = z.infer<
-  typeof traceNullRecordInsertSchema
->;
+export type TraceNullRecordInsertType = z.infer<typeof traceNullRecordInsertSchema>;
 
 export const scoreRecordBaseSchema = z.object({
   id: z.string(),
@@ -265,32 +248,23 @@ const _datasetRunItemRecordReadSchema = datasetRunItemRecordBaseSchema.extend({
   updated_at: clickhouseStringDateSchema,
   event_ts: clickhouseStringDateSchema,
 });
-export type DatasetRunItemRecordReadType = z.infer<
-  typeof _datasetRunItemRecordReadSchema
->;
+export type DatasetRunItemRecordReadType = z.infer<typeof _datasetRunItemRecordReadSchema>;
 // Conditional type for dataset run item records with optional IO
-export type DatasetRunItemRecord<WithIO extends boolean = true> =
-  WithIO extends true
-    ? DatasetRunItemRecordReadType
-    : Omit<
-        DatasetRunItemRecordReadType,
-        | "dataset_run_metadata"
-        | "dataset_item_input"
-        | "dataset_item_expected_output"
-        | "dataset_item_metadata"
-      >;
+export type DatasetRunItemRecord<WithIO extends boolean = true> = WithIO extends true
+  ? DatasetRunItemRecordReadType
+  : Omit<
+      DatasetRunItemRecordReadType,
+      "dataset_run_metadata" | "dataset_item_input" | "dataset_item_expected_output" | "dataset_item_metadata"
+    >;
 
-export const datasetRunItemRecordInsertSchema =
-  datasetRunItemRecordBaseSchema.extend({
-    created_at: z.number(),
-    updated_at: z.number(),
-    event_ts: z.number(),
-    dataset_run_created_at: z.number(),
-    dataset_item_version: z.number().nullish(),
-  });
-export type DatasetRunItemRecordInsertType = z.infer<
-  typeof datasetRunItemRecordInsertSchema
->;
+export const datasetRunItemRecordInsertSchema = datasetRunItemRecordBaseSchema.extend({
+  created_at: z.number(),
+  updated_at: z.number(),
+  event_ts: z.number(),
+  dataset_run_created_at: z.number(),
+  dataset_item_version: z.number().nullish(),
+});
+export type DatasetRunItemRecordInsertType = z.infer<typeof datasetRunItemRecordInsertSchema>;
 
 export const blobStorageFileLogRecordBaseSchema = z.object({
   id: z.string(),
@@ -304,28 +278,20 @@ export const blobStorageFileLogRecordBaseSchema = z.object({
   bucket_path: z.string(),
   is_deleted: z.number(),
 });
-export const blobStorageFileRefRecordReadSchema =
-  blobStorageFileLogRecordBaseSchema.extend({
-    created_at: clickhouseStringDateSchema,
-    updated_at: clickhouseStringDateSchema,
-    event_ts: clickhouseStringDateSchema,
-  });
-export type BlobStorageFileRefRecordReadType = z.infer<
-  typeof blobStorageFileRefRecordReadSchema
->;
-export const blobStorageFileLogRecordInsertSchema =
-  blobStorageFileLogRecordBaseSchema.extend({
-    created_at: z.number(),
-    updated_at: z.number(),
-    event_ts: z.number(),
-  });
-export type BlobStorageFileLogInsertType = z.infer<
-  typeof blobStorageFileLogRecordInsertSchema
->;
+export const blobStorageFileRefRecordReadSchema = blobStorageFileLogRecordBaseSchema.extend({
+  created_at: clickhouseStringDateSchema,
+  updated_at: clickhouseStringDateSchema,
+  event_ts: clickhouseStringDateSchema,
+});
+export type BlobStorageFileRefRecordReadType = z.infer<typeof blobStorageFileRefRecordReadSchema>;
+export const blobStorageFileLogRecordInsertSchema = blobStorageFileLogRecordBaseSchema.extend({
+  created_at: z.number(),
+  updated_at: z.number(),
+  event_ts: z.number(),
+});
+export type BlobStorageFileLogInsertType = z.infer<typeof blobStorageFileLogRecordInsertSchema>;
 
-export const convertTraceReadToInsert = (
-  record: TraceRecordReadType,
-): TraceRecordInsertType => {
+export const convertTraceReadToInsert = (record: TraceRecordReadType): TraceRecordInsertType => {
   return {
     ...record,
     created_at: new Date(record.created_at).getTime(),
@@ -335,9 +301,7 @@ export const convertTraceReadToInsert = (
   };
 };
 
-export const convertObservationReadToInsert = (
-  record: ObservationRecordReadType,
-): ObservationRecordInsertType => {
+export const convertObservationReadToInsert = (record: ObservationRecordReadType): ObservationRecordInsertType => {
   const convertDate = (date: string) => new Date(date).getTime();
 
   return {
@@ -346,9 +310,7 @@ export const convertObservationReadToInsert = (
     updated_at: convertDate(record.updated_at),
     start_time: convertDate(record.start_time),
     end_time: record.end_time ? convertDate(record.end_time) : undefined,
-    completion_start_time: record.completion_start_time
-      ? convertDate(record.completion_start_time)
-      : undefined,
+    completion_start_time: record.completion_start_time ? convertDate(record.completion_start_time) : undefined,
     event_ts: convertDate(record.event_ts),
     provided_usage_details: record.provided_usage_details,
     provided_cost_details: record.provided_cost_details,
@@ -357,9 +319,7 @@ export const convertObservationReadToInsert = (
   };
 };
 
-export const convertScoreReadToInsert = (
-  record: ScoreRecordReadType,
-): ScoreRecordInsertType => {
+export const convertScoreReadToInsert = (record: ScoreRecordReadType): ScoreRecordInsertType => {
   return {
     ...record,
     created_at: new Date(record.created_at).getTime(),
@@ -440,9 +400,7 @@ export const convertTraceToStagingObservation = (
  * Expects a single record from a `select * from traces` query. Must be a raw query to keep original
  * column names, not the Prisma mapped names.
  */
-export const convertPostgresTraceToInsert = (
-  trace: Record<string, any>,
-): TraceRecordInsertType => {
+export const convertPostgresTraceToInsert = (trace: Record<string, any>): TraceRecordInsertType => {
   return {
     id: trace.id,
     timestamp: trace.timestamp?.getTime(),
@@ -499,9 +457,7 @@ export const convertPostgresDatasetRunItemToInsert = (
     dataset_run_created_at: datasetRunItem.dataset_run_created_at?.getTime(),
     // denormalized item data
     dataset_item_input: JSON.stringify(datasetRunItem.dataset_item_input),
-    dataset_item_expected_output: JSON.stringify(
-      datasetRunItem.dataset_item_expected_output,
-    ),
+    dataset_item_expected_output: JSON.stringify(datasetRunItem.dataset_item_expected_output),
     dataset_item_metadata:
       typeof datasetRunItem.dataset_item_metadata === "string" ||
       typeof datasetRunItem.dataset_item_metadata === "number" ||
@@ -526,9 +482,7 @@ export const convertPostgresDatasetRunItemToInsert = (
  * query. Must be a raw query to keep original
  * column names, not the Prisma mapped names.
  */
-export const convertPostgresObservationToInsert = (
-  observation: Record<string, any>,
-): ObservationRecordInsertType => {
+export const convertPostgresObservationToInsert = (observation: Record<string, any>): ObservationRecordInsertType => {
   return {
     id: observation.id,
     trace_id: observation.trace_id,
@@ -552,16 +506,11 @@ export const convertPostgresObservationToInsert = (
     output: observation.output ? JSON.stringify(observation.output) : null,
     provided_model_name: observation.model,
     internal_model_id: observation.internal_model_id,
-    model_parameters: observation.model_parameters
-      ? JSON.stringify(observation.model_parameters)
-      : null,
+    model_parameters: observation.model_parameters ? JSON.stringify(observation.model_parameters) : null,
     provided_usage_details: {},
     usage_details: {
       input: observation.prompt_tokens >= 0 ? observation.prompt_tokens : null,
-      output:
-        observation.completion_tokens >= 0
-          ? observation.completion_tokens
-          : null,
+      output: observation.completion_tokens >= 0 ? observation.completion_tokens : null,
       total: observation.total_tokens >= 0 ? observation.total_tokens : null,
     },
     provided_cost_details: {
@@ -594,9 +543,7 @@ export const convertPostgresObservationToInsert = (
  * Expects a single record from a `select * from scores` query. Must be a raw query to keep original
  * column names, not the Prisma mapped names.
  */
-export const convertPostgresScoreToInsert = (
-  score: Record<string, any>,
-): ScoreRecordInsertType => {
+export const convertPostgresScoreToInsert = (score: Record<string, any>): ScoreRecordInsertType => {
   return {
     id: score.id,
     timestamp: score.timestamp?.getTime(),

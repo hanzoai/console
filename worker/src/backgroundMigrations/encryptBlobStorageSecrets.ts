@@ -22,18 +22,14 @@ import { encrypt, decrypt } from "@hanzo/shared/encryption";
 export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
   private isAborted = false;
 
-  async validate(
-    _args: Record<string, unknown>,
-  ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
+  async validate(_args: Record<string, unknown>): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // No special prerequisites - encryption key is validated at decrypt/encrypt time
     return { valid: true, invalidReason: undefined };
   }
 
   async run(_args: Record<string, unknown>): Promise<void> {
     const startTime = Date.now();
-    logger.info(
-      "[Background Migration] Starting blob storage secrets encryption migration",
-    );
+    logger.info("[Background Migration] Starting blob storage secrets encryption migration");
 
     try {
       // Fetch all integrations with non-null secretAccessKey
@@ -44,14 +40,10 @@ export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
 
       const total = integrations.length;
       if (total === 0) {
-        logger.info(
-          "[Background Migration] No integrations to check, migration complete",
-        );
+        logger.info("[Background Migration] No integrations to check, migration complete");
         return;
       }
-      logger.info(
-        `[Background Migration] Found ${total} blob storage integrations to check`,
-      );
+      logger.info(`[Background Migration] Found ${total} blob storage integrations to check`);
 
       let encrypted = 0;
       let alreadyEncrypted = 0;
@@ -74,14 +66,9 @@ export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
           // Try to decrypt - if it succeeds, already encrypted
           decrypt(integration.secretAccessKey);
           alreadyEncrypted++;
-          logger.debug(
-            `[Background Migration] Integration ${integration.projectId} already encrypted, skipping`,
-          );
+          logger.debug(`[Background Migration] Integration ${integration.projectId} already encrypted, skipping`);
         } catch (error) {
-          if (
-            error instanceof Error &&
-            error.message === "Invalid or corrupted cipher format"
-          ) {
+          if (error instanceof Error && error.message === "Invalid or corrupted cipher format") {
             // Unencrypted - needs encryption
             try {
               const encryptedValue = encrypt(integration.secretAccessKey);
@@ -90,9 +77,7 @@ export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
                 data: { secretAccessKey: encryptedValue },
               });
               encrypted++;
-              logger.info(
-                `[Background Migration] Encrypted secretAccessKey for project ${integration.projectId}`,
-              );
+              logger.info(`[Background Migration] Encrypted secretAccessKey for project ${integration.projectId}`);
             } catch (encryptError) {
               errors++;
               logger.error(
@@ -103,10 +88,9 @@ export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
           } else {
             // Different error (wrong key, corrupted data) - log and skip
             errors++;
-            logger.error(
-              `[Background Migration] Unexpected decryption error for ${integration.projectId}: ${error}`,
-              { error },
-            );
+            logger.error(`[Background Migration] Unexpected decryption error for ${integration.projectId}: ${error}`, {
+              error,
+            });
           }
         }
       }
@@ -117,18 +101,13 @@ export default class EncryptBlobStorageSecrets implements IBackgroundMigration {
           `${encrypted} encrypted, ${alreadyEncrypted} already encrypted, ${errors} errors`,
       );
     } catch (error) {
-      logger.error(
-        "[Background Migration] Blob storage secrets encryption failed",
-        { error },
-      );
+      logger.error("[Background Migration] Blob storage secrets encryption failed", { error });
       throw error;
     }
   }
 
   async abort(): Promise<void> {
-    logger.info(
-      "[Background Migration] Aborting EncryptBlobStorageSecrets migration",
-    );
+    logger.info("[Background Migration] Aborting EncryptBlobStorageSecrets migration");
     this.isAborted = true;
   }
 }
@@ -145,10 +124,7 @@ if (require.main === module) {
       process.exit(0);
     })
     .catch((error) => {
-      logger.error(
-        `[Background Migration] Migration execution failed: ${error}`,
-        error,
-      );
+      logger.error(`[Background Migration] Migration execution failed: ${error}`, error);
       process.exit(1);
     });
 }

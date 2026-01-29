@@ -1,10 +1,6 @@
 import { randomUUID } from "crypto";
 
-import {
-  ForbiddenError,
-  ObservationLevel,
-  ObservationTypeDomain,
-} from "../../";
+import { ForbiddenError, ObservationLevel, ObservationTypeDomain } from "../../";
 import {
   type TraceEventType,
   type IngestionEventType,
@@ -133,9 +129,10 @@ export class OtelIngestionProcessor {
     const fileKey = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}otel/${this.projectId}/${this.getCurrentTimePath()}/${randomUUID()}.json`;
 
     // Upload to S3
-    await getS3EventStorageClient(
-      env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-    ).uploadJson(fileKey, resourceSpans as Record<string, unknown>[]);
+    await getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(
+      fileKey,
+      resourceSpans as Record<string, unknown>[],
+    );
 
     // Add queue job
     const queue = OtelIngestionQueue.getInstance({});
@@ -170,10 +167,7 @@ export class OtelIngestionProcessor {
     return instrumentSync({ name: "otel-event-processor" }, (span) => {
       try {
         span.setAttribute("project_id", this.projectId);
-        span.setAttribute(
-          "total_span_count",
-          this.getTotalSpanCount(resourceSpans),
-        );
+        span.setAttribute("total_span_count", this.getTotalSpanCount(resourceSpans));
 
         // Input validation
         if (!Array.isArray(resourceSpans)) {
@@ -186,8 +180,7 @@ export class OtelIngestionProcessor {
         return resourceSpans
           .filter((r) => Boolean(r))
           .flatMap((resourceSpan) => {
-            const resourceAttributes =
-              this.extractResourceAttributes(resourceSpan);
+            const resourceAttributes = this.extractResourceAttributes(resourceSpan);
             const events: any[] = [];
 
             for (const scopeSpan of resourceSpan?.scopeSpans ?? []) {
@@ -201,28 +194,14 @@ export class OtelIngestionProcessor {
                     ? (spanAttributes["hanzo.trace.id"] as string)
                     : this.parseId(span.traceId);
                 const spanId = this.parseId(span.spanId);
-                const parentSpanId = span?.parentSpanId
-                  ? this.parseId(span.parentSpanId)
-                  : null;
+                const parentSpanId = span?.parentSpanId ? this.parseId(span.parentSpanId) : null;
                 const name = span.name;
-                const startTimeISO =
-                  OtelIngestionProcessor.convertNanoTimestampToISO(
-                    span.startTimeUnixNano,
-                  );
-                const endTimeISO =
-                  OtelIngestionProcessor.convertNanoTimestampToISO(
-                    span.endTimeUnixNano,
-                  );
+                const startTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(span.startTimeUnixNano);
+                const endTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(span.endTimeUnixNano);
 
                 // Extract metadata from different sources
-                const spanMetadata = this.extractMetadata(
-                  spanAttributes,
-                  "observation",
-                );
-                const traceMetadata = this.extractMetadata(
-                  spanAttributes,
-                  "trace",
-                );
+                const spanMetadata = this.extractMetadata(spanAttributes, "observation");
+                const traceMetadata = this.extractMetadata(spanAttributes, "trace");
 
                 // Extract input/output (filteredAttributes not needed as metadata.attributes is commented out)
                 // Add filteredAttributes in case spanAttributes are included in the metadata block.
@@ -242,44 +221,26 @@ export class OtelIngestionProcessor {
                 };
 
                 // Extract instrumentation metadata
-                const serviceName = resourceAttributes?.["service.name"] as
-                  | string
-                  | undefined;
-                const serviceVersion = resourceAttributes?.[
-                  "service.version"
-                ] as string | undefined;
-                const telemetrySdkLanguage = resourceAttributes?.[
-                  "telemetry.sdk.language"
-                ] as string | undefined;
-                const telemetrySdkName = resourceAttributes?.[
-                  "telemetry.sdk.name"
-                ] as string | undefined;
-                const telemetrySdkVersion = resourceAttributes?.[
-                  "telemetry.sdk.version"
-                ] as string | undefined;
+                const serviceName = resourceAttributes?.["service.name"] as string | undefined;
+                const serviceVersion = resourceAttributes?.["service.version"] as string | undefined;
+                const telemetrySdkLanguage = resourceAttributes?.["telemetry.sdk.language"] as string | undefined;
+                const telemetrySdkName = resourceAttributes?.["telemetry.sdk.name"] as string | undefined;
+                const telemetrySdkVersion = resourceAttributes?.["telemetry.sdk.version"] as string | undefined;
                 const scopeName = scopeSpan?.scope?.name;
                 const scopeVersion = scopeSpan?.scope?.version;
 
                 const stringifiedSpan = JSON.stringify(span);
                 const eventBytes = Buffer.byteLength(stringifiedSpan, "utf8");
 
-                recordDistribution(
-                  "hanzo.ingestion.otel.event.byte_length",
-                  eventBytes,
-                  {
-                    source: "otel",
-                    sdk_language: telemetrySdkLanguage || "",
-                  },
-                );
+                recordDistribution("hanzo.ingestion.otel.event.byte_length", eventBytes, {
+                  source: "otel",
+                  sdk_language: telemetrySdkLanguage || "",
+                });
 
-                const experimentFields =
-                  this.extractExperimentFields(spanAttributes);
+                const experimentFields = this.extractExperimentFields(spanAttributes);
 
                 const usageDetails = UsageDetails.safeParse(
-                  this.extractUsageDetails(
-                    spanAttributes,
-                    scopeSpan?.scope?.name ?? "",
-                  ),
+                  this.extractUsageDetails(spanAttributes, scopeSpan?.scope?.name ?? ""),
                 );
                 if (!usageDetails.success) {
                   logger.warn(
@@ -299,10 +260,7 @@ export class OtelIngestionProcessor {
                     resourceAttributes,
                     scopeSpan?.scope,
                   ),
-                  environment: this.extractEnvironment(
-                    spanAttributes,
-                    resourceAttributes,
-                  ),
+                  environment: this.extractEnvironment(spanAttributes, resourceAttributes),
                   version:
                     spanAttributes?.[HanzoOtelSpanAttributes.VERSION] ??
                     resourceAttributes?.["service.version"] ??
@@ -312,57 +270,34 @@ export class OtelIngestionProcessor {
                   endTimeISO,
 
                   level:
-                    spanAttributes[
-                      HanzoOtelSpanAttributes.OBSERVATION_LEVEL
-                    ] ??
-                    (span.status?.code === 2
-                      ? ObservationLevel.ERROR
-                      : ObservationLevel.DEFAULT),
+                    spanAttributes[HanzoOtelSpanAttributes.OBSERVATION_LEVEL] ??
+                    (span.status?.code === 2 ? ObservationLevel.ERROR : ObservationLevel.DEFAULT),
                   statusMessage:
-                    spanAttributes[
-                      HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE
-                    ] ??
-                    span.status?.message ??
-                    null,
+                    spanAttributes[HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE] ?? span.status?.message ?? null,
 
                   promptName:
-                    spanAttributes?.[
-                      HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME
-                    ] ??
+                    spanAttributes?.[HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME] ??
                     spanAttributes["hanzo.prompt.name"] ??
                     this.parseHanzoPromptFromAISDK(spanAttributes)?.name ??
                     null,
                   promptVersion:
-                    spanAttributes?.[
-                      HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION
-                    ] ??
+                    spanAttributes?.[HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION] ??
                     spanAttributes["hanzo.prompt.version"] ??
-                    this.parseHanzoPromptFromAISDK(spanAttributes)
-                      ?.version ??
+                    this.parseHanzoPromptFromAISDK(spanAttributes)?.version ??
                     null,
 
-                  modelParameters: this.extractModelParameters(
-                    spanAttributes,
-                    scopeSpan?.scope?.name ?? "",
-                  ),
+                  modelParameters: this.extractModelParameters(spanAttributes, scopeSpan?.scope?.name ?? ""),
                   modelName: this.extractModelName(spanAttributes),
-                  completionStartTime: this.extractCompletionStartTime(
-                    spanAttributes,
-                    startTimeISO,
-                  ),
+                  completionStartTime: this.extractCompletionStartTime(spanAttributes, startTimeISO),
 
                   // Usage and cost details
-                  providedUsageDetails: usageDetails.success
-                    ? usageDetails.data
-                    : undefined,
+                  providedUsageDetails: usageDetails.success ? usageDetails.data : undefined,
                   providedCostDetails: this.extractCostDetails(spanAttributes),
 
                   // Properties
                   tags: this.extractTags(spanAttributes),
                   public: this.extractPublic(spanAttributes),
-                  traceName:
-                    spanAttributes?.[HanzoOtelSpanAttributes.TRACE_NAME] ??
-                    null,
+                  traceName: spanAttributes?.[HanzoOtelSpanAttributes.TRACE_NAME] ?? null,
                   userId: this.extractUserId(spanAttributes),
                   sessionId: this.extractSessionId(spanAttributes),
 
@@ -408,77 +343,62 @@ export class OtelIngestionProcessor {
    * Initializes seen traces from Redis automatically on first call.
    * Filters out shallow trace events if full trace events exist for the same traceId.
    */
-  async processToIngestionEvents(
-    resourceSpans: ResourceSpan[],
-  ): Promise<IngestionEventType[]> {
-    return await instrumentAsync(
-      { name: "otel-ingestion-processor" },
-      async (span) => {
-        span.setAttribute("project_id", this.projectId);
-        span.setAttribute(
-          "total_span_count",
-          this.getTotalSpanCount(resourceSpans),
-        );
+  async processToIngestionEvents(resourceSpans: ResourceSpan[]): Promise<IngestionEventType[]> {
+    return await instrumentAsync({ name: "otel-ingestion-processor" }, async (span) => {
+      span.setAttribute("project_id", this.projectId);
+      span.setAttribute("total_span_count", this.getTotalSpanCount(resourceSpans));
 
-        try {
-          // Lazy initialization - load seen traces from Redis if not already done
-          // Seen traces are traces that went through the ingestion pipeline within last 10 minutes
-          if (!this.isInitialized) {
-            this.seenTraces = await this.getSeenTracesSet(resourceSpans);
-            this.isInitialized = true;
-          }
+      try {
+        // Lazy initialization - load seen traces from Redis if not already done
+        // Seen traces are traces that went through the ingestion pipeline within last 10 minutes
+        if (!this.isInitialized) {
+          this.seenTraces = await this.getSeenTracesSet(resourceSpans);
+          this.isInitialized = true;
+        }
 
-          // Input validation
-          if (!Array.isArray(resourceSpans)) {
-            return [];
-          }
-
-          if (resourceSpans.length === 0) {
-            return [];
-          }
-
-          // Process all events normally first
-          const allEvents = resourceSpans.flatMap((resourceSpan) => {
-            if (!resourceSpan) return [];
-            return this.processResourceSpan(resourceSpan);
-          });
-
-          // Filter out redundant shallow trace events
-          const finalEvents = this.filterRedundantShallowTraces(allEvents);
-
-          span.setAttribute("events_generated", finalEvents.length);
-
-          this.traceEventCounts.shallow = Math.max(
-            this.traceEventCounts.shallow -
-              (allEvents.length - finalEvents.length),
-            0,
-          );
-
-          for (const key of Object.keys(
-            this.traceEventCounts,
-          ) as (keyof typeof this.traceEventCounts)[]) {
-            recordIncrement(
-              "hanzo.ingestion.otel.trace_create_event",
-              this.traceEventCounts[key],
-              { reason: key },
-            );
-          }
-
-          return finalEvents;
-        } catch (error) {
-          if (error instanceof ForbiddenError) {
-            traceException(error, span);
-            throw error;
-          }
-
-          // Log error but don't throw to avoid breaking the ingestion pipeline
-          logger.error("Error processing OTEL spans:", error);
-          traceException(error, span);
-
+        // Input validation
+        if (!Array.isArray(resourceSpans)) {
           return [];
         }
-      },
-    );
+
+        if (resourceSpans.length === 0) {
+          return [];
+        }
+
+        // Process all events normally first
+        const allEvents = resourceSpans.flatMap((resourceSpan) => {
+          if (!resourceSpan) return [];
+          return this.processResourceSpan(resourceSpan);
+        });
+
+        // Filter out redundant shallow trace events
+        const finalEvents = this.filterRedundantShallowTraces(allEvents);
+
+        span.setAttribute("events_generated", finalEvents.length);
+
+        this.traceEventCounts.shallow = Math.max(
+          this.traceEventCounts.shallow - (allEvents.length - finalEvents.length),
+          0,
+        );
+
+        for (const key of Object.keys(this.traceEventCounts) as (keyof typeof this.traceEventCounts)[]) {
+          recordIncrement("hanzo.ingestion.otel.trace_create_event", this.traceEventCounts[key], { reason: key });
+        }
+
+        return finalEvents;
+      } catch (error) {
+        if (error instanceof ForbiddenError) {
+          traceException(error, span);
+          throw error;
+        }
+
+        // Log error but don't throw to avoid breaking the ingestion pipeline
+        logger.error("Error processing OTEL spans:", error);
+        traceException(error, span);
+
+        return [];
+      }
+    });
   }
 
   /**
@@ -487,15 +407,11 @@ export class OtelIngestionProcessor {
    *
    * Performance: O(n) where n is the number of events
    */
-  private filterRedundantShallowTraces(
-    events: IngestionEventType[],
-  ): IngestionEventType[] {
+  private filterRedundantShallowTraces(events: IngestionEventType[]): IngestionEventType[] {
     if (events.length === 0) return events;
 
     // Fast path: if no trace-create events, return as-is
-    const hasTraceEvents = events.some(
-      (event) => event.type === "trace-create",
-    );
+    const hasTraceEvents = events.some((event) => event.type === "trace-create");
     if (!hasTraceEvents) return events;
 
     // Track trace states by traceId - using simpler structure for better performance
@@ -597,15 +513,12 @@ export class OtelIngestionProcessor {
     return true;
   }
 
-  private processResourceSpan(
-    resourceSpan: ResourceSpan,
-  ): IngestionEventType[] {
+  private processResourceSpan(resourceSpan: ResourceSpan): IngestionEventType[] {
     const resourceAttributes = this.extractResourceAttributes(resourceSpan);
     const events: IngestionEventType[] = [];
 
     for (const scopeSpan of resourceSpan?.scopeSpans ?? []) {
-      const isHanzoSDKSpans =
-        scopeSpan.scope?.name?.startsWith("hanzo-sdk") ?? false;
+      const isHanzoSDKSpans = scopeSpan.scope?.name?.startsWith("hanzo-sdk") ?? false;
       const scopeAttributes = this.extractScopeAttributes(scopeSpan);
 
       if (isHanzoSDKSpans) {
@@ -613,13 +526,7 @@ export class OtelIngestionProcessor {
       }
 
       for (const span of scopeSpan?.spans ?? []) {
-        const spanEvents = this.processSpan(
-          span,
-          scopeSpan,
-          resourceAttributes,
-          scopeAttributes,
-          isHanzoSDKSpans,
-        );
+        const spanEvents = this.processSpan(span, scopeSpan, resourceAttributes, scopeAttributes, isHanzoSDKSpans);
         events.push(...spanEvents);
       }
     }
@@ -643,28 +550,14 @@ export class OtelIngestionProcessor {
       isLiteLLMSpan && attributes["hanzo.trace.id"]
         ? (attributes["hanzo.trace.id"] as string)
         : this.parseId(span.traceId?.data ?? span.traceId);
-    const parentObservationId = span?.parentSpanId
-      ? this.parseId(span.parentSpanId?.data ?? span.parentSpanId)
-      : null;
+    const parentObservationId = span?.parentSpanId ? this.parseId(span.parentSpanId?.data ?? span.parentSpanId) : null;
 
-    const spanAttributeMetadata = this.extractMetadata(
-      attributes,
-      "observation",
-    );
-    const resourceAttributeMetadata = this.extractMetadata(
-      resourceAttributes,
-      "trace",
-    );
-    const startTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(
-      span.startTimeUnixNano,
-    );
-    const endTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(
-      span.endTimeUnixNano,
-    );
+    const spanAttributeMetadata = this.extractMetadata(attributes, "observation");
+    const resourceAttributeMetadata = this.extractMetadata(resourceAttributes, "trace");
+    const startTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(span.startTimeUnixNano);
+    const endTimeISO = OtelIngestionProcessor.convertNanoTimestampToISO(span.endTimeUnixNano);
 
-    const isRootSpan =
-      !parentObservationId ||
-      String(attributes[HanzoOtelSpanAttributes.AS_ROOT]) === "true";
+    const isRootSpan = !parentObservationId || String(attributes[HanzoOtelSpanAttributes.AS_ROOT]) === "true";
 
     const hasTraceUpdates = this.hasTraceUpdates(attributes);
 
@@ -746,9 +639,7 @@ export class OtelIngestionProcessor {
 
       trace = {
         ...trace,
-        name:
-          (attributes[HanzoOtelSpanAttributes.TRACE_NAME] as string) ??
-          this.extractName(span.name, attributes),
+        name: (attributes[HanzoOtelSpanAttributes.TRACE_NAME] as string) ?? this.extractName(span.name, attributes),
         metadata: {
           ...resourceAttributeMetadata,
           ...this.extractMetadata(attributes, "trace"),
@@ -761,9 +652,7 @@ export class OtelIngestionProcessor {
           },
         } as Record<string, string | Record<string, string | number>>,
         version:
-          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ??
-          resourceAttributes?.["service.version"] ??
-          null,
+          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ?? resourceAttributes?.["service.version"] ?? null,
         release:
           (attributes?.[HanzoOtelSpanAttributes.RELEASE] as string) ??
           resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
@@ -796,9 +685,7 @@ export class OtelIngestionProcessor {
           },
         } as Record<string, string | Record<string, string | number>>,
         version:
-          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ??
-          resourceAttributes?.["service.version"] ??
-          null,
+          (attributes?.[HanzoOtelSpanAttributes.VERSION] as string) ?? resourceAttributes?.["service.version"] ?? null,
         release:
           (attributes?.[HanzoOtelSpanAttributes.RELEASE] as string) ??
           resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
@@ -829,20 +716,14 @@ export class OtelIngestionProcessor {
     };
   }
 
-  private extractPublic(
-    attributes?: Record<string, unknown>,
-  ): boolean | undefined {
-    const value =
-      attributes?.[HanzoOtelSpanAttributes.TRACE_PUBLIC] ??
-      attributes?.["hanzo.public"];
+  private extractPublic(attributes?: Record<string, unknown>): boolean | undefined {
+    const value = attributes?.[HanzoOtelSpanAttributes.TRACE_PUBLIC] ?? attributes?.["hanzo.public"];
 
     if (value == null) return;
     return value === true || value === "true";
   }
 
-  private createObservationEvent(
-    params: CreateObservationEventParams,
-  ): IngestionEventType {
+  private createObservationEvent(params: CreateObservationEventParams): IngestionEventType {
     const {
       span,
       traceId,
@@ -875,10 +756,7 @@ export class OtelIngestionProcessor {
       startTime: startTimeISO,
       endTime: endTimeISO,
       environment: this.extractEnvironment(attributes, resourceAttributes),
-      completionStartTime: this.extractCompletionStartTime(
-        attributes,
-        startTimeISO,
-      ),
+      completionStartTime: this.extractCompletionStartTime(attributes, startTimeISO),
       metadata: {
         ...resourceAttributeMetadata,
         ...spanAttributeMetadata,
@@ -888,21 +766,10 @@ export class OtelIngestionProcessor {
       },
       level:
         attributes[HanzoOtelSpanAttributes.OBSERVATION_LEVEL] ??
-        (span.status?.code === 2
-          ? ObservationLevel.ERROR
-          : ObservationLevel.DEFAULT),
-      statusMessage:
-        attributes[HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE] ??
-        span.status?.message ??
-        null,
-      version:
-        attributes[HanzoOtelSpanAttributes.VERSION] ??
-        resourceAttributes?.["service.version"] ??
-        null,
-      modelParameters: this.extractModelParameters(
-        attributes,
-        instrumentationScopeName,
-      ) as any,
+        (span.status?.code === 2 ? ObservationLevel.ERROR : ObservationLevel.DEFAULT),
+      statusMessage: attributes[HanzoOtelSpanAttributes.OBSERVATION_STATUS_MESSAGE] ?? span.status?.message ?? null,
+      version: attributes[HanzoOtelSpanAttributes.VERSION] ?? resourceAttributes?.["service.version"] ?? null,
+      modelParameters: this.extractModelParameters(attributes, instrumentationScopeName) as any,
       model: this.extractModelName(attributes),
       promptName:
         attributes?.[HanzoOtelSpanAttributes.OBSERVATION_PROMPT_NAME] ??
@@ -914,10 +781,7 @@ export class OtelIngestionProcessor {
         attributes["hanzo.prompt.version"] ??
         this.parseHanzoPromptFromAISDK(attributes)?.version ??
         null,
-      usageDetails: this.extractUsageDetails(
-        attributes,
-        instrumentationScopeName,
-      ),
+      usageDetails: this.extractUsageDetails(attributes, instrumentationScopeName),
       costDetails: this.extractCostDetails(attributes),
       input,
       output,
@@ -934,8 +798,7 @@ export class OtelIngestionProcessor {
         : undefined;
 
     const isKnownObservationType =
-      observationType &&
-      ObservationTypeDomain.safeParse(observationType.toUpperCase()).success;
+      observationType && ObservationTypeDomain.safeParse(observationType.toUpperCase()).success;
 
     const getIngestionEventType = (): string => {
       if (isKnownObservationType) {
@@ -980,16 +843,12 @@ export class OtelIngestionProcessor {
     ].some((traceAttribute) => Boolean(attributes[traceAttribute]));
 
     const attributeKeys = Object.keys(attributes);
-    const hasTraceMetadataKey = attributeKeys.some((key) =>
-      key.startsWith(HanzoOtelSpanAttributes.TRACE_METADATA),
-    );
+    const hasTraceMetadataKey = attributeKeys.some((key) => key.startsWith(HanzoOtelSpanAttributes.TRACE_METADATA));
 
     return hasExactMatchingAttributeName || hasTraceMetadataKey;
   }
 
-  private extractResourceAttributes(
-    resourceSpan: any,
-  ): Record<string, unknown> {
+  private extractResourceAttributes(resourceSpan: any): Record<string, unknown> {
     return (
       resourceSpan?.resource?.attributes?.reduce((acc: any, attr: any) => {
         acc[attr.key] = this.convertValueToPlainJavascript(attr.value);
@@ -1027,9 +886,7 @@ export class OtelIngestionProcessor {
       return value.boolValue;
     }
     if (value.arrayValue && value.arrayValue.values !== undefined) {
-      return value.arrayValue.values.map((v: any) =>
-        this.convertValueToPlainJavascript(v),
-      );
+      return value.arrayValue.values.map((v: any) => this.convertValueToPlainJavascript(v));
     }
     if (value.intValue && value.intValue.high === 0) {
       return value.intValue.low;
@@ -1037,11 +894,7 @@ export class OtelIngestionProcessor {
     if (value.intValue && typeof value.intValue === "number") {
       return value.intValue;
     }
-    if (
-      value.intValue &&
-      value.intValue.high === -1 &&
-      value.intValue.low === -1
-    ) {
+    if (value.intValue && value.intValue.high === -1 && value.intValue.low === -1) {
       return -1;
     }
     if (value.intValue && value.intValue.high !== 0) {
@@ -1050,10 +903,7 @@ export class OtelIngestionProcessor {
     return JSON.stringify(value);
   }
 
-  private convertKeyPathToNestedObject(
-    input: Record<string, unknown>,
-    prefix: string,
-  ): any {
+  private convertKeyPathToNestedObject(input: Record<string, unknown>, prefix: string): any {
     if (input[prefix]) {
       return input[prefix];
     }
@@ -1088,11 +938,7 @@ export class OtelIngestionProcessor {
           result[index][pathParts[1]] = input[`${prefix}.${key}`];
         } else {
           // Nested case: 0.message.content -> result[0].message.content
-          setNestedValue(
-            result[index],
-            pathParts.slice(1),
-            input[`${prefix}.${key}`],
-          );
+          setNestedValue(result[index], pathParts.slice(1), input[`${prefix}.${key}`]);
         }
       }
       return result;
@@ -1229,10 +1075,7 @@ export class OtelIngestionProcessor {
               ? attributes["ai.toolCall.args"]
               : undefined;
 
-      if (
-        "ai.response.text" in attributes &&
-        "ai.response.toolCalls" in attributes
-      ) {
+      if ("ai.response.text" in attributes && "ai.response.toolCalls" in attributes) {
         output = JSON.stringify({
           role: "assistant",
           content: attributes["ai.response.text"],
@@ -1240,8 +1083,7 @@ export class OtelIngestionProcessor {
         });
       } else {
         output =
-          "ai.response.text" in attributes &&
-          Boolean(attributes["ai.response.text"])
+          "ai.response.text" in attributes && Boolean(attributes["ai.response.text"])
             ? attributes["ai.response.text"]
             : "ai.result.text" in attributes // Legacy support for ai SDK versions < 4.0.0
               ? attributes["ai.result.text"]
@@ -1269,9 +1111,7 @@ export class OtelIngestionProcessor {
         event.name === "gen_ai.tool.message",
     );
 
-    const outputEvents = events.filter(
-      (event: Record<string, unknown>) => event.name === "gen_ai.choice",
-    );
+    const outputEvents = events.filter((event: Record<string, unknown>) => event.name === "gen_ai.choice");
 
     if (inputEvents.length > 0 || outputEvents.length > 0) {
       const processedInput =
@@ -1279,9 +1119,7 @@ export class OtelIngestionProcessor {
           ? inputEvents.map((event: any) => {
               const eventAttributes =
                 event.attributes?.reduce((acc: any, attr: any) => {
-                  acc[attr.key] = this.convertValueToPlainJavascript(
-                    attr.value,
-                  );
+                  acc[attr.key] = this.convertValueToPlainJavascript(attr.value);
                   return acc;
                 }, {}) ?? {};
 
@@ -1297,9 +1135,7 @@ export class OtelIngestionProcessor {
           ? outputEvents.map((event: any) => {
               const eventAttributes =
                 event.attributes?.reduce((acc: any, attr: any) => {
-                  acc[attr.key] = this.convertValueToPlainJavascript(
-                    attr.value,
-                  );
+                  acc[attr.key] = this.convertValueToPlainJavascript(attr.value);
                   return acc;
                 }, {}) ?? {};
 
@@ -1309,24 +1145,15 @@ export class OtelIngestionProcessor {
 
       return {
         input: processedInput,
-        output:
-          processedOutput && processedOutput.length === 1
-            ? processedOutput[0]
-            : processedOutput,
+        output: processedOutput && processedOutput.length === 1 ? processedOutput[0] : processedOutput,
         filteredAttributes, // No attribute keys used, events are used instead
       };
     }
 
     // Legacy semantic kernel event definitions
-    input = events.find(
-      (event: Record<string, unknown>) =>
-        event.name === "gen_ai.content.prompt",
-    )?.attributes;
+    input = events.find((event: Record<string, unknown>) => event.name === "gen_ai.content.prompt")?.attributes;
 
-    output = events.find(
-      (event: Record<string, unknown>) =>
-        event.name === "gen_ai.content.completion",
-    )?.attributes;
+    output = events.find((event: Record<string, unknown>) => event.name === "gen_ai.content.completion")?.attributes;
 
     if (input || output) {
       input =
@@ -1382,8 +1209,7 @@ export class OtelIngestionProcessor {
 
     // LiveKit
     input = attributes["lk.input_text"];
-    output =
-      attributes["lk.function_tool.output"] || attributes["lk.response.text"];
+    output = attributes["lk.function_tool.output"] || attributes["lk.response.text"];
     if (input || output) {
       return { input, output, filteredAttributes };
     }
@@ -1400,12 +1226,8 @@ export class OtelIngestionProcessor {
         }
       }
 
-      const choiceEvent = events.find(
-        (event) => event["event.name"] === "gen_ai.choice",
-      );
-      const inputEvents = events.filter(
-        (event) => event["event.name"] !== "gen_ai.choice",
-      );
+      const choiceEvent = events.find((event) => event["event.name"] === "gen_ai.choice");
+      const inputEvents = events.filter((event) => event["event.name"] !== "gen_ai.choice");
 
       if (choiceEvent || inputEvents.length > 0) {
         return {
@@ -1452,12 +1274,8 @@ export class OtelIngestionProcessor {
     }
 
     // TraceLoop uses attributes property
-    const inputAttributes = Object.keys(attributes).filter((key) =>
-      key.startsWith("gen_ai.prompt"),
-    );
-    const outputAttributes = Object.keys(attributes).filter((key) =>
-      key.startsWith("gen_ai.completion"),
-    );
+    const inputAttributes = Object.keys(attributes).filter((key) => key.startsWith("gen_ai.prompt"));
+    const outputAttributes = Object.keys(attributes).filter((key) => key.startsWith("gen_ai.completion"));
     if (inputAttributes.length > 0 || outputAttributes.length > 0) {
       input = inputAttributes.reduce((acc: any, key) => {
         acc[key] = attributes[key];
@@ -1475,12 +1293,8 @@ export class OtelIngestionProcessor {
     }
 
     // OpenInference llm.input_messages and llm.output_messages (used by Agno, BeeAI, etc.)
-    const llmInputAttributes = Object.keys(attributes).filter((key) =>
-      key.startsWith("llm.input_messages"),
-    );
-    const llmOutputAttributes = Object.keys(attributes).filter((key) =>
-      key.startsWith("llm.output_messages"),
-    );
+    const llmInputAttributes = Object.keys(attributes).filter((key) => key.startsWith("llm.input_messages"));
+    const llmOutputAttributes = Object.keys(attributes).filter((key) => key.startsWith("llm.output_messages"));
     if (llmInputAttributes.length > 0 || llmOutputAttributes.length > 0) {
       const llmInput = llmInputAttributes.reduce((acc: any, key) => {
         acc[key] = attributes[key];
@@ -1491,14 +1305,8 @@ export class OtelIngestionProcessor {
         return acc;
       }, {});
       return {
-        input: this.convertKeyPathToNestedObject(
-          llmInput,
-          "llm.input_messages",
-        ),
-        output: this.convertKeyPathToNestedObject(
-          llmOutput,
-          "llm.output_messages",
-        ),
+        input: this.convertKeyPathToNestedObject(llmInput, "llm.input_messages"),
+        output: this.convertKeyPathToNestedObject(llmOutput, "llm.output_messages"),
         filteredAttributes,
       };
     }
@@ -1520,10 +1328,7 @@ export class OtelIngestionProcessor {
     return { input: null, output: null, filteredAttributes };
   }
 
-  private extractEnvironment(
-    attributes: Record<string, unknown>,
-    resourceAttributes: Record<string, unknown>,
-  ): string {
+  private extractEnvironment(attributes: Record<string, unknown>, resourceAttributes: Record<string, unknown>): string {
     const environmentAttributeKeys = [
       HanzoOtelSpanAttributes.ENVIRONMENT,
       "deployment.environment.name",
@@ -1542,10 +1347,7 @@ export class OtelIngestionProcessor {
     return "default";
   }
 
-  private extractName(
-    spanName: string,
-    attributes: Record<string, unknown>,
-  ): string {
+  private extractName(spanName: string, attributes: Record<string, unknown>): string {
     // GenAI tool name (standard OTel GenAI attribute)
     if ("gen_ai.tool.name" in attributes && attributes["gen_ai.tool.name"]) {
       return typeof attributes["gen_ai.tool.name"] === "string"
@@ -1557,9 +1359,7 @@ export class OtelIngestionProcessor {
     const nameKeys = ["logfire.msg"];
     for (const key of nameKeys) {
       if (attributes[key]) {
-        return typeof attributes[key] === "string"
-          ? (attributes[key] as string)
-          : JSON.stringify(attributes[key]);
+        return typeof attributes[key] === "string" ? (attributes[key] as string) : JSON.stringify(attributes[key]);
       }
     }
 
@@ -1572,9 +1372,7 @@ export class OtelIngestionProcessor {
     const operationIdAttribute = "ai.operationId";
 
     if (operationIdAttribute in attributes) {
-      const prefix = attributes[functionIdAttribute]
-        ? attributes[functionIdAttribute] + ":"
-        : "";
+      const prefix = attributes[functionIdAttribute] ? attributes[functionIdAttribute] + ":" : "";
 
       return prefix + attributes[operationIdAttribute];
     }
@@ -1589,22 +1387,16 @@ export class OtelIngestionProcessor {
     let topLevelMetadata: Record<string, unknown> = {};
 
     const metadataKeyPrefix =
-      domain === "observation"
-        ? HanzoOtelSpanAttributes.OBSERVATION_METADATA
-        : HanzoOtelSpanAttributes.TRACE_METADATA;
+      domain === "observation" ? HanzoOtelSpanAttributes.OBSERVATION_METADATA : HanzoOtelSpanAttributes.TRACE_METADATA;
 
-    const hanzoMetadataAttribute =
-      attributes[metadataKeyPrefix] || attributes["hanzo.metadata"];
+    const hanzoMetadataAttribute = attributes[metadataKeyPrefix] || attributes["hanzo.metadata"];
 
     if (hanzoMetadataAttribute) {
       try {
         if (typeof hanzoMetadataAttribute === "string") {
           topLevelMetadata = JSON.parse(hanzoMetadataAttribute as string);
         } else if (typeof hanzoMetadataAttribute === "object") {
-          topLevelMetadata = hanzoMetadataAttribute as Record<
-            string,
-            unknown
-          >;
+          topLevelMetadata = hanzoMetadataAttribute as Record<string, unknown>;
         }
       } catch {
         // Continue with nested metadata extraction
@@ -1614,11 +1406,7 @@ export class OtelIngestionProcessor {
     const hanzoMetadata: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(attributes)) {
-      for (const prefix of [
-        metadataKeyPrefix,
-        "hanzo.metadata",
-        "ai.telemetry.metadata",
-      ]) {
+      for (const prefix of [metadataKeyPrefix, "hanzo.metadata", "ai.telemetry.metadata"]) {
         if (
           key.startsWith(`${prefix}.`) &&
           // Filter out the Vercel AI SDK trace attribute keys
@@ -1636,10 +1424,7 @@ export class OtelIngestionProcessor {
     }
 
     // Vercel AI SDK
-    const tools =
-      "ai.prompt.tools" in attributes
-        ? attributes["ai.prompt.tools"]
-        : undefined;
+    const tools = "ai.prompt.tools" in attributes ? attributes["ai.prompt.tools"] : undefined;
 
     if (tools) {
       hanzoMetadata["tools"] = tools;
@@ -1651,9 +1436,7 @@ export class OtelIngestionProcessor {
     };
   }
 
-  private extractUserId(
-    attributes: Record<string, unknown>,
-  ): string | undefined {
+  private extractUserId(attributes: Record<string, unknown>): string | undefined {
     const userIdKeys = [
       "hanzo.user.id",
       "user.id",
@@ -1664,16 +1447,12 @@ export class OtelIngestionProcessor {
 
     for (const key of userIdKeys) {
       if (attributes[key]) {
-        return typeof attributes[key] === "string"
-          ? (attributes[key] as string)
-          : JSON.stringify(attributes[key]);
+        return typeof attributes[key] === "string" ? (attributes[key] as string) : JSON.stringify(attributes[key]);
       }
     }
   }
 
-  private extractSessionId(
-    attributes: Record<string, unknown>,
-  ): string | undefined {
+  private extractSessionId(attributes: Record<string, unknown>): string | undefined {
     const userIdKeys = [
       "hanzo.session.id",
       "session.id",
@@ -1685,9 +1464,7 @@ export class OtelIngestionProcessor {
 
     for (const key of userIdKeys) {
       if (attributes[key]) {
-        return typeof attributes[key] === "string"
-          ? (attributes[key] as string)
-          : JSON.stringify(attributes[key]);
+        return typeof attributes[key] === "string" ? (attributes[key] as string) : JSON.stringify(attributes[key]);
       }
     }
   }
@@ -1699,11 +1476,7 @@ export class OtelIngestionProcessor {
     if (attributes[HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS]) {
       try {
         return this.sanitizeModelParams(
-          JSON.parse(
-            attributes[
-              HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS
-            ] as string,
-          ),
+          JSON.parse(attributes[HanzoOtelSpanAttributes.OBSERVATION_MODEL_PARAMETERS] as string),
         );
       } catch {
         // Fallthrough
@@ -1714,13 +1487,9 @@ export class OtelIngestionProcessor {
     if (instrumentationScopeName === "ai") {
       return {
         maxSteps:
-          "ai.settings.maxSteps" in attributes
-            ? (attributes["ai.settings.maxSteps"]?.toString() ?? null)
-            : null,
+          "ai.settings.maxSteps" in attributes ? (attributes["ai.settings.maxSteps"]?.toString() ?? null) : null,
         toolChoice:
-          "ai.prompt.toolChoice" in attributes
-            ? (attributes["ai.prompt.toolChoice"]?.toString() ?? null)
-            : null,
+          "ai.prompt.toolChoice" in attributes ? (attributes["ai.prompt.toolChoice"]?.toString() ?? null) : null,
         maxTokens:
           "gen_ai.request.max_tokens" in attributes
             ? (attributes["gen_ai.request.max_tokens"]?.toString() ?? null)
@@ -1738,13 +1507,8 @@ export class OtelIngestionProcessor {
               ? (attributes["ai.model.provider"]?.toString() ?? null)
               : null,
         maxRetries:
-          "ai.settings.maxRetries" in attributes
-            ? (attributes["ai.settings.maxRetries"]?.toString() ?? null)
-            : null,
-        mode:
-          "ai.settings.mode" in attributes
-            ? (attributes["ai.settings.mode"]?.toString() ?? null)
-            : null,
+          "ai.settings.maxRetries" in attributes ? (attributes["ai.settings.maxRetries"]?.toString() ?? null) : null,
+        mode: "ai.settings.mode" in attributes ? (attributes["ai.settings.mode"]?.toString() ?? null) : null,
         temperature:
           "gen_ai.request.temperature" in attributes
             ? (attributes["gen_ai.request.temperature"]?.toString() ?? null)
@@ -1754,9 +1518,7 @@ export class OtelIngestionProcessor {
 
     if (attributes["llm.invocation_parameters"]) {
       try {
-        return this.sanitizeModelParams(
-          JSON.parse(attributes["llm.invocation_parameters"] as string),
-        );
+        return this.sanitizeModelParams(JSON.parse(attributes["llm.invocation_parameters"] as string));
       } catch {
         // fallthrough
       }
@@ -1764,17 +1526,13 @@ export class OtelIngestionProcessor {
 
     if (attributes["model_config"]) {
       try {
-        return this.sanitizeModelParams(
-          JSON.parse(attributes["model_config"] as string),
-        );
+        return this.sanitizeModelParams(JSON.parse(attributes["model_config"] as string));
       } catch {
         // fallthrough
       }
     }
 
-    const modelParameters = Object.keys(attributes).filter((key) =>
-      key.startsWith("gen_ai.request."),
-    );
+    const modelParameters = Object.keys(attributes).filter((key) => key.startsWith("gen_ai.request."));
 
     return this.sanitizeModelParams(
       modelParameters.reduce((acc: any, key) => {
@@ -1793,18 +1551,14 @@ export class OtelIngestionProcessor {
       return Object.fromEntries(
         Object.entries(params).map((e) => [
           e[0],
-          ["string", "number"].includes(typeof e[1])
-            ? e[1]
-            : JSON.stringify(e[1]),
+          ["string", "number"].includes(typeof e[1]) ? e[1] : JSON.stringify(e[1]),
         ]),
       );
 
     return params;
   }
 
-  private extractModelName(
-    attributes: Record<string, unknown>,
-  ): string | undefined {
+  private extractModelName(attributes: Record<string, unknown>): string | undefined {
     const modelNameKeys = [
       HanzoOtelSpanAttributes.OBSERVATION_MODEL,
       "gen_ai.response.model",
@@ -1816,9 +1570,7 @@ export class OtelIngestionProcessor {
     ];
     for (const key of modelNameKeys) {
       if (attributes[key]) {
-        return typeof attributes[key] === "string"
-          ? (attributes[key] as string)
-          : JSON.stringify(attributes[key]);
+        return typeof attributes[key] === "string" ? (attributes[key] as string) : JSON.stringify(attributes[key]);
       }
     }
   }
@@ -1829,11 +1581,7 @@ export class OtelIngestionProcessor {
   ): Record<string, unknown> {
     if (attributes[HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS]) {
       try {
-        return JSON.parse(
-          attributes[
-            HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS
-          ] as string,
-        );
+        return JSON.parse(attributes[HanzoOtelSpanAttributes.OBSERVATION_USAGE_DETAILS] as string);
       } catch {
         // Fallthrough
       }
@@ -1844,53 +1592,38 @@ export class OtelIngestionProcessor {
         const usageDetails: Record<string, number | undefined> = {
           input:
             "gen_ai.usage.prompt_tokens" in attributes // Backward compat, input_tokens used in latest ai SDK versions
-              ? parseInt(
-                  attributes["gen_ai.usage.prompt_tokens"]?.toString() ?? "0",
-                )
+              ? parseInt(attributes["gen_ai.usage.prompt_tokens"]?.toString() ?? "0")
               : "gen_ai.usage.input_tokens" in attributes
-                ? parseInt(
-                    attributes["gen_ai.usage.input_tokens"]?.toString() ?? "0",
-                  )
+                ? parseInt(attributes["gen_ai.usage.input_tokens"]?.toString() ?? "0")
                 : undefined,
 
           output:
             "gen_ai.usage.completion_tokens" in attributes // Backward compat, output_tokens used in latest ai SDK versions
-              ? parseInt(
-                  attributes["gen_ai.usage.completion_tokens"]?.toString() ??
-                    "0",
-                )
+              ? parseInt(attributes["gen_ai.usage.completion_tokens"]?.toString() ?? "0")
               : "gen_ai.usage.output_tokens" in attributes
-                ? parseInt(
-                    attributes["gen_ai.usage.output_tokens"]?.toString() ?? "0",
-                  )
+                ? parseInt(attributes["gen_ai.usage.output_tokens"]?.toString() ?? "0")
                 : undefined,
           total:
-            "ai.usage.tokens" in attributes
-              ? parseInt(attributes["ai.usage.tokens"]?.toString() ?? "0")
-              : undefined,
+            "ai.usage.tokens" in attributes ? parseInt(attributes["ai.usage.tokens"]?.toString() ?? "0") : undefined,
         };
 
         const providerMetadata = attributes["ai.response.providerMetadata"];
 
         // Try reading token details from ai.usage
         if (
-          ["ai.usage.cachedInputTokens", "ai.usage.reasoningTokens"].some((k) =>
-            Object.keys(attributes).includes(k),
-          )
+          ["ai.usage.cachedInputTokens", "ai.usage.reasoningTokens"].some((k) => Object.keys(attributes).includes(k))
         ) {
           if ("ai.usage.cachedInputTokens" in attributes) {
             const value = attributes["ai.usage.cachedInputTokens"] as string;
             const parsed = JSON.parse(value);
 
-            usageDetails["input_cached_tokens"] =
-              typeof parsed === "number" ? parsed : JSON.parse(value).intValue;
+            usageDetails["input_cached_tokens"] = typeof parsed === "number" ? parsed : JSON.parse(value).intValue;
           }
           if ("ai.usage.reasoningTokens" in attributes) {
             const value = attributes["ai.usage.reasoningTokens"] as string;
             const parsed = JSON.parse(value);
 
-            usageDetails["output_reasoning_tokens"] =
-              typeof parsed === "number" ? parsed : JSON.parse(value).intValue;
+            usageDetails["output_reasoning_tokens"] = typeof parsed === "number" ? parsed : JSON.parse(value).intValue;
           }
         }
 
@@ -1901,27 +1634,18 @@ export class OtelIngestionProcessor {
           if ("openai" in parsed) {
             const openaiMetadata = parsed["openai"] as Record<string, number>;
 
-            usageDetails["input_cached_tokens"] ??=
-              openaiMetadata["cachedPromptTokens"];
-            usageDetails["accepted_prediction_tokens"] ??=
-              openaiMetadata["acceptedPredictionTokens"];
-            usageDetails["rejected_prediction_tokens"] ??=
-              openaiMetadata["rejectedPredictionTokens"];
-            usageDetails["output_reasoning_tokens"] ??=
-              openaiMetadata["reasoningTokens"];
+            usageDetails["input_cached_tokens"] ??= openaiMetadata["cachedPromptTokens"];
+            usageDetails["accepted_prediction_tokens"] ??= openaiMetadata["acceptedPredictionTokens"];
+            usageDetails["rejected_prediction_tokens"] ??= openaiMetadata["rejectedPredictionTokens"];
+            usageDetails["output_reasoning_tokens"] ??= openaiMetadata["reasoningTokens"];
           }
 
           // "ai.response.providerMetadata": {"anthropic":{"usage":{"input_tokens":7,"cache_creation_input_tokens":2089,"cache_read_input_tokens":16399,"cache_creation":{"ephemeral_5m_input_tokens":2089,"ephemeral_1h_input_tokens":0},"output_tokens":445,"service_tier":"standard"},"cacheCreationInputTokens":2089,"stopSequence":null,"container":null,"contextManagement":null}}
           if ("anthropic" in parsed && "usage" in parsed["anthropic"]) {
-            const anthropicMetadata = parsed["anthropic"]["usage"] as Record<
-              string,
-              number
-            >;
+            const anthropicMetadata = parsed["anthropic"]["usage"] as Record<string, number>;
 
-            usageDetails["input_cache_creation"] ??=
-              anthropicMetadata["cache_creation_input_tokens"];
-            usageDetails["input_cached_tokens"] ??=
-              anthropicMetadata["cache_read_input_tokens"];
+            usageDetails["input_cache_creation"] ??= anthropicMetadata["cache_creation_input_tokens"];
+            usageDetails["input_cached_tokens"] ??= anthropicMetadata["cache_read_input_tokens"];
           }
 
           // Bedrock provider metadata extraction
@@ -1933,16 +1657,13 @@ export class OtelIngestionProcessor {
               const usage = bedrockMetadata["usage"] as Record<string, number>;
 
               if (usage["cacheReadInputTokens"] !== undefined) {
-                usageDetails["input_cache_read"] ??=
-                  usage["cacheReadInputTokens"];
+                usageDetails["input_cache_read"] ??= usage["cacheReadInputTokens"];
               }
               if (usage["cacheWriteInputTokens"] !== undefined) {
-                usageDetails["input_cache_write"] ??=
-                  usage["cacheWriteInputTokens"];
+                usageDetails["input_cache_write"] ??= usage["cacheWriteInputTokens"];
               }
               if (usage["cacheCreationInputTokens"] !== undefined) {
-                usageDetails["input_cache_creation"] ??=
-                  usage["cacheCreationInputTokens"];
+                usageDetails["input_cache_creation"] ??= usage["cacheCreationInputTokens"];
               }
             }
           }
@@ -1958,8 +1679,7 @@ export class OtelIngestionProcessor {
         );
 
         usageDetails["output"] = Math.max(
-          (usageDetails["output"] ?? 0) -
-            (usageDetails["output_reasoning_tokens"] ?? 0),
+          (usageDetails["output"] ?? 0) - (usageDetails["output_reasoning_tokens"] ?? 0),
           0,
         );
 
@@ -1973,11 +1693,9 @@ export class OtelIngestionProcessor {
       const inputTokens = attributes["gen_ai.usage.input_tokens"];
       const outputTokens = attributes["gen_ai.usage.output_tokens"];
       const cacheReadTokens =
-        attributes["gen_ai.usage.cache_read_tokens"] ??
-        attributes["gen_ai.usage.details.cache_read_input_tokens"];
+        attributes["gen_ai.usage.cache_read_tokens"] ?? attributes["gen_ai.usage.details.cache_read_input_tokens"];
       const cacheWriteTokens =
-        attributes["gen_ai.usage.cache_write_tokens"] ??
-        attributes["gen_ai.usage.details.cache_creation_input_tokens"];
+        attributes["gen_ai.usage.cache_write_tokens"] ?? attributes["gen_ai.usage.details.cache_creation_input_tokens"];
 
       return {
         input: inputTokens,
@@ -1988,9 +1706,7 @@ export class OtelIngestionProcessor {
     }
 
     const usageDetails = Object.keys(attributes).filter(
-      (key) =>
-        (key.startsWith("gen_ai.usage.") && key !== "gen_ai.usage.cost") ||
-        key.startsWith("llm.token_count"),
+      (key) => (key.startsWith("gen_ai.usage.") && key !== "gen_ai.usage.cost") || key.startsWith("llm.token_count"),
     );
 
     const usageDetailKeyMapping: Record<string, string> = {
@@ -2004,11 +1720,8 @@ export class OtelIngestionProcessor {
     };
 
     return usageDetails.reduce((acc: any, key) => {
-      const usageDetailKey = key
-        .replace("gen_ai.usage.", "")
-        .replace("llm.token_count.", "");
-      const mappedUsageDetailKey =
-        usageDetailKeyMapping[usageDetailKey] ?? usageDetailKey;
+      const usageDetailKey = key.replace("gen_ai.usage.", "").replace("llm.token_count.", "");
+      const mappedUsageDetailKey = usageDetailKeyMapping[usageDetailKey] ?? usageDetailKey;
       const value = Number(attributes[key]);
       if (!Number.isNaN(value)) {
         acc[mappedUsageDetailKey] = value;
@@ -2017,16 +1730,10 @@ export class OtelIngestionProcessor {
     }, {});
   }
 
-  private extractCostDetails(
-    attributes: Record<string, unknown>,
-  ): Record<string, unknown> {
+  private extractCostDetails(attributes: Record<string, unknown>): Record<string, unknown> {
     if (attributes[HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS]) {
       try {
-        return JSON.parse(
-          attributes[
-            HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS
-          ] as string,
-        );
+        return JSON.parse(attributes[HanzoOtelSpanAttributes.OBSERVATION_COST_DETAILS] as string);
       } catch {
         // Fallthrough
       }
@@ -2038,14 +1745,9 @@ export class OtelIngestionProcessor {
     return {};
   }
 
-  private extractCompletionStartTime(
-    attributes: Record<string, unknown>,
-    startTimeISO?: string,
-  ): string | null {
+  private extractCompletionStartTime(attributes: Record<string, unknown>, startTimeISO?: string): string | null {
     try {
-      const value = attributes[
-        HanzoOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME
-      ] as any;
+      const value = attributes[HanzoOtelSpanAttributes.OBSERVATION_COMPLETION_START_TIME] as any;
 
       if (isValidDateString(value)) return value;
 
@@ -2059,9 +1761,7 @@ export class OtelIngestionProcessor {
 
     // Vercel AI SDK
     try {
-      const msToFirstChunk =
-        attributes["ai.response.msToFirstChunk"] ??
-        attributes["ai.stream.msToFirstChunk"];
+      const msToFirstChunk = attributes["ai.response.msToFirstChunk"] ?? attributes["ai.stream.msToFirstChunk"];
       if (msToFirstChunk && startTimeISO) {
         const msToFirstChunkNumber = Math.ceil(Number(msToFirstChunk));
 
@@ -2080,12 +1780,8 @@ export class OtelIngestionProcessor {
     const tagsValue =
       attributes[HanzoOtelSpanAttributes.TRACE_TAGS] ||
       attributes["hanzo.tags"] ||
-      attributes[
-        `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`
-      ] ||
-      attributes[
-        `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`
-      ] ||
+      attributes[`${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`] ||
+      attributes[`${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`] ||
       attributes["ai.telemetry.metadata.tags"] ||
       attributes["tag.tags"];
 
@@ -2138,26 +1834,16 @@ export class OtelIngestionProcessor {
     experimentItemMetadataValues?: Array<string | null | undefined>;
   } {
     const experimentId = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ID];
-    const experimentName =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_NAME];
-    const experimentDescription =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_DESCRIPTION];
-    const experimentDatasetId =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_DATASET_ID];
-    const experimentItemId =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ID];
-    const experimentItemRootSpanId =
-      attributes[
-        HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ROOT_OBSERVATION_ID
-      ];
-    const experimentItemExpectedOutput =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_EXPECTED_OUTPUT];
-    const experimentItemVersion =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_VERSION];
+    const experimentName = attributes[HanzoOtelSpanAttributes.EXPERIMENT_NAME];
+    const experimentDescription = attributes[HanzoOtelSpanAttributes.EXPERIMENT_DESCRIPTION];
+    const experimentDatasetId = attributes[HanzoOtelSpanAttributes.EXPERIMENT_DATASET_ID];
+    const experimentItemId = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ID];
+    const experimentItemRootSpanId = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_ROOT_OBSERVATION_ID];
+    const experimentItemExpectedOutput = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_EXPECTED_OUTPUT];
+    const experimentItemVersion = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_VERSION];
 
     // Extract experiment metadata
-    const experimentMetadataStr =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_METADATA];
+    const experimentMetadataStr = attributes[HanzoOtelSpanAttributes.EXPERIMENT_METADATA];
     let experimentMetadata: Record<string, unknown> = {};
     if (experimentMetadataStr && typeof experimentMetadataStr === "string") {
       try {
@@ -2166,62 +1852,37 @@ export class OtelIngestionProcessor {
         // If parsing fails, treat as empty
       }
     }
-    const experimentMetadataFlattened =
-      flattenJsonToPathArrays(experimentMetadata);
+    const experimentMetadataFlattened = flattenJsonToPathArrays(experimentMetadata);
 
     // Extract experiment item metadata
-    const experimentItemMetadataStr =
-      attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_METADATA];
+    const experimentItemMetadataStr = attributes[HanzoOtelSpanAttributes.EXPERIMENT_ITEM_METADATA];
     let experimentItemMetadata: Record<string, unknown> = {};
-    if (
-      experimentItemMetadataStr &&
-      typeof experimentItemMetadataStr === "string"
-    ) {
+    if (experimentItemMetadataStr && typeof experimentItemMetadataStr === "string") {
       try {
         experimentItemMetadata = JSON.parse(experimentItemMetadataStr);
       } catch {
         // If parsing fails, treat as empty
       }
     }
-    const experimentItemMetadataFlattened = flattenJsonToPathArrays(
-      experimentItemMetadata,
-    );
+    const experimentItemMetadataFlattened = flattenJsonToPathArrays(experimentItemMetadata);
 
     return {
       experimentId: experimentId ? String(experimentId) : undefined,
       experimentName: experimentName ? String(experimentName) : undefined,
-      experimentDescription: experimentDescription
-        ? String(experimentDescription)
-        : undefined,
-      experimentDatasetId: experimentDatasetId
-        ? String(experimentDatasetId)
-        : undefined,
+      experimentDescription: experimentDescription ? String(experimentDescription) : undefined,
+      experimentDatasetId: experimentDatasetId ? String(experimentDatasetId) : undefined,
       experimentItemId: experimentItemId ? String(experimentItemId) : undefined,
-      experimentItemVersion: experimentItemVersion
-        ? String(experimentItemVersion)
-        : undefined,
-      experimentItemRootSpanId: experimentItemRootSpanId
-        ? String(experimentItemRootSpanId)
-        : undefined,
-      experimentItemExpectedOutput: experimentItemExpectedOutput
-        ? String(experimentItemExpectedOutput)
-        : undefined,
+      experimentItemVersion: experimentItemVersion ? String(experimentItemVersion) : undefined,
+      experimentItemRootSpanId: experimentItemRootSpanId ? String(experimentItemRootSpanId) : undefined,
+      experimentItemExpectedOutput: experimentItemExpectedOutput ? String(experimentItemExpectedOutput) : undefined,
       experimentMetadataNames:
-        experimentMetadataFlattened.names.length > 0
-          ? experimentMetadataFlattened.names
-          : undefined,
+        experimentMetadataFlattened.names.length > 0 ? experimentMetadataFlattened.names : undefined,
       experimentMetadataValues:
-        experimentMetadataFlattened.values.length > 0
-          ? experimentMetadataFlattened.values
-          : undefined,
+        experimentMetadataFlattened.values.length > 0 ? experimentMetadataFlattened.values : undefined,
       experimentItemMetadataNames:
-        experimentItemMetadataFlattened.names.length > 0
-          ? experimentItemMetadataFlattened.names
-          : undefined,
+        experimentItemMetadataFlattened.names.length > 0 ? experimentItemMetadataFlattened.names : undefined,
       experimentItemMetadataValues:
-        experimentItemMetadataFlattened.values.length > 0
-          ? experimentItemMetadataFlattened.values
-          : undefined,
+        experimentItemMetadataFlattened.values.length > 0 ? experimentItemMetadataFlattened.values : undefined,
     };
   }
 

@@ -23,10 +23,7 @@ export function isS3SlowDownError(err: unknown): boolean {
 
   // Check message as fallback
   if ("message" in err && typeof err.message === "string") {
-    return (
-      err.message.includes("SlowDown") ||
-      err.message.includes("reduce your request rate")
-    );
+    return err.message.includes("SlowDown") || err.message.includes("reduce your request rate");
   }
 
   return false;

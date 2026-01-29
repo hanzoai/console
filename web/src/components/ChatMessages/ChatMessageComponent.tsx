@@ -17,21 +17,11 @@ import { useSortable } from "@dnd-kit/sortable";
 import { cn } from "@/src/utils/tailwind";
 import { CSS } from "@dnd-kit/utilities";
 import { ToolCallCard } from "./ToolCallCard";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 
 type ChatMessageProps = Pick<
   MessagesContext,
-  | "deleteMessage"
-  | "updateMessage"
-  | "availableRoles"
-  | "toolCallIds"
-  | "replaceMessage"
+  "deleteMessage" | "updateMessage" | "availableRoles" | "toolCallIds" | "replaceMessage"
 > & { message: ChatMessageWithId; index: number };
 
 const ROLES: ChatMessageRole[] = [
@@ -84,14 +74,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
 }) => {
   const [roleIndex, setRoleIndex] = useState(1);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: message.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: message.id });
 
   const toggleRole = () => {
     // Only allow role toggling for messages that have a role property (not placeholder messages)
@@ -112,14 +95,9 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
     } else {
       // if user has not set custom roles, we toggle through default roles (assistant, user)
       // Allow all roles including system and developer at any position
-      const eligibleRoles = ROLES.filter(
-        (r) =>
-          r !== ChatMessageRole.Tool || (toolCallIds && toolCallIds.length > 0),
-      );
+      const eligibleRoles = ROLES.filter((r) => r !== ChatMessageRole.Tool || (toolCallIds && toolCallIds.length > 0));
       const currentIndex = eligibleRoles.indexOf(
-        ("role" in message
-          ? message.role
-          : ChatMessageRole.User) as ChatMessageRole,
+        ("role" in message ? message.role : ChatMessageRole.User) as ChatMessageRole,
       );
       const nextRole = eligibleRoles[(currentIndex + 1) % eligibleRoles.length];
 
@@ -210,9 +188,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
         >
           <GripVertical className="h-3 w-3" />
         </div>
-        <CardContent
-          className={cn("flex flex-1 flex-row items-center gap-2 p-0 pl-1")}
-        >
+        <CardContent className={cn("flex flex-1 flex-row items-center gap-2 p-0 pl-1")}>
           <div className="sticky bottom-0 top-0 z-10 flex w-[4rem] flex-shrink-0 flex-col gap-1 bg-background">
             {isPlaceholder ? (
               <span className="inline-flex h-6 w-full items-center justify-center rounded-md bg-accent px-4 font-mono text-[9px] text-muted-foreground">
@@ -234,19 +210,9 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
               {showToolCallSelect && (
                 <Select
                   value={message.toolCallId}
-                  onValueChange={(value) =>
-                    updateMessage(
-                      ChatMessageType.ToolResult,
-                      message.id,
-                      "toolCallId",
-                      value,
-                    )
-                  }
+                  onValueChange={(value) => updateMessage(ChatMessageType.ToolResult, message.id, "toolCallId", value)}
                 >
-                  <SelectTrigger
-                    title="Select Tool Call ID"
-                    className="h-[25px] w-[96px] border-0 bg-muted text-[9px]"
-                  >
+                  <SelectTrigger title="Select Tool Call ID" className="h-[25px] w-[96px] border-0 bg-muted text-[9px]">
                     <SelectValue placeholder="Select Call ID" />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,11 +231,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
                   role={message.type}
                 />
               ) : (
-                <MemoizedEditor
-                  value={message.content}
-                  onChange={onValueChange}
-                  role={message.role}
-                />
+                <MemoizedEditor value={message.content} onChange={onValueChange} role={message.role} />
               )}
             </div>
             {message.type === ChatMessageType.AssistantToolCall && (

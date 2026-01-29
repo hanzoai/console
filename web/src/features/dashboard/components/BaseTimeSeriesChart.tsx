@@ -23,9 +23,7 @@ export function BaseTimeSeriesChart(props: {
   valueFormatter?: (value: number) => string;
   chartType?: "line" | "area";
 }) {
-  const labels = new Set(
-    props.data.flatMap((d) => d.values.map((v) => v.label)),
-  );
+  const labels = new Set(props.data.flatMap((d) => d.values.map((v) => v.label)));
 
   type ChartInput = { timestamp: string } & {
     [key: string]: number | undefined;
@@ -45,13 +43,8 @@ export function BaseTimeSeriesChart(props: {
     });
   }
 
-  const convertDate = (
-    date: number,
-    agg: DashboardDateRangeAggregationOption,
-  ) => {
-    const showMinutes = ["minute", "hour"].includes(
-      dashboardDateRangeAggregationSettings[agg].dateTrunc ?? "",
-    );
+  const convertDate = (date: number, agg: DashboardDateRangeAggregationOption) => {
+    const showMinutes = ["minute", "hour"].includes(dashboardDateRangeAggregationSettings[agg].dateTrunc ?? "");
 
     if (showMinutes) {
       return new Date(date).toLocaleTimeString("en-US", {
@@ -71,10 +64,7 @@ export function BaseTimeSeriesChart(props: {
 
   const ChartComponent = props.chartType === "area" ? AreaChart : LineChart;
   const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
-    <Tooltip
-      {...tooltipProps}
-      formatter={props.valueFormatter ?? compactNumberFormatter}
-    />
+    <Tooltip {...tooltipProps} formatter={props.valueFormatter ?? compactNumberFormatter} />
   );
   const colors = getColorsForCategories(Array.from(labels));
 
@@ -82,9 +72,7 @@ export function BaseTimeSeriesChart(props: {
   const dynamicMaxValue = useMemo(() => {
     if (props.data.length === 0) return undefined;
 
-    const maxValue = Math.max(
-      ...props.data.flatMap((point) => point.values.map((v) => v.value ?? 0)),
-    );
+    const maxValue = Math.max(...props.data.flatMap((point) => point.values.map((v) => v.value ?? 0)));
 
     if (maxValue <= 0) return undefined;
 

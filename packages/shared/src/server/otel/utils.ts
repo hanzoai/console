@@ -20,17 +20,9 @@ export function flattenJsonToPathArrays(
   for (const [key, value] of Object.entries(obj)) {
     const path = prefix ? `${prefix}.${key}` : key;
 
-    if (
-      value !== null &&
-      value !== undefined &&
-      typeof value === "object" &&
-      !Array.isArray(value)
-    ) {
+    if (value !== null && value !== undefined && typeof value === "object" && !Array.isArray(value)) {
       // Recursively flatten nested objects
-      const nested = flattenJsonToPathArrays(
-        value as Record<string, unknown>,
-        path,
-      );
+      const nested = flattenJsonToPathArrays(value as Record<string, unknown>, path);
       names.push(...nested.names);
       values.push(...nested.values);
     } else {

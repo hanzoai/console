@@ -69,9 +69,7 @@ export class ClickhouseWriter {
   }
 
   private start() {
-    logger.info(
-      `Starting ClickhouseWriter. Max interval: ${this.writeInterval} ms, Max batch size: ${this.batchSize}`,
-    );
+    logger.info(`Starting ClickhouseWriter. Max interval: ${this.writeInterval} ms, Max batch size: ${this.batchSize}`);
 
     this.intervalId = setInterval(() => {
       if (this.isIntervalFlushInProgress) return;
@@ -169,16 +167,10 @@ export class ClickhouseWriter {
   } {
     // If batch size is 1, fallback to truncation to prevent infinite loops
     if (queueItems.length === 1) {
-      const truncatedRecord = this.truncateOversizedRecord(
-        tableName,
-        queueItems[0].data,
-      );
-      logger.warn(
-        `String length error with single record for ${tableName}, falling back to truncation`,
-        {
-          recordId: queueItems[0].data.id,
-        },
-      );
+      const truncatedRecord = this.truncateOversizedRecord(tableName, queueItems[0].data);
+      logger.warn(`String length error with single record for ${tableName}, falling back to truncation`, {
+        recordId: queueItems[0].data.id,
+      });
       return {
         retryItems: [{ ...queueItems[0], data: truncatedRecord }],
         requeueItems: [],
@@ -196,10 +188,7 @@ export class ClickhouseWriter {
     return { retryItems, requeueItems };
   }
 
-  private truncateOversizedRecord<T extends TableName>(
-    tableName: T,
-    record: RecordInsertType<T>,
-  ): RecordInsertType<T> {
+  private truncateOversizedRecord<T extends TableName>(tableName: T, record: RecordInsertType<T>): RecordInsertType<T> {
     const maxFieldSize = 1024 * 1024; // 1MB per field as safety margin
     const truncationMessage = "[TRUNCATED: Field exceeded size limit]";
 
@@ -216,33 +205,19 @@ export class ClickhouseWriter {
     };
 
     // Truncate input field if present
-    if (
-      "input" in record &&
-      record.input &&
-      record.input.length > maxFieldSize
-    ) {
+    if ("input" in record && record.input && record.input.length > maxFieldSize) {
       record.input = truncateField(record.input);
-      logger.info(
-        `Truncated oversized input field for record ${record.id} of type ${tableName}`,
-        {
-          projectId: record.project_id,
-        },
-      );
+      logger.info(`Truncated oversized input field for record ${record.id} of type ${tableName}`, {
+        projectId: record.project_id,
+      });
     }
 
     // Truncate output field if present
-    if (
-      "output" in record &&
-      record.output &&
-      record.output.length > maxFieldSize
-    ) {
+    if ("output" in record && record.output && record.output.length > maxFieldSize) {
       record.output = truncateField(record.output);
-      logger.info(
-        `Truncated oversized output field for record ${record.id} of type ${tableName}`,
-        {
-          projectId: record.project_id,
-        },
-      );
+      logger.info(`Truncated oversized output field for record ${record.id} of type ${tableName}`, {
+        projectId: record.project_id,
+      });
     }
 
     // Truncate metadata field if present
@@ -252,12 +227,9 @@ export class ClickhouseWriter {
       for (const [key, value] of Object.entries(metadata)) {
         if (value && value.length > maxFieldSize) {
           truncatedMetadata[key] = truncateField(value) || "";
-          logger.info(
-            `Truncated oversized metadata for record ${record.id} of type ${tableName} and key ${key}`,
-            {
-              projectId: record.project_id,
-            },
-          );
+          logger.info(`Truncated oversized metadata for record ${record.id} of type ${tableName} and key ${key}`, {
+            projectId: record.project_id,
+          });
         } else {
           truncatedMetadata[key] = value;
         }
@@ -272,10 +244,7 @@ export class ClickhouseWriter {
     const entityQueue = this.queue[tableName];
     if (entityQueue.length === 0) return;
 
-    let queueItems = entityQueue.splice(
-      0,
-      fullQueue ? entityQueue.length : this.batchSize,
-    );
+    let queueItems = entityQueue.splice(0, fullQueue ? entityQueue.length : this.batchSize);
 
     // Log wait time
     queueItems.forEach((item) => {
@@ -334,10 +303,7 @@ export class ClickhouseWriter {
                 },
               );
 
-              const { retryItems, requeueItems } = this.handleStringLengthError(
-                tableName,
-                queueItems,
-              );
+              const { retryItems, requeueItems } = this.handleStringLengthError(tableName, queueItems);
 
               // Update records to write with only the retry items
               recordsToWrite = retryItems.map((item) => item.data);
@@ -365,9 +331,7 @@ export class ClickhouseWriter {
               );
 
               // Truncate oversized records
-              recordsToWrite = recordsToWrite.map((record) =>
-                this.truncateOversizedRecord(tableName, record),
-              );
+              recordsToWrite = recordsToWrite.map((record) => this.truncateOversizedRecord(tableName, record));
               hasBeenTruncated = true;
 
               currentSpan?.addEvent("clickhouse-query-truncate-retry", {
@@ -377,12 +341,9 @@ export class ClickhouseWriter {
               });
               return true;
             } else {
-              logger.error(
-                `ClickHouse query failed with non-retryable error: ${error.message}`,
-                {
-                  error: error.message,
-                },
-              );
+              logger.error(`ClickHouse query failed with non-retryable error: ${error.message}`, {
+                error: error.message,
+              });
               return false;
             }
           },
@@ -393,26 +354,18 @@ export class ClickhouseWriter {
       );
 
       // Log processing time
-      recordHistogram(
-        "hanzo.queue.clickhouse_writer.processing_time",
-        Date.now() - processingStartTime,
-        {
-          unit: "milliseconds",
-        },
-      );
+      recordHistogram("hanzo.queue.clickhouse_writer.processing_time", Date.now() - processingStartTime, {
+        unit: "milliseconds",
+      });
 
       logger.debug(
         `Flushed ${queueItems.length} records to Clickhouse ${tableName}. New queue length: ${entityQueue.length}`,
       );
 
-      recordGauge(
-        "ingestion_clickhouse_insert_queue_length",
-        entityQueue.length,
-        {
-          unit: "records",
-          entityType: tableName,
-        },
-      );
+      recordGauge("ingestion_clickhouse_insert_queue_length", entityQueue.length, {
+        unit: "records",
+        entityType: tableName,
+      });
     } catch (err) {
       logger.error(`ClickhouseWriter.flush ${tableName}`, err);
 
@@ -432,17 +385,12 @@ export class ClickhouseWriter {
       });
 
       if (droppedCount > 0) {
-        logger.error(
-          `ClickhouseWriter: Max attempts reached, dropped ${droppedCount} ${tableName} record(s)`,
-        );
+        logger.error(`ClickhouseWriter: Max attempts reached, dropped ${droppedCount} ${tableName} record(s)`);
       }
     }
   }
 
-  public addToQueue<T extends TableName>(
-    tableName: T,
-    data: RecordInsertType<T>,
-  ) {
+  public addToQueue<T extends TableName>(tableName: T, data: RecordInsertType<T>) {
     const entityQueue = this.queue[tableName];
     entityQueue.push({
       createdAt: Date.now(),
@@ -475,10 +423,7 @@ export class ClickhouseWriter {
             feature: "ingestion",
             type: params.table,
             operation_name: "writeToClickhouse",
-            projectId:
-              params.records.length > 0
-                ? params.records[0].project_id
-                : undefined,
+            projectId: params.records.length > 0 ? params.records[0].project_id : undefined,
           }),
         },
       })
@@ -488,9 +433,7 @@ export class ClickhouseWriter {
         throw err;
       });
 
-    logger.debug(
-      `ClickhouseWriter.writeToClickhouse: ${Date.now() - startTime} ms`,
-    );
+    logger.debug(`ClickhouseWriter.writeToClickhouse: ${Date.now() - startTime} ms`);
 
     recordGauge("ingestion_clickhouse_insert", params.records.length);
   }

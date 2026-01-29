@@ -42,20 +42,19 @@ export const StripeCancellationButton = ({
     },
   });
 
-  const reactivateMutation =
-    api.cloudBilling.reactivateStripeSubscription.useMutation({
-      onSuccess: () => {
-        toast.success("Subscription reactivated");
-        setLoading(false);
-        setOpId(null);
-        setTimeout(() => window.location.reload(), 500);
-      },
-      onError: () => {
-        setLoading(false);
-        setOpId(null);
-        toast.error("Failed to reactivate subscription");
-      },
-    });
+  const reactivateMutation = api.cloudBilling.reactivateStripeSubscription.useMutation({
+    onSuccess: () => {
+      toast.success("Subscription reactivated");
+      setLoading(false);
+      setOpId(null);
+      setTimeout(() => window.location.reload(), 500);
+    },
+    onError: () => {
+      setLoading(false);
+      setOpId(null);
+      toast.error("Failed to reactivate subscription");
+    },
+  });
 
   if (!orgId) return null;
 
@@ -94,30 +93,21 @@ export const StripeCancellationButton = ({
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            variant={variant}
-            disabled={loading}
-            title="Reactivate Subscription"
-            className={className}
-          >
+          <Button variant={variant} disabled={loading} title="Reactivate Subscription" className={className}>
             {loading ? "Working…" : "Reactivate Subscription"}
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-lg">
-              Confirm Reactivation: Keep Your Subscription
-            </DialogTitle>
+            <DialogTitle className="text-lg">Confirm Reactivation: Keep Your Subscription</DialogTitle>
           </DialogHeader>
           <DialogBody className="text-sm">
             <p>
-              Reactivating removes the scheduled cancellation. Your subscription
-              will continue beyond the current billing period and renew until
-              you cancel again.
+              Reactivating removes the scheduled cancellation. Your subscription will continue beyond the current
+              billing period and renew until you cancel again.
             </p>
             <p>
-              Your features and usage billing remain unchanged. By confirming,
-              you agree to future renewals and charges.
+              Your features and usage billing remain unchanged. By confirming, you agree to future renewals and charges.
             </p>
           </DialogBody>
           <DialogFooter>
@@ -137,11 +127,7 @@ export const StripeCancellationButton = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant={variant}
-          disabled={loading}
-          title="Cancel Subscription"
-        >
+        <Button variant={variant} disabled={loading} title="Cancel Subscription">
           Cancel Subscription
         </Button>
       </DialogTrigger>
@@ -150,15 +136,10 @@ export const StripeCancellationButton = ({
           <DialogTitle className="text-lg">Confirm Cancellation</DialogTitle>
         </DialogHeader>
         <DialogBody className="text-sm">
+          <p>Your subscription will not renew. You will retain access until the end of the current billing period</p>
           <p>
-            Your subscription will not renew. You will retain access until the
-            end of the current billing period
-          </p>
-          <p>
-            Usage during the remainder of the period is still billed under your
-            current plan. By confirming, you schedule the cancellation for
-            period end. You can reactivate before that date if you change your
-            mind.
+            Usage during the remainder of the period is still billed under your current plan. By confirming, you
+            schedule the cancellation for period end. You can reactivate before that date if you change your mind.
           </p>
         </DialogBody>
         <DialogFooter>

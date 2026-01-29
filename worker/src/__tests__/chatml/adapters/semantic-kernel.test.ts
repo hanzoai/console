@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  semanticKernelAdapter,
-  selectAdapter,
-  SimpleChatMlArraySchema,
-  type NormalizerContext,
-} from "@hanzo/shared";
+import { semanticKernelAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
 
 const skMetadata = {
   scope: { name: "Microsoft.SemanticKernel.Diagnostics", version: "" },
@@ -47,9 +42,7 @@ describe("Semantic Kernel Adapter", () => {
     });
 
     it("should detect by framework override", () => {
-      expect(
-        semanticKernelAdapter.detect({ framework: "semantic-kernel" }),
-      ).toBe(true);
+      expect(semanticKernelAdapter.detect({ framework: "semantic-kernel" })).toBe(true);
     });
 
     it("should not detect messages with gen_ai.event.content but no scope name", () => {
@@ -153,9 +146,7 @@ describe("Semantic Kernel Adapter", () => {
       expect(result.success).toBe(true);
       expect(result.data).toHaveLength(1);
 
-      expect(result.data?.[0].content).toBe(
-        "Based on the analysis, the answer is positive.",
-      );
+      expect(result.data?.[0].content).toBe("Based on the analysis, the answer is positive.");
       // Role should be normalized to lowercase
       expect(result.data?.[0].role).toBe("assistant");
     });
@@ -176,17 +167,14 @@ describe("Semantic Kernel Adapter", () => {
       expect(result.data?.[0].tool_calls).toBeDefined();
       expect(result.data?.[0].tool_calls).toHaveLength(1);
       expect(result.data?.[0].tool_calls?.[0].id).toBe("call_abc123");
-      expect(result.data?.[0].tool_calls?.[0].function?.name).toBe(
-        "get_weather",
-      );
+      expect(result.data?.[0].tool_calls?.[0].function?.name).toBe("get_weather");
     });
 
     it("should strip gen_ai.* fields from output", () => {
       const input = [
         {
           role: "user",
-          "gen_ai.event.content":
-            '{"role":"user","content":"Hello","tool_calls":[]}',
+          "gen_ai.event.content": '{"role":"user","content":"Hello","tool_calls":[]}',
           "gen_ai.system": "openai",
         },
       ];
@@ -210,9 +198,7 @@ describe("Semantic Kernel Adapter", () => {
       const result = normalizeInput(input, { framework: "semantic-kernel" });
 
       expect(result.success).toBe(true);
-      expect(result.data?.[0].content).toBe(
-        "Regular message without OTel wrapping",
-      );
+      expect(result.data?.[0].content).toBe("Regular message without OTel wrapping");
       expect(result.data?.[0].role).toBe("user");
     });
   });

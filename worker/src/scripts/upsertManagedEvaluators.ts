@@ -32,9 +32,7 @@ const ManagedEvaluatorSchema = z.object({
 export const upsertManagedEvaluators = async (force = false) => {
   const startTime = Date.now();
   try {
-    const parsedManagedEvaluators = z
-      .array(ManagedEvaluatorSchema)
-      .parse(managedEvaluators);
+    const parsedManagedEvaluators = z.array(ManagedEvaluatorSchema).parse(managedEvaluators);
 
     const existingEvaluators = await prisma.evalTemplate.findMany({
       where: {
@@ -46,20 +44,12 @@ export const upsertManagedEvaluators = async (force = false) => {
         updatedAt: true,
       },
     });
-    const existingEvaluatorsMap = new Map(
-      existingEvaluators.map((e) => [e.id, e.updatedAt]),
-    );
+    const existingEvaluatorsMap = new Map(existingEvaluators.map((e) => [e.id, e.updatedAt]));
 
     const upsertPromises = parsedManagedEvaluators.map((evaluator) => {
       const existingUpdatedAt = existingEvaluatorsMap.get(evaluator.id);
-      if (
-        !force &&
-        existingUpdatedAt &&
-        existingUpdatedAt.getTime() === evaluator.updated_at.getTime()
-      ) {
-        logger.debug(
-          `Evaluator ${evaluator.name} already up to date. Skipping.`,
-        );
+      if (!force && existingUpdatedAt && existingUpdatedAt.getTime() === evaluator.updated_at.getTime()) {
+        logger.debug(`Evaluator ${evaluator.name} already up to date. Skipping.`);
         return Promise.resolve();
       }
 
@@ -86,21 +76,14 @@ export const upsertManagedEvaluators = async (force = false) => {
             vars: parsePromptVariables(evaluator.prompt),
           },
         })
-        .then(() =>
-          logger.info(`Upserted evaluator ${evaluator.name} (${evaluator.id})`),
-        )
+        .then(() => logger.info(`Upserted evaluator ${evaluator.name} (${evaluator.id})`))
         .catch((error) => {
-          logger.error(
-            `Error upserting evaluator ${evaluator.name} (${evaluator.id}): ${error.message}`,
-            { error },
-          );
+          logger.error(`Error upserting evaluator ${evaluator.name} (${evaluator.id}): ${error.message}`, { error });
         });
     });
 
     await Promise.all(upsertPromises);
-    logger.info(
-      `Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`,
-    );
+    logger.info(`Finished upserting Hanzo dashboards and widgets in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error(
       `Error upserting managed evaluators after ${Date.now() - startTime}ms: ${

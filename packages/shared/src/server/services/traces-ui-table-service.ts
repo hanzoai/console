@@ -1,15 +1,8 @@
 import { OrderByState } from "../../interfaces/orderBy";
 import { tracesTableUiColumnDefinitions } from "../tableMappings";
 import { FilterState } from "../../types";
-import {
-  StringFilter,
-  StringOptionsFilter,
-  DateTimeFilter,
-} from "../queries/clickhouse-sql/clickhouse-filter";
-import {
-  getProjectIdDefaultFilter,
-  createFilterFromFilterState,
-} from "../queries/clickhouse-sql/factory";
+import { StringFilter, StringOptionsFilter, DateTimeFilter } from "../queries/clickhouse-sql/clickhouse-filter";
+import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
 import { orderByToClickhouseSql } from "../queries/clickhouse-sql/orderby-factory";
 import { clickhouseSearchCondition } from "../queries/clickhouse-sql/search";
 import { TraceRecordReadType } from "../repositories/definitions";
@@ -81,9 +74,7 @@ export type TracesMetricsUiReturnType = {
   debugCount: bigint;
 };
 
-export const convertToUiTableRows = (
-  row: TracesTableReturnType,
-): TracesTableUiReturnType => {
+export const convertToUiTableRows = (row: TracesTableReturnType): TracesTableUiReturnType => {
   return {
     id: row.id,
     projectId: row.project_id,
@@ -112,28 +103,12 @@ export const convertToUITableMetrics = (
     promptTokens: BigInt(usageDetails.input ?? 0),
     completionTokens: BigInt(usageDetails.output ?? 0),
     totalTokens: BigInt(usageDetails.total ?? 0),
-    usageDetails: Object.fromEntries(
-      Object.entries(row.usage_details).map(([key, value]) => [
-        key,
-        Number(value),
-      ]),
-    ),
-    costDetails: Object.fromEntries(
-      Object.entries(row.cost_details).map(([key, value]) => [
-        key,
-        Number(value),
-      ]),
-    ),
+    usageDetails: Object.fromEntries(Object.entries(row.usage_details).map(([key, value]) => [key, Number(value)])),
+    costDetails: Object.fromEntries(Object.entries(row.cost_details).map(([key, value]) => [key, Number(value)])),
     observationCount: BigInt(row.observation_count ?? 0),
-    calculatedTotalCost: row.cost_details?.total
-      ? new Decimal(row.cost_details.total)
-      : null,
-    calculatedInputCost: row.cost_details?.input
-      ? new Decimal(row.cost_details.input)
-      : null,
-    calculatedOutputCost: row.cost_details?.output
-      ? new Decimal(row.cost_details.output)
-      : null,
+    calculatedTotalCost: row.cost_details?.total ? new Decimal(row.cost_details.total) : null,
+    calculatedInputCost: row.cost_details?.input ? new Decimal(row.cost_details.input) : null,
+    calculatedOutputCost: row.cost_details?.output ? new Decimal(row.cost_details.output) : null,
     level: row.level,
     debugCount: BigInt(row.debug_count ?? 0),
     warningCount: BigInt(row.warning_count ?? 0),
@@ -202,31 +177,21 @@ async function getTracesTableGeneric(
 ): Promise<Array<SelectReturnTypeMap[keyof SelectReturnTypeMap]>>;
 
 async function getTracesTableGeneric(props: FetchTracesTableProps) {
-  const {
-    select,
-    projectId,
-    filter,
-    orderBy,
-    limit,
-    page,
-    searchQuery,
-    searchType,
-    clickhouseConfigs,
-  } = props;
+  const { select, projectId, filter, orderBy, limit, page, searchQuery, searchType, clickhouseConfigs } = props;
 
   // OTel projects use immutable spans - no need for deduplication
   const skipObservationsDedup = await shouldSkipObservationsFinal(projectId);
 
-  const { tracesFilter, scoresFilter, observationsFilter } =
-    getProjectIdDefaultFilter(projectId, { tracesPrefix: "t" });
+  const { tracesFilter, scoresFilter, observationsFilter } = getProjectIdDefaultFilter(projectId, {
+    tracesPrefix: "t",
+  });
 
-  tracesFilter.push(
-    ...createFilterFromFilterState(filter, tracesTableUiColumnDefinitions),
-  );
+  tracesFilter.push(...createFilterFromFilterState(filter, tracesTableUiColumnDefinitions));
 
-  const traceIdFilter = tracesFilter.find(
-    (f) => f.clickhouseTable === "traces" && f.field === "id",
-  ) as StringFilter | StringOptionsFilter | undefined;
+  const traceIdFilter = tracesFilter.find((f) => f.clickhouseTable === "traces" && f.field === "id") as
+    | StringFilter
+    | StringOptionsFilter
+    | undefined;
 
   traceIdFilter
     ? scoresFilter.push(
@@ -234,10 +199,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
           clickhouseTable: "scores",
           field: "trace_id",
           operator: "any of",
-          values:
-            traceIdFilter instanceof StringFilter
-              ? [traceIdFilter.value]
-              : traceIdFilter.values,
+          values: traceIdFilter instanceof StringFilter ? [traceIdFilter.value] : traceIdFilter.values,
         }),
       )
     : null;
@@ -247,10 +209,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
           clickhouseTable: "observations",
           field: "trace_id",
           operator: "any of",
-          values:
-            traceIdFilter instanceof StringFilter
-              ? [traceIdFilter.value]
-              : traceIdFilter.values,
+          values: traceIdFilter instanceof StringFilter ? [traceIdFilter.value] : traceIdFilter.values,
         }),
       )
     : null;
@@ -258,24 +217,18 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
   // for query optimisation, we have to add the timeseries filter to observations + scores as well
   // stats show, that 98% of all observations have their start_time larger than trace.timestamp - 5 min
   const timeStampFilter = tracesFilter.find(
-    (f) =>
-      f.field === "timestamp" && (f.operator === ">=" || f.operator === ">"),
+    (f) => f.field === "timestamp" && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
 
   const requiresScoresJoin =
     tracesFilter.find((f) => f.clickhouseTable === "scores") !== undefined ||
-    tracesTableUiColumnDefinitions.find(
-      (c) =>
-        c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column,
-    )?.clickhouseTableName === "scores";
+    tracesTableUiColumnDefinitions.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
+      ?.clickhouseTableName === "scores";
 
   const requiresObservationsJoin =
-    tracesFilter.find((f) => f.clickhouseTable === "observations") !==
-      undefined ||
-    tracesTableUiColumnDefinitions.find(
-      (c) =>
-        c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column,
-    )?.clickhouseTableName === "observations";
+    tracesFilter.find((f) => f.clickhouseTable === "observations") !== undefined ||
+    tracesTableUiColumnDefinitions.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
+      ?.clickhouseTableName === "observations";
 
   const tracesFilterRes = tracesFilter.apply();
   const scoresFilterRes = scoresFilter.apply();
@@ -459,9 +412,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
         ${limit !== undefined && page !== undefined ? `LIMIT {limit: Int32} OFFSET {offset: Int32}` : ""}
       `;
 
-      const res = await queryClickhouse<
-        SelectReturnTypeMap[keyof SelectReturnTypeMap]
-      >({
+      const res = await queryClickhouse<SelectReturnTypeMap[keyof SelectReturnTypeMap]>({
         query: query,
         params: {
           limit: limit,
@@ -538,16 +489,7 @@ export const getTracesTable = async (p: {
   page?: number;
   clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
 }) => {
-  const {
-    projectId,
-    filter,
-    searchQuery,
-    searchType,
-    orderBy,
-    limit,
-    page,
-    clickhouseConfigs,
-  } = p;
+  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, clickhouseConfigs } = p;
   const rows = await getTracesTableGeneric({
     select: "rows",
     tags: { kind: "list" },
@@ -574,16 +516,7 @@ export const getTraceIdentifiers = async (props: {
   page?: number;
   clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
 }) => {
-  const {
-    projectId,
-    filter,
-    searchQuery,
-    searchType,
-    orderBy,
-    limit,
-    page,
-    clickhouseConfigs,
-  } = props;
+  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, clickhouseConfigs } = props;
   const identifiers = await getTracesTableGeneric({
     select: "identifiers",
     tags: { kind: "list" },

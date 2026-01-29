@@ -32,9 +32,7 @@ export const ParsedMediaReferenceSchema = z.object({
   source: z.string(),
   referenceString: z.string(),
 });
-export type ParsedMediaReferenceType = z.infer<
-  typeof ParsedMediaReferenceSchema
->;
+export type ParsedMediaReferenceType = z.infer<typeof ParsedMediaReferenceSchema>;
 
 /**
  * Schema that parses Hanzo media reference magic strings.
@@ -113,9 +111,7 @@ export const RedactedThinkingContentPartSchema = z.object({
   type: z.literal("redacted_thinking"),
   data: z.string(), // Encrypted blob
 });
-export type RedactedThinkingContentPart = z.infer<
-  typeof RedactedThinkingContentPartSchema
->;
+export type RedactedThinkingContentPart = z.infer<typeof RedactedThinkingContentPartSchema>;
 
 /**
  * OpenAI text content part.
@@ -123,11 +119,7 @@ export type RedactedThinkingContentPart = z.infer<
  * Defined as per https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages
  */
 const OpenAITextContentPart = z.object({
-  type: z.union([
-    z.literal("text"),
-    z.literal("input_text"),
-    z.literal("output_text"),
-  ]),
+  type: z.union([z.literal("text"), z.literal("input_text"), z.literal("output_text")]),
   text: z.string(),
 });
 export type OpenAITextContentPartType = z.infer<typeof OpenAITextContentPart>;
@@ -141,9 +133,7 @@ export const OpenAIUrlImageUrl = z.string().regex(/^https?:/);
  * Base64-encoded image data URL.
  * Supported formats: png, jpeg, jpg, gif, webp
  */
-const OpenAIBase64ImageUrl = z
-  .string()
-  .regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/);
+const OpenAIBase64ImageUrl = z.string().regex(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/);
 
 /**
  * OpenAI image content part for vision-enabled models.
@@ -152,11 +142,7 @@ const OpenAIBase64ImageUrl = z
 const OpenAIImageContentPart = z.object({
   type: z.literal("image_url"),
   image_url: z.object({
-    url: z.union([
-      OpenAIUrlImageUrl,
-      MediaReferenceStringSchema,
-      OpenAIBase64ImageUrl,
-    ]),
+    url: z.union([OpenAIUrlImageUrl, MediaReferenceStringSchema, OpenAIBase64ImageUrl]),
     detail: z.enum(["low", "high", "auto"]).optional(), // Controls how the model processes the image. Defaults to "auto". [https://platform.openai.com/docs/guides/vision/low-or-high-fidelity-image-understanding]
   }),
 });
@@ -167,11 +153,7 @@ export type OpenAIImageContentPartType = z.infer<typeof OpenAIImageContentPart>;
  * Used when message content is structured with multiple parts.
  */
 export const OpenAIContentParts = z.array(
-  z.union([
-    OpenAITextContentPart,
-    OpenAIImageContentPart,
-    OpenAIInputAudioContentPart,
-  ]),
+  z.union([OpenAITextContentPart, OpenAIImageContentPart, OpenAIInputAudioContentPart]),
 );
 
 /**
@@ -189,20 +171,14 @@ export type OpenAIOutputAudioType = z.infer<typeof OpenAIOutputAudioSchema>;
  * Can be either a simple string or an array of structured content parts.
  * Nullable to support messages without content (e.g., tool call only).
  */
-export const OpenAIContentSchema = z
-  .union([z.string(), OpenAIContentParts])
-  .nullable();
+export const OpenAIContentSchema = z.union([z.string(), OpenAIContentParts]).nullable();
 export type OpenAIContentSchema = z.infer<typeof OpenAIContentSchema>;
 
-export const isOpenAITextContentPart = (
-  content: any,
-): content is z.infer<typeof OpenAITextContentPart> => {
+export const isOpenAITextContentPart = (content: any): content is z.infer<typeof OpenAITextContentPart> => {
   return OpenAITextContentPart.safeParse(content).success;
 };
 
-export const isOpenAIImageContentPart = (
-  content: any,
-): content is z.infer<typeof OpenAIImageContentPart> => {
+export const isOpenAIImageContentPart = (content: any): content is z.infer<typeof OpenAIImageContentPart> => {
   return OpenAIImageContentPart.safeParse(content).success;
 };
 
@@ -223,14 +199,7 @@ export const BaseChatMlMessageSchema = z
   .object({
     role: z.string().optional(),
     name: z.string().optional(),
-    content: z
-      .union([
-        z.record(z.string(), z.any()),
-        z.string(),
-        z.array(z.any()),
-        OpenAIContentSchema,
-      ])
-      .nullish(),
+    content: z.union([z.record(z.string(), z.any()), z.string(), z.array(z.any()), OpenAIContentSchema]).nullish(),
     audio: OpenAIOutputAudioSchema.optional(),
     additional_kwargs: z.record(z.string(), z.any()).optional(),
     tools: z.array(ToolDefinitionSchema).optional(),
@@ -296,19 +265,7 @@ export const ChatMlMessageSchema = BaseChatMlMessageSchema.refine(
     ...additional_kwargs,
   }))
   .transform(
-    ({
-      role,
-      name,
-      content,
-      audio,
-      type,
-      tools,
-      tool_calls,
-      tool_call_id,
-      thinking,
-      redacted_thinking,
-      ...other
-    }) => ({
+    ({ role, name, content, audio, type, tools, tool_calls, tool_call_id, thinking, redacted_thinking, ...other }) => ({
       role,
       name,
       content,

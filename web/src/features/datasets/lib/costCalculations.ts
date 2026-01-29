@@ -63,15 +63,11 @@ export const findObservationDescendants = <T extends ObservationCostData>(
 /**
  * Sum costs for a list of observations
  */
-export const sumObservationCosts = (
-  observations: ObservationCostData[],
-): Decimal | undefined => {
+export const sumObservationCosts = (observations: ObservationCostData[]): Decimal | undefined => {
   return observations.reduce<Decimal | undefined>((prev, curr) => {
     const totalCost = curr.totalCost ? new Decimal(curr.totalCost) : undefined;
     const inputCost = curr.inputCost ? new Decimal(curr.inputCost) : undefined;
-    const outputCost = curr.outputCost
-      ? new Decimal(curr.outputCost)
-      : undefined;
+    const outputCost = curr.outputCost ? new Decimal(curr.outputCost) : undefined;
 
     // No cost data - skip
     if (!totalCost && !inputCost && !outputCost) return prev;

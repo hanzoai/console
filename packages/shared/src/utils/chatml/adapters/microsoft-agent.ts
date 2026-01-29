@@ -1,10 +1,5 @@
 import type { NormalizerContext, ProviderAdapter } from "../types";
-import {
-  parseMetadata,
-  getNestedProperty,
-  stringifyToolResultContent,
-  isRichToolResult,
-} from "../helpers";
+import { parseMetadata, getNestedProperty, stringifyToolResultContent, isRichToolResult } from "../helpers";
 import { z } from "zod/v4";
 
 /**
@@ -53,9 +48,7 @@ function extractFromParts(parts: unknown[]): {
       // uses array IDs: ["run_id", "call_id"], we just need the call id,
       let callId = "";
       if (Array.isArray(p.id)) {
-        const callIdMatch = p.id.find(
-          (id) => typeof id === "string" && id.startsWith("call_"),
-        );
+        const callIdMatch = p.id.find((id) => typeof id === "string" && id.startsWith("call_"));
         callId = callIdMatch || p.id[p.id.length - 1] || "";
       } else if (typeof p.id === "string") {
         callId = p.id;
@@ -64,10 +57,7 @@ function extractFromParts(parts: unknown[]): {
       toolCalls.push({
         id: callId,
         name: p.name,
-        arguments:
-          typeof p.arguments === "string"
-            ? p.arguments
-            : JSON.stringify(p.arguments ?? {}),
+        arguments: typeof p.arguments === "string" ? p.arguments : JSON.stringify(p.arguments ?? {}),
         type: "function",
       });
       continue;
@@ -83,9 +73,7 @@ function extractFromParts(parts: unknown[]): {
     if (p.type === "tool_call_response") {
       // we just need the call_id, again
       if (Array.isArray(p.id)) {
-        const callIdMatch = p.id.find(
-          (id) => typeof id === "string" && id.startsWith("call_"),
-        );
+        const callIdMatch = p.id.find((id) => typeof id === "string" && id.startsWith("call_"));
         toolCallId = callIdMatch || p.id[p.id.length - 1] || "";
       } else if (typeof p.id === "string") {
         toolCallId = p.id;
@@ -209,11 +197,7 @@ function preprocessData(data: unknown, ctx: NormalizerContext): unknown {
 
     // extract tool definitions from metadata
     const meta = parseMetadata(ctx.metadata);
-    const toolDefinitions = getNestedProperty(
-      meta,
-      "attributes",
-      "gen_ai.tool.definitions",
-    );
+    const toolDefinitions = getNestedProperty(meta, "attributes", "gen_ai.tool.definitions");
 
     if (toolDefinitions) {
       const tools = extractToolDefinitions(toolDefinitions);
@@ -233,9 +217,7 @@ function preprocessData(data: unknown, ctx: NormalizerContext): unknown {
     const obj = data as Record<string, unknown>;
     return {
       ...obj,
-      messages: Array.isArray(obj.messages)
-        ? normalizeMessages(obj.messages)
-        : obj.messages,
+      messages: Array.isArray(obj.messages) ? normalizeMessages(obj.messages) : obj.messages,
     };
   }
 
@@ -259,16 +241,11 @@ export const microsoftAgentAdapter: ProviderAdapter = {
     const scopeName = getNestedProperty(meta, "scope", "name");
     if (scopeName === "agent_framework") return true;
 
-    const providerName = getNestedProperty(
-      meta,
-      "attributes",
-      "gen_ai.provider.name",
-    );
+    const providerName = getNestedProperty(meta, "attributes", "gen_ai.provider.name");
     if (providerName === "microsoft.agent_framework") return true;
 
     // STRUCTURAL: Schema-based detection on metadata
-    if (MicrosoftAgentMessagesSchema.safeParse(ctx.metadata).success)
-      return true;
+    if (MicrosoftAgentMessagesSchema.safeParse(ctx.metadata).success) return true;
 
     // Schema-based detection on data (slower, do last)
     if (MicrosoftAgentMessagesSchema.safeParse(ctx.data).success) return true;
@@ -277,11 +254,7 @@ export const microsoftAgentAdapter: ProviderAdapter = {
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", ctx: NormalizerContext): unknown {
     return preprocessData(data, ctx);
   },
 };

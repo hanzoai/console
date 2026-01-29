@@ -4,11 +4,7 @@
 // NEVER call process.exit() in this process. Kubernetes should kill the container: https://kostasbariotis.com/why-you-should-not-use-process-exit/
 // We wait for 110 seconds to allow the app to finish processing requests. There is no native way to do this in Next.js.
 
-import {
-  ClickHouseClientManager,
-  logger,
-  redis,
-} from "@hanzo/shared/src/server";
+import { ClickHouseClientManager, logger, redis } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 
@@ -25,14 +21,11 @@ export const setSigtermReceived = () => {
   globalThis.sigtermReceived = true;
 };
 
-export const isSigtermReceived = () =>
-  Boolean(process.env.NEXT_MANUAL_SIG_HANDLE) && globalThis.sigtermReceived;
+export const isSigtermReceived = () => Boolean(process.env.NEXT_MANUAL_SIG_HANDLE) && globalThis.sigtermReceived;
 
 export const shutdown = async (signal: PrexitSignal) => {
   if (signal === "SIGTERM" || signal === "SIGINT") {
-    console.log(
-      `SIGTERM / SIGINT received. Shutting down in ${TIMEOUT / 1000} seconds.`,
-    );
+    console.log(`SIGTERM / SIGINT received. Shutting down in ${TIMEOUT / 1000} seconds.`);
     setSigtermReceived();
 
     return await new Promise<void>((resolve) => {

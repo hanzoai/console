@@ -56,9 +56,7 @@ async function main() {
 
       // Keyword matching
       if (triggers.keywords) {
-        const keywordMatch = triggers.keywords.some((kw) =>
-          prompt.includes(kw.toLowerCase()),
-        );
+        const keywordMatch = triggers.keywords.some((kw) => prompt.includes(kw.toLowerCase()));
         if (keywordMatch) {
           matchedSkills.push({ name: skillName, matchType: "keyword", config });
           continue;
@@ -84,13 +82,9 @@ async function main() {
       output += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
       // Group by priority
-      const critical = matchedSkills.filter(
-        (s) => s.config.priority === "critical",
-      );
+      const critical = matchedSkills.filter((s) => s.config.priority === "critical");
       const high = matchedSkills.filter((s) => s.config.priority === "high");
-      const medium = matchedSkills.filter(
-        (s) => s.config.priority === "medium",
-      );
+      const medium = matchedSkills.filter((s) => s.config.priority === "medium");
       const low = matchedSkills.filter((s) => s.config.priority === "low");
 
       if (critical.length > 0) {

@@ -1,9 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import {
-  clickhouseClient,
-  convertPostgresScoreToInsert,
-  logger,
-} from "@hanzo/shared/src/server";
+import { clickhouseClient, convertPostgresScoreToInsert, logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
@@ -11,9 +7,7 @@ import { env } from "../env";
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "94e50334-50d3-4e49-ad2e-9f6d92c85ef7";
 
-export default class MigrateScoresFromPostgresToClickhouse
-  implements IBackgroundMigration
-{
+export default class MigrateScoresFromPostgresToClickhouse implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -22,15 +16,10 @@ export default class MigrateScoresFromPostgresToClickhouse
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // Check if Clickhouse credentials are configured
-    if (
-      !env.CLICKHOUSE_URL ||
-      !env.CLICKHOUSE_USER ||
-      !env.CLICKHOUSE_PASSWORD
-    ) {
+    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
       return {
         valid: false,
-        invalidReason:
-          "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Clickhouse credentials must be configured to perform migration",
       };
     }
 
@@ -42,9 +31,7 @@ export default class MigrateScoresFromPostgresToClickhouse
     if (!tableNames.some((r) => r.name === "scores")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(
-          `ClickHouse scores table does not exist. Retrying in 10s...`,
-        );
+        logger.info(`ClickHouse scores table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -62,9 +49,7 @@ export default class MigrateScoresFromPostgresToClickhouse
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(
-      `Migrating scores from postgres to clickhouse with ${JSON.stringify(args)}`,
-    );
+    logger.info(`Migrating scores from postgres to clickhouse with ${JSON.stringify(args)}`);
 
     // @ts-ignore
     const initialMigrationState: { state: { maxDate: string | undefined } } =
@@ -85,23 +70,16 @@ export default class MigrateScoresFromPostgresToClickhouse
     });
 
     let processedRows = 0;
-    while (
-      !this.isAborted &&
-      !this.isFinished &&
-      processedRows < maxRowsToProcess
-    ) {
+    while (!this.isAborted && !this.isFinished && processedRows < maxRowsToProcess) {
       const fetchStart = Date.now();
 
       // @ts-ignore
-      const migrationState: { state: { maxDate: string } } =
-        await prisma.backgroundMigration.findUniqueOrThrow({
-          where: { id: backgroundMigrationId },
-          select: { state: true },
-        });
+      const migrationState: { state: { maxDate: string } } = await prisma.backgroundMigration.findUniqueOrThrow({
+        where: { id: backgroundMigrationId },
+        select: { state: true },
+      });
 
-      const scores = await prisma.$queryRaw<
-        Array<Record<string, any>>
-      >(Prisma.sql`
+      const scores = await prisma.$queryRaw<Array<Record<string, any>>>(Prisma.sql`
         SELECT id, timestamp, project_id, trace_id, observation_id, name, value, source, comment, author_user_id, config_id, data_type, string_value, queue_id, created_at, updated_at
         FROM scores
         WHERE created_at <= ${new Date(migrationState.state.maxDate)}
@@ -113,9 +91,7 @@ export default class MigrateScoresFromPostgresToClickhouse
         break;
       }
 
-      logger.info(
-        `Got ${scores.length} records from Postgres in ${Date.now() - fetchStart}ms`,
-      );
+      logger.info(`Got ${scores.length} records from Postgres in ${Date.now() - fetchStart}ms`);
 
       const insertStart = Date.now();
       await clickhouseClient().insert({
@@ -124,9 +100,7 @@ export default class MigrateScoresFromPostgresToClickhouse
         format: "JSONEachRow",
       });
 
-      logger.info(
-        `Inserted ${scores.length} scores into Clickhouse in ${Date.now() - insertStart}ms`,
-      );
+      logger.info(`Inserted ${scores.length} scores into Clickhouse in ${Date.now() - insertStart}ms`);
 
       await prisma.backgroundMigration.update({
         where: { id: backgroundMigrationId },
@@ -155,9 +129,7 @@ export default class MigrateScoresFromPostgresToClickhouse
       return;
     }
 
-    logger.info(
-      `Finished migration of scores from Postgres to Clickhouse in ${Date.now() - start}ms`,
-    );
+    logger.info(`Finished migration of scores from Postgres to Clickhouse in ${Date.now() - start}ms`);
   }
 
   async abort(): Promise<void> {

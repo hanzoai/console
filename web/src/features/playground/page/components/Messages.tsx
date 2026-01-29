@@ -14,11 +14,7 @@ import { env } from "@/src/env.mjs";
 import { GenerationOutput } from "./GenerationOutput";
 import { ChatMessages } from "@/src/components/ChatMessages";
 import { type MessagesContext } from "@/src/components/ChatMessages/types";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/src/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 
 export const Messages: React.FC<MessagesContext> = (props) => {
   return (
@@ -28,11 +24,7 @@ export const Messages: React.FC<MessagesContext> = (props) => {
           <ChatMessages {...props} />
         </ResizablePanel>
         <ResizableHandle withHandle className="bg-transparent" />
-        <ResizablePanel
-          minSize={20}
-          defaultSize={20}
-          className="flex flex-col space-y-4"
-        >
+        <ResizablePanel minSize={20} defaultSize={20} className="flex flex-col space-y-4">
           <GenerationOutput />
         </ResizablePanel>
       </ResizablePanelGroup>
@@ -43,8 +35,7 @@ export const Messages: React.FC<MessagesContext> = (props) => {
 
 const SubmitButton = () => {
   const { handleSubmit, isStreaming } = usePlaygroundContext();
-  const defaultStreamingEnabled =
-    env.NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT === "true";
+  const defaultStreamingEnabled = env.NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT === "true";
   const [streamingEnabled, setStreamingEnabled] = useLocalStorage(
     "hanzo-playground-streaming",
     defaultStreamingEnabled,
@@ -80,15 +71,10 @@ const SubmitButton = () => {
             <div className="flex flex-col">
               <span className="font-medium">Stream responses</span>
               <span className="text-xs text-muted-foreground">
-                {streamingEnabled
-                  ? "Real-time response streaming"
-                  : "Complete response at once"}
+                {streamingEnabled ? "Real-time response streaming" : "Complete response at once"}
               </span>
             </div>
-            <Switch
-              checked={streamingEnabled}
-              onCheckedChange={setStreamingEnabled}
-            />
+            <Switch checked={streamingEnabled} onCheckedChange={setStreamingEnabled} />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

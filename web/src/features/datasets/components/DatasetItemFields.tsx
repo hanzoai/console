@@ -44,17 +44,11 @@ export const DatasetItemFields = ({
   }, [dataset]);
 
   // Validate against dataset schemas
-  const validation = useDatasetItemValidation(
-    inputValue,
-    expectedOutputValue,
-    datasets,
-  );
+  const validation = useDatasetItemValidation(inputValue, expectedOutputValue, datasets);
 
   // Filter validation errors by field
   const inputErrors = validation.errors.filter((e) => e.field === "input");
-  const expectedOutputErrors = validation.errors.filter(
-    (e) => e.field === "expectedOutput",
-  );
+  const expectedOutputErrors = validation.errors.filter((e) => e.field === "expectedOutput");
 
   const isFormMode = !!control;
   // In form mode, don't show validation errors (only used for submit button state)
@@ -153,11 +147,7 @@ export const DatasetItemFields = ({
           )}
         />
       ) : (
-        <DatasetItemField
-          label="Metadata"
-          value={metadataValue}
-          editable={false}
-        />
+        <DatasetItemField label="Metadata" value={metadataValue} editable={false} />
       )}
     </div>
   );

@@ -10,11 +10,7 @@ export class InMemoryFilterService {
    * @param fieldMapper - Function to map filter column names to data object values
    * @returns true if the data matches all filter conditions, false otherwise
    */
-  static evaluateFilter<T>(
-    data: T,
-    filter: FilterState,
-    fieldMapper: (data: T, column: string) => unknown,
-  ): boolean {
+  static evaluateFilter<T>(data: T, filter: FilterState, fieldMapper: (data: T, column: string) => unknown): boolean {
     try {
       // If no filters, data matches
       if (!filter || filter.length === 0) {
@@ -56,52 +52,21 @@ export class InMemoryFilterService {
       case "string":
         return this.evaluateStringFilter(fieldValue, condition.value, operator);
       case "datetime":
-        return this.evaluateDateTimeFilter(
-          fieldValue,
-          condition.value,
-          operator,
-        );
+        return this.evaluateDateTimeFilter(fieldValue, condition.value, operator);
       case "stringOptions":
-        return this.evaluateStringOptionsFilter(
-          fieldValue,
-          condition.value,
-          operator,
-        );
+        return this.evaluateStringOptionsFilter(fieldValue, condition.value, operator);
       case "arrayOptions":
-        return this.evaluateArrayOptionsFilter(
-          fieldValue,
-          condition.value,
-          operator,
-        );
+        return this.evaluateArrayOptionsFilter(fieldValue, condition.value, operator);
       case "number":
         return this.evaluateNumberFilter(fieldValue, condition.value, operator);
       case "boolean":
-        return this.evaluateBooleanFilter(
-          fieldValue,
-          condition.value,
-          operator,
-        );
+        return this.evaluateBooleanFilter(fieldValue, condition.value, operator);
       case "categoryOptions":
-        return this.evaluateCategoryOptionsFilter(
-          fieldValue,
-          condition.key,
-          condition.value,
-          operator,
-        );
+        return this.evaluateCategoryOptionsFilter(fieldValue, condition.key, condition.value, operator);
       case "stringObject":
-        return this.evaluateStringObjectFilter(
-          fieldValue,
-          condition.key,
-          condition.value,
-          operator,
-        );
+        return this.evaluateStringObjectFilter(fieldValue, condition.key, condition.value, operator);
       case "numberObject":
-        return this.evaluateNumberObjectFilter(
-          fieldValue,
-          condition.key,
-          condition.value,
-          operator,
-        );
+        return this.evaluateNumberObjectFilter(fieldValue, condition.key, condition.value, operator);
       case "null":
         return this.evaluateNullFilter(fieldValue, operator);
       default:
@@ -113,11 +78,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateStringFilter(
-    fieldValue: unknown,
-    filterValue: string,
-    operator: string,
-  ): boolean {
+  private static evaluateStringFilter(fieldValue: unknown, filterValue: string, operator: string): boolean {
     const strValue = fieldValue != null ? String(fieldValue) : "";
 
     switch (operator) {
@@ -141,11 +102,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateDateTimeFilter(
-    fieldValue: unknown,
-    filterValue: Date,
-    operator: string,
-  ): boolean {
+  private static evaluateDateTimeFilter(fieldValue: unknown, filterValue: Date, operator: string): boolean {
     if (!(fieldValue instanceof Date)) {
       return false;
     }
@@ -172,11 +129,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateNumberFilter(
-    fieldValue: unknown,
-    filterValue: number,
-    operator: string,
-  ): boolean {
+  private static evaluateNumberFilter(fieldValue: unknown, filterValue: number, operator: string): boolean {
     if (typeof fieldValue !== "number") {
       return false;
     }
@@ -232,11 +185,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateStringOptionsFilter(
-    fieldValue: unknown,
-    filterValues: string[],
-    operator: string,
-  ): boolean {
+  private static evaluateStringOptionsFilter(fieldValue: unknown, filterValues: string[], operator: string): boolean {
     const strValue = fieldValue ? String(fieldValue) : "";
 
     switch (operator) {
@@ -254,11 +203,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateArrayOptionsFilter(
-    fieldValue: unknown,
-    filterValues: string[],
-    operator: string,
-  ): boolean {
+  private static evaluateArrayOptionsFilter(fieldValue: unknown, filterValues: string[], operator: string): boolean {
     if (!Array.isArray(fieldValue)) {
       return false;
     }
@@ -272,9 +217,7 @@ export class InMemoryFilterService {
       case "none of":
         return !arrayValue.some((val) => filterValues.includes(String(val)));
       case "all of":
-        return filterValues.every((val) =>
-          arrayValue.map(String).includes(val),
-        );
+        return filterValues.every((val) => arrayValue.map(String).includes(val));
       default:
         logger.error("Unsupported arrayOptions filter operator", {
           operator,
@@ -285,11 +228,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateBooleanFilter(
-    fieldValue: unknown,
-    filterValue: boolean,
-    operator: string,
-  ): boolean {
+  private static evaluateBooleanFilter(fieldValue: unknown, filterValue: boolean, operator: string): boolean {
     switch (operator) {
       case "=":
         return fieldValue === filterValue;
@@ -333,10 +272,7 @@ export class InMemoryFilterService {
 
     // Type assertion is safe here since we've checked typeof fieldValue === "object" above
     const objectValue = (fieldValue as Record<string, unknown>)[key];
-    const numValue =
-      typeof objectValue === "number"
-        ? objectValue
-        : parseFloat(String(objectValue));
+    const numValue = typeof objectValue === "number" ? objectValue : parseFloat(String(objectValue));
 
     if (isNaN(numValue)) {
       return false;
@@ -364,10 +300,7 @@ export class InMemoryFilterService {
     }
   }
 
-  private static evaluateNullFilter(
-    fieldValue: unknown,
-    operator: string,
-  ): boolean {
+  private static evaluateNullFilter(fieldValue: unknown, operator: string): boolean {
     switch (operator) {
       case "is null":
         return fieldValue === null || fieldValue === undefined;

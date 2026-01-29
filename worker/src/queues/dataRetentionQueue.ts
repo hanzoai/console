@@ -1,9 +1,5 @@
 import { Processor } from "bullmq";
-import {
-  instrumentAsync,
-  logger,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { handleDataRetentionSchedule } from "../ee/dataRetention/handleDataRetentionSchedule";
 import { handleDataRetentionProcessingJob } from "../ee/dataRetention/handleDataRetentionProcessingJob";
 import { SpanKind } from "@opentelemetry/api";

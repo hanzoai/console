@@ -2,12 +2,7 @@ import { z } from "zod/v4";
 
 const MAX_COMMENT_LENGTH = 5000;
 
-export const COMMENT_OBJECT_TYPES = [
-  "TRACE",
-  "OBSERVATION",
-  "SESSION",
-  "PROMPT",
-] as const;
+export const COMMENT_OBJECT_TYPES = ["TRACE", "OBSERVATION", "SESSION", "PROMPT"] as const;
 
 export const COMMENT_DATA_FIELDS = ["input", "output", "metadata"] as const;
 
@@ -16,10 +11,7 @@ export const COMMENT_DATA_FIELDS = ["input", "output", "metadata"] as const;
 // Allows: $ (root), $.foo, $[0], $.foo[0].bar, $['key-with-dash'], etc.
 export const jsonPathSchema = z
   .string()
-  .regex(
-    /^\$(\.[a-zA-Z_][a-zA-Z0-9_-]*|\[\d+\]|\['[^']+'\]|\["[^"]+"\])*$/,
-    "Invalid JSON Path syntax",
-  );
+  .regex(/^\$(\.[a-zA-Z_][a-zA-Z0-9_-]*|\[\d+\]|\['[^']+'\]|\["[^"]+"\])*$/, "Invalid JSON Path syntax");
 
 export const CreateCommentData = z
   .object({
@@ -37,8 +29,7 @@ export const CreateCommentData = z
     (data) => {
       const hasDataField = data.dataField != null;
       const hasPath = data.path != null && data.path.length > 0;
-      const hasRangeStart =
-        data.rangeStart != null && data.rangeStart.length > 0;
+      const hasRangeStart = data.rangeStart != null && data.rangeStart.length > 0;
       const hasRangeEnd = data.rangeEnd != null && data.rangeEnd.length > 0;
 
       // All must be set together, or all must be null/empty

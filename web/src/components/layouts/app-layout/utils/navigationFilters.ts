@@ -30,14 +30,8 @@ export const filters = {
   /**
    * Filter routes that require an organization ID when none is available
    */
-  organizationScope: (
-    route: Route,
-    ctx: NavigationFilterContext,
-  ): Route | null => {
-    if (
-      !ctx.routerOrganizationId &&
-      route.pathname.includes("[organizationId]")
-    ) {
+  organizationScope: (route: Route, ctx: NavigationFilterContext): Route | null => {
+    if (!ctx.routerOrganizationId && route.pathname.includes("[organizationId]")) {
       return null;
     }
     return route;
@@ -47,10 +41,7 @@ export const filters = {
    * Filter routes based on UI customization settings (enterprise feature)
    * Hides routes if their product module is not in visible modules list
    */
-  uiCustomization: (
-    route: Route,
-    ctx: NavigationFilterContext,
-  ): Route | null => {
+  uiCustomization: (route: Route, ctx: NavigationFilterContext): Route | null => {
     if (
       route.productModule &&
       ctx.uiCustomization &&
@@ -73,9 +64,7 @@ export const filters = {
     if (route.featureFlag === undefined) return route;
 
     const hasFlag =
-      ctx.enableExperimentalFeatures ||
-      ctx.cloudAdmin ||
-      ctx.session?.user?.featureFlags?.[route.featureFlag] === true;
+      ctx.enableExperimentalFeatures || ctx.cloudAdmin || ctx.session?.user?.featureFlags?.[route.featureFlag] === true;
 
     return hasFlag ? route : null;
   },
@@ -92,9 +81,7 @@ export const filters = {
     if (ctx.cloudAdmin) return route;
 
     // OR logic - user needs at least one entitlement
-    const hasEntitlement = route.entitlements.some((ent) =>
-      ctx.entitlements.includes(ent),
-    );
+    const hasEntitlement = route.entitlements.some((ent) => ctx.entitlements.includes(ent));
 
     return hasEntitlement ? route : null;
   },
@@ -126,10 +113,7 @@ export const filters = {
    * Filter routes based on organization-level RBAC scope
    * Cloud admins bypass this check
    */
-  organizationRbac: (
-    route: Route,
-    ctx: NavigationFilterContext,
-  ): Route | null => {
+  organizationRbac: (route: Route, ctx: NavigationFilterContext): Route | null => {
     if (!route.organizationRbacScope || !ctx.routerOrganizationId) return route;
 
     // Cloud admins bypass RBAC checks
@@ -148,16 +132,10 @@ export const filters = {
    * Filter routes based on custom show function
    * Allows routes to implement custom visibility logic
    */
-  customShow: (
-    route: Route,
-    _ctx: NavigationFilterContext,
-    organization: Organization,
-  ): Route | null => {
+  customShow: (route: Route, _ctx: NavigationFilterContext, organization: Organization): Route | null => {
     if (!route.show) return route;
     // Convert null to undefined for route.show compatibility
-    return route.show({ organization: organization ?? undefined })
-      ? route
-      : null;
+    return route.show({ organization: organization ?? undefined }) ? route : null;
   },
 };
 

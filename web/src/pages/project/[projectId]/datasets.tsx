@@ -54,11 +54,7 @@ export default function Datasets() {
           href: "https://hanzo.com/docs/evaluation/dataset-runs/datasets",
         },
         actionButtonsRight: (
-          <DatasetActionButton
-            projectId={projectId}
-            mode="create"
-            folderPrefix={currentFolderPath || undefined}
-          />
+          <DatasetActionButton projectId={projectId} mode="create" folderPrefix={currentFolderPath || undefined} />
         ),
       }}
     >

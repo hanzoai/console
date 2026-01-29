@@ -28,10 +28,7 @@ export const ErrorPage = ({
   const router = useRouter();
   const newTargetPath = stripBasePath(router.asPath || "/");
   // Only include targetPath if it's not the root (since "/" is the default anyway)
-  const targetPathQuery =
-    newTargetPath !== "/"
-      ? `?targetPath=${encodeURIComponent(newTargetPath)}`
-      : "";
+  const targetPathQuery = newTargetPath !== "/" ? `?targetPath=${encodeURIComponent(newTargetPath)}` : "";
 
   return (
     <div className="flex h-full flex-col items-center justify-center">
@@ -40,11 +37,7 @@ export const ErrorPage = ({
       <p className="mb-6 text-center">{message}</p>
       <div className="flex gap-3">
         {session.status === "unauthenticated" ? (
-          <Button
-            onClick={() => void router.push(`/auth/sign-in${targetPathQuery}`)}
-          >
-            Sign In
-          </Button>
+          <Button onClick={() => void router.push(`/auth/sign-in${targetPathQuery}`)}>Sign In</Button>
         ) : null}
         {additionalButton ? (
           "onClick" in additionalButton ? (
@@ -81,17 +74,8 @@ export const ErrorPageWithSentry = ({
 }) => {
   useEffect(() => {
     // Capture the error with Sentry
-    if (window !== undefined)
-      captureException(
-        new Error(`ErrorPageWithSentry rendered: ${title}, ${message}`),
-      );
+    if (window !== undefined) captureException(new Error(`ErrorPageWithSentry rendered: ${title}, ${message}`));
   }, [title, message]); // Empty dependency array means this effect runs once on mount
 
-  return (
-    <ErrorPage
-      title={title}
-      message={message}
-      additionalButton={additionalButton}
-    />
-  );
+  return <ErrorPage title={title} message={message} additionalButton={additionalButton} />;
 };

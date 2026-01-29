@@ -39,17 +39,14 @@ export function TagPromptPopover({
       setIsLoading(false);
     },
     onSettled: (data, error, { name, tags }) => {
-      utils.prompts.all.setData(
-        promptsFilter,
-        (oldQueryData: RouterOutput["prompts"]["all"] | undefined) => {
-          const updatedPrompts = oldQueryData
-            ? oldQueryData.prompts.map((prompt: any) => {
-                return prompt.name === name ? { ...prompt, tags } : prompt;
-              })
-            : [];
-          return { prompts: updatedPrompts, totalCount: updatedPrompts.length };
-        },
-      );
+      utils.prompts.all.setData(promptsFilter, (oldQueryData: RouterOutput["prompts"]["all"] | undefined) => {
+        const updatedPrompts = oldQueryData
+          ? oldQueryData.prompts.map((prompt: any) => {
+              return prompt.name === name ? { ...prompt, tags } : prompt;
+            })
+          : [];
+        return { prompts: updatedPrompts, totalCount: updatedPrompts.length };
+      });
       setIsLoading(false);
     },
   });

@@ -18,9 +18,7 @@ import { isUnrecoverableError } from "../errors/UnrecoverableError";
 import { retryObservationNotFound } from "../features/evaluation/retryObservationNotFound";
 import { isObservationNotFoundError } from "../errors/ObservationNotFoundError";
 
-export const evalJobTraceCreatorQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.TraceUpsert]>,
-) => {
+export const evalJobTraceCreatorQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.TraceUpsert]>) => {
   try {
     await createEvalJobs({
       sourceEventType: "trace-upsert",
@@ -30,18 +28,13 @@ export const evalJobTraceCreatorQueueProcessor = async (
     });
     return true;
   } catch (e) {
-    logger.error(
-      `Failed job Evaluation for traceId ${job.data.payload.traceId}`,
-      e,
-    );
+    logger.error(`Failed job Evaluation for traceId ${job.data.payload.traceId}`, e);
     traceException(e);
     throw e;
   }
 };
 
-export const evalJobDatasetCreatorQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.DatasetRunItemUpsert]>,
-) => {
+export const evalJobDatasetCreatorQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.DatasetRunItemUpsert]>) => {
   try {
     await createEvalJobs({
       sourceEventType: "dataset-run-item-upsert",
@@ -68,32 +61,24 @@ export const evalJobDatasetCreatorQueueProcessor = async (
         return true;
       } else {
         // Max attempts reached, log warning and complete successfully
-        logger.warn(
-          `Observation not found after max retries. Completing job without creating eval.`,
-          {
-            projectId: job.data.payload.projectId,
-            datasetItemId: job.data.payload.datasetItemId,
-            observationId: job.data.payload.observationId,
-            traceId: job.data.payload.traceId,
-          },
-        );
+        logger.warn(`Observation not found after max retries. Completing job without creating eval.`, {
+          projectId: job.data.payload.projectId,
+          datasetItemId: job.data.payload.datasetItemId,
+          observationId: job.data.payload.observationId,
+          traceId: job.data.payload.traceId,
+        });
         return true;
       }
     }
 
     // All other errors should be logged and propagated for BullMQ retry
-    logger.error(
-      `Failed job Evaluation for dataset item: ${job.data.payload.datasetItemId}`,
-      e,
-    );
+    logger.error(`Failed job Evaluation for dataset item: ${job.data.payload.datasetItemId}`, e);
     traceException(e);
     throw e;
   }
 };
 
-export const evalJobCreatorQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.CreateEvalQueue]>,
-) => {
+export const evalJobCreatorQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.CreateEvalQueue]>) => {
   try {
     await createEvalJobs({
       sourceEventType: "ui-create-eval",
@@ -102,36 +87,22 @@ export const evalJobCreatorQueueProcessor = async (
     });
     return true;
   } catch (e) {
-    logger.error(
-      `Failed to create evaluation jobs: ${JSON.stringify(job.data.payload)}`,
-      e,
-    );
+    logger.error(`Failed to create evaluation jobs: ${JSON.stringify(job.data.payload)}`, e);
     traceException(e);
     throw e;
   }
 };
 
-export const evalJobExecutorQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.EvaluationExecution]>,
-) => {
+export const evalJobExecutorQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.EvaluationExecution]>) => {
   try {
     logger.info("Executing Evaluation Execution Job", job.data);
 
     const span = getCurrentSpan();
 
     if (span) {
-      span.setAttribute(
-        "messaging.bullmq.job.input.jobExecutionId",
-        job.data.payload.jobExecutionId,
-      );
-      span.setAttribute(
-        "messaging.bullmq.job.input.projectId",
-        job.data.payload.projectId,
-      );
-      span.setAttribute(
-        "messaging.bullmq.job.input.retryBaggage.attempt",
-        job.data.retryBaggage?.attempt ?? 0,
-      );
+      span.setAttribute("messaging.bullmq.job.input.jobExecutionId", job.data.payload.jobExecutionId);
+      span.setAttribute("messaging.bullmq.job.input.projectId", job.data.payload.projectId);
+      span.setAttribute("messaging.bullmq.job.input.retryBaggage.attempt", job.data.retryBaggage?.attempt ?? 0);
     }
 
     await evaluate({ event: job.data.payload });
@@ -199,10 +170,7 @@ export const evalJobExecutorQueueProcessor = async (
         status: JobExecutionStatus.ERROR,
         endTime: new Date(),
         // Show user-facing error messages (LLM and config errors)
-        error:
-          isLLMCompletionError(e) || isUnrecoverableError(e)
-            ? e.message
-            : "An internal error occurred",
+        error: isLLMCompletionError(e) || isUnrecoverableError(e) ? e.message : "An internal error occurred",
         executionTraceId,
       },
     });
@@ -210,10 +178,7 @@ export const evalJobExecutorQueueProcessor = async (
     if (isLLMCompletionError(e) || isUnrecoverableError(e)) return;
 
     traceException(e);
-    logger.error(
-      `Failed Evaluation_Execution job for id ${job.data.payload.jobExecutionId}`,
-      e,
-    );
+    logger.error(`Failed Evaluation_Execution job for id ${job.data.payload.jobExecutionId}`, e);
 
     // Retry job by rethrowing error
     throw e;

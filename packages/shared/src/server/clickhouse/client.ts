@@ -49,24 +49,18 @@ export class ClickHouseClientManager {
       database: env.CLICKHOUSE_DB,
       http_headers: opts?.http_headers ?? {},
       settings: opts?.clickhouse_settings,
-      ...(opts.request_timeout
-        ? { request_timeout: opts.request_timeout }
-        : {}),
+      ...(opts.request_timeout ? { request_timeout: opts.request_timeout } : {}),
 
       // Include any other relevant config options
     };
     return keyParams;
   }
 
-  private generateClientSettingsKey(
-    settings: NodeClickHouseClientConfigOptions,
-  ): string {
+  private generateClientSettingsKey(settings: NodeClickHouseClientConfigOptions): string {
     return JSON.stringify(settings);
   }
 
-  private getClickhouseUrl = (
-    preferredClickhouseService: PreferredClickhouseService,
-  ) => {
+  private getClickhouseUrl = (preferredClickhouseService: PreferredClickhouseService) => {
     return preferredClickhouseService === "ReadWrite"
       ? env.CLICKHOUSE_URL
       : env.CLICKHOUSE_READ_ONLY_URL || env.CLICKHOUSE_URL;
@@ -81,10 +75,7 @@ export class ClickHouseClientManager {
     opts: NodeClickHouseClientConfigOptions,
     preferredClickhouseService: PreferredClickhouseService = "ReadWrite",
   ): ClickhouseClientType {
-    const settings = this.generateClientSettings(
-      opts,
-      preferredClickhouseService,
-    );
+    const settings = this.generateClientSettings(opts, preferredClickhouseService);
     const key = this.generateClientSettingsKey(settings);
     if (!this.clientMap.has(key)) {
       const activeSpan = getCurrentSpan();
@@ -93,11 +84,7 @@ export class ClickHouseClientManager {
       }
 
       const cloudOptions: Record<string, unknown> = {};
-      if (
-        ["STAGING", "EU", "US", "HIPAA"].includes(
-          env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? "",
-        )
-      ) {
+      if (["STAGING", "EU", "US", "HIPAA"].includes(env.NEXT_PUBLIC_HANZO_CLOUD_REGION ?? "")) {
         cloudOptions.input_format_json_throw_on_bad_escape_sequence = 0;
       }
 
@@ -116,20 +103,17 @@ export class ClickHouseClientManager {
           // Overwrite async insert settings to tune throughput
           ...(env.CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE
             ? {
-                async_insert_max_data_size:
-                  env.CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE,
+                async_insert_max_data_size: env.CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE,
               }
             : {}),
           ...(env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS
             ? {
-                async_insert_busy_timeout_ms:
-                  env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS,
+                async_insert_busy_timeout_ms: env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS,
               }
             : {}),
           ...(env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS
             ? {
-                async_insert_busy_timeout_min_ms:
-                  env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS,
+                async_insert_busy_timeout_min_ms: env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS,
               }
             : {}),
           ...(env.CLICKHOUSE_LIGHTWEIGHT_DELETE_MODE !== "alter_update"
@@ -161,9 +145,7 @@ export class ClickHouseClientManager {
    * Close all client connections - useful for application shutdown
    */
   public closeAllConnections(): Promise<void[]> {
-    const closePromises = Array.from(this.clientMap.values()).map((client) =>
-      client.close(),
-    );
+    const closePromises = Array.from(this.clientMap.values()).map((client) => client.close());
     this.clientMap.clear();
     return Promise.all(closePromises);
   }
@@ -173,10 +155,7 @@ export const clickhouseClient = (
   opts?: NodeClickHouseClientConfigOptions,
   preferredClickhouseService: PreferredClickhouseService = "ReadWrite",
 ) => {
-  return ClickHouseClientManager.getInstance().getClient(
-    opts ?? {},
-    preferredClickhouseService,
-  );
+  return ClickHouseClientManager.getInstance().getClient(opts ?? {}, preferredClickhouseService);
 };
 
 /**

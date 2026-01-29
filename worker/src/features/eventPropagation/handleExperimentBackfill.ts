@@ -12,8 +12,7 @@ import { IngestionService } from "../../services/IngestionService";
 import { prisma } from "@hanzo/shared/src/db";
 import { chunk } from "lodash";
 
-const EXPERIMENT_BACKFILL_TIMESTAMP_KEY =
-  "hanzo:event-propagation:experiment-backfill:last-run";
+const EXPERIMENT_BACKFILL_TIMESTAMP_KEY = "hanzo:event-propagation:experiment-backfill:last-run";
 const EXPERIMENT_BACKFILL_LOCK_KEY = "hanzo:experiment-backfill:lock";
 const LOCK_TTL_SECONDS = 300; // 5 minutes
 
@@ -108,10 +107,7 @@ export interface TraceProperties {
  * Fetch dataset run items created within a time window.
  * Deduplicates by (project_id, trace_id, observation_id) taking the most recent.
  */
-export async function getDatasetRunItemsSinceLastRun(
-  lastRun: Date,
-  upperBound: Date,
-): Promise<DatasetRunItem[]> {
+export async function getDatasetRunItemsSinceLastRun(lastRun: Date, upperBound: Date): Promise<DatasetRunItem[]> {
   const query = `
     WITH prefiltered_events as (
       select distinct project_id, trace_id
@@ -348,10 +344,7 @@ export function buildSpanMaps(spans: SpanRecord[]): {
 /**
  * Recursively find all child spans for a given root span.
  */
-export function findAllChildren(
-  rootSpanId: string,
-  childMap: Map<string, SpanRecord[]>,
-): SpanRecord[] {
+export function findAllChildren(rootSpanId: string, childMap: Map<string, SpanRecord[]>): SpanRecord[] {
   const children: SpanRecord[] = [];
   const queue: string[] = [rootSpanId];
 
@@ -413,12 +406,8 @@ export function enrichSpansWithExperiment(
 ): EnrichedSpan[] {
   const enrichedSpans: EnrichedSpan[] = [];
 
-  const experimentMetadataFlattened = flattenJsonToPathArrays(
-    dri.dataset_run_metadata,
-  );
-  const experimentItemMetadataFlattened = flattenJsonToPathArrays(
-    dri.dataset_item_metadata,
-  );
+  const experimentMetadataFlattened = flattenJsonToPathArrays(dri.dataset_run_metadata);
+  const experimentItemMetadataFlattened = flattenJsonToPathArrays(dri.dataset_item_metadata);
 
   // Enrich root span
   enrichedSpans.push({
@@ -487,12 +476,7 @@ export async function writeEnrichedSpans(spans: EnrichedSpan[]): Promise<void> {
   if (!redis) throw new Error("Redis not available");
   if (!prisma) throw new Error("Prisma not available");
 
-  const ingestionService = new IngestionService(
-    redis,
-    prisma,
-    ClickhouseWriter.getInstance(),
-    clickhouseClient(),
-  );
+  const ingestionService = new IngestionService(redis, prisma, ClickhouseWriter.getInstance(), clickhouseClient());
 
   for (const span of spans) {
     // Convert EnrichedSpan to EventInput format
@@ -577,9 +561,7 @@ export async function writeEnrichedSpans(spans: EnrichedSpan[]): Promise<void> {
     await ingestionService.writeEvent(eventInput, ""); // Empty fileKey since we're not storing raw events
   }
 
-  logger.info(
-    `[EXPERIMENT BACKFILL] Wrote ${spans.length} enriched spans to events table via IngestionService`,
-  );
+  logger.info(`[EXPERIMENT BACKFILL] Wrote ${spans.length} enriched spans to events table via IngestionService`);
 }
 
 /**
@@ -590,50 +572,33 @@ export async function writeEnrichedSpans(spans: EnrichedSpan[]): Promise<void> {
  */
 export async function initializeBackfillCutoff(): Promise<Date> {
   if (!redis) {
-    logger.error(
-      "[EXPERIMENT BACKFILL] Redis not available, using current time as cutoff",
-    );
-    throw new Error(
-      "Redis not available. Experiment backfill cannot be initialized.",
-    );
+    logger.error("[EXPERIMENT BACKFILL] Redis not available, using current time as cutoff");
+    throw new Error("Redis not available. Experiment backfill cannot be initialized.");
   }
 
   try {
     const now = new Date().toISOString();
 
     // Try to set the key only if it doesn't exist (NX)
-    const result = await redis.set(
-      EXPERIMENT_BACKFILL_TIMESTAMP_KEY,
-      now,
-      "NX",
-    );
+    const result = await redis.set(EXPERIMENT_BACKFILL_TIMESTAMP_KEY, now, "NX");
 
     if (result === "OK") {
-      logger.info(
-        `[EXPERIMENT BACKFILL] Initialized cutoff timestamp to ${now} (first run)`,
-      );
+      logger.info(`[EXPERIMENT BACKFILL] Initialized cutoff timestamp to ${now} (first run)`);
       return new Date(now);
     }
 
     // Key already exists, fetch the existing value
     const existing = await redis.get(EXPERIMENT_BACKFILL_TIMESTAMP_KEY);
     if (existing) {
-      logger.debug(
-        `[EXPERIMENT BACKFILL] Using existing cutoff timestamp: ${existing}`,
-      );
+      logger.debug(`[EXPERIMENT BACKFILL] Using existing cutoff timestamp: ${existing}`);
       return new Date(existing);
     }
 
     // Fallback if something went wrong
-    logger.warn(
-      "[EXPERIMENT BACKFILL] Could not read existing timestamp, using current time",
-    );
+    logger.warn("[EXPERIMENT BACKFILL] Could not read existing timestamp, using current time");
     return new Date();
   } catch (error) {
-    logger.error(
-      "[EXPERIMENT BACKFILL] Failed to initialize cutoff timestamp",
-      error,
-    );
+    logger.error("[EXPERIMENT BACKFILL] Failed to initialize cutoff timestamp", error);
     return new Date();
   }
 }
@@ -653,48 +618,31 @@ export async function shouldRunBackfill(lastRun: Date): Promise<boolean> {
   const timeSinceLastRun = now.getTime() - lastRun.getTime();
 
   if (timeSinceLastRun < env.HANZO_EXPERIMENT_BACKFILL_THROTTLE_MS) {
-    logger.debug(
-      "[EXPERIMENT BACKFILL] Skipping due to throttle (time threshold not met)",
-    );
+    logger.debug("[EXPERIMENT BACKFILL] Skipping due to throttle (time threshold not met)");
     return false;
   }
 
   // Time threshold passed, now try to acquire lock
   if (!redis) {
-    logger.warn(
-      "[EXPERIMENT BACKFILL] Redis not available, skipping lock acquisition",
-    );
+    logger.warn("[EXPERIMENT BACKFILL] Redis not available, skipping lock acquisition");
     return true; // Allow processing if Redis is unavailable
   }
 
   try {
     // Try to acquire lock using Redis SET NX (atomic test-and-set)
-    const result = await redis.set(
-      EXPERIMENT_BACKFILL_LOCK_KEY,
-      "true",
-      "EX",
-      LOCK_TTL_SECONDS,
-      "NX",
-    );
+    const result = await redis.set(EXPERIMENT_BACKFILL_LOCK_KEY, "true", "EX", LOCK_TTL_SECONDS, "NX");
 
     const acquired = result === "OK";
 
     if (acquired) {
-      logger.info(
-        `[EXPERIMENT BACKFILL] Acquired backfill lock with TTL ${LOCK_TTL_SECONDS}s`,
-      );
+      logger.info(`[EXPERIMENT BACKFILL] Acquired backfill lock with TTL ${LOCK_TTL_SECONDS}s`);
     } else {
-      logger.debug(
-        "[EXPERIMENT BACKFILL] Backfill is already locked by another worker",
-      );
+      logger.debug("[EXPERIMENT BACKFILL] Backfill is already locked by another worker");
     }
 
     return acquired;
   } catch (error) {
-    logger.error(
-      "[EXPERIMENT BACKFILL] Failed to acquire backfill lock",
-      error,
-    );
+    logger.error("[EXPERIMENT BACKFILL] Failed to acquire backfill lock", error);
     // On error, allow processing to avoid blocking the system
     return true;
   }
@@ -706,18 +654,14 @@ export async function shouldRunBackfill(lastRun: Date): Promise<boolean> {
  */
 export async function updateBackfillTimestamp(timestamp: Date): Promise<void> {
   if (!redis) {
-    logger.warn(
-      "[EXPERIMENT BACKFILL] Redis not available, cannot update timestamp",
-    );
+    logger.warn("[EXPERIMENT BACKFILL] Redis not available, cannot update timestamp");
     return;
   }
 
   try {
     const timestampStr = timestamp.toISOString();
     await redis.set(EXPERIMENT_BACKFILL_TIMESTAMP_KEY, timestampStr);
-    logger.info(
-      `[EXPERIMENT BACKFILL] Updated last run timestamp to ${timestampStr}`,
-    );
+    logger.info(`[EXPERIMENT BACKFILL] Updated last run timestamp to ${timestampStr}`);
   } catch (error) {
     logger.error("[EXPERIMENT BACKFILL] Failed to update timestamp", error);
   }
@@ -760,24 +704,16 @@ export async function runExperimentBackfill(): Promise<void> {
 /**
  * Internal orchestration function to process experiment backfill.
  */
-async function processExperimentBackfill(
-  lastRun: Date,
-  upperBound: Date,
-): Promise<void> {
+async function processExperimentBackfill(lastRun: Date, upperBound: Date): Promise<void> {
   logger.info(
     `[EXPERIMENT BACKFILL] Starting backfill process with lastRun ${lastRun.toISOString()} and upperBound ${upperBound.toISOString()}`,
   );
 
   // Step 1: Fetch dataset run items within time window [lastRun, upperBound]
-  const allDatasetRunItems = await getDatasetRunItemsSinceLastRun(
-    lastRun,
-    upperBound,
-  );
+  const allDatasetRunItems = await getDatasetRunItemsSinceLastRun(lastRun, upperBound);
 
   if (allDatasetRunItems.length === 0) {
-    logger.info(
-      "[EXPERIMENT BACKFILL] No dataset run items to process, skipping",
-    );
+    logger.info("[EXPERIMENT BACKFILL] No dataset run items to process, skipping");
     return;
   }
 
@@ -791,9 +727,7 @@ async function processExperimentBackfill(
 
   for (let i = 0; i < chunks.length; i++) {
     const driChunk = chunks[i];
-    logger.info(
-      `[EXPERIMENT BACKFILL] Processing chunk ${i + 1}/${chunks.length} with ${driChunk.length} items`,
-    );
+    logger.info(`[EXPERIMENT BACKFILL] Processing chunk ${i + 1}/${chunks.length} with ${driChunk.length} items`);
 
     // Extract project and trace IDs for this chunk
     const projectIds = [...new Set(driChunk.map((dri) => dri.project_id))];
@@ -805,9 +739,7 @@ async function processExperimentBackfill(
       getRelevantTraces(projectIds, traceIds, lastRun),
     ]);
 
-    logger.info(
-      `[EXPERIMENT BACKFILL] Fetched ${observations.length} observations and ${traces.length} traces`,
-    );
+    logger.info(`[EXPERIMENT BACKFILL] Fetched ${observations.length} observations and ${traces.length} traces`);
 
     // Combine spans
     const allSpans = [...observations, ...traces];
@@ -838,9 +770,7 @@ async function processExperimentBackfill(
       const rootSpan = spanMap.get(rootSpanId);
 
       if (!rootSpan) {
-        logger.warn(
-          `[EXPERIMENT BACKFILL] Root span ${rootSpanId} not found for DRI ${dri.id}, skipping`,
-        );
+        logger.warn(`[EXPERIMENT BACKFILL] Root span ${rootSpanId} not found for DRI ${dri.id}, skipping`);
         continue;
       }
 
@@ -851,12 +781,7 @@ async function processExperimentBackfill(
       const childSpans = findAllChildren(rootSpanId, childMap);
 
       // Enrich spans with experiment properties and propagate trace-level properties
-      const enrichedSpans = enrichSpansWithExperiment(
-        rootSpan,
-        childSpans,
-        dri,
-        traceProperties,
-      );
+      const enrichedSpans = enrichSpansWithExperiment(rootSpan, childSpans, dri, traceProperties);
 
       allEnrichedSpans.push(...enrichedSpans);
 
@@ -871,9 +796,7 @@ async function processExperimentBackfill(
     for (const span of allSpans) {
       if (!processedSpanIds.has(span.span_id)) {
         const traceProperties = tracePropertiesMap.get(span.trace_id);
-        allEnrichedSpans.push(
-          convertToEnrichedSpanWithoutExperiment(span, traceProperties),
-        );
+        allEnrichedSpans.push(convertToEnrichedSpanWithoutExperiment(span, traceProperties));
       }
     }
 
@@ -883,7 +806,5 @@ async function processExperimentBackfill(
     }
   }
 
-  logger.info(
-    `[EXPERIMENT BACKFILL] Completed backfill process for ${allDatasetRunItems.length} items`,
-  );
+  logger.info(`[EXPERIMENT BACKFILL] Completed backfill process for ${allDatasetRunItems.length} items`);
 }

@@ -83,6 +83,4 @@ export const BatchExportSchema = z.object({
 
 // Ensure that zod type matches the Prisma type
 export type BatchExportType =
-  z.infer<typeof BatchExportSchema> extends BatchExport
-    ? z.infer<typeof BatchExportSchema>
-    : never;
+  z.infer<typeof BatchExportSchema> extends BatchExport ? z.infer<typeof BatchExportSchema> : never;

@@ -2,16 +2,11 @@ import z from "zod/v4";
 import { prisma } from "../../db";
 import { singleFilter } from "../../interfaces/filters";
 
-export const getPublicSessionsFilter = async (
-  projectId: string,
-  filter: z.infer<typeof singleFilter>[],
-) => {
+export const getPublicSessionsFilter = async (projectId: string, filter: z.infer<typeof singleFilter>[]) => {
   // Theoretically we should also filter the sessions by environment here. As this would return a huge list that's probably not feasible.
   // I.e. we only perform the environment check on the ClickHouse queries.
 
-  const sessionsBookmarkedFilter = filter?.find(
-    (f) => f.column === "⭐️" || f.column === "bookmarked",
-  );
+  const sessionsBookmarkedFilter = filter?.find((f) => f.column === "⭐️" || f.column === "bookmarked");
 
   let additionalBookmarkFilter: z.infer<typeof singleFilter>[] = [];
   if (sessionsBookmarkedFilter) {
@@ -35,10 +30,8 @@ export const getPublicSessionsFilter = async (
 
     // If the value is true and we check for equality we include it or if the value is false and we check for inequality we include it.
     if (
-      (sessionsBookmarkedFilter.value === true &&
-        sessionsBookmarkedFilter.operator === "=") ||
-      (sessionsBookmarkedFilter.value === false &&
-        sessionsBookmarkedFilter.operator === "<>")
+      (sessionsBookmarkedFilter.value === true && sessionsBookmarkedFilter.operator === "=") ||
+      (sessionsBookmarkedFilter.value === false && sessionsBookmarkedFilter.operator === "<>")
     ) {
       operator = "any of";
     }
@@ -46,8 +39,7 @@ export const getPublicSessionsFilter = async (
     // Now we check the opposite case where the value should be none of the given values.
     if (
       sessionsBookmarkedFilter.value === false ||
-      (sessionsBookmarkedFilter.value === true &&
-        sessionsBookmarkedFilter.operator === "<>")
+      (sessionsBookmarkedFilter.value === true && sessionsBookmarkedFilter.operator === "<>")
     ) {
       operator = "none of";
     }
@@ -67,12 +59,7 @@ export const getPublicSessionsFilter = async (
   }
 
   return filter
-    ? [
-        ...filter.filter(
-          (f) => f.column !== "⭐️" && f.column !== "bookmarked",
-        ),
-        ...additionalBookmarkFilter,
-      ]
+    ? [...filter.filter((f) => f.column !== "⭐️" && f.column !== "bookmarked"), ...additionalBookmarkFilter]
     : [...additionalBookmarkFilter];
 };
 

@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState, useRef } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -73,39 +66,29 @@ type PlaygroundContextType = {
 } & ModelParamsContext &
   MessagesContext;
 
-const PlaygroundContext = createContext<PlaygroundContextType | undefined>(
-  undefined,
-);
+const PlaygroundContext = createContext<PlaygroundContextType | undefined>(undefined);
 
 export const usePlaygroundContext = () => {
   const context = useContext(PlaygroundContext);
   if (!context) {
-    throw new Error(
-      "usePlaygroundContext must be used within a PlaygroundProvider",
-    );
+    throw new Error("usePlaygroundContext must be used within a PlaygroundProvider");
   }
   return context;
 };
 
-export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
-  children,
-  windowId,
-}) => {
+export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({ children, windowId }) => {
   const capture = usePostHogClientCapture();
   const projectId = useProjectIdFromURL();
   const { playgroundCache, setPlaygroundCache } = usePlaygroundCache(windowId);
   const [promptVariables, setPromptVariables] = useState<PromptVariable[]>([]);
-  const [messagePlaceholders, setMessagePlaceholders] = useState<
-    PlaceholderMessageFillIn[]
-  >([]);
+  const [messagePlaceholders, setMessagePlaceholders] = useState<PlaceholderMessageFillIn[]>([]);
   const [output, setOutput] = useState("");
   const [outputToolCalls, setOutputToolCalls] = useState<LLMToolCall[]>([]);
   const [outputJson, setOutputJson] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const isStreamingRef = useRef(isStreaming);
   const [tools, setTools] = useState<PlaygroundTool[]>([]);
-  const [structuredOutputSchema, setStructuredOutputSchema] =
-    useState<PlaygroundSchema | null>(null);
+  const [structuredOutputSchema, setStructuredOutputSchema] = useState<PlaygroundSchema | null>(null);
   const [messages, setMessages] = useState<ChatMessageWithId[]>([
     createEmptyMessage({
       type: ChatMessageType.System,
@@ -200,9 +183,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
   }, [playgroundCache, setModelParams]);
 
   const updatePromptVariables = useCallback(() => {
-    const messageContents = messages
-      .map((m) => ("content" in m ? m.content : m.name))
-      .join("\n");
+    const messageContents = messages.map((m) => ("content" in m ? m.content : m.name)).join("\n");
     const variables = extractVariables(messageContents)
       .map((v) => v.trim())
       .filter(Boolean);
@@ -232,78 +213,56 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
 
   useEffect(updatePromptVariables, [messages, updatePromptVariables]);
 
-  const addMessage: PlaygroundContextType["addMessage"] = useCallback(
-    (message) => {
-      if (message.type === ChatMessageType.AssistantToolCall) {
-        const toolCallMessage = createEmptyMessage({
-          type: ChatMessageType.AssistantToolCall,
-          role: ChatMessageRole.Assistant,
-          content: message.content ?? "",
-          toolCalls: message.toolCalls,
+  const addMessage: PlaygroundContextType["addMessage"] = useCallback((message) => {
+    if (message.type === ChatMessageType.AssistantToolCall) {
+      const toolCallMessage = createEmptyMessage({
+        type: ChatMessageType.AssistantToolCall,
+        role: ChatMessageRole.Assistant,
+        content: message.content ?? "",
+        toolCalls: message.toolCalls,
+      });
+      const toolResultMessages: ChatMessageWithId[] = [];
+
+      for (const toolCall of message.toolCalls) {
+        const toolResultMessage = createEmptyMessage({
+          type: ChatMessageType.ToolResult,
+          role: ChatMessageRole.Tool,
+          content: "",
+          toolCallId: toolCall.id,
         });
-        const toolResultMessages: ChatMessageWithId[] = [];
 
-        for (const toolCall of message.toolCalls) {
-          const toolResultMessage = createEmptyMessage({
-            type: ChatMessageType.ToolResult,
-            role: ChatMessageRole.Tool,
-            content: "",
-            toolCallId: toolCall.id,
-          });
-
-          toolResultMessages.push(toolResultMessage);
-        }
-
-        setMessages((prev) => [
-          ...prev,
-          ...[toolCallMessage],
-          ...toolResultMessages,
-        ]);
-
-        return toolCallMessage;
-      } else if (message.type === ChatMessageType.Placeholder) {
-        const placeholderMessage = {
-          ...message,
-          id: uuidv4(),
-        } as ChatMessageWithId;
-        setMessages((prev) => [...prev, placeholderMessage]);
-        return placeholderMessage;
-      } else {
-        const newMessage = createEmptyMessage(message);
-        setMessages((prev) => [...prev, newMessage]);
-
-        return newMessage;
+        toolResultMessages.push(toolResultMessage);
       }
-    },
-    [],
-  );
 
-  const updateMessage: PlaygroundContextType["updateMessage"] = useCallback(
-    (_, id, key, value) => {
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === id ? { ...message, [key]: value } : message,
-        ),
-      );
-    },
-    [],
-  );
+      setMessages((prev) => [...prev, ...[toolCallMessage], ...toolResultMessages]);
 
-  const replaceMessage: PlaygroundContextType["replaceMessage"] = useCallback(
-    (id, message) => {
-      setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { id, ...message } : m)),
-      );
-    },
-    [],
-  );
+      return toolCallMessage;
+    } else if (message.type === ChatMessageType.Placeholder) {
+      const placeholderMessage = {
+        ...message,
+        id: uuidv4(),
+      } as ChatMessageWithId;
+      setMessages((prev) => [...prev, placeholderMessage]);
+      return placeholderMessage;
+    } else {
+      const newMessage = createEmptyMessage(message);
+      setMessages((prev) => [...prev, newMessage]);
 
-  const deleteMessage: PlaygroundContextType["deleteMessage"] = useCallback(
-    (id) => {
-      setMessages((prev) => prev.filter((message) => message.id !== id));
-    },
-    [],
-  );
+      return newMessage;
+    }
+  }, []);
+
+  const updateMessage: PlaygroundContextType["updateMessage"] = useCallback((_, id, key, value) => {
+    setMessages((prev) => prev.map((message) => (message.id === id ? { ...message, [key]: value } : message)));
+  }, []);
+
+  const replaceMessage: PlaygroundContextType["replaceMessage"] = useCallback((id, message) => {
+    setMessages((prev) => prev.map((m) => (m.id === id ? { id, ...message } : m)));
+  }, []);
+
+  const deleteMessage: PlaygroundContextType["deleteMessage"] = useCallback((id) => {
+    setMessages((prev) => prev.filter((message) => message.id !== id));
+  }, []);
 
   const handleSubmit: PlaygroundContextType["handleSubmit"] = useCallback(
     async (streaming = true) => {
@@ -313,20 +272,14 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
         setOutputJson("");
         setOutputToolCalls([]);
 
-        const finalMessages = getFinalMessages(
-          promptVariables,
-          messages,
-          messagePlaceholders,
-        );
+        const finalMessages = getFinalMessages(promptVariables, messages, messagePlaceholders);
 
         if (finalMessages.length === 0) {
           throw new Error("Please add at least one message with content.");
         }
 
         const leftOverVariables = extractVariables(
-          finalMessages
-            .map((m) => (typeof m.content === "string" ? m.content : ""))
-            .join("\n"),
+          finalMessages.map((m) => (typeof m.content === "string" ? m.content : "")).join("\n"),
         );
 
         if (!modelParams.provider.value || !modelParams.model.value) {
@@ -338,28 +291,18 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
         }
 
         if (tools.length > 0 && structuredOutputSchema) {
-          throw new Error(
-            "Cannot use both tools and structured output at the same time",
-          );
+          throw new Error("Cannot use both tools and structured output at the same time");
         }
 
         let response = "";
         if (tools.length > 0) {
-          const completion = await getChatCompletionWithTools(
-            projectId,
-            finalMessages,
-            modelParams,
-            tools,
-            streaming,
-          );
+          const completion = await getChatCompletionWithTools(projectId, finalMessages, modelParams, tools, streaming);
 
           const displayContent =
             typeof completion.content === "string"
               ? completion.content
-              : (completion.content.find(
-                  (m): m is { type: "text"; text: string } =>
-                    "type" in m && m.type === "text",
-                )?.text as string);
+              : (completion.content.find((m): m is { type: "text"; text: string } => "type" in m && m.type === "text")
+                  ?.text as string);
 
           setOutput(displayContent);
           setOutputToolCalls(completion.tool_calls);
@@ -377,35 +320,19 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
           setOutput(response);
         } else {
           if (streaming) {
-            const completionStream = getChatCompletionStream(
-              projectId,
-              finalMessages,
-              modelParams,
-            );
+            const completionStream = getChatCompletionStream(projectId, finalMessages, modelParams);
 
             for await (const token of completionStream) {
               response += token;
               setOutput(response);
             }
           } else {
-            response = await getChatCompletionNonStreaming(
-              projectId,
-              finalMessages,
-              modelParams,
-            );
+            response = await getChatCompletionNonStreaming(projectId, finalMessages, modelParams);
             setOutput(response);
           }
         }
 
-        setOutputJson(
-          getOutputJson(
-            response,
-            finalMessages,
-            modelParams,
-            tools,
-            structuredOutputSchema,
-          ),
-        );
+        setOutputJson(getOutputJson(response, finalMessages, modelParams, tools, structuredOutputSchema));
         setPlaygroundCache({
           messages,
           modelParams,
@@ -424,8 +351,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
           isStructuredOutput: Boolean(structuredOutputSchema),
         });
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An error occurred";
+        const errorMessage = err instanceof Error ? err.message : "An error occurred";
         showErrorToast("Error", errorMessage);
       } finally {
         setIsStreaming(false);
@@ -446,27 +372,17 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
 
   // Command enter handling moved to Messages component to access streaming preference
 
-  const updatePromptVariableValue = useCallback(
-    (variable: string, value: string) => {
-      setPromptVariables((prev) =>
-        prev.map((v) => (v.name === variable ? { ...v, value } : v)),
-      );
-    },
-    [],
-  );
+  const updatePromptVariableValue = useCallback((variable: string, value: string) => {
+    setPromptVariables((prev) => prev.map((v) => (v.name === variable ? { ...v, value } : v)));
+  }, []);
 
   const deletePromptVariable = useCallback((variable: string) => {
     setPromptVariables((prev) => prev.filter((v) => v.name !== variable));
   }, []);
 
-  const updateMessagePlaceholderValue = useCallback(
-    (name: string, value: ChatMessage[]) => {
-      setMessagePlaceholders((prev) =>
-        prev.map((p) => (p.name === name ? { ...p, value } : p)),
-      );
-    },
-    [],
-  );
+  const updateMessagePlaceholderValue = useCallback((name: string, value: ChatMessage[]) => {
+    setMessagePlaceholders((prev) => prev.map((p) => (p.name === name ? { ...p, value } : p)));
+  }, []);
 
   const deleteMessagePlaceholder = useCallback((name: string) => {
     setMessagePlaceholders((prev) => prev.filter((p) => p.name !== name));
@@ -486,18 +402,15 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
 
     setMessagePlaceholders((prev) => {
       // Set isUsed flag for existing placeholders and remove unused ones
-      const next = prev.reduce<PlaceholderMessageFillIn[]>(
-        (updatedPlaceholders, p) => {
-          const isUsed = placeholderNames.includes(p.name);
-          // Remove unused placeholders
-          if (!isUsed && p.value.length === 0) {
-            return updatedPlaceholders;
-          }
-          updatedPlaceholders.push({ ...p, isUsed });
+      const next = prev.reduce<PlaceholderMessageFillIn[]>((updatedPlaceholders, p) => {
+        const isUsed = placeholderNames.includes(p.name);
+        // Remove unused placeholders
+        if (!isUsed && p.value.length === 0) {
           return updatedPlaceholders;
-        },
-        [],
-      );
+        }
+        updatedPlaceholders.push({ ...p, isUsed });
+        return updatedPlaceholders;
+      }, []);
 
       // Add new placeholders
       for (const name of placeholderNames) {
@@ -592,26 +505,14 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
       }
     };
 
-    playgroundEventBus.addEventListener(
-      PLAYGROUND_EVENTS.EXECUTE_ALL,
-      handleGlobalExecute,
-    );
-    playgroundEventBus.addEventListener(
-      PLAYGROUND_EVENTS.STOP_ALL,
-      handleGlobalStop,
-    );
+    playgroundEventBus.addEventListener(PLAYGROUND_EVENTS.EXECUTE_ALL, handleGlobalExecute);
+    playgroundEventBus.addEventListener(PLAYGROUND_EVENTS.STOP_ALL, handleGlobalStop);
 
     return () => {
       unregisterWindow(effectiveWindowId);
 
-      playgroundEventBus.removeEventListener(
-        PLAYGROUND_EVENTS.EXECUTE_ALL,
-        handleGlobalExecute,
-      );
-      playgroundEventBus.removeEventListener(
-        PLAYGROUND_EVENTS.STOP_ALL,
-        handleGlobalStop,
-      );
+      playgroundEventBus.removeEventListener(PLAYGROUND_EVENTS.EXECUTE_ALL, handleGlobalExecute);
+      playgroundEventBus.removeEventListener(PLAYGROUND_EVENTS.STOP_ALL, handleGlobalStop);
     };
   }, [
     windowId,
@@ -646,9 +547,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
       new CustomEvent(PLAYGROUND_EVENTS.WINDOW_MODEL_CONFIG_CHANGE, {
         detail: {
           windowId: windowId || MULTI_WINDOW_CONFIG.DEFAULT_WINDOW_ID,
-          hasModel: Boolean(
-            modelParams.provider.value && modelParams.model.value,
-          ),
+          hasModel: Boolean(modelParams.provider.value && modelParams.model.value),
         },
       }),
     );
@@ -715,14 +614,11 @@ async function getChatCompletionWithTools(
     streaming,
   });
 
-  const result = await fetch(
-    `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-    },
-  );
+  const result = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
 
   const responseData = await result.json();
 
@@ -732,10 +628,7 @@ async function getChatCompletionWithTools(
 
   const parsed = ToolCallResponseSchema.safeParse(responseData);
   if (!parsed.success)
-    throw Error(
-      "Failed to parse tool call response client-side:\n" +
-        JSON.stringify(responseData, null, 2),
-    );
+    throw Error("Failed to parse tool call response client-side:\n" + JSON.stringify(responseData, null, 2));
 
   return parsed.data;
 }
@@ -757,14 +650,11 @@ async function getChatCompletionWithStructuredOutput(
     streaming,
   });
 
-  const result = await fetch(
-    `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-    },
-  );
+  const result = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
 
   if (!result.ok) {
     const responseData = await result.json();
@@ -791,9 +681,7 @@ async function* getChatCompletionStream(
     return;
   }
 
-  const hasToolResults = messages.some(
-    (msg) => msg.type === ChatMessageType.ToolResult,
-  );
+  const hasToolResults = messages.some((msg) => msg.type === ChatMessageType.ToolResult);
 
   const body = JSON.stringify({
     projectId,
@@ -805,14 +693,11 @@ async function* getChatCompletionStream(
     ...(hasToolResults && { tools: [] }),
   });
 
-  const result = await fetch(
-    `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-    },
-  );
+  const result = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
 
   if (!result.ok) {
     const errorData = await result.json();
@@ -851,9 +736,7 @@ async function getChatCompletionNonStreaming(
     throw new Error("Project ID is not set");
   }
 
-  const hasToolResults = messages.some(
-    (msg) => msg.type === ChatMessageType.ToolResult,
-  );
+  const hasToolResults = messages.some((msg) => msg.type === ChatMessageType.ToolResult);
 
   const body = JSON.stringify({
     projectId,
@@ -865,14 +748,11 @@ async function getChatCompletionNonStreaming(
     ...(hasToolResults && { tools: [] }),
   });
 
-  const result = await fetch(
-    `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-    },
-  );
+  const result = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chatCompletion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
 
   if (!result.ok) {
     const errorData = await result.json();
@@ -891,28 +771,21 @@ function getFinalMessages(
   const missingVariables = promptVariables.filter((v) => !v.value && v.isUsed);
   if (missingVariables.length > 0) {
     throw new Error(
-      `Please set a value for the following variables: ${missingVariables
-        .map((v) => v.name)
-        .join(", ")}`,
+      `Please set a value for the following variables: ${missingVariables.map((v) => v.name).join(", ")}`,
     );
   }
 
-  const missingPlaceholders = messagePlaceholders.filter(
-    (p) => p.value.length === 0 && p.isUsed,
-  );
+  const missingPlaceholders = messagePlaceholders.filter((p) => p.value.length === 0 && p.isUsed);
   if (missingPlaceholders.length > 0) {
     throw new Error(
-      `Please set values for the following message placeholders: ${missingPlaceholders
-        .map((p) => p.name)
-        .join(", ")}`,
+      `Please set values for the following message placeholders: ${missingPlaceholders.map((p) => p.name).join(", ")}`,
     );
   }
 
-  const placeholderValues: MessagePlaceholderValues =
-    messagePlaceholders.reduce((placeholderMap, p) => {
-      placeholderMap[p.name] = p.value;
-      return placeholderMap;
-    }, {} as MessagePlaceholderValues);
+  const placeholderValues: MessagePlaceholderValues = messagePlaceholders.reduce((placeholderMap, p) => {
+    placeholderMap[p.name] = p.value;
+    return placeholderMap;
+  }, {} as MessagePlaceholderValues);
 
   const textVariables = promptVariables.reduce(
     (variableMap, v) => {
@@ -922,11 +795,7 @@ function getFinalMessages(
     {} as Record<string, string>,
   );
 
-  const compiledMessages = compileChatMessagesWithIds(
-    messages,
-    placeholderValues,
-    textVariables,
-  );
+  const compiledMessages = compileChatMessagesWithIds(messages, placeholderValues, textVariables);
 
   // Filter empty messages (except tool calls), e.g. if placeholder value was empty
   return compiledMessages.filter((m) => {
@@ -934,10 +803,7 @@ function getFinalMessages(
     if (typeof m.content === "string") {
       return (
         m.content.length > 0 ||
-        ("toolCalls" in m &&
-          m.toolCalls &&
-          Array.isArray(m.toolCalls) &&
-          m.toolCalls.length > 0)
+        ("toolCalls" in m && m.toolCalls && Array.isArray(m.toolCalls) && m.toolCalls.length > 0)
       );
     }
 

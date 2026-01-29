@@ -12,10 +12,7 @@ export function resolveProjectRole({
   projectMemberships: ProjectMembership[];
   orgMembershipRole: Role;
 }): Role {
-  return (
-    projectMemberships.find((membership) => membership.projectId === projectId)
-      ?.role ?? orgMembershipRole
-  );
+  return projectMemberships.find((membership) => membership.projectId === projectId)?.role ?? orgMembershipRole;
 }
 
 /**
@@ -112,9 +109,7 @@ export const getUserProjectRoles = async ({
   page?: number;
   orderBy: Prisma.Sql;
 }) => {
-  return await prisma.$queryRaw<
-    Array<{ id: string; name: string; email: string; role: Role }>
-  >(
+  return await prisma.$queryRaw<Array<{ id: string; name: string; email: string; role: Role }>>(
     generateUserProjectRolesQuery({
       select: Prisma.sql`all_eligible_users.id, all_eligible_users.name, all_eligible_users.email, all_eligible_users.role`,
       projectId,

@@ -11,9 +11,7 @@ export class RedirectValidationError extends Error {
     public redirectUrl: string,
     public redirectDepth: number,
   ) {
-    super(
-      `Redirect validation failed at depth ${redirectDepth} for url ${redirectUrl}: ${message}`,
-    );
+    super(`Redirect validation failed at depth ${redirectDepth} for url ${redirectUrl}: ${message}`);
     this.name = "RedirectValidationError";
   }
 }
@@ -26,9 +24,7 @@ export class MaxRedirectsExceededError extends Error {
     public maxRedirects: number,
     public redirectChain: string[],
   ) {
-    super(
-      `Maximum redirects (${maxRedirects}) exceeded. Chain: ${redirectChain.join(" → ")}`,
-    );
+    super(`Maximum redirects (${maxRedirects}) exceeded. Chain: ${redirectChain.join(" → ")}`);
     this.name = "MaxRedirectsExceededError";
   }
 }
@@ -116,10 +112,7 @@ export async function fetchWithSecureRedirects(
     const response = await fetch(currentUrl, fetchOptions);
 
     // Check if this is a redirect response (3xx status codes)
-    const isRedirect =
-      response.status >= 300 &&
-      response.status < 400 &&
-      response.status !== 304; // 304 Not Modified is not a redirect
+    const isRedirect = response.status >= 300 && response.status < 400 && response.status !== 304; // 304 Not Modified is not a redirect
 
     if (!isRedirect) {
       // This is the final response, return it
@@ -140,9 +133,7 @@ export async function fetchWithSecureRedirects(
     const location = response.headers.get("Location");
 
     if (!location) {
-      throw new Error(
-        `Redirect response (${response.status}) missing Location header at ${currentUrl}`,
-      );
+      throw new Error(`Redirect response (${response.status}) missing Location header at ${currentUrl}`);
     }
 
     // Resolve relative URLs against the current URL
@@ -173,10 +164,7 @@ export async function fetchWithSecureRedirects(
 
     // Check if we've hit the redirect limit
     if (redirectDepth >= maxRedirects) {
-      throw new MaxRedirectsExceededError(maxRedirects, [
-        ...redirectChain,
-        redirectUrl,
-      ]);
+      throw new MaxRedirectsExceededError(maxRedirects, [...redirectChain, redirectUrl]);
     }
 
     // Validate the redirect target URL before following
@@ -206,8 +194,5 @@ export async function fetchWithSecureRedirects(
 
   // This should never be reached due to the check inside the loop,
   // but included for completeness
-  throw new MaxRedirectsExceededError(maxRedirects, [
-    ...redirectChain,
-    currentUrl,
-  ]);
+  throw new MaxRedirectsExceededError(maxRedirects, [...redirectChain, currentUrl]);
 }

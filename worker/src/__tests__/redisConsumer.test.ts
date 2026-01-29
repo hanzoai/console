@@ -1,10 +1,6 @@
 import { expect, test, describe, vi, afterEach } from "vitest";
 import { randomUUID } from "crypto";
-import {
-  QueueJobs,
-  QueueName,
-  TraceUpsertQueue,
-} from "@hanzo/shared/src/server";
+import { QueueJobs, QueueName, TraceUpsertQueue } from "@hanzo/shared/src/server";
 import { WorkerManager } from "../queues/workerManager";
 
 describe.sequential("handle redis events", () => {

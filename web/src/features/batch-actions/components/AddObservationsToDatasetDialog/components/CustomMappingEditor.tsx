@@ -55,19 +55,13 @@ export function CustomMappingEditor({
     }
   };
 
-  const handleRootConfigChange = (
-    field: "sourceField" | "jsonPath",
-    value: string,
-  ) => {
+  const handleRootConfigChange = (field: "sourceField" | "jsonPath", value: string) => {
     onChange({
       ...config,
       rootConfig: {
         sourceField:
-          field === "sourceField"
-            ? (value as SourceField)
-            : (config.rootConfig?.sourceField ?? defaultSourceField),
-        jsonPath:
-          field === "jsonPath" ? value : (config.rootConfig?.jsonPath ?? "$."),
+          field === "sourceField" ? (value as SourceField) : (config.rootConfig?.sourceField ?? defaultSourceField),
+        jsonPath: field === "jsonPath" ? value : (config.rootConfig?.jsonPath ?? "$."),
       },
     });
   };
@@ -119,18 +113,12 @@ export function CustomMappingEditor({
     });
   };
 
-  const handleEntryChange = (
-    id: string,
-    field: keyof KeyValueMappingEntry,
-    value: string,
-  ) => {
+  const handleEntryChange = (id: string, field: keyof KeyValueMappingEntry, value: string) => {
     const entries = config.keyValueMapConfig?.entries ?? [];
     onChange({
       ...config,
       keyValueMapConfig: {
-        entries: entries.map((e) =>
-          e.id === id ? { ...e, [field]: value } : e,
-        ),
+        entries: entries.map((e) => (e.id === id ? { ...e, [field]: value } : e)),
       },
     });
   };
@@ -144,11 +132,7 @@ export function CustomMappingEditor({
     <div className="space-y-2 rounded-md border bg-muted/30 p-4">
       <div>
         <Label className="text-sm font-medium">Target</Label>
-        <Tabs
-          value={config.type}
-          onValueChange={(v) => handleTypeChange(v as MappingTarget)}
-          className="mt-2"
-        >
+        <Tabs value={config.type} onValueChange={(v) => handleTypeChange(v as MappingTarget)} className="mt-2">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="root">Root</TabsTrigger>
             <TabsTrigger value="keyValueMap">Key-value map</TabsTrigger>
@@ -173,15 +157,11 @@ export function CustomMappingEditor({
               <JsonPathInput
                 value={config.rootConfig?.jsonPath ?? "$."}
                 onChange={(v) => handleRootConfigChange("jsonPath", v)}
-                sourceData={getSourceData(
-                  config.rootConfig?.sourceField ?? defaultSourceField,
-                )}
+                sourceData={getSourceData(config.rootConfig?.sourceField ?? defaultSourceField)}
                 placeholder="$.path.to.field"
               />
             </div>
-            <p className="p-1 text-xs text-muted-foreground">
-              Start with $. to use a JSON path (e.g., $.field)
-            </p>
+            <p className="p-1 text-xs text-muted-foreground">Start with $. to use a JSON path (e.g., $.field)</p>
           </div>
         </div>
       )}
@@ -190,17 +170,14 @@ export function CustomMappingEditor({
         <div className="max-h-[35vh] space-y-3 overflow-auto">
           <Label className="text-sm font-medium">Key-value mappings</Label>
           <p className="text-xs text-muted-foreground">
-            Build an object with custom keys. Values starting with $ are treated
-            as JSON paths.
+            Build an object with custom keys. Values starting with $ are treated as JSON paths.
           </p>
 
           <div className="space-y-3">
             {(config.keyValueMapConfig?.entries ?? []).map((entry) => {
               // Determine if this entry can be removed
-              const isRequiredSchemaField =
-                entry.fromSchema === true && entry.isRequired === true;
-              const hasMultipleEntries =
-                (config.keyValueMapConfig?.entries.length ?? 0) > 1;
+              const isRequiredSchemaField = entry.fromSchema === true && entry.isRequired === true;
+              const hasMultipleEntries = (config.keyValueMapConfig?.entries.length ?? 0) > 1;
               const canRemove = !isRequiredSchemaField && hasMultipleEntries;
 
               return (
@@ -208,12 +185,8 @@ export function CustomMappingEditor({
                   key={entry.id}
                   entry={entry}
                   onKeyChange={(key) => handleEntryChange(entry.id, "key", key)}
-                  onSourceFieldChange={(sf) =>
-                    handleEntryChange(entry.id, "sourceField", sf)
-                  }
-                  onValueChange={(value) =>
-                    handleEntryChange(entry.id, "value", value)
-                  }
+                  onSourceFieldChange={(sf) => handleEntryChange(entry.id, "sourceField", sf)}
+                  onValueChange={(value) => handleEntryChange(entry.id, "value", value)}
                   onRemove={() => handleRemoveEntry(entry.id)}
                   canRemove={canRemove}
                   sourceData={getSourceData(entry.sourceField)}
@@ -222,12 +195,7 @@ export function CustomMappingEditor({
             })}
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleAddEntry}
-            className="w-full"
-          >
+          <Button type="button" variant="outline" onClick={handleAddEntry} className="w-full">
             <Plus className="mr-2 h-4 w-4" />
             Add field
           </Button>
@@ -261,19 +229,13 @@ function KeyValueEntryRow({
   const isRequired = entry.isRequired === true;
 
   return (
-    <div
-      className={`space-y-2 rounded-md border bg-background p-3 ${
-        isSchemaField ? "border-primary/30" : ""
-      }`}
-    >
+    <div className={`space-y-2 rounded-md border bg-background p-3 ${isSchemaField ? "border-primary/30" : ""}`}>
       <div className="grid grid-cols-[1fr,auto] gap-2">
         <div>
           <Label className="text-xs text-muted-foreground">
             Key
             {isRequired && <span className="ml-1 text-destructive">*</span>}
-            {isSchemaField && (
-              <span className="ml-2 text-primary">(from schema)</span>
-            )}
+            {isSchemaField && <span className="ml-2 text-primary">(from schema)</span>}
           </Label>
           <Input
             value={entry.key}
@@ -292,19 +254,9 @@ function KeyValueEntryRow({
             onClick={onRemove}
             disabled={!canRemove}
             className="h-8 w-8 p-0"
-            title={
-              isSchemaField && isRequired
-                ? "Required schema field cannot be removed"
-                : "Remove field"
-            }
+            title={isSchemaField && isRequired ? "Required schema field cannot be removed" : "Remove field"}
           >
-            <Trash2
-              className={`h-4 w-4 ${
-                !canRemove
-                  ? "text-muted-foreground/30"
-                  : "text-muted-foreground"
-              }`}
-            />
+            <Trash2 className={`h-4 w-4 ${!canRemove ? "text-muted-foreground/30" : "text-muted-foreground"}`} />
           </Button>
         </div>
       </div>
@@ -313,17 +265,11 @@ function KeyValueEntryRow({
         <div>
           <Label className="text-xs text-muted-foreground">Source</Label>
           <div className="mt-1">
-            <SourceFieldSelector
-              value={entry.sourceField}
-              onChange={onSourceFieldChange}
-              disabled={!isPath}
-            />
+            <SourceFieldSelector value={entry.sourceField} onChange={onSourceFieldChange} disabled={!isPath} />
           </div>
         </div>
         <div>
-          <Label className="text-xs text-muted-foreground">
-            Value {!isPath && "(literal)"}
-          </Label>
+          <Label className="text-xs text-muted-foreground">Value {!isPath && "(literal)"}</Label>
           <div className="mt-1">
             {isPath ? (
               <JsonPathInput
@@ -342,9 +288,7 @@ function KeyValueEntryRow({
               />
             )}
 
-            <p className="pt-1 text-xs text-muted-foreground">
-              Start with $. to use a JSON path (e.g., $.field)
-            </p>
+            <p className="pt-1 text-xs text-muted-foreground">Start with $. to use a JSON path (e.g., $.field)</p>
           </div>
         </div>
       </div>

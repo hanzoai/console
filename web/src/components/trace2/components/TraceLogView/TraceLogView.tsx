@@ -37,11 +37,7 @@ import { useTraceData } from "@/src/components/trace2/contexts/TraceDataContext"
 import { useViewPreferences } from "@/src/components/trace2/contexts/ViewPreferencesContext";
 import { useJsonExpansion } from "@/src/components/trace2/contexts/JsonExpansionContext";
 import { JSONTableView } from "@/src/components/trace2/components/_shared/JSONTableView";
-import {
-  flattenChronological,
-  flattenTreeOrder,
-  filterBySearch,
-} from "./log-view-flattening";
+import { flattenChronological, flattenTreeOrder, filterBySearch } from "./log-view-flattening";
 import { type FlatLogItem } from "./log-view-types";
 import { LogViewToolbar } from "./LogViewToolbar";
 import { LogViewExpandedContent } from "./LogViewExpandedContent";
@@ -70,30 +66,23 @@ const {
 // Re-export thresholds for use in parent components
 export { LOG_VIEW_VIRTUALIZATION_THRESHOLD };
 
-export const TraceLogView = ({
-  traceId,
-  projectId,
-  currentView = "pretty",
-}: TraceLogViewProps) => {
+export const TraceLogView = ({ traceId, projectId, currentView = "pretty" }: TraceLogViewProps) => {
   const { roots, observations } = useTraceData();
   const { logViewMode, logViewTreeStyle } = useViewPreferences();
   const { formattedExpansion, setFormattedFieldExpansion } = useJsonExpansion();
 
   // Determine if we should virtualize based on observation count
-  const isVirtualized =
-    observations.length >= LOG_VIEW_VIRTUALIZATION_THRESHOLD;
+  const isVirtualized = observations.length >= LOG_VIEW_VIRTUALIZATION_THRESHOLD;
 
   // Determine if download/copy should use cached I/O only (vs loading all)
-  const isDownloadCacheOnly =
-    observations.length >= LOG_VIEW_DOWNLOAD_THRESHOLD;
+  const isDownloadCacheOnly = observations.length >= LOG_VIEW_DOWNLOAD_THRESHOLD;
 
   // Get expanded keys from context (persisted in sessionStorage)
   // Uses dynamic key format: logViewRows:${traceId}
   const expandedRowsKey = `logViewRows:${traceId}`;
 
   const expandedKeys = useMemo(() => {
-    const expandedRowsState = (formattedExpansion[expandedRowsKey] ??
-      {}) as Record<string, boolean>;
+    const expandedRowsState = (formattedExpansion[expandedRowsKey] ?? {}) as Record<string, boolean>;
     return new Set(
       Object.entries(expandedRowsState)
         .filter(([, isExpanded]) => isExpanded)
@@ -104,10 +93,7 @@ export const TraceLogView = ({
   // Update expanded keys in context
   const setExpandedKeys = useCallback(
     (keysOrUpdater: Set<string> | ((prev: Set<string>) => Set<string>)) => {
-      const newKeys =
-        typeof keysOrUpdater === "function"
-          ? keysOrUpdater(expandedKeys)
-          : keysOrUpdater;
+      const newKeys = typeof keysOrUpdater === "function" ? keysOrUpdater(expandedKeys) : keysOrUpdater;
 
       // Convert Set to Record<string, boolean>
       const newState: Record<string, boolean> = {};
@@ -144,9 +130,7 @@ export const TraceLogView = ({
 
   // Flatten tree based on mode
   const allItems = useMemo(() => {
-    return logViewMode === "chronological"
-      ? flattenChronological(roots)
-      : flattenTreeOrder(roots);
+    return logViewMode === "chronological" ? flattenChronological(roots) : flattenTreeOrder(roots);
   }, [roots, logViewMode]);
 
   // Apply search filter
@@ -171,11 +155,7 @@ export const TraceLogView = ({
       if (treeStyle !== "indented" || item.node.depth <= 0) return null;
 
       return (
-        <LogViewTreeIndent
-          treeLines={item.treeLines}
-          isLastSibling={item.isLastSibling}
-          depth={item.node.depth}
-        />
+        <LogViewTreeIndent treeLines={item.treeLines} isLastSibling={item.isLastSibling} depth={item.node.depth} />
       );
     },
     [treeStyle],
@@ -195,21 +175,12 @@ export const TraceLogView = ({
           currentView={currentView}
           externalExpansionState={formattedExpansion[observationExpansionKey]}
           onExternalExpansionChange={(exp) =>
-            setFormattedFieldExpansion(
-              observationExpansionKey,
-              exp as Record<string, boolean>,
-            )
+            setFormattedFieldExpansion(observationExpansionKey, exp as Record<string, boolean>)
           }
         />
       );
     },
-    [
-      traceId,
-      projectId,
-      currentView,
-      formattedExpansion,
-      setFormattedFieldExpansion,
-    ],
+    [traceId, projectId, currentView, formattedExpansion, setFormattedFieldExpansion],
   );
 
   // Track if all rows are expanded (for non-virtualized mode)
@@ -246,16 +217,15 @@ export const TraceLogView = ({
   });
 
   // Download and copy handlers
-  const { handleCopyJson, handleDownloadJson, isDownloadOrCopyLoading } =
-    useLogViewDownload({
-      traceId,
-      isDownloadCacheOnly,
-      allObservationsData: allObservationsIO.data,
-      isLoadingAllData: allObservationsIO.isLoading,
-      failedObservationIds: allObservationsIO.failedObservationIds,
-      loadAllData: allObservationsIO.loadAllData,
-      buildDataFromCache: allObservationsIO.buildDataFromCache,
-    });
+  const { handleCopyJson, handleDownloadJson, isDownloadOrCopyLoading } = useLogViewDownload({
+    traceId,
+    isDownloadCacheOnly,
+    allObservationsData: allObservationsIO.data,
+    isLoadingAllData: allObservationsIO.isLoading,
+    failedObservationIds: allObservationsIO.failedObservationIds,
+    loadAllData: allObservationsIO.loadAllData,
+    buildDataFromCache: allObservationsIO.buildDataFromCache,
+  });
 
   // Toggle JSON view collapse
   const handleToggleJsonCollapse = useCallback(() => {
@@ -292,17 +262,13 @@ export const TraceLogView = ({
       {/* Empty states */}
       {hasNoObservations && (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-sm text-muted-foreground">
-            No observations in this trace
-          </div>
+          <div className="text-sm text-muted-foreground">No observations in this trace</div>
         </div>
       )}
 
       {hasNoSearchResults && (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-sm text-muted-foreground">
-            No observations match &quot;{searchQuery}&quot;
-          </div>
+          <div className="text-sm text-muted-foreground">No observations match &quot;{searchQuery}&quot;</div>
         </div>
       )}
 
@@ -319,23 +285,22 @@ export const TraceLogView = ({
 
       {/* Table view mode - render as expandable table */}
       {/* "json-beta" uses table mode since advanced I/O viewer works in expandable rows */}
-      {flatItems.length > 0 &&
-        (currentView === "pretty" || currentView === "json-beta") && (
-          <JSONTableView
-            items={flatItems}
-            columns={columns}
-            getItemKey={(item) => item.node.id}
-            expandable
-            renderExpanded={renderExpanded}
-            expandedKeys={expandedKeys}
-            onExpandedKeysChange={setExpandedKeys}
-            virtualized={isVirtualized}
-            overscan={100}
-            collapsedRowHeight={COLLAPSED_ROW_HEIGHT}
-            expandedRowHeight={EXPANDED_ROW_HEIGHT}
-            renderRowPrefix={renderRowPrefix}
-          />
-        )}
+      {flatItems.length > 0 && (currentView === "pretty" || currentView === "json-beta") && (
+        <JSONTableView
+          items={flatItems}
+          columns={columns}
+          getItemKey={(item) => item.node.id}
+          expandable
+          renderExpanded={renderExpanded}
+          expandedKeys={expandedKeys}
+          onExpandedKeysChange={setExpandedKeys}
+          virtualized={isVirtualized}
+          overscan={100}
+          collapsedRowHeight={COLLAPSED_ROW_HEIGHT}
+          expandedRowHeight={EXPANDED_ROW_HEIGHT}
+          renderRowPrefix={renderRowPrefix}
+        />
+      )}
     </div>
   );
 };

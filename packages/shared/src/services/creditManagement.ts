@@ -4,11 +4,11 @@
  */
 
 export enum CreditTransactionType {
-  PURCHASE = 'PURCHASE',
-  USAGE = 'USAGE',
-  REFUND = 'REFUND',
-  ADJUSTMENT = 'ADJUSTMENT',
-  EXPIRATION = 'EXPIRATION'
+  PURCHASE = "PURCHASE",
+  USAGE = "USAGE",
+  REFUND = "REFUND",
+  ADJUSTMENT = "ADJUSTMENT",
+  EXPIRATION = "EXPIRATION",
 }
 
 export interface CreditOperationResult {
@@ -26,13 +26,13 @@ export class CreditManagementService {
     amount: number,
     type: CreditTransactionType,
     description?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): Promise<CreditOperationResult> {
     return {
       success: false,
       newBalance: 0,
-      transactionId: '',
-      message: 'Credit management is not available in community edition'
+      transactionId: "",
+      message: "Credit management is not available in community edition",
     };
   }
 
@@ -40,13 +40,13 @@ export class CreditManagementService {
     organizationId: string,
     amount: number,
     description?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): Promise<CreditOperationResult> {
     return {
       success: false,
       newBalance: 0,
-      transactionId: '',
-      message: 'Credit management is not available in community edition'
+      transactionId: "",
+      message: "Credit management is not available in community edition",
     };
   }
 
@@ -54,11 +54,7 @@ export class CreditManagementService {
     return 0;
   }
 
-  async getTransactionHistory(
-    organizationId: string,
-    limit: number = 10,
-    offset: number = 0
-  ) {
+  async getTransactionHistory(organizationId: string, limit: number = 10, offset: number = 0) {
     return [];
   }
 }

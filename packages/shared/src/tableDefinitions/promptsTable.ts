@@ -67,9 +67,7 @@ export type PromptOptions = {
   labels: Array<SingleValueOption>;
 };
 
-export function promptsTableColsWithOptions(
-  options?: PromptOptions,
-): ColumnDefinition[] {
+export function promptsTableColsWithOptions(options?: PromptOptions): ColumnDefinition[] {
   return promptsTableCols.map((col) => {
     if (col.id === "tags") {
       return formatColumnOptions(col, options?.tags ?? []);

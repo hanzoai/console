@@ -1,14 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { Line, LineChart, XAxis, YAxis, Legend } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/src/components/ui/chart";
-import {
-  type IntervalConfig,
-  type TimeRange,
-} from "@/src/utils/date-range-utils";
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/src/components/ui/chart";
+import { type IntervalConfig, type TimeRange } from "@/src/utils/date-range-utils";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { formatChartTimestamp } from "../../lib/chart-formatters";
 import { ScoreChartTooltip } from "../../lib/ScoreChartTooltip";
@@ -48,11 +41,7 @@ export function ScoreTimeSeriesNumericChart({
   const chartData = useMemo(() => {
     return data.map((item) => {
       // Format timestamp based on interval and time range
-      const timestamp = formatChartTimestamp(
-        item.timestamp,
-        interval,
-        timeRange,
-      );
+      const timestamp = formatChartTimestamp(item.timestamp, interval, timeRange);
 
       if (isComparisonMode) {
         return {
@@ -82,20 +71,17 @@ export function ScoreTimeSeriesNumericChart({
   }, [hiddenKeys, score1Name, score2Name, isComparisonMode]);
 
   // Toggle handler
-  const handleVisibilityToggle = useCallback(
-    (key: string, visible: boolean) => {
-      setHiddenKeys((prev) => {
-        const next = new Set(prev);
-        if (visible) {
-          next.delete(key);
-        } else {
-          next.add(key);
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const handleVisibilityToggle = useCallback((key: string, visible: boolean) => {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (visible) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   const config: ChartConfig = useMemo(() => {
     if (isComparisonMode && score2Name) {
@@ -167,9 +153,7 @@ export function ScoreTimeSeriesNumericChart({
           strokeWidth={2}
           strokeOpacity={hiddenKeys.has(score1Name) ? 0 : 1}
           dot={!hiddenKeys.has(score1Name)}
-          activeDot={
-            !hiddenKeys.has(score1Name) ? { r: 6, strokeWidth: 0 } : false
-          }
+          activeDot={!hiddenKeys.has(score1Name) ? { r: 6, strokeWidth: 0 } : false}
           connectNulls
         />
         {isComparisonMode && score2Name && (
@@ -180,19 +164,13 @@ export function ScoreTimeSeriesNumericChart({
             strokeWidth={2}
             strokeOpacity={hiddenKeys.has(score2Name) ? 0 : 1}
             dot={!hiddenKeys.has(score2Name)}
-            activeDot={
-              !hiddenKeys.has(score2Name) ? { r: 6, strokeWidth: 0 } : false
-            }
+            activeDot={!hiddenKeys.has(score2Name) ? { r: 6, strokeWidth: 0 } : false}
             connectNulls
           />
         )}
         <ChartTooltip
           content={
-            <ScoreChartTooltip
-              interval={interval}
-              timeRange={timeRange}
-              valueFormatter={compactNumberFormatter}
-            />
+            <ScoreChartTooltip interval={interval} timeRange={timeRange} valueFormatter={compactNumberFormatter} />
           }
         />
         <Legend

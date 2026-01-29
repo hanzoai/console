@@ -32,10 +32,7 @@ export const OrgEnrichedApiKey = z.discriminatedUnion("scope", [
 
 export const API_KEY_NON_EXISTENT = "api-key-non-existent";
 
-export const CachedApiKey = z.union([
-  OrgEnrichedApiKey,
-  z.literal(API_KEY_NON_EXISTENT),
-]);
+export const CachedApiKey = z.union([OrgEnrichedApiKey, z.literal(API_KEY_NON_EXISTENT)]);
 
 export type AuthHeaderVerificationResult =
   | AuthHeaderValidVerificationResult
@@ -68,7 +65,6 @@ type ApiAccessScopeMetadata = {
   isIngestionSuspended: boolean | null | undefined;
 };
 
-export type ApiAccessScopeIngestion = BaseApiAccessScope &
-  MakeOptional<ApiAccessScopeMetadata>;
+export type ApiAccessScopeIngestion = BaseApiAccessScope & MakeOptional<ApiAccessScopeMetadata>;
 
 export type ApiAccessScope = BaseApiAccessScope & ApiAccessScopeMetadata;

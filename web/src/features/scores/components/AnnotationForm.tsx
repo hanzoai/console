@@ -1,24 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  MessageCircleMore,
-  MessageCircle,
-  X,
-  Archive,
-  Loader2,
-  Check,
-  Trash,
-} from "lucide-react";
+import { MessageCircleMore, MessageCircle, X, Archive, Loader2, Check, Trash } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import {
   isPresent,
   type ScoreConfigDomain,
@@ -27,21 +12,12 @@ import {
   type CreateAnnotationScoreData,
 } from "@hanzo/shared";
 import { Input } from "@/src/components/ui/input";
-import {
-  Popover,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Combobox } from "@/src/components/ui/combobox";
 import { Textarea } from "@/src/components/ui/textarea";
 import { HoverCardContent } from "@radix-ui/react-hover-card";
 import { HoverCard, HoverCardTrigger } from "@/src/components/ui/hover-card";
-import {
-  formatAnnotateDescription,
-  isNumericDataType,
-  isScoreUnsaved,
-} from "@/src/features/scores/lib/helpers";
+import { formatAnnotateDescription, isNumericDataType, isScoreUnsaved } from "@/src/features/scores/lib/helpers";
 import { ToggleGroup, ToggleGroupItem } from "@/src/components/ui/toggle-group";
 import Header from "@/src/components/layouts/header";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -99,13 +75,7 @@ function CommentField({
         <div className="relative">
           {savedComment && (
             <PopoverClose asChild>
-              <Button
-                variant="ghost"
-                type="button"
-                size="icon-xs"
-                loading={loading}
-                onClick={() => onSave(null)}
-              >
+              <Button variant="ghost" type="button" size="icon-xs" loading={loading} onClick={() => onSave(null)}>
                 <Trash className="h-3 w-3" />
               </Button>
             </PopoverClose>
@@ -158,14 +128,9 @@ function CommentField({
 
 const renderSelect = (categories: ScoreConfigCategoryDomain[]) => {
   const hasMoreThanThreeCategories = categories.length > 3;
-  const hasLongCategoryNames = categories.some(
-    ({ label }) => label.length > CHAR_CUTOFF,
-  );
+  const hasLongCategoryNames = categories.some(({ label }) => label.length > CHAR_CUTOFF);
 
-  return (
-    hasMoreThanThreeCategories ||
-    (categories.length > 1 && hasLongCategoryNames)
-  );
+  return hasMoreThanThreeCategories || (categories.length > 1 && hasLongCategoryNames);
 };
 
 function AnnotateHeader({
@@ -188,15 +153,9 @@ function AnnotateHeader({
       actionButtons={[
         <div className="flex items-center justify-end" key="saving-spinner">
           <div className="mr-1 items-center justify-center">
-            {showSaving ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <Check className="h-3 w-3" />
-            )}
+            {showSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
           </div>
-          <span className="text-xs text-muted-foreground">
-            {showSaving ? "Saving score data" : "Score data saved"}
-          </span>
+          <span className="text-xs text-muted-foreground">{showSaving ? "Saving score data" : "Score data saved"}</span>
         </div>,
         actionButtons,
       ]}
@@ -260,16 +219,9 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
   const [showSaving, setShowSaving] = useState(false);
 
   useEffect(() => {
-    const isPending =
-      createMutation.isPending ||
-      updateMutation.isPending ||
-      deleteMutation.isPending;
+    const isPending = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
     setShowSaving(isPending);
-  }, [
-    createMutation.isPending,
-    updateMutation.isPending,
-    deleteMutation.isPending,
-  ]);
+  }, [createMutation.isPending, updateMutation.isPending, deleteMutation.isPending]);
 
   const rollbackDeleteError = (
     index: number,
@@ -342,11 +294,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
     capture("score:delete", analyticsData);
   };
 
-  const rollbackUpdateError = (
-    index: number,
-    previousValue?: number | null,
-    previousStringValue?: string | null,
-  ) => {
+  const rollbackUpdateError = (index: number, previousValue?: number | null, previousStringValue?: string | null) => {
     form.setValue(`scoreData.${index}.value`, previousValue);
     form.setValue(`scoreData.${index}.stringValue`, previousStringValue);
     form.setError(`scoreData.${index}.value`, {
@@ -372,11 +320,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
     });
   };
 
-  const handleUpsert = (
-    index: number,
-    value: number | null,
-    stringValue: string | null,
-  ) => {
+  const handleUpsert = (index: number, value: number | null, stringValue: string | null) => {
     const field = controlledFields[index];
     if (!field) return;
 
@@ -392,11 +336,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
     form.setValue(`scoreData.${index}.stringValue`, stringValue);
 
     // Fire mutation
-    const {
-      id: scoreId,
-      timestamp: scoreTimestamp,
-      ...fieldWithoutIdAndTimestamp
-    } = field;
+    const { id: scoreId, timestamp: scoreTimestamp, ...fieldWithoutIdAndTimestamp } = field;
 
     const baseScoreData = {
       ...fieldWithoutIdAndTimestamp,
@@ -414,8 +354,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
           timestamp: scoreTimestamp ?? undefined,
         } as UpdateAnnotationScoreData,
         {
-          onError: () =>
-            rollbackUpdateError(index, previousValue, previousStringValue),
+          onError: () => rollbackUpdateError(index, previousValue, previousStringValue),
         },
       );
     } else {
@@ -430,14 +369,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
           timestamp,
         } as CreateAnnotationScoreData,
         {
-          onError: () =>
-            rollbackCreateError(
-              index,
-              previousValue,
-              previousStringValue,
-              previousId,
-              previousTimestamp,
-            ),
+          onError: () => rollbackCreateError(index, previousValue, previousStringValue, previousId, previousTimestamp),
         },
       );
     }
@@ -478,9 +410,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
 
     if (!config || !field) return;
 
-    const numericCategoryValue = config.categories?.find(
-      ({ label }) => label === stringValue,
-    )?.value;
+    const numericCategoryValue = config.categories?.find(({ label }) => label === stringValue)?.value;
 
     if (!isPresent(numericCategoryValue)) return;
 
@@ -531,11 +461,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
   return (
     <div className="mx-auto w-full space-y-2 overflow-y-auto md:max-h-full">
       <div className="sticky top-0 z-10 rounded-sm bg-background">
-        <AnnotateHeader
-          showSaving={showSaving}
-          actionButtons={actionButtons}
-          description={description}
-        />
+        <AnnotateHeader showSaving={showSaving} actionButtons={actionButtons} description={description} />
         {allowManualSelection ? (
           <div className="grid grid-flow-col items-center">
             <MultiSelectKeyValues
@@ -557,13 +483,8 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
               controlButtons={
                 <DropdownMenuItem
                   onSelect={() => {
-                    capture(
-                      "score_configs:manage_configs_item_click",
-                      analyticsData,
-                    );
-                    router.push(
-                      `/project/${scoreMetadata.projectId}/settings/scores`,
-                    );
+                    capture("score_configs:manage_configs_item_click", analyticsData);
+                    router.push(`/project/${scoreMetadata.projectId}/settings/scores`);
                   }}
                 >
                   Manage score configs
@@ -582,9 +503,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
               render={() => (
                 <>
                   {controlledFields.map((score, index) => {
-                    const config = configs.find(
-                      (config) => config.id === score.configId,
-                    );
+                    const config = configs.find((config) => config.id === score.configId);
                     if (!config) return null;
                     const categories = enrichCategoryOptionsWithStaleScoreValue(
                       config.categories ?? [],
@@ -597,17 +516,13 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                         className="grid w-full grid-cols-[1fr,2fr] items-center gap-8 text-left"
                       >
                         <div className="grid h-full grid-cols-[1fr,auto] items-center">
-                          {config.description ||
-                          isPresent(config.maxValue) ||
-                          isPresent(config.minValue) ? (
+                          {config.description || isPresent(config.maxValue) || isPresent(config.minValue) ? (
                             <HoverCard>
                               <HoverCardTrigger asChild>
                                 <span
                                   className={cn(
                                     "line-clamp-2 break-words text-xs font-medium underline decoration-muted-gray decoration-dashed underline-offset-2",
-                                    config.isArchived
-                                      ? "text-foreground/40"
-                                      : "",
+                                    config.isArchived ? "text-foreground/40" : "",
                                   )}
                                 >
                                   {score.name}
@@ -636,10 +551,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                 size="xs"
                                 title="Add or view score comment"
                                 className="h-full px-0 pl-1 disabled:text-primary/50 disabled:opacity-100"
-                                disabled={
-                                  isScoreUnsaved(score.id) ||
-                                  (config.isArchived && !score.comment)
-                                }
+                                disabled={isScoreUnsaved(score.id) || (config.isArchived && !score.comment)}
                               >
                                 {score.comment ? (
                                   <MessageCircleMore className="h-4 w-4" />
@@ -661,10 +573,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                         loading={updateMutation.isPending}
                                         onSave={(newComment) => {
                                           const trimmed = newComment?.trim();
-                                          handleCommentUpdate(
-                                            index,
-                                            trimmed || null,
-                                          );
+                                          handleCommentUpdate(index, trimmed || null);
                                         }}
                                       />
                                     </FormControl>
@@ -757,10 +666,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                             variant="outline"
                                             className="grid grid-flow-col gap-1 text-nowrap px-1 text-xs font-normal opacity-50"
                                           >
-                                            <span
-                                              className="truncate"
-                                              title={category.label}
-                                            >
+                                            <span className="truncate" title={category.label}>
                                               {category.label}
                                             </span>
                                             <span>{`(${category.value})`}</span>
@@ -772,10 +678,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                             variant="outline"
                                             className="grid grid-flow-col gap-1 text-nowrap px-1 text-xs font-normal"
                                           >
-                                            <span
-                                              className="truncate"
-                                              title={category.label}
-                                            >
+                                            <span className="truncate" title={category.label}>
                                               {category.label}
                                             </span>
                                           </ToggleGroupItem>
@@ -802,13 +705,8 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent>
-                                <h2 className="text-md mb-3 font-semibold">
-                                  Your score is archived
-                                </h2>
-                                <p className="mb-3 text-sm">
-                                  This action will delete your score
-                                  irreversibly.
-                                </p>
+                                <h2 className="text-md mb-3 font-semibold">Your score is archived</h2>
+                                <p className="mb-3 text-sm">This action will delete your score irreversibly.</p>
                                 <div className="flex justify-end space-x-4">
                                   <Button
                                     type="button"
@@ -827,14 +725,8 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                               type="button"
                               className="px-0 pl-1"
                               title="Delete score from trace/observation"
-                              disabled={
-                                isScoreUnsaved(score.id) ||
-                                updateMutation.isPending
-                              }
-                              loading={
-                                deleteMutation.isPending &&
-                                !isScoreUnsaved(score.id)
-                              }
+                              disabled={isScoreUnsaved(score.id) || updateMutation.isPending}
+                              loading={deleteMutation.isPending && !isScoreUnsaved(score.id)}
                               onClick={() => handleDeleteScore(index)}
                             >
                               <X className="h-4 w-4" />
@@ -863,11 +755,10 @@ export function AnnotationForm<Target extends ScoreTarget>({
   configSelection = { mode: "selectable" },
 }: AnnotationFormType<Target>) {
   const { projectId } = scoreMetadata;
-  const { isLoading, availableConfigs, selectedConfigIds } =
-    useAnnotationScoreConfigs({
-      projectId,
-      configSelection,
-    });
+  const { isLoading, availableConfigs, selectedConfigIds } = useAnnotationScoreConfigs({
+    projectId,
+    configSelection,
+  });
 
   // Step 1: Transform server scores to annotation scores
   const serverAnnotationScores = useMemo(() => {
@@ -886,10 +777,7 @@ export function AnnotationForm<Target extends ScoreTarget>({
   }, [serverScores, availableConfigs, scoreTarget]);
 
   // Step 2: Merge with cache
-  const annotationScores = useMergedAnnotationScores(
-    serverAnnotationScores,
-    scoreTarget,
-  );
+  const annotationScores = useMergedAnnotationScores(serverAnnotationScores, scoreTarget);
 
   const initialFormData: AnnotationScoreFormData[] = [];
   const configIds = new Set<string>();
@@ -924,9 +812,7 @@ export function AnnotationForm<Target extends ScoreTarget>({
     }
   });
 
-  const sortedInitialFormData = initialFormData.sort((a, b) =>
-    a.name.localeCompare(b.name),
-  );
+  const sortedInitialFormData = initialFormData.sort((a, b) => a.name.localeCompare(b.name));
 
   return isLoading ? (
     <Skeleton className="h-full w-full" />

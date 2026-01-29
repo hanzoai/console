@@ -7,11 +7,7 @@
  * Run with: pnpm test-client --testPathPattern="json-expansion-utils"
  */
 
-import {
-  normalizeKey,
-  normalizeExpansionState,
-  denormalizeExpansionState,
-} from "./json-expansion-utils";
+import { normalizeKey, normalizeExpansionState, denormalizeExpansionState } from "./json-expansion-utils";
 
 describe("json-expansion-utils", () => {
   describe("normalizeKey", () => {
@@ -26,9 +22,7 @@ describe("json-expansion-utils", () => {
     });
 
     it("handles combined hyphen conversion and ID removal", () => {
-      expect(normalizeKey("natural-language-filter (abc12345)")).toBe(
-        "natural.language.filter",
-      );
+      expect(normalizeKey("natural-language-filter (abc12345)")).toBe("natural.language.filter");
     });
 
     it("leaves simple keys unchanged", () => {
@@ -37,9 +31,7 @@ describe("json-expansion-utils", () => {
     });
 
     it("handles keys with dots and hyphens", () => {
-      expect(normalizeKey("deeply-nested-path.sub.item")).toBe(
-        "deeply.nested.path.sub.item",
-      );
+      expect(normalizeKey("deeply-nested-path.sub.item")).toBe("deeply.nested.path.sub.item");
     });
 
     it("only removes valid 8-char hex IDs", () => {
@@ -108,18 +100,14 @@ describe("json-expansion-utils", () => {
     it("returns empty object when no matching observation keys", () => {
       const normalizedState = { "non.existent": true };
       const observationKeys: string[] = ["other (abc12345)"];
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({});
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({});
     });
 
     it("maps top-level normalized key to actual observation key", () => {
       const normalizedState = { filter: true };
       const observationKeys = ["filter (abc12345)"];
 
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "filter (abc12345)": true,
       });
     });
@@ -131,9 +119,7 @@ describe("json-expansion-utils", () => {
       };
       const observationKeys = ["filter (abc12345)"];
 
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "filter (abc12345).input": true,
         "filter (abc12345).output.nested": false,
       });
@@ -143,9 +129,7 @@ describe("json-expansion-utils", () => {
       const normalizedState = { filter: true };
       const observationKeys = ["filter (abc12345)", "filter (def67890)"];
 
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "filter (abc12345)": true,
         "filter (def67890)": true,
       });
@@ -156,9 +140,7 @@ describe("json-expansion-utils", () => {
       const observationKeys = ["my-span (abc12345)"];
 
       // Observation key gets hyphens converted to dots in output
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "my.span (abc12345)": true,
       });
     });
@@ -171,14 +153,9 @@ describe("json-expansion-utils", () => {
         "generation.input.messages": true,
         "generation.output": false,
       };
-      const observationKeys = [
-        "generation (abc12345)",
-        "generation (def67890)",
-      ];
+      const observationKeys = ["generation (abc12345)", "generation (def67890)"];
 
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "generation (abc12345).input.messages": true,
         "generation (def67890).input.messages": true,
         "generation (abc12345).output": false,
@@ -193,9 +170,7 @@ describe("json-expansion-utils", () => {
       };
       const observationKeys = ["filter (abc12345)"];
 
-      expect(
-        denormalizeExpansionState(normalizedState, observationKeys),
-      ).toEqual({
+      expect(denormalizeExpansionState(normalizedState, observationKeys)).toEqual({
         "filter (abc12345)": true,
         // "non.existent" is not in output
       });
@@ -255,10 +230,7 @@ describe("json-expansion-utils", () => {
     };
 
     // Helper to generate normalized state for denormalization tests
-    const generateNormalizedState = (
-      count: number,
-      nestedPathsPerKey: number = 0,
-    ): Record<string, boolean> => {
+    const generateNormalizedState = (count: number, nestedPathsPerKey: number = 0): Record<string, boolean> => {
       const state: Record<string, boolean> = {};
       const names = [
         "filter",
@@ -299,11 +271,7 @@ describe("json-expansion-utils", () => {
       return duration;
     };
 
-    const runNormalizeStateTest = (
-      keyCount: number,
-      nestedPaths: number,
-      threshold: number,
-    ) => {
+    const runNormalizeStateTest = (keyCount: number, nestedPaths: number, threshold: number) => {
       const observationKeys = generateObservationKeys(keyCount);
       const state = generateExpansionState(observationKeys, nestedPaths);
       const totalKeys = Object.keys(state).length;
@@ -313,9 +281,7 @@ describe("json-expansion-utils", () => {
       const duration = Date.now() - start;
 
       expect(typeof result).toBe("object");
-      console.log(
-        `normalizeExpansionState (${totalKeys.toLocaleString()} keys): ${duration}ms`,
-      );
+      console.log(`normalizeExpansionState (${totalKeys.toLocaleString()} keys): ${duration}ms`);
       expect(duration).toBeLessThan(threshold);
       return duration;
     };
@@ -331,10 +297,7 @@ describe("json-expansion-utils", () => {
       const totalNormalizedKeys = Object.keys(normalizedState).length;
 
       const start = Date.now();
-      const result = denormalizeExpansionState(
-        normalizedState,
-        observationKeys,
-      );
+      const result = denormalizeExpansionState(normalizedState, observationKeys);
       const duration = Date.now() - start;
 
       expect(typeof result).toBe("object");

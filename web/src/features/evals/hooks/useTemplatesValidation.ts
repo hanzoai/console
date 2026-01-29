@@ -11,17 +11,13 @@ export function useTemplatesValidation({
   const [isSelectionValid, setIsSelectionValid] = useState(true);
 
   // Fetch default model
-  const { data: defaultModel, isLoading: isLoadingDefaultModel } =
-    api.defaultLlmModel.fetchDefaultModel.useQuery(
-      { projectId },
-      { enabled: !!projectId },
-    );
-
-  // Fetch all templates
-  const { data: templatesData } = api.evals.allTemplates.useQuery(
+  const { data: defaultModel, isLoading: isLoadingDefaultModel } = api.defaultLlmModel.fetchDefaultModel.useQuery(
     { projectId },
     { enabled: !!projectId },
   );
+
+  // Fetch all templates
+  const { data: templatesData } = api.evals.allTemplates.useQuery({ projectId }, { enabled: !!projectId });
 
   useEffect(() => {
     if (isLoadingDefaultModel) return;
@@ -29,26 +25,19 @@ export function useTemplatesValidation({
     // If there's no default model, check if any of the selected templates requires one
     if (!defaultModel) {
       // Find selected templates
-      const selectedTemplates = (templatesData?.templates || []).filter(
-        (template) => selectedTemplateIds.includes(template.id),
+      const selectedTemplates = (templatesData?.templates || []).filter((template) =>
+        selectedTemplateIds.includes(template.id),
       );
 
       // Check if any template requires a default model (has no provider/model specified)
-      const requiresDefaultModel = selectedTemplates.some(
-        (template) => !template.provider || !template.model,
-      );
+      const requiresDefaultModel = selectedTemplates.some((template) => !template.provider || !template.model);
 
       setIsSelectionValid(!requiresDefaultModel);
     } else {
       // If there is a default model, selection is valid
       setIsSelectionValid(true);
     }
-  }, [
-    defaultModel,
-    isLoadingDefaultModel,
-    selectedTemplateIds,
-    templatesData?.templates,
-  ]);
+  }, [defaultModel, isLoadingDefaultModel, selectedTemplateIds, templatesData?.templates]);
 
   /**
    * Check if a specific template is valid (has a default model if needed)

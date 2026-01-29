@@ -8,9 +8,7 @@ import { useRouter } from "next/router";
 export const useQueryOrganization = () => {
   const router = useRouter();
   const organizationId = router.query.organizationId;
-  return useOrganization(
-    typeof organizationId === "string" ? organizationId : null,
-  );
+  return useOrganization(typeof organizationId === "string" ? organizationId : null);
 };
 
 export const useOrganization = (organizationId: string | null) => {

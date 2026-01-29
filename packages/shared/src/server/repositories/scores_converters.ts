@@ -1,9 +1,5 @@
 import { ScoreRecordReadType } from "./definitions";
-import type {
-  ScoreDataTypeType,
-  ScoreByDataType,
-  ScoreSourceType,
-} from "../../domain/scores";
+import type { ScoreDataTypeType, ScoreByDataType, ScoreSourceType } from "../../domain/scores";
 import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
 import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
 
@@ -44,17 +40,11 @@ export const convertClickhouseScoreToDomain = <
     dataType: record.data_type as DataType,
     queueId: record.queue_id ?? null,
     executionTraceId: record.execution_trace_id ?? null,
-    createdAt: record.created_at
-      ? parseClickhouseUTCDateTimeFormat(record.created_at)
-      : new Date(),
-    updatedAt: record.updated_at
-      ? parseClickhouseUTCDateTimeFormat(record.updated_at)
-      : new Date(),
+    createdAt: record.created_at ? parseClickhouseUTCDateTimeFormat(record.created_at) : new Date(),
+    updatedAt: record.updated_at ? parseClickhouseUTCDateTimeFormat(record.updated_at) : new Date(),
     metadata: (includeMetadataPayload
       ? (parseMetadataCHRecordToDomain(record.metadata ?? {}) ?? {})
-      : {}) as ExcludeMetadata extends true
-      ? never
-      : NonNullable<ReturnType<typeof parseMetadataCHRecordToDomain>>,
+      : {}) as ExcludeMetadata extends true ? never : NonNullable<ReturnType<typeof parseMetadataCHRecordToDomain>>,
   };
 
   if (record.data_type === "NUMERIC") {
@@ -80,9 +70,7 @@ export const convertClickhouseScoreToDomain = <
   } as ScoreByDataType<DataType>;
 };
 
-export const convertScoreAggregation = <DataType extends ScoreDataTypeType>(
-  row: ScoreAggregation,
-) => {
+export const convertScoreAggregation = <DataType extends ScoreDataTypeType>(row: ScoreAggregation) => {
   return {
     id: row.id,
     name: row.name,

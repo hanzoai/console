@@ -2,16 +2,9 @@ import { z } from "zod/v4";
 
 import { env } from "@/src/env.mjs";
 import { getMediaStorageServiceClient } from "@/src/features/media/server/getMediaStorageClient";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import {
-  type MediaContentType,
-  type MediaReturnType,
-  type MediaEnabledFields,
-} from "@/src/features/media/validation";
+import { type MediaContentType, type MediaReturnType, type MediaEnabledFields } from "@/src/features/media/validation";
 
 export const mediaRouter = createTRPCRouter({
   getById: protectedProjectProcedure
@@ -48,11 +41,7 @@ export const mediaRouter = createTRPCRouter({
       const ttlSeconds = env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
       const urlExpiry = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
-      const url = await mediaStorageClient.getSignedUrl(
-        media.bucketPath,
-        ttlSeconds,
-        false,
-      );
+      const url = await mediaStorageClient.getSignedUrl(media.bucketPath, ttlSeconds, false);
 
       return {
         mediaId,
@@ -144,20 +133,14 @@ export const mediaRouter = createTRPCRouter({
         return [];
       }
 
-      const mediaStorageClient = getMediaStorageServiceClient(
-        media[0].bucket_name,
-      );
+      const mediaStorageClient = getMediaStorageServiceClient(media[0].bucket_name);
       const ttlSeconds = env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
       const urlExpiry = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
       // Use Promise.all as better to fail all media requests than one of them only
       return await Promise.all(
         media.map<Promise<MediaReturnType>>(async (m) => {
-          const url = await mediaStorageClient.getSignedUrl(
-            m.bucket_path,
-            ttlSeconds,
-            false,
-          );
+          const url = await mediaStorageClient.getSignedUrl(m.bucket_path, ttlSeconds, false);
           return {
             mediaId: m.id,
             contentType: m.content_type as MediaContentType,

@@ -17,13 +17,7 @@ export default tseslint.config(
   // Global ignores - include config files
   {
     name: "hanzo/ignores",
-    ignores: [
-      "**/node_modules/",
-      "**/dist/",
-      "**/.next/",
-      "**/coverage/",
-      "eslint.config.mjs",
-    ],
+    ignores: ["**/node_modules/", "**/dist/", "**/.next/", "**/coverage/", "eslint.config.mjs"],
   },
 
   // Next.js rules via FlatCompat (applies to all files)

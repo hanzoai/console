@@ -20,10 +20,7 @@ import { buildTraceUiData } from "../lib/tree-building";
 import { useViewPreferences } from "./ViewPreferencesContext";
 import { useMergedScores } from "@/src/features/scores/lib/useMergedScores";
 
-type TraceType = Omit<
-  WithStringifiedMetadata<TraceDomain>,
-  "input" | "output"
-> & {
+type TraceType = Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
   input: string | null;
   output: string | null;
 };
@@ -101,20 +98,8 @@ export function TraceDataProvider({
       hiddenObservationsCount: uiData.hiddenObservationsCount,
       comments,
     }),
-    [
-      trace,
-      observations,
-      serverScores,
-      mergedScores,
-      corrections,
-      uiData,
-      comments,
-    ],
+    [trace, observations, serverScores, mergedScores, corrections, uiData, comments],
   );
 
-  return (
-    <TraceDataContext.Provider value={value}>
-      {children}
-    </TraceDataContext.Provider>
-  );
+  return <TraceDataContext.Provider value={value}>{children}</TraceDataContext.Provider>;
 }

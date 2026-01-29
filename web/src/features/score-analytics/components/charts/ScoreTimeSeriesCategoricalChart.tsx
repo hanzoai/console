@@ -1,14 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { Line, LineChart, XAxis, YAxis, Legend } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/src/components/ui/chart";
-import {
-  type IntervalConfig,
-  type TimeRange,
-} from "@/src/utils/date-range-utils";
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/src/components/ui/chart";
+import { type IntervalConfig, type TimeRange } from "@/src/utils/date-range-utils";
 import { formatChartTimestamp } from "../../lib/chart-formatters";
 import { ScoreChartTooltip } from "../../lib/ScoreChartTooltip";
 import { ScoreChartLegendContent } from "./ScoreChartLegendContent";
@@ -60,11 +53,7 @@ export function ScoreTimeSeriesCategoricalChart({
     const formattedData = Array.from(groupedByTimestamp.entries())
       .sort(([tsA], [tsB]) => tsA - tsB)
       .map(([timestamp, categoryMap]) => {
-        const formattedTimestamp = formatChartTimestamp(
-          new Date(timestamp),
-          interval,
-          timeRange,
-        );
+        const formattedTimestamp = formatChartTimestamp(new Date(timestamp), interval, timeRange);
 
         const dataPoint: Record<string, string | number> = {
           time_dimension: formattedTimestamp,
@@ -97,20 +86,17 @@ export function ScoreTimeSeriesCategoricalChart({
   }, [hiddenKeys, categories]);
 
   // Toggle handler
-  const handleVisibilityToggle = useCallback(
-    (key: string, visible: boolean) => {
-      setHiddenKeys((prev) => {
-        const next = new Set(prev);
-        if (visible) {
-          next.delete(key);
-        } else {
-          next.add(key);
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const handleVisibilityToggle = useCallback((key: string, visible: boolean) => {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (visible) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   // Create chart config with colors for each category
   const config: ChartConfig = useMemo(() => {
@@ -135,9 +121,7 @@ export function ScoreTimeSeriesCategoricalChart({
   }
 
   // Check if all values are zero (no data in the selected time range)
-  const hasAnyData = chartData.some((item) =>
-    categories.some((category) => (item[category] as number) > 0),
-  );
+  const hasAnyData = chartData.some((item) => categories.some((category) => (item[category] as number) > 0));
 
   if (!hasAnyData) {
     return (

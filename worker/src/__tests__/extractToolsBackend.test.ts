@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  extractToolsFromObservation,
-  convertDefinitionsToMap,
-  convertCallsToArrays,
-} from "@hanzo/shared/src/server";
+import { extractToolsFromObservation, convertDefinitionsToMap, convertCallsToArrays } from "@hanzo/shared/src/server";
 
 describe("extractToolsFromObservation", () => {
   describe("Tool Definitions extraction", () => {
@@ -73,11 +69,7 @@ describe("extractToolsFromObservation", () => {
         },
       };
 
-      const { toolDefinitions } = extractToolsFromObservation(
-        null,
-        null,
-        metadata,
-      );
+      const { toolDefinitions } = extractToolsFromObservation(null, null, metadata);
 
       expect(toolDefinitions).toHaveLength(1);
       expect(toolDefinitions[0].name).toBe("calculator");
@@ -98,11 +90,7 @@ describe("extractToolsFromObservation", () => {
         },
       };
 
-      const { toolDefinitions } = extractToolsFromObservation(
-        null,
-        null,
-        metadata,
-      );
+      const { toolDefinitions } = extractToolsFromObservation(null, null, metadata);
 
       expect(toolDefinitions).toHaveLength(2);
       expect(toolDefinitions.map((t) => t.name)).toEqual(["tool1", "tool2"]);
@@ -253,9 +241,7 @@ describe("extractToolsFromObservation", () => {
 
       expect(toolArguments).toHaveLength(1);
       expect(toolArguments[0].name).toBe("calculator");
-      expect(toolArguments[0].arguments).toBe(
-        JSON.stringify({ operation: "add" }),
-      );
+      expect(toolArguments[0].arguments).toBe(JSON.stringify({ operation: "add" }));
     });
 
     it("extracts from array of messages with tool_calls", () => {
@@ -534,9 +520,7 @@ describe("extractToolsFromObservation", () => {
         name: "get_pun_suggestion",
         type: "tool_call",
       });
-      expect(result.toolArguments[0].arguments).toBe(
-        JSON.stringify({ topic: "programming" }),
-      );
+      expect(result.toolArguments[0].arguments).toBe(JSON.stringify({ topic: "programming" }));
     });
 
     it("should extract tools from OpenAI format (tools in input.tools)", () => {
@@ -589,10 +573,7 @@ describe("extractToolsFromObservation", () => {
       const result = extractToolsFromObservation(input, output);
 
       expect(result.toolDefinitions).toHaveLength(2);
-      expect(result.toolDefinitions.map((t) => t.name)).toEqual([
-        "get_weather",
-        "search_web",
-      ]);
+      expect(result.toolDefinitions.map((t) => t.name)).toEqual(["get_weather", "search_web"]);
       expect(result.toolArguments).toHaveLength(1);
       expect(result.toolArguments[0].name).toBe("get_weather");
       expect(result.toolArguments[0].id).toBe("call_123");
@@ -615,8 +596,7 @@ describe("extractToolsFromObservation", () => {
                   properties: { topic: { type: "string" } },
                   required: ["topic"],
                 },
-                description:
-                  "Get a pun-style joke suggestion for the given topic.",
+                description: "Get a pun-style joke suggestion for the given topic.",
               },
               {
                 name: "get_dad_joke_suggestion",
@@ -624,13 +604,11 @@ describe("extractToolsFromObservation", () => {
                   type: "object",
                   properties: { topic: { type: "string" } },
                 },
-                description:
-                  "Get a dad joke style suggestion for the given topic.",
+                description: "Get a dad joke style suggestion for the given topic.",
               },
               {
                 name: "get_one_liner_suggestion",
-                description:
-                  "Get a one-liner joke suggestion for the given topic.",
+                description: "Get a one-liner joke suggestion for the given topic.",
               },
             ],
           },
@@ -648,9 +626,7 @@ describe("extractToolsFromObservation", () => {
         },
         {
           role: "user",
-          parts: [
-            { type: "text", content: "Tell me a joke about programming." },
-          ],
+          parts: [{ type: "text", content: "Tell me a joke about programming." }],
         },
       ];
 
@@ -683,10 +659,7 @@ describe("extractToolsFromObservation", () => {
 
       // Should extract 2 called tools
       expect(result.toolArguments).toHaveLength(2);
-      expect(result.toolArguments.map((t) => t.name)).toEqual([
-        "get_pun_suggestion",
-        "get_dad_joke_suggestion",
-      ]);
+      expect(result.toolArguments.map((t) => t.name)).toEqual(["get_pun_suggestion", "get_dad_joke_suggestion"]);
     });
   });
 
@@ -753,11 +726,7 @@ describe("extractToolsFromObservation", () => {
         const { tool_calls, tool_call_names } = convertCallsToArrays(calls);
 
         // Names array should match the order of calls
-        expect(tool_call_names).toEqual([
-          "get_weather",
-          "search",
-          "get_weather",
-        ]);
+        expect(tool_call_names).toEqual(["get_weather", "search", "get_weather"]);
         expect(tool_calls).toHaveLength(3);
 
         // Verify JSON structure (should NOT include name)

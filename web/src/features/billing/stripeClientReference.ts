@@ -16,9 +16,7 @@ export function createStripeClientReference(orgId: string): string | null {
 /**
  * Parse a Stripe client reference ID to get the organization ID
  */
-export function parseStripeClientReference(
-  clientReferenceId: string,
-): string | null {
+export function parseStripeClientReference(clientReferenceId: string): string | null {
   if (!clientReferenceId) {
     return null;
   }
@@ -34,9 +32,7 @@ export function parseStripeClientReference(
 /**
  * Alias for parseStripeClientReference
  */
-export function getOrgIdFromStripeClientReference(
-  clientReferenceId: string | null | undefined,
-): string | undefined {
+export function getOrgIdFromStripeClientReference(clientReferenceId: string | null | undefined): string | undefined {
   if (!clientReferenceId) {
     return undefined;
   }
@@ -46,9 +42,7 @@ export function getOrgIdFromStripeClientReference(
 /**
  * Check if a client reference ID is from the current cloud region
  */
-export function isStripeClientReferenceFromCurrentCloudRegion(
-  clientReferenceId: string | null | undefined,
-): boolean {
+export function isStripeClientReferenceFromCurrentCloudRegion(clientReferenceId: string | null | undefined): boolean {
   if (!clientReferenceId) {
     return false;
   }

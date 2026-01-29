@@ -31,10 +31,7 @@ class SimpleAttributeMapper implements ObservationTypeMapper {
     _resourceAttributes?: Record<string, unknown>,
     _scopeData?: Record<string, unknown>,
   ): boolean {
-    return (
-      this.attributeKey in attributes &&
-      hasMeaningfulValue(attributes[this.attributeKey])
-    );
+    return this.attributeKey in attributes && hasMeaningfulValue(attributes[this.attributeKey]);
   }
 
   mapToObservationType(
@@ -45,10 +42,7 @@ class SimpleAttributeMapper implements ObservationTypeMapper {
     const value = attributes[this.attributeKey] as string;
     const mappedType = this.mappings[value];
 
-    if (
-      mappedType &&
-      ObservationTypeDomain.safeParse(mappedType.toUpperCase()).success
-    ) {
+    if (mappedType && ObservationTypeDomain.safeParse(mappedType.toUpperCase()).success) {
       return mappedType as HanzoObservationType;
     }
 
@@ -90,11 +84,7 @@ class CustomAttributeMapper implements ObservationTypeMapper {
   ): HanzoObservationType | null {
     const result = this.mapFn(attributes, resourceAttributes, scopeData);
 
-    if (
-      result &&
-      typeof result === "string" &&
-      ObservationTypeDomain.safeParse(result.toUpperCase()).success
-    ) {
+    if (result && typeof result === "string" && ObservationTypeDomain.safeParse(result.toUpperCase()).success) {
       return result;
     }
 
@@ -117,10 +107,7 @@ function hasMeaningfulValue(value: unknown): boolean {
 }
 
 // for Vercel AI SDK checks attributes operation.name with startsWith and ai.operationId with equals
-function matchesVercelAiSdkOperation(
-  attributes: Record<string, unknown>,
-  prefixes: string[],
-): boolean {
+function matchesVercelAiSdkOperation(attributes: Record<string, unknown>, prefixes: string[]): boolean {
   const operationName = attributes["operation.name"];
   const operationId = attributes["ai.operationId"];
 
@@ -188,9 +175,7 @@ export class ObservationTypeMapperRegistry {
           HanzoOtelSpanAttributes.OBSERVATION_PROMPT_VERSION,
         ];
 
-        const hasGenerationAttributes = Object.keys(attributes).some((key) =>
-          generationKeys.includes(key as any),
-        );
+        const hasGenerationAttributes = Object.keys(attributes).some((key) => generationKeys.includes(key as any));
 
         if (hasGenerationAttributes) {
           return "GENERATION";
@@ -201,23 +186,18 @@ export class ObservationTypeMapperRegistry {
     ),
 
     // Priority 1: maps hanzo.observation.type directly
-    new SimpleAttributeMapper(
-      "HanzoObservationTypeDirectMapping",
-      1,
-      HanzoOtelSpanAttributes.OBSERVATION_TYPE,
-      {
-        span: "SPAN",
-        generation: "GENERATION",
-        event: "EVENT",
-        embedding: "EMBEDDING",
-        agent: "AGENT",
-        tool: "TOOL",
-        chain: "CHAIN",
-        retriever: "RETRIEVER",
-        guardrail: "GUARDRAIL",
-        evaluator: "EVALUATOR",
-      },
-    ),
+    new SimpleAttributeMapper("HanzoObservationTypeDirectMapping", 1, HanzoOtelSpanAttributes.OBSERVATION_TYPE, {
+      span: "SPAN",
+      generation: "GENERATION",
+      event: "EVENT",
+      embedding: "EMBEDDING",
+      agent: "AGENT",
+      tool: "TOOL",
+      chain: "CHAIN",
+      retriever: "RETRIEVER",
+      guardrail: "GUARDRAIL",
+      evaluator: "EVALUATOR",
+    }),
 
     new SimpleAttributeMapper("OpenInference", 2, "openinference.span.kind", {
       // Format:
@@ -232,25 +212,20 @@ export class ObservationTypeMapperRegistry {
       EVALUATOR: "EVALUATOR",
     }),
 
-    new SimpleAttributeMapper(
-      "OTel_GenAI_Operation",
-      3,
-      "gen_ai.operation.name",
-      {
-        // Format:
-        // GenAI Value: Hanzo ObservationType
-        chat: "GENERATION",
-        // completion was used historically (keeping it for backward compatibility), text_completion is per spec as of 2025-12-04
-        completion: "GENERATION",
-        text_completion: "GENERATION",
-        generate_content: "GENERATION",
-        generate: "GENERATION",
-        embeddings: "EMBEDDING",
-        invoke_agent: "AGENT",
-        create_agent: "AGENT",
-        execute_tool: "TOOL",
-      },
-    ),
+    new SimpleAttributeMapper("OTel_GenAI_Operation", 3, "gen_ai.operation.name", {
+      // Format:
+      // GenAI Value: Hanzo ObservationType
+      chat: "GENERATION",
+      // completion was used historically (keeping it for backward compatibility), text_completion is per spec as of 2025-12-04
+      completion: "GENERATION",
+      text_completion: "GENERATION",
+      generate_content: "GENERATION",
+      generate: "GENERATION",
+      embeddings: "EMBEDDING",
+      invoke_agent: "AGENT",
+      create_agent: "AGENT",
+      execute_tool: "TOOL",
+    }),
 
     // Priority 4: Vercel AI SDK generation/embedding operations (require model information)
     new CustomAttributeMapper(
@@ -266,9 +241,7 @@ export class ObservationTypeMapperRegistry {
           "gen_ai.request.model",
           "gen_ai.response.model",
         ];
-        const hasModelInformation = modelKeys.some((key) =>
-          hasMeaningfulValue(attributes[key]),
-        );
+        const hasModelInformation = modelKeys.some((key) => hasMeaningfulValue(attributes[key]));
 
         // Only handle generation and embedding operations
         const generationEmbeddingPrefixes = [
@@ -280,10 +253,7 @@ export class ObservationTypeMapperRegistry {
           "ai.embed.doEmbed",
         ];
 
-        const isGenerationOrEmbedding = matchesVercelAiSdkOperation(
-          attributes,
-          generationEmbeddingPrefixes,
-        );
+        const isGenerationOrEmbedding = matchesVercelAiSdkOperation(attributes, generationEmbeddingPrefixes);
 
         return hasModelInformation && isGenerationOrEmbedding;
       },
@@ -327,10 +297,8 @@ export class ObservationTypeMapperRegistry {
         const operationId = attributes["ai.operationId"];
 
         const hasAiOperation =
-          (hasMeaningfulValue(operationName) &&
-            (operationName as string).startsWith("ai.")) ||
-          (hasMeaningfulValue(operationId) &&
-            (operationId as string).startsWith("ai."));
+          (hasMeaningfulValue(operationName) && (operationName as string).startsWith("ai.")) ||
+          (hasMeaningfulValue(operationId) && (operationId as string).startsWith("ai."));
 
         if (!hasAiOperation) {
           return false;
@@ -348,10 +316,7 @@ export class ObservationTypeMapperRegistry {
           "ai.embed.doEmbed",
         ];
 
-        const isGenerationOrEmbedding = matchesVercelAiSdkOperation(
-          attributes,
-          generationEmbeddingPrefixes,
-        );
+        const isGenerationOrEmbedding = matchesVercelAiSdkOperation(attributes, generationEmbeddingPrefixes);
 
         return !isGenerationOrEmbedding;
       },
@@ -374,8 +339,7 @@ export class ObservationTypeMapperRegistry {
       (attributes) => {
         // Check for standard GenAI tool call attributes
         return (
-          hasMeaningfulValue(attributes["gen_ai.tool.name"]) ||
-          hasMeaningfulValue(attributes["gen_ai.tool.call.id"])
+          hasMeaningfulValue(attributes["gen_ai.tool.name"]) || hasMeaningfulValue(attributes["gen_ai.tool.call.id"])
         );
       },
       () => "TOOL",
@@ -402,9 +366,7 @@ export class ObservationTypeMapperRegistry {
 
   private getSortedMappers(): ObservationTypeMapper[] {
     if (!this.sortedMappersCache) {
-      this.sortedMappersCache = [...this.mappers].sort(
-        (a, b) => a.priority - b.priority,
-      );
+      this.sortedMappersCache = [...this.mappers].sort((a, b) => a.priority - b.priority);
     }
     return this.sortedMappersCache;
   }
@@ -417,11 +379,7 @@ export class ObservationTypeMapperRegistry {
     const sortedMappers = this.getSortedMappers();
     for (const mapper of sortedMappers) {
       if (mapper.canMap(attributes, resourceAttributes, scopeData)) {
-        const result = mapper.mapToObservationType(
-          attributes,
-          resourceAttributes,
-          scopeData,
-        );
+        const result = mapper.mapToObservationType(attributes, resourceAttributes, scopeData);
         if (result) {
           return result;
         }

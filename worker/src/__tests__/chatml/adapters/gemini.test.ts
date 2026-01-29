@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  geminiAdapter,
-  selectAdapter,
-  SimpleChatMlArraySchema,
-  type NormalizerContext,
-} from "@hanzo/shared";
+import { geminiAdapter, selectAdapter, SimpleChatMlArraySchema, type NormalizerContext } from "@hanzo/shared";
 
 // Test helper
 function normalizeInput(input: unknown, ctx: NormalizerContext = {}) {
@@ -41,12 +36,8 @@ describe("geminiAdapter", () => {
     });
 
     it("should not detect non-Gemini formats", () => {
-      expect(
-        geminiAdapter.detect({ metadata: { ls_provider: "openai" } }),
-      ).toBe(false);
-      expect(geminiAdapter.detect({ observationName: "OpenAI-call" })).toBe(
-        false,
-      );
+      expect(geminiAdapter.detect({ metadata: { ls_provider: "openai" } })).toBe(false);
+      expect(geminiAdapter.detect({ observationName: "OpenAI-call" })).toBe(false);
       expect(geminiAdapter.detect({})).toBe(false);
 
       // Should reject Microsoft Agent format (parts without contents wrapper)
@@ -183,9 +174,7 @@ describe("geminiAdapter", () => {
       expect(toolCall.type).toBe("function");
       expect(toolCall.name).toBe("get_weather");
       expect(typeof toolCall.arguments).toBe("string");
-      expect(toolCall.arguments).toBe(
-        JSON.stringify({ location: "San Francisco", unit: "celsius" }),
-      );
+      expect(toolCall.arguments).toBe(JSON.stringify({ location: "San Francisco", unit: "celsius" }));
 
       // Old fields should be removed
       expect(toolCall.args).toBeUndefined();
@@ -246,9 +235,7 @@ describe("geminiAdapter", () => {
 
       // First message: system instruction
       expect(result.data?.[0].role).toBe("system");
-      expect(result.data?.[0].content).toBe(
-        "Always greet using the say_hello tool.",
-      );
+      expect(result.data?.[0].content).toBe("Always greet using the say_hello tool.");
       expect(result.data?.[0].tools).toBeDefined();
       expect(result.data?.[0].tools?.[0].name).toBe("say_hello");
 

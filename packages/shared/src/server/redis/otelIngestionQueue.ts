@@ -1,20 +1,13 @@
 import { Queue } from "bullmq";
 import { QueueName, TQueueJobTypes } from "../queues";
-import {
-  createNewRedisInstance,
-  redisQueueRetryOptions,
-  getQueuePrefix,
-} from "./redis";
+import { createNewRedisInstance, redisQueueRetryOptions, getQueuePrefix } from "./redis";
 import { logger } from "../logger";
 import { getShardIndex } from "./sharding";
 import { env } from "../../env";
 import { randomUUID } from "crypto";
 
 export class OtelIngestionQueue {
-  private static instances: Map<
-    number,
-    Queue<TQueueJobTypes[QueueName.OtelIngestionQueue]> | null
-  > = new Map();
+  private static instances: Map<number, Queue<TQueueJobTypes[QueueName.OtelIngestionQueue]> | null> = new Map();
 
   public static getShardNames() {
     return Array.from(
@@ -23,19 +16,14 @@ export class OtelIngestionQueue {
     );
   }
 
-  static getShardIndexFromShardName(
-    shardName: string | undefined,
-  ): number | null {
+  static getShardIndexFromShardName(shardName: string | undefined): number | null {
     if (!shardName) return null;
 
     // Extract shard index from shard name
     const shardIndex =
       shardName === QueueName.OtelIngestionQueue
         ? 0
-        : parseInt(
-            shardName.replace(`${QueueName.OtelIngestionQueue}-`, ""),
-            10,
-          );
+        : parseInt(shardName.replace(`${QueueName.OtelIngestionQueue}-`, ""), 10);
 
     if (isNaN(shardIndex)) return null;
     return shardIndex;
@@ -53,10 +41,7 @@ export class OtelIngestionQueue {
     const shardIndex =
       OtelIngestionQueue.getShardIndexFromShardName(shardName) ??
       (env.REDIS_CLUSTER_ENABLED === "true"
-        ? getShardIndex(
-            randomUUID(),
-            env.HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT,
-          )
+        ? getShardIndex(randomUUID(), env.HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT)
         : 0);
 
     // Check if we already have an instance for this shard

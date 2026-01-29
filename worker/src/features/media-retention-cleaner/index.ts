@@ -56,10 +56,7 @@ export class MediaRetentionCleaner {
 
     // Record gauge for how far past cutoff the oldest expired item is
     if (workload.secondsPastCutoff !== null) {
-      recordGauge(
-        `${METRIC_PREFIX}.seconds_past_cutoff`,
-        Math.max(workload.secondsPastCutoff, 0),
-      );
+      recordGauge(`${METRIC_PREFIX}.seconds_past_cutoff`, Math.max(workload.secondsPastCutoff, 0));
     }
 
     logger.info(`${instanceName}: Processing project`, {
@@ -132,23 +129,15 @@ export class MediaRetentionCleaner {
     };
   }
 
-  private static async processProject(
-    workload: ProjectWorkload,
-  ): Promise<void> {
+  private static async processProject(workload: ProjectWorkload): Promise<void> {
     // Delete media files (S3 + PostgreSQL)
     if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
-      await MediaRetentionCleaner.deleteExpiredMedia(
-        workload,
-        env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-      );
+      await MediaRetentionCleaner.deleteExpiredMedia(workload, env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
     }
 
     // Delete blob storage entries (S3 + ClickHouse soft delete)
     if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
-      await removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
-        workload.projectId,
-        workload.cutoffDate,
-      );
+      await removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(workload.projectId, workload.cutoffDate);
     }
 
     logger.info("MediaRetentionCleaner: Project processed", {
@@ -158,10 +147,7 @@ export class MediaRetentionCleaner {
     });
   }
 
-  private static async deleteExpiredMedia(
-    workload: ProjectWorkload,
-    bucket: string,
-  ): Promise<void> {
+  private static async deleteExpiredMedia(workload: ProjectWorkload, bucket: string): Promise<void> {
     const mediaFiles = await prisma.media.findMany({
       select: { id: true, bucketPath: true },
       where: {

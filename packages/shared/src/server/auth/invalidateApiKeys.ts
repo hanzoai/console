@@ -19,15 +19,10 @@ import { type ApiKey } from "../../db";
  * @param apiKeys - List of API key records to invalidate from cache
  * @param identifier - Context string for logging (e.g., org or project identifier)
  */
-export async function invalidateCachedApiKeys(
-  apiKeys: ApiKey[],
-  identifier: string,
-) {
+export async function invalidateCachedApiKeys(apiKeys: ApiKey[], identifier: string) {
   const hashKeys = apiKeys.map((key) => key.fastHashedSecretKey);
 
-  const filteredHashKeys = hashKeys.filter((hash): hash is string =>
-    Boolean(hash),
-  );
+  const filteredHashKeys = hashKeys.filter((hash): hash is string => Boolean(hash));
   if (filteredHashKeys.length === 0) {
     logger.info("No valid keys to invalidate");
     return;
@@ -67,9 +62,7 @@ export async function invalidateCachedOrgApiKeys(orgId: string): Promise<void> {
     },
   });
 
-  const hashKeys = apiKeys
-    .map((key) => key.fastHashedSecretKey)
-    .filter((hash): hash is string => Boolean(hash));
+  const hashKeys = apiKeys.map((key) => key.fastHashedSecretKey).filter((hash): hash is string => Boolean(hash));
 
   if (hashKeys.length === 0) {
     logger.info(`No valid API keys to invalidate for org ${orgId}`);
@@ -92,9 +85,7 @@ export async function invalidateCachedOrgApiKeys(orgId: string): Promise<void> {
  *
  * @param projectId - The project ID whose API keys should be invalidated from cache
  */
-export async function invalidateCachedProjectApiKeys(
-  projectId: string,
-): Promise<void> {
+export async function invalidateCachedProjectApiKeys(projectId: string): Promise<void> {
   const apiKeys = await prisma.apiKey.findMany({
     where: {
       projectId: projectId,
@@ -102,9 +93,7 @@ export async function invalidateCachedProjectApiKeys(
     },
   });
 
-  const hashKeys = apiKeys
-    .map((key) => key.fastHashedSecretKey)
-    .filter((hash): hash is string => Boolean(hash));
+  const hashKeys = apiKeys.map((key) => key.fastHashedSecretKey).filter((hash): hash is string => Boolean(hash));
 
   if (hashKeys.length === 0) {
     logger.info(`No valid API keys to invalidate for project ${projectId}`);

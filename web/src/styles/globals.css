@@ -109,9 +109,7 @@
     /* Banner height system for fixed/sticky positioning
        Banner components dynamically update --banner-height via JS */
     --banner-height: 0px;
-    --banner-offset: calc(
-      env(safe-area-inset-top, 0px) + var(--banner-height, 0px)
-    );
+    --banner-offset: calc(env(safe-area-inset-top, 0px) + var(--banner-height, 0px));
   }
 
   .dark {
@@ -218,14 +216,16 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
   }
 
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  code,
+  pre,
+  .font-mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
   }
 
   html,

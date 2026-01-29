@@ -9,15 +9,8 @@ import {
   getTraceCountsByProjectInCreationInterval,
   logger,
 } from "@hanzo/shared/src/server";
-import {
-  cloudUsageMeteringDbCronJobName,
-  CloudUsageMeteringDbCronJobStates,
-} from "./constants";
-import {
-  QueueJobs,
-  recordGauge,
-  traceException,
-} from "@hanzo/shared/src/server";
+import { cloudUsageMeteringDbCronJobName, CloudUsageMeteringDbCronJobStates } from "./constants";
+import { QueueJobs, recordGauge, traceException } from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
 import { backOff } from "exponential-backoff";
 
@@ -44,12 +37,8 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     throw new Error("Cloud Usage Metering Cron Job last run not found");
   }
   if (cron.lastRun.getTime() % 3600000 !== 0) {
-    logger.warn(
-      "[CLOUD USAGE METERING] Cron job last run is not on the full hour",
-    );
-    throw new Error(
-      "Cloud Usage Metering Cron Job last run is not on the full hour",
-    );
+    logger.warn("[CLOUD USAGE METERING] Cron job last run is not on the full hour");
+    throw new Error("Cloud Usage Metering Cron Job last run is not on the full hour");
   }
   if (cron.lastRun.getTime() + delayFromStartOfInterval > Date.now()) {
     logger.info(`[CLOUD USAGE METERING] Next Job is not due yet`);
@@ -57,13 +46,8 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
   }
 
   if (cron.state === CloudUsageMeteringDbCronJobStates.Processing) {
-    if (
-      cron.jobStartedAt &&
-      cron.jobStartedAt < new Date(Date.now() - 1200000)
-    ) {
-      logger.warn(
-        "[CLOUD USAGE METERING] Last job started at is older than 20 minutes, retrying job",
-      );
+    if (cron.jobStartedAt && cron.jobStartedAt < new Date(Date.now() - 1200000)) {
+      logger.warn("[CLOUD USAGE METERING] Last job started at is older than 20 minutes, retrying job");
     } else {
       logger.warn("[CLOUD USAGE METERING] Job already in progress");
       return;
@@ -83,12 +67,9 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
       },
     });
   } catch (e) {
-    logger.warn(
-      "[CLOUD USAGE METERING] Failed to update cron job state, potential race condition, exiting",
-      {
-        e,
-      },
-    );
+    logger.warn("[CLOUD USAGE METERING] Failed to update cron job state, potential race condition, exiting", {
+      e,
+    });
     return;
   }
 
@@ -120,15 +101,12 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     ...parseDbOrg(org),
     projectIds: projects.map((p) => p.id),
   }));
-  logger.info(
-    `[CLOUD USAGE METERING] Job for ${organizations.length} organizations`,
-  );
+  logger.info(`[CLOUD USAGE METERING] Job for ${organizations.length} organizations`);
 
-  const observationCountsByProject =
-    await getObservationCountsByProjectInCreationInterval({
-      start: meterIntervalStart,
-      end: meterIntervalEnd,
-    });
+  const observationCountsByProject = await getObservationCountsByProjectInCreationInterval({
+    start: meterIntervalStart,
+    end: meterIntervalEnd,
+  });
   const traceCountsByProject = await getTraceCountsByProjectInCreationInterval({
     start: meterIntervalStart,
     end: meterIntervalEnd,
@@ -152,12 +130,8 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     const stripeCustomerId = org.cloudConfig?.stripe?.customerId;
     if (!stripeCustomerId) {
       // should not happen
-      traceException(
-        `[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`,
-      );
-      logger.error(
-        `[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`,
-      );
+      traceException(`[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`);
+      logger.error(`[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`);
       continue;
     }
 
@@ -223,13 +197,9 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
   recordGauge("cloud_usage_metering_processed_orgs", countProcessedOrgs, {
     unit: "organizations",
   });
-  recordGauge(
-    "cloud_usage_metering_processed_observations",
-    countProcessedObservations,
-    {
-      unit: "observations",
-    },
-  );
+  recordGauge("cloud_usage_metering_processed_observations", countProcessedObservations, {
+    unit: "observations",
+  });
   recordGauge("cloud_usage_metering_processed_events", countProcessedEvents, {
     unit: "events",
   });
@@ -254,15 +224,10 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
   );
 
   if (meterIntervalEnd.getTime() + delayFromStartOfInterval < Date.now()) {
-    logger.info(
-      `[CLOUD USAGE METERING] Enqueueing next Cloud Usage Metering Job to catch up `,
-    );
+    logger.info(`[CLOUD USAGE METERING] Enqueueing next Cloud Usage Metering Job to catch up `);
     recordGauge("cloud_usage_metering_scheduled_catchup_jobs", 1, {
       unit: "jobs",
     });
-    await CloudUsageMeteringQueue.getInstance()?.add(
-      QueueJobs.CloudUsageMeteringJob,
-      {},
-    );
+    await CloudUsageMeteringQueue.getInstance()?.add(QueueJobs.CloudUsageMeteringJob, {});
   }
 };

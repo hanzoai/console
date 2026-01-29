@@ -68,17 +68,9 @@ export function tableColumnsToSqlFilter(
     const filter = filterAndColumn.condition;
     const operatorPrisma =
       filter.type === "arrayOptions"
-        ? Prisma.raw(
-            arrayOperatorReplacements[
-              filter.operator as keyof typeof arrayOperatorReplacements
-            ],
-          )
+        ? Prisma.raw(arrayOperatorReplacements[filter.operator as keyof typeof arrayOperatorReplacements])
         : filter.operator in operatorReplacements
-          ? Prisma.raw(
-              operatorReplacements[
-                filter.operator as keyof typeof operatorReplacements
-              ],
-            )
+          ? Prisma.raw(operatorReplacements[filter.operator as keyof typeof operatorReplacements])
           : Prisma.raw(filter.operator); //checked by zod
 
     // Get prisma value
@@ -96,9 +88,7 @@ export function tableColumnsToSqlFilter(
         valuePrisma = Prisma.sql`${filter.value}`;
         break;
       case "stringOptions":
-        valuePrisma = Prisma.sql`(${Prisma.join(
-          filter.value.map((v) => Prisma.sql`${v}`),
-        )})`;
+        valuePrisma = Prisma.sql`(${Prisma.join(filter.value.map((v) => Prisma.sql`${v}`))})`;
         break;
       case "arrayOptions":
         valuePrisma = Prisma.sql`ARRAY[${Prisma.join(
@@ -118,9 +108,7 @@ export function tableColumnsToSqlFilter(
         break;
     }
     const jsonKeyPrisma =
-      filter.type === "stringObject" || filter.type === "numberObject"
-        ? Prisma.sql`->>${filter.key}`
-        : Prisma.empty;
+      filter.type === "stringObject" || filter.type === "numberObject" ? Prisma.sql`->>${filter.key}` : Prisma.empty;
     const [cast1, cast2] =
       filter.type === "numberObject"
         ? [Prisma.raw("cast("), Prisma.raw(" as double precision)")]
@@ -128,14 +116,10 @@ export function tableColumnsToSqlFilter(
     const [valuePrefix, valueSuffix] =
       filter.type === "string" || filter.type === "stringObject"
         ? [
-            ["contains", "does not contain", "ends with"].includes(
-              filter.operator,
-            )
+            ["contains", "does not contain", "ends with"].includes(filter.operator)
               ? Prisma.raw("'%' || ")
               : Prisma.empty,
-            ["contains", "does not contain", "starts with"].includes(
-              filter.operator,
-            )
+            ["contains", "does not contain", "starts with"].includes(filter.operator)
               ? Prisma.raw(" || '%'")
               : Prisma.empty,
           ]
@@ -156,10 +140,7 @@ export function tableColumnsToSqlFilter(
   return Prisma.join(statements, " AND ");
 }
 
-const castValueToPostgresTypes = (
-  column: ColumnDefinition,
-  table: TableNames,
-) => {
+const castValueToPostgresTypes = (column: ColumnDefinition, table: TableNames) => {
   return column.name === "type" &&
     (table === "observations" ||
       table === "traces_observations" ||
@@ -188,9 +169,7 @@ export const datetimeFilterToPrismaSql = (
   )} ${value}::timestamp with time zone at time zone 'UTC'`;
 };
 
-export const datetimeFilterToPrisma = (
-  timestampFilter: z.infer<typeof timeFilter>,
-) => {
+export const datetimeFilterToPrisma = (timestampFilter: z.infer<typeof timeFilter>) => {
   const prismaTimestampFilter =
     timestampFilter.operator === ">="
       ? { gte: timestampFilter.value }

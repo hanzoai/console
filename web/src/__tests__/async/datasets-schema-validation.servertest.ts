@@ -1,13 +1,7 @@
 /** @jest-environment node */
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-} from "@/src/__tests__/test-utils";
-import {
-  PostDatasetsV2Response,
-  PostDatasetItemsV1Response,
-} from "@/src/features/public-api/types/datasets";
+import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
+import { PostDatasetsV2Response, PostDatasetItemsV1Response } from "@/src/features/public-api/types/datasets";
 import {
   createOrgProjectAndApiKey,
   isValidJSONSchema,
@@ -17,8 +11,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { validateFieldAgainstSchema } from "@hanzo/shared";
 
-process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
-  "true";
+process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 // Test schemas
@@ -50,10 +43,7 @@ const TEST_SCHEMAS = {
   },
 
   allowsNull: {
-    anyOf: [
-      { type: "null" },
-      { type: "object", properties: { text: { type: "string" } } },
-    ],
+    anyOf: [{ type: "null" }, { type: "object", properties: { text: { type: "string" } } }],
   },
 
   requiresObject: {
@@ -202,9 +192,7 @@ describe("Unit Tests - validateFieldAgainstSchema", () => {
       });
       expect(result.isValid).toBe(false);
       if (!result.isValid) {
-        expect(
-          result.errors.some((e) => e.keyword === "additionalProperties"),
-        ).toBe(true);
+        expect(result.errors.some((e) => e.keyword === "additionalProperties")).toBe(true);
       }
     });
   });
@@ -352,8 +340,7 @@ describe("Public API - Dataset Schema Enforcement", () => {
   let projectId: string;
 
   beforeEach(async () => {
-    const { auth: newAuth, projectId: newProjectId } =
-      await createOrgProjectAndApiKey();
+    const { auth: newAuth, projectId: newProjectId } = await createOrgProjectAndApiKey();
     auth = newAuth;
     projectId = newProjectId;
   });
@@ -391,9 +378,7 @@ describe("Public API - Dataset Schema Enforcement", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(res.body.expectedOutputSchema).toEqual(
-        TEST_SCHEMAS.requiresObject,
-      );
+      expect(res.body.expectedOutputSchema).toEqual(TEST_SCHEMAS.requiresObject);
       expect(res.body.inputSchema).toBeNull();
     });
 
@@ -523,12 +508,7 @@ describe("Public API - Dataset Schema Enforcement", () => {
         auth,
       );
 
-      const res = await makeAPICall(
-        "GET",
-        "/api/public/v2/datasets?page=1&limit=10",
-        undefined,
-        auth,
-      );
+      const res = await makeAPICall("GET", "/api/public/v2/datasets?page=1&limit=10", undefined, auth);
 
       expect(res.status).toBe(200);
       expect(res.body.data[0].inputSchema).toEqual(TEST_SCHEMAS.simpleText);
@@ -543,17 +523,10 @@ describe("Public API - Dataset Schema Enforcement", () => {
         auth,
       );
 
-      const res = await makeAPICall(
-        "GET",
-        "/api/public/v2/datasets?page=1&limit=10",
-        undefined,
-        auth,
-      );
+      const res = await makeAPICall("GET", "/api/public/v2/datasets?page=1&limit=10", undefined, auth);
 
       expect(res.status).toBe(200);
-      const dataset = res.body.data.find(
-        (d: any) => d.name === "no-schema-test",
-      );
+      const dataset = res.body.data.find((d: any) => d.name === "no-schema-test");
       expect(dataset.inputSchema).toBeNull();
       expect(dataset.expectedOutputSchema).toBeNull();
     });

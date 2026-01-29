@@ -43,14 +43,8 @@ export const projectDeleteProcessor: Processor = async (
   const span = getCurrentSpan();
   if (span) {
     span.setAttribute("messaging.bullmq.job.input.id", job.data.id);
-    span.setAttribute(
-      "messaging.bullmq.job.input.projectId",
-      job.data.payload.projectId,
-    );
-    span.setAttribute(
-      "messaging.bullmq.job.input.orgId",
-      job.data.payload.orgId,
-    );
+    span.setAttribute("messaging.bullmq.job.input.projectId", job.data.payload.projectId);
+    span.setAttribute("messaging.bullmq.job.input.orgId", job.data.payload.orgId);
   }
 
   logger.info(`Deleting ${projectId} in org ${orgId}`);
@@ -68,34 +62,23 @@ export const projectDeleteProcessor: Processor = async (
         projectId,
       },
     });
-    const mediaStorageClient = getS3MediaStorageClient(
-      env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-    );
+    const mediaStorageClient = getS3MediaStorageClient(env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
     // Delete from Cloud Storage
-    await mediaStorageClient.deleteFiles(
-      mediaFilesToDelete.map((f) => f.bucketPath),
-    );
+    await mediaStorageClient.deleteFiles(mediaFilesToDelete.map((f) => f.bucketPath));
     // No need to delete from table as this will be done below via Prisma
   }
 
-  logger.info(
-    `Deleting ClickHouse and S3 data for ${projectId} in org ${orgId}`,
-  );
+  logger.info(`Deleting ClickHouse and S3 data for ${projectId} in org ${orgId}`);
 
   // Delete project data from ClickHouse first
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
-      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
-          projectId,
-          undefined,
-        )
+      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(projectId, undefined)
       : Promise.resolve(),
     deleteTracesByProjectId(projectId),
     deleteObservationsByProjectId(projectId),
     deleteScoresByProjectId(projectId),
-    env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
-      ? deleteEventsByProjectId(projectId)
-      : Promise.resolve(),
+    env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true" ? deleteEventsByProjectId(projectId) : Promise.resolve(),
   ]);
 
   // Trigger async delete of dataset run items
@@ -113,9 +96,7 @@ export const projectDeleteProcessor: Processor = async (
       },
     });
     if (!existingProject) {
-      logger.info(
-        `Tried to delete project ${projectId} from PG, but it does not exist anymore.`,
-      );
+      logger.info(`Tried to delete project ${projectId} from PG, but it does not exist anymore.`);
       return;
     }
     await prisma.project.delete({
@@ -130,9 +111,7 @@ export const projectDeleteProcessor: Processor = async (
     });
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2025" || e.code === "P2016") {
-        logger.warn(
-          `Tried to delete project ${projectId} in org ${orgId}, but it does not exist`,
-        );
+        logger.warn(`Tried to delete project ${projectId} in org ${orgId}, but it does not exist`);
         return;
       }
     }

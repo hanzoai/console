@@ -11,10 +11,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 
-async function getClickhouseCount(
-  table: string,
-  projectId: string,
-): Promise<number> {
+async function getClickhouseCount(table: string, projectId: string): Promise<number> {
   const result = await queryClickhouse<{ count: number }>({
     query: `SELECT count() as count FROM ${table} FINAL WHERE project_id = {projectId: String}`,
     params: { projectId },

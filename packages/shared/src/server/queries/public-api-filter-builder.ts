@@ -214,10 +214,7 @@ type BaseQueryType = {
   projectId: string;
 } & Record<string, unknown>;
 
-export function convertApiProvidedFilterToClickhouseFilter(
-  filter: BaseQueryType,
-  columnMapping: ApiColumnMapping[],
-) {
+export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType, columnMapping: ApiColumnMapping[]) {
   const filterList = new FilterList();
 
   columnMapping.forEach((columnMapping) => {
@@ -233,13 +230,9 @@ export function convertApiProvidedFilterToClickhouseFilter(
           const parsedOperator = availableOperators.safeParse(filter.operator);
 
           // otherwise fall back to the operator provided in the column mapping
-          const finalOperator = parsedOperator.success
-            ? parsedOperator.data
-            : columnMapping.operator;
+          const finalOperator = parsedOperator.success ? parsedOperator.data : columnMapping.operator;
 
-          finalOperator &&
-          typeof value === "string" &&
-          ["<", "<=", ">", ">="].includes(finalOperator)
+          finalOperator && typeof value === "string" && ["<", "<=", ">", ">="].includes(finalOperator)
             ? (filterInstance = new DateTimeFilter({
                 clickhouseTable: columnMapping.clickhouseTable,
                 field: columnMapping.clickhouseSelect,
@@ -275,17 +268,10 @@ export function convertApiProvidedFilterToClickhouseFilter(
           break;
         case "CategoryOptionsFilter":
           if (Array.isArray(value)) {
-            const availableOperatorsCategory = z.enum(
-              filterOperators.categoryOptions,
-            );
-            const parsedOperatorCategory = availableOperatorsCategory.safeParse(
-              filter.operator,
-            );
+            const availableOperatorsCategory = z.enum(filterOperators.categoryOptions);
+            const parsedOperatorCategory = availableOperatorsCategory.safeParse(filter.operator);
 
-            if (
-              parsedOperatorCategory.success &&
-              typeof filter.key === "string"
-            ) {
+            if (parsedOperatorCategory.success && typeof filter.key === "string") {
               filterInstance = new CategoryOptionsFilter({
                 clickhouseTable: columnMapping.clickhouseTable,
                 field: columnMapping.clickhouseSelect,
@@ -310,13 +296,8 @@ export function convertApiProvidedFilterToClickhouseFilter(
           }
           break;
         case "NumberFilter": {
-          const availableOperatorsNum = z.enum([
-            ...filterOperators.number,
-            "!=",
-          ]);
-          const parsedOperatorNum = availableOperatorsNum.safeParse(
-            filter.operator,
-          );
+          const availableOperatorsNum = z.enum([...filterOperators.number, "!="]);
+          const parsedOperatorNum = availableOperatorsNum.safeParse(filter.operator);
 
           if (parsedOperatorNum.success) {
             filterInstance = new NumberFilter({
@@ -355,23 +336,16 @@ export function deriveFilters<T extends BaseQueryType>(
   uiColumnDefinitions: UiColumnMappings,
 ): FilterList {
   // Start with advanced filters converted to FilterList
-  const filterList = new FilterList(
-    createFilterFromFilterState(advancedFilters ?? [], uiColumnDefinitions),
-  );
+  const filterList = new FilterList(createFilterFromFilterState(advancedFilters ?? [], uiColumnDefinitions));
 
   // Convert simple parameters to filters
-  const simpleFilters = convertApiProvidedFilterToClickhouseFilter(
-    simpleFilterProps,
-    filterParamsMapping,
-  );
+  const simpleFilters = convertApiProvidedFilterToClickhouseFilter(simpleFilterProps, filterParamsMapping);
 
   // Advanced filter takes precedence. Remove all simple filters that are also in advanced filter
   const advancedFilterColumns = new Set<string>();
   filterList.forEach((f) => advancedFilterColumns.add(f.field));
 
-  simpleFilters
-    .filter((sf) => !advancedFilterColumns.has(sf.field))
-    .forEach((f) => filterList.push(f));
+  simpleFilters.filter((sf) => !advancedFilterColumns.has(sf.field)).forEach((f) => filterList.push(f));
 
   // Return merged filters
   return filterList;

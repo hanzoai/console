@@ -7,13 +7,10 @@ type StatementTimeout = {
   statement_timeout: string;
 };
 
-async function updateStatementTimeout(
-  newTimeout: string,
-  previousTimeout: any,
-) {
-  const [{ statement_timeout: previousTimeoutRead }] = await prisma.$queryRaw<
-    StatementTimeout[]
-  >(Prisma.sql`SHOW statement_timeout;`);
+async function updateStatementTimeout(newTimeout: string, previousTimeout: any) {
+  const [{ statement_timeout: previousTimeoutRead }] = await prisma.$queryRaw<StatementTimeout[]>(
+    Prisma.sql`SHOW statement_timeout;`,
+  );
   logger.info(`Current statement_timeout ${previousTimeoutRead}`);
   if (!previousTimeoutRead || previousTimeoutRead === newTimeout) {
     // If the statement_timeout is already set to 19 minutes, assume it was set by this script and reset it to 2 minutes
@@ -41,28 +38,20 @@ async function addTemporaryColumnIfNotExists() {
     await prisma.$executeRaw`ALTER TABLE observations ADD COLUMN tmp_has_calculated_cost BOOLEAN DEFAULT FALSE;`;
     logger.info("Added temporary column tmp_has_calculated_cost");
   } else {
-    logger.info(
-      "Temporary column tmp_has_calculated_cost already exists. Continuing...",
-    );
+    logger.info("Temporary column tmp_has_calculated_cost already exists. Continuing...");
   }
 }
 
-export default class AddGenerationsCostBackfill
-  implements IBackgroundMigration
-{
+export default class AddGenerationsCostBackfill implements IBackgroundMigration {
   private isAborted = false;
 
-  async validate(
-    _args: Record<string, unknown>,
-  ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
+  async validate(_args: Record<string, unknown>): Promise<{ valid: boolean; invalidReason: string | undefined }> {
     // No validation to be done
     return { valid: true, invalidReason: undefined };
   }
 
   async run(args: Record<string, unknown>): Promise<void> {
-    logger.info(
-      `Running AddGenerationsCostBackfill migration with ${JSON.stringify(args)}`,
-    );
+    logger.info(`Running AddGenerationsCostBackfill migration with ${JSON.stringify(args)}`);
     let previousTimeout;
 
     const maxRowsToProcess = Number(args.maxRowsToProcess ?? Infinity);
@@ -72,19 +61,14 @@ export default class AddGenerationsCostBackfill
     try {
       // Set the statement timeout
       const newTimeout = "19min";
-      previousTimeout = await updateStatementTimeout(
-        newTimeout,
-        previousTimeout,
-      );
+      previousTimeout = await updateStatementTimeout(newTimeout, previousTimeout);
 
       // Add tracking column
       await addTemporaryColumnIfNotExists();
 
       let totalRowsProcessed = 0;
       while (!this.isAborted && totalRowsProcessed < maxRowsToProcess) {
-        const batchUpdate = await prisma.$queryRaw<
-          { start_time: Date }[]
-        >(Prisma.sql`
+        const batchUpdate = await prisma.$queryRaw<{ start_time: Date }[]>(Prisma.sql`
           WITH batch AS (
             SELECT o.id,
               o.start_time,
@@ -156,45 +140,33 @@ export default class AddGenerationsCostBackfill
         `);
 
         if (!batchUpdate[0]?.start_time) {
-          logger.info(
-            `No more rows to process, breaking loop after ${totalRowsProcessed} rows processed.`,
-          );
+          logger.info(`No more rows to process, breaking loop after ${totalRowsProcessed} rows processed.`);
           break;
         }
 
         currentDateCutoff = batchUpdate[0]?.start_time.toISOString();
         totalRowsProcessed += batchSize;
 
-        logger.info(
-          `Total rows processed after increment: ${totalRowsProcessed} rows`,
-        );
+        logger.info(`Total rows processed after increment: ${totalRowsProcessed} rows`);
         if (maxRowsToProcess && totalRowsProcessed >= maxRowsToProcess) {
-          logger.info(
-            `Max rows to process reached: ${maxRowsToProcess.toLocaleString()}, breaking loop.`,
-          );
+          logger.info(`Max rows to process reached: ${maxRowsToProcess.toLocaleString()}, breaking loop.`);
 
           break;
         }
       }
 
       if (this.isAborted) {
-        logger.info(
-          `Backfill aborted after processing ${totalRowsProcessed} rows. Skipping cleanup.`,
-        );
+        logger.info(`Backfill aborted after processing ${totalRowsProcessed} rows. Skipping cleanup.`);
         return;
       }
 
       await prisma.$executeRaw`ALTER TABLE observations DROP COLUMN IF EXISTS tmp_has_calculated_cost;`;
-      logger.info(
-        `Backfill completed after processing ${totalRowsProcessed} rows`,
-      );
+      logger.info(`Backfill completed after processing ${totalRowsProcessed} rows`);
     } catch (e) {
       logger.error(`Error backfilling costs: ${e}`, e);
       throw e;
     } finally {
-      await prisma.$executeRawUnsafe(
-        `SET statement_timeout = '${previousTimeout}';`,
-      );
+      await prisma.$executeRawUnsafe(`SET statement_timeout = '${previousTimeout}';`);
       logger.info(`Reset statement_timeout to ${previousTimeout}`);
     }
   }

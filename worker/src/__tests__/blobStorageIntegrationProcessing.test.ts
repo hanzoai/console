@@ -15,10 +15,7 @@ import {
 import { prisma } from "@hanzo/shared/src/db";
 import { Job } from "bullmq";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";
-import {
-  BlobStorageIntegrationType,
-  BlobStorageIntegrationFileType,
-} from "@hanzo/shared";
+import { BlobStorageIntegrationType, BlobStorageIntegrationFileType } from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
 
 // Skip tests that use Azurite in Azure mode due to known Azurite limitations
@@ -87,8 +84,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         secretAccessKey: encrypt(secretAccessKey),
         region: region ? region : "auto",
         endpoint: endpoint ? endpoint : null,
-        forcePathStyle:
-          env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+        forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
         enabled: false,
         exportFrequency: "hourly",
       },
@@ -123,8 +119,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         secretAccessKey: encrypt(minioAccessKeySecret),
         region: region ? region : "auto",
         endpoint: minioEndpoint,
-        forcePathStyle:
-          env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+        forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
         enabled: true,
         exportFrequency: "hourly",
         nextSyncAt: twoHoursAgo,
@@ -184,9 +179,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
 
     // Check file paths follow the expected pattern
     const traceFile = projectFiles.find((f) => f.file.includes("/traces/"));
-    const observationFile = projectFiles.find((f) =>
-      f.file.includes("/observations/"),
-    );
+    const observationFile = projectFiles.find((f) => f.file.includes("/observations/"));
     const scoreFile = projectFiles.find((f) => f.file.includes("/scores/"));
 
     expect(traceFile).toBeDefined();
@@ -219,12 +212,8 @@ describe("BlobStorageIntegrationProcessingJob", () => {
     });
 
     if (updatedIntegration?.lastSyncAt && updatedIntegration?.nextSyncAt) {
-      expect(updatedIntegration.lastSyncAt.getTime()).toBeGreaterThan(
-        twoHoursAgo.getTime(),
-      );
-      expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(
-        now.getTime(),
-      );
+      expect(updatedIntegration.lastSyncAt.getTime()).toBeGreaterThan(twoHoursAgo.getTime());
+      expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(now.getTime());
     } else {
       expect.fail("Integration should have lastSyncAt and nextSyncAt set");
     }
@@ -247,8 +236,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         secretAccessKey: encrypt(minioAccessKeySecret),
         region: region,
         endpoint: minioEndpoint,
-        forcePathStyle:
-          env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+        forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
         enabled: true,
         exportFrequency: "weekly",
         lastSyncAt: oneHourAgo,
@@ -276,18 +264,12 @@ describe("BlobStorageIntegrationProcessingJob", () => {
     });
 
     // Should be set to 7 days in the future from maxTimestamp (now - 30min)
-    const expectedNextSync = new Date(
-      now.getTime() - 30 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000,
-    );
+    const expectedNextSync = new Date(now.getTime() - 30 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000);
 
     if (updatedIntegration?.nextSyncAt) {
       // Use a tolerance value in milliseconds instead of numeric precision
       const tolerance = 1000; // 1 second tolerance
-      expect(
-        Math.abs(
-          updatedIntegration.nextSyncAt.getTime() - expectedNextSync.getTime(),
-        ),
-      ).toBeLessThan(tolerance);
+      expect(Math.abs(updatedIntegration.nextSyncAt.getTime() - expectedNextSync.getTime())).toBeLessThan(tolerance);
     } else {
       expect.fail("Integration should have nextSyncAt set");
     }
@@ -310,8 +292,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         secretAccessKey: encrypt(minioAccessKeySecret),
         region: region ? region : "auto",
         endpoint: minioEndpoint,
-        forcePathStyle:
-          env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+        forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
         enabled: true,
         exportFrequency: "daily",
         lastSyncAt: oneHourAgo,
@@ -409,8 +390,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           fileType,
@@ -425,18 +405,14 @@ describe("BlobStorageIntegrationProcessingJob", () => {
 
       // Get files for this file type
       const files = await s3StorageService.listFiles(prefix);
-      const projectFiles = files.filter(
-        (f) => f.file.includes(projectId) && f.file.includes(fileTypePrefix),
-      );
+      const projectFiles = files.filter((f) => f.file.includes(projectId) && f.file.includes(fileTypePrefix));
 
       // Should have 3 files (traces, observations, scores)
       expect(projectFiles).toHaveLength(3);
 
       // Check file extensions
       const expectedExtension = fileType.toLowerCase();
-      expect(
-        projectFiles.every((f) => f.file.endsWith(`.${expectedExtension}`)),
-      ).toBe(true);
+      expect(projectFiles.every((f) => f.file.endsWith(`.${expectedExtension}`))).toBe(true);
 
       // Check file contents for each type
       for (const file of projectFiles) {
@@ -480,78 +456,71 @@ describe("BlobStorageIntegrationProcessingJob", () => {
   });
 
   describe("BlobStorageExportMode minTimestamp behavior", () => {
-    maybeIt(
-      "should export old data for FULL_HISTORY mode when data exists",
-      async () => {
-        const { projectId } = await createOrgProjectAndApiKey();
-        s3Prefix = projectId;
+    maybeIt("should export old data for FULL_HISTORY mode when data exists", async () => {
+      const { projectId } = await createOrgProjectAndApiKey();
+      s3Prefix = projectId;
 
-        // Create trace with old timestamp that's far enough in the past
-        // but not so old that it might not be found by ClickHouse
-        const now = new Date();
-        const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
-        const oldTrace = createTrace({
-          project_id: projectId,
-          timestamp: twoDaysAgo.getTime(),
-          name: "Old Trace",
-        });
-        await createTracesCh([oldTrace]);
+      // Create trace with old timestamp that's far enough in the past
+      // but not so old that it might not be found by ClickHouse
+      const now = new Date();
+      const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+      const oldTrace = createTrace({
+        project_id: projectId,
+        timestamp: twoDaysAgo.getTime(),
+        name: "Old Trace",
+      });
+      await createTracesCh([oldTrace]);
 
-        // Create integration with FULL_HISTORY mode and no lastSyncAt
-        await prisma.blobStorageIntegration.create({
-          data: {
-            projectId,
-            type: BlobStorageIntegrationType.S3,
-            bucketName,
-            prefix: s3Prefix,
-            accessKeyId,
-            secretAccessKey: encrypt(secretAccessKey),
-            region: region ? region : "auto",
-            endpoint: endpoint ? endpoint : null,
-            forcePathStyle:
-              env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-            enabled: true,
-            exportFrequency: "hourly",
-            exportMode: "FULL_HISTORY",
-            exportStartDate: null,
-            lastSyncAt: null, // First export
-          },
-        });
+      // Create integration with FULL_HISTORY mode and no lastSyncAt
+      await prisma.blobStorageIntegration.create({
+        data: {
+          projectId,
+          type: BlobStorageIntegrationType.S3,
+          bucketName,
+          prefix: s3Prefix,
+          accessKeyId,
+          secretAccessKey: encrypt(secretAccessKey),
+          region: region ? region : "auto",
+          endpoint: endpoint ? endpoint : null,
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          enabled: true,
+          exportFrequency: "hourly",
+          exportMode: "FULL_HISTORY",
+          exportStartDate: null,
+          lastSyncAt: null, // First export
+        },
+      });
 
-        await handleBlobStorageIntegrationProjectJob({
-          data: { payload: { projectId } },
-        } as Job);
+      await handleBlobStorageIntegrationProjectJob({
+        data: { payload: { projectId } },
+      } as Job);
 
-        // If data was found and exported, check the files
-        const files = await storageService.listFiles(s3Prefix);
-        const projectFiles = files.filter((f) => f.file.includes(projectId));
+      // If data was found and exported, check the files
+      const files = await storageService.listFiles(s3Prefix);
+      const projectFiles = files.filter((f) => f.file.includes(projectId));
 
-        // With FULL_HISTORY mode, if the ClickHouse query finds the old data,
-        // it should export starting from that timestamp
-        if (projectFiles.length > 0) {
-          const traceFile = projectFiles.find((f) =>
-            f.file.includes("/traces/"),
-          );
-          expect(traceFile).toBeDefined();
+      // With FULL_HISTORY mode, if the ClickHouse query finds the old data,
+      // it should export starting from that timestamp
+      if (projectFiles.length > 0) {
+        const traceFile = projectFiles.find((f) => f.file.includes("/traces/"));
+        expect(traceFile).toBeDefined();
 
-          if (traceFile) {
-            const content = await storageService.download(traceFile.file);
-            expect(content).toContain(oldTrace.id);
-          }
+        if (traceFile) {
+          const content = await storageService.download(traceFile.file);
+          expect(content).toContain(oldTrace.id);
         }
+      }
 
-        // Verify integration was updated if export happened
-        const updatedIntegration =
-          await prisma.blobStorageIntegration.findUnique({
-            where: { projectId },
-          });
+      // Verify integration was updated if export happened
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
-        // If files were exported, lastSyncAt should be set
-        if (projectFiles.length > 0) {
-          expect(updatedIntegration?.lastSyncAt).toBeDefined();
-        }
-      },
-    );
+      // If files were exported, lastSyncAt should be set
+      if (projectFiles.length > 0) {
+        expect(updatedIntegration?.lastSyncAt).toBeDefined();
+      }
+    });
 
     it("should use current date for FROM_TODAY mode on first export", async () => {
       const { projectId } = await createOrgProjectAndApiKey();
@@ -584,8 +553,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(secretAccessKey),
           region: region ? region : "auto",
           endpoint: endpoint ? endpoint : null,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FROM_TODAY" as any,
@@ -647,8 +615,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FROM_CUSTOM_DATE" as any,
@@ -677,82 +644,71 @@ describe("BlobStorageIntegrationProcessingJob", () => {
   });
 
   describe("Chunked historic exports", () => {
-    maybeIt(
-      "should cap maxTimestamp to one frequency period ahead for FULL_HISTORY mode",
-      async () => {
-        const { projectId } = await createOrgProjectAndApiKey();
-        s3Prefix = projectId;
-        const now = new Date();
-        const veryOldTimestamp = new Date(
-          now.getTime() - 7 * 24 * 60 * 60 * 1000,
-        ); // 7 days ago
+    maybeIt("should cap maxTimestamp to one frequency period ahead for FULL_HISTORY mode", async () => {
+      const { projectId } = await createOrgProjectAndApiKey();
+      s3Prefix = projectId;
+      const now = new Date();
+      const veryOldTimestamp = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
 
-        // Create trace from 7 days ago
-        const oldTrace = createTrace({
-          project_id: projectId,
-          timestamp: veryOldTimestamp.getTime(),
-          name: "Old Trace",
-        });
-        await createTracesCh([oldTrace]);
+      // Create trace from 7 days ago
+      const oldTrace = createTrace({
+        project_id: projectId,
+        timestamp: veryOldTimestamp.getTime(),
+        name: "Old Trace",
+      });
+      await createTracesCh([oldTrace]);
 
-        // Create integration with FULL_HISTORY and hourly frequency (first export)
-        await prisma.blobStorageIntegration.create({
-          data: {
-            projectId,
-            type: BlobStorageIntegrationType.S3,
-            bucketName,
-            prefix: s3Prefix,
-            accessKeyId,
-            secretAccessKey: encrypt(secretAccessKey),
-            region: region ? region : "auto",
-            endpoint: endpoint ? endpoint : null,
-            forcePathStyle:
-              env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-            enabled: true,
-            exportFrequency: "hourly",
-            exportMode: "FULL_HISTORY",
-            exportStartDate: null,
-            lastSyncAt: null,
-          },
-        });
+      // Create integration with FULL_HISTORY and hourly frequency (first export)
+      await prisma.blobStorageIntegration.create({
+        data: {
+          projectId,
+          type: BlobStorageIntegrationType.S3,
+          bucketName,
+          prefix: s3Prefix,
+          accessKeyId,
+          secretAccessKey: encrypt(secretAccessKey),
+          region: region ? region : "auto",
+          endpoint: endpoint ? endpoint : null,
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          enabled: true,
+          exportFrequency: "hourly",
+          exportMode: "FULL_HISTORY",
+          exportStartDate: null,
+          lastSyncAt: null,
+        },
+      });
 
-        // When
-        await handleBlobStorageIntegrationProjectJob({
-          data: { payload: { projectId } },
-        } as Job);
+      // When
+      await handleBlobStorageIntegrationProjectJob({
+        data: { payload: { projectId } },
+      } as Job);
 
-        // Then
-        const updatedIntegration =
-          await prisma.blobStorageIntegration.findUnique({
-            where: { projectId },
-          });
+      // Then
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
-        expect(updatedIntegration).toBeDefined();
+      expect(updatedIntegration).toBeDefined();
 
-        // Check if files were exported (meaning data was found)
-        const files = await storageService.listFiles(s3Prefix);
-        const projectFiles = files.filter((f) => f.file.includes(projectId));
+      // Check if files were exported (meaning data was found)
+      const files = await storageService.listFiles(s3Prefix);
+      const projectFiles = files.filter((f) => f.file.includes(projectId));
 
-        // If data was found and exported, verify chunking behavior
-        if (projectFiles.length > 0 && updatedIntegration?.lastSyncAt) {
-          // When ClickHouse finds the old data, it should start from that timestamp
-          // and cap the export to 1 hour (frequency interval)
-          // lastSyncAt should be capped to 1 hour after the found timestamp
-          const minExpectedTime = veryOldTimestamp.getTime();
-          const maxExpectedTime = veryOldTimestamp.getTime() + 60 * 60 * 1000; // +1 hour
-          const tolerance = 2000; // 2 second tolerance
+      // If data was found and exported, verify chunking behavior
+      if (projectFiles.length > 0 && updatedIntegration?.lastSyncAt) {
+        // When ClickHouse finds the old data, it should start from that timestamp
+        // and cap the export to 1 hour (frequency interval)
+        // lastSyncAt should be capped to 1 hour after the found timestamp
+        const minExpectedTime = veryOldTimestamp.getTime();
+        const maxExpectedTime = veryOldTimestamp.getTime() + 60 * 60 * 1000; // +1 hour
+        const tolerance = 2000; // 2 second tolerance
 
-          expect(
-            updatedIntegration.lastSyncAt.getTime(),
-          ).toBeGreaterThanOrEqual(minExpectedTime);
-          expect(updatedIntegration.lastSyncAt.getTime()).toBeLessThanOrEqual(
-            maxExpectedTime + tolerance,
-          );
-        }
-        // If no data was found (fallback to current time), the time window would be invalid
-        // and no export would happen, which is acceptable behavior
-      },
-    );
+        expect(updatedIntegration.lastSyncAt.getTime()).toBeGreaterThanOrEqual(minExpectedTime);
+        expect(updatedIntegration.lastSyncAt.getTime()).toBeLessThanOrEqual(maxExpectedTime + tolerance);
+      }
+      // If no data was found (fallback to current time), the time window would be invalid
+      // and no export would happen, which is acceptable behavior
+    });
 
     it("should immediately schedule next chunk when in catch-up mode", async () => {
       const { projectId } = await createOrgProjectAndApiKey();
@@ -784,8 +740,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           lastSyncAt: twoDaysAgo, // Start from 2 days ago
@@ -798,11 +753,9 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       } as Job);
 
       // Then
-      const updatedIntegration = await prisma.blobStorageIntegration.findUnique(
-        {
-          where: { projectId },
-        },
-      );
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
       expect(updatedIntegration).toBeDefined();
       if (!updatedIntegration?.nextSyncAt) {
@@ -810,9 +763,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       }
 
       // nextSyncAt should be immediate (within a few seconds of now)
-      const timeDiff = Math.abs(
-        updatedIntegration.nextSyncAt.getTime() - now.getTime(),
-      );
+      const timeDiff = Math.abs(updatedIntegration.nextSyncAt.getTime() - now.getTime());
       expect(timeDiff).toBeLessThan(5000); // Within 5 seconds
     });
 
@@ -841,8 +792,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           lastSyncAt: oneHourAgo,
@@ -855,11 +805,9 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       } as Job);
 
       // Then
-      const updatedIntegration = await prisma.blobStorageIntegration.findUnique(
-        {
-          where: { projectId },
-        },
-      );
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
       expect(updatedIntegration).toBeDefined();
       if (!updatedIntegration?.nextSyncAt || !updatedIntegration?.lastSyncAt) {
@@ -867,21 +815,13 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       }
 
       // nextSyncAt should be 1 hour after lastSyncAt (normal scheduling)
-      const expectedNextSync = new Date(
-        updatedIntegration.lastSyncAt.getTime() + 60 * 60 * 1000,
-      );
+      const expectedNextSync = new Date(updatedIntegration.lastSyncAt.getTime() + 60 * 60 * 1000);
       const tolerance = 1000; // 1 second tolerance
 
-      expect(
-        Math.abs(
-          updatedIntegration.nextSyncAt.getTime() - expectedNextSync.getTime(),
-        ),
-      ).toBeLessThan(tolerance);
+      expect(Math.abs(updatedIntegration.nextSyncAt.getTime() - expectedNextSync.getTime())).toBeLessThan(tolerance);
 
       // nextSyncAt should be in the future
-      expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(
-        now.getTime(),
-      );
+      expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(now.getTime());
     });
   });
 });

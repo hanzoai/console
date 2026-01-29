@@ -7,9 +7,7 @@ import {
   EventRecordInsertType,
 } from "../repositories/definitions";
 
-export const createTrace = (
-  trace: Partial<TraceRecordInsertType>,
-): TraceRecordInsertType => {
+export const createTrace = (trace: Partial<TraceRecordInsertType>): TraceRecordInsertType => {
   return {
     id: v4(),
     project_id: v4(),
@@ -61,9 +59,7 @@ export const createDatasetRunItem = (
   };
 };
 
-export const createObservation = (
-  observation: Partial<ObservationRecordInsertType>,
-): ObservationRecordInsertType => {
+export const createObservation = (observation: Partial<ObservationRecordInsertType>): ObservationRecordInsertType => {
   return {
     id: v4(),
     trace_id: v4(),
@@ -105,9 +101,7 @@ export const createObservation = (
   };
 };
 
-export const createTraceScore = (
-  score: Partial<ScoreRecordInsertType>,
-): ScoreRecordInsertType => {
+export const createTraceScore = (score: Partial<ScoreRecordInsertType>): ScoreRecordInsertType => {
   return {
     id: v4(),
     project_id: v4(),
@@ -133,9 +127,7 @@ export const createTraceScore = (
   };
 };
 
-export const createSessionScore = (
-  score: Partial<ScoreRecordInsertType>,
-): ScoreRecordInsertType => {
+export const createSessionScore = (score: Partial<ScoreRecordInsertType>): ScoreRecordInsertType => {
   return {
     id: v4(),
     project_id: v4(),
@@ -160,9 +152,7 @@ export const createSessionScore = (
   };
 };
 
-export const createDatasetRunScore = (
-  score: Partial<ScoreRecordInsertType>,
-): ScoreRecordInsertType => {
+export const createDatasetRunScore = (score: Partial<ScoreRecordInsertType>): ScoreRecordInsertType => {
   return {
     id: v4(),
     project_id: v4(),
@@ -187,9 +177,7 @@ export const createDatasetRunScore = (
   };
 };
 
-export const createEvent = (
-  event: Partial<EventRecordInsertType>,
-): EventRecordInsertType => {
+export const createEvent = (event: Partial<EventRecordInsertType>): EventRecordInsertType => {
   const spanId = v4();
   const now = Date.now() * 1000; // Convert to micro
 

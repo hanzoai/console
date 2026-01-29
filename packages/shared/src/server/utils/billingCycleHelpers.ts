@@ -6,9 +6,7 @@ import type { Organization } from "@prisma/client";
  */
 export function startOfDayUTC(date: Date): Date {
   const d = new Date(date);
-  return new Date(
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
-  );
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
 
 /**
@@ -16,17 +14,7 @@ export function startOfDayUTC(date: Date): Date {
  */
 export function endOfDayUTC(date: Date): Date {
   const d = new Date(date);
-  return new Date(
-    Date.UTC(
-      d.getUTCFullYear(),
-      d.getUTCMonth(),
-      d.getUTCDate(),
-      23,
-      59,
-      59,
-      999,
-    ),
-  );
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
 }
 
 /**
@@ -34,9 +22,7 @@ export function endOfDayUTC(date: Date): Date {
  * Always returns start of day in UTC
  */
 export function getBillingCycleAnchor(org: Organization): Date {
-  return org.cloudBillingCycleAnchor
-    ? startOfDayUTC(org.cloudBillingCycleAnchor)
-    : startOfDayUTC(org.createdAt);
+  return org.cloudBillingCycleAnchor ? startOfDayUTC(org.cloudBillingCycleAnchor) : startOfDayUTC(org.createdAt);
 }
 
 /**
@@ -53,10 +39,7 @@ export function getBillingCycleAnchor(org: Organization): Date {
  * - Feb cycle day is Feb 15
  * - Since Feb 20 >= Feb 15, we're in Feb's cycle → return Feb 15
  */
-export function getBillingCycleStart(
-  org: Organization,
-  referenceDate: Date,
-): Date {
+export function getBillingCycleStart(org: Organization, referenceDate: Date): Date {
   const anchor = getBillingCycleAnchor(org);
   const dayOfMonth = anchor.getUTCDate(); // e.g. 31
 
@@ -65,26 +48,16 @@ export function getBillingCycleStart(
   const refMonth = referenceDate.getUTCMonth();
 
   // Calculate adjusted day for current month (handles 31 → 28/29/30)
-  const daysInRefMonth = getDaysInMonth(
-    new Date(Date.UTC(refYear, refMonth, 1)),
-  );
+  const daysInRefMonth = getDaysInMonth(new Date(Date.UTC(refYear, refMonth, 1)));
   const adjustedDay = Math.min(dayOfMonth, daysInRefMonth);
 
-  const currentMonthCycleStart = new Date(
-    Date.UTC(refYear, refMonth, adjustedDay),
-  );
+  const currentMonthCycleStart = new Date(Date.UTC(refYear, refMonth, adjustedDay));
 
   // If current month's cycle start is after reference date, use previous month
   if (currentMonthCycleStart > referenceDate) {
     const prevDate = subMonths(new Date(Date.UTC(refYear, refMonth, 1)), 1);
     const daysInPrevMonth = getDaysInMonth(prevDate);
-    return new Date(
-      Date.UTC(
-        prevDate.getUTCFullYear(),
-        prevDate.getUTCMonth(),
-        Math.min(dayOfMonth, daysInPrevMonth),
-      ),
-    );
+    return new Date(Date.UTC(prevDate.getUTCFullYear(), prevDate.getUTCMonth(), Math.min(dayOfMonth, daysInPrevMonth)));
   }
 
   return currentMonthCycleStart;
@@ -106,33 +79,18 @@ export function getBillingCycleStart(
  * @param referenceDate - The current date (typically "now")
  * @returns Date when the usage limit resets (start of next billing cycle)
  */
-export function getBillingCycleEnd(
-  org: Organization,
-  referenceDate: Date,
-): Date {
+export function getBillingCycleEnd(org: Organization, referenceDate: Date): Date {
   // Get the current cycle start using existing function
   const currentCycleStart = getBillingCycleStart(org, referenceDate);
   const anchor = getBillingCycleAnchor(org);
   const dayOfMonth = anchor.getUTCDate();
 
   // Calculate next month's cycle day (one month after current cycle start)
-  const nextMonthDate = new Date(
-    Date.UTC(
-      currentCycleStart.getUTCFullYear(),
-      currentCycleStart.getUTCMonth() + 1,
-      1,
-    ),
-  );
+  const nextMonthDate = new Date(Date.UTC(currentCycleStart.getUTCFullYear(), currentCycleStart.getUTCMonth() + 1, 1));
   const daysInNextMonth = getDaysInMonth(nextMonthDate);
   const adjustedDay = Math.min(dayOfMonth, daysInNextMonth);
 
-  return new Date(
-    Date.UTC(
-      nextMonthDate.getUTCFullYear(),
-      nextMonthDate.getUTCMonth(),
-      adjustedDay,
-    ),
-  );
+  return new Date(Date.UTC(nextMonthDate.getUTCFullYear(), nextMonthDate.getUTCMonth(), adjustedDay));
 }
 
 /**

@@ -1,21 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogBody,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Label } from "@/src/components/ui/label";
 import { api } from "@/src/utils/api";
 import { CopyIcon, ExternalLinkIcon } from "lucide-react";
@@ -28,19 +15,11 @@ type PromptSelectionDialogProps = {
   projectId: string;
 };
 
-export function PromptSelectionDialog({
-  isOpen,
-  onClose,
-  onSelect,
-  projectId,
-}: PromptSelectionDialogProps) {
+export function PromptSelectionDialog({ isOpen, onClose, onSelect, projectId }: PromptSelectionDialogProps) {
   const [selectedPromptName, setSelectedPromptName] = useState<string>("");
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [selectionType, setSelectionType] = useState<"version" | "label">(
-    "label",
-  );
-  const [selectedVersionOrLabel, setSelectedVersionOrLabel] =
-    useState<string>("");
+  const [selectionType, setSelectionType] = useState<"version" | "label">("label");
+  const [selectedVersionOrLabel, setSelectedVersionOrLabel] = useState<string>("");
 
   const copySelectedTag = useCallback(() => {
     copyTextToClipboard(selectedTag);
@@ -58,13 +37,9 @@ export function PromptSelectionDialog({
   useEffect(() => {
     if (selectedPromptName && selectedVersionOrLabel) {
       if (selectionType === "version") {
-        setSelectedTag(
-          `@@@hanzoPrompt:name=${selectedPromptName}|version=${selectedVersionOrLabel}@@@`,
-        );
+        setSelectedTag(`@@@hanzoPrompt:name=${selectedPromptName}|version=${selectedVersionOrLabel}@@@`);
       } else {
-        setSelectedTag(
-          `@@@hanzoPrompt:name=${selectedPromptName}|label=${selectedVersionOrLabel}@@@`,
-        );
+        setSelectedTag(`@@@hanzoPrompt:name=${selectedPromptName}|label=${selectedVersionOrLabel}@@@`);
       }
     } else {
       setSelectedTag("");
@@ -84,9 +59,7 @@ export function PromptSelectionDialog({
     },
   );
 
-  const selectedPrompt = promptOptions?.find(
-    (option) => option.name === selectedPromptName,
-  );
+  const selectedPrompt = promptOptions?.find((option) => option.name === selectedPromptName);
 
   const handleConfirm = useCallback(() => {
     if (!selectedTag) return;
@@ -107,9 +80,8 @@ export function PromptSelectionDialog({
         <DialogBody>
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              Referenced prompts are dynamically resolved and inserted when
-              fetched via API/SDK. This enables modular design—create complex
-              prompts from reusable, independently maintained components.
+              Referenced prompts are dynamically resolved and inserted when fetched via API/SDK. This enables modular
+              design—create complex prompts from reusable, independently maintained components.
             </p>
 
             <div className="flex flex-col gap-2">
@@ -132,9 +104,7 @@ export function PromptSelectionDialog({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Only text prompts can be referenced inline.
-              </p>
+              <p className="text-xs text-muted-foreground">Only text prompts can be referenced inline.</p>
             </div>
 
             {selectedPromptName && (
@@ -160,30 +130,16 @@ export function PromptSelectionDialog({
 
             {selectedPromptName && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="version-or-label">
-                  {selectionType === "version" ? "Version" : "Label"}
-                </Label>
+                <Label htmlFor="version-or-label">{selectionType === "version" ? "Version" : "Label"}</Label>
                 <div className="flex gap-2">
-                  <Select
-                    value={selectedVersionOrLabel}
-                    onValueChange={setSelectedVersionOrLabel}
-                  >
+                  <Select value={selectedVersionOrLabel} onValueChange={setSelectedVersionOrLabel}>
                     <SelectTrigger id="version-or-label">
-                      <SelectValue
-                        placeholder={
-                          selectionType === "version"
-                            ? "Select a version"
-                            : "Select a label"
-                        }
-                      />
+                      <SelectValue placeholder={selectionType === "version" ? "Select a version" : "Select a label"} />
                     </SelectTrigger>
                     <SelectContent>
                       {selectionType === "version"
                         ? selectedPrompt?.versions.map((version) => (
-                            <SelectItem
-                              key={version.toString()}
-                              value={version.toString()}
-                            >
+                            <SelectItem key={version.toString()} value={version.toString()}>
                               {version}
                             </SelectItem>
                           ))
@@ -214,9 +170,7 @@ export function PromptSelectionDialog({
             <div className="space-y-2">
               <Label>Tag preview</Label>
               <div className="relative">
-                <div className="rounded-md border bg-muted p-3 pr-10 font-mono text-xs">
-                  {selectedTag}
-                </div>
+                <div className="rounded-md border bg-muted p-3 pr-10 font-mono text-xs">{selectedTag}</div>
                 <Button
                   type="button"
                   variant="ghost"

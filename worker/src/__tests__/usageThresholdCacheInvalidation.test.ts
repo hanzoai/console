@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { prisma } from "@hanzo/shared/src/db";
 import { type ParsedOrganization } from "@hanzo/shared";
-import {
-  redis,
-  hashSecretKey,
-  getDisplaySecretKey,
-  createShaHash,
-} from "@hanzo/shared/src/server";
+import { redis, hashSecretKey, getDisplaySecretKey, createShaHash } from "@hanzo/shared/src/server";
 import { processThresholds } from "../ee/usageThresholds/thresholdProcessing";
 import { bulkUpdateOrganizations } from "../ee/usageThresholds/bulkUpdates";
 
@@ -130,12 +125,7 @@ describe("Usage Threshold Cache Invalidation", () => {
       isIngestionSuspended: false,
     };
 
-    await redis.set(
-      `api-key:${fastHashedKey}`,
-      JSON.stringify(cachedApiKey),
-      "EX",
-      3600,
-    );
+    await redis.set(`api-key:${fastHashedKey}`, JSON.stringify(cachedApiKey), "EX", 3600);
 
     // Verify key is in cache
     const cachedBefore = await redis.get(`api-key:${fastHashedKey}`);
@@ -213,12 +203,7 @@ describe("Usage Threshold Cache Invalidation", () => {
       isIngestionSuspended: true, // Blocked
     };
 
-    await redis.set(
-      `api-key:${fastHashedKey}`,
-      JSON.stringify(cachedApiKey),
-      "EX",
-      3600,
-    );
+    await redis.set(`api-key:${fastHashedKey}`, JSON.stringify(cachedApiKey), "EX", 3600);
 
     // Verify key is in cache
     const cachedBefore = await redis.get(`api-key:${fastHashedKey}`);
@@ -308,12 +293,7 @@ describe("Usage Threshold Cache Invalidation", () => {
       isIngestionSuspended: false,
     };
 
-    await redis.set(
-      `api-key:${fastHashedKey}`,
-      JSON.stringify(cachedApiKey),
-      "EX",
-      3600,
-    );
+    await redis.set(`api-key:${fastHashedKey}`, JSON.stringify(cachedApiKey), "EX", 3600);
 
     // Verify key is in cache
     const cachedBefore = await redis.get(`api-key:${fastHashedKey}`);
@@ -417,19 +397,9 @@ describe("Usage Threshold Cache Invalidation", () => {
       isIngestionSuspended: false,
     };
 
-    await redis.set(
-      `api-key:${fastHashedKey1}`,
-      JSON.stringify(cachedApiKey1),
-      "EX",
-      3600,
-    );
+    await redis.set(`api-key:${fastHashedKey1}`, JSON.stringify(cachedApiKey1), "EX", 3600);
 
-    await redis.set(
-      `api-key:${fastHashedKey2}`,
-      JSON.stringify(cachedApiKey2),
-      "EX",
-      3600,
-    );
+    await redis.set(`api-key:${fastHashedKey2}`, JSON.stringify(cachedApiKey2), "EX", 3600);
 
     // Verify both keys are in cache
     expect(await redis.get(`api-key:${fastHashedKey1}`)).not.toBeNull();

@@ -6,8 +6,7 @@ export const COMMIT_MESSAGE_MAX_LENGTH = 500;
 export const PROMPT_NAME_MAX_LENGTH = 255;
 export const RESERVED_PROMPT_NAME_NEW = "new";
 export const PROMPT_NAME_PIPE_RESTRICTION_REGEX = /^[^|]*$/;
-export const PROMPT_NAME_PIPE_RESTRICTION_ERROR =
-  "Prompt name cannot contain '|' character";
+export const PROMPT_NAME_PIPE_RESTRICTION_ERROR = "Prompt name cannot contain '|' character";
 
 // Prompt label validation
 export const PROMPT_LABEL_MAX_LENGTH = 36;

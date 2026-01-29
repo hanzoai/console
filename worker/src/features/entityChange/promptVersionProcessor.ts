@@ -1,8 +1,4 @@
-import {
-  type TriggerEventAction,
-  jsonSchemaNullable,
-  InternalServerError,
-} from "@hanzo/shared";
+import { type TriggerEventAction, jsonSchemaNullable, InternalServerError } from "@hanzo/shared";
 import {
   getTriggerConfigurations,
   getActionById,
@@ -23,14 +19,11 @@ import { v4 } from "uuid";
 /**
  * Process prompt change events with in-memory filtering
  */
-export const promptVersionProcessor = async (
-  event: EntityChangeEventType,
-): Promise<void> => {
+export const promptVersionProcessor = async (event: EntityChangeEventType): Promise<void> => {
   try {
-    logger.info(
-      `Processing prompt version change event for prompt ${event.promptId} for project ${event.projectId}`,
-      { event: JSON.stringify(event, null, 2) },
-    );
+    logger.info(`Processing prompt version change event for prompt ${event.promptId} for project ${event.projectId}`, {
+      event: JSON.stringify(event, null, 2),
+    });
 
     // Get active prompt triggers
     const triggers = await getTriggerConfigurations({
@@ -67,11 +60,7 @@ export const promptVersionProcessor = async (
         };
 
         // Use InMemoryFilterService for all filtering including actions
-        const eventMatches = InMemoryFilterService.evaluateFilter(
-          eventData,
-          trigger.filter,
-          fieldMapper,
-        );
+        const eventMatches = InMemoryFilterService.evaluateFilter(eventData, trigger.filter, fieldMapper);
 
         if (!eventMatches) {
           logger.debug(`Event doesn't match trigger ${trigger.id} filters`, {
@@ -160,9 +149,7 @@ async function enqueueAutomationAction({
   });
 
   if (automations.length !== 1) {
-    throw new InternalServerError(
-      `Expected 1 automation for action ${actionId}, got ${automations.length}`,
-    );
+    throw new InternalServerError(`Expected 1 automation for action ${actionId}, got ${automations.length}`);
   }
 
   const executionId = v4();
@@ -187,9 +174,7 @@ async function enqueueAutomationAction({
     },
   });
 
-  logger.debug(
-    `Created automation execution ${executionId} for project ${projectId} and action ${actionId}`,
-  );
+  logger.debug(`Created automation execution ${executionId} for project ${projectId} and action ${actionId}`);
 
   // Queue to webhook processor (handles both webhook and Slack actions)
   await WebhookQueue.getInstance()?.add(QueueName.WebhookQueue, {

@@ -3,9 +3,7 @@ import { mergeWith, merge } from "lodash";
 
 // Theoretically this returns Record<string, unknown>, but it would be hard to align the typing accordingly.
 // It's easier to pretend here and let JavaScript do its magic.
-export const convertJsonSchemaToRecord = (
-  jsonSchema: JsonNested,
-): Record<string, string> => {
+export const convertJsonSchemaToRecord = (jsonSchema: JsonNested): Record<string, string> => {
   const record: Record<string, string> = {};
 
   // if it's a literal, return the value with "metadata" prefix
@@ -23,14 +21,8 @@ export const convertJsonSchemaToRecord = (
   return jsonSchema as Record<string, string>;
 };
 
-export const convertPostgresJsonToMetadataRecord = (
-  metadata: Prisma.JsonValue,
-): Record<string, string> => {
-  if (
-    typeof metadata === "string" ||
-    typeof metadata === "number" ||
-    typeof metadata === "boolean"
-  ) {
+export const convertPostgresJsonToMetadataRecord = (metadata: Prisma.JsonValue): Record<string, string> => {
+  if (typeof metadata === "string" || typeof metadata === "number" || typeof metadata === "boolean") {
     return { metadata: String(metadata) };
   }
   if (Array.isArray(metadata)) {
@@ -42,9 +34,7 @@ export const convertPostgresJsonToMetadataRecord = (
   return {};
 };
 
-export const convertRecordValuesToString = (
-  record: Record<string, unknown>,
-): Record<string, string> => {
+export const convertRecordValuesToString = (record: Record<string, unknown>): Record<string, string> => {
   const result: Record<string, string> = {};
   for (const key in record) {
     const value = record[key];
@@ -70,9 +60,7 @@ export function overwriteObject(
     if (
       nonOverwritableKeys.includes(key) ||
       srcValue === undefined ||
-      (typeof srcValue === "object" &&
-        srcValue !== null &&
-        Object.keys(srcValue).length === 0) // empty object check for cost / usage details
+      (typeof srcValue === "object" && srcValue !== null && Object.keys(srcValue).length === 0) // empty object check for cost / usage details
     ) {
       return objValue;
     } else {
@@ -88,9 +76,7 @@ export function overwriteObject(
         : (merge(a.metadata, b.metadata) ?? {});
 
   if ("tags" in result) {
-    result.tags = Array.from(
-      new Set([...(a.tags || []), ...(b.tags || [])]),
-    ).sort();
+    result.tags = Array.from(new Set([...(a.tags || []), ...(b.tags || [])])).sort();
   }
 
   return result;

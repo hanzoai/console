@@ -65,15 +65,9 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should initialize with correct values", () => {
-    expect(writer.batchSize).toBe(
-      env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE,
-    );
-    expect(writer.writeInterval).toBe(
-      env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS,
-    );
-    expect(writer.maxAttempts).toBe(
-      env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS,
-    );
+    expect(writer.batchSize).toBe(env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE);
+    expect(writer.writeInterval).toBe(env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS);
+    expect(writer.maxAttempts).toBe(env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS);
   });
 
   it("should add items to the queue", () => {
@@ -85,9 +79,7 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should flush when queue reaches batch size", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
 
     for (let i = 0; i < writer.batchSize; i++) {
       writer.addToQueue(TableName.Traces, { id: `${i}`, name: "test" } as any);
@@ -100,9 +92,7 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should flush at regular intervals", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
@@ -131,9 +121,7 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should drop records after max attempts", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockRejectedValue(new Error("DB Error"));
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockRejectedValue(new Error("DB Error"));
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
@@ -144,33 +132,23 @@ describe("ClickhouseWriter", () => {
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
 
     expect(mockInsert).toHaveBeenCalledTimes(writer.maxAttempts);
-    expect(
-      logger.error.mock.calls.some((call) =>
-        call[0].includes("Max attempts reached"),
-      ),
-    ).toBe(true);
+    expect(logger.error.mock.calls.some((call) => call[0].includes("Max attempts reached"))).toBe(true);
     expect(writer["queue"][TableName.Traces]).toHaveLength(0);
   });
 
   it("should shutdown gracefully", async () => {
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
 
     await writer.shutdown();
 
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(writer["intervalId"]).toBeNull();
-    expect(logger.info).toHaveBeenCalledWith(
-      "ClickhouseWriter shutdown complete.",
-    );
+    expect(logger.info).toHaveBeenCalledWith("ClickhouseWriter shutdown complete.");
   });
 
   it("should handle multiple table types", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "trace" });
     writer.addToQueue(TableName.Scores, { id: "2", name: "score" });
@@ -185,9 +163,7 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should not flush when isIntervalFlushInProgress is true", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
     writer["isIntervalFlushInProgress"] = true;
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
@@ -201,16 +177,11 @@ describe("ClickhouseWriter", () => {
     const setIntervalSpy = vi.spyOn(global, "setInterval");
     writer["start"]();
 
-    expect(setIntervalSpy).toHaveBeenCalledWith(
-      expect.any(Function),
-      writer.writeInterval,
-    );
+    expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), writer.writeInterval);
   });
 
   it("should flush all queues when flushAll is called directly", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
     writer.addToQueue(TableName.Traces, { id: "1", name: "trace" });
     writer.addToQueue(TableName.Scores, { id: "2", name: "score" });
 
@@ -222,12 +193,10 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should handle adding items to queue while flush is in progress", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockImplementation(() => {
-        writer.addToQueue(TableName.Traces, { id: "2", name: "test2" });
-        return Promise.resolve();
-      });
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockImplementation(() => {
+      writer.addToQueue(TableName.Traces, { id: "2", name: "test2" });
+      return Promise.resolve();
+    });
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "test1" });
 
@@ -239,9 +208,7 @@ describe("ClickhouseWriter", () => {
   });
 
   it("should handle concurrent writes during high load", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
     const concurrentWrites = 1000;
 
     const writes = Array.from({ length: concurrentWrites }, (_, i) =>
@@ -251,29 +218,21 @@ describe("ClickhouseWriter", () => {
     await Promise.all(writes);
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
 
-    expect(mockInsert).toHaveBeenCalledTimes(
-      Math.ceil(concurrentWrites / writer.batchSize),
-    );
-    expect(writer["queue"][TableName.Traces].length).toBeLessThan(
-      writer.batchSize,
-    );
+    expect(mockInsert).toHaveBeenCalledTimes(Math.ceil(concurrentWrites / writer.batchSize));
+    expect(writer["queue"][TableName.Traces].length).toBeLessThan(writer.batchSize);
   });
 
   it("should report wait time and processing time metrics correctly", async () => {
     const metricsDistributionSpy = vi.spyOn(serverExports, "recordHistogram");
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
 
-    expect(metricsDistributionSpy).toHaveBeenCalledWith(
-      "hanzo.queue.clickhouse_writer.wait_time",
-      expect.any(Number),
-      { unit: "milliseconds" },
-    );
+    expect(metricsDistributionSpy).toHaveBeenCalledWith("hanzo.queue.clickhouse_writer.wait_time", expect.any(Number), {
+      unit: "milliseconds",
+    });
 
     expect(metricsDistributionSpy).toHaveBeenCalledWith(
       "hanzo.queue.clickhouse_writer.processing_time",
@@ -292,23 +251,17 @@ describe("ClickhouseWriter", () => {
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("Network error"),
-    );
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Network error"));
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("Timeout"),
-    );
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Timeout"));
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
     expect(writer["queue"][TableName.Traces]).toHaveLength(0);
   });
 
   it("should handle partial queue flush correctly", async () => {
-    const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
-      .mockResolvedValue();
+    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
     const partialQueueSize = Math.floor(writer.batchSize / 2);
 
     for (let i = 0; i < partialQueueSize; i++) {
@@ -320,9 +273,7 @@ describe("ClickhouseWriter", () => {
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        values: expect.arrayContaining(
-          new Array(partialQueueSize).fill(expect.any(Object)),
-        ),
+        values: expect.arrayContaining(new Array(partialQueueSize).fill(expect.any(Object))),
       }),
     );
     expect(writer["queue"][TableName.Traces]).toHaveLength(0);
@@ -354,23 +305,14 @@ describe("ClickhouseWriter", () => {
         metadata: { key: "value" },
       } as any;
 
-      const truncatedRecord = writer["truncateOversizedRecord"](
-        TableName.Traces,
-        record,
-      );
+      const truncatedRecord = writer["truncateOversizedRecord"](TableName.Traces, record);
 
       expect(truncatedRecord.id).toBe("1");
       expect((truncatedRecord as any).output).toBe("normal output");
       expect((truncatedRecord as any).metadata).toEqual({ key: "value" });
-      expect((truncatedRecord as any).input).toContain(
-        "[TRUNCATED: Field exceeded size limit]",
-      );
-      expect((truncatedRecord as any).input.length).toBeLessThan(
-        largeInput.length,
-      );
-      expect((truncatedRecord as any).input).toMatch(
-        /^a+\[TRUNCATED: Field exceeded size limit]$/,
-      );
+      expect((truncatedRecord as any).input).toContain("[TRUNCATED: Field exceeded size limit]");
+      expect((truncatedRecord as any).input.length).toBeLessThan(largeInput.length);
+      expect((truncatedRecord as any).input).toMatch(/^a+\[TRUNCATED: Field exceeded size limit]$/);
     });
 
     it("should truncate oversized output field", () => {
@@ -382,21 +324,14 @@ describe("ClickhouseWriter", () => {
         metadata: { key: "value" },
       };
 
-      const truncatedRecord = writer["truncateOversizedRecord"](
-        TableName.Traces,
-        record,
-      );
+      const truncatedRecord = writer["truncateOversizedRecord"](TableName.Traces, record);
 
       expect(truncatedRecord.id).toBe("1");
       expect(truncatedRecord.input).toBe("normal input");
       expect(truncatedRecord.metadata).toEqual({ key: "value" });
-      expect(truncatedRecord.output).toContain(
-        "[TRUNCATED: Field exceeded size limit]",
-      );
+      expect(truncatedRecord.output).toContain("[TRUNCATED: Field exceeded size limit]");
       expect(truncatedRecord.output.length).toBeLessThan(largeOutput.length);
-      expect(truncatedRecord.output).toMatch(
-        /^b+\[TRUNCATED: Field exceeded size limit\]$/,
-      );
+      expect(truncatedRecord.output).toMatch(/^b+\[TRUNCATED: Field exceeded size limit\]$/);
     });
 
     it("should truncate oversized metadata values", () => {
@@ -412,27 +347,16 @@ describe("ClickhouseWriter", () => {
         },
       };
 
-      const truncatedRecord = writer["truncateOversizedRecord"](
-        TableName.Traces,
-        record,
-      );
+      const truncatedRecord = writer["truncateOversizedRecord"](TableName.Traces, record);
 
       expect(truncatedRecord.id).toBe("1");
       expect(truncatedRecord.input).toBe("normal input");
       expect(truncatedRecord.output).toBe("normal output");
       expect(truncatedRecord.metadata.normalKey).toBe("normal value");
-      expect(truncatedRecord.metadata.anotherNormalKey).toBe(
-        "another normal value",
-      );
-      expect(truncatedRecord.metadata.largeKey).toContain(
-        "[TRUNCATED: Field exceeded size limit]",
-      );
-      expect(truncatedRecord.metadata.largeKey.length).toBeLessThan(
-        largeMetadataValue.length,
-      );
-      expect(truncatedRecord.metadata.largeKey).toMatch(
-        /^c+\[TRUNCATED: Field exceeded size limit\]$/,
-      );
+      expect(truncatedRecord.metadata.anotherNormalKey).toBe("another normal value");
+      expect(truncatedRecord.metadata.largeKey).toContain("[TRUNCATED: Field exceeded size limit]");
+      expect(truncatedRecord.metadata.largeKey.length).toBeLessThan(largeMetadataValue.length);
+      expect(truncatedRecord.metadata.largeKey).toMatch(/^c+\[TRUNCATED: Field exceeded size limit\]$/);
     });
 
     it("should not truncate normal-sized fields", () => {
@@ -443,10 +367,7 @@ describe("ClickhouseWriter", () => {
         metadata: { key: "value" },
       };
 
-      const truncatedRecord = writer["truncateOversizedRecord"](
-        TableName.Traces,
-        normalRecord,
-      );
+      const truncatedRecord = writer["truncateOversizedRecord"](TableName.Traces, normalRecord);
 
       expect(truncatedRecord).toEqual(normalRecord);
     });
@@ -461,11 +382,7 @@ describe("ClickhouseWriter", () => {
 
       const mockInsert = vi
         .spyOn(clickhouseClientMock, "insert")
-        .mockRejectedValueOnce(
-          new Error(
-            "size of json object is extremely large and expected not greater than 1MB",
-          ),
-        )
+        .mockRejectedValueOnce(new Error("size of json object is extremely large and expected not greater than 1MB"))
         .mockResolvedValueOnce();
 
       writer.addToQueue(TableName.Traces, record);
@@ -473,9 +390,7 @@ describe("ClickhouseWriter", () => {
       await vi.advanceTimersByTimeAsync(writer.writeInterval);
 
       expect(mockInsert).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenCalledWith(
-        expect.stringContaining("size of json object is extremely large"),
-      );
+      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("size of json object is extremely large"));
 
       // Second attempt with truncated data
       await vi.advanceTimersByTimeAsync(writer.writeInterval);
@@ -485,17 +400,14 @@ describe("ClickhouseWriter", () => {
         expect.stringContaining("Truncating oversized records"),
         expect.objectContaining({
           attemptNumber: 1,
-          error:
-            "size of json object is extremely large and expected not greater than 1MB",
+          error: "size of json object is extremely large and expected not greater than 1MB",
         }),
       );
       expect(writer["queue"][TableName.Traces]).toHaveLength(0);
 
       // Verify that the second call used truncated data
       const secondCallArgs = mockInsert.mock.calls[1][0];
-      expect(secondCallArgs.values[0].input).toContain(
-        "[TRUNCATED: Field exceeded size limit]",
-      );
+      expect(secondCallArgs.values[0].input).toContain("[TRUNCATED: Field exceeded size limit]");
     });
 
     it("should handle string length errors with batch splitting", async () => {

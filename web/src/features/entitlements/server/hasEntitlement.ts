@@ -1,7 +1,4 @@
-import {
-  entitlementAccess,
-  type Entitlement,
-} from "@/src/features/entitlements/constants/entitlements";
+import { entitlementAccess, type Entitlement } from "@/src/features/entitlements/constants/entitlements";
 import { TRPCError } from "@trpc/server";
 import { type User } from "next-auth";
 import { type Plan } from "@hanzo/shared";
@@ -22,9 +19,7 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
     // Find the relevant organization
     const org =
       "projectId" in p
-        ? p.sessionUser.organizations?.find((org) =>
-            org.projects?.some((proj) => proj.id === p.projectId),
-          )
+        ? p.sessionUser.organizations?.find((org) => org.projects?.some((proj) => proj.id === p.projectId))
         : p.sessionUser.organizations?.find((org) => org.id === p.orgId);
 
     // If no organization found, return false
@@ -32,7 +27,7 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
 
     // Use getOrganizationPlanServerSide to get the plan
     const rawPlan = org.plan;
-    
+
     // Convert the plan using similar logic as getOrganizationPlanServerSide
     let plan: Plan;
     if (rawPlan?.toUpperCase() === "PRO") {
@@ -59,13 +54,7 @@ export const hasEntitlement = (p: HasEntitlementParams): Boolean => {
 /**
  * Check if user has access to a specific entitlement based on the plan.
  */
-export const hasEntitlementBasedOnPlan = ({
-  plan,
-  entitlement,
-}: {
-  plan: Plan | null;
-  entitlement: Entitlement;
-}) => {
+export const hasEntitlementBasedOnPlan = ({ plan, entitlement }: { plan: Plan | null; entitlement: Entitlement }) => {
   try {
     // If no plan, return false
     if (!plan) return false;
@@ -93,11 +82,7 @@ export const throwIfNoEntitlement = (p: HasEntitlementParams) => {
   if (!hasEntitlement(p)) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message:
-        "Unauthorized, user does not have access to entitlement: " +
-        p.entitlement,
+      message: "Unauthorized, user does not have access to entitlement: " + p.entitlement,
     });
   }
 };
-
-

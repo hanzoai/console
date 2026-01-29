@@ -10,14 +10,7 @@ export type TableLinkProps = {
   title?: string;
 };
 
-export default function TableLink({
-  path,
-  value,
-  icon,
-  className,
-  onClick,
-  title,
-}: TableLinkProps) {
+export default function TableLink({ path, value, icon, className, onClick, title }: TableLinkProps) {
   const handleClick = (event: React.MouseEvent) => {
     if (onClick) {
       event.preventDefault();

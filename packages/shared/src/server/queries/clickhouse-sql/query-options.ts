@@ -10,9 +10,7 @@ import { env } from "../../../env";
  * 2. If HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS is enabled, check Redis for project OTEL usage
  * 3. Returns boolean
  */
-export async function shouldSkipObservationsFinal(
-  projectId: string,
-): Promise<boolean> {
+export async function shouldSkipObservationsFinal(projectId: string): Promise<boolean> {
   // Check env var first (takes precedence) - only if env is provided
   if (env.HANZO_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL === "true") {
     recordIncrement("query.final_modifier.skipped", 1, {

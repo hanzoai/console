@@ -1,18 +1,11 @@
 import { env } from "../../env";
-import {
-  logger,
-  sendCommentMentionEmail,
-  getObservationById,
-} from "@hanzo/shared/src/server";
+import { logger, sendCommentMentionEmail, getObservationById } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { Prisma } from "@hanzo/shared";
 import { getUserProjectRoles } from "@hanzo/shared/src/server";
 import { type NotificationEventType } from "@hanzo/shared/src/server";
 
-type CommentMentionPayload = Omit<
-  Extract<NotificationEventType, { type: "COMMENT_MENTION" }>,
-  "type"
->;
+type CommentMentionPayload = Omit<Extract<NotificationEventType, { type: "COMMENT_MENTION" }>, "type">;
 
 async function buildCommentLink(opts: {
   baseUrl: string;
@@ -47,9 +40,7 @@ async function buildCommentLink(opts: {
         select: { name: true, version: true },
       });
       if (!prompt) {
-        logger.warn(
-          `Prompt ${comment.objectId} not found. Skipping notification for user ${userIdForLogging}.`,
-        );
+        logger.warn(`Prompt ${comment.objectId} not found. Skipping notification for user ${userIdForLogging}.`);
         return null;
       }
       const encodedPromptName = encodeURIComponent(prompt.name);
@@ -63,14 +54,10 @@ async function buildCommentLink(opts: {
   }
 }
 
-export async function handleCommentMentionNotification(
-  payload: CommentMentionPayload,
-) {
+export async function handleCommentMentionNotification(payload: CommentMentionPayload) {
   const { commentId, projectId, mentionedUserIds } = payload;
 
-  logger.info(
-    `Processing comment mention notification for comment ${commentId} in project ${projectId}`,
-  );
+  logger.info(`Processing comment mention notification for comment ${commentId} in project ${projectId}`);
 
   try {
     // CRITICAL: Always include projectId in query to prevent cross-project data leakage
@@ -91,15 +78,11 @@ export async function handleCommentMentionNotification(
     });
 
     if (!comment) {
-      logger.warn(
-        `Comment ${commentId} not found in project ${projectId}. Skipping notification processing.`,
-      );
+      logger.warn(`Comment ${commentId} not found in project ${projectId}. Skipping notification processing.`);
       return;
     }
 
-    const allUserIds = comment.authorUserId
-      ? [comment.authorUserId, ...mentionedUserIds]
-      : mentionedUserIds;
+    const allUserIds = comment.authorUserId ? [comment.authorUserId, ...mentionedUserIds] : mentionedUserIds;
 
     const projectUsers = await getUserProjectRoles({
       projectId: projectId,
@@ -128,10 +111,7 @@ export async function handleCommentMentionNotification(
 
     // Build comment preview once (truncate + strip mention markdown)
     const commentPreview = (() => {
-      const truncated =
-        comment.content.length > 500
-          ? comment.content.substring(0, 497) + "..."
-          : comment.content;
+      const truncated = comment.content.length > 500 ? comment.content.substring(0, 497) + "..." : comment.content;
       // Convert @[DisplayName](user:userId) to @DisplayName
       return truncated.replace(/@\[([^\]]+)\]\(user:[^)]+\)/g, "@$1");
     })();
@@ -210,26 +190,16 @@ export async function handleCommentMentionNotification(
           settingsLink,
         });
 
-        logger.info(
-          `Comment mention email sent successfully for comment ${commentId} to user ${userId}`,
-        );
+        logger.info(`Comment mention email sent successfully for comment ${commentId} to user ${userId}`);
       } catch (error) {
-        logger.error(
-          `Failed to send comment mention notification to user ${userId}`,
-          error,
-        );
+        logger.error(`Failed to send comment mention notification to user ${userId}`, error);
         // Continue processing other users even if one fails
       }
     }
 
-    logger.info(
-      `Completed processing comment mention notification for comment ${commentId}`,
-    );
+    logger.info(`Completed processing comment mention notification for comment ${commentId}`);
   } catch (error) {
-    logger.error(
-      `Failed to process comment mention notification for comment ${commentId}`,
-      error,
-    );
+    logger.error(`Failed to process comment mention notification for comment ${commentId}`, error);
     throw error;
   }
 }

@@ -48,17 +48,17 @@ async function registerKeyWithLLM(publicKey: string, secretKey: string, projectI
 
   try {
     const response = await fetch(`${llmApiUrl}/api/register-key`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${llmApiKey}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${llmApiKey}`,
       },
       body: JSON.stringify({
         publicKey,
         secretKey,
         projectId,
-        orgId
-      })
+        orgId,
+      }),
     });
 
     if (!response.ok) {
@@ -84,14 +84,14 @@ export async function unregisterKeyFromLLM(publicKey: string) {
 
   try {
     const response = await fetch(`${llmApiUrl}/api/unregister-key`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${llmApiKey}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${llmApiKey}`,
       },
       body: JSON.stringify({
-        publicKey
-      })
+        publicKey,
+      }),
     });
 
     if (!response.ok) {
@@ -130,8 +130,7 @@ export async function createAndAddApiKeysToDb(p: {
 
   const hashFromProvidedKey = createShaHash(sk, salt);
 
-  const entity =
-    p.scope === "PROJECT" ? { projectId: p.entityId } : { orgId: p.entityId };
+  const entity = p.scope === "PROJECT" ? { projectId: p.entityId } : { orgId: p.entityId };
 
   const apiKey = await p.prisma.apiKey.create({
     data: {
@@ -146,10 +145,10 @@ export async function createAndAddApiKeysToDb(p: {
     include: {
       project: {
         include: {
-          organization: true
-        }
-      }
-    }
+          organization: true,
+        },
+      },
+    },
   });
 
   // Register with LLM API (only for project-scoped keys)

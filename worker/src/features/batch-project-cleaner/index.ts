@@ -33,9 +33,7 @@ export class BatchProjectCleaner {
   /**
    * Process a batch of deleted projects for a specific table.
    */
-  public static async processBatch(
-    tableName: BatchDeletionTable,
-  ): Promise<void> {
+  public static async processBatch(tableName: BatchDeletionTable): Promise<void> {
     const instanceName = `BatchProjectCleaner(${tableName})`;
 
     // Step 1: Query PG for deleted projects
@@ -69,9 +67,7 @@ export class BatchProjectCleaner {
       .map(([projectId]) => projectId);
 
     if (projectIdsWithData.length === 0) {
-      logger.info(
-        `${instanceName}: No data found for deleted projects in ${tableName}`,
-      );
+      logger.info(`${instanceName}: No data found for deleted projects in ${tableName}`);
       return;
     }
 
@@ -79,10 +75,7 @@ export class BatchProjectCleaner {
     try {
       await BatchProjectCleaner.executeDelete(tableName, projectIdsWithData);
 
-      const totalRows = Array.from(initialCounts.values()).reduce(
-        (sum, count) => sum + count,
-        0,
-      );
+      const totalRows = Array.from(initialCounts.values()).reduce((sum, count) => sum + count, 0);
       logger.info(`${instanceName}: Batch deletion completed`, {
         table: tableName,
         projectsProcessed: projectIdsWithData.length,
@@ -90,10 +83,7 @@ export class BatchProjectCleaner {
       });
     } catch (deleteError) {
       // Step 4: On failure, re-run count query to determine partial success
-      logger.warn(
-        `${instanceName}: DELETE failed, checking for partial success`,
-        deleteError,
-      );
+      logger.warn(`${instanceName}: DELETE failed, checking for partial success`, deleteError);
       traceException(deleteError);
 
       // Record DELETE failure metric
@@ -103,16 +93,10 @@ export class BatchProjectCleaner {
 
       let finalCounts: Map<string, number> | undefined;
       try {
-        finalCounts = await BatchProjectCleaner.getProjectCounts(
-          tableName,
-          projectIdsWithData,
-        );
+        finalCounts = await BatchProjectCleaner.getProjectCounts(tableName, projectIdsWithData);
       } catch (countError) {
         // Can't determine partial success
-        logger.error(
-          `${instanceName}: Failed to re-query counts after DELETE failure`,
-          countError,
-        );
+        logger.error(`${instanceName}: Failed to re-query counts after DELETE failure`, countError);
       }
 
       // Calculate projects that couldn't be fully cleaned
@@ -124,11 +108,9 @@ export class BatchProjectCleaner {
         : projectIdsWithData;
 
       if (incompleteProjects.length > 0) {
-        recordIncrement(
-          "hanzo.batch_project_cleaner.incomplete_cleanups",
-          incompleteProjects.length,
-          { table: tableName },
-        );
+        recordIncrement("hanzo.batch_project_cleaner.incomplete_cleanups", incompleteProjects.length, {
+          table: tableName,
+        });
         logger.warn(`${instanceName}: Partial deletion completed`, {
           table: tableName,
           incompleteProjectCount: incompleteProjects.length,
@@ -136,9 +118,7 @@ export class BatchProjectCleaner {
           error: (deleteError as Error).message,
         });
       } else {
-        logger.info(
-          `${instanceName}: All projects cleaned successfully on re-check`,
-        );
+        logger.info(`${instanceName}: All projects cleaned successfully on re-check`);
       }
 
       // Re-throw so BullMQ marks job as failed
@@ -190,10 +170,7 @@ export class BatchProjectCleaner {
     return counts;
   }
 
-  private static async executeDelete(
-    tableName: BatchDeletionTable,
-    projectIds: string[],
-  ): Promise<void> {
+  private static async executeDelete(tableName: BatchDeletionTable, projectIds: string[]): Promise<void> {
     if (projectIds.length === 0) {
       return;
     }

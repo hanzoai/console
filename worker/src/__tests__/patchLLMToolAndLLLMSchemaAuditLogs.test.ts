@@ -260,9 +260,7 @@ describe("PatchLLMToolAndLLLMSchemaAuditLogs", () => {
     });
 
     // All should be updated to llmTool
-    expect(updatedLogs.every((log) => log.resourceType === "llmTool")).toBe(
-      true,
-    );
+    expect(updatedLogs.every((log) => log.resourceType === "llmTool")).toBe(true);
     expect(updatedLogs.length).toBe(1250);
 
     // Clean up

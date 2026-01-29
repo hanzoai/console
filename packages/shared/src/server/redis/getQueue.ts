@@ -36,12 +36,7 @@ import { MediaRetentionCleanerQueue } from "./mediaRetentionCleanerQueue";
 // IngestionQueue, OtelIngestionQueue, and TraceUpsert are sharded and require a sharding key
 // Use IngestionQueue.getInstance({ shardName: queueName }) or TraceUpsertQueue.getInstance({ shardName: queueName }) directly instead
 export function getQueue(
-  queueName: Exclude<
-    QueueName,
-    | QueueName.IngestionQueue
-    | QueueName.TraceUpsert
-    | QueueName.OtelIngestionQueue
-  >,
+  queueName: Exclude<QueueName, QueueName.IngestionQueue | QueueName.TraceUpsert | QueueName.OtelIngestionQueue>,
 ): Queue | null {
   switch (queueName) {
     case QueueName.BatchExport:

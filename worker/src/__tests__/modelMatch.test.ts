@@ -1,12 +1,7 @@
 import { expect, describe, it } from "vitest";
 import { prisma } from "@hanzo/shared/src/db";
 import { createOrgProjectAndApiKey, redis } from "@hanzo/shared/src/server";
-import {
-  findModel,
-  findModelInPostgres,
-  getRedisModelKey,
-  clearModelCacheForProject,
-} from "@hanzo/shared/src/server";
+import { findModel, findModelInPostgres, getRedisModelKey, clearModelCacheForProject } from "@hanzo/shared/src/server";
 import { v4 as uuidv4 } from "uuid";
 
 describe("modelMatch", () => {
@@ -62,15 +57,9 @@ describe("modelMatch", () => {
       expect(result.model.modelName).toEqual(mockModel.modelName);
       expect(result.model.matchPattern).toEqual(mockModel.matchPattern);
       expect(result.model.unit).toEqual(mockModel.unit);
-      expect(result.model.inputPrice?.toString()).toEqual(
-        mockModel.inputPrice?.toString(),
-      );
-      expect(result.model.outputPrice?.toString()).toEqual(
-        mockModel.outputPrice?.toString(),
-      );
-      expect(result.model.totalPrice?.toString()).toEqual(
-        mockModel.totalPrice?.toString(),
-      );
+      expect(result.model.inputPrice?.toString()).toEqual(mockModel.inputPrice?.toString());
+      expect(result.model.outputPrice?.toString()).toEqual(mockModel.outputPrice?.toString());
+      expect(result.model.totalPrice?.toString()).toEqual(mockModel.totalPrice?.toString());
 
       // Verify pricing tiers are included
       expect(result.pricingTiers).toHaveLength(1);

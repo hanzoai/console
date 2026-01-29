@@ -10,25 +10,17 @@ import type { PricingTierMatchResult, PricingTierWithPrices } from "./types";
  * Evaluates a single condition against usage details
  * Sums all usage_details keys matching the pattern and compares to threshold
  */
-function evaluateCondition(
-  condition: PricingTierCondition,
-  usageDetails: Record<string, number>,
-): boolean {
+function evaluateCondition(condition: PricingTierCondition, usageDetails: Record<string, number>): boolean {
   try {
     // Build regex with case sensitivity flag
     const flags = condition.caseSensitive ? "" : "i";
     const regex = new RegExp(condition.usageDetailPattern, flags);
 
     // Find all keys matching the pattern
-    const matchingKeys = Object.keys(usageDetails).filter((key) =>
-      regex.test(key),
-    );
+    const matchingKeys = Object.keys(usageDetails).filter((key) => regex.test(key));
 
     // Sum values of matching keys
-    const sum = matchingKeys.reduce(
-      (acc, key) => acc + (usageDetails[key] || 0),
-      0,
-    );
+    const sum = matchingKeys.reduce((acc, key) => acc + (usageDetails[key] || 0), 0);
 
     // Compare sum to threshold
     switch (condition.operator) {
@@ -56,19 +48,14 @@ function evaluateCondition(
  * Evaluates all conditions for a tier (AND logic)
  * Returns true only if ALL conditions pass
  */
-function evaluateConditions(
-  conditions: PricingTierCondition[],
-  usageDetails: Record<string, number>,
-): boolean {
+function evaluateConditions(conditions: PricingTierCondition[], usageDetails: Record<string, number>): boolean {
   // Empty conditions should never match (except for default tiers)
   if (conditions.length === 0) {
     return false;
   }
 
   // All conditions must pass (AND logic)
-  return conditions.every((condition) =>
-    evaluateCondition(condition, usageDetails),
-  );
+  return conditions.every((condition) => evaluateCondition(condition, usageDetails));
 }
 
 /**
@@ -90,9 +77,7 @@ export function matchPricingTier(
   usageDetails: Record<string, number>,
 ): PricingTierMatchResult | null {
   // 1. Filter and sort non-default tiers by priority (ascending)
-  const sortedTiers = tiers
-    .filter((tier) => !tier.isDefault)
-    .sort((a, b) => a.priority - b.priority);
+  const sortedTiers = tiers.filter((tier) => !tier.isDefault).sort((a, b) => a.priority - b.priority);
 
   // 2. Try to match each tier in priority order
   for (const tier of sortedTiers) {
@@ -100,9 +85,7 @@ export function matchPricingTier(
       return {
         pricingTierId: tier.id,
         pricingTierName: tier.name,
-        prices: Object.fromEntries(
-          tier.prices.map((p) => [p.usageType, p.price]),
-        ),
+        prices: Object.fromEntries(tier.prices.map((p) => [p.usageType, p.price])),
       };
     }
   }
@@ -114,9 +97,7 @@ export function matchPricingTier(
     return {
       pricingTierId: defaultTier.id,
       pricingTierName: defaultTier.name,
-      prices: Object.fromEntries(
-        defaultTier.prices.map((p) => [p.usageType, p.price]),
-      ),
+      prices: Object.fromEntries(defaultTier.prices.map((p) => [p.usageType, p.price])),
     };
   }
 

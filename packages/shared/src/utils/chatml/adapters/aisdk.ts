@@ -1,10 +1,5 @@
 import type { NormalizerContext, ProviderAdapter } from "../types";
-import {
-  removeNullFields,
-  stringifyToolResultContent,
-  parseMetadata,
-  isRichToolResult,
-} from "../helpers";
+import { removeNullFields, stringifyToolResultContent, parseMetadata, isRichToolResult } from "../helpers";
 import { z } from "zod/v4";
 
 /**
@@ -49,9 +44,7 @@ const AISDKMessagesArraySchema = z
   .array(
     z.looseObject({
       role: z.string(),
-      content: z
-        .union([z.string(), z.array(z.looseObject({ type: z.string() }))])
-        .optional(),
+      content: z.union([z.string(), z.array(z.looseObject({ type: z.string() }))]).optional(),
     }),
   )
   .refine(
@@ -95,21 +88,13 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   let working = msg as Record<string, unknown>;
 
   // Strip provider-specific metadata (Bedrock, OpenAI, etc.)
-  const {
-    providerMetadata: _providerMetadata,
-    providerOptions: _providerOptions,
-    ...withoutProviderFields
-  } = working;
+  const { providerMetadata: _providerMetadata, providerOptions: _providerOptions, ...withoutProviderFields } = working;
   working = withoutProviderFields;
 
   let normalized = removeNullFields(working);
 
   // Normalize content: [{type: "text", text: "..."}] → string
-  if (
-    normalized.content &&
-    Array.isArray(normalized.content) &&
-    normalized.content.length > 0
-  ) {
+  if (normalized.content && Array.isArray(normalized.content) && normalized.content.length > 0) {
     // all text already or do we need to normalize further?
     const allTextItems = normalized.content.every(
       (item: unknown) =>
@@ -125,9 +110,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
       normalized.content = firstItem.text;
     } else if (allTextItems && normalized.content.length > 1) {
       // Multiple text items: concatenate
-      const texts = normalized.content.map(
-        (item: unknown) => (item as Record<string, unknown>).text,
-      );
+      const texts = normalized.content.map((item: unknown) => (item as Record<string, unknown>).text);
       normalized.content = texts.join("");
     } else {
       // Mixed content or tool-calls/tool-results: normalize each item
@@ -145,8 +128,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
           const args = contentItem.args ?? contentItem.input;
           return {
             ...cleanedItem,
-            arguments:
-              typeof args === "string" ? args : JSON.stringify(args ?? {}),
+            arguments: typeof args === "string" ? args : JSON.stringify(args ?? {}),
           };
         }
 
@@ -173,10 +155,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
           // Otherwise stringify the result
           return {
             ...contentItem,
-            content:
-              typeof resultValue === "string"
-                ? resultValue
-                : JSON.stringify(resultValue ?? ""),
+            content: typeof resultValue === "string" ? resultValue : JSON.stringify(resultValue ?? ""),
           };
         }
 
@@ -186,10 +165,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
       // Convert tool-call content items to tool_calls array
       if (Array.isArray(normalized.content)) {
         const toolCallItems = normalized.content.filter(
-          (item: unknown) =>
-            item &&
-            typeof item === "object" &&
-            (item as Record<string, unknown>).type === "tool-call",
+          (item: unknown) => item && typeof item === "object" && (item as Record<string, unknown>).type === "tool-call",
         );
 
         if (toolCallItems.length > 0) {
@@ -205,16 +181,11 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
 
           // Remove tool-call items from content, keep only text items
           const textItems = normalized.content.filter(
-            (item: unknown) =>
-              item &&
-              typeof item === "object" &&
-              (item as Record<string, unknown>).type === "text",
+            (item: unknown) => item && typeof item === "object" && (item as Record<string, unknown>).type === "text",
           );
 
           if (textItems.length > 0) {
-            const texts = textItems.map(
-              (item: unknown) => (item as Record<string, unknown>).text ?? "",
-            );
+            const texts = textItems.map((item: unknown) => (item as Record<string, unknown>).text ?? "");
             normalized.content = texts.join("");
           } else {
             // No text content, remove content field
@@ -228,9 +199,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
       if (Array.isArray(normalized.content)) {
         const toolResultItems = normalized.content.filter(
           (item: unknown) =>
-            item &&
-            typeof item === "object" &&
-            (item as Record<string, unknown>).type === "tool-result",
+            item && typeof item === "object" && (item as Record<string, unknown>).type === "tool-result",
         );
 
         if (toolResultItems.length > 0 && normalized.role === "tool") {
@@ -321,10 +290,7 @@ function splitToolResultMessages(messages: unknown[]): unknown[] {
       Array.isArray(message.content) &&
       message.content.length > 1 &&
       message.content.every(
-        (item: unknown) =>
-          item &&
-          typeof item === "object" &&
-          (item as Record<string, unknown>).type === "tool-result",
+        (item: unknown) => item && typeof item === "object" && (item as Record<string, unknown>).type === "tool-result",
       )
     ) {
       // Split into separate messages, one per tool result
@@ -399,8 +365,7 @@ function preprocessData(data: unknown, ctx?: NormalizerContext): unknown {
         return {
           id: tc.toolCallId,
           name: tc.toolName,
-          arguments:
-            typeof args === "string" ? args : JSON.stringify(args ?? {}),
+          arguments: typeof args === "string" ? args : JSON.stringify(args ?? {}),
           type: "function",
         };
       });
@@ -460,11 +425,7 @@ export const aisdkAdapter: ProviderAdapter = {
 
       if ("attributes" in meta && typeof meta.attributes === "object") {
         const attrs = meta.attributes as Record<string, unknown> | null;
-        if (
-          attrs &&
-          typeof attrs["operation.name"] === "string" &&
-          attrs["operation.name"].startsWith("ai.")
-        ) {
+        if (attrs && typeof attrs["operation.name"] === "string" && attrs["operation.name"].startsWith("ai.")) {
           return true;
         }
       }
@@ -472,8 +433,7 @@ export const aisdkAdapter: ProviderAdapter = {
 
     // STRUCTURAL: Schema-based detection (for edge cases without metadata)
     if (AISDKToolCallMessageSchema.safeParse(ctx.metadata).success) return true;
-    if (AISDKToolResultMessageSchema.safeParse(ctx.metadata).success)
-      return true;
+    if (AISDKToolResultMessageSchema.safeParse(ctx.metadata).success) return true;
     if (AISDKMessagesArraySchema.safeParse(ctx.metadata).success) return true;
 
     if (AISDKToolCallMessageSchema.safeParse(ctx.data).success) return true;
@@ -486,11 +446,7 @@ export const aisdkAdapter: ProviderAdapter = {
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", ctx: NormalizerContext): unknown {
     return preprocessData(data, ctx);
   },
 };

@@ -33,8 +33,7 @@ describe("signature.ts", () => {
 
   describe("getDisplaySecretKey", () => {
     it("should create display version for valid secret", () => {
-      const secretKey =
-        "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+      const secretKey = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
       const display = getDisplaySecretKey(secretKey);
 
       expect(display).toBe("lf-whsec_...7890");
@@ -65,16 +64,8 @@ describe("signature.ts", () => {
       const timestamp = 1640995200;
       const secret = "test_secret_key";
 
-      const sig1 = generateWebhookSignature(
-        '{"test": "data1"}',
-        timestamp,
-        secret,
-      );
-      const sig2 = generateWebhookSignature(
-        '{"test": "data2"}',
-        timestamp,
-        secret,
-      );
+      const sig1 = generateWebhookSignature('{"test": "data1"}', timestamp, secret);
+      const sig2 = generateWebhookSignature('{"test": "data2"}', timestamp, secret);
 
       expect(sig1).not.toBe(sig2);
     });
@@ -99,11 +90,7 @@ describe("signature.ts", () => {
       const signatureHeader = createSignatureHeader(payload, secretKey);
 
       // User verification process
-      const isValid = verifyWebhookSignature(
-        payload,
-        signatureHeader,
-        secretKey,
-      );
+      const isValid = verifyWebhookSignature(payload, signatureHeader, secretKey);
       expect(isValid).toBe(true);
     });
 
@@ -113,22 +100,14 @@ describe("signature.ts", () => {
       const payload = '{"event": "trace.created"}';
       const signatureHeader = createSignatureHeader(payload, secretKey);
 
-      const isValid = verifyWebhookSignature(
-        payload,
-        signatureHeader,
-        wrongSecret,
-      );
+      const isValid = verifyWebhookSignature(payload, signatureHeader, wrongSecret);
       expect(isValid).toBe(false);
     });
   });
 });
 
 // Example verification function that users would implement
-function verifyWebhookSignature(
-  payload: string,
-  signatureHeader: string,
-  secret: string,
-): boolean {
+function verifyWebhookSignature(payload: string, signatureHeader: string, secret: string): boolean {
   try {
     const [timestampPart, signaturePart] = signatureHeader.split(",");
 
@@ -144,17 +123,10 @@ function verifyWebhookSignature(
     }
 
     // Generate expected signature using our provided function
-    const expectedSignature = generateWebhookSignature(
-      payload,
-      timestamp,
-      secret,
-    );
+    const expectedSignature = generateWebhookSignature(payload, timestamp, secret);
 
     // Use timing-safe comparison
-    return require("crypto").timingSafeEqual(
-      Buffer.from(receivedSignature),
-      Buffer.from(expectedSignature),
-    );
+    return require("crypto").timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expectedSignature));
   } catch (error) {
     return false;
   }

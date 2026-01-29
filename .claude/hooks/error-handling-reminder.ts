@@ -20,9 +20,7 @@ interface SessionTracking {
   edited_files: EditedFile[];
 }
 
-function getFileCategory(
-  filePath: string,
-): "backend" | "frontend" | "database" | "other" {
+function getFileCategory(filePath: string): "backend" | "frontend" | "database" | "other" {
   // Frontend detection
   if (
     filePath.includes("/frontend/") ||
@@ -43,11 +41,7 @@ function getFileCategory(
     return "backend";
 
   // Database detection
-  if (
-    filePath.includes("/database/") ||
-    filePath.includes("/prisma/") ||
-    filePath.includes("/migrations/")
-  )
+  if (filePath.includes("/database/") || filePath.includes("/prisma/") || filePath.includes("/migrations/"))
     return "database";
 
   return "other";
@@ -86,14 +80,8 @@ function analyzeFileContent(filePath: string): {
   return {
     hasTryCatch: /try\s*\{/.test(content),
     hasAsync: /async\s+/.test(content),
-    hasPrisma:
-      /prisma\.|PrismaService|findMany|findUnique|create\(|update\(|delete\(/i.test(
-        content,
-      ),
-    hasController:
-      /export class.*Controller|router\.|app\.(get|post|put|delete|patch)/.test(
-        content,
-      ),
+    hasPrisma: /prisma\.|PrismaService|findMany|findUnique|create\(|update\(|delete\(/i.test(content),
+    hasController: /export class.*Controller|router\.|app\.(get|post|put|delete|patch)/.test(content),
     hasApiCall: /fetch\(|axios\.|apiClient\./i.test(content),
   };
 }
@@ -108,12 +96,7 @@ async function main() {
     const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
 
     // Check for edited files tracking
-    const cacheDir = join(
-      process.env.HOME || "/root",
-      ".claude",
-      "tsc-cache",
-      session_id,
-    );
+    const cacheDir = join(process.env.HOME || "/root", ".claude", "tsc-cache", session_id);
     const trackingFile = join(cacheDir, "edited-files.log");
 
     if (!existsSync(trackingFile)) {
@@ -182,9 +165,7 @@ async function main() {
 
     // Backend reminders
     if (categories.backend.length > 0) {
-      const backendFiles = analysisResults.filter(
-        (f) => f.category === "backend",
-      );
+      const backendFiles = analysisResults.filter((f) => f.category === "backend");
       const hasTryCatch = backendFiles.some((f) => f.analysis.hasTryCatch);
       const hasPrisma = backendFiles.some((f) => f.analysis.hasPrisma);
       const hasController = backendFiles.some((f) => f.analysis.hasController);
@@ -193,9 +174,7 @@ async function main() {
       console.log(`   ${categories.backend.length} file(s) edited\n`);
 
       if (hasTryCatch) {
-        console.log(
-          "   ❓ Did you add Sentry.captureException() in catch blocks?",
-        );
+        console.log("   ❓ Did you add Sentry.captureException() in catch blocks?");
       }
       if (hasPrisma) {
         console.log("   ❓ Are Prisma operations wrapped in error handling?");
@@ -212,9 +191,7 @@ async function main() {
 
     // Frontend reminders
     if (categories.frontend.length > 0) {
-      const frontendFiles = analysisResults.filter(
-        (f) => f.category === "frontend",
-      );
+      const frontendFiles = analysisResults.filter((f) => f.category === "frontend");
       const hasApiCall = frontendFiles.some((f) => f.analysis.hasApiCall);
       const hasTryCatch = frontendFiles.some((f) => f.analysis.hasTryCatch);
 

@@ -6,9 +6,7 @@ export type EnvironmentFilterProps = {
   fromTimestamp?: Date;
 };
 
-export const getEnvironmentsForProject = async (
-  props: EnvironmentFilterProps,
-): Promise<{ environment: string }[]> => {
+export const getEnvironmentsForProject = async (props: EnvironmentFilterProps): Promise<{ environment: string }[]> => {
   const { projectId, fromTimestamp } = props;
 
   const query = `
@@ -50,9 +48,7 @@ export const getEnvironmentsForProject = async (
   // Always add default environment to list
   results.push({ environment: "default" });
 
-  return Array.from(new Set(results.map((e) => e.environment))).map(
-    (environment) => ({
-      environment,
-    }),
-  );
+  return Array.from(new Set(results.map((e) => e.environment))).map((environment) => ({
+    environment,
+  }));
 };

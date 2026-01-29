@@ -24,10 +24,7 @@ const tracingFormat = function () {
   })();
 };
 
-const getWinstonLogger = (
-  nodeEnv: "development" | "production" | "test",
-  minLevel = "info",
-) => {
+const getWinstonLogger = (nodeEnv: "development" | "production" | "test", minLevel = "info") => {
   const textLoggerFormat = winston.format.combine(
     winston.format.errors({ stack: true }),
     winston.format.timestamp(),
@@ -45,8 +42,7 @@ const getWinstonLogger = (
     winston.format.json(),
   );
 
-  const format =
-    env.HANZO_LOG_FORMAT === "text" ? textLoggerFormat : jsonLoggerFormat;
+  const format = env.HANZO_LOG_FORMAT === "text" ? textLoggerFormat : jsonLoggerFormat;
   return winston.createLogger({
     level: minLevel,
     format: format,

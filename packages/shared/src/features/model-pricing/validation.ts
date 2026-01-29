@@ -25,16 +25,12 @@ export function validateRegexPattern(pattern: string): void {
   try {
     new RegExp(pattern);
   } catch (e) {
-    throw new Error(
-      `Invalid regex syntax: ${e instanceof Error ? e.message : String(e)}`,
-    );
+    throw new Error(`Invalid regex syntax: ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // Safety check (catastrophic backtracking)
   if (!safeRegex(pattern)) {
-    throw new Error(
-      "Pattern may cause catastrophic backtracking. Please simplify your regex.",
-    );
+    throw new Error("Pattern may cause catastrophic backtracking. Please simplify your regex.");
   }
 }
 
@@ -56,8 +52,7 @@ export const PricingTierConditionSchema = z.object({
         }
       },
       {
-        message:
-          "Invalid regex pattern: must be valid regex and not cause catastrophic backtracking",
+        message: "Invalid regex pattern: must be valid regex and not cause catastrophic backtracking",
       },
     ),
   operator: z.enum(["gt", "gte", "lt", "lte", "eq", "neq"]),
@@ -72,10 +67,7 @@ export type PricingTierCondition = z.infer<typeof PricingTierConditionSchema>;
  * Used when creating new tiers via API or tRPC
  */
 export const PricingTierInputSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name cannot be empty")
-    .max(100, "Name exceeds maximum length of 100 characters"),
+  name: z.string().min(1, "Name cannot be empty").max(100, "Name exceeds maximum length of 100 characters"),
   isDefault: z.boolean().default(false),
   priority: z
     .number()
@@ -83,10 +75,7 @@ export const PricingTierInputSchema = z.object({
     .min(0, "Priority must be non-negative")
     .max(999, "Priority cannot exceed 999"),
   conditions: z.array(PricingTierConditionSchema),
-  prices: z.record(
-    z.string(),
-    z.number().nonnegative("Price must be non-negative"),
-  ),
+  prices: z.record(z.string(), z.number().nonnegative("Price must be non-negative")),
 });
 
 export type PricingTierInput = z.infer<typeof PricingTierInputSchema>;
@@ -99,9 +88,7 @@ export type PricingTierInput = z.infer<typeof PricingTierInputSchema>;
  * - Unique names
  * - Default tier has priority 0 and empty conditions
  */
-export function validatePricingTiers(
-  tiers: PricingTierInput[],
-): { valid: true } | { valid: false; error: string } {
+export function validatePricingTiers(tiers: PricingTierInput[]): { valid: true } | { valid: false; error: string } {
   if (tiers.length === 0) {
     return { valid: false, error: "At least one pricing tier is required" };
   }
@@ -117,9 +104,7 @@ export function validatePricingTiers(
   if (defaultTiers.length > 1) {
     return {
       valid: false,
-      error:
-        "Only one pricing tier can have isDefault: true, found " +
-        defaultTiers.length,
+      error: "Only one pricing tier can have isDefault: true, found " + defaultTiers.length,
     };
   }
 
@@ -206,10 +191,7 @@ export function validatePricingTiers(
       const tierKeys = Object.keys(tier.prices).sort();
 
       // Check if keys match
-      if (
-        defaultKeys.length !== tierKeys.length ||
-        !defaultKeys.every((key, index) => key === tierKeys[index])
-      ) {
+      if (defaultKeys.length !== tierKeys.length || !defaultKeys.every((key, index) => key === tierKeys[index])) {
         return {
           valid: false,
           error: `Pricing tier "${tier.name}" must have the same usage keys as the default tier. Expected: [${defaultKeys.join(", ")}], Got: [${tierKeys.join(", ")}]`,
@@ -234,16 +216,14 @@ export function validatePricingMethod(params: {
   if (hasFlatPrices && hasPricingTiers) {
     return {
       valid: false,
-      error:
-        "Cannot provide both flat prices (inputPrice/outputPrice/totalPrice) and pricingTiers",
+      error: "Cannot provide both flat prices (inputPrice/outputPrice/totalPrice) and pricingTiers",
     };
   }
 
   if (!hasFlatPrices && !hasPricingTiers) {
     return {
       valid: false,
-      error:
-        "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers",
+      error: "Must provide either flat prices (inputPrice/outputPrice/totalPrice) OR pricingTiers",
     };
   }
 

@@ -34,9 +34,7 @@ describe("trace deletion queue processor", () => {
     });
   });
 
-  const createMockJob = (
-    traceIds: string[],
-  ): Job<TQueueJobTypes[QueueName.TraceDelete]> => {
+  const createMockJob = (traceIds: string[]): Job<TQueueJobTypes[QueueName.TraceDelete]> => {
     return {
       data: {
         timestamp: new Date(),
@@ -94,10 +92,7 @@ describe("trace deletion queue processor", () => {
     ]);
 
     // Verify all traces exist before processing
-    const tracesBeforeDeletion = await getTracesByIds(
-      [alreadyDeletedTrace, notDeletedTrace, newEventTrace],
-      projectId,
-    );
+    const tracesBeforeDeletion = await getTracesByIds([alreadyDeletedTrace, notDeletedTrace, newEventTrace], projectId);
     expect(tracesBeforeDeletion).toHaveLength(3);
 
     await prisma.pendingDeletion.createMany({
@@ -126,10 +121,7 @@ describe("trace deletion queue processor", () => {
 
     // Then: Only traces that weren't already deleted should be processed
     // The already deleted trace should be filtered out, so only notDeletedTrace and newEventTrace get deleted
-    const tracesAfterDeletion = await getTracesByIds(
-      [alreadyDeletedTrace, notDeletedTrace, newEventTrace],
-      projectId,
-    );
+    const tracesAfterDeletion = await getTracesByIds([alreadyDeletedTrace, notDeletedTrace, newEventTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(1); // Only alreadyDeletedTrace should remain
     expect(tracesAfterDeletion[0].id).toBe(alreadyDeletedTrace);
 
@@ -141,12 +133,8 @@ describe("trace deletion queue processor", () => {
 
     expect(pendingDeletions).toHaveLength(2);
 
-    const alreadyDeletedRecord = pendingDeletions.find(
-      (p) => p.objectId === alreadyDeletedTrace,
-    );
-    const notDeletedRecord = pendingDeletions.find(
-      (p) => p.objectId === notDeletedTrace,
-    );
+    const alreadyDeletedRecord = pendingDeletions.find((p) => p.objectId === alreadyDeletedTrace);
+    const notDeletedRecord = pendingDeletions.find((p) => p.objectId === notDeletedTrace);
 
     expect(alreadyDeletedRecord?.isDeleted).toBe(true); // Should remain true
     expect(notDeletedRecord?.isDeleted).toBe(true); // Should be updated to true
@@ -217,15 +205,10 @@ describe("trace deletion queue processor", () => {
     const pendingTrace = randomUUID();
 
     // Create trace in ClickHouse
-    await createTracesCh([
-      createTrace({ id: pendingTrace, project_id: projectId }),
-    ]);
+    await createTracesCh([createTrace({ id: pendingTrace, project_id: projectId })]);
 
     // Verify trace exists before processing
-    const tracesBeforeDeletion = await getTracesByIds(
-      [pendingTrace],
-      projectId,
-    );
+    const tracesBeforeDeletion = await getTracesByIds([pendingTrace], projectId);
     expect(tracesBeforeDeletion).toHaveLength(1);
 
     await prisma.pendingDeletion.create({
@@ -268,10 +251,7 @@ describe("trace deletion queue processor", () => {
     ]);
 
     // Verify all traces exist before processing
-    const tracesBeforeDeletion = await getTracesByIds(
-      [overlappingTrace, eventOnlyTrace, pendingOnlyTrace],
-      projectId,
-    );
+    const tracesBeforeDeletion = await getTracesByIds([overlappingTrace, eventOnlyTrace, pendingOnlyTrace], projectId);
     expect(tracesBeforeDeletion).toHaveLength(3);
 
     await prisma.pendingDeletion.createMany({
@@ -297,10 +277,7 @@ describe("trace deletion queue processor", () => {
     await traceDeleteProcessor(job);
 
     // Then: All traces should be deleted from ClickHouse
-    const tracesAfterDeletion = await getTracesByIds(
-      [overlappingTrace, eventOnlyTrace, pendingOnlyTrace],
-      projectId,
-    );
+    const tracesAfterDeletion = await getTracesByIds([overlappingTrace, eventOnlyTrace, pendingOnlyTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(0);
 
     // And both pending deletions should be marked as deleted
@@ -317,15 +294,10 @@ describe("trace deletion queue processor", () => {
     const alreadyDeletedTrace = randomUUID();
 
     // Create trace in ClickHouse (this represents a trace that was already deleted previously)
-    await createTracesCh([
-      createTrace({ id: alreadyDeletedTrace, project_id: projectId }),
-    ]);
+    await createTracesCh([createTrace({ id: alreadyDeletedTrace, project_id: projectId })]);
 
     // Verify trace exists before processing
-    const tracesBeforeDeletion = await getTracesByIds(
-      [alreadyDeletedTrace],
-      projectId,
-    );
+    const tracesBeforeDeletion = await getTracesByIds([alreadyDeletedTrace], projectId);
     expect(tracesBeforeDeletion).toHaveLength(1);
 
     await prisma.pendingDeletion.create({
@@ -343,10 +315,7 @@ describe("trace deletion queue processor", () => {
     await traceDeleteProcessor(job);
 
     // Then: Trace should still exist in ClickHouse since it was filtered out
-    const tracesAfterDeletion = await getTracesByIds(
-      [alreadyDeletedTrace],
-      projectId,
-    );
+    const tracesAfterDeletion = await getTracesByIds([alreadyDeletedTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(1); // Trace should remain since it was filtered out
 
     // And pending deletion status should remain unchanged
@@ -369,10 +338,7 @@ describe("trace deletion queue processor", () => {
     ]);
 
     // Verify both traces exist before processing
-    const tracesBeforeDeletion = await getTracesByIds(
-      [alreadyDeletedTrace, validEventTrace],
-      projectId,
-    );
+    const tracesBeforeDeletion = await getTracesByIds([alreadyDeletedTrace, validEventTrace], projectId);
     expect(tracesBeforeDeletion).toHaveLength(2);
 
     // Mark one trace as already deleted
@@ -393,10 +359,7 @@ describe("trace deletion queue processor", () => {
 
     // Then: Only the valid event trace should be deleted from ClickHouse
     // The already deleted trace should remain untouched
-    const tracesAfterDeletion = await getTracesByIds(
-      [alreadyDeletedTrace, validEventTrace],
-      projectId,
-    );
+    const tracesAfterDeletion = await getTracesByIds([alreadyDeletedTrace, validEventTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(1); // Only alreadyDeletedTrace should remain
     expect(tracesAfterDeletion[0].id).toBe(alreadyDeletedTrace);
 
@@ -453,11 +416,7 @@ describe("trace deletion queue processor", () => {
     });
 
     // Event contains: already deleted (skip), new (process), overlapping (process)
-    const job = createMockJob([
-      alreadyDeletedTrace,
-      newEventTrace,
-      overlappingTrace,
-    ]);
+    const job = createMockJob([alreadyDeletedTrace, newEventTrace, overlappingTrace]);
 
     // When
     await traceDeleteProcessor(job);
@@ -479,13 +438,9 @@ describe("trace deletion queue processor", () => {
 
     expect(pendingDeletions).toHaveLength(3);
 
-    const alreadyDeleted = pendingDeletions.find(
-      (p) => p.objectId === alreadyDeletedTrace,
-    );
+    const alreadyDeleted = pendingDeletions.find((p) => p.objectId === alreadyDeletedTrace);
     const pending = pendingDeletions.find((p) => p.objectId === pendingTrace);
-    const overlapping = pendingDeletions.find(
-      (p) => p.objectId === overlappingTrace,
-    );
+    const overlapping = pendingDeletions.find((p) => p.objectId === overlappingTrace);
 
     expect(alreadyDeleted?.isDeleted).toBe(true); // Unchanged
     expect(pending?.isDeleted).toBe(true); // Updated

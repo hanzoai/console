@@ -21,13 +21,7 @@ export const getVariableColor = (index: number) => {
 };
 
 // Component for colored variable display
-const ColoredVariable = ({
-  value,
-  index,
-}: {
-  value: unknown;
-  index: number;
-}) => {
+const ColoredVariable = ({ value, index }: { value: unknown; index: number }) => {
   // Rotate through colors
   const color = getVariableColor(index);
 
@@ -65,13 +59,10 @@ const ColoredVariable = ({
   };
 
   const displayValue = renderValue();
-  const isLarge =
-    typeof displayValue === "string" && displayValue.length > 1000;
+  const isLarge = typeof displayValue === "string" && displayValue.length > 1000;
 
   return (
-    <span className={cn(color, "font-mono")}>
-      {isLarge ? displayValue.substring(0, 1000) + "..." : displayValue}
-    </span>
+    <span className={cn(color, "font-mono")}>{isLarge ? displayValue.substring(0, 1000) + "..." : displayValue}</span>
   );
 };
 
@@ -98,10 +89,7 @@ const ColoredPromptView = ({
               {fragment.type === "text" ? (
                 fragment.content
               ) : (
-                <ColoredVariable
-                  value={fragment.value || ""}
-                  index={fragment.colorIndex || 0}
-                />
+                <ColoredVariable value={fragment.value || ""} index={fragment.colorIndex || 0} />
               )}
             </Fragment>
           ))}
@@ -169,9 +157,7 @@ export const EvaluationPromptPreview = ({
 
       // Add variable
       const variableName = match[1];
-      const variableValue =
-        extractedVariables.find((v) => v.variable === variableName)?.value ||
-        "";
+      const variableValue = extractedVariables.find((v) => v.variable === variableName)?.value || "";
 
       fragments.push({
         type: "variable" as const,

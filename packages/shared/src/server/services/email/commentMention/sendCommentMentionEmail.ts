@@ -7,9 +7,7 @@ import { logger } from "../../../logger";
 import { sanitizeEmailSubject } from "../../../../utils/zod";
 
 type SendCommentMentionEmailParams = {
-  env: Partial<
-    Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL", string | undefined>
-  >;
+  env: Partial<Record<"EMAIL_FROM_ADDRESS" | "SMTP_CONNECTION_URL", string | undefined>>;
   mentionedUserName: string;
   mentionedUserEmail: string;
   authorName?: string; // Optional - undefined if author deleted or not project member
@@ -52,9 +50,7 @@ export const sendCommentMentionEmail = async ({
 
     // Sanitize authorName and projectName to prevent email header injection attacks
     const safeProjectName = sanitizeEmailSubject(projectName);
-    const safeAuthorName = authorName
-      ? sanitizeEmailSubject(authorName)
-      : undefined;
+    const safeAuthorName = authorName ? sanitizeEmailSubject(authorName) : undefined;
 
     const subject = safeAuthorName
       ? `${safeAuthorName} mentioned you in project ${safeProjectName}`

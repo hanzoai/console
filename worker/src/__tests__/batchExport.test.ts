@@ -17,8 +17,7 @@ import { getDatabaseReadStreamPaginated } from "../features/database-read-stream
 import { getObservationStream } from "../features/database-read-stream/observation-stream";
 import { getTraceStream } from "../features/database-read-stream/trace-stream";
 // Set environment variable before any imports to ensure it's picked up by env module
-process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
-  "true";
+process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 describe("batch export test suite", () => {
@@ -975,9 +974,7 @@ describe("batch export test suite", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].name).toBe("score2");
     expect(rows[0].value).toBe(0.6);
-    expect(new Date(rows[0].timestamp).toISOString()).toBe(
-      "2024-01-15T10:00:00.000Z",
-    );
+    expect(new Date(rows[0].timestamp).toISOString()).toBe("2024-01-15T10:00:00.000Z");
   });
 
   it("should export scores with multiple filter conditions", async () => {
@@ -1332,9 +1329,7 @@ describe("batch export test suite", () => {
     expect(rows).toHaveLength(3);
 
     // Find items by their input to verify relationships
-    const traceAndObsItem = rows.find(
-      (r) => r.input?.from === "trace_and_observation",
-    );
+    const traceAndObsItem = rows.find((r) => r.input?.from === "trace_and_observation");
     const traceOnlyItem = rows.find((r) => r.input?.from === "trace_only");
     const manualItem = rows.find((r) => r.input?.from === "manual");
 
@@ -1436,9 +1431,7 @@ describe("batch export test suite", () => {
     expect(rows[0].action).toBe("DELETE");
     expect(rows[0].resourceType).toBe("prompt");
     expect(rows[0].type).toBe("USER");
-    expect(rows[0].before).toBe(
-      JSON.stringify({ name: "old-prompt", content: "Hello World" }),
-    );
+    expect(rows[0].before).toBe(JSON.stringify({ name: "old-prompt", content: "Hello World" }));
     expect(rows[0].after).toBe(null);
 
     expect(rows[1].action).toBe("UPDATE");
@@ -1451,9 +1444,7 @@ describe("batch export test suite", () => {
     expect(rows[2].resourceType).toBe("trace");
     expect(rows[2].type).toBe("USER");
     expect(rows[2].before).toBe(null);
-    expect(rows[2].after).toBe(
-      JSON.stringify({ name: "test-trace", version: 1 }),
-    );
+    expect(rows[2].after).toBe(JSON.stringify({ name: "test-trace", version: 1 }));
 
     // Verify all rows have the correct project ID
     rows.forEach((row) => {
@@ -1677,10 +1668,7 @@ describe("batch export test suite", () => {
     // Observation-level latency filter should be ignored
     expect(rows).toHaveLength(2);
     const exportedEnvironments = rows.map((row) => row.environment).sort();
-    expect(exportedEnvironments).toEqual([
-      "kfc-search-engine-qna",
-      "taboola-trs",
-    ]);
+    expect(exportedEnvironments).toEqual(["kfc-search-engine-qna", "taboola-trs"]);
 
     // All should have the correct name
     rows.forEach((row) => {
@@ -1793,10 +1781,7 @@ describe("batch export test suite", () => {
     // Tags filter should be ignored since it's trace-level
     expect(rows).toHaveLength(2);
     const exportedNames = rows.map((row) => row.name).sort();
-    expect(exportedNames).toEqual([
-      "makeRecommendations",
-      "makeRecommendations",
-    ]);
+    expect(exportedNames).toEqual(["makeRecommendations", "makeRecommendations"]);
 
     // Verify both observations are included regardless of trace tags
     const traceIds = rows.map((row) => row.traceId).sort();
@@ -2122,20 +2107,19 @@ describe("batch export test suite", () => {
     });
 
     // Apply comment filter preprocessing (mimics what handleBatchExportJob does)
-    const { filterState: processedFilter, hasNoMatches } =
-      await applyCommentFilters({
-        filterState: [
-          {
-            type: "number",
-            operator: ">=",
-            column: "commentCount",
-            value: 1,
-          },
-        ],
-        prisma,
-        projectId,
-        objectType: "SESSION",
-      });
+    const { filterState: processedFilter, hasNoMatches } = await applyCommentFilters({
+      filterState: [
+        {
+          type: "number",
+          operator: ">=",
+          column: "commentCount",
+          value: 1,
+        },
+      ],
+      prisma,
+      projectId,
+      objectType: "SESSION",
+    });
 
     expect(hasNoMatches).toBe(false);
 
@@ -2175,20 +2159,19 @@ describe("batch export test suite", () => {
     await createTracesCh([trace]);
 
     // Apply comment filter preprocessing - should match nothing
-    const { filterState: processedFilter, hasNoMatches } =
-      await applyCommentFilters({
-        filterState: [
-          {
-            type: "number",
-            operator: ">=",
-            column: "commentCount",
-            value: 1,
-          },
-        ],
-        prisma,
-        projectId,
-        objectType: "SESSION",
-      });
+    const { filterState: processedFilter, hasNoMatches } = await applyCommentFilters({
+      filterState: [
+        {
+          type: "number",
+          operator: ">=",
+          column: "commentCount",
+          value: 1,
+        },
+      ],
+      prisma,
+      projectId,
+      objectType: "SESSION",
+    });
 
     // Should indicate no matches
     expect(hasNoMatches).toBe(true);
@@ -2226,20 +2209,19 @@ describe("batch export test suite", () => {
     });
 
     // Apply comment filter preprocessing
-    const { filterState: processedFilter, hasNoMatches } =
-      await applyCommentFilters({
-        filterState: [
-          {
-            type: "number",
-            operator: ">=",
-            column: "commentCount",
-            value: 1,
-          },
-        ],
-        prisma,
-        projectId,
-        objectType: "TRACE",
-      });
+    const { filterState: processedFilter, hasNoMatches } = await applyCommentFilters({
+      filterState: [
+        {
+          type: "number",
+          operator: ">=",
+          column: "commentCount",
+          value: 1,
+        },
+      ],
+      prisma,
+      projectId,
+      objectType: "TRACE",
+    });
 
     expect(hasNoMatches).toBe(false);
 

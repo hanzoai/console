@@ -12,12 +12,7 @@ export type ScoreSourceType = z.infer<typeof ScoreSourceDomain>;
 
 export const CORRECTION_NAME = "output" as const;
 
-export const ScoreDataTypeArray = [
-  "NUMERIC",
-  "CATEGORICAL",
-  "BOOLEAN",
-  "CORRECTION",
-] as const;
+export const ScoreDataTypeArray = ["NUMERIC", "CATEGORICAL", "BOOLEAN", "CORRECTION"] as const;
 export const ScoreDataTypeEnum = {
   NUMERIC: "NUMERIC",
   CATEGORICAL: "CATEGORICAL",
@@ -84,12 +79,7 @@ const ScoreFoundationSchema = ScoreSchemaExclReferencesAndDates.and(
 );
 
 export const ScoreSchema = ScoreFoundationSchema.and(
-  z.discriminatedUnion("dataType", [
-    NumericData,
-    CategoricalData,
-    BooleanData,
-    CorrectionData,
-  ]),
+  z.discriminatedUnion("dataType", [NumericData, CategoricalData, BooleanData, CorrectionData]),
 );
 
 export type ScoreDomain = z.infer<typeof ScoreSchema>;
@@ -98,12 +88,11 @@ export type ScoreByDataType<T extends ScoreDataTypeType> = ScoreDomain & {
   dataType: T;
 };
 
-export type ScoresByDataTypes<T extends readonly ScoreDataTypeType[]> =
-  T extends readonly (infer U)[]
-    ? U extends ScoreDataTypeType
-      ? ScoreByDataType<U>
-      : never
-    : never;
+export type ScoresByDataTypes<T extends readonly ScoreDataTypeType[]> = T extends readonly (infer U)[]
+  ? U extends ScoreDataTypeType
+    ? ScoreByDataType<U>
+    : never
+  : never;
 
 // Aggregatable score types - used in most read queries to exclude CORRECTION scores
 export const AGGREGATABLE_SCORE_TYPES = [
@@ -112,10 +101,7 @@ export const AGGREGATABLE_SCORE_TYPES = [
   "CATEGORICAL",
 ] as const satisfies readonly ScoreDataTypeType[];
 
-export type AggregatableScoreDataType =
-  (typeof AGGREGATABLE_SCORE_TYPES)[number];
+export type AggregatableScoreDataType = (typeof AGGREGATABLE_SCORE_TYPES)[number];
 
 // Type helper for functions that return only aggregatable scores
-export type AggregatableScore = ScoresByDataTypes<
-  typeof AGGREGATABLE_SCORE_TYPES
->;
+export type AggregatableScore = ScoresByDataTypes<typeof AGGREGATABLE_SCORE_TYPES>;

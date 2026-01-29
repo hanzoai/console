@@ -26,10 +26,7 @@ vi.mock("@hanzo/shared/src/server", async () => {
   };
 });
 
-import {
-  buildProjectToOrgMap,
-  aggregateByOrg,
-} from "../ee/usageThresholds/usageAggregation";
+import { buildProjectToOrgMap, aggregateByOrg } from "../ee/usageThresholds/usageAggregation";
 import { prisma } from "@hanzo/shared/src/db";
 import { type ParsedOrganization } from "@hanzo/shared";
 
@@ -84,16 +81,9 @@ describe("aggregateByOrg", () => {
       { count: 75, projectId: "proj-3", date: "2024-03-01" },
     ];
 
-    const scoreCounts = [
-      { count: 10, projectId: "proj-2", date: "2024-03-01" },
-    ];
+    const scoreCounts = [{ count: 10, projectId: "proj-2", date: "2024-03-01" }];
 
-    const result = aggregateByOrg(
-      traceCounts,
-      obsCounts,
-      scoreCounts,
-      projectToOrgMap,
-    );
+    const result = aggregateByOrg(traceCounts, obsCounts, scoreCounts, projectToOrgMap);
 
     expect(result).toEqual({
       "org-a": {
@@ -167,22 +157,11 @@ describe("aggregateByOrg edge cases", () => {
       "proj-1": "org-a",
     };
 
-    const traceCounts = [
-      { count: 1000, projectId: "proj-1", date: "2024-03-01" },
-    ];
-    const obsCounts = [
-      { count: 2000, projectId: "proj-1", date: "2024-03-01" },
-    ];
-    const scoreCounts = [
-      { count: 3000, projectId: "proj-1", date: "2024-03-01" },
-    ];
+    const traceCounts = [{ count: 1000, projectId: "proj-1", date: "2024-03-01" }];
+    const obsCounts = [{ count: 2000, projectId: "proj-1", date: "2024-03-01" }];
+    const scoreCounts = [{ count: 3000, projectId: "proj-1", date: "2024-03-01" }];
 
-    const result = aggregateByOrg(
-      traceCounts,
-      obsCounts,
-      scoreCounts,
-      projectToOrgMap,
-    );
+    const result = aggregateByOrg(traceCounts, obsCounts, scoreCounts, projectToOrgMap);
 
     expect(result["org-a"]).toEqual({
       traces: 1000,

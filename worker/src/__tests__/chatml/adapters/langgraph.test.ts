@@ -9,9 +9,7 @@ describe("LangGraph Adapter", () => {
       }),
     ).toBe(true);
 
-    expect(
-      langgraphAdapter.detect({ metadata: { framework: "langgraph" } }),
-    ).toBe(true);
+    expect(langgraphAdapter.detect({ metadata: { framework: "langgraph" } })).toBe(true);
 
     expect(langgraphAdapter.detect({ framework: "langgraph" })).toBe(true);
 
@@ -88,9 +86,7 @@ describe("LangGraph Adapter", () => {
 
     expect(result.data[2].role).toBe("tool");
     expect(typeof result.data[2].content).toBe("string");
-    expect(result.data[2].content).toBe(
-      '{"temperature":72,"conditions":"sunny"}',
-    );
+    expect(result.data[2].content).toBe('{"temperature":72,"conditions":"sunny"}');
   });
 
   it("should filter out tool definitions and attach them to messages", () => {
@@ -136,14 +132,10 @@ describe("LangGraph Adapter", () => {
     expect(result.data?.[0].content).toBe("Be helpful!");
     expect(result.data?.[0].tools).toBeDefined();
     expect(result.data?.[0].tools?.[0].name).toBe("Web-Search");
-    expect(result.data?.[0].tools?.[0].description).toBe(
-      "Dummy web search tool.",
-    );
+    expect(result.data?.[0].tools?.[0].description).toBe("Dummy web search tool.");
 
     expect(result.data?.[1].role).toBe("user");
-    expect(result.data?.[1].content).toBe(
-      "Search the web for 'example' and summarize.",
-    );
+    expect(result.data?.[1].content).toBe("Search the web for 'example' and summarize.");
     expect(result.data?.[1].tools).toBeDefined();
     expect(result.data?.[1].tools?.[0].name).toBe("Web-Search");
   });
@@ -201,9 +193,7 @@ describe("LangGraph Adapter", () => {
     // Tool calls should be extracted and flattened
     expect(result.data?.[0].tool_calls).toBeDefined();
     expect(result.data?.[0].tool_calls?.[0].name).toBe("Web-Search");
-    expect(result.data?.[0].tool_calls?.[0].arguments).toBe(
-      '{"query":"example"}',
-    );
+    expect(result.data?.[0].tool_calls?.[0].arguments).toBe('{"query":"example"}');
 
     // additional_kwargs should be removed entirely (only had tool_calls and null refusal)
     expect(result.data?.[0].json?.json?.additional_kwargs).toBeUndefined();

@@ -6,11 +6,7 @@ import {
   createDatasetRunItemsCh,
 } from "../../../src/server";
 import { SEED_TEXT_PROMPTS } from "./postgres-seed-constants";
-import {
-  createTracesCh,
-  createObservationsCh,
-  createScoresCh,
-} from "../../../src/server";
+import { createTracesCh, createObservationsCh, createScoresCh } from "../../../src/server";
 import { InsertResult } from "@clickhouse/client";
 
 /**
@@ -28,9 +24,7 @@ export class ClickHouseQueryBuilder {
    * Creates INSERT query for trace data using VALUES syntax.
    * Use for: Small datasets, detailed trace objects with all fields populated.
    */
-  async executeTracesInsert(
-    traces: TraceRecordInsertType[],
-  ): Promise<InsertResult> {
+  async executeTracesInsert(traces: TraceRecordInsertType[]): Promise<InsertResult> {
     return await createTracesCh(traces);
   }
 
@@ -38,9 +32,7 @@ export class ClickHouseQueryBuilder {
    * Creates INSERT query for observation data using VALUES syntax.
    * Use for: Small datasets, observations that link to postgres data (e.g. dataset runs)
    */
-  async executeObservationsInsert(
-    observations: ObservationRecordInsertType[],
-  ): Promise<InsertResult> {
+  async executeObservationsInsert(observations: ObservationRecordInsertType[]): Promise<InsertResult> {
     return await createObservationsCh(observations);
   }
 
@@ -48,9 +40,7 @@ export class ClickHouseQueryBuilder {
    * Creates INSERT query for dataset run items data using VALUES syntax.
    * Use for: Small datasets, dataset run items that link to postgres data (e.g. dataset runs)
    */
-  async executeDatasetRunItemsInsert(
-    datasetRunItems: DatasetRunItemRecordInsertType[],
-  ): Promise<InsertResult> {
+  async executeDatasetRunItemsInsert(datasetRunItems: DatasetRunItemRecordInsertType[]): Promise<InsertResult> {
     return await createDatasetRunItemsCh(datasetRunItems);
   }
 
@@ -58,9 +48,7 @@ export class ClickHouseQueryBuilder {
    * Creates INSERT query for score data using VALUES syntax.
    * Use for: Small datasets, scores with custom values and metadata.
    */
-  async executeScoresInsert(
-    scores: ScoreRecordInsertType[],
-  ): Promise<InsertResult> {
+  async executeScoresInsert(scores: ScoreRecordInsertType[]): Promise<InsertResult> {
     return await createScoresCh(scores);
   }
 
@@ -82,9 +70,7 @@ export class ClickHouseQueryBuilder {
     const escapedNestedJson = fileContent
       ? this.escapeString(JSON.stringify(fileContent.nestedJson))
       : '{"sample": "nested json"}';
-    const escapedChatMl = fileContent
-      ? this.escapeString(JSON.stringify(fileContent.chatMlJson))
-      : '{"messages": []}';
+    const escapedChatMl = fileContent ? this.escapeString(JSON.stringify(fileContent.chatMlJson)) : '{"messages": []}';
 
     return `
       INSERT INTO traces
@@ -137,9 +123,7 @@ export class ClickHouseQueryBuilder {
     const escapedNestedJson = fileContent
       ? this.escapeString(JSON.stringify(fileContent.nestedJson))
       : '{"sample": "nested json"}';
-    const escapedChatMl = fileContent
-      ? this.escapeString(JSON.stringify(fileContent.chatMlJson))
-      : '{"messages": []}';
+    const escapedChatMl = fileContent ? this.escapeString(JSON.stringify(fileContent.chatMlJson)) : '{"messages": []}';
 
     return `
       INSERT INTO observations

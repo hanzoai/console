@@ -1,8 +1,5 @@
 import { env } from "../../env";
-import {
-  StorageService,
-  StorageServiceFactory,
-} from "../services/StorageService";
+import { StorageService, StorageServiceFactory } from "../services/StorageService";
 
 let s3MediaStorageClient: StorageService;
 let s3EventStorageClient: StorageService;

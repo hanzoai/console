@@ -11,13 +11,9 @@ export const ParsedPromptDependencySchema = z.union([
   z.object({ name: z.string(), type: z.literal("label"), label: z.string() }),
 ]);
 
-export type ParsedPromptDependencyTag = z.infer<
-  typeof ParsedPromptDependencySchema
->;
+export type ParsedPromptDependencyTag = z.infer<typeof ParsedPromptDependencySchema>;
 
-export function parsePromptDependencyTags(
-  content: string | object,
-): ParsedPromptDependencyTag[] {
+export function parsePromptDependencyTags(content: string | object): ParsedPromptDependencyTag[] {
   const matchedTags = JSON.stringify(content).match(PromptDependencyRegex);
 
   const validTags: ParsedPromptDependencyTag[] = [];
@@ -46,9 +42,7 @@ export function parsePromptDependencyTags(
     if (params.name) {
       const parsed = ParsedPromptDependencySchema.safeParse({
         name: params.name,
-        ...(params.version
-          ? { version: params.version, type: "version" }
-          : { label: params.label, type: "label" }),
+        ...(params.version ? { version: params.version, type: "version" } : { label: params.label, type: "label" }),
       });
 
       if (parsed.success) {

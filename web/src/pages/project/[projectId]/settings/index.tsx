@@ -44,9 +44,7 @@ export function useProjectSettingsPages(): ProjectSettingsPage[] {
   const { project, organization } = useQueryProject();
   const showBillingSettings = useHasEntitlement("cloud-billing");
   const showRetentionSettings = useHasEntitlement("data-retention");
-  const showProtectedLabelsSettings = useHasEntitlement(
-    "prompt-protected-labels",
-  );
+  const showProtectedLabelsSettings = useHasEntitlement("prompt-protected-labels");
 
   if (!project || !organization || !router.query.projectId) {
     return [];
@@ -117,8 +115,7 @@ export const getProjectSettingsPages = ({
             },
             {
               title: "Delete this project",
-              description:
-                "Once you delete a project, there is no going back. Please be certain.",
+              description: "Once you delete a project, there is no going back. Please be certain.",
               button: <DeleteProjectButton />,
             },
           ]}
@@ -139,17 +136,7 @@ export const getProjectSettingsPages = ({
   {
     title: "LLM Connections",
     slug: "llm-connections",
-    cmdKKeywords: [
-      "llm",
-      "provider",
-      "openai",
-      "anthropic",
-      "azure",
-      "playground",
-      "evaluation",
-      "endpoint",
-      "api",
-    ],
+    cmdKKeywords: ["llm", "provider", "openai", "anthropic", "azure", "playground", "evaluation", "endpoint", "api"],
     content: (
       <div className="flex flex-col gap-6">
         <LlmApiKeyList projectId={project.id} />
@@ -183,16 +170,9 @@ export const getProjectSettingsPages = ({
     content: (
       <div>
         <Header title="Project Members" />
-        <MembersTable
-          orgId={organization.id}
-          project={{ id: project.id, name: project.name }}
-          showSettingsCard
-        />
+        <MembersTable orgId={organization.id} project={{ id: project.id, name: project.name }} showSettingsCard />
         <div>
-          <MembershipInvitesPage
-            orgId={organization.id}
-            projectId={project.id}
-          />
+          <MembershipInvitesPage orgId={organization.id} projectId={project.id} />
         </div>
       </div>
     ),
@@ -253,10 +233,7 @@ export default function SettingsPage() {
         title: "Project Settings",
       }}
     >
-      <PagedSettingsContainer
-        activeSlug={router.query.page as string | undefined}
-        pages={pages}
-      />
+      <PagedSettingsContainer activeSlug={router.query.page as string | undefined} pages={pages} />
     </ContainerPage>
   );
 }
@@ -267,9 +244,7 @@ const Integrations = (props: { projectId: string }) => {
     scope: "integrations:CRUD",
   });
 
-  const allowBlobStorageIntegration = useHasEntitlement(
-    "scheduled-blob-exports",
-  );
+  const allowBlobStorageIntegration = useHasEntitlement("scheduled-blob-exports");
 
   return (
     <div>
@@ -279,8 +254,8 @@ const Integrations = (props: { projectId: string }) => {
           {}
           <PostHogLogo className="mb-4 w-40 text-foreground" />
           <p className="mb-4 text-sm text-primary">
-            We have teamed up with PostHog (OSS product analytics) to make
-            Hanzo Events/Metrics available in your Posthog Dashboards.
+            We have teamed up with PostHog (OSS product analytics) to make Hanzo Events/Metrics available in your
+            Posthog Dashboards.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton
@@ -291,10 +266,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link
-                href="https://hanzo.com/integrations/analytics/posthog"
-                target="_blank"
-              >
+              <Link href="https://hanzo.com/integrations/analytics/posthog" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>
@@ -304,8 +276,8 @@ const Integrations = (props: { projectId: string }) => {
         <Card className="p-3">
           <MixpanelLogo className="mb-4 w-20 text-foreground" />
           <p className="mb-4 text-sm text-primary">
-            Integrate with Mixpanel to sync your Hanzo traces, generations,
-            and scores for advanced product analytics and insights.
+            Integrate with Mixpanel to sync your Hanzo traces, generations, and scores for advanced product analytics
+            and insights.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton
@@ -316,10 +288,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link
-                href="https://hanzo.com/integrations/analytics/mixpanel"
-                target="_blank"
-              >
+              <Link href="https://hanzo.com/integrations/analytics/mixpanel" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>
@@ -329,9 +298,8 @@ const Integrations = (props: { projectId: string }) => {
         <Card className="p-3">
           <span className="font-semibold">Blob Storage</span>
           <p className="mb-4 text-sm text-primary">
-            Configure scheduled exports of your trace data to S3 compatible
-            storages or Azure Blob Storage. Set up a scheduled export to your
-            own storage for data analysis or backup purposes.
+            Configure scheduled exports of your trace data to S3 compatible storages or Azure Blob Storage. Set up a
+            scheduled export to your own storage for data analysis or backup purposes.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton
@@ -343,10 +311,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link
-                href="https://hanzo.com/docs/query-traces#blob-storage"
-                target="_blank"
-              >
+              <Link href="https://hanzo.com/docs/query-traces#blob-storage" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>
@@ -359,8 +324,7 @@ const Integrations = (props: { projectId: string }) => {
             <span className="font-semibold">Slack</span>
           </div>
           <p className="mb-4 text-sm text-primary">
-            Connect a Slack workspace and create channel automations to receive
-            Hanzo alerts natively in Slack.
+            Connect a Slack workspace and create channel automations to receive Hanzo alerts natively in Slack.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton

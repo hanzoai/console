@@ -2,9 +2,7 @@ import { Job } from "bullmq";
 import { logger, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { entityChangeWorker } from "../features/entityChange/entityChangeWorker";
 
-export const entityChangeQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.EntityChangeQueue]>,
-) => {
+export const entityChangeQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.EntityChangeQueue]>) => {
   logger.debug(
     `Processing entity change event for entity ${job.data.payload.entityType}, event: ${JSON.stringify(
       job.data,

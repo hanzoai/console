@@ -61,11 +61,7 @@ function extractFromParts(parts: unknown[]): {
     } else if (p.type === "thinking") {
       // Handle thinking parts - content can be in 'content' or 'thinking' field
       const thinkingContent =
-        typeof p.content === "string"
-          ? p.content
-          : typeof p.thinking === "string"
-            ? p.thinking
-            : "";
+        typeof p.content === "string" ? p.content : typeof p.thinking === "string" ? p.thinking : "";
       if (thinkingContent) {
         thinkingParts.push({
           content: thinkingContent,
@@ -81,19 +77,13 @@ function extractFromParts(parts: unknown[]): {
       toolCalls.push({
         id: p.id,
         name: p.name,
-        arguments:
-          typeof p.arguments === "string"
-            ? p.arguments
-            : JSON.stringify(p.arguments ?? {}),
+        arguments: typeof p.arguments === "string" ? p.arguments : JSON.stringify(p.arguments ?? {}),
         type: "function",
       });
     } else if (p.type === "tool_call_response") {
       toolResponses.push({
         tool_call_id: p.id,
-        content:
-          typeof p.result === "string"
-            ? p.result
-            : JSON.stringify(p.result ?? ""),
+        content: typeof p.result === "string" ? p.result : JSON.stringify(p.result ?? ""),
       });
     }
   }
@@ -131,18 +121,11 @@ function normalizeToolDefinition(tool: unknown): Record<string, unknown> {
  * Extract tool definitions from pydantic-ai metadata
  * Tools are in: metadata.attributes.model_request_parameters.function_tools
  */
-function extractToolDefinitions(
-  metadata: unknown,
-): Array<Record<string, unknown>> {
+function extractToolDefinitions(metadata: unknown): Array<Record<string, unknown>> {
   const meta = parseMetadata(metadata);
   if (!meta) return [];
 
-  const tools = getNestedProperty(
-    meta,
-    "attributes",
-    "model_request_parameters",
-    "function_tools",
-  );
+  const tools = getNestedProperty(meta, "attributes", "model_request_parameters", "function_tools");
 
   if (Array.isArray(tools)) {
     return tools.map(normalizeToolDefinition);
@@ -155,9 +138,7 @@ function extractToolDefinitions(
  * Normalize a single pydantic-ai message
  * Returns either a single message or array of messages (for tool responses)
  */
-function normalizeMessage(
-  msg: unknown,
-): Record<string, unknown> | Record<string, unknown>[] {
+function normalizeMessage(msg: unknown): Record<string, unknown> | Record<string, unknown>[] {
   if (!msg || typeof msg !== "object") return {};
 
   const message = msg as Record<string, unknown>;
@@ -167,13 +148,7 @@ function normalizeMessage(
     return removeNullFields(message);
   }
 
-  const {
-    toolCalls,
-    toolResponses,
-    thinkingParts,
-    redactedThinkingParts,
-    text,
-  } = extractFromParts(message.parts);
+  const { toolCalls, toolResponses, thinkingParts, redactedThinkingParts, text } = extractFromParts(message.parts);
 
   // Extract other fields (exclude role and parts)
   const { role: _role, parts: _parts, ...rest } = message;
@@ -255,9 +230,7 @@ function preprocessData(data: unknown, ctx: NormalizerContext): unknown {
     const obj = data as Record<string, unknown>;
     return {
       ...obj,
-      messages: Array.isArray(obj.messages)
-        ? normalizeMessages(obj.messages)
-        : obj.messages,
+      messages: Array.isArray(obj.messages) ? normalizeMessages(obj.messages) : obj.messages,
     };
   }
 
@@ -285,11 +258,7 @@ export const pydanticAIAdapter: ProviderAdapter = {
     return false;
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", ctx: NormalizerContext): unknown {
     return preprocessData(data, ctx);
   },
 };

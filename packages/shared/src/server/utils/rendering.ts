@@ -37,22 +37,13 @@ export const applyInputOutputRendering = (
   if (!io) return null;
   let result: JsonNested | string = io;
 
-  if (
-    renderingProps.truncated &&
-    io.length > env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT
-  ) {
-    result =
-      io.slice(0, env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT) + "...[truncated]";
+  if (renderingProps.truncated && io.length > env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT) {
+    result = io.slice(0, env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT) + "...[truncated]";
   }
 
-  if (
-    renderingProps.truncated &&
-    io.length === env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT
-  ) {
+  if (renderingProps.truncated && io.length === env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT) {
     result = io + "...[truncated]";
   }
 
-  return renderingProps.shouldJsonParse
-    ? (parseJsonPrioritised(result) ?? null)
-    : result;
+  return renderingProps.shouldJsonParse ? (parseJsonPrioritised(result) ?? null) : result;
 };

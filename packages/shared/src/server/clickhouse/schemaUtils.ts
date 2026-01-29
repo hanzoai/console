@@ -2,21 +2,12 @@ import { HanzoNotFoundError } from "../../errors";
 import { eventTypes } from "../ingestion/types";
 import { ClickhouseTableName, ClickhouseTableNames } from "./schema";
 
-export const isValidTableName = (
-  tableName: string,
-): tableName is ClickhouseTableName =>
+export const isValidTableName = (tableName: string): tableName is ClickhouseTableName =>
   Object.keys(ClickhouseTableNames).includes(tableName);
 
-export type IngestionEntityTypes =
-  | "trace"
-  | "observation"
-  | "score"
-  | "sdk_log"
-  | "dataset_run_item";
+export type IngestionEntityTypes = "trace" | "observation" | "score" | "sdk_log" | "dataset_run_item";
 
-export const getClickhouseEntityType = (
-  eventType: string,
-): IngestionEntityTypes => {
+export const getClickhouseEntityType = (eventType: string): IngestionEntityTypes => {
   switch (eventType) {
     case eventTypes.TRACE_CREATE:
       return "trace";

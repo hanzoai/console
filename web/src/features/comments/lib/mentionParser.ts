@@ -15,10 +15,7 @@ export const MENTION_USER_PREFIX = "user:";
  * - Display name: 1-100 characters, excluding brackets
  * - User ID: 1-30 characters (CUID is 25 chars, custom IDs may include hyphens/underscores)
  */
-const MENTION_REGEX = new RegExp(
-  `@\\[([^[\\]]{1,100})\\]\\(${MENTION_USER_PREFIX}([a-z0-9_-]{1,30})\\)`,
-  "gi",
-);
+const MENTION_REGEX = new RegExp(`@\\[([^[\\]]{1,100})\\]\\(${MENTION_USER_PREFIX}([a-z0-9_-]{1,30})\\)`, "gi");
 
 /**
  * Extract unique mentioned user IDs from markdown content
@@ -83,14 +80,9 @@ export interface SanitizeMentionsResult {
  * sanitizeMentions("Hey @[Someone](user:invalid)", [{id: "alice123", name: "Alice Smith", email: "..."}])
  * // Returns: { sanitizedContent: "Hey Someone", validMentionedUserIds: [] }
  */
-export function sanitizeMentions(
-  content: string,
-  projectMembers: ProjectMember[],
-): SanitizeMentionsResult {
+export function sanitizeMentions(content: string, projectMembers: ProjectMember[]): SanitizeMentionsResult {
   // Create lookup map for O(1) user validation
-  const memberMap = new Map(
-    projectMembers.map((member) => [member.id, member]),
-  );
+  const memberMap = new Map(projectMembers.map((member) => [member.id, member]));
 
   const validUserIds: string[] = [];
   const seenUserIds = new Set<string>();
@@ -99,28 +91,25 @@ export function sanitizeMentions(
   MENTION_REGEX.lastIndex = 0;
 
   // Single pass using String.replace() - O(n) complexity
-  const sanitizedContent = content.replace(
-    MENTION_REGEX,
-    (match, displayName, userId) => {
-      const member = memberMap.get(userId);
+  const sanitizedContent = content.replace(MENTION_REGEX, (match, displayName, userId) => {
+    const member = memberMap.get(userId);
 
-      if (member) {
-        // Valid user: Replace with canonical display name from DB
-        const canonicalName = member.name || member.email || "User";
+    if (member) {
+      // Valid user: Replace with canonical display name from DB
+      const canonicalName = member.name || member.email || "User";
 
-        // Track valid user (deduplicate with Set)
-        if (!seenUserIds.has(userId)) {
-          validUserIds.push(userId);
-          seenUserIds.add(userId);
-        }
-
-        return `@[${canonicalName}](${MENTION_USER_PREFIX}${userId})`;
-      } else {
-        // Invalid user: Strip mention markdown, keep display name as plain text
-        return displayName;
+      // Track valid user (deduplicate with Set)
+      if (!seenUserIds.has(userId)) {
+        validUserIds.push(userId);
+        seenUserIds.add(userId);
       }
-    },
-  );
+
+      return `@[${canonicalName}](${MENTION_USER_PREFIX}${userId})`;
+    } else {
+      // Invalid user: Strip mention markdown, keep display name as plain text
+      return displayName;
+    }
+  });
 
   return {
     sanitizedContent,

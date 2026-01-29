@@ -8,10 +8,7 @@ import {
 } from "@/src/features/public-api/types/comments";
 import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
-import {
-  createObservationsCh,
-  createTracesCh,
-} from "@hanzo/shared/src/server";
+import { createObservationsCh, createTracesCh } from "@hanzo/shared/src/server";
 import { createObservation, createTrace } from "@hanzo/shared/src/server";
 
 describe("Create and get comments", () => {
@@ -28,26 +25,17 @@ describe("Create and get comments", () => {
   });
 
   it("should create and get comment", async () => {
-    const commentResponse = await makeZodVerifiedAPICall(
-      PostCommentsV1Response,
-      "POST",
-      "/api/public/comments",
-      {
-        content: "hello",
-        objectId: "1234",
-        objectType: "TRACE",
-        projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-        authorUserId: "user-1",
-      },
-    );
+    const commentResponse = await makeZodVerifiedAPICall(PostCommentsV1Response, "POST", "/api/public/comments", {
+      content: "hello",
+      objectId: "1234",
+      objectType: "TRACE",
+      projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+      authorUserId: "user-1",
+    });
 
     const { id: commentId } = commentResponse.body;
 
-    const response = await makeZodVerifiedAPICall(
-      GetCommentV1Response,
-      "GET",
-      `/api/public/comments/${commentId}`,
-    );
+    const response = await makeZodVerifiedAPICall(GetCommentV1Response, "GET", `/api/public/comments/${commentId}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -203,11 +191,7 @@ describe("GET /api/public/comments API Endpoint", () => {
   });
 
   it("should return all comments", async () => {
-    const comments = await makeZodVerifiedAPICall(
-      GetCommentsV1Response,
-      "GET",
-      "/api/public/comments",
-    );
+    const comments = await makeZodVerifiedAPICall(GetCommentsV1Response, "GET", "/api/public/comments");
     expect(comments.body.data).toHaveLength(5);
     expect(comments.body.meta).toMatchObject({
       page: 1,
@@ -260,10 +244,7 @@ describe("GET /api/public/comments API Endpoint", () => {
       totalItems: 2,
       totalPages: 1,
     });
-    expect(comments.body.data.map((comment) => comment.id)).toEqual([
-      "comment-2021-01-01",
-      "comment-2021-03-01",
-    ]);
+    expect(comments.body.data.map((comment) => comment.id)).toEqual(["comment-2021-01-01", "comment-2021-03-01"]);
   });
 
   it("should return an empty array when no comments match the criteria", async () => {
@@ -293,9 +274,7 @@ describe("GET /api/public/comments API Endpoint", () => {
         "/api/public/comments?objectType=INVALID_TYPE",
       );
     } catch (error) {
-      expect((error as Error).message).toContain(
-        "API call did not return 200, returned status 400",
-      );
+      expect((error as Error).message).toContain("API call did not return 200, returned status 400");
     }
   });
 
@@ -352,27 +331,17 @@ describe("Public API does NOT process mentions", () => {
   });
 
   it("should preserve mention markdown as-is without processing", async () => {
-    const commentResponse = await makeZodVerifiedAPICall(
-      PostCommentsV1Response,
-      "POST",
-      "/api/public/comments",
-      {
-        content:
-          "Hey @[FakeAdmin](user:user-1) and @[InvalidUser](user:invalid-id), check this!",
-        objectId: "no-mention-processing-trace",
-        objectType: "TRACE",
-        projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-        authorUserId: "user-1",
-      },
-    );
+    const commentResponse = await makeZodVerifiedAPICall(PostCommentsV1Response, "POST", "/api/public/comments", {
+      content: "Hey @[FakeAdmin](user:user-1) and @[InvalidUser](user:invalid-id), check this!",
+      objectId: "no-mention-processing-trace",
+      objectType: "TRACE",
+      projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+      authorUserId: "user-1",
+    });
 
     const { id: commentId } = commentResponse.body;
 
-    const response = await makeZodVerifiedAPICall(
-      GetCommentV1Response,
-      "GET",
-      `/api/public/comments/${commentId}`,
-    );
+    const response = await makeZodVerifiedAPICall(GetCommentV1Response, "GET", `/api/public/comments/${commentId}`);
 
     expect(response.status).toBe(200);
     // Content should be stored exactly as provided - NO sanitization or normalization

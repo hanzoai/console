@@ -84,11 +84,7 @@ function normalizeMessage(msg: unknown): Record<string, unknown> {
   }
 
   // Fallback: return as-is without OTel fields
-  const {
-    "gen_ai.event.content": _content,
-    "gen_ai.system": _system,
-    ...rest
-  } = message;
+  const { "gen_ai.event.content": _content, "gen_ai.system": _system, ...rest } = message;
   return removeNullFields(rest);
 }
 
@@ -116,9 +112,7 @@ function preprocessData(data: unknown, _ctx: NormalizerContext): unknown {
     const obj = data as Record<string, unknown>;
     return {
       ...obj,
-      messages: Array.isArray(obj.messages)
-        ? normalizeMessages(obj.messages)
-        : obj.messages,
+      messages: Array.isArray(obj.messages) ? normalizeMessages(obj.messages) : obj.messages,
     };
   }
 
@@ -142,17 +136,10 @@ export const semanticKernelAdapter: ProviderAdapter = {
     const meta = parseMetadata(ctx.metadata);
     const scopeName = getNestedProperty(meta, "scope", "name");
 
-    return (
-      typeof scopeName === "string" &&
-      scopeName.startsWith("Microsoft.SemanticKernel")
-    );
+    return typeof scopeName === "string" && scopeName.startsWith("Microsoft.SemanticKernel");
   },
 
-  preprocess(
-    data: unknown,
-    _kind: "input" | "output",
-    ctx: NormalizerContext,
-  ): unknown {
+  preprocess(data: unknown, _kind: "input" | "output", ctx: NormalizerContext): unknown {
     return preprocessData(data, ctx);
   },
 };

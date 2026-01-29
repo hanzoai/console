@@ -75,13 +75,10 @@ export class MixpanelClient {
 
       if (!response.ok) {
         const errorText = await response.text();
-        logger.error(
-          `Failed to send events to Mixpanel: ${response.status} ${response.statusText}`,
-          { body: errorText },
-        );
-        throw new Error(
-          `Mixpanel API error: ${response.status} ${response.statusText}`,
-        );
+        logger.error(`Failed to send events to Mixpanel: ${response.status} ${response.statusText}`, {
+          body: errorText,
+        });
+        throw new Error(`Mixpanel API error: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();

@@ -20,9 +20,7 @@ export const backfillValidToForDatasetItems = async (
           `;
 
   // 1. Get the next project_id to process
-  const nextProject = await prisma.$queryRaw<
-    Array<{ project_id: string }>
-  >(Prisma.sql`
+  const nextProject = await prisma.$queryRaw<Array<{ project_id: string }>>(Prisma.sql`
         SELECT DISTINCT project_id
         FROM dataset_items
         WHERE valid_to IS NULL

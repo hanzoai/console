@@ -32,10 +32,7 @@ import {
   HanzoInternalTraceEnvironment,
   tableColumnsToSqlFilterAndPrefix,
 } from "@hanzo/shared/src/server";
-import {
-  mapTraceFilterColumn,
-  requiresDatabaseLookup,
-} from "./traceFilterUtils";
+import { mapTraceFilterColumn, requiresDatabaseLookup } from "./traceFilterUtils";
 import {
   ChatMessageRole,
   Prisma,
@@ -200,20 +197,13 @@ export const createEvalJobs = async ({
   // for dataset_run_item_upsert queue + trace queue, we do not want to execute evals on configs,
   // which were only allowed to run on historic data. Hence, we need to filter all configs which have "NEW" in the time_scope column.
   if (enforcedJobTimeScope) {
-    configsQuery = configsQuery.where(
-      "time_scope",
-      "@>",
-      sql<string[]>`ARRAY[${enforcedJobTimeScope}]`,
-    );
+    configsQuery = configsQuery.where("time_scope", "@>", sql<string[]>`ARRAY[${enforcedJobTimeScope}]`);
   }
 
   const configs = await configsQuery.execute();
 
   if (configs.length === 0) {
-    logger.debug(
-      "No active evaluation jobs found for project",
-      event.projectId,
-    );
+    logger.debug("No active evaluation jobs found for project", event.projectId);
 
     // Cache the fact that there are no job configurations for this project
     // This helps avoid unnecessary database queries and queue processing
@@ -222,9 +212,7 @@ export const createEvalJobs = async ({
     return;
   }
 
-  logger.debug(
-    `Creating eval jobs for trace ${event.traceId} on project ${event.projectId}`,
-  );
+  logger.debug(`Creating eval jobs for trace ${event.traceId} on project ${event.projectId}`);
 
   // Early exit: Skip eval job creation for internal Hanzo traces from trace-upsert queue
   //
@@ -242,10 +230,7 @@ export const createEvalJobs = async ({
   //
   // See: packages/shared/src/server/llm/fetchLLMCompletion.ts (enforcement)
   // See: packages/shared/src/server/llm/types.ts (HanzoInternalTraceEnvironment enum)
-  if (
-    sourceEventType === "trace-upsert" &&
-    event.traceEnvironment?.startsWith("hanzo")
-  ) {
+  if (sourceEventType === "trace-upsert" && event.traceEnvironment?.startsWith("hanzo")) {
     logger.debug("Skipping eval job creation for internal Hanzo trace", {
       traceId: event.traceId,
       environment: event.traceEnvironment,
@@ -305,13 +290,9 @@ export const createEvalJobs = async ({
         traceId: event.traceId,
         filter: [],
       });
-      recordIncrement(
-        "hanzo.evaluation-execution.dataset_item_cache_fetch",
-        1,
-        {
-          found: Boolean(cachedDatasetItemIds.length > 0).toString(),
-        },
-      );
+      recordIncrement("hanzo.evaluation-execution.dataset_item_cache_fetch", 1, {
+        found: Boolean(cachedDatasetItemIds.length > 0).toString(),
+      });
       logger.debug("Fetched dataset item ids for evaluation optimization", {
         traceId: event.traceId,
         projectId: event.projectId,
@@ -319,14 +300,11 @@ export const createEvalJobs = async ({
         configCount: datasetConfigs.length,
       });
     } catch (error) {
-      logger.error(
-        "Failed to fetch datasetItemIds for evaluation optimization",
-        {
-          error,
-          traceId: event.traceId,
-          projectId: event.projectId,
-        },
-      );
+      logger.error("Failed to fetch datasetItemIds for evaluation optimization", {
+        error,
+        traceId: event.traceId,
+        projectId: event.projectId,
+      });
       // Continue without cached dataset item ids - will fall back to individual queries
     }
   }
@@ -341,8 +319,7 @@ export const createEvalJobs = async ({
     const validatedFilter = z.array(singleFilter).parse(config.filter);
 
     const maxTimeStamp =
-      "timestamp" in event &&
-      new Date(event.timestamp).getTime() === new Date("2020-01-01").getTime() // min time for historic evals
+      "timestamp" in event && new Date(event.timestamp).getTime() === new Date("2020-01-01").getTime() // min time for historic evals
         ? new Date()
         : undefined;
 
@@ -357,11 +334,7 @@ export const createEvalJobs = async ({
     const traceFilter = config.target_object === "trace" ? validatedFilter : [];
     if (cachedTrace && !requiresDatabaseLookup(traceFilter)) {
       // Evaluate filter in memory using the cached trace
-      traceExists = InMemoryFilterService.evaluateFilter(
-        cachedTrace,
-        traceFilter,
-        mapTraceFilterColumn,
-      );
+      traceExists = InMemoryFilterService.evaluateFilter(cachedTrace, traceFilter, mapTraceFilterColumn);
 
       traceExistsDecisionSource = "cache";
 
@@ -380,10 +353,7 @@ export const createEvalJobs = async ({
       let timestamp: Date | undefined = undefined;
       if (!("datasetItemId" in event) && traceFilter.length === 0) {
         exists = true;
-        timestamp =
-          "exactTimestamp" in event && event.exactTimestamp
-            ? new Date(event.exactTimestamp)
-            : undefined;
+        timestamp = "exactTimestamp" in event && event.exactTimestamp ? new Date(event.exactTimestamp) : undefined;
 
         traceExistsDecisionSource = "identifier";
       } else {
@@ -392,16 +362,11 @@ export const createEvalJobs = async ({
           projectId: event.projectId,
           traceId: event.traceId,
           // Fallback to jobTimestamp if no payload timestamp is set to allow for successful retry attempts.
-          timestamp:
-            "timestamp" in event
-              ? new Date(event.timestamp)
-              : new Date(jobTimestamp),
+          timestamp: "timestamp" in event ? new Date(event.timestamp) : new Date(jobTimestamp),
           filter: traceFilter,
           maxTimeStamp,
           exactTimestamp:
-            "exactTimestamp" in event && event.exactTimestamp
-              ? new Date(event.exactTimestamp)
-              : undefined,
+            "exactTimestamp" in event && event.exactTimestamp ? new Date(event.exactTimestamp) : undefined,
         }));
         traceExistsDecisionSource = "lookup";
       }
@@ -410,9 +375,7 @@ export const createEvalJobs = async ({
       traceTimestamp = timestamp;
       recordIncrement("hanzo.evaluation-execution.trace_db_lookup", 1, {
         hasCached: Boolean(cachedTrace).toString(),
-        requiredDatabaseLookup: requiresDatabaseLookup(traceFilter)
-          ? "true"
-          : "false",
+        requiredDatabaseLookup: requiresDatabaseLookup(traceFilter) ? "true" : "false",
       });
     }
 
@@ -422,10 +385,7 @@ export const createEvalJobs = async ({
     });
 
     const isDatasetConfig = config.target_object === "dataset";
-    let datasetItem:
-      | { id: string }
-      | { id: string; observationId: string | null }
-      | undefined;
+    let datasetItem: { id: string } | { id: string; observationId: string | null } | undefined;
     if (isDatasetConfig) {
       const condition = tableColumnsToSqlFilterAndPrefix(
         config.target_object === "dataset" ? validatedFilter : [],
@@ -435,9 +395,7 @@ export const createEvalJobs = async ({
 
       // If the target object is a dataset and the event type has a datasetItemId, we try to fetch it based on our filter
       if ("datasetItemId" in event && event.datasetItemId) {
-        const datasetItems = await prisma.$queryRaw<
-          Array<{ id: string }>
-        >(Prisma.sql`
+        const datasetItems = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
           SELECT id
           FROM (
             SELECT id, is_deleted
@@ -451,9 +409,7 @@ export const createEvalJobs = async ({
           WHERE is_deleted = false
         `);
         const latestDatasetItem = datasetItems.shift();
-        datasetItem = latestDatasetItem
-          ? { id: latestDatasetItem.id }
-          : undefined;
+        datasetItem = latestDatasetItem ? { id: latestDatasetItem.id } : undefined;
       } else {
         // If the cached items are not null, we fetched all available datasetItemIds from the DB.
         // The dataset is the only allowed filter today, so it should be easy to check using our existing in memory filter.
@@ -496,23 +452,16 @@ export const createEvalJobs = async ({
     // We also need to validate that the observation exists in case an observationId is set
     // If it's not set, we go into the retry loop. For the other events, we expect that the rerun
     // is unnecessary, as we're triggering this flow if either event comes in.
-    const observationId =
-      "observationId" in event && event.observationId
-        ? event.observationId
-        : undefined;
+    const observationId = "observationId" in event && event.observationId ? event.observationId : undefined;
     if (observationId) {
       const observationExists = await checkObservationExists(
         event.projectId,
         observationId,
         // Fallback to jobTimestamp if no payload timestamp is set to allow for successful retry attempts.
-        "timestamp" in event
-          ? new Date(event.timestamp)
-          : new Date(jobTimestamp),
+        "timestamp" in event ? new Date(event.timestamp) : new Date(jobTimestamp),
       );
       if (!observationExists) {
-        logger.warn(
-          `Observation ${observationId} not found, will retry with exponential backoff`,
-        );
+        logger.warn(`Observation ${observationId} not found, will retry with exponential backoff`);
         throw new ObservationNotFoundError({
           message: "Observation not found, retrying later",
           observationId,
@@ -528,16 +477,8 @@ export const createEvalJobs = async ({
       .where("project_id", "=", event.projectId)
       .where("job_configuration_id", "=", config.id)
       .where("job_input_trace_id", "=", event.traceId)
-      .where(
-        "job_input_dataset_item_id",
-        datasetItem ? "=" : "is",
-        datasetItem ? datasetItem.id : null,
-      )
-      .where(
-        "job_input_observation_id",
-        observationId ? "=" : "is",
-        observationId || null,
-      )
+      .where("job_input_dataset_item_id", datasetItem ? "=" : "is", datasetItem ? datasetItem.id : null)
+      .where("job_input_observation_id", observationId ? "=" : "is", observationId || null)
       .execute();
 
     // If we matched a trace for a trace event, we create a job or
@@ -547,9 +488,7 @@ export const createEvalJobs = async ({
 
       // deduplication: if a job exists already for a trace event, we do not create a new one.
       if (existingJob.length > 0) {
-        logger.debug(
-          `Eval job for config ${config.id} and trace ${event.traceId} already exists`,
-        );
+        logger.debug(`Eval job for config ${config.id} and trace ${event.traceId} already exists`);
         continue;
       }
 
@@ -558,16 +497,12 @@ export const createEvalJobs = async ({
       if (parseFloat(config.sampling) !== 1) {
         const random = Math.random();
         if (random > parseFloat(config.sampling)) {
-          logger.debug(
-            `Eval job for config ${config.id} and trace ${event.traceId} was sampled out`,
-          );
+          logger.debug(`Eval job for config ${config.id} and trace ${event.traceId} was sampled out`);
           continue;
         }
       }
 
-      logger.debug(
-        `Creating eval job execution for config ${config.id} and trace ${event.traceId}`,
-      );
+      logger.debug(`Creating eval job execution for config ${config.id} and trace ${event.traceId}`);
 
       await prisma.jobExecution.create({
         data: {
@@ -614,9 +549,7 @@ export const createEvalJobs = async ({
       // we do this, because a second trace event might 'deselect' a trace
       logger.debug(`Eval job for config ${config.id} did not match trace`);
       if (existingJob.length > 0) {
-        logger.debug(
-          `Cancelling eval job for config ${config.id} and trace ${event.traceId}`,
-        );
+        logger.debug(`Cancelling eval job for config ${config.id} and trace ${event.traceId}`);
 
         // Note: we use updateMany to gracefully handle case where execution is already completed; we silently skip the update.
         await prisma.jobExecution.updateMany({
@@ -641,14 +574,8 @@ export const createEvalJobs = async ({
 };
 
 // for a single eval job, this function is used to evaluate the job
-export const evaluate = async ({
-  event,
-}: {
-  event: z.infer<typeof EvalExecutionEvent>;
-}) => {
-  logger.debug(
-    `Evaluating job ${event.jobExecutionId} for project ${event.projectId}`,
-  );
+export const evaluate = async ({ event }: { event: z.infer<typeof EvalExecutionEvent> }) => {
+  logger.debug(`Evaluating job ${event.jobExecutionId} for project ${event.projectId}`);
   // first, fetch all the context required for the evaluation
   const job = await prisma.jobExecution.findFirst({
     where: {
@@ -685,12 +612,8 @@ export const evaluate = async ({
   });
 
   if (!config || !config.evalTemplateId) {
-    logger.error(
-      `Evaluation template not found for config: ${config?.evalTemplateId}`,
-    );
-    throw new UnrecoverableError(
-      `Evaluation template not found for config: ${config?.evalTemplateId}`,
-    );
+    logger.error(`Evaluation template not found for config: ${config?.evalTemplateId}`);
+    throw new UnrecoverableError(`Evaluation template not found for config: ${config?.evalTemplateId}`);
   }
 
   const template = await prisma.evalTemplate.findFirstOrThrow({
@@ -705,9 +628,7 @@ export const evaluate = async ({
   );
 
   // selectedcolumnid is not safe to use, needs validation in extractVariablesFromTrace()
-  const parsedVariableMapping = variableMappingList.parse(
-    config.variableMapping,
-  );
+  const parsedVariableMapping = variableMappingList.parse(config.variableMapping);
 
   // extract the variables which need to be inserted into the prompt
   const mappingResult = await extractVariablesFromTracingData({
@@ -720,9 +641,7 @@ export const evaluate = async ({
   });
 
   if (logger.isLevelEnabled("debug")) {
-    logger.debug(
-      `Evaluating job ${event.jobExecutionId} extracted variables ${JSON.stringify(mappingResult)} `,
-    );
+    logger.debug(`Evaluating job ${event.jobExecutionId} extracted variables ${JSON.stringify(mappingResult)} `);
   }
 
   // Get environment from trace or observation variables
@@ -732,28 +651,20 @@ export const evaluate = async ({
   let prompt;
   try {
     prompt = compileTemplateString(template.prompt, {
-      ...Object.fromEntries(
-        mappingResult.map(({ var: key, value }) => [key, value]),
-      ),
+      ...Object.fromEntries(mappingResult.map(({ var: key, value }) => [key, value])),
     });
   } catch (e) {
     // in case of a compilation error, we use the original prompt without adding variables.
-    logger.error(
-      `Evaluating job ${event.jobExecutionId} failed to compile prompt. Eval will fail. ${e}`,
-    );
+    logger.error(`Evaluating job ${event.jobExecutionId} failed to compile prompt. Eval will fail. ${e}`);
     prompt = template.prompt;
   }
 
-  logger.debug(
-    `Evaluating job ${event.jobExecutionId} compiled prompt ${prompt}`,
-  );
+  logger.debug(`Evaluating job ${event.jobExecutionId} compiled prompt ${prompt}`);
 
   const parsedOutputSchema = outputSchemaValidator.parse(template.outputSchema);
 
   if (!parsedOutputSchema) {
-    throw new UnrecoverableError(
-      "Output schema not found in evaluation template",
-    );
+    throw new UnrecoverableError("Output schema not found in evaluation template");
   }
 
   const evalScoreSchema = zodV3.object({
@@ -769,12 +680,8 @@ export const evaluate = async ({
   );
 
   if (!modelConfig.valid) {
-    logger.warn(
-      `Evaluating job ${event.jobExecutionId} will fail. ${modelConfig.error}`,
-    );
-    throw new UnrecoverableError(
-      `Invalid model configuration for job ${event.jobExecutionId}: ${modelConfig.error}`,
-    );
+    logger.warn(`Evaluating job ${event.jobExecutionId} will fail. ${modelConfig.error}`);
+    throw new UnrecoverableError(`Invalid model configuration for job ${event.jobExecutionId}: ${modelConfig.error}`);
   }
 
   const messages = [
@@ -833,9 +740,7 @@ export const evaluate = async ({
   }
 
   if (logger.isLevelEnabled("debug")) {
-    logger.debug(
-      `Evaluating job ${event.jobExecutionId} Parsed LLM output ${JSON.stringify(parsedLLMOutput)}`,
-    );
+    logger.debug(`Evaluating job ${event.jobExecutionId} Parsed LLM output ${JSON.stringify(parsedLLMOutput)}`);
   }
 
   const baseScore = {
@@ -855,9 +760,7 @@ export const evaluate = async ({
   try {
     const eventId = randomUUID();
     const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${event.projectId}/score/${scoreId}/${eventId}.json`;
-    await getS3StorageServiceClient(
-      env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-    ).uploadJson(bucketPath, [
+    await getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, [
       {
         id: eventId,
         timestamp: new Date().toISOString(),
@@ -899,9 +802,7 @@ export const evaluate = async ({
     throw new Error(`Failed to write score ${scoreId} into IngestionQueue`);
   }
 
-  logger.debug(
-    `Evaluating job ${event.jobExecutionId} persisted score ${scoreId} for trace ${job.jobInputTraceId}`,
-  );
+  logger.debug(`Evaluating job ${event.jobExecutionId} persisted score ${scoreId} for trace ${job.jobInputTraceId}`);
 
   await prisma.jobExecution.update({
     where: {
@@ -916,9 +817,7 @@ export const evaluate = async ({
     },
   });
 
-  logger.debug(
-    `Eval job ${job.id} for project ${event.projectId} completed with score ${parsedLLMOutput.data.score}`,
-  );
+  logger.debug(`Eval job ${job.id} for project ${event.projectId} completed with score ${parsedLLMOutput.data.score}`);
 };
 
 export async function extractVariablesFromTracingData({
@@ -947,9 +846,7 @@ export async function extractVariablesFromTracingData({
   // We run through this list sequentially to make use of caching.
   // The performance improvement by parallel execution should be less than the improvement we gain by caching.
   for (const variable of variables) {
-    const mapping = variableMapping.find(
-      (m) => m.templateVariable === variable,
-    );
+    const mapping = variableMapping.find((m) => m.templateVariable === variable);
 
     // validation ensures that mapping is always defined for a variable
     if (!mapping) {
@@ -959,9 +856,7 @@ export async function extractVariablesFromTracingData({
     }
     if (mapping.hanzoObject === "dataset_item") {
       if (!datasetItemId) {
-        logger.warn(
-          `No dataset item id found for variable ${variable}. Eval will succeed without dataset item input.`,
-        );
+        logger.warn(`No dataset item id found for variable ${variable}. Eval will succeed without dataset item input.`);
         results.push({ var: variable, value: "" });
         continue;
       }
@@ -973,20 +868,14 @@ export async function extractVariablesFromTracingData({
 
       // if no column was found, we still process with an empty variable
       if (!safeInternalColumn?.id) {
-        logger.error(
-          `No column found for variable ${variable} and column ${mapping.selectedColumnId}`,
-        );
+        logger.error(`No column found for variable ${variable} and column ${mapping.selectedColumnId}`);
         results.push({ var: variable, value: "" });
         continue;
       }
 
       const datasetItem = (await kyselyPrisma.$kysely
         .selectFrom("dataset_items as d")
-        .select(
-          sql`${sql.raw(safeInternalColumn.internal)}`.as(
-            safeInternalColumn.id,
-          ),
-        ) // query the internal column name raw
+        .select(sql`${sql.raw(safeInternalColumn.internal)}`.as(safeInternalColumn.id)) // query the internal column name raw
         .where("id", "=", datasetItemId)
         .where("project_id", "=", projectId)
         .where("valid_to", "is", null)
@@ -1018,9 +907,7 @@ export async function extractVariablesFromTracingData({
 
       // if no column was found, we still process with an empty variable
       if (!safeInternalColumn?.id) {
-        logger.error(
-          `No column found for variable ${variable} and column ${mapping.selectedColumnId}`,
-        );
+        logger.error(`No column found for variable ${variable} and column ${mapping.selectedColumnId}`);
         results.push({ var: variable, value: "" });
         continue;
       }
@@ -1066,17 +953,13 @@ export async function extractVariablesFromTracingData({
         ?.availableColumns.find((col) => col.id === mapping.selectedColumnId);
 
       if (!mapping.objectName) {
-        logger.info(
-          `No object name found for variable ${variable} and object ${mapping.hanzoObject}`,
-        );
+        logger.info(`No object name found for variable ${variable} and object ${mapping.hanzoObject}`);
         results.push({ var: variable, value: "" });
         continue;
       }
 
       if (!safeInternalColumn?.id) {
-        logger.warn(
-          `No column found for variable ${variable} and column ${mapping.selectedColumnId}`,
-        );
+        logger.warn(`No column found for variable ${variable} and column ${mapping.selectedColumnId}`);
         results.push({ var: variable, value: "" });
         continue;
       }
@@ -1131,19 +1014,14 @@ export const parseDatabaseRowToString = (
 
   if (mapping.jsonSelector) {
     if (logger.isLevelEnabled("debug")) {
-      logger.debug(
-        `Parsing JSON for json selector ${mapping.jsonSelector} from ${JSON.stringify(selectedColumn)}`,
-      );
+      logger.debug(`Parsing JSON for json selector ${mapping.jsonSelector} from ${JSON.stringify(selectedColumn)}`);
     }
 
     try {
       jsonSelectedColumn = JSONPath({
         path: mapping.jsonSelector,
 
-        json:
-          typeof selectedColumn === "string"
-            ? JSON.parse(selectedColumn)
-            : selectedColumn,
+        json: typeof selectedColumn === "string" ? JSON.parse(selectedColumn) : selectedColumn,
       });
     } catch (error) {
       logger.error(
@@ -1166,11 +1044,7 @@ export const parseUnknownToString = (value: unknown): string => {
     return "";
   }
 
-  if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
-  ) {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return value.toString();
   }
 

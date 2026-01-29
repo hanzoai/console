@@ -25,15 +25,9 @@ export const entitlements = [
 ] as const;
 export type Entitlement = (typeof entitlements)[number];
 
-const cloudAllPlansEntitlements: Entitlement[] = [
-  "cloud-billing",
-  "trace-deletion",
-];
+const cloudAllPlansEntitlements: Entitlement[] = ["cloud-billing", "trace-deletion"];
 
-const selfHostedAllPlansEntitlements: Entitlement[] = [
-  "trace-deletion",
-  "scheduled-blob-exports",
-];
+const selfHostedAllPlansEntitlements: Entitlement[] = ["trace-deletion", "scheduled-blob-exports"];
 
 // Entitlement Limits: Limits on the number of resources that can be created/used
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -60,7 +54,8 @@ export const entitlementAccess: Record<
     entitlementLimits: EntitlementLimits;
   }
 > = {
-  "cloud:free": {  // Add new free plan
+  "cloud:free": {
+    // Add new free plan
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
       "organization-member-count": 2,
@@ -91,11 +86,7 @@ export const entitlementAccess: Record<
     },
   },
   "cloud:pro": {
-    entitlements: [
-      ...cloudAllPlansEntitlements,
-      "cloud-spend-alerts",
-      "data-retention",
-    ],
+    entitlements: [...cloudAllPlansEntitlements, "cloud-spend-alerts", "data-retention"],
     entitlementLimits: {
       "annotation-queue-count": false,
       "organization-member-count": false,

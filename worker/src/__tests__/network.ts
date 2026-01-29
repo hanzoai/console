@@ -102,9 +102,7 @@ export class OpenAIServer {
     logger.info("openai", { hasActiveKey, useDefaultResponse });
 
     this.hasActiveKey = hasActiveKey;
-    this.internalServer = setupServer(
-      ...(useDefaultResponse ? [JsonCompletionHandler(DEFAULT_RESPONSE)] : []),
-    );
+    this.internalServer = setupServer(...(useDefaultResponse ? [JsonCompletionHandler(DEFAULT_RESPONSE)] : []));
     if (hasActiveKey) {
       this.internalServer.events.on("response:bypass", async ({ response }) => {
         logger.info(response);

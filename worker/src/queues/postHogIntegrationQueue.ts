@@ -1,9 +1,5 @@
 import { Processor } from "bullmq";
-import {
-  instrumentAsync,
-  logger,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { handlePostHogIntegrationSchedule } from "../features/posthog/handlePostHogIntegrationSchedule";
 import { handlePostHogIntegrationProjectJob } from "../features/posthog/handlePostHogIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";
@@ -32,10 +28,7 @@ export const postHogIntegrationProcessingProcessor: Processor = async (job) => {
         try {
           return await handlePostHogIntegrationProjectJob(job);
         } catch (error) {
-          logger.error(
-            "Error executing PostHogIntegrationProcessingJob",
-            error,
-          );
+          logger.error("Error executing PostHogIntegrationProcessingJob", error);
           throw error;
         }
       },

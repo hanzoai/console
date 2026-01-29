@@ -5,12 +5,9 @@ import {
   GetScoreConfigResponse,
   PutScoreConfigBody as PatchScoreConfigBody,
   PutScoreConfigQuery as PatchScoreConfigQuery,
-  PutScoreConfigResponse as PatchScoreConfigResponse } from "@/src/features/public-api/types/score-configs";
-import {
-  InternalServerError,
-  InvalidRequestError,
-  HanzoNotFoundError,
-  validateDbScoreConfigSafe } from "@hanzo/shared";
+  PutScoreConfigResponse as PatchScoreConfigResponse,
+} from "@/src/features/public-api/types/score-configs";
+import { InternalServerError, InvalidRequestError, HanzoNotFoundError, validateDbScoreConfigSafe } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import { traceException } from "@hanzo/shared/src/server";
 
@@ -23,12 +20,12 @@ export default withMiddlewares({
       const config = await prisma.scoreConfig.findUnique({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId } });
+          projectId: auth.scope.projectId,
+        },
+      });
 
       if (!config) {
-        throw new HanzoNotFoundError(
-          "Score config not found within authorized project",
-        );
+        throw new HanzoNotFoundError("Score config not found within authorized project");
       }
 
       const parsedConfig = validateDbScoreConfigSafe(config);
@@ -38,7 +35,8 @@ export default withMiddlewares({
       }
 
       return parsedConfig.data;
-    } }),
+    },
+  }),
   PATCH: createAuthedProjectAPIRoute({
     name: "Update a Score Config",
     querySchema: PatchScoreConfigQuery,
@@ -48,29 +46,32 @@ export default withMiddlewares({
       const existingConfig = await prisma.scoreConfig.findUnique({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId } });
+          projectId: auth.scope.projectId,
+        },
+      });
 
       if (!existingConfig) {
-        throw new HanzoNotFoundError(
-          "Score config not found within authorized project",
-        );
+        throw new HanzoNotFoundError("Score config not found within authorized project");
       }
 
       // Merge the body with the existing config and verify schema compliance
       const result = validateDbScoreConfigSafe({ ...existingConfig, ...body });
 
       if (!result.success) {
-        throw new InvalidRequestError(
-          result.error.issues.map((issue) => issue.message).join(", "),
-        );
+        throw new InvalidRequestError(result.error.issues.map((issue) => issue.message).join(", "));
       }
 
       await prisma.scoreConfig.update({
         where: {
           id: query.configId,
-          projectId: auth.scope.projectId },
+          projectId: auth.scope.projectId,
+        },
         data: {
-          ...body } });
+          ...body,
+        },
+      });
 
       return result.data;
-    } }) });
+    },
+  }),
+});

@@ -5,10 +5,7 @@ import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { getServerAuthSession } from "@/src/server/auth";
 import { hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     await runMiddleware(req, res, cors);
 

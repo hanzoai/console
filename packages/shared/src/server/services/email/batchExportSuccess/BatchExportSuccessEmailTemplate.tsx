@@ -52,13 +52,11 @@ export const BatchExportSuccessEmailTemplate = ({
               Hello <strong>{userName}</strong>
             </Text>
             <Text className="text-sm leading-6 text-black">
-              Your data export{" "}
-              <span className="font-mono">{batchExportName}</span> is ready to
-              download. The download link is valid for a few hours.
+              Your data export <span className="font-mono">{batchExportName}</span> is ready to download. The download
+              link is valid for a few hours.
             </Text>
             <Text className="text-sm leading-6 text-black">
-              Please note data exports do not reflect custom column ordering or
-              visibility.
+              Please note data exports do not reflect custom column ordering or visibility.
             </Text>
             <Section className="mb-4 mt-8 text-center">
               <Button
@@ -70,9 +68,8 @@ export const BatchExportSuccessEmailTemplate = ({
             </Section>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-xs leading-6 text-[#666666]">
-              This email was intended for{" "}
-              <span className="text-black">{receiverEmail}</span>. If you were
-              not expecting this email, please delete it.
+              This email was intended for <span className="text-black">{receiverEmail}</span>. If you were not expecting
+              this email, please delete it.
             </Text>
           </Container>
         </Body>

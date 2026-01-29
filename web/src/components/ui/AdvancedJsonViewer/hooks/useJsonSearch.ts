@@ -13,10 +13,7 @@ import { useMemo } from "react";
 import { type SearchMatch } from "../types";
 import { getCurrentMatchIndexInRow } from "../utils/searchJson";
 
-export function useJsonSearch(
-  searchMatches: SearchMatch[],
-  currentMatchIndex: number,
-) {
+export function useJsonSearch(searchMatches: SearchMatch[], currentMatchIndex: number) {
   // Build a map of rowId -> match for quick lookup
   const matchMap = useMemo(() => {
     const map = new Map<string, SearchMatch>();

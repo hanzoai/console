@@ -1,8 +1,5 @@
 import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
-import {
-  ObservationRecordReadType,
-  EventsObservationRecordReadType,
-} from "./definitions";
+import { ObservationRecordReadType, EventsObservationRecordReadType } from "./definitions";
 import {
   Observation,
   EventsObservation,
@@ -13,11 +10,7 @@ import {
   ObservationCoreFields,
 } from "../../domain";
 import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
-import {
-  RenderingProps,
-  DEFAULT_RENDERING_PROPS,
-  applyInputOutputRendering,
-} from "../utils/rendering";
+import { RenderingProps, DEFAULT_RENDERING_PROPS, applyInputOutputRendering } from "../utils/rendering";
 import { logger } from "../logger";
 import type { Model, Price } from "@prisma/client";
 
@@ -31,9 +24,7 @@ type ModelWithPrice = Model & { Price: Price[] };
  * @throws Error if any core field is undefined
  * @returns The validated core fields in domain format
  */
-function ensureObservationCoreFields(
-  record: Partial<ObservationRecordReadType>,
-): ObservationCoreFields {
+function ensureObservationCoreFields(record: Partial<ObservationRecordReadType>): ObservationCoreFields {
   const missingFields: string[] = [];
 
   if (record.id === undefined) missingFields.push("id");
@@ -61,17 +52,12 @@ function ensureObservationCoreFields(
  * @param model - The model with price data (can be null)
  * @returns Object with modelId and pricing fields
  */
-export const enrichObservationWithModelData = (
-  model: ModelWithPrice | null | undefined,
-) => {
+export const enrichObservationWithModelData = (model: ModelWithPrice | null | undefined) => {
   return {
     modelId: model?.id ?? null,
-    inputPrice:
-      model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
-    outputPrice:
-      model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
-    totalPrice:
-      model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
+    inputPrice: model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
+    outputPrice: model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
+    totalPrice: model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
   };
 };
 
@@ -132,9 +118,7 @@ export function convertObservationPartial(
     ...coreFields,
     ...(record.type !== undefined && { type: record.type as ObservationType }),
     ...(record.end_time !== undefined && {
-      endTime: record.end_time
-        ? parseClickhouseUTCDateTimeFormat(record.end_time)
-        : null,
+      endTime: record.end_time ? parseClickhouseUTCDateTimeFormat(record.end_time) : null,
     }),
 
     // Basic fields
@@ -194,10 +178,7 @@ export function convertObservationPartial(
     // Usage fields
     ...(record.usage_details !== undefined && {
       usageDetails: Object.fromEntries(
-        Object.entries(record.usage_details ?? {}).map(([key, value]) => [
-          key,
-          Number(value),
-        ]),
+        Object.entries(record.usage_details ?? {}).map(([key, value]) => [key, Number(value)]),
       ),
       inputUsage: reducedUsageDetails.input ?? 0,
       outputUsage: reducedUsageDetails.output ?? 0,
@@ -205,10 +186,7 @@ export function convertObservationPartial(
     }),
     ...(record.cost_details !== undefined && {
       costDetails: Object.fromEntries(
-        Object.entries(record.cost_details ?? {}).map(([key, value]) => [
-          key,
-          Number(value),
-        ]),
+        Object.entries(record.cost_details ?? {}).map(([key, value]) => [key, Number(value)]),
       ),
       inputCost: reducedCostDetails.input,
       outputCost: reducedCostDetails.output,
@@ -216,9 +194,7 @@ export function convertObservationPartial(
     }),
     ...(record.provided_cost_details !== undefined && {
       providedCostDetails: Object.fromEntries(
-        Object.entries(record.provided_cost_details ?? {}).map(
-          ([key, value]) => [key, Number(value)],
-        ),
+        Object.entries(record.provided_cost_details ?? {}).map(([key, value]) => [key, Number(value)]),
       ),
     }),
 
@@ -230,9 +206,7 @@ export function convertObservationPartial(
       promptName: record.prompt_name ?? null,
     }),
     ...(record.prompt_version !== undefined && {
-      promptVersion: record.prompt_version
-        ? Number(record.prompt_version)
-        : null,
+      promptVersion: record.prompt_version ? Number(record.prompt_version) : null,
     }),
 
     // Pricing tier fields
@@ -263,13 +237,10 @@ export function convertObservationPartial(
             1000
           : null,
     }),
-    ...((record.completion_start_time !== undefined ||
-      record.start_time !== undefined) && {
+    ...((record.completion_start_time !== undefined || record.start_time !== undefined) && {
       timeToFirstToken:
         record.completion_start_time && record.start_time
-          ? (parseClickhouseUTCDateTimeFormat(
-              record.completion_start_time,
-            ).getTime() -
+          ? (parseClickhouseUTCDateTimeFormat(record.completion_start_time).getTime() -
               parseClickhouseUTCDateTimeFormat(record.start_time).getTime()) /
             1000
           : null,
@@ -353,11 +324,7 @@ export function convertEventsObservation(
 ): EventsObservation | PartialEventsObservation {
   // Branch based on complete flag to use correct overload
   const baseObservation = complete
-    ? convertObservationPartial(
-        record as ObservationRecordReadType,
-        renderingProps,
-        true,
-      )
+    ? convertObservationPartial(record as ObservationRecordReadType, renderingProps, true)
     : convertObservationPartial(record, renderingProps, false);
 
   return {

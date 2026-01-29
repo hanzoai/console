@@ -14,11 +14,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Switch } from "@/src/components/ui/switch";
 import { usePersistedWindowIds } from "@/src/features/playground/page/hooks/usePersistedWindowIds";
-import {
-  type PlaygroundCache,
-  type PlaygroundSchema,
-  type PlaygroundTool,
-} from "@/src/features/playground/page/types";
+import { type PlaygroundCache, type PlaygroundSchema, type PlaygroundTool } from "@/src/features/playground/page/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import {
@@ -42,10 +38,7 @@ import { convertChatMlToPlayground } from "@/src/utils/chatml/playgroundConverte
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import usePlaygroundCache from "@/src/features/playground/page/hooks/usePlaygroundCache";
-import {
-  type MetadataDomainClient,
-  type WithStringifiedMetadata,
-} from "@/src/utils/clientSideDomainTypes";
+import { type MetadataDomainClient, type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 
 type JumpToPlaygroundButtonProps = (
   | {
@@ -55,10 +48,7 @@ type JumpToPlaygroundButtonProps = (
     }
   | {
       source: "generation";
-      generation: Omit<
-        WithStringifiedMetadata<Observation>,
-        "input" | "output"
-      > & {
+      generation: Omit<WithStringifiedMetadata<Observation>, "input" | "output"> & {
         input: string | null;
         output: string | null;
       };
@@ -70,9 +60,7 @@ type JumpToPlaygroundButtonProps = (
   size?: "default" | "sm" | "xs" | "lg" | "icon" | "icon-xs" | "icon-sm";
 };
 
-export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
-  props,
-) => {
+export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (props) => {
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const projectId = useProjectIdFromURL();
@@ -120,16 +108,13 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
   }, [apiKeys.data]);
 
   const promptData = props.source === "prompt" ? props.prompt : null;
-  const generationData =
-    props.source === "generation" ? props.generation : null;
+  const generationData = props.source === "generation" ? props.generation : null;
 
   useEffect(() => {
     if (promptData) {
       setCapturedState(parsePrompt(promptData));
     } else if (generationData) {
-      setCapturedState(
-        parseGeneration(generationData, modelToProviderMap, includeOutput),
-      );
+      setCapturedState(parseGeneration(generationData, modelToProviderMap, includeOutput));
     }
   }, [promptData, generationData, modelToProviderMap, includeOutput]);
 
@@ -160,9 +145,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
       const addedWindowId = addWindowWithId(stableWindowId);
 
       if (!addedWindowId) {
-        console.warn(
-          "Failed to add window to existing playground, maximum windows reached",
-        );
+        console.warn("Failed to add window to existing playground, maximum windows reached");
         return;
       }
     }
@@ -171,9 +154,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
     requestAnimationFrame(() => {
       try {
         setPlaygroundCache(capturedState);
-        console.log(
-          `Cache saved for existing playground window ${stableWindowId}`,
-        );
+        console.log(`Cache saved for existing playground window ${stableWindowId}`);
 
         // Navigate after cache is successfully saved
         router.push(`/project/${projectId}/playground`);
@@ -197,17 +178,10 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
           size={props.size ?? "default"}
           disabled={!isAvailable}
           title={tooltipMessage}
-          className={cn(
-            "flex items-center gap-1",
-            !isAvailable ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-          )}
+          className={cn("flex items-center gap-1", !isAvailable ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
         >
-          <Terminal
-            className={props.size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"}
-          />
-          <span className={cn("hidden md:inline", props.className)}>
-            Playground
-          </span>
+          <Terminal className={props.size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          <span className={cn("hidden md:inline", props.className)}>Playground</span>
           <ChevronDown className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
@@ -225,10 +199,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
             <DropdownMenuSeparator />
             <div className="flex items-center justify-between px-2 py-1.5">
               <span className="text-sm">Include output</span>
-              <Switch
-                checked={includeOutput}
-                onCheckedChange={setIncludeOutput}
-              />
+              <Switch checked={includeOutput} onCheckedChange={setIncludeOutput} />
             </div>
           </>
         )}
@@ -237,9 +208,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
   );
 };
 
-const parsePrompt = (
-  prompt: Prompt & { resolvedPrompt?: Prisma.JsonValue },
-): PlaygroundCache => {
+const parsePrompt = (prompt: Prompt & { resolvedPrompt?: Prisma.JsonValue }): PlaygroundCache => {
   if (prompt.type === PromptType.Chat) {
     try {
       const inResult = normalizeInput(prompt.resolvedPrompt);
@@ -247,9 +216,7 @@ const parsePrompt = (
       const messages = inResult.success
         ? inResult.data
             .map(convertChatMlToPlayground)
-            .filter(
-              (msg): msg is ChatMessage | PlaceholderMessage => msg !== null,
-            )
+            .filter((msg): msg is ChatMessage | PlaceholderMessage => msg !== null)
         : [];
 
       if (messages.length === 0) return null;
@@ -285,19 +252,14 @@ const parseGeneration = (
   if (!isGenerationLike(generation.type)) return null;
 
   let modelParams = parseModelParams(generation, modelToProviderMap);
-  const tools = parseTools(
-    generation.input,
-    generation.output,
-    generation.metadata,
-  );
+  const tools = parseTools(generation.input, generation.output, generation.metadata);
 
   const structuredOutputSchema = parseStructuredOutputSchema(generation);
   const providerOptions = parseLitellmMetadataFromGeneration(generation);
 
   if (modelParams && providerOptions) {
     const existingProviderOptions =
-      modelParams.providerOptions?.value ??
-      ({} as UIModelParams["providerOptions"]["value"]);
+      modelParams.providerOptions?.value ?? ({} as UIModelParams["providerOptions"]["value"]);
 
     const mergedProviderOptions = {
       ...existingProviderOptions,
@@ -357,10 +319,7 @@ const parseGeneration = (
   if (typeof input === "object") {
     try {
       const ctx = {
-        metadata:
-          typeof generation.metadata === "string"
-            ? JSON.parse(generation.metadata)
-            : generation.metadata,
+        metadata: typeof generation.metadata === "string" ? JSON.parse(generation.metadata) : generation.metadata,
         observationName: generation.name ?? undefined,
       };
 
@@ -369,9 +328,7 @@ const parseGeneration = (
       let messages = inResult.success
         ? inResult.data
             .map(convertChatMlToPlayground)
-            .filter(
-              (msg): msg is ChatMessage | PlaceholderMessage => msg !== null,
-            )
+            .filter((msg): msg is ChatMessage | PlaceholderMessage => msg !== null)
         : [];
 
       if (includeOutput) {
@@ -395,17 +352,12 @@ const parseGeneration = (
             const outputMessages = outResult.success
               ? outResult.data
                   .map(convertChatMlToPlayground)
-                  .filter(
-                    (msg): msg is ChatMessage | PlaceholderMessage =>
-                      msg !== null,
-                  )
+                  .filter((msg): msg is ChatMessage | PlaceholderMessage => msg !== null)
                   // Filter tool calls without results (i.e. assistant messages with tool_calls but no results)
                   // here, a tool was just selected by an LLM but not called yet.
                   // we don't want this in the playground, because we a) cannot run the playground
                   // and b) if we jump to the playground, we exactly want to test if the LLM selects the tool
-                  .filter(
-                    (msg) => msg.type !== ChatMessageType.AssistantToolCall,
-                  )
+                  .filter((msg) => msg.type !== ChatMessageType.AssistantToolCall)
               : [];
 
             // Append output messages to input messages
@@ -419,10 +371,7 @@ const parseGeneration = (
       if (messages.length === 0) return null;
 
       // Extract tools from normalized ChatML messages (they may have tools attached)
-      const normalizedTools =
-        inResult.success && inResult.data
-          ? extractTools(inResult.data, ctx.metadata)
-          : [];
+      const normalizedTools = inResult.success && inResult.data ? extractTools(inResult.data, ctx.metadata) : [];
 
       // Merge with tools from input/metadata, prefer normalized tools
       const mergedTools = normalizedTools.length > 0 ? normalizedTools : tools;
@@ -444,13 +393,9 @@ const parseGeneration = (
 function parseModelParams(
   generation: Omit<Observation, "input" | "output" | "metadata">,
   modelToProviderMap: Record<string, string>,
-):
-  | (Partial<UIModelParams> & Pick<UIModelParams, "provider" | "model">)
-  | undefined {
+): (Partial<UIModelParams> & Pick<UIModelParams, "provider" | "model">) | undefined {
   const generationModel = generation.model?.valueOf();
-  let modelParams:
-    | (Partial<UIModelParams> & Pick<UIModelParams, "provider" | "model">)
-    | undefined = undefined;
+  let modelParams: (Partial<UIModelParams> & Pick<UIModelParams, "provider" | "model">) | undefined = undefined;
 
   if (generationModel) {
     const provider = modelToProviderMap[generationModel];
@@ -524,14 +469,8 @@ function parseStructuredOutputSchema(
       }
     } catch {}
 
-    if (
-      typeof metadata === "object" &&
-      metadata !== null &&
-      "response_format" in metadata
-    ) {
-      const parseStructuredOutputSchema = OpenAIResponseFormatSchema.safeParse(
-        metadata["response_format"],
-      );
+    if (typeof metadata === "object" && metadata !== null && "response_format" in metadata) {
+      const parseStructuredOutputSchema = OpenAIResponseFormatSchema.safeParse(metadata["response_format"]);
 
       if (parseStructuredOutputSchema.success)
         return {
@@ -553,8 +492,7 @@ function parseStructuredOutputSchema(
     ) {
       const parsedResponseFormat = JSON.parse(modelParams["response_format"]);
 
-      const parseStructuredOutputSchema =
-        OpenAIResponseFormatSchema.safeParse(parsedResponseFormat);
+      const parseStructuredOutputSchema = OpenAIResponseFormatSchema.safeParse(parsedResponseFormat);
 
       if (parseStructuredOutputSchema.success)
         return {
@@ -610,9 +548,7 @@ function parseLitellmMetadataFromGeneration(
     return undefined;
   }
 
-  const requesterMetadata = (metadata as Record<string, unknown>)[
-    "requester_metadata"
-  ];
+  const requesterMetadata = (metadata as Record<string, unknown>)["requester_metadata"];
 
   if (typeof requesterMetadata !== "object" || requesterMetadata === null) {
     return undefined;

@@ -1,10 +1,7 @@
 import z from "zod/v4";
 import { jsonSchema, jsonSchemaNullable } from "../utils/zod";
 
-export const MetadataDomain = z.record(
-  z.string(),
-  jsonSchemaNullable.or(z.undefined()),
-);
+export const MetadataDomain = z.record(z.string(), jsonSchemaNullable.or(z.undefined()));
 
 export type MetadataDomain = z.infer<typeof MetadataDomain>;
 

@@ -1,7 +1,4 @@
-import {
-  createHttpHeaderFromRateLimit,
-  RateLimitService,
-} from "@/src/features/public-api/server/RateLimitService";
+import { createHttpHeaderFromRateLimit, RateLimitService } from "@/src/features/public-api/server/RateLimitService";
 import { Redis } from "ioredis";
 
 describe("RateLimitService", () => {
@@ -126,18 +123,13 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
-      rateLimitOverrides: [
-        { resource: "public-api" as const, points: 100, durationInSec: 2 },
-      ],
+      rateLimitOverrides: [{ resource: "public-api" as const, points: 100, durationInSec: 2 }],
     };
 
     const rateLimitService = RateLimitService.getInstance(redis);
     await rateLimitService.rateLimitRequest(scope, "public-api");
 
-    const firstResult = await rateLimitService.rateLimitRequest(
-      scope,
-      "public-api",
-    );
+    const firstResult = await rateLimitService.rateLimitRequest(scope, "public-api");
     expect(firstResult?.isRateLimited()).toBe(false);
 
     expect(firstResult?.res).toEqual({
@@ -152,10 +144,7 @@ describe("RateLimitService", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const secondResult = await rateLimitService.rateLimitRequest(
-      scope,
-      "public-api",
-    );
+    const secondResult = await rateLimitService.rateLimitRequest(scope, "public-api");
 
     expect(secondResult?.res).toEqual({
       scope: scope,
@@ -176,9 +165,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
-      rateLimitOverrides: [
-        { resource: "public-api" as const, points: 5, durationInSec: 60 },
-      ],
+      rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 60 }],
     };
 
     const rateLimitService = RateLimitService.getInstance(redis);
@@ -207,9 +194,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
-      rateLimitOverrides: [
-        { resource: "public-api" as const, points: 5, durationInSec: 10 },
-      ],
+      rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 10 }],
     };
 
     const rateLimitService = RateLimitService.getInstance(redis);
@@ -233,9 +218,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
-      rateLimitOverrides: [
-        { resource: "public-api" as const, points: 5, durationInSec: 10 },
-      ],
+      rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 10 }],
     };
 
     const rateLimitService = RateLimitService.getInstance(redis);
@@ -252,9 +235,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
-      rateLimitOverrides: [
-        { resource: "ingestion" as const, points: null, durationInSec: null },
-      ],
+      rateLimitOverrides: [{ resource: "ingestion" as const, points: null, durationInSec: null }],
     };
 
     const rateLimitService = RateLimitService.getInstance(redis);

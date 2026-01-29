@@ -26,8 +26,7 @@ describe("SlackMessageBuilder", () => {
 
   describe("buildPromptVersionMessage", () => {
     it("should build complete prompt-version message with all fields", () => {
-      const blocks =
-        SlackMessageBuilder.buildPromptVersionMessage(mockPromptPayload);
+      const blocks = SlackMessageBuilder.buildPromptVersionMessage(mockPromptPayload);
 
       expect(blocks).toHaveLength(6); // header, main, details, commit, actions, footer
 
@@ -93,9 +92,7 @@ describe("SlackMessageBuilder", () => {
               text: "View Prompt",
               emoji: true,
             },
-            url: expect.stringContaining(
-              "/project/project-456/prompts/test-prompt?version=2",
-            ),
+            url: expect.stringContaining("/project/project-456/prompts/test-prompt?version=2"),
             style: "primary",
           },
         ],
@@ -135,8 +132,7 @@ describe("SlackMessageBuilder", () => {
         },
       };
 
-      const blocks =
-        SlackMessageBuilder.buildPromptVersionMessage(minimalPayload);
+      const blocks = SlackMessageBuilder.buildPromptVersionMessage(minimalPayload);
 
       expect(blocks).toHaveLength(5); // No commit message section
 
@@ -146,9 +142,7 @@ describe("SlackMessageBuilder", () => {
       expect(detailsSection.fields[3].text).toBe("*Tags:*\nNone");
 
       // Ensure no commit message section
-      expect(
-        blocks.find((block) => block.text?.text?.includes("*Commit Message:*")),
-      ).toBeUndefined();
+      expect(blocks.find((block) => block.text?.text?.includes("*Commit Message:*"))).toBeUndefined();
     });
 
     it("should generate correct action emojis for different actions", () => {
@@ -168,8 +162,7 @@ describe("SlackMessageBuilder", () => {
     });
 
     it("should generate correct URLs for different environments", () => {
-      let blocks =
-        SlackMessageBuilder.buildPromptVersionMessage(mockPromptPayload);
+      let blocks = SlackMessageBuilder.buildPromptVersionMessage(mockPromptPayload);
       expect(blocks[4].elements[0].url).toContain(
         "http://localhost:3000/project/project-456/prompts/test-prompt?version=2",
       );
@@ -183,9 +176,7 @@ describe("SlackMessageBuilder", () => {
         type: "unknown-event" as any,
       };
 
-      const blocks = SlackMessageBuilder.buildFallbackMessage(
-        unknownPayload as any,
-      );
+      const blocks = SlackMessageBuilder.buildFallbackMessage(unknownPayload as any);
 
       expect(blocks).toHaveLength(2);
 

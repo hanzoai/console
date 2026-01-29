@@ -5,14 +5,8 @@ import { FilterState } from "../../types";
 import { convertDateToClickhouseDateTime } from "../clickhouse/client";
 import { measureAndReturn } from "../clickhouse/measureAndReturn";
 import { DateTimeFilter, FilterList, orderByToClickhouseSql } from "../queries";
-import {
-  getProjectIdDefaultFilter,
-  createFilterFromFilterState,
-} from "../queries/clickhouse-sql/factory";
-import {
-  TRACE_TO_OBSERVATIONS_INTERVAL,
-  queryClickhouse,
-} from "../repositories";
+import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { TRACE_TO_OBSERVATIONS_INTERVAL, queryClickhouse } from "../repositories";
 
 export type SessionDataReturnType = {
   session_id: string;
@@ -122,8 +116,7 @@ export type FetchSessionsTableProps = {
 };
 
 const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
-  const { select, projectId, filter, orderBy, limit, page, clickhouseConfigs } =
-    props;
+  const { select, projectId, filter, orderBy, limit, page, clickhouseConfigs } = props;
 
   let sqlSelect: string;
   switch (select) {
@@ -176,15 +169,11 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
 
   tracesFilter.push(...createFilterFromFilterState(filter, sessionCols));
 
-  const tracesFilterRes = tracesFilter
-    .filter((f) => f.field !== "environment")
-    .apply();
+  const tracesFilterRes = tracesFilter.filter((f) => f.field !== "environment").apply();
   const scoresFilterRes = scoresFilter.apply();
 
   const traceTimestampFilter: DateTimeFilter | undefined = tracesFilter.find(
-    (f) =>
-      f.field === "min_timestamp" &&
-      (f.operator === ">=" || f.operator === ">"),
+    (f) => f.field === "min_timestamp" && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
 
   const filters = [];
@@ -200,23 +189,15 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
   }
 
   tracesFilter
-    .filter(
-      (f) =>
-        f.field === "bookmarked" ||
-        f.field === "session_id" ||
-        f.field === "environment",
-    )
+    .filter((f) => f.field === "bookmarked" || f.field === "session_id" || f.field === "environment")
     .forEach((f) => filters.push(f));
 
-  const singleTraceFilter =
-    filters.length > 0 ? new FilterList(filters).apply() : undefined;
+  const singleTraceFilter = filters.length > 0 ? new FilterList(filters).apply() : undefined;
 
   const requiresScoresJoin =
     tracesFilter.find((f) => f.clickhouseTable === "scores") !== undefined ||
-    sessionCols.find(
-      (c) =>
-        c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column,
-    )?.clickhouseTableName === "scores";
+    sessionCols.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
+      ?.clickhouseTableName === "scores";
 
   const hasMetricsFilter =
     tracesFilter.find((f) =>
@@ -387,9 +368,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
         ...scoresFilterRes.params,
         ...(traceTimestampFilter
           ? {
-              observationsStartTime: convertDateToClickhouseDateTime(
-                traceTimestampFilter.value,
-              ),
+              observationsStartTime: convertDateToClickhouseDateTime(traceTimestampFilter.value),
             }
           : {}),
       },

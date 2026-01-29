@@ -10,9 +10,7 @@ export function useTemplateValidation({
   projectId: string;
   onValidSelection?: (template: EvalTemplate) => void;
 }) {
-  const [selectedTemplate, setSelectedTemplate] = useState<EvalTemplate | null>(
-    null,
-  );
+  const [selectedTemplate, setSelectedTemplate] = useState<EvalTemplate | null>(null);
   const [isSelectionValid, setIsSelectionValid] = useState(true);
 
   const defaultModel = api.defaultLlmModel.fetchDefaultModel.useQuery({

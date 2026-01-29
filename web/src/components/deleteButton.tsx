@@ -1,10 +1,6 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Button } from "@/src/components/ui/button";
 import { LockIcon, TrashIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -32,14 +28,8 @@ type BaseDeleteButtonProps = Omit<DeleteButtonProps, "itemId"> & {
   variant?: "outline" | "ghost";
   scope: NonNullable<DeleteButtonProps["scope"]>;
   invalidateFunc: NonNullable<DeleteButtonProps["invalidateFunc"]>;
-  captureDeleteOpen: (
-    capture: ReturnType<typeof usePostHogClientCapture>,
-    isTableAction: boolean,
-  ) => void;
-  captureDeleteSuccess: (
-    capture: ReturnType<typeof usePostHogClientCapture>,
-    isTableAction: boolean,
-  ) => void;
+  captureDeleteOpen: (capture: ReturnType<typeof usePostHogClientCapture>, isTableAction: boolean) => void;
+  captureDeleteSuccess: (capture: ReturnType<typeof usePostHogClientCapture>, isTableAction: boolean) => void;
   entityToDeleteName: string;
   customDeletePrompt?: string;
   executeDeleteMutation: (onSuccess: () => void) => Promise<void>;
@@ -76,18 +66,9 @@ export function DeleteButton({
     return () => {
       setIsDeleted(true);
       captureDeleteSuccess(capture, isTableAction);
-      !isTableAction && redirectUrl
-        ? void router.push(redirectUrl)
-        : invalidateFunc();
+      !isTableAction && redirectUrl ? void router.push(redirectUrl) : invalidateFunc();
     };
-  }, [
-    isTableAction,
-    redirectUrl,
-    invalidateFunc,
-    router,
-    captureDeleteSuccess,
-    capture,
-  ]);
+  }, [isTableAction, redirectUrl, invalidateFunc, router, captureDeleteSuccess, capture]);
 
   return (
     <Popover key={itemId ?? "delete-action"}>
@@ -105,11 +86,7 @@ export function DeleteButton({
             <TrashIcon className="h-4 w-4" />
           ) : (
             <>
-              {hasAccess ? (
-                <TrashIcon className="mr-2 h-4 w-4" />
-              ) : (
-                <LockIcon className="mr-2 h-4 w-4" />
-              )}
+              {hasAccess ? <TrashIcon className="mr-2 h-4 w-4" /> : <LockIcon className="mr-2 h-4 w-4" />}
               Delete
             </>
           )}
@@ -124,9 +101,7 @@ export function DeleteButton({
         </p>
         {deleteConfirmation && (
           <div className="mb-4 grid w-full gap-1.5">
-            <Label htmlFor="delete-confirmation">
-              Type &quot;{deleteConfirmation}&quot; to confirm
-            </Label>
+            <Label htmlFor="delete-confirmation">Type &quot;{deleteConfirmation}&quot; to confirm</Label>
             <Input
               id="delete-confirmation"
               value={deleteConfirmationInput}
@@ -140,10 +115,7 @@ export function DeleteButton({
             variant="destructive"
             loading={isDeleteMutationLoading || isDeleted}
             onClick={() => {
-              if (
-                deleteConfirmation &&
-                deleteConfirmationInput !== deleteConfirmation
-              ) {
+              if (deleteConfirmation && deleteConfirmationInput !== deleteConfirmation) {
                 alert("Please type the correct confirmation");
                 return;
               }
@@ -209,12 +181,7 @@ export function DeleteTraceButton(props: DeleteButtonProps) {
 
 export function DeleteDatasetButton(props: DeleteButtonProps) {
   const utils = api.useUtils();
-  const {
-    itemId,
-    projectId,
-    scope = "datasets:CUD",
-    invalidateFunc = () => void utils.datasets.invalidate(),
-  } = props;
+  const { itemId, projectId, scope = "datasets:CUD", invalidateFunc = () => void utils.datasets.invalidate() } = props;
   const datasetMutation = api.datasets.deleteDataset.useMutation();
   const executeDeleteMutation = async (onSuccess: () => void) => {
     try {
@@ -279,12 +246,8 @@ export function DeleteDashboardButton(props: DeleteButtonProps) {
       {...props}
       scope={scope}
       invalidateFunc={invalidateFunc}
-      captureDeleteOpen={(capture) =>
-        capture("dashboard:delete_dashboard_form_open")
-      }
-      captureDeleteSuccess={(capture) =>
-        capture("dashboard:delete_dashboard_button_click")
-      }
+      captureDeleteOpen={(capture) => capture("dashboard:delete_dashboard_form_open")}
+      captureDeleteSuccess={(capture) => capture("dashboard:delete_dashboard_button_click")}
       entityToDeleteName="dashboard"
       executeDeleteMutation={executeDeleteMutation}
       isDeleteMutationLoading={dashboardMutation.isPending}
@@ -294,12 +257,7 @@ export function DeleteDashboardButton(props: DeleteButtonProps) {
 
 export function DeleteEvalConfigButton(props: DeleteButtonProps) {
   const utils = api.useUtils();
-  const {
-    itemId,
-    projectId,
-    scope = "evalJob:CUD",
-    invalidateFunc = () => void utils.evals.invalidate(),
-  } = props;
+  const { itemId, projectId, scope = "evalJob:CUD", invalidateFunc = () => void utils.evals.invalidate() } = props;
 
   const evaluatorMutation = api.evals.deleteEvalJob.useMutation({
     onSuccess: () => {
@@ -346,9 +304,7 @@ export function DeleteEvalConfigButton(props: DeleteButtonProps) {
   );
 }
 
-export function DeleteEvaluationModelButton(
-  props: Omit<DeleteButtonProps, "itemId">,
-) {
+export function DeleteEvaluationModelButton(props: Omit<DeleteButtonProps, "itemId">) {
   const utils = api.useUtils();
   const {
     projectId,
@@ -356,17 +312,16 @@ export function DeleteEvaluationModelButton(
     invalidateFunc = () => void utils.defaultLlmModel.invalidate(),
   } = props;
 
-  const { mutateAsync: deleteDefaultModel, isPending } =
-    api.defaultLlmModel.deleteDefaultModel.useMutation({
-      onSuccess: () => {
-        showSuccessToast({
-          title: "Default evaluation model deleted",
-          description:
-            "The default evaluation model has been deleted. Any running evaluations relying on the default model will be inactivated. Queued jobs will fail.",
-        });
-        utils.defaultLlmModel.fetchDefaultModel.invalidate({ projectId });
-      },
-    });
+  const { mutateAsync: deleteDefaultModel, isPending } = api.defaultLlmModel.deleteDefaultModel.useMutation({
+    onSuccess: () => {
+      showSuccessToast({
+        title: "Default evaluation model deleted",
+        description:
+          "The default evaluation model has been deleted. Any running evaluations relying on the default model will be inactivated. Queued jobs will fail.",
+      });
+      utils.defaultLlmModel.fetchDefaultModel.invalidate({ projectId });
+    },
+  });
 
   const executeDeleteMutation = async (onSuccess: () => void) => {
     try {

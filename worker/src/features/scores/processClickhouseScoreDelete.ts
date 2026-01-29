@@ -6,13 +6,8 @@ import {
 } from "@hanzo/shared/src/server";
 import { env } from "../../env";
 
-export const processClickhouseScoreDelete = async (
-  projectId: string,
-  scoreIds: string[],
-) => {
-  logger.info(
-    `Deleting scores ${JSON.stringify(scoreIds)} in project ${projectId} from Clickhouse and S3`,
-  );
+export const processClickhouseScoreDelete = async (projectId: string, scoreIds: string[]) => {
+  logger.info(`Deleting scores ${JSON.stringify(scoreIds)} in project ${projectId} from Clickhouse and S3`);
 
   try {
     await Promise.all([
@@ -25,10 +20,7 @@ export const processClickhouseScoreDelete = async (
       deleteScores(projectId, scoreIds),
     ]);
   } catch (e) {
-    logger.error(
-      `Error deleting scores ${JSON.stringify(scoreIds)} in project ${projectId} from Clickhouse`,
-      e,
-    );
+    logger.error(`Error deleting scores ${JSON.stringify(scoreIds)} in project ${projectId} from Clickhouse`, e);
     traceException(e);
     throw e;
   }
