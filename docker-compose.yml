@@ -1,0 +1,172 @@
+# Make sure to update the credential placeholders with your own secrets.
+# We mark them with # CHANGEME in the file below.
+# In addition, we recommend to restrict inbound traffic on the host to hanzo-web (port 3000) and minio (port 9090) only.
+# All other components are bound to localhost (127.0.0.1) to only accept connections from the local machine.
+# External connections from other machines will not be able to reach these services directly.
+services:
+  hanzo-worker:
+    image: docker.io/hanzo/hanzo-worker:3
+    restart: always
+    depends_on: &hanzo-depends-on
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:3030:3030
+    environment: &hanzo-worker-env
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres} # CHANGEME
+      SALT: ${SALT:-mysalt} # CHANGEME
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000} # CHANGEME: generate via `openssl rand -hex 32`
+      TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
+      HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
+      CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
+      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse} # CHANGEME
+      CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+      HANZO_USE_AZURE_BLOB: ${HANZO_USE_AZURE_BLOB:-false}
+      HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
+      HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
+      HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+      HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret} # CHANGEME
+      HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+      HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
+      HANZO_S3_EVENT_UPLOAD_PREFIX: ${HANZO_S3_EVENT_UPLOAD_PREFIX:-events/}
+      HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+      HANZO_S3_MEDIA_UPLOAD_REGION: ${HANZO_S3_MEDIA_UPLOAD_REGION:-auto}
+      HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+      HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret} # CHANGEME
+      HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://localhost:9090}
+      HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+      HANZO_S3_MEDIA_UPLOAD_PREFIX: ${HANZO_S3_MEDIA_UPLOAD_PREFIX:-media/}
+      HANZO_S3_BATCH_EXPORT_ENABLED: ${HANZO_S3_BATCH_EXPORT_ENABLED:-false}
+      HANZO_S3_BATCH_EXPORT_BUCKET: ${HANZO_S3_BATCH_EXPORT_BUCKET:-hanzo}
+      HANZO_S3_BATCH_EXPORT_PREFIX: ${HANZO_S3_BATCH_EXPORT_PREFIX:-exports/}
+      HANZO_S3_BATCH_EXPORT_REGION: ${HANZO_S3_BATCH_EXPORT_REGION:-auto}
+      HANZO_S3_BATCH_EXPORT_ENDPOINT: ${HANZO_S3_BATCH_EXPORT_ENDPOINT:-http://minio:9000}
+      HANZO_S3_BATCH_EXPORT_EXTERNAL_ENDPOINT: ${HANZO_S3_BATCH_EXPORT_EXTERNAL_ENDPOINT:-http://localhost:9090}
+      HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID: ${HANZO_S3_BATCH_EXPORT_ACCESS_KEY_ID:-minio}
+      HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY: ${HANZO_S3_BATCH_EXPORT_SECRET_ACCESS_KEY:-miniosecret} # CHANGEME
+      HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE: ${HANZO_S3_BATCH_EXPORT_FORCE_PATH_STYLE:-true}
+      HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
+      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_AUTH: ${REDIS_AUTH:-myredissecret} # CHANGEME
+      REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
+      REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
+      REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
+      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+      EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
+      SMTP_CONNECTION_URL: ${SMTP_CONNECTION_URL:-}
+
+  hanzo-web:
+    image: docker.io/hanzo/hanzo:3
+    restart: always
+    depends_on: *hanzo-depends-on
+    ports:
+      - 3000:3000
+    environment:
+      <<: *hanzo-worker-env
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-mysecret} # CHANGEME
+      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
+      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
+      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
+      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
+      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
+      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
+      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
+      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
+      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
+
+  clickhouse:
+    image: docker.io/clickhouse/clickhouse-server
+    restart: always
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse} # CHANGEME
+    volumes:
+      - hanzo_clickhouse_data:/var/lib/clickhouse
+      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+    ports:
+      - 127.0.0.1:8123:8123
+      - 127.0.0.1:9000:9000
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+
+  minio:
+    image: cgr.dev/chainguard/minio
+    restart: always
+    entrypoint: sh
+    # create the 'hanzo' bucket before starting the service
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-miniosecret} # CHANGEME
+    ports:
+      - 9090:9000
+      - 127.0.0.1:9091:9001
+    volumes:
+      - hanzo_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 1s
+
+  redis:
+    image: docker.io/redis:7
+    restart: always
+    # CHANGEME: row below to secure redis password
+    command: >
+      --requirepass ${REDIS_AUTH:-myredissecret}
+      --maxmemory-policy noeviction
+    ports:
+      - 127.0.0.1:6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  postgres:
+    image: docker.io/postgres:${POSTGRES_VERSION:-17}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres} # CHANGEME
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - hanzo_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  hanzo_postgres_data:
+    driver: local
+  hanzo_clickhouse_data:
+    driver: local
+  hanzo_clickhouse_logs:
+    driver: local
+  hanzo_minio_data:
+    driver: local
