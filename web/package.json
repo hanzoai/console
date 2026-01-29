@@ -128,7 +128,7 @@
     "json-schema-faker": "^0.5.9",
     "kysely": "^0.27.4",
     "langchain": "^0.3.37",
-    "langfuse": "3.38.4",
+    "@hanzo/console": "workspace:*",
     "lodash": "^4.17.23",
     "lucide-react": "^0.552.0",
     "nanoid": "^3.3.8",
