@@ -3,7 +3,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { DataRetentionProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
-export const handleDataRetentionSchedule = async (job: Job) => {
+export const handleDataRetentionSchedule = async (_job: Job) => {
   const projectsWithRetention = await prisma.project.findMany({
     select: {
       id: true,

@@ -3,7 +3,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { PostHogIntegrationProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
-export const handlePostHogIntegrationSchedule = async (job: Job) => {
+export const handlePostHogIntegrationSchedule = async (_job: Job) => {
   const postHogIntegrationProjects = await prisma.posthogIntegration.findMany({
     select: {
       lastSyncAt: true,

@@ -18,8 +18,8 @@ export type BulkUpdateResult = {
  * Bulk update organizations - stub implementation
  */
 export async function bulkUpdateOrganizations(
-  updates: OrgUpdateData[],
-  chunkSize: number = 1000,
+  _updates: OrgUpdateData[],
+  _chunkSize: number = 1000,
 ): Promise<BulkUpdateResult> {
   return { successCount: 0, failedCount: 0, failedOrgIds: [] };
 }
@@ -28,8 +28,8 @@ export async function bulkUpdateOrganizations(
  * Bulk update organizations using raw SQL - stub implementation
  */
 export async function bulkUpdateOrganizationsRawSQL(
-  updates: OrgUpdateData[],
-  chunkSize: number = 1000,
+  _updates: OrgUpdateData[],
+  _chunkSize: number = 1000,
 ): Promise<BulkUpdateResult> {
   return { successCount: 0, failedCount: 0, failedOrgIds: [] };
 }

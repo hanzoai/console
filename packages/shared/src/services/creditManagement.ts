@@ -22,11 +22,11 @@ export class CreditManagementService {
   constructor(private prisma: any) {}
 
   async addCredits(
-    organizationId: string,
-    amount: number,
-    type: CreditTransactionType,
-    description?: string,
-    metadata?: Record<string, any>,
+    _organizationId: string,
+    _amount: number,
+    _type: CreditTransactionType,
+    _description?: string,
+    _metadata?: Record<string, any>,
   ): Promise<CreditOperationResult> {
     return {
       success: false,
@@ -37,10 +37,10 @@ export class CreditManagementService {
   }
 
   async deductCredits(
-    organizationId: string,
-    amount: number,
-    description?: string,
-    metadata?: Record<string, any>,
+    _organizationId: string,
+    _amount: number,
+    _description?: string,
+    _metadata?: Record<string, any>,
   ): Promise<CreditOperationResult> {
     return {
       success: false,
@@ -50,11 +50,11 @@ export class CreditManagementService {
     };
   }
 
-  async getBalance(organizationId: string): Promise<number> {
+  async getBalance(_organizationId: string): Promise<number> {
     return 0;
   }
 
-  async getTransactionHistory(organizationId: string, limit: number = 10, offset: number = 0) {
+  async getTransactionHistory(_organizationId: string, _limit: number = 10, _offset: number = 0) {
     return [];
   }
 }

@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
+  "globalEnv": ["LLM_API_URL", "LLM_ADMIN_KEY"],
   "envMode": "loose",
   "tasks": {
     "build": {

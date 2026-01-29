@@ -52,10 +52,10 @@ async function fetchAllOrgsWithBillingInfo(): Promise<ParsedOrganization[]> {
  * Aggregate project-level counts to org-level - stub implementation
  */
 function aggregateByOrg(
-  traceCounts: Array<{ count: number; projectId: string; date: string }>,
-  obsCounts: Array<{ count: number; projectId: string; date: string }>,
-  scoreCounts: Array<{ count: number; projectId: string; date: string }>,
-  projectToOrgMap: ProjectToOrgMap,
+  _traceCounts: Array<{ count: number; projectId: string; date: string }>,
+  _obsCounts: Array<{ count: number; projectId: string; date: string }>,
+  _scoreCounts: Array<{ count: number; projectId: string; date: string }>,
+  _projectToOrgMap: ProjectToOrgMap,
 ): UsageByOrg {
   return {};
 }
@@ -64,8 +64,8 @@ function aggregateByOrg(
  * Process usage aggregation for all organizations - stub implementation
  */
 export async function processUsageAggregationForAllOrgs(
-  referenceDate: Date = new Date(),
-  onProgress?: (progress: number) => void | Promise<void>,
+  _referenceDate: Date = new Date(),
+  _onProgress?: (progress: number) => void | Promise<void>,
 ): Promise<UsageAggregationStats> {
   return {
     totalOrgsProcessed: 0,
