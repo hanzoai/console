@@ -1,4 +1,4 @@
-name: Docker Build and Deploy to Hanzo Cloud
+name: Docker Build and Deploy to Hanzo Platform
 
 on:
   push:
@@ -84,56 +84,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy compose file to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          source: "compose.prod.yaml"
-          target: "/root/hanzo/"
-
-      - name: Deploy to Hanzo Cloud Production
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          script: |
-            cd /root/hanzo
-
-            # Use synced compose file
-            cp compose.prod.yaml compose.production.yml
-
-            # Pull latest Console image
-            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # Update and restart Console service via Docker Compose
-            docker compose -f compose.production.yml up -d --no-deps --pull always console
-
-            # Health check - wait for Console to be healthy
-            echo "Waiting for Console health check..."
-            for i in {1..45}; do
-              if curl -sf http://localhost:3001/api/public/health > /dev/null 2>&1; then
-                echo "Console is healthy!"
-                break
-              fi
-              if [ $i -eq 45 ]; then
-                echo "Console health check failed"
-                docker logs hanzo-console --tail 50
-                exit 1
-              fi
-              echo "Waiting... ($i/45)"
-              sleep 2
-            done
-
-            # Show service status
-            docker compose -f compose.production.yml ps console
+      - name: Trigger Hanzo Platform Deployment
+        run: |
+          # Trigger deployment via Hanzo Platform webhook
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: Go-http-client/1.1" \
+            -d '{
+              "push_data": {
+                "tag": "latest",
+                "pusher": "${{ github.actor }}"
+              },
+              "repository": {
+                "repo_name": "hanzoai/console"
+              }
+            }' \
+            "https://platform.hanzo.ai/api/deploy/${{ secrets.PLATFORM_DEPLOY_TOKEN }}"
 
   deploy-staging:
     needs: build
@@ -141,30 +107,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
     steps:
-      - name: Deploy to Staging
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          script: |
-            cd /root/hanzo
-
-            # Pull latest Console image
-            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
-
-            # Update staging Console
-            docker compose -f compose.staging.yml up -d --no-deps console
-
-            # Health check
-            for i in {1..45}; do
-              if curl -sf http://localhost:3002/api/public/health > /dev/null 2>&1; then
-                echo "Staging Console is healthy!"
-                break
-              fi
-              sleep 2
-            done
+      - name: Trigger Hanzo Platform Staging Deployment
+        run: |
+          # Trigger staging deployment via Hanzo Platform webhook
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: Go-http-client/1.1" \
+            -d '{
+              "push_data": {
+                "tag": "latest",
+                "pusher": "${{ github.actor }}"
+              },
+              "repository": {
+                "repo_name": "hanzoai/console"
+              }
+            }' \
+            "https://platform.hanzo.ai/api/deploy/${{ secrets.PLATFORM_DEPLOY_TOKEN_STAGING }}"
 
   notify:
     needs: [build, deploy-production, deploy-staging]
