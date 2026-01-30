@@ -21,10 +21,10 @@ pip install hanzo
    \`\`\`typescript  
    import { Hanzo } from 'hanzo'  
 
-   const hanzo = new Hanzo({  
-     secretKey: process.env.LANGFUSE_SECRET_KEY,  
-     publicKey: process.env.LANGFUSE_PUBLIC_KEY,  
-     baseUrl: 'https://cloud.hanzo.com'  
+   const hanzo = new Hanzo({
+     secretKey: process.env.HANZO_SECRET_KEY,
+     publicKey: process.env.HANZO_PUBLIC_KEY,
+     baseUrl: 'https://cloud.hanzo.ai'
    })  
    \`\`\`
 
