@@ -1,0 +1,171 @@
+name: Docker Build and Deploy to Hanzo Cloud
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        type: choice
+        options:
+          - production
+          - staging
+        required: true
+        default: production
+
+concurrency:
+  group: docker-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_IMAGE: hanzoai/console
+  REGISTRY: docker.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}},value=${{ steps.version.outputs.version }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  deploy-production:
+    needs: build
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to Hanzo Cloud Production
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd /root/hanzo
+
+            # Pull latest Console image
+            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            # Update and restart Console service via Docker Compose
+            docker compose -f compose.production.yml up -d --no-deps --pull always console
+
+            # Health check - wait for Console to be healthy
+            echo "Waiting for Console health check..."
+            for i in {1..45}; do
+              if curl -sf http://localhost:3001/api/public/health > /dev/null 2>&1; then
+                echo "Console is healthy!"
+                break
+              fi
+              if [ $i -eq 45 ]; then
+                echo "Console health check failed"
+                docker logs hanzo-console --tail 50
+                exit 1
+              fi
+              echo "Waiting... ($i/45)"
+              sleep 2
+            done
+
+            # Show service status
+            docker compose -f compose.production.yml ps console
+
+  deploy-staging:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd /root/hanzo
+
+            # Pull latest Console image
+            docker pull ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE }}:latest
+
+            # Update staging Console
+            docker compose -f compose.staging.yml up -d --no-deps console
+
+            # Health check
+            for i in {1..45}; do
+              if curl -sf http://localhost:3002/api/public/health > /dev/null 2>&1; then
+                echo "Staging Console is healthy!"
+                break
+              fi
+              sleep 2
+            done
+
+  notify:
+    needs: [build, deploy-production, deploy-staging]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Console Deployment Status: ${{ job.status }}
+            Version: ${{ needs.build.outputs.version }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Message: ${{ github.event.head_commit.message }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
