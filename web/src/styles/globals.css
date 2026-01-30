@@ -113,40 +113,40 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 83%;
+    --background: 0 0% 0%; /* Pure black */
+    --foreground: 0 0% 100%; /* Pure white */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 88%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 88%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
 
-    --header: 217.2 32.6% 15%;
-    --header-foreground: var(--foreground);
+    --header: 0 0% 10%;
+    --header-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 27.5%;
-    --input: 217.2 32.6% 27.5%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
 
-    --primary: 210 40% 83%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 88%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
 
-    --tertiary: 217.2 32.6% 30%;
-    --tertiary-foreground: 210 40% 88%;
+    --tertiary: 0 0% 25%;
+    --tertiary-foreground: 0 0% 100%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
 
-    --ring: 217.2 32.6% 17.5%;
+    --ring: 0 0% 20%;
 
     /* Hanzo Brand Red (dark mode variant) */
     --primary-accent: 0 85% 65%;
@@ -177,14 +177,14 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 83%;
-    --sidebar-primary: 210 40% 81%;
-    --sidebar-primary-foreground: 222.2 47.4% 10.2%;
-    --sidebar-accent: 217.2 32.6% 16.5%;
-    --sidebar-accent-foreground: 210 40% 86%;
-    --sidebar-border: 217.2 32.6% 26.5%;
-    --sidebar-ring: 224.3 76.3% 46%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 10%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 0% 40%;
 
     --chart-1: var(--dark-green);
     --chart-2: var(--dark-yellow);
