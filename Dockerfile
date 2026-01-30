@@ -64,6 +64,7 @@ ENV SALT=build-time-salt-value-that-is-long-enough
 ENV CLICKHOUSE_URL=http://localhost:8123
 ENV CLICKHOUSE_USER=default
 ENV CLICKHOUSE_PASSWORD=placeholder
+ENV HANZO_S3_EVENT_UPLOAD_BUCKET=placeholder-bucket
 
 # Build the application
 RUN pnpm build
