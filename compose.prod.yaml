@@ -48,8 +48,8 @@ x-cloud-environment: &cloud-worker-env
   REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
 
 services:
-  cloud-web:
-    image: hanzoai/cloud-web:3.38.0
+  console:
+    image: hanzoai/console:latest
     build:
       context: .
       dockerfile: web/Dockerfile
@@ -68,7 +68,7 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk-live-xxx}
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-pk-live-xxx}
       STRIPE_WEBHOOK_SIGNING_SECRET: ${STRIPE_WEBHOOK_SIGNING_SECRET:-your-secret}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://cloud.hanzo.ai}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-https://console.hanzo.ai}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-mysecret}
       HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
       HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
@@ -95,18 +95,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.well-known.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.middlewares.cloud-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://cloud.hanzo.ai http://cloud.hanzo.ai;"
-      - "traefik.http.routers.cloud-http.rule=Host(`cloud.hanzo.ai`)"
-      - "traefik.http.routers.cloud-http.entrypoints=web"
-      - "traefik.http.routers.cloud-http.middlewares=well-known,cloud-csp,redirect-to-https"
-      - "traefik.http.routers.cloud-https.rule=Host(`cloud.hanzo.ai`)"
-      - "traefik.http.routers.cloud-https.entrypoints=websecure"
-      - "traefik.http.routers.cloud-https.middlewares=well-known,cloud-csp"
-      - "traefik.http.routers.cloud-https.tls.certresolver=letsencrypt"
-      - "traefik.http.services.cloud-service.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.console-csp.headers.customResponseHeaders.Content-Security-Policy=connect-src 'self' https://console.hanzo.ai http://console.hanzo.ai;"
+      - "traefik.http.routers.console-http.rule=Host(`console.hanzo.ai`)"
+      - "traefik.http.routers.console-http.entrypoints=web"
+      - "traefik.http.routers.console-http.middlewares=well-known,console-csp,redirect-to-https"
+      - "traefik.http.routers.console-https.rule=Host(`console.hanzo.ai`)"
+      - "traefik.http.routers.console-https.entrypoints=websecure"
+      - "traefik.http.routers.console-https.middlewares=well-known,console-csp"
+      - "traefik.http.routers.console-https.tls.certresolver=letsencrypt"
+      - "traefik.http.services.console-service.loadbalancer.server.port=3000"
 
-  cloud-worker:
-    image: hanzoai/cloud-worker:3.38.0
+  console-worker:
+    image: hanzoai/console-worker:latest
     restart: always
     depends_on: *cloud-depends-on
     #ports:
