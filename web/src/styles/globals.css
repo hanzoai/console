@@ -86,14 +86,6 @@
     --accent-light-blue: 251 95.2% 91.8%;
     --accent-dark-blue: 224 76.3% 38%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 210 40% 96.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
 
     --chart-1: var(--dark-green);
     --chart-2: var(--dark-yellow);
@@ -109,7 +101,9 @@
     /* Banner height system for fixed/sticky positioning
        Banner components dynamically update --banner-height via JS */
     --banner-height: 0px;
-    --banner-offset: calc(env(safe-area-inset-top, 0px) + var(--banner-height, 0px));
+    --banner-offset: calc(
+      env(safe-area-inset-top, 0px) + var(--banner-height, 0px)
+    );
   }
 
   .dark {
