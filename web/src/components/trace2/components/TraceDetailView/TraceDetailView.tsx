@@ -5,28 +5,14 @@
 import { type TraceDomain, type ScoreDomain } from "@hanzo/shared";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
-import {
-  TabsBar,
-  TabsBarContent,
-  TabsBarList,
-  TabsBarTrigger,
-} from "@/src/components/ui/tabs-bar";
+import { TabsBar, TabsBarContent, TabsBarList, TabsBarTrigger } from "@/src/components/ui/tabs-bar";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Switch } from "@/src/components/ui/switch";
 import { useCallback, useMemo, useState } from "react";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { api } from "@/src/utils/api";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 
 // Preview tab components
 import { IOPreview } from "@/src/components/trace2/components/IOPreview/IOPreview";
@@ -61,21 +47,14 @@ export interface TraceDetailViewProps {
   projectId: string;
 }
 
-export function TraceDetailView({
-  trace,
-  observations,
-  scores,
-  corrections,
-  projectId,
-}: TraceDetailViewProps) {
+export function TraceDetailView({ trace, observations, scores, corrections, projectId }: TraceDetailViewProps) {
   // Tab and view state from URL (via SelectionContext)
   const { selectedTab, setSelectedTab } = useSelection();
   const [isPrettyViewAvailable, setIsPrettyViewAvailable] = useState(true);
   const [isJSONBetaVirtualized, setIsJSONBetaVirtualized] = useState(false);
 
   // Inline comment state
-  const [pendingSelection, setPendingSelection] =
-    useState<SelectionData | null>(null);
+  const [pendingSelection, setPendingSelection] = useState<SelectionData | null>(null);
   const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
 
   const handleAddInlineComment = useCallback((selection: SelectionData) => {
@@ -88,18 +67,12 @@ export function TraceDetailView({
   }, []);
 
   // Get jsonViewPreference directly from ViewPreferencesContext for "json-beta" support
-  const {
-    jsonViewPreference,
-    setJsonViewPreference,
-    jsonBetaEnabled,
-    setJsonBetaEnabled,
-  } = useViewPreferences();
+  const { jsonViewPreference, setJsonViewPreference, jsonBetaEnabled, setJsonBetaEnabled } = useViewPreferences();
 
   // Map jsonViewPreference to currentView format expected by child components
   const currentView = jsonViewPreference;
 
-  const selectedViewTab =
-    jsonViewPreference === "pretty" ? "pretty" : ("json" as const);
+  const selectedViewTab = jsonViewPreference === "pretty" ? "pretty" : ("json" as const);
 
   const handleViewTabChange = useCallback(
     (tab: string) => {
@@ -135,13 +108,12 @@ export function TraceDetailView({
   const traceMedia = useMedia({ projectId, traceId: trace.id });
 
   // Parse trace I/O in background (Web Worker)
-  const { parsedInput, parsedOutput, parsedMetadata, isParsing } =
-    useParsedTrace({
-      traceId: trace.id,
-      input: trace.input,
-      output: trace.output,
-      metadata: trace.metadata,
-    });
+  const { parsedInput, parsedOutput, parsedMetadata, isParsing } = useParsedTrace({
+    traceId: trace.id,
+    input: trace.input,
+    output: trace.output,
+    metadata: trace.metadata,
+  });
 
   // Fetch comments for this trace (for inline comment highlighting)
   const traceComments = api.comments.getByObjectId.useQuery(
@@ -158,28 +130,20 @@ export function TraceDetailView({
   const commentedPathsByField = useCommentedPaths(traceComments.data);
 
   // Derived state
-  const traceScores = useMemo(
-    () => scores.filter((s) => !s.observationId),
-    [scores],
-  );
+  const traceScores = useMemo(() => scores.filter((s) => !s.observationId), [scores]);
 
-  const traceCorrections = useMemo(
-    () => corrections.filter((c) => !c.observationId),
-    [corrections],
-  );
+  const traceCorrections = useMemo(() => corrections.filter((c) => !c.observationId), [corrections]);
 
   const outputCorrection = getMostRecentCorrection(traceCorrections);
 
   const showLogViewTab = observations.length > 0;
 
   // Check if log view will be virtualized (affects JSON tab availability)
-  const isLogViewVirtualized =
-    observations.length >= TRACE_VIEW_CONFIG.logView.virtualizationThreshold;
+  const isLogViewVirtualized = observations.length >= TRACE_VIEW_CONFIG.logView.virtualizationThreshold;
 
   // Scores tab visibility: hide for public trace viewers and in peek mode (annotation queues)
   const { isPeekMode } = useViewPreferences();
-  const isAuthenticatedAndProjectMember =
-    useIsAuthenticatedAndProjectMember(projectId);
+  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(projectId);
   const showScoresTab = isAuthenticatedAndProjectMember && !isPeekMode;
 
   // Handle tab change
@@ -224,29 +188,18 @@ export function TraceDetailView({
                 </Tooltip>
               </TabsBarTrigger>
             )}
-            {showScoresTab && (
-              <TabsBarTrigger value="scores">Scores</TabsBarTrigger>
-            )}
+            {showScoresTab && <TabsBarTrigger value="scores">Scores</TabsBarTrigger>}
 
             {/* View toggle (Formatted/JSON) - show for preview and log tabs when pretty view available */}
             {/* JSON views are disabled for virtualized log view (large traces) */}
-            {(selectedTab === "log" ||
-              (selectedTab === "preview" && isPrettyViewAvailable)) && (
+            {(selectedTab === "log" || (selectedTab === "preview" && isPrettyViewAvailable)) && (
               <>
                 <Tabs
                   className="ml-auto h-fit px-2 py-0.5"
-                  value={
-                    selectedTab === "log" && isLogViewVirtualized
-                      ? "pretty"
-                      : selectedViewTab
-                  }
+                  value={selectedTab === "log" && isLogViewVirtualized ? "pretty" : selectedViewTab}
                   onValueChange={(value) => {
                     // Don't allow JSON views for virtualized log view
-                    if (
-                      selectedTab === "log" &&
-                      isLogViewVirtualized &&
-                      value === "json"
-                    ) {
+                    if (selectedTab === "log" && isLogViewVirtualized && value === "json") {
                       return;
                     }
                     handleViewTabChange(value);
@@ -259,24 +212,15 @@ export function TraceDetailView({
                     {selectedTab === "log" && isLogViewVirtualized ? (
                       <HoverCard openDelay={200}>
                         <HoverCardTrigger asChild>
-                          <TabsTrigger
-                            value="json"
-                            className="h-fit px-1 text-xs"
-                            disabled
-                          >
+                          <TabsTrigger value="json" className="h-fit px-1 text-xs" disabled>
                             JSON
                           </TabsTrigger>
                         </HoverCardTrigger>
-                        <HoverCardContent
-                          align="end"
-                          className="w-64 text-sm"
-                          sideOffset={8}
-                        >
+                        <HoverCardContent align="end" className="w-64 text-sm" sideOffset={8}>
                           <p className="font-medium">JSON view unavailable</p>
                           <p className="mt-1 text-muted-foreground">
-                            Disabled for traces with{" "}
-                            {TRACE_VIEW_CONFIG.logView.virtualizationThreshold}+
-                            observations to maintain performance.
+                            Disabled for traces with {TRACE_VIEW_CONFIG.logView.virtualizationThreshold}+ observations
+                            to maintain performance.
                           </p>
                         </HoverCardContent>
                       </HoverCard>
@@ -288,42 +232,28 @@ export function TraceDetailView({
                   </TabsList>
                 </Tabs>
                 {/* Beta toggle - only show when JSON is selected and not in virtualized log view */}
-                {selectedViewTab === "json" &&
-                  !(selectedTab === "log" && isLogViewVirtualized) && (
-                    <div className="mr-1 flex items-center gap-1.5">
-                      <Switch
-                        size="sm"
-                        checked={jsonBetaEnabled}
-                        onCheckedChange={handleBetaToggle}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        Beta
-                      </span>
-                    </div>
-                  )}
+                {selectedViewTab === "json" && !(selectedTab === "log" && isLogViewVirtualized) && (
+                  <div className="mr-1 flex items-center gap-1.5">
+                    <Switch size="sm" checked={jsonBetaEnabled} onCheckedChange={handleBetaToggle} />
+                    <span className="text-xs text-muted-foreground">Beta</span>
+                  </div>
+                )}
               </>
             )}
           </TabsBarList>
         </TooltipProvider>
 
         {/* Preview tab content */}
-        <TabsBarContent
-          value="preview"
-          className="mt-0 flex max-h-full min-h-0 w-full flex-1"
-        >
+        <TabsBarContent value="preview" className="mt-0 flex max-h-full min-h-0 w-full flex-1">
           <div
             className={`flex min-h-0 w-full flex-1 flex-col ${
-              currentView === "json-beta" && isJSONBetaVirtualized
-                ? "overflow-hidden"
-                : "overflow-auto pb-4"
+              currentView === "json-beta" && isJSONBetaVirtualized ? "overflow-hidden" : "overflow-auto pb-4"
             }`}
           >
             {/* Tags Section - scrolls with content except in JSON Beta (virtualized) */}
             {trace.tags.length > 0 && (
               <>
-                <div
-                  className={`px-2 pt-2 text-sm font-medium ${currentView !== "pretty" ? "flex-shrink-0" : ""}`}
-                >
+                <div className={`px-2 pt-2 text-sm font-medium ${currentView !== "pretty" ? "flex-shrink-0" : ""}`}>
                   Tags
                 </div>
                 <div
@@ -351,38 +281,19 @@ export function TraceDetailView({
               inputExpansionState={formattedExpansion.input}
               outputExpansionState={formattedExpansion.output}
               metadataExpansionState={formattedExpansion.metadata}
-              onInputExpansionChange={(exp) =>
-                setFormattedFieldExpansion(
-                  "input",
-                  exp as Record<string, boolean>,
-                )
-              }
-              onOutputExpansionChange={(exp) =>
-                setFormattedFieldExpansion(
-                  "output",
-                  exp as Record<string, boolean>,
-                )
-              }
+              onInputExpansionChange={(exp) => setFormattedFieldExpansion("input", exp as Record<string, boolean>)}
+              onOutputExpansionChange={(exp) => setFormattedFieldExpansion("output", exp as Record<string, boolean>)}
               onMetadataExpansionChange={(exp) =>
-                setFormattedFieldExpansion(
-                  "metadata",
-                  exp as Record<string, boolean>,
-                )
+                setFormattedFieldExpansion("metadata", exp as Record<string, boolean>)
               }
               advancedJsonExpansionState={advancedJsonExpansion}
               onAdvancedJsonExpansionChange={setAdvancedJsonExpansion}
               jsonInputExpanded={jsonExpansion.input}
               jsonOutputExpanded={jsonExpansion.output}
               jsonMetadataExpanded={jsonExpansion.metadata}
-              onJsonInputExpandedChange={(expanded) =>
-                setJsonFieldExpansion("input", expanded)
-              }
-              onJsonOutputExpandedChange={(expanded) =>
-                setJsonFieldExpansion("output", expanded)
-              }
-              onJsonMetadataExpandedChange={(expanded) =>
-                setJsonFieldExpansion("metadata", expanded)
-              }
+              onJsonInputExpandedChange={(expanded) => setJsonFieldExpansion("input", expanded)}
+              onJsonOutputExpandedChange={(expanded) => setJsonFieldExpansion("output", expanded)}
+              onJsonMetadataExpandedChange={(expanded) => setJsonFieldExpansion("metadata", expanded)}
               enableInlineComments={true}
               onAddInlineComment={handleAddInlineComment}
               commentedPathsByField={commentedPathsByField}
@@ -396,10 +307,7 @@ export function TraceDetailView({
         </TabsBarContent>
 
         {/* Log View tab content */}
-        <TabsBarContent
-          value="log"
-          className="mt-0 flex max-h-full min-h-0 w-full flex-1"
-        >
+        <TabsBarContent value="log" className="mt-0 flex max-h-full min-h-0 w-full flex-1">
           <TraceLogView
             traceId={trace.id}
             projectId={projectId}
@@ -409,10 +317,7 @@ export function TraceDetailView({
 
         {/* Scores tab content */}
         {showScoresTab && (
-          <TabsBarContent
-            value="scores"
-            className="mt-0 flex max-h-full min-h-0 w-full flex-1 overflow-hidden"
-          >
+          <TabsBarContent value="scores" className="mt-0 flex max-h-full min-h-0 w-full flex-1 overflow-hidden">
             <div className="flex h-full min-h-0 w-full flex-col overflow-hidden pr-3">
               <ScoresTable
                 projectId={projectId}

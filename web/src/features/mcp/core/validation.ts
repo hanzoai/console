@@ -36,12 +36,7 @@ export const ParamLimit = z.coerce
  * Pagination page parameter
  * Defaults to 1
  */
-export const ParamPage = z.coerce
-  .number()
-  .int()
-  .min(1)
-  .default(1)
-  .describe("Page number for pagination (default: 1)");
+export const ParamPage = z.coerce.number().int().min(1).default(1).describe("Page number for pagination (default: 1)");
 
 /**
  * Helper to extract schema description for MCP tool definitions

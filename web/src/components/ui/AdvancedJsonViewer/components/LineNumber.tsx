@@ -12,11 +12,7 @@ interface LineNumberProps {
   maxDigits?: number;
 }
 
-export function LineNumber({
-  lineNumber,
-  theme,
-  maxDigits = 3,
-}: LineNumberProps) {
+export function LineNumber({ lineNumber, theme, maxDigits = 3 }: LineNumberProps) {
   return (
     <span
       className="select-none"

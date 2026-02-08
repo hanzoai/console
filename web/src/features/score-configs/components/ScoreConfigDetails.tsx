@@ -10,8 +10,7 @@ export function ScoreConfigDetails({ config }: { config: ScoreConfigDomain }) {
   return (
     <div className="text-wrap bg-background p-2 text-xs font-light">
       {!!description && <p>{`Description: ${description}`}</p>}
-      {isNumericDataType(dataType) &&
-      (isPresent(minValue) || isPresent(maxValue)) ? (
+      {isNumericDataType(dataType) && (isPresent(minValue) || isPresent(maxValue)) ? (
         <p>{`Range: [${minValue ?? "-∞"}, ${maxValue ?? "∞"}]`}</p>
       ) : null}
       {isNameTruncated && <p>{`Full name: ${name}`}</p>}

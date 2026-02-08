@@ -102,20 +102,12 @@ const shouldShowToast = (error: unknown): boolean => {
   return true;
 };
 
-const handleTrpcError = (
-  error: unknown,
-  shouldSilenceError: boolean = false,
-) => {
+const handleTrpcError = (error: unknown, shouldSilenceError: boolean = false) => {
   if (error instanceof TRPCClientError) {
-    const httpStatus: number =
-      typeof error.data?.httpStatus === "number" ? error.data.httpStatus : 500;
+    const httpStatus: number = typeof error.data?.httpStatus === "number" ? error.data.httpStatus : 500;
 
     if (CLIENT_STALE_CACHE_CODES.includes(httpStatus)) {
-      if (
-        !!buildId &&
-        !!process.env.NEXT_PUBLIC_BUILD_ID &&
-        buildId !== process.env.NEXT_PUBLIC_BUILD_ID
-      ) {
+      if (!!buildId && !!process.env.NEXT_PUBLIC_BUILD_ID && buildId !== process.env.NEXT_PUBLIC_BUILD_ID) {
         showVersionUpdateToast();
         return;
       }
@@ -141,11 +133,7 @@ const buildIdLink = (): TRPCLink<AppRouter> => () => {
           observer.next(value);
         },
         error(err) {
-          if (
-            err.meta &&
-            err.meta.response &&
-            err.meta.response instanceof Response
-          ) {
+          if (err.meta && err.meta.response && err.meta.response instanceof Response) {
             buildId = err.meta.response.headers.get("x-build-id");
           }
           observer.error(err);
@@ -159,15 +147,9 @@ const buildIdLink = (): TRPCLink<AppRouter> => () => {
   };
 };
 
-const shouldSilenceError = (
-  meta: Record<string, unknown>,
-  error: Error,
-): boolean => {
+const shouldSilenceError = (meta: Record<string, unknown>, error: Error): boolean => {
   if (Array.isArray(meta?.silentHttpCodes)) {
-    return (
-      error instanceof TRPCClientError &&
-      meta.silentHttpCodes.includes(error.data.httpStatus)
-    );
+    return error instanceof TRPCClientError && meta.silentHttpCodes.includes(error.data.httpStatus);
   }
 
   return false;

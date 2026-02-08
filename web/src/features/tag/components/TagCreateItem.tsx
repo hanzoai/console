@@ -7,14 +7,8 @@ type TagItemCreateProps = {
   onSelect: () => void;
 };
 
-const TagItemCreate = ({
-  inputValue,
-  options,
-  onSelect,
-}: TagItemCreateProps) => {
-  const hasNoOption = !options
-    .map((value) => value.toLowerCase())
-    .includes(inputValue.toLowerCase());
+const TagItemCreate = ({ inputValue, options, onSelect }: TagItemCreateProps) => {
+  const hasNoOption = !options.map((value) => value.toLowerCase()).includes(inputValue.toLowerCase());
 
   const render = inputValue !== "" && hasNoOption;
 

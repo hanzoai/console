@@ -1,31 +1,14 @@
 import ContainerPage from "@/src/components/layouts/container-page";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import {
-  createOrganizationRoute,
-  createProjectRoute,
-} from "@/src/features/setup/setupRoutes";
+import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
 import { isCloudPlan } from "@hanzo/shared";
 import { Divider } from "@tremor/react";
-import {
-  BookOpen,
-  LockIcon,
-  MessageSquareText,
-  PlusIcon,
-  Settings,
-  Users,
-} from "lucide-react";
+import { BookOpen, LockIcon, MessageSquareText, PlusIcon, Settings, Users } from "lucide-react";
 import { type User } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -33,25 +16,15 @@ import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { StringParam, useQueryParams } from "use-query-params";
 
-const OrganizationProjectTiles = ({
-  org,
-  search,
-}: {
-  org: User["organizations"][number];
-  search?: string;
-}) => {
+const OrganizationProjectTiles = ({ org, search }: { org: User["organizations"][number]; search?: string }) => {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {org.projects
-        .filter(
-          (p) => !search || p.name.toLowerCase().includes(search.toLowerCase()),
-        )
+        .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()))
         .map((project) => (
           <Card key={project.id}>
             <CardHeader>
-              <CardTitle className="truncate text-base">
-                {project.name}
-              </CardTitle>
+              <CardTitle className="truncate text-base">{project.name}</CardTitle>
             </CardHeader>
             {!project.deletedAt ? (
               <CardFooter className="gap-2">
@@ -82,14 +55,12 @@ const DemoOrganizationTile = () => {
         <CardTitle>Try Hanzo Cloud Demo</CardTitle>
       </CardHeader>
       <CardContent>
-        We have built a Q&A chatbot that answers questions based on the
-        HanzoCloud Docs. Interact with it to see traces in HanzoCloudud.
+        We have built a Q&A chatbot that answers questions based on the HanzoCloud Docs. Interact with it to see traces
+        in HanzoCloudud.
       </CardContent>
       <CardFooter>
         <Button asChild variant="secondary">
-          <Link href={`/project/${env.NEXT_PUBLIC_DEMO_PROJECT_ID}/traces`}>
-            View Demo Project
-          </Link>
+          <Link href={`/project/${env.NEXT_PUBLIC_DEMO_PROJECT_ID}/traces`}>View Demo Project</Link>
         </Button>
       </CardFooter>
     </Card>
@@ -143,13 +114,7 @@ const OrganizationActionButtons = ({
   );
 };
 
-const SingleOrganizationPage = ({
-  orgId,
-  search,
-}: {
-  orgId: string;
-  search?: string;
-}) => {
+const SingleOrganizationPage = ({ orgId, search }: { orgId: string; search?: string }) => {
   const session = useSession();
   const org = session.data?.user?.organizations.find((o) => o.id === orgId);
 
@@ -158,8 +123,7 @@ const SingleOrganizationPage = ({
   }
 
   const isDemoOrg =
-    env.NEXT_PUBLIC_DEMO_ORG_ID === orgId &&
-    org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
+    env.NEXT_PUBLIC_DEMO_ORG_ID === orgId && org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
 
   if (isDemoOrg) {
     return (
@@ -185,13 +149,7 @@ const SingleOrganizationPage = ({
   );
 };
 
-const SingleOrganizationProjectOverviewTile = ({
-  orgId,
-  search,
-}: {
-  orgId: string;
-  search?: string;
-}) => {
+const SingleOrganizationProjectOverviewTile = ({ orgId, search }: { orgId: string; search?: string }) => {
   const session = useSession();
   const org = session.data?.user?.organizations.find((o) => o.id === orgId);
 
@@ -200,8 +158,7 @@ const SingleOrganizationProjectOverviewTile = ({
   }
 
   const isDemoOrg =
-    env.NEXT_PUBLIC_DEMO_ORG_ID === orgId &&
-    org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
+    env.NEXT_PUBLIC_DEMO_ORG_ID === orgId && org.projects.some((p) => p.id === env.NEXT_PUBLIC_DEMO_PROJECT_ID);
 
   if (isDemoOrg) {
     return (
@@ -226,12 +183,7 @@ const SingleOrganizationProjectOverviewTile = ({
               }
             : undefined
         }
-        actionButtons={
-          <OrganizationActionButtons
-            orgId={orgId}
-            primaryButtonVariant="secondary"
-          />
-        }
+        actionButtons={<OrganizationActionButtons orgId={orgId} primaryButtonVariant="secondary" />}
       />
       <OrganizationProjectTiles org={org} search={search} />
     </div>
@@ -251,8 +203,7 @@ export const OrganizationProjectOverview = () => {
   }
 
   const showOnboarding =
-    organizations.filter((org) => org.id !== env.NEXT_PUBLIC_DEMO_ORG_ID)
-      .length === 0 && !queryOrgId;
+    organizations.filter((org) => org.id !== env.NEXT_PUBLIC_DEMO_ORG_ID).length === 0 && !queryOrgId;
 
   if (queryOrgId) {
     const org = organizations.find((org) => org.id === queryOrgId);
@@ -261,9 +212,7 @@ export const OrganizationProjectOverview = () => {
       return null;
     }
 
-    return (
-      <SingleOrganizationPage orgId={org.id} search={search ?? undefined} />
-    );
+    return <SingleOrganizationPage orgId={org.id} search={search ?? undefined} />;
   }
 
   return (
@@ -312,13 +261,8 @@ export const OrganizationProjectOverview = () => {
         })
         .map((org) => (
           <Fragment key={org.id}>
-            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && (
-              <Divider />
-            )}
-            <SingleOrganizationProjectOverviewTile
-              orgId={org.id}
-              search={search ?? undefined}
-            />
+            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && <Divider />}
+            <SingleOrganizationProjectOverviewTile orgId={org.id} search={search ?? undefined} />
           </Fragment>
         ))}
     </ContainerPage>
@@ -331,9 +275,7 @@ const Onboarding = () => {
   return (
     <Card className="mt-5">
       <CardHeader>
-        <CardTitle data-testid="create-new-project-title">
-          Get Started
-        </CardTitle>
+        <CardTitle data-testid="create-new-project-title">Get Started</CardTitle>
       </CardHeader>
       <CardContent>
         <CardDescription>

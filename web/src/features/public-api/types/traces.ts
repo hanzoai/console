@@ -14,13 +14,7 @@ import { useEventsTableSchema } from "../../query";
 /**
  * Field groups for selective field fetching
  */
-export const TRACE_FIELD_GROUPS = [
-  "core",
-  "io",
-  "scores",
-  "observations",
-  "metrics",
-] as const;
+export const TRACE_FIELD_GROUPS = ["core", "io", "scores", "observations", "metrics"] as const;
 
 export type TraceFieldGroup = (typeof TRACE_FIELD_GROUPS)[number];
 

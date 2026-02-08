@@ -36,10 +36,7 @@ export function useCorrectionData(
     }
 
     // 2. If server correction is marked as deleted, return null
-    if (
-      existingCorrection?.id &&
-      correctionCache.isDeleted(existingCorrection.id)
-    ) {
+    if (existingCorrection?.id && correctionCache.isDeleted(existingCorrection.id)) {
       return null;
     }
 
@@ -49,9 +46,7 @@ export function useCorrectionData(
 
   // Check if deleted - check server correction ID since that's what we delete
   const isDeleted = useMemo(() => {
-    return existingCorrection?.id
-      ? correctionCache.isDeleted(existingCorrection.id)
-      : false;
+    return existingCorrection?.id ? correctionCache.isDeleted(existingCorrection.id) : false;
   }, [existingCorrection?.id, correctionCache]);
 
   // Extract value - prefer cached value (optimistic) over server value

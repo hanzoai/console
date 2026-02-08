@@ -1,9 +1,6 @@
 import Decimal from "decimal.js";
 
-export const compactNumberFormatter = (
-  number?: number | bigint,
-  maxFractionDigits?: number,
-) => {
+export const compactNumberFormatter = (number?: number | bigint, maxFractionDigits?: number) => {
   return Intl.NumberFormat("en-US", {
     notation: "compact",
     compactDisplay: "short",
@@ -15,10 +12,7 @@ export const compactNumberFormatter = (
  * Specialized formatter for very small numbers (10^-3 to 10^-15 range)
  * Uses scientific notation for compact representation with ~3 significant digits
  */
-export const compactSmallNumberFormatter = (
-  number?: number | bigint,
-  significantDigits: number = 3,
-) => {
+export const compactSmallNumberFormatter = (number?: number | bigint, significantDigits: number = 3) => {
   const num = Number(number ?? 0);
 
   if (num === 0) return "0";
@@ -34,10 +28,7 @@ export const compactSmallNumberFormatter = (
   return num.toExponential(significantDigits - 1);
 };
 
-export const numberFormatter = (
-  number?: number | bigint,
-  fractionDigits?: number,
-) => {
+export const numberFormatter = (number?: number | bigint, fractionDigits?: number) => {
   return Intl.NumberFormat("en-US", {
     notation: "standard",
     useGrouping: true,

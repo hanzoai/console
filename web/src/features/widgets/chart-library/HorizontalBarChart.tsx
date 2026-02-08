@@ -24,18 +24,8 @@ export const HorizontalBarChart: React.FC<ChartProps> = ({
 }) => {
   return (
     <ChartContainer config={config}>
-      <BarChart
-        accessibilityLayer={accessibilityLayer}
-        data={data}
-        layout="vertical"
-      >
-        <XAxis
-          type="number"
-          stroke="hsl(var(--chart-grid))"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
+      <BarChart accessibilityLayer={accessibilityLayer} data={data} layout="vertical">
+        <XAxis type="number" stroke="hsl(var(--chart-grid))" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis
           type="category"
           dataKey="dimension"
@@ -46,11 +36,7 @@ export const HorizontalBarChart: React.FC<ChartProps> = ({
           tickFormatter={formatAxisLabel}
           width={90}
         />
-        <Bar
-          dataKey="metric"
-          radius={[0, 4, 4, 0]}
-          className="fill-[--color-metric]"
-        />
+        <Bar dataKey="metric" radius={[0, 4, 4, 0]} className="fill-[--color-metric]" />
         <ChartTooltip
           contentStyle={{ backgroundColor: "hsl(var(--background))" }}
           itemStyle={{ color: "hsl(var(--foreground))" }}

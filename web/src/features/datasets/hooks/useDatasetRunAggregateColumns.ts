@@ -1,10 +1,7 @@
 import { useMemo } from "react";
 import { constructDatasetRunAggregateColumns } from "@/src/features/datasets/components/DatasetRunAggregateColumnHelpers";
 import { api } from "@/src/utils/api";
-import {
-  datasetRunItemsTableColsWithOptions,
-  type FilterState,
-} from "@hanzo/shared";
+import { datasetRunItemsTableColsWithOptions, type FilterState } from "@hanzo/shared";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 
 export function useDatasetRunAggregateColumns({
@@ -20,12 +17,11 @@ export function useDatasetRunAggregateColumns({
   updateRunFilters: (runId: string, filters: FilterState) => void;
   getFiltersForRun: (runId: string) => FilterState;
 }) {
-  const datasetRunItemsFilterOptionsResponse =
-    api.datasets.runItemFilterOptions.useQuery({
-      projectId,
-      datasetId,
-      datasetRunIds: runIds,
-    });
+  const datasetRunItemsFilterOptionsResponse = api.datasets.runItemFilterOptions.useQuery({
+    projectId,
+    datasetId,
+    datasetRunIds: runIds,
+  });
 
   const runsData = api.datasets.baseRunDataByDatasetId.useQuery(
     {
@@ -51,8 +47,7 @@ export function useDatasetRunAggregateColumns({
     },
   );
 
-  const datasetRunItemsFilterOptions =
-    datasetRunItemsFilterOptionsResponse.data;
+  const datasetRunItemsFilterOptions = datasetRunItemsFilterOptionsResponse.data;
 
   const datasetColumns = useMemo(() => {
     return datasetRunItemsTableColsWithOptions(datasetRunItemsFilterOptions);

@@ -1,17 +1,11 @@
 import { useRouter } from "next/router";
 import { useMemo, useEffect, useRef } from "react";
 import Page from "@/src/components/layouts/page";
-import {
-  getScoresTabs,
-  SCORES_TABS,
-} from "@/src/features/navigation/utils/scores-tabs";
+import { getScoresTabs, SCORES_TABS } from "@/src/features/navigation/utils/scores-tabs";
 import { useAnalyticsUrlState } from "@/src/features/score-analytics/lib/analytics-url-state";
 import { type ScoreOption } from "@/src/features/score-analytics/components/charts/ScoreCombobox";
 import { useDashboardDateRange } from "@/src/hooks/useDashboardDateRange";
-import {
-  toAbsoluteTimeRange,
-  getOptimalInterval,
-} from "@/src/utils/date-range-utils";
+import { toAbsoluteTimeRange, getOptimalInterval } from "@/src/utils/date-range-utils";
 import { BarChart3, Loader2 } from "lucide-react";
 import { api } from "@/src/utils/api";
 import {
@@ -49,10 +43,7 @@ export default function ScoresAnalyticsV2Page() {
     data: scoresData,
     isLoading: scoresLoading,
     error: scoresError,
-  } = api.scoreAnalytics.getScoreIdentifiers.useQuery(
-    { projectId },
-    { enabled: !!projectId },
-  );
+  } = api.scoreAnalytics.getScoreIdentifiers.useQuery({ projectId }, { enabled: !!projectId });
 
   // Transform API data to ScoreOption format and sort by dataType
   const scoreOptions: ScoreOption[] = useMemo(() => {
@@ -140,10 +131,7 @@ export default function ScoresAnalyticsV2Page() {
   }, [urlState.score2, scoreOptions]);
 
   // Convert time range to absolute dates
-  const absoluteTimeRange = useMemo(
-    () => toAbsoluteTimeRange(timeRange),
-    [timeRange],
-  );
+  const absoluteTimeRange = useMemo(() => toAbsoluteTimeRange(timeRange), [timeRange]);
 
   // Calculate optimal interval based on time range
   const interval = useMemo(() => {
@@ -153,12 +141,7 @@ export default function ScoresAnalyticsV2Page() {
 
   // Determine query params for Provider
   const queryParams = useMemo(() => {
-    if (
-      !parsedScore1 ||
-      !projectId ||
-      !absoluteTimeRange?.from ||
-      !absoluteTimeRange?.to
-    ) {
+    if (!parsedScore1 || !projectId || !absoluteTimeRange?.from || !absoluteTimeRange?.to) {
       return undefined;
     }
 
@@ -171,19 +154,11 @@ export default function ScoresAnalyticsV2Page() {
       interval,
       objectType: urlState.objectType,
     };
-  }, [
-    parsedScore1,
-    parsedScore2,
-    projectId,
-    absoluteTimeRange,
-    interval,
-    urlState.objectType,
-  ]);
+  }, [parsedScore1, parsedScore2, projectId, absoluteTimeRange, interval, urlState.objectType]);
 
   // UI state flags
   const hasError = !!scoresError;
-  const hasNoScores =
-    !scoresLoading && scoreOptions.length === 0 && !scoresError;
+  const hasNoScores = !scoresLoading && scoreOptions.length === 0 && !scoresError;
   const hasNoSelection = !hasError && !hasNoScores && !urlState.score1;
 
   return (
@@ -231,8 +206,7 @@ export default function ScoresAnalyticsV2Page() {
               <div className="text-center">
                 <h3 className="text-lg font-semibold">No Scores Available</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Create scores by adding evaluations to your traces and
-                  observations.
+                  Create scores by adding evaluations to your traces and observations.
                 </p>
               </div>
             </div>
@@ -242,24 +216,16 @@ export default function ScoresAnalyticsV2Page() {
               <div className="max-w-2xl text-center">
                 <h3 className="text-2xl font-semibold">Select a Score</h3>
                 <p className="mt-3 text-base text-muted-foreground">
-                  Choose one or two scores from the dropdowns above to view
-                  analytics
+                  Choose one or two scores from the dropdowns above to view analytics
                 </p>
                 <div className="mt-6 space-y-3 text-sm text-muted-foreground">
                   <div className="rounded-lg bg-background/50 p-4">
-                    <p className="mb-1 font-semibold text-foreground">
-                      Single score selected:
-                    </p>
+                    <p className="mb-1 font-semibold text-foreground">Single score selected:</p>
                     <p>View distribution and trends over time</p>
                   </div>
                   <div className="rounded-lg bg-background/50 p-4">
-                    <p className="mb-1 font-semibold text-foreground">
-                      Two scores selected:
-                    </p>
-                    <p>
-                      Compare scores with heatmaps, correlation analysis, and
-                      statistical metrics
-                    </p>
+                    <p className="mb-1 font-semibold text-foreground">Two scores selected:</p>
+                    <p>Compare scores with heatmaps, correlation analysis, and statistical metrics</p>
                   </div>
                 </div>
               </div>
@@ -271,9 +237,7 @@ export default function ScoresAnalyticsV2Page() {
           ) : (
             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Loading analytics data...
-              </p>
+              <p className="text-sm text-muted-foreground">Loading analytics data...</p>
             </div>
           )}
         </div>

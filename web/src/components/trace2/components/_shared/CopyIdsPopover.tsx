@@ -1,11 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { CopyIcon, CheckIcon } from "lucide-react";
 import { useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { cn } from "@/src/utils/tailwind";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 
@@ -14,13 +10,7 @@ interface IdItem {
   id: string;
 }
 
-export const CopyIdsPopover = ({
-  idItems,
-  className,
-}: {
-  idItems: IdItem[];
-  className?: string;
-}) => {
+export const CopyIdsPopover = ({ idItems, className }: { idItems: IdItem[]; className?: string }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = (textToCopy: string) => {
@@ -51,19 +41,12 @@ export const CopyIdsPopover = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          title="Copy ID"
-          className={cn("h-fit px-1", className)}
-        >
+        <Button variant="ghost" title="Copy ID" className={cn("h-fit px-1", className)}>
           <CopyIcon className="h-3 w-3" />
           <span className="ml-1 text-xs">ID</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="max-h-[50vh] w-auto min-w-[280px] overflow-y-auto p-1"
-        align="start"
-      >
+      <PopoverContent className="max-h-[50vh] w-auto min-w-[280px] overflow-y-auto p-1" align="start">
         <div className="flex flex-col gap-0.5">
           {idItems.map((item) => (
             <div
@@ -71,13 +54,8 @@ export const CopyIdsPopover = ({
               className="group flex items-center justify-between gap-2 rounded-sm px-2 py-1.5 transition-colors hover:bg-muted/50"
             >
               <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="text-xs font-medium text-muted-foreground">
-                  {item.name}
-                </span>
-                <span
-                  className="max-w-[220px] truncate font-mono text-xs"
-                  title={item.id}
-                >
+                <span className="text-xs font-medium text-muted-foreground">{item.name}</span>
+                <span className="max-w-[220px] truncate font-mono text-xs" title={item.id}>
                   {item.id}
                 </span>
               </div>

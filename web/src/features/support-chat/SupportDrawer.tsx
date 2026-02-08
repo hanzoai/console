@@ -23,20 +23,13 @@ export const SupportDrawer = ({
   className?: string;
 }) => {
   const { open, setOpen } = useSupportDrawer();
-  const [currentMode, setCurrentMode] = useState<"intro" | "form" | "success">(
-    "intro",
-  );
+  const [currentMode, setCurrentMode] = useState<"intro" | "form" | "success">("intro");
   const close = () => setOpen(false);
 
   if (!open) return null;
 
   return (
-    <div
-      className={cn([
-        "flex h-full w-full min-w-0 flex-col bg-background",
-        className,
-      ])}
-    >
+    <div className={cn(["flex h-full w-full min-w-0 flex-col bg-background", className])}>
       <div className="bg-background">
         <div className="flex min-h-11 w-full items-center justify-between gap-1 px-4 py-1">
           <Breadcrumb>
@@ -49,11 +42,7 @@ export const SupportDrawer = ({
                 <>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <button
-                        type="button"
-                        onClick={() => setCurrentMode("intro")}
-                        className="text-foreground"
-                      >
+                      <button type="button" onClick={() => setCurrentMode("intro")} className="text-foreground">
                         Support
                       </button>
                     </BreadcrumbLink>
@@ -69,12 +58,7 @@ export const SupportDrawer = ({
             </BreadcrumbList>
           </Breadcrumb>
           {showCloseButton && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={close}
-              aria-label="Close"
-            >
+            <Button variant="ghost" size="icon" onClick={close} aria-label="Close">
               <X className="h-4 w-4" />
             </Button>
           )}
@@ -84,21 +68,14 @@ export const SupportDrawer = ({
         <div className="px-2 py-1">
           <div className="h-full bg-background">
             <div className="p-2">
-              {currentMode === "intro" && (
-                <IntroSection onStartForm={() => setCurrentMode("form")} />
-              )}
+              {currentMode === "intro" && <IntroSection onStartForm={() => setCurrentMode("form")} />}
               {currentMode === "form" && (
                 <SupportFormSection
                   onSuccess={() => setCurrentMode("success")}
                   onCancel={() => setCurrentMode("intro")}
                 />
               )}
-              {currentMode === "success" && (
-                <SuccessSection
-                  onClose={close}
-                  onAnother={() => setCurrentMode("form")}
-                />
-              )}
+              {currentMode === "success" && <SuccessSection onClose={close} onAnother={() => setCurrentMode("form")} />}
             </div>
           </div>
         </div>

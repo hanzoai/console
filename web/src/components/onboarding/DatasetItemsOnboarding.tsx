@@ -3,13 +3,7 @@ import { SplashScreen } from "@/src/components/ui/splash-screen";
 import { Braces, Code, ListTree, Upload } from "lucide-react";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { CsvUploadDialog } from "@/src/features/datasets/components/CsvUploadDialog";
 import { NewDatasetItemForm } from "@/src/features/datasets/components/NewDatasetItemForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -45,38 +39,24 @@ const DatasetItemEntryPointRow = ({
       tabIndex={0}
       className={cn(
         "flex h-20 items-center gap-4 rounded-lg border border-border p-4 transition-colors",
-        disabled
-          ? "bg-muted text-muted-foreground opacity-60"
-          : "cursor-pointer bg-card hover:bg-accent/50",
+        disabled ? "bg-muted text-muted-foreground opacity-60" : "cursor-pointer bg-card hover:bg-accent/50",
       )}
       onClick={!disabled ? onClick : undefined}
-      title={
-        !hasAccess
-          ? "You don't have access to this feature, please contact your administrator"
-          : undefined
-      }
+      title={!hasAccess ? "You don't have access to this feature, please contact your administrator" : undefined}
     >
       <div className="flex items-center">{icon}</div>
       <div className="flex flex-1 flex-col gap-1">
         <h3 className="font-semibold">{title}</h3>
         <div className="flex items-center gap-1">
           <p className="text-sm text-muted-foreground">{description}</p>
-          {docPopup && (
-            <DocPopup description={docPopup.description} href={docPopup.href} />
-          )}
+          {docPopup && <DocPopup description={docPopup.description} href={docPopup.href} />}
         </div>
       </div>
     </div>
   );
 };
 
-export const DatasetItemsOnboarding = ({
-  projectId,
-  datasetId,
-}: {
-  projectId: string;
-  datasetId: string;
-}) => {
+export const DatasetItemsOnboarding = ({ projectId, datasetId }: { projectId: string; datasetId: string }) => {
   const capture = usePostHogClientCapture();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
@@ -113,10 +93,7 @@ export const DatasetItemsOnboarding = ({
           </DialogTrigger>
         </CsvUploadDialog>
 
-        <Dialog
-          open={hasProjectAccess && isNewItemDialogOpen}
-          onOpenChange={setIsNewItemDialogOpen}
-        >
+        <Dialog open={hasProjectAccess && isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
           <DialogTrigger asChild disabled={!hasProjectAccess}>
             <DatasetItemEntryPointRow
               icon={<Braces className="h-5 w-5" />}

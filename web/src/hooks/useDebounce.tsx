@@ -39,12 +39,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
   }, [callback]);
 
   return useMemo(
-    () =>
-      debounce(
-        (...args: Parameters<T>) => callbackRef.current(...args),
-        delay,
-        executeFirstCall,
-      ),
+    () => debounce((...args: Parameters<T>) => callbackRef.current(...args), delay, executeFirstCall),
     [delay, executeFirstCall],
   );
 }

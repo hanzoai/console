@@ -2,23 +2,14 @@ import ContainerPage from "@/src/components/layouts/container-page";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { AutomationButton } from "@/src/features/automations/components/AutomationButton";
 import { SlackConnectionCard } from "@/src/features/slack/components/SlackConnectionCard";
-import {
-  ChannelSelector,
-  type SlackChannel,
-} from "@/src/features/slack/components/ChannelSelector";
+import { ChannelSelector, type SlackChannel } from "@/src/features/slack/components/ChannelSelector";
 import { SlackTestMessageButton } from "@/src/features/slack/components/SlackTestMessageButton";
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { Badge } from "@/src/components/ui/badge";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 
 export default function SlackIntegrationSettings() {
   const router = useRouter();
@@ -64,21 +55,14 @@ export default function SlackIntegrationSettings() {
     }
   }, [router.query]);
 
-  const { data: integrationStatus, isInitialLoading } =
-    api.slack.getIntegrationStatus.useQuery(
-      { projectId },
-      { enabled: !!projectId },
-    );
-
-  const status = isInitialLoading
-    ? undefined
-    : integrationStatus?.isConnected
-      ? "active"
-      : "inactive";
-
-  const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(
-    null,
+  const { data: integrationStatus, isInitialLoading } = api.slack.getIntegrationStatus.useQuery(
+    { projectId },
+    { enabled: !!projectId },
   );
+
+  const status = isInitialLoading ? undefined : integrationStatus?.isConnected ? "active" : "inactive";
+
+  const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(null);
 
   // Check user permissions
   const hasAccess = useHasProjectAccess({
@@ -90,9 +74,7 @@ export default function SlackIntegrationSettings() {
     <ContainerPage
       headerProps={{
         title: "Slack Integration",
-        breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
-        ],
+        breadcrumb: [{ name: "Settings", href: `/project/${projectId}/settings` }],
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: <AutomationButton projectId={projectId} />,
       }}
@@ -105,18 +87,12 @@ export default function SlackIntegrationSettings() {
         {integrationStatus?.isConnected && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Test Integration
-              </CardTitle>
-              <CardDescription>
-                Test your Slack integration by sending a message to a channel.
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">Test Integration</CardTitle>
+              <CardDescription>Test your Slack integration by sending a message to a channel.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="mb-2 text-sm font-medium">
-                  Select Test Channel
-                </h4>
+                <h4 className="mb-2 text-sm font-medium">Select Test Channel</h4>
                 <div className="max-w-md">
                   <ChannelSelector
                     projectId={projectId}
@@ -131,15 +107,11 @@ export default function SlackIntegrationSettings() {
               {selectedChannel && (
                 <div className="space-y-4 border-t pt-4">
                   <div>
-                    <h4 className="mb-3 text-sm font-medium">
-                      Channel Information
-                    </h4>
+                    <h4 className="mb-3 text-sm font-medium">Channel Information</h4>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium">Channel Name</p>
-                        <p className="text-sm text-muted-foreground">
-                          #{selectedChannel.name}
-                        </p>
+                        <p className="text-sm text-muted-foreground">#{selectedChannel.name}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium">Channel Type</p>
@@ -149,9 +121,7 @@ export default function SlackIntegrationSettings() {
                       </div>
                       <div>
                         <p className="text-sm font-medium">Channel ID</p>
-                        <p className="font-mono text-sm text-muted-foreground">
-                          {selectedChannel.id}
-                        </p>
+                        <p className="font-mono text-sm text-muted-foreground">{selectedChannel.id}</p>
                       </div>
                     </div>
                   </div>
@@ -169,8 +139,7 @@ export default function SlackIntegrationSettings() {
 
               {!selectedChannel && (
                 <div className="text-sm text-muted-foreground">
-                  Select a channel above to view its details and test message
-                  delivery.
+                  Select a channel above to view its details and test message delivery.
                 </div>
               )}
             </CardContent>

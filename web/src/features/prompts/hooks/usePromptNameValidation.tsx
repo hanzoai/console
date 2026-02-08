@@ -7,17 +7,11 @@ interface UsePromptNameValidationProps {
   form: UseFormReturn<any>;
 }
 
-export const usePromptNameValidation = ({
-  currentName,
-  allPrompts,
-  form,
-}: UsePromptNameValidationProps) => {
+export const usePromptNameValidation = ({ currentName, allPrompts, form }: UsePromptNameValidationProps) => {
   useEffect(() => {
     if (!currentName || !allPrompts) return;
 
-    const isNewPrompt = !allPrompts
-      ?.map((prompt) => prompt.value)
-      .includes(currentName);
+    const isNewPrompt = !allPrompts?.map((prompt) => prompt.value).includes(currentName);
 
     if (!isNewPrompt) {
       form.setError("name", { message: "Prompt name already exists." });

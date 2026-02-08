@@ -4,10 +4,7 @@ process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { v4 } from "uuid";
 import {
   GetDatasetItemV1Response,
@@ -50,8 +47,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
   let projectId: string;
 
   beforeEach(async () => {
-    const { auth: newAuth, projectId: newProjectId } =
-      await createOrgProjectAndApiKey();
+    const { auth: newAuth, projectId: newProjectId } = await createOrgProjectAndApiKey();
     auth = newAuth;
     projectId = newProjectId;
     const trace = createTrace({
@@ -525,21 +521,19 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       includeIO: true,
     });
     expect(dbDatasetItemsOther.length).toBe(1);
-    const dbDatasetItemsOtherApiResponseFormat = dbDatasetItemsOther.map(
-      (item) => ({
-        id: item.id,
-        datasetId: item.datasetId,
-        status: item.status,
-        input: item.input,
-        expectedOutput: item.expectedOutput,
-        metadata: item.metadata,
-        sourceTraceId: item.sourceTraceId,
-        sourceObservationId: item.sourceObservationId,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-        datasetName: "dataset-name-other",
-      }),
-    );
+    const dbDatasetItemsOtherApiResponseFormat = dbDatasetItemsOther.map((item) => ({
+      id: item.id,
+      datasetId: item.datasetId,
+      status: item.status,
+      input: item.input,
+      expectedOutput: item.expectedOutput,
+      metadata: item.metadata,
+      sourceTraceId: item.sourceTraceId,
+      sourceObservationId: item.sourceObservationId,
+      createdAt: item.createdAt.toISOString(),
+      updatedAt: item.updatedAt.toISOString(),
+      datasetName: "dataset-name-other",
+    }));
     const dbDatasetItemsAllApiResponseFormat = [
       ...dbDatasetItemsApiResponseFormat,
       ...dbDatasetItemsOtherApiResponseFormat,
@@ -619,9 +613,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     );
     expect(getDatasetItemsTrace.status).toBe(200);
     expect(getDatasetItemsTrace.body).toMatchObject({
-      data: dbDatasetItemsApiResponseFormat.filter(
-        (item) => item.sourceTraceId === traceId,
-      ),
+      data: dbDatasetItemsApiResponseFormat.filter((item) => item.sourceTraceId === traceId),
       meta: expect.objectContaining({
         totalItems: 3,
         page: 1,
@@ -637,9 +629,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     );
     expect(getDatasetItemsObservation.status).toBe(200);
     expect(getDatasetItemsObservation.body).toMatchObject({
-      data: dbDatasetItemsApiResponseFormat.filter(
-        (item) => item.sourceObservationId === observationId,
-      ),
+      data: dbDatasetItemsApiResponseFormat.filter((item) => item.sourceObservationId === observationId),
       meta: expect.objectContaining({
         totalItems: 3,
         page: 1,
@@ -1167,14 +1157,10 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
   }, 90000);
 
   it("dataset-run-items should fail when neither trace nor observation provided", async () => {
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/dataset-run-items",
-      {
-        datasetItemId: "dataset-item-id",
-        runName: "run-fail",
-      },
-    );
+    const response = await makeAPICall("POST", "/api/public/dataset-run-items", {
+      datasetItemId: "dataset-item-id",
+      runName: "run-fail",
+    });
     expect(response.status).toBe(400);
   });
 
@@ -1196,15 +1182,10 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
       name: "dataset-name",
     };
     // dataset, id is generated
-    const apiDataset = await makeZodVerifiedAPICall(
-      PostDatasetsV1Response,
-      "POST",
-      "/api/public/datasets",
-      {
-        ...datasetBody,
-        metadata: "api-dataset",
-      },
-    );
+    const apiDataset = await makeZodVerifiedAPICall(PostDatasetsV1Response, "POST", "/api/public/datasets", {
+      ...datasetBody,
+      metadata: "api-dataset",
+    });
     const otherProjDbDataset = await prisma.dataset.create({
       data: {
         ...datasetBody,
@@ -1235,18 +1216,13 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     const datasetItemId = res.datasetItem.id;
 
     // dataset item, id is set
-    await makeZodVerifiedAPICall(
-      PostDatasetItemsV1Response,
-      "POST",
-      "/api/public/dataset-items",
-      {
-        ...datasetItemBody,
-        id: datasetItemId,
-        expectedOutput: "api-item",
-        datasetName: datasetBody.name,
-        metadata: "api-item",
-      },
-    );
+    await makeZodVerifiedAPICall(PostDatasetItemsV1Response, "POST", "/api/public/dataset-items", {
+      ...datasetItemBody,
+      id: datasetItemId,
+      expectedOutput: "api-item",
+      datasetName: datasetBody.name,
+      metadata: "api-item",
+    });
     const getApiDatasetItem = await makeZodVerifiedAPICall(
       GetDatasetItemV1Response,
       "GET",
@@ -1360,12 +1336,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     });
 
     // Verify item no longer exists
-    const getDeletedItem = await makeAPICall(
-      "GET",
-      `/api/public/dataset-items/${itemId}`,
-      undefined,
-      auth,
-    );
+    const getDeletedItem = await makeAPICall("GET", `/api/public/dataset-items/${itemId}`, undefined, auth);
     expect(getDeletedItem.status).toBe(404);
 
     // Verify item is removed from database

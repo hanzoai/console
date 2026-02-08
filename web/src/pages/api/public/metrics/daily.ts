@@ -1,13 +1,7 @@
-import {
-  GetMetricsDailyV1Query,
-  GetMetricsDailyV1Response,
-} from "@/src/features/public-api/types/metrics";
+import { GetMetricsDailyV1Query, GetMetricsDailyV1Response } from "@/src/features/public-api/types/metrics";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import {
-  generateDailyMetrics,
-  getDailyMetricsCount,
-} from "@/src/features/public-api/server/dailyMetrics";
+import { generateDailyMetrics, getDailyMetricsCount } from "@/src/features/public-api/server/dailyMetrics";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -30,10 +24,7 @@ export default withMiddlewares({
         toTimestamp: query.toTimestamp ?? undefined,
       };
 
-      const [usage, count] = await Promise.all([
-        generateDailyMetrics(filterProps),
-        getDailyMetricsCount(filterProps),
-      ]);
+      const [usage, count] = await Promise.all([generateDailyMetrics(filterProps), getDailyMetricsCount(filterProps)]);
 
       const finalCount = count || 0;
       return {

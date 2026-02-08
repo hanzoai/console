@@ -12,13 +12,7 @@ export const localtimeDateOffsetByDays = (days: number) => {
   return date;
 };
 export const utcDate = (localDateTime: Date) =>
-  new Date(
-    Date.UTC(
-      localDateTime.getFullYear(),
-      localDateTime.getMonth(),
-      localDateTime.getDate(),
-    ),
-  );
+  new Date(Date.UTC(localDateTime.getFullYear(), localDateTime.getMonth(), localDateTime.getDate()));
 
 export const setBeginningOfDay = (date: Date) => {
   const newDate = new Date(date);
@@ -47,9 +41,7 @@ export const formatIntervalSeconds = (seconds: number, scale: number = 2) => {
 };
 
 export const getShortLocalTimezone = () => {
-  return new Date()
-    .toLocaleTimeString("en-us", { timeZoneName: "short" })
-    .split(" ")[2];
+  return new Date().toLocaleTimeString("en-us", { timeZoneName: "short" }).split(" ")[2];
 };
 
 export const getTimezoneDetails = () => {

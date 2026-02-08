@@ -6,9 +6,7 @@ type UseViewMutationsProps = {
   handleSetViewId: (viewId: string | null) => void;
 };
 
-export const useViewMutations = ({
-  handleSetViewId,
-}: UseViewMutationsProps) => {
+export const useViewMutations = ({ handleSetViewId }: UseViewMutationsProps) => {
   const utils = api.useUtils();
 
   const createMutation = api.TableViewPresets.create.useMutation({
@@ -40,16 +38,15 @@ export const useViewMutations = ({
     },
   });
 
-  const generatePermalinkMutation =
-    api.TableViewPresets.generatePermalink.useMutation({
-      onSuccess: (data) => {
-        copyTextToClipboard(data);
-        showSuccessToast({
-          title: "Permalink copied to clipboard",
-          description: "You can now share the permalink with others",
-        });
-      },
-    });
+  const generatePermalinkMutation = api.TableViewPresets.generatePermalink.useMutation({
+    onSuccess: (data) => {
+      copyTextToClipboard(data);
+      showSuccessToast({
+        title: "Permalink copied to clipboard",
+        description: "You can now share the permalink with others",
+      });
+    },
+  });
 
   return {
     createMutation,

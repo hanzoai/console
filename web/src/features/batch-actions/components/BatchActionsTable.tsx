@@ -6,12 +6,7 @@ import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { InfoIcon } from "lucide-react";
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 
 type BatchActionRow = {
@@ -75,9 +70,7 @@ export function BatchActionsTable(props: { projectId: string }) {
       size: 110,
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
-        return (
-          <StatusBadge type={status.toLowerCase()} className="capitalize" />
-        );
+        return <StatusBadge type={status.toLowerCase()} className="capitalize" />;
       },
     },
     {
@@ -90,19 +83,14 @@ export function BatchActionsTable(props: { projectId: string }) {
         const processedCount = row.original.processedCount ?? 0;
         const failedCount = row.original.failedCount ?? 0;
 
-        if (!totalCount)
-          return <span className="text-muted-foreground">-</span>;
+        if (!totalCount) return <span className="text-muted-foreground">-</span>;
 
         return (
           <div className="space-y-1">
             <div className="text-sm">
               {processedCount} / {totalCount}
             </div>
-            {failedCount > 0 && (
-              <div className="text-xs text-destructive">
-                {failedCount} failed
-              </div>
-            )}
+            {failedCount > 0 && <div className="text-xs text-destructive">{failedCount} failed</div>}
           </div>
         );
       },
@@ -124,11 +112,7 @@ export function BatchActionsTable(props: { projectId: string }) {
       size: 150,
       cell: ({ row }) => {
         const finishedAt = row.getValue("finishedAt") as Date | null;
-        return finishedAt ? (
-          <LocalIsoDate date={finishedAt} />
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
+        return finishedAt ? <LocalIsoDate date={finishedAt} /> : <span className="text-muted-foreground">-</span>;
       },
     },
     {
@@ -144,10 +128,7 @@ export function BatchActionsTable(props: { projectId: string }) {
         return (
           <div className="flex items-center space-x-2">
             <Avatar className="h-7 w-7">
-              <AvatarImage
-                src={user?.image ?? undefined}
-                alt={user?.name ?? "User Avatar"}
-              />
+              <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? "User Avatar"} />
             </Avatar>
             <span>{user?.name ?? "Unknown"}</span>
           </div>
@@ -171,9 +152,7 @@ export function BatchActionsTable(props: { projectId: string }) {
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-md">
-                <pre className="max-h-60 overflow-auto whitespace-pre-wrap text-xs">
-                  {log}
-                </pre>
+                <pre className="max-h-60 overflow-auto whitespace-pre-wrap text-xs">{log}</pre>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

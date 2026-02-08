@@ -8,14 +8,7 @@ import * as z from "zod/v4";
 import { useForm } from "react-hook-form";
 import { HanzoIcon } from "@/src/components/HanzoLogo";
 import { Button } from "@/src/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { captureException } from "@sentry/nextjs";
@@ -46,22 +39,14 @@ export default function EnterpriseSsoRequiredPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const emailFromQuery =
-    typeof router.query.email === "string" ? router.query.email : "";
+  const emailFromQuery = typeof router.query.email === "string" ? router.query.email : "";
   const attemptedProvider =
-    typeof router.query.attemptedProvider === "string"
-      ? router.query.attemptedProvider
-      : undefined;
-  const callbackUrl =
-    typeof router.query.callbackUrl === "string"
-      ? router.query.callbackUrl
-      : undefined;
+    typeof router.query.attemptedProvider === "string" ? router.query.attemptedProvider : undefined;
+  const callbackUrl = typeof router.query.callbackUrl === "string" ? router.query.callbackUrl : undefined;
 
   const friendlyProviderName = useMemo(() => {
     if (!attemptedProvider) return undefined;
-    return (
-      PROVIDER_LABELS[attemptedProvider] ?? attemptedProvider.replace(/-/g, " ")
-    );
+    return PROVIDER_LABELS[attemptedProvider] ?? attemptedProvider.replace(/-/g, " ");
   }, [attemptedProvider]);
 
   const form = useForm<z.infer<typeof enterpriseSsoFormSchema>>({
@@ -89,14 +74,11 @@ export default function EnterpriseSsoRequiredPage() {
     }
 
     try {
-      const response = await fetch(
-        `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ domain }),
-        },
-      );
+      const response = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain }),
+      });
 
       if (response.ok) {
         const { providerId } = (await response.json()) as {
@@ -118,15 +100,10 @@ export default function EnterpriseSsoRequiredPage() {
       const data = (await response.json().catch(() => null)) as {
         message?: string;
       } | null;
-      setError(
-        data?.message ??
-          "Unable to start the Enterprise SSO sign-in flow. Please try again.",
-      );
+      setError(data?.message ?? "Unable to start the Enterprise SSO sign-in flow. Please try again.");
     } catch (err) {
       captureException(err);
-      setError(
-        "Something went wrong while checking your Enterprise SSO configuration. Please try again.",
-      );
+      setError("Something went wrong while checking your Enterprise SSO configuration. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -144,12 +121,9 @@ export default function EnterpriseSsoRequiredPage() {
       <div className="flex min-h-screen-with-banner flex-col justify-center bg-background px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <HanzoIcon className="mx-auto" />
-          <h1 className="mt-6 text-center text-2xl font-bold text-primary">
-            Use your Enterprise SSO
-          </h1>
+          <h1 className="mt-6 text-center text-2xl font-bold text-primary">Use your Enterprise SSO</h1>
           <p className="mt-2 text-center text-sm leading-6 text-muted-foreground">
-            {description} Enter your company email so we can send you to the
-            correct identity provider.
+            {description} Enter your company email so we can send you to the correct identity provider.
           </p>
         </div>
 
@@ -163,24 +137,14 @@ export default function EnterpriseSsoRequiredPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="jsdoe@example.com"
-                        allowPasswordManager
-                        autoComplete="email"
-                        {...field}
-                      />
+                      <Input placeholder="jsdoe@example.com" allowPasswordManager autoComplete="email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full"
-                loading={loading}
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full" loading={loading} disabled={loading}>
                 Continue with Enterprise SSO
               </Button>
             </form>
@@ -190,20 +154,14 @@ export default function EnterpriseSsoRequiredPage() {
               {error}
               <br />
               Contact{" "}
-              <a
-                href="mailto:support@hanzo.com"
-                className="text-primary-accent hover:text-hover-primary-accent"
-              >
+              <a href="mailto:support@hanzo.com" className="text-primary-accent hover:text-hover-primary-accent">
                 support@hanzo.com
               </a>{" "}
               if this keeps happening.
             </div>
           ) : null}
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            <Link
-              href="/auth/sign-in"
-              className="text-primary-accent hover:text-hover-primary-accent"
-            >
+            <Link href="/auth/sign-in" className="text-primary-accent hover:text-hover-primary-accent">
               Back to other sign-in options
             </Link>
           </div>
@@ -211,10 +169,7 @@ export default function EnterpriseSsoRequiredPage() {
 
         <div className="mt-4 text-center text-xs text-muted-foreground">
           Need help? Contact{" "}
-          <a
-            href="mailto:support@hanzo.com"
-            className="text-primary-accent hover:text-hover-primary-accent"
-          >
+          <a href="mailto:support@hanzo.com" className="text-primary-accent hover:text-hover-primary-accent">
             support@hanzo.com
           </a>
           .

@@ -1,5 +1,2 @@
 export { PaymentBanner } from "./PaymentBanner";
-export {
-  PaymentBannerProvider,
-  usePaymentBannerHeight,
-} from "./PaymentBannerContext";
+export { PaymentBannerProvider, usePaymentBannerHeight } from "./PaymentBannerContext";

@@ -2,12 +2,7 @@ import { type Redis, type Cluster } from "ioredis";
 import { type z } from "zod/v4";
 import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { env } from "@/src/env.mjs";
-import {
-  type RateLimitResult,
-  type RateLimitResource,
-  type RateLimitConfig,
-  type Plan,
-} from "@hanzo/shared";
+import { type RateLimitResult, type RateLimitResource, type RateLimitConfig, type Plan } from "@hanzo/shared";
 import {
   recordIncrement,
   type ApiAccessScope,
@@ -48,10 +43,7 @@ export class RateLimitService {
     }
   }
 
-  async rateLimitRequest(
-    scope: ApiAccessScope,
-    resource: z.infer<typeof RateLimitResource>,
-  ) {
+  async rateLimitRequest(scope: ApiAccessScope, resource: z.infer<typeof RateLimitResource>) {
     // if cloud config is not present, we don't apply rate limits and just return
     if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
       return new RateLimitHelper(undefined);
@@ -69,18 +61,11 @@ export class RateLimitService {
     return new RateLimitHelper(await this.checkRateLimit(scope, resource));
   }
 
-  async checkRateLimit(
-    scope: ApiAccessScope,
-    resource: z.infer<typeof RateLimitResource>,
-  ) {
+  async checkRateLimit(scope: ApiAccessScope, resource: z.infer<typeof RateLimitResource>) {
     const effectiveConfig = getRateLimitConfig(scope, resource);
 
     // returning early if no rate limit is set
-    if (
-      !effectiveConfig ||
-      !effectiveConfig.points ||
-      !effectiveConfig.durationInSec
-    ) {
+    if (!effectiveConfig || !effectiveConfig.points || !effectiveConfig.durationInSec) {
       return;
     }
 
@@ -165,18 +150,13 @@ export class RateLimitHelper {
   sendRestResponseIfLimited(nextResponse: NextApiResponse) {
     if (!this.res || !this.isRateLimited()) {
       logger.error("Trying to send rate limit response without being limited.");
-      throw new Error(
-        "Trying to send rate limit response without being limited.",
-      );
+      throw new Error("Trying to send rate limit response without being limited.");
     }
     return sendRateLimitResponse(nextResponse, this.res);
   }
 }
 
-export const sendRateLimitResponse = (
-  res: NextApiResponse,
-  rateLimitRes: RateLimitResult,
-) => {
+export const sendRateLimitResponse = (res: NextApiResponse, rateLimitRes: RateLimitResult) => {
   const httpHeader = createHttpHeaderFromRateLimit(rateLimitRes);
 
   for (const [header, value] of Object.entries(httpHeader)) {
@@ -195,14 +175,9 @@ export const createHttpHeaderFromRateLimit = (res: RateLimitResult) => {
   };
 };
 
-const getRateLimitConfig = (
-  scope: ApiAccessScope,
-  resource: z.infer<typeof RateLimitResource>,
-) => {
+const getRateLimitConfig = (scope: ApiAccessScope, resource: z.infer<typeof RateLimitResource>) => {
   const planBasedConfig = getPlanBasedRateLimitConfig(scope.plan, resource);
-  const customConfig = scope.rateLimitOverrides?.find(
-    (config) => config.resource === resource,
-  );
+  const customConfig = scope.rateLimitOverrides?.find((config) => config.resource === resource);
 
   return customConfig || planBasedConfig;
 };

@@ -16,11 +16,7 @@ export const validateQueryAndExtractId = (query: unknown): string | null => {
   return validation.data.projectId;
 };
 
-export async function handleGetApiKeys(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  projectId: string,
-) {
+export async function handleGetApiKeys(req: NextApiRequest, res: NextApiResponse, projectId: string) {
   const apiKeys = await prisma.apiKey.findMany({
     where: {
       projectId,
@@ -43,12 +39,7 @@ export async function handleGetApiKeys(
   return res.status(200).json({ apiKeys });
 }
 
-export async function handleCreateApiKey(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  projectId: string,
-  orgId: string,
-) {
+export async function handleCreateApiKey(req: NextApiRequest, res: NextApiResponse, projectId: string, orgId: string) {
   // Validate the request body
   const createApiKeySchema = z.object({
     note: z.string().optional(),
@@ -72,8 +63,7 @@ export async function handleCreateApiKey(
     // Both keys must be provided together
     if (!publicKey || !secretKey) {
       return res.status(400).json({
-        message:
-          "Both publicKey and secretKey must be provided together when specifying predefined keys",
+        message: "Both publicKey and secretKey must be provided together when specifying predefined keys",
       });
     }
 
@@ -98,8 +88,7 @@ export async function handleCreateApiKey(
       entityId: projectId,
       note,
       scope: "PROJECT",
-      predefinedKeys:
-        publicKey && secretKey ? { publicKey, secretKey } : undefined,
+      predefinedKeys: publicKey && secretKey ? { publicKey, secretKey } : undefined,
     });
 
     // Log the API key creation
@@ -113,21 +102,17 @@ export async function handleCreateApiKey(
       apiKeyId: "ORG_KEY",
     });
 
-    logger.info(
-      `Created API key ${apiKeyMeta.id} for project ${projectId} via public API`,
-    );
+    logger.info(`Created API key ${apiKeyMeta.id} for project ${projectId} via public API`);
 
     return res.status(201).json(apiKeyMeta);
   } catch (error) {
     // Handle database unique constraint violations
     if (
       error instanceof Error &&
-      (error.message.includes("Unique constraint") ||
-        error.message.includes("unique constraint"))
+      (error.message.includes("Unique constraint") || error.message.includes("unique constraint"))
     ) {
       return res.status(409).json({
-        message:
-          "API key with the provided publicKey or secretKey already exists",
+        message: "API key with the provided publicKey or secretKey already exists",
       });
     }
     throw error;

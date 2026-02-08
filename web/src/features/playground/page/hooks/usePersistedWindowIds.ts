@@ -43,9 +43,7 @@ export function usePersistedWindowIds() {
         return windowId;
       }
       if (windowIds.length >= MULTI_WINDOW_CONFIG.MAX_WINDOWS) {
-        toast.error(
-          `Maximum window limit of ${MULTI_WINDOW_CONFIG.MAX_WINDOWS} reached`,
-        );
+        toast.error(`Maximum window limit of ${MULTI_WINDOW_CONFIG.MAX_WINDOWS} reached`);
         return null;
       }
       setWindowIds((prev) => [...prev, windowId]);
@@ -62,9 +60,7 @@ export function usePersistedWindowIds() {
   const addWindowWithCopy = useCallback(
     (sourceWindowId?: string) => {
       if (windowIds.length >= MULTI_WINDOW_CONFIG.MAX_WINDOWS) {
-        toast.error(
-          `Maximum window limit of ${MULTI_WINDOW_CONFIG.MAX_WINDOWS} reached`,
-        );
+        toast.error(`Maximum window limit of ${MULTI_WINDOW_CONFIG.MAX_WINDOWS} reached`);
         return null;
       }
 

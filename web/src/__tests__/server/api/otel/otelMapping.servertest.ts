@@ -1,15 +1,8 @@
-import {
-  OtelIngestionProcessor,
-  createIngestionEventSchema,
-} from "@hanzo/shared/src/server";
+import { OtelIngestionProcessor, createIngestionEventSchema } from "@hanzo/shared/src/server";
 
 // Test helper function to maintain backward compatibility with existing tests
 // This mimics the old convertOtelSpanToIngestionEvent function signature
-async function convertOtelSpanToIngestionEvent(
-  resourceSpan: any,
-  seenTraces: Set<string>,
-  publicKey?: string,
-) {
+async function convertOtelSpanToIngestionEvent(resourceSpan: any, seenTraces: Set<string>, publicKey?: string) {
   const processor = new OtelIngestionProcessor({
     projectId: "test-project",
     publicKey,
@@ -71,10 +64,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      44, 206, 24, 247, 232, 205, 6, 90, 11, 78, 99, 78, 239,
-                      114, 131, 145,
-                    ],
+                    data: [44, 206, 24, 247, 232, 205, 6, 90, 11, 78, 99, 78, 239, 114, 131, 145],
                   },
                   spanId: {
                     type: "Buffer",
@@ -118,8 +108,7 @@ describe("OTel Resource Span Mapping", () => {
                     {
                       key: "hanzo.observation.output",
                       value: {
-                        stringValue:
-                          '{"role": "assistant", "content": "what\'s up?"}',
+                        stringValue: '{"role": "assistant", "content": "what\'s up?"}',
                       },
                     },
                     {
@@ -137,15 +126,13 @@ describe("OTel Resource Span Mapping", () => {
                     {
                       key: "hanzo.observation.usage_details",
                       value: {
-                        stringValue:
-                          '{"input_tokens": 123, "output_tokens": 456}',
+                        stringValue: '{"input_tokens": 123, "output_tokens": 456}',
                       },
                     },
                     {
                       key: "hanzo.observation.cost_details",
                       value: {
-                        stringValue:
-                          '{"input_tokens": 0.0001, "output_tokens": 0.002}',
+                        stringValue: '{"input_tokens": 0.0001, "output_tokens": 0.002}',
                       },
                     },
                     {
@@ -185,8 +172,7 @@ describe("OTel Resource Span Mapping", () => {
                     {
                       key: "hanzo.trace.output",
                       value: {
-                        stringValue:
-                          '{"role": "assistant", "content": "what\'s up?"}',
+                        stringValue: '{"role": "assistant", "content": "what\'s up?"}',
                       },
                     },
                     {
@@ -213,10 +199,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      44, 206, 24, 247, 232, 205, 6, 90, 11, 78, 99, 78, 239,
-                      114, 131, 145,
-                    ],
+                    data: [44, 206, 24, 247, 232, 205, 6, 90, 11, 78, 99, 78, 239, 114, 131, 145],
                   },
                   spanId: {
                     type: "Buffer",
@@ -260,16 +243,11 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          hanzoOtelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          hanzoOtelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
       const traceEvents = events.filter((e) => e.type === "trace-create");
-      const generationEvents = events.filter(
-        (e) => e.type === "generation-create",
-      );
+      const generationEvents = events.filter((e) => e.type === "generation-create");
       const spanEvents = events.filter((e) => e.type === "span-create");
 
       expect(events.length).toBe(4);
@@ -413,10 +391,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -458,10 +433,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          hanzoOtelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          hanzoOtelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
       const traceEvents = events.filter((e) => e.type === "trace-create");
@@ -523,10 +495,7 @@ describe("OTel Resource Span Mapping", () => {
               {
                 traceId: {
                   type: "Buffer",
-                  data: [
-                    234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211,
-                    89, 95,
-                  ],
+                  data: [234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211, 89, 95],
                 },
                 spanId: {
                   type: "Buffer",
@@ -671,10 +640,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       // Will throw an error if the parsing fails
@@ -691,8 +657,7 @@ describe("OTel Resource Span Mapping", () => {
             {
               key: "service.name",
               value: {
-                stringValue:
-                  "/usr/local/lib/python3.11/dist-packages/colab_kernel_launcher.py",
+                stringValue: "/usr/local/lib/python3.11/dist-packages/colab_kernel_launcher.py",
               },
             },
           ],
@@ -707,10 +672,7 @@ describe("OTel Resource Span Mapping", () => {
               {
                 traceId: {
                   type: "Buffer",
-                  data: [
-                    228, 239, 69, 2, 92, 155, 64, 146, 75, 255, 23, 94, 43, 18,
-                    91, 91,
-                  ],
+                  data: [228, 239, 69, 2, 92, 155, 64, 146, 75, 255, 23, 94, 43, 18, 91, 91],
                 },
                 spanId: {
                   type: "Buffer",
@@ -789,10 +751,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       // Will throw an error if the parsing fails
@@ -811,10 +770,7 @@ describe("OTel Resource Span Mapping", () => {
               {
                 traceId: {
                   type: "Buffer",
-                  data: [
-                    234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211,
-                    89, 95,
-                  ],
+                  data: [234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211, 89, 95],
                 },
                 spanId: {
                   type: "Buffer",
@@ -909,10 +865,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       // Will throw an error if the parsing fails
@@ -921,9 +874,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(parsedEvents).toHaveLength(2);
 
       // Check that input contains both system and user messages
-      const observationEvent = parsedEvents.find(
-        (event) => event.type === "generation-create",
-      );
+      const observationEvent = parsedEvents.find((event) => event.type === "generation-create");
       expect(observationEvent?.body.input).toEqual([
         {
           role: "system",
@@ -977,8 +928,7 @@ describe("OTel Resource Span Mapping", () => {
                   {
                     key: "operation.name",
                     value: {
-                      stringValue:
-                        "ai.embed.doEmbed generate-document-embedding",
+                      stringValue: "ai.embed.doEmbed generate-document-embedding",
                     },
                   },
                   {
@@ -994,10 +944,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       const schema = createIngestionEventSchema();
@@ -1005,9 +952,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(parsedEvents).toHaveLength(2); // trace + embedding
 
       // Should create embedding-create event, not span-create
-      const embeddingEvent = parsedEvents.find(
-        (event) => event.type === "embedding-create",
-      );
+      const embeddingEvent = parsedEvents.find((event) => event.type === "embedding-create");
       expect(embeddingEvent).toBeDefined();
       expect(embeddingEvent?.body.model).toBe("gemini-embedding-001");
     });
@@ -1017,9 +962,7 @@ describe("OTel Resource Span Mapping", () => {
     const defaultSpanProps = {
       traceId: {
         type: "Buffer",
-        data: [
-          234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211, 89, 95,
-        ],
+        data: [234, 103, 55, 8, 68, 28, 41, 132, 165, 74, 62, 57, 98, 211, 89, 95],
       },
       spanId: {
         type: "Buffer",
@@ -1060,10 +1003,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       // Expect a span and a trace to be created
@@ -1081,47 +1021,38 @@ describe("OTel Resource Span Mapping", () => {
       ["EVALUATOR", "evaluator-create"],
       ["", "span-create"],
       ["UnknownKind", "span-create"],
-    ])(
-      "should map OpenInference %s span kind to %s event",
-      async (spanKind, expectedEventType) => {
-        const resourceSpan = {
-          scopeSpans: [
-            {
-              spans: [
-                {
-                  ...defaultSpanProps,
-                  attributes: [
-                    {
-                      key: "openinference.span.kind",
-                      value: { stringValue: spanKind },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        };
+    ])("should map OpenInference %s span kind to %s event", async (spanKind, expectedEventType) => {
+      const resourceSpan = {
+        scopeSpans: [
+          {
+            spans: [
+              {
+                ...defaultSpanProps,
+                attributes: [
+                  {
+                    key: "openinference.span.kind",
+                    value: { stringValue: spanKind },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
 
-        // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
+      // When
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
-        // Then
-        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
-        expect(
-          hanzoEvents.some((event) => event.type === expectedEventType),
-        ).toBe(true);
+      // Then
+      expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
+      expect(hanzoEvents.some((event) => event.type === expectedEventType)).toBe(true);
 
-        // Verify the observation has the correct type
-        const observationEvent = hanzoEvents.find(
-          (event) =>
-            event.type.endsWith("-create") && event.type !== "trace-create",
-        );
-        expect(observationEvent?.type).toBe(expectedEventType);
-      },
-    );
+      // Verify the observation has the correct type
+      const observationEvent = hanzoEvents.find(
+        (event) => event.type.endsWith("-create") && event.type !== "trace-create",
+      );
+      expect(observationEvent?.type).toBe(expectedEventType);
+    });
 
     it.each([
       ["chat", "generation-create"],
@@ -1132,47 +1063,38 @@ describe("OTel Resource Span Mapping", () => {
       ["invoke_agent", "agent-create"],
       ["create_agent", "agent-create"],
       ["execute_tool", "tool-create"],
-    ])(
-      "should map OTel GenAI %s operation to %s event",
-      async (operationName, expectedEventType) => {
-        const resourceSpan = {
-          scopeSpans: [
-            {
-              spans: [
-                {
-                  ...defaultSpanProps,
-                  attributes: [
-                    {
-                      key: "gen_ai.operation.name",
-                      value: { stringValue: operationName },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        };
+    ])("should map OTel GenAI %s operation to %s event", async (operationName, expectedEventType) => {
+      const resourceSpan = {
+        scopeSpans: [
+          {
+            spans: [
+              {
+                ...defaultSpanProps,
+                attributes: [
+                  {
+                    key: "gen_ai.operation.name",
+                    value: { stringValue: operationName },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
 
-        // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
+      // When
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
-        // Then
-        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
-        expect(
-          hanzoEvents.some((event) => event.type === expectedEventType),
-        ).toBe(true);
+      // Then
+      expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
+      expect(hanzoEvents.some((event) => event.type === expectedEventType)).toBe(true);
 
-        // Verify the observation has the correct type
-        const observationEvent = hanzoEvents.find(
-          (event) =>
-            event.type.endsWith("-create") && event.type !== "trace-create",
-        );
-        expect(observationEvent?.type).toBe(expectedEventType);
-      },
-    );
+      // Verify the observation has the correct type
+      const observationEvent = hanzoEvents.find(
+        (event) => event.type.endsWith("-create") && event.type !== "trace-create",
+      );
+      expect(observationEvent?.type).toBe(expectedEventType);
+    });
 
     it.each([
       ["ai.generateText.doGenerate", "generation-create"],
@@ -1184,48 +1106,39 @@ describe("OTel Resource Span Mapping", () => {
       ["ai.embedMany.doEmbed", "embedding-create"],
       ["ai.embed.doEmbed generate-document-embedding", "embedding-create"],
       ["ai.toolCall", "tool-create"],
-    ])(
-      "should map AI SDK %s operation to %s event",
-      async (operationName, expectedEventType) => {
-        const resourceSpan = {
-          scopeSpans: [
-            {
-              spans: [
-                {
-                  ...defaultSpanProps,
-                  attributes: [
-                    {
-                      key: "operation.name",
-                      value: { stringValue: operationName },
-                    },
-                    {
-                      key: "gen_ai.response.model",
-                      value: { stringValue: "gpt-4o" },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        };
-        // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
-        // Then
-        expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
-        expect(
-          hanzoEvents.some((event) => event.type === expectedEventType),
-        ).toBe(true);
-        // Verify the observation has the correct type
-        const observationEvent = hanzoEvents.find(
-          (event) =>
-            event.type.endsWith("-create") && event.type !== "trace-create",
-        );
-        expect(observationEvent?.type).toBe(expectedEventType);
-      },
-    );
+    ])("should map AI SDK %s operation to %s event", async (operationName, expectedEventType) => {
+      const resourceSpan = {
+        scopeSpans: [
+          {
+            spans: [
+              {
+                ...defaultSpanProps,
+                attributes: [
+                  {
+                    key: "operation.name",
+                    value: { stringValue: operationName },
+                  },
+                  {
+                    key: "gen_ai.response.model",
+                    value: { stringValue: "gpt-4o" },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      // When
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
+      // Then
+      expect(hanzoEvents).toHaveLength(2); // Should create trace + observation
+      expect(hanzoEvents.some((event) => event.type === expectedEventType)).toBe(true);
+      // Verify the observation has the correct type
+      const observationEvent = hanzoEvents.find(
+        (event) => event.type.endsWith("-create") && event.type !== "trace-create",
+      );
+      expect(observationEvent?.type).toBe(expectedEventType);
+    });
 
     it("should map Pydantic AI tool call to TOOL observation type via gen_ai.tool.* attributes", async () => {
       const traceId = "abcdef1234567890abcdef1234567890";
@@ -1301,10 +1214,7 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        pydanticAiToolSpan,
-        new Set([traceId]),
-      );
+      const events = await convertOtelSpanToIngestionEvent(pydanticAiToolSpan, new Set([traceId]));
 
       const toolObservation = events.find((e) => e.type === "tool-create");
 
@@ -1369,10 +1279,7 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        toolSpanWithBothNames,
-        new Set([traceId]),
-      );
+      const events = await convertOtelSpanToIngestionEvent(toolSpanWithBothNames, new Set([traceId]));
 
       const toolObservation = events.find((e) => e.type === "tool-create");
 
@@ -1408,20 +1315,13 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       expect(hanzoEvents).toHaveLength(2);
       // Should be tool-create, NOT generation-create (OpenInference takes priority)
-      expect(hanzoEvents.some((event) => event.type === "tool-create")).toBe(
-        true,
-      );
-      expect(
-        hanzoEvents.some((event) => event.type === "generation-create"),
-      ).toBe(false);
+      expect(hanzoEvents.some((event) => event.type === "tool-create")).toBe(true);
+      expect(hanzoEvents.some((event) => event.type === "generation-create")).toBe(false);
     });
 
     it("should prioritize OTel GenAI over model-based detection", async () => {
@@ -1448,20 +1348,13 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       expect(hanzoEvents).toHaveLength(2);
       // Should be embedding-create, NOT generation-create (OTel GenAI takes priority over model detection)
-      expect(
-        hanzoEvents.some((event) => event.type === "embedding-create"),
-      ).toBe(true);
-      expect(
-        hanzoEvents.some((event) => event.type === "generation-create"),
-      ).toBe(false);
+      expect(hanzoEvents.some((event) => event.type === "embedding-create")).toBe(true);
+      expect(hanzoEvents.some((event) => event.type === "generation-create")).toBe(false);
     });
 
     it("should trust Hanzo type over OpenInference or model detection", async () => {
@@ -1495,23 +1388,14 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       expect(hanzoEvents).toHaveLength(2);
       // Explicit Hanzo type should always win over inferred types
-      expect(hanzoEvents.some((event) => event.type === "span-create")).toBe(
-        true,
-      );
-      expect(hanzoEvents.some((event) => event.type === "agent-create")).toBe(
-        false,
-      );
-      expect(
-        hanzoEvents.some((event) => event.type === "generation-create"),
-      ).toBe(false);
+      expect(hanzoEvents.some((event) => event.type === "span-create")).toBe(true);
+      expect(hanzoEvents.some((event) => event.type === "agent-create")).toBe(false);
+      expect(hanzoEvents.some((event) => event.type === "generation-create")).toBe(false);
     });
 
     it("should trust OpenInference over model detection but keep model attributes", async () => {
@@ -1544,25 +1428,16 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       expect(hanzoEvents).toHaveLength(2);
       // OpenInference should win over model detection
-      expect(
-        hanzoEvents.some((event) => event.type === "retriever-create"),
-      ).toBe(true);
-      expect(
-        hanzoEvents.some((event) => event.type === "generation-create"),
-      ).toBe(false);
+      expect(hanzoEvents.some((event) => event.type === "retriever-create")).toBe(true);
+      expect(hanzoEvents.some((event) => event.type === "generation-create")).toBe(false);
 
       // Should still extract model and usage info
-      const retrieverEvent = hanzoEvents.find(
-        (event) => event.type === "retriever-create",
-      );
+      const retrieverEvent = hanzoEvents.find((event) => event.type === "retriever-create");
       expect(retrieverEvent?.body.model).toBe("text-embedding-ada-002");
       expect(retrieverEvent?.body.usageDetails.input).toBe(50);
     });
@@ -1603,14 +1478,9 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
-      const observationEvent = hanzoEvents.find(
-        (event) => event.type !== "trace-create",
-      );
+      const observationEvent = hanzoEvents.find((event) => event.type !== "trace-create");
 
       // Tool-call spans with empty model-related attributes should remain as span-create
       expect(observationEvent?.type).toBe("span-create");
@@ -1637,10 +1507,7 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // When
-      const hanzoEvents = await convertOtelSpanToIngestionEvent(
-        resourceSpan,
-        new Set(),
-      );
+      const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
       // Then
       expect(hanzoEvents[0].body.name).toBe("right name");
@@ -2148,9 +2015,7 @@ describe("OTel Resource Span Mapping", () => {
             stringValue: "Hello, how are you?",
           },
           entityAttributeKey: "input",
-          entityAttributeValue: [
-            { message: { content: "Hello, how are you?" } },
-          ],
+          entityAttributeValue: [{ message: { content: "Hello, how are you?" } }],
         },
       ],
       [
@@ -2174,9 +2039,7 @@ describe("OTel Resource Span Mapping", () => {
             stringValue: "Hello, how are you?",
           },
           entityAttributeKey: "output",
-          entityAttributeValue: [
-            { message: { content: "Hello, how are you?" } },
-          ],
+          entityAttributeValue: [{ message: { content: "Hello, how are you?" } }],
         },
       ],
       [
@@ -2428,12 +2291,10 @@ describe("OTel Resource Span Mapping", () => {
           entity: "observation",
           otelAttributeKey: "tool_arguments",
           otelAttributeValue: {
-            stringValue:
-              '{"query": "What is the weather like?", "location": "New York"}',
+            stringValue: '{"query": "What is the weather like?", "location": "New York"}',
           },
           entityAttributeKey: "input",
-          entityAttributeValue:
-            '{"query": "What is the weather like?", "location": "New York"}',
+          entityAttributeValue: '{"query": "What is the weather like?", "location": "New York"}',
         },
       ],
       [
@@ -2499,8 +2360,7 @@ describe("OTel Resource Span Mapping", () => {
         // Setup
         // Check if this test needs the "ai" scope (Vercel AI SDK attributes)
         const needsAiScope =
-          spec.otelAttributeKey.startsWith("ai.") ||
-          spec.otelAttributeKey.startsWith("pydantic-ai.");
+          spec.otelAttributeKey.startsWith("ai.") || spec.otelAttributeKey.startsWith("pydantic-ai.");
 
         const resourceSpan = {
           scopeSpans: [
@@ -2527,14 +2387,10 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
         // Then
-        const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
+        const entity: { body: Record<string, any> } = spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(
           spec.entityAttributeKey // This logic allows to follow a path in the object, e.g. foo.bar.baz.
             .split(".")
@@ -2638,14 +2494,10 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
         // Then
-        const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
+        const entity: { body: Record<string, any> } = spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
         expect(
           spec.entityAttributeKey // This logic allows to follow a path in the object, e.g. foo.bar.baz.
             .split(".")
@@ -2694,12 +2546,10 @@ describe("OTel Resource Span Mapping", () => {
           otelEventName: "gen_ai.content.completion",
           otelEventAttributeKey: "gen_ai.completion",
           otelEventAttributeValue: {
-            stringValue:
-              "assistant: LLM Observability stands for logs, metrics, and traces observability.",
+            stringValue: "assistant: LLM Observability stands for logs, metrics, and traces observability.",
           },
           entityAttributeKey: "output",
-          entityAttributeValue:
-            "assistant: LLM Observability stands for logs, metrics, and traces observability.",
+          entityAttributeValue: "assistant: LLM Observability stands for logs, metrics, and traces observability.",
         },
       ],
       [
@@ -2709,13 +2559,11 @@ describe("OTel Resource Span Mapping", () => {
           otelEventName: "gen_ai.content.completion",
           otelEventAttributeKey: "gen_ai.something_else",
           otelEventAttributeValue: {
-            stringValue:
-              "assistant: LLM Observability stands for logs, metrics, and traces observability.",
+            stringValue: "assistant: LLM Observability stands for logs, metrics, and traces observability.",
           },
           entityAttributeKey: "output",
           entityAttributeValue: {
-            "gen_ai.something_else":
-              "assistant: LLM Observability stands for logs, metrics, and traces observability.",
+            "gen_ai.something_else": "assistant: LLM Observability stands for logs, metrics, and traces observability.",
           },
         },
       ],
@@ -2941,17 +2789,11 @@ describe("OTel Resource Span Mapping", () => {
         };
 
         // When
-        const hanzoEvents = await convertOtelSpanToIngestionEvent(
-          resourceSpan,
-          new Set(),
-        );
+        const hanzoEvents = await convertOtelSpanToIngestionEvent(resourceSpan, new Set());
 
         // Then
-        const entity: { body: Record<string, any> } =
-          spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
-        expect(entity.body[spec.entityAttributeKey]).toEqual(
-          spec.entityAttributeValue,
-        );
+        const entity: { body: Record<string, any> } = spec.entity === "trace" ? hanzoEvents[0] : hanzoEvents[1];
+        expect(entity.body[spec.entityAttributeKey]).toEqual(spec.entityAttributeValue);
       },
     );
 
@@ -3012,8 +2854,7 @@ describe("OTel Resource Span Mapping", () => {
                   {
                     key: "llm.output_messages.0.message.content",
                     value: {
-                      stringValue:
-                        "I don't have access to real-time weather data.",
+                      stringValue: "I don't have access to real-time weather data.",
                     },
                   },
                   // Custom attributes (should remain in metadata.attributes)
@@ -3029,77 +2870,38 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        openInferenceSpan,
-        new Set(),
-      );
+      const events = await convertOtelSpanToIngestionEvent(openInferenceSpan, new Set());
 
-      const observation = events.find(
-        (e) => e.type.endsWith("-create") && e.type !== "trace-create",
-      );
+      const observation = events.find((e) => e.type.endsWith("-create") && e.type !== "trace-create");
 
       // Verify input is extracted and structured as a nested array
       expect(observation?.body.input).toBeDefined();
       const inputParsed =
-        typeof observation?.body.input === "string"
-          ? JSON.parse(observation.body.input)
-          : observation?.body.input;
+        typeof observation?.body.input === "string" ? JSON.parse(observation.body.input) : observation?.body.input;
       expect(Array.isArray(inputParsed)).toBe(true);
       expect(inputParsed[0].message.role).toBe("system");
-      expect(inputParsed[0].message.content).toBe(
-        "You are a helpful assistant.",
-      );
+      expect(inputParsed[0].message.content).toBe("You are a helpful assistant.");
       expect(inputParsed[1].message.role).toBe("user");
       expect(inputParsed[1].message.content).toBe("What is the weather today?");
 
       // Verify output is extracted and structured as a nested array
       expect(observation?.body.output).toBeDefined();
       const outputParsed =
-        typeof observation?.body.output === "string"
-          ? JSON.parse(observation.body.output)
-          : observation?.body.output;
+        typeof observation?.body.output === "string" ? JSON.parse(observation.body.output) : observation?.body.output;
       expect(Array.isArray(outputParsed)).toBe(true);
       expect(outputParsed[0].message.role).toBe("assistant");
-      expect(outputParsed[0].message.content).toBe(
-        "I don't have access to real-time weather data.",
-      );
+      expect(outputParsed[0].message.content).toBe("I don't have access to real-time weather data.");
 
       // Verify llm.input_messages.* and llm.output_messages.* are NOT in metadata.attributes
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.input_messages.0.message.role"
-        ],
-      ).toBeUndefined();
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.input_messages.0.message.content"
-        ],
-      ).toBeUndefined();
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.input_messages.1.message.role"
-        ],
-      ).toBeUndefined();
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.input_messages.1.message.content"
-        ],
-      ).toBeUndefined();
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.output_messages.0.message.role"
-        ],
-      ).toBeUndefined();
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.output_messages.0.message.content"
-        ],
-      ).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.input_messages.0.message.role"]).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.input_messages.0.message.content"]).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.input_messages.1.message.role"]).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.input_messages.1.message.content"]).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.output_messages.0.message.role"]).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.output_messages.0.message.content"]).toBeUndefined();
 
       // Verify custom attributes ARE in metadata.attributes
-      expect(observation?.body.metadata?.attributes?.custom_attribute).toBe(
-        "should_be_preserved",
-      );
+      expect(observation?.body.metadata?.attributes?.custom_attribute).toBe("should_be_preserved");
     });
 
     it("should filter all input/output attribute patterns from metadata.attributes while preserving custom attributes", async () => {
@@ -3182,14 +2984,9 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        multiFrameworkSpan,
-        new Set(),
-      );
+      const events = await convertOtelSpanToIngestionEvent(multiFrameworkSpan, new Set());
 
-      const observation = events.find(
-        (e) => e.type.endsWith("-create") && e.type !== "trace-create",
-      );
+      const observation = events.find((e) => e.type.endsWith("-create") && e.type !== "trace-create");
 
       // Verify input was extracted
       expect(observation?.body.input).toBe('{"query": "test input"}');
@@ -3198,39 +2995,21 @@ describe("OTel Resource Span Mapping", () => {
       expect(observation?.body.metadata?.attributes?.input).toBeUndefined();
 
       // Verify gen_ai.prompt.* attributes are filtered
-      expect(
-        observation?.body.metadata?.attributes?.["gen_ai.prompt.0.content"],
-      ).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["gen_ai.prompt.0.content"]).toBeUndefined();
 
       // Verify gen_ai.completion.* attributes are filtered
-      expect(
-        observation?.body.metadata?.attributes?.["gen_ai.completion.0.content"],
-      ).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["gen_ai.completion.0.content"]).toBeUndefined();
 
       // Verify llm.input_messages.* attributes are filtered
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.input_messages.0.message.role"
-        ],
-      ).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.input_messages.0.message.role"]).toBeUndefined();
 
       // Verify llm.output_messages.* attributes are filtered
-      expect(
-        observation?.body.metadata?.attributes?.[
-          "llm.output_messages.0.message.role"
-        ],
-      ).toBeUndefined();
+      expect(observation?.body.metadata?.attributes?.["llm.output_messages.0.message.role"]).toBeUndefined();
 
       // Verify custom attributes ARE preserved in metadata.attributes
-      expect(
-        observation?.body.metadata?.attributes?.["custom.request_id"],
-      ).toBe("req-12345");
-      expect(
-        observation?.body.metadata?.attributes?.["deployment.region"],
-      ).toBe("us-west-2");
-      expect(observation?.body.metadata?.attributes?.["model.version"]).toBe(
-        "v2.0",
-      );
+      expect(observation?.body.metadata?.attributes?.["custom.request_id"]).toBe("req-12345");
+      expect(observation?.body.metadata?.attributes?.["deployment.region"]).toBe("us-west-2");
+      expect(observation?.body.metadata?.attributes?.["model.version"]).toBe("v2.0");
     });
   });
 
@@ -3343,9 +3122,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       };
 
-      const count = (processor as any).getTotalSpanCount([
-        maliciousResourceSpan,
-      ]);
+      const count = (processor as any).getTotalSpanCount([maliciousResourceSpan]);
       expect(count).toBe(-1);
     });
   });
@@ -3371,10 +3148,8 @@ describe("OTel Resource Span Mapping", () => {
       const expectedEndTime = "2025-04-17T07:39:54.084Z";
 
       // Convert timestamps to ISO strings
-      const actualStartTime =
-        OtelIngestionProcessor.convertNanoTimestampToISO(positiveTimestamp);
-      const actualEndTime =
-        OtelIngestionProcessor.convertNanoTimestampToISO(negativeTimestamp);
+      const actualStartTime = OtelIngestionProcessor.convertNanoTimestampToISO(positiveTimestamp);
+      const actualEndTime = OtelIngestionProcessor.convertNanoTimestampToISO(negativeTimestamp);
 
       // Verify conversions match expected values
       expect(actualStartTime).toBe(expectedStartTime);
@@ -3385,9 +3160,7 @@ describe("OTel Resource Span Mapping", () => {
       // Test with string timestamp (nanoseconds)
       const stringTimestamp = "1744317592317227000"; // Same as positiveTimestamp above
       const expectedStringResult = "2025-04-10T20:39:52.317Z";
-      expect(
-        OtelIngestionProcessor.convertNanoTimestampToISO(stringTimestamp),
-      ).toBe(expectedStringResult);
+      expect(OtelIngestionProcessor.convertNanoTimestampToISO(stringTimestamp)).toBe(expectedStringResult);
 
       // Test with zero timestamp
       const zeroTimestamp = {
@@ -3395,9 +3168,7 @@ describe("OTel Resource Span Mapping", () => {
         high: 0,
         unsigned: true,
       };
-      expect(
-        OtelIngestionProcessor.convertNanoTimestampToISO(zeroTimestamp),
-      ).toBe("1970-01-01T00:00:00.000Z");
+      expect(OtelIngestionProcessor.convertNanoTimestampToISO(zeroTimestamp)).toBe("1970-01-01T00:00:00.000Z");
     });
   });
 
@@ -3425,10 +3196,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3467,10 +3235,7 @@ describe("OTel Resource Span Mapping", () => {
       // Empty seenTraces set - should create shallow trace for first span
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
 
@@ -3521,10 +3286,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3563,14 +3325,7 @@ describe("OTel Resource Span Mapping", () => {
       // seenTraces contains the traceId - should NOT create trace
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(
-                span,
-                seenTraces,
-                publicKey,
-              ),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, seenTraces, publicKey)),
         )
       ).flat();
 
@@ -3614,10 +3369,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3653,14 +3405,7 @@ describe("OTel Resource Span Mapping", () => {
       // seenTraces contains the traceId, but span is root - should still create full trace
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(
-                span,
-                seenTraces,
-                publicKey,
-              ),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, seenTraces, publicKey)),
         )
       ).flat();
 
@@ -3708,10 +3453,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3757,14 +3499,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(
-                span,
-                seenTraces,
-                publicKey,
-              ),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, seenTraces, publicKey)),
         )
       ).flat();
 
@@ -3799,10 +3534,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3848,14 +3580,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(
-                span,
-                seenTraces,
-                publicKey,
-              ),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, seenTraces, publicKey)),
         )
       ).flat();
 
@@ -3890,10 +3615,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -3936,14 +3658,7 @@ describe("OTel Resource Span Mapping", () => {
       // seenTraces contains the traceId, but span has trace updates - should still create full trace
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(
-                span,
-                seenTraces,
-                publicKey,
-              ),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, seenTraces, publicKey)),
         )
       ).flat();
 
@@ -3969,9 +3684,7 @@ describe("OTel Resource Span Mapping", () => {
     });
 
     it("should create only ONE trace when multiple spans share the same traceId with empty seenTraces", async () => {
-      const sharedTraceId = [
-        149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32,
-      ];
+      const sharedTraceId = [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32];
 
       const otelSpans = [
         {
@@ -4098,10 +3811,7 @@ describe("OTel Resource Span Mapping", () => {
       // Empty seenTraces set - should create only ONE trace despite multiple spans with same traceId
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
 
@@ -4133,9 +3843,7 @@ describe("OTel Resource Span Mapping", () => {
     });
 
     it("should filter out shallow traces when full traces exist for the same traceId in same batch", async () => {
-      const sharedTraceId = [
-        149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32,
-      ];
+      const sharedTraceId = [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32];
 
       const otelSpans = [
         {
@@ -4218,10 +3926,7 @@ describe("OTel Resource Span Mapping", () => {
       // Empty seenTraces set - both spans would normally create traces
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
 
@@ -4270,10 +3975,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -4311,10 +4013,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
 
@@ -4344,10 +4043,7 @@ describe("OTel Resource Span Mapping", () => {
                 {
                   traceId: {
                     type: "Buffer",
-                    data: [
-                      149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                      49, 17, 32,
-                    ],
+                    data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                   },
                   spanId: {
                     type: "Buffer",
@@ -4385,10 +4081,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const events = (
         await Promise.all(
-          otelSpans.map(
-            async (span) =>
-              await convertOtelSpanToIngestionEvent(span, new Set(), publicKey),
-          ),
+          otelSpans.map(async (span) => await convertOtelSpanToIngestionEvent(span, new Set(), publicKey)),
         )
       ).flat();
 
@@ -4407,9 +4100,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "test-span",
@@ -4429,11 +4120,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
       const spanEvents = events.filter((e) => e.type === "span-create");
 
       expect(spanEvents.length).toBe(1);
@@ -4462,9 +4149,7 @@ describe("OTel Resource Span Mapping", () => {
                 spans: [
                   {
                     traceId: {
-                      data: [
-                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                      ],
+                      data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                     },
                     spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                     name: `test-${type}`,
@@ -4498,19 +4183,11 @@ describe("OTel Resource Span Mapping", () => {
           },
         ];
 
-        const events = await convertOtelSpanToIngestionEvent(
-          otelSpans[0],
-          new Set(),
-          publicKey,
-        );
+        const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
         // Should create the specific observation type, NOT generation-create
-        const observationEvents = events.filter(
-          (e) => e.type === expectedEventType,
-        );
-        const generationEvents = events.filter(
-          (e) => e.type === "generation-create",
-        );
+        const observationEvents = events.filter((e) => e.type === expectedEventType);
+        const generationEvents = events.filter((e) => e.type === "generation-create");
 
         expect(observationEvents.length).toBe(1);
         expect(generationEvents.length).toBe(0);
@@ -4530,9 +4207,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "test-llm-call",
@@ -4553,15 +4228,9 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
-      const generationEvents = events.filter(
-        (e) => e.type === "generation-create",
-      );
+      const generationEvents = events.filter((e) => e.type === "generation-create");
       expect(generationEvents.length).toBe(1);
       expect(generationEvents[0].body.name).toBe("test-llm-call");
       expect(generationEvents[0].body.model).toBe("gpt-4");
@@ -4577,9 +4246,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: {
                     data: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -4610,11 +4277,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
       // Should create a span-create event (default when no mapping found)
       const spanEvents = events.filter((e) => e.type === "span-create");
@@ -4622,9 +4285,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(spanEvents[0].body.name).toBe("unknown-operation");
 
       // Should not create any generation-create or other typed events
-      const nonSpanEvents = events.filter(
-        (e) => e.type !== "span-create" && e.type !== "trace-create",
-      );
+      const nonSpanEvents = events.filter((e) => e.type !== "span-create" && e.type !== "trace-create");
       expect(nonSpanEvents.length).toBe(0);
 
       // Should still create a trace
@@ -4642,9 +4303,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "ai.toolCall",
@@ -4682,11 +4341,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
       const toolEvents = events.filter((e) => e.type === "tool-create");
       expect(toolEvents.length).toBe(1);
@@ -4702,9 +4357,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "tool-execution",
@@ -4724,11 +4377,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
       const toolEvents = events.filter((e) => e.type === "tool-create");
       expect(toolEvents.length).toBe(1);
@@ -4744,9 +4393,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "text-generation",
@@ -4770,15 +4417,9 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
-      const generationEvents = events.filter(
-        (e) => e.type === "generation-create",
-      );
+      const generationEvents = events.filter((e) => e.type === "generation-create");
       expect(generationEvents.length).toBe(1);
     });
 
@@ -4792,9 +4433,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                   name: "text-generation",
@@ -4814,16 +4453,10 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
       const spanEvents = events.filter((e) => e.type === "span-create");
-      const generationEvents = events.filter(
-        (e) => e.type === "generation-create",
-      );
+      const generationEvents = events.filter((e) => e.type === "generation-create");
       expect(spanEvents.length).toBe(1);
       expect(generationEvents.length).toBe(0);
     });
@@ -4855,9 +4488,7 @@ describe("OTel Resource Span Mapping", () => {
               spans: [
                 {
                   traceId: {
-                    data: [
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    ],
+                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
                   },
                   spanId: {
                     data: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -4884,11 +4515,7 @@ describe("OTel Resource Span Mapping", () => {
         },
       ];
 
-      const events = await convertOtelSpanToIngestionEvent(
-        otelSpans[0],
-        new Set(),
-        publicKey,
-      );
+      const events = await convertOtelSpanToIngestionEvent(otelSpans[0], new Set(), publicKey);
 
       // Should create a span-create event (default when no mapping found)
       const spanEvents = events.filter((e) => e.type === "generation-create");
@@ -4896,9 +4523,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(spanEvents[0].body.name).toBe("unknown-operation");
 
       // Should not create any span-create or other typed events
-      const nonSpanEvents = events.filter(
-        (e) => e.type !== "generation-create" && e.type !== "trace-create",
-      );
+      const nonSpanEvents = events.filter((e) => e.type !== "generation-create" && e.type !== "trace-create");
       expect(nonSpanEvents.length).toBe(0);
 
       // Should still create a trace
@@ -4920,10 +4545,7 @@ describe("OTel Resource Span Mapping", () => {
             spans: [
               {
                 traceId: {
-                  data: [
-                    149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                    49, 17, 32,
-                  ],
+                  data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                 },
                 spanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
                 name: "root-span",
@@ -4959,10 +4581,7 @@ describe("OTel Resource Span Mapping", () => {
             spans: [
               {
                 traceId: {
-                  data: [
-                    149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39,
-                    49, 17, 32,
-                  ],
+                  data: [149, 243, 185, 38, 199, 208, 9, 146, 91, 203, 93, 188, 39, 49, 17, 32],
                 },
                 spanId: { data: [2, 2, 3, 4, 5, 6, 7, 8] },
                 parentSpanId: { data: [1, 2, 3, 4, 5, 6, 7, 8] },
@@ -4991,38 +4610,22 @@ describe("OTel Resource Span Mapping", () => {
       };
 
       // Validate that root span creates trace with span attributes in metadata.attributes
-      const rootEvents = await convertOtelSpanToIngestionEvent(
-        rootSpan,
-        new Set(),
-        publicKey,
-      );
+      const rootEvents = await convertOtelSpanToIngestionEvent(rootSpan, new Set(), publicKey);
       const rootTrace = rootEvents.find((e) => e.type === "trace-create");
       expect(rootTrace?.body.sessionId).toBe("original-session");
-      expect(
-        rootTrace?.body.metadata?.attributes?.original_span_attribute,
-      ).toBe("should_be_preserved");
+      expect(rootTrace?.body.metadata?.attributes?.original_span_attribute).toBe("should_be_preserved");
 
       // Process child span with trace updates
-      const childSpanEvents = await convertOtelSpanToIngestionEvent(
-        childSpan,
-        new Set([traceId]),
-        publicKey,
-      );
-      const updatedTraceEvent = childSpanEvents.find(
-        (e) => e.type === "trace-create",
-      );
+      const childSpanEvents = await convertOtelSpanToIngestionEvent(childSpan, new Set([traceId]), publicKey);
+      const updatedTraceEvent = childSpanEvents.find((e) => e.type === "trace-create");
 
       expect(updatedTraceEvent).toBeDefined();
 
       // original_span_attribute should still exist
-      expect(
-        updatedTraceEvent.body.metadata?.attributes?.original_span_attribute,
-      ).toBe("should_be_preserved");
+      expect(updatedTraceEvent.body.metadata?.attributes?.original_span_attribute).toBe("should_be_preserved");
 
       // new_span_attribute should now exist
-      expect(
-        updatedTraceEvent.body.metadata?.attributes?.new_span_attribute,
-      ).toBe("new_value");
+      expect(updatedTraceEvent.body.metadata?.attributes?.new_span_attribute).toBe("new_value");
 
       // The sessionId should be updated
       expect(updatedTraceEvent.body.sessionId).toBe("new-session");
@@ -5112,14 +4715,9 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        vercelAIAnthropicSpan,
-        new Set(),
-      );
+      const events = await convertOtelSpanToIngestionEvent(vercelAIAnthropicSpan, new Set());
 
-      const observationEvent = events.find(
-        (e) => e.type === "generation-create" || e.type === "span-create",
-      );
+      const observationEvent = events.find((e) => e.type === "generation-create" || e.type === "span-create");
 
       expect(observationEvent).toBeDefined();
 
@@ -5128,18 +4726,10 @@ describe("OTel Resource Span Mapping", () => {
       expect(observationEvent?.body.usageDetails.output).toBe(445);
 
       // Verify cache tokens are extracted
-      expect(observationEvent?.body.usageDetails.input_cached_tokens).toBe(
-        16399,
-      );
-      expect(
-        observationEvent?.body.usageDetails.input_cache_read,
-      ).toBeUndefined(); // no double accounting
-      expect(observationEvent?.body.usageDetails.input_cache_creation).toBe(
-        2089,
-      );
-      expect(
-        observationEvent?.body.usageDetails.input_cache_write,
-      ).toBeUndefined(); // no double accounting
+      expect(observationEvent?.body.usageDetails.input_cached_tokens).toBe(16399);
+      expect(observationEvent?.body.usageDetails.input_cache_read).toBeUndefined(); // no double accounting
+      expect(observationEvent?.body.usageDetails.input_cache_creation).toBe(2089);
+      expect(observationEvent?.body.usageDetails.input_cache_write).toBeUndefined(); // no double accounting
     });
     it("should extract all Bedrock cache token types from Vercel AI SDK provider metadata", async () => {
       const traceId = "abcdef1234567890abcdef1234567890";
@@ -5225,14 +4815,9 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        vercelAIBedrockSpan,
-        new Set(),
-      );
+      const events = await convertOtelSpanToIngestionEvent(vercelAIBedrockSpan, new Set());
 
-      const observationEvent = events.find(
-        (e) => e.type === "generation-create" || e.type === "span-create",
-      );
+      const observationEvent = events.find((e) => e.type === "generation-create" || e.type === "span-create");
 
       expect(observationEvent).toBeDefined();
 
@@ -5244,14 +4829,10 @@ describe("OTel Resource Span Mapping", () => {
       // Verify Bedrock cache tokens are extracted
       expect(observationEvent?.body.usageDetails.input_cache_read).toBe(4482);
       expect(observationEvent?.body.usageDetails.input_cache_write).toBe(0);
-      expect(observationEvent?.body.usageDetails.input_cache_creation).toBe(
-        100,
-      );
+      expect(observationEvent?.body.usageDetails.input_cache_creation).toBe(100);
 
       // Verify model is extracted
-      expect(observationEvent?.body.model).toBe(
-        "anthropic.claude-3-5-sonnet-20241022-v2:0",
-      );
+      expect(observationEvent?.body.model).toBe("anthropic.claude-3-5-sonnet-20241022-v2:0");
     });
 
     it("should handle Bedrock provider metadata with only cache read tokens", async () => {
@@ -5298,25 +4879,16 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        vercelAIBedrockSpan,
-        new Set(),
-      );
+      const events = await convertOtelSpanToIngestionEvent(vercelAIBedrockSpan, new Set());
 
-      const observationEvent = events.find(
-        (e) => e.type === "generation-create" || e.type === "span-create",
-      );
+      const observationEvent = events.find((e) => e.type === "generation-create" || e.type === "span-create");
 
       expect(observationEvent).toBeDefined();
       expect(observationEvent?.body.usageDetails.input).toBe(0);
       expect(observationEvent?.body.usageDetails.input_cache_read).toBe(5000);
       // Other cache tokens should not be set
-      expect(
-        observationEvent?.body.usageDetails.input_cache_write,
-      ).toBeUndefined();
-      expect(
-        observationEvent?.body.usageDetails.input_cache_creation,
-      ).toBeUndefined();
+      expect(observationEvent?.body.usageDetails.input_cache_write).toBeUndefined();
+      expect(observationEvent?.body.usageDetails.input_cache_creation).toBeUndefined();
     });
   });
 
@@ -5379,10 +4951,7 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const rootEvents = await convertOtelSpanToIngestionEvent(
-        rootSpan,
-        new Set(),
-      );
+      const rootEvents = await convertOtelSpanToIngestionEvent(rootSpan, new Set());
 
       const traceEvent = rootEvents.find((e) => e.type === "trace-create");
 
@@ -5391,20 +4960,12 @@ describe("OTel Resource Span Mapping", () => {
       expect(traceEvent?.body.output).toEqual('{"response": "hi"}');
 
       // Verify trace input/output keys are NOT in metadata.attributes
-      expect(
-        traceEvent?.body.metadata?.attributes?.["hanzo.trace.input"],
-      ).toBeUndefined();
-      expect(
-        traceEvent?.body.metadata?.attributes?.["hanzo.trace.output"],
-      ).toBeUndefined();
+      expect(traceEvent?.body.metadata?.attributes?.["hanzo.trace.input"]).toBeUndefined();
+      expect(traceEvent?.body.metadata?.attributes?.["hanzo.trace.output"]).toBeUndefined();
 
       // Verify custom trace attributes ARE in metadata.attributes
-      expect(
-        traceEvent?.body.metadata?.attributes?.custom_trace_attribute,
-      ).toBe("should_be_in_metadata");
-      expect(traceEvent?.body.metadata?.attributes?.trace_metadata_field).toBe(
-        "preserved_value",
-      );
+      expect(traceEvent?.body.metadata?.attributes?.custom_trace_attribute).toBe("should_be_in_metadata");
+      expect(traceEvent?.body.metadata?.attributes?.trace_metadata_field).toBe("preserved_value");
     });
 
     it("should filter Vercel AI SDK input/output attributes from observation metadata", async () => {
@@ -5473,37 +5034,21 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const vercelEvents = await convertOtelSpanToIngestionEvent(
-        vercelAISpan,
-        new Set([traceId]),
-      );
+      const vercelEvents = await convertOtelSpanToIngestionEvent(vercelAISpan, new Set([traceId]));
 
-      const vercelObservation = vercelEvents.find(
-        (e) => e.type === "span-create",
-      );
+      const vercelObservation = vercelEvents.find((e) => e.type === "span-create");
 
       // Verify Vercel AI SDK input/output are extracted
-      expect(vercelObservation?.body.input).toEqual(
-        JSON.stringify([{ role: "user", content: "test" }]),
-      );
+      expect(vercelObservation?.body.input).toEqual(JSON.stringify([{ role: "user", content: "test" }]));
       expect(vercelObservation?.body.output).toBe("AI response text");
 
       // Verify Vercel AI SDK keys are NOT in metadata.attributes
-      expect(
-        vercelObservation?.body.metadata?.attributes?.["ai.prompt.messages"],
-      ).toBeUndefined();
-      expect(
-        vercelObservation?.body.metadata?.attributes?.["ai.response.text"],
-      ).toBeUndefined();
+      expect(vercelObservation?.body.metadata?.attributes?.["ai.prompt.messages"]).toBeUndefined();
+      expect(vercelObservation?.body.metadata?.attributes?.["ai.response.text"]).toBeUndefined();
 
       // Verify custom observation attributes ARE in metadata.attributes
-      expect(
-        vercelObservation?.body.metadata?.attributes
-          ?.custom_observation_attribute,
-      ).toBe("should_remain");
-      expect(vercelObservation?.body.metadata?.attributes?.request_id).toBe(
-        "req-123",
-      );
+      expect(vercelObservation?.body.metadata?.attributes?.custom_observation_attribute).toBe("should_remain");
+      expect(vercelObservation?.body.metadata?.attributes?.request_id).toBe("req-123");
     });
 
     it("should filter TraceLoop and MLFlow input/output attributes from observation metadata", async () => {
@@ -5574,43 +5119,24 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const traceLoopEvents = await convertOtelSpanToIngestionEvent(
-        traceLoopSpan,
-        new Set([traceId]),
-      );
+      const traceLoopEvents = await convertOtelSpanToIngestionEvent(traceLoopSpan, new Set([traceId]));
 
-      const traceLoopObservation = traceLoopEvents.find(
-        (e) => e.type === "span-create",
-      );
+      const traceLoopObservation = traceLoopEvents.find((e) => e.type === "span-create");
 
       // Verify TraceLoop input/output are extracted
       expect(traceLoopObservation?.body.input).toBeDefined();
       expect(traceLoopObservation?.body.output).toBeDefined();
 
       // Verify TraceLoop gen_ai keys are NOT in metadata.attributes
-      expect(
-        traceLoopObservation?.body.metadata?.attributes?.[
-          "gen_ai.prompt.0.content"
-        ],
-      ).toBeUndefined();
-      expect(
-        traceLoopObservation?.body.metadata?.attributes?.[
-          "gen_ai.completion.0.content"
-        ],
-      ).toBeUndefined();
+      expect(traceLoopObservation?.body.metadata?.attributes?.["gen_ai.prompt.0.content"]).toBeUndefined();
+      expect(traceLoopObservation?.body.metadata?.attributes?.["gen_ai.completion.0.content"]).toBeUndefined();
 
       // Verify MLFlow keys are NOT in metadata.attributes
-      expect(
-        traceLoopObservation?.body.metadata?.attributes?.["mlflow.spanInputs"],
-      ).toBeUndefined();
-      expect(
-        traceLoopObservation?.body.metadata?.attributes?.["mlflow.spanOutputs"],
-      ).toBeUndefined();
+      expect(traceLoopObservation?.body.metadata?.attributes?.["mlflow.spanInputs"]).toBeUndefined();
+      expect(traceLoopObservation?.body.metadata?.attributes?.["mlflow.spanOutputs"]).toBeUndefined();
 
       // Verify custom span attribute IS in metadata.attributes
-      expect(
-        traceLoopObservation?.body.metadata?.attributes?.span_custom_field,
-      ).toBe("custom_value");
+      expect(traceLoopObservation?.body.metadata?.attributes?.span_custom_field).toBe("custom_value");
     });
 
     it("should extract Google ADK tool call I/O from tool_call_args/tool_response when llm_request/llm_response are empty", async () => {
@@ -5690,8 +5216,7 @@ describe("OTel Resource Span Mapping", () => {
                   {
                     key: "gen_ai.tool.description",
                     value: {
-                      stringValue:
-                        "a tool that bakes a cake for you, with a lot of chocolate if you ask nicely",
+                      stringValue: "a tool that bakes a cake for you, with a lot of chocolate if you ask nicely",
                     },
                   },
                   {
@@ -5734,8 +5259,7 @@ describe("OTel Resource Span Mapping", () => {
                   {
                     key: "tool.description",
                     value: {
-                      stringValue:
-                        "a tool that bakes a cake for you, with a lot of chocolate if you ask nicely",
+                      stringValue: "a tool that bakes a cake for you, with a lot of chocolate if you ask nicely",
                     },
                   },
                   {
@@ -5757,8 +5281,7 @@ describe("OTel Resource Span Mapping", () => {
                   {
                     key: "output.value",
                     value: {
-                      stringValue:
-                        '{"id":"adk-chocolate-caked","name":"bake_cake","response":{"result":"duplo cake"}}',
+                      stringValue: '{"id":"adk-chocolate-caked","name":"bake_cake","response":{"result":"duplo cake"}}',
                     },
                   },
                   {
@@ -5778,14 +5301,9 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const googleADKEvents = await convertOtelSpanToIngestionEvent(
-        googleADKToolSpan,
-        new Set([traceId]),
-      );
+      const googleADKEvents = await convertOtelSpanToIngestionEvent(googleADKToolSpan, new Set([traceId]));
 
-      const toolObservation = googleADKEvents.find(
-        (e) => e.type === "tool-create",
-      );
+      const toolObservation = googleADKEvents.find((e) => e.type === "tool-create");
 
       // Bug: input/output should NOT be "{}" from empty llm_request/llm_response
       // Instead, they should come from tool_call_args and tool_response
@@ -5796,31 +5314,13 @@ describe("OTel Resource Span Mapping", () => {
       expect(toolObservation?.body.input).toBe('{"query": "much duplo"}');
 
       // Verify output is correctly extracted from tool_response
-      expect(toolObservation?.body.output).toBe(
-        '{"result": "particularly juicy cake"}',
-      );
+      expect(toolObservation?.body.output).toBe('{"result": "particularly juicy cake"}');
 
       // Verify Google ADK attributes are NOT in metadata.attributes
-      expect(
-        toolObservation?.body.metadata?.attributes?.[
-          "gcp.vertex.agent.tool_call_args"
-        ],
-      ).toBeUndefined();
-      expect(
-        toolObservation?.body.metadata?.attributes?.[
-          "gcp.vertex.agent.tool_response"
-        ],
-      ).toBeUndefined();
-      expect(
-        toolObservation?.body.metadata?.attributes?.[
-          "gcp.vertex.agent.llm_request"
-        ],
-      ).toBeUndefined();
-      expect(
-        toolObservation?.body.metadata?.attributes?.[
-          "gcp.vertex.agent.llm_response"
-        ],
-      ).toBeUndefined();
+      expect(toolObservation?.body.metadata?.attributes?.["gcp.vertex.agent.tool_call_args"]).toBeUndefined();
+      expect(toolObservation?.body.metadata?.attributes?.["gcp.vertex.agent.tool_response"]).toBeUndefined();
+      expect(toolObservation?.body.metadata?.attributes?.["gcp.vertex.agent.llm_request"]).toBeUndefined();
+      expect(toolObservation?.body.metadata?.attributes?.["gcp.vertex.agent.llm_response"]).toBeUndefined();
 
       // Verify trace-level attributes
       expect(toolObservation?.body.traceId).toBe(traceId);
@@ -5869,10 +5369,7 @@ describe("OTel Resource Span Mapping", () => {
         ],
       };
 
-      const events = await convertOtelSpanToIngestionEvent(
-        spanWithNonStringAttrs,
-        new Set([traceId]),
-      );
+      const events = await convertOtelSpanToIngestionEvent(spanWithNonStringAttrs, new Set([traceId]));
 
       const observation = events.find((e) => e.type === "span-create");
 
@@ -5884,9 +5381,7 @@ describe("OTel Resource Span Mapping", () => {
       expect(observation?.body.metadata?.attributes?.temperature).toBe("0.7");
       expect(observation?.body.metadata?.attributes?.is_streaming).toBe("true");
       // Verify string values remain strings
-      expect(observation?.body.metadata?.attributes?.custom_field).toBe(
-        "custom-value",
-      );
+      expect(observation?.body.metadata?.attributes?.custom_field).toBe("custom-value");
     });
   });
 });

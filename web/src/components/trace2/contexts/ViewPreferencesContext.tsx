@@ -55,15 +55,12 @@ interface ViewPreferencesContextValue {
   setJsonBetaEnabled: (value: boolean) => void;
 }
 
-const ViewPreferencesContext =
-  createContext<ViewPreferencesContextValue | null>(null);
+const ViewPreferencesContext = createContext<ViewPreferencesContextValue | null>(null);
 
 export function useViewPreferences(): ViewPreferencesContextValue {
   const context = useContext(ViewPreferencesContext);
   if (!context) {
-    throw new Error(
-      "useViewPreferences must be used within a ViewPreferencesProvider",
-    );
+    throw new Error("useViewPreferences must be used within a ViewPreferencesProvider");
   }
   return context;
 }
@@ -74,48 +71,29 @@ interface ViewPreferencesProviderProps {
   traceContext?: "peek" | "fullscreen";
 }
 
-export function ViewPreferencesProvider({
-  children,
-  traceContext = "fullscreen",
-}: ViewPreferencesProviderProps) {
+export function ViewPreferencesProvider({ children, traceContext = "fullscreen" }: ViewPreferencesProviderProps) {
   const isPeekMode = traceContext === "peek";
-  const [showDuration, setShowDuration] = useLocalStorage(
-    "durationOnObservationTree",
-    true,
-  );
-  const [showCostTokens, setShowCostTokens] = useLocalStorage(
-    "costTokensOnObservationTree",
-    true,
-  );
-  const [showScores, setShowScores] = useLocalStorage(
-    "scoresOnObservationTree",
-    true,
-  );
-  const [colorCodeMetrics, setColorCodeMetrics] = useLocalStorage(
-    "colorCodeMetricsOnObservationTree",
-    true,
-  );
+  const [showDuration, setShowDuration] = useLocalStorage("durationOnObservationTree", true);
+  const [showCostTokens, setShowCostTokens] = useLocalStorage("costTokensOnObservationTree", true);
+  const [showScores, setShowScores] = useLocalStorage("scoresOnObservationTree", true);
+  const [colorCodeMetrics, setColorCodeMetrics] = useLocalStorage("colorCodeMetricsOnObservationTree", true);
   const [showComments, setShowComments] = useLocalStorage("showComments", true);
   const [showGraph, setShowGraph] = useLocalStorage("showGraph", true);
-  const [minObservationLevel, setMinObservationLevel] =
-    useLocalStorage<ObservationLevelType>(
-      "minObservationLevel",
-      ObservationLevel.DEFAULT,
-    );
-  const [logViewMode, setLogViewMode] = useLocalStorage<LogViewMode>(
-    "logViewMode",
-    "chronological",
+  const [minObservationLevel, setMinObservationLevel] = useLocalStorage<ObservationLevelType>(
+    "minObservationLevel",
+    ObservationLevel.DEFAULT,
   );
-  const [logViewTreeStyle, setLogViewTreeStyle] =
-    useLocalStorage<LogViewTreeStyle>("logViewTreeStyle", "flat");
-  const [jsonViewPreference, setJsonViewPreference] =
-    useLocalStorage<JsonViewPreference>("jsonViewPreference", "pretty");
+  const [logViewMode, setLogViewMode] = useLocalStorage<LogViewMode>("logViewMode", "chronological");
+  const [logViewTreeStyle, setLogViewTreeStyle] = useLocalStorage<LogViewTreeStyle>("logViewTreeStyle", "flat");
+  const [jsonViewPreference, setJsonViewPreference] = useLocalStorage<JsonViewPreference>(
+    "jsonViewPreference",
+    "pretty",
+  );
   // Migration: default to true if user had json-beta selected previously
   // TODO: Remove migration logic after 2025-01-26 (2 weeks) when user settings are migrated
   const [jsonBetaEnabled, setJsonBetaEnabled] = useLocalStorage<boolean>(
     "jsonBetaEnabled",
-    typeof window !== "undefined" &&
-      localStorage.getItem("jsonViewPreference") === '"json-beta"',
+    typeof window !== "undefined" && localStorage.getItem("jsonViewPreference") === '"json-beta"',
   );
 
   const value = useMemo<ViewPreferencesContextValue>(
@@ -171,9 +149,5 @@ export function ViewPreferencesProvider({
     ],
   );
 
-  return (
-    <ViewPreferencesContext.Provider value={value}>
-      {children}
-    </ViewPreferencesContext.Provider>
-  );
+  return <ViewPreferencesContext.Provider value={value}>{children}</ViewPreferencesContext.Provider>;
 }

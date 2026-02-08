@@ -10,10 +10,7 @@ type UsageDetailsEditorProps = {
 
 export type { UsageDetailsEditorProps };
 
-export function UsageDetailsEditor({
-  usageDetails,
-  onChange,
-}: UsageDetailsEditorProps) {
+export function UsageDetailsEditor({ usageDetails, onChange }: UsageDetailsEditorProps) {
   const [entries, setEntries] = useState<Array<{ key: string; value: number }>>(
     Object.entries(usageDetails).map(([key, value]) => ({ key, value })),
   );
@@ -21,9 +18,7 @@ export function UsageDetailsEditor({
   const handleUpdate = (newEntries: Array<{ key: string; value: number }>) => {
     setEntries(newEntries);
     const newUsageDetails = Object.fromEntries(
-      newEntries
-        .filter((e) => e.key.trim() !== "")
-        .map((e) => [e.key, e.value]),
+      newEntries.filter((e) => e.key.trim() !== "").map((e) => [e.key, e.value]),
     );
     onChange(newUsageDetails);
   };
@@ -61,16 +56,13 @@ export function UsageDetailsEditor({
       <div>
         <div className="pb-2 text-sm font-medium">Usage Details (optional)</div>
         <div className="text-sm text-muted-foreground">
-          Add usage details to test pricing tier matching. Leave empty to match
-          the default tier.
+          Add usage details to test pricing tier matching. Leave empty to match the default tier.
         </div>
       </div>
 
       {/* Template Buttons */}
       <div className="space-y-2">
-        <div className="text-sm text-muted-foreground">
-          Prefill from template:
-        </div>
+        <div className="text-sm text-muted-foreground">Prefill from template:</div>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -121,16 +113,9 @@ export function UsageDetailsEditor({
                 type="number"
                 placeholder="0"
                 value={entry.value}
-                onChange={(e) =>
-                  handleValueChange(index, parseFloat(e.target.value) || 0)
-                }
+                onChange={(e) => handleValueChange(index, parseFloat(e.target.value) || 0)}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemoveRow(index)}
-              >
+              <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveRow(index)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -138,12 +123,7 @@ export function UsageDetailsEditor({
         </div>
       ) : null}
 
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={handleAddRow}
-        className="w-full"
-      >
+      <Button type="button" variant="ghost" onClick={handleAddRow} className="w-full">
         <PlusCircle className="mr-2 h-4 w-4" />
         Add Usage Type
       </Button>

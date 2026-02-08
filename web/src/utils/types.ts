@@ -65,9 +65,6 @@ export type Guardrail = Observation & {
 export type RouterInput = inferRouterInputs<AppRouter>;
 export type RouterOutput = inferRouterOutputs<AppRouter>;
 
-export const isUndefinedOrNull = <T>(val?: T | null): val is undefined | null =>
-  val === undefined || val === null;
+export const isUndefinedOrNull = <T>(val?: T | null): val is undefined | null => val === undefined || val === null;
 
-export const isNotNullOrUndefined = <T>(
-  val?: T | null,
-): val is Exclude<T, null | undefined> => !isUndefinedOrNull(val);
+export const isNotNullOrUndefined = <T>(val?: T | null): val is Exclude<T, null | undefined> => !isUndefinedOrNull(val);

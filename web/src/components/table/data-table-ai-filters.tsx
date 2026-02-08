@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { Info, ExternalLink } from "lucide-react";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
@@ -18,9 +13,7 @@ interface DataTableAIFiltersProps {
   onFiltersGenerated: (filters: FilterState) => void;
 }
 
-export function DataTableAIFilters({
-  onFiltersGenerated,
-}: DataTableAIFiltersProps) {
+export function DataTableAIFilters({ onFiltersGenerated }: DataTableAIFiltersProps) {
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
   const projectId = useProjectIdFromURL();
@@ -31,8 +24,7 @@ export function DataTableAIFilters({
     scope: "organization:update",
   });
 
-  const createFilterMutation =
-    api.naturalLanguageFilters.createCompletion.useMutation();
+  const createFilterMutation = api.naturalLanguageFilters.createCompletion.useMutation();
 
   const handleAiFilterSubmit = async () => {
     if (aiPrompt.trim() && !createFilterMutation.isPending && projectId) {
@@ -58,9 +50,7 @@ export function DataTableAIFilters({
         }
       } catch (error) {
         console.error("Error calling tRPC API:", error);
-        setAiError(
-          error instanceof Error ? error.message : "Failed to generate filters",
-        );
+        setAiError(error instanceof Error ? error.message : "Failed to generate filters");
       }
     }
   };
@@ -70,18 +60,13 @@ export function DataTableAIFilters({
     return (
       <div className="flex flex-col gap-3">
         <p className="text-sm text-muted-foreground">
-          AI-powered filters use natural language to generate deterministic
-          filters.
-          {!hasAdminAccess &&
-            " Ask your organization administrator to enable AI features in organization settings."}
+          AI-powered filters use natural language to generate deterministic filters.
+          {!hasAdminAccess && " Ask your organization administrator to enable AI features in organization settings."}
         </p>
         {hasAdminAccess && organization?.id && (
           <Button
             onClick={() => {
-              window.open(
-                `/organization/${organization.id}/settings`,
-                "_blank",
-              );
+              window.open(`/organization/${organization.id}/settings`, "_blank");
             }}
             variant="outline"
             size="sm"
@@ -107,8 +92,7 @@ export function DataTableAIFilters({
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">
-                We convert natural language into deterministic filters which you
-                can adjust afterwards
+                We convert natural language into deterministic filters which you can adjust afterwards
               </p>
             </TooltipContent>
           </Tooltip>
@@ -125,11 +109,7 @@ export function DataTableAIFilters({
         className="min-h-[80px] resize-none"
         disabled={createFilterMutation.isPending}
         onKeyDown={(e) => {
-          if (
-            e.key === "Enter" &&
-            !e.shiftKey &&
-            !createFilterMutation.isPending
-          ) {
+          if (e.key === "Enter" && !e.shiftKey && !createFilterMutation.isPending) {
             e.preventDefault();
             handleAiFilterSubmit();
           }
@@ -146,9 +126,7 @@ export function DataTableAIFilters({
         {createFilterMutation.isPending ? "Loading..." : "Generate"}
       </Button>
       {aiError && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {aiError}
-        </div>
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{aiError}</div>
       )}
     </div>
   );

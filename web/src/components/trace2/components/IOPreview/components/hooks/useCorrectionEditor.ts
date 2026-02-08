@@ -57,10 +57,7 @@ export function useCorrectionEditor({
     if (!value && actualOutput) {
       try {
         // Store as JSON string (not stringified string)
-        const jsonValue =
-          typeof actualOutput === "string"
-            ? actualOutput
-            : JSON.stringify(actualOutput);
+        const jsonValue = typeof actualOutput === "string" ? actualOutput : JSON.stringify(actualOutput);
         setValue(jsonValue);
 
         // Validate the prefilled value

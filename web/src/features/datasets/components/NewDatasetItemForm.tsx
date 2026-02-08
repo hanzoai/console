@@ -2,14 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { api } from "@/src/utils/api";
 import { useState, useMemo, useEffect } from "react";
 import { CodeMirrorEditor } from "@/src/components/editor";
@@ -27,11 +20,7 @@ import {
   InputCommandInput,
   InputCommandItem,
 } from "@/src/components/ui/input-command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
@@ -50,8 +39,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   expectedOutput: z.string().refine(
@@ -65,8 +53,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
   metadata: z.string().refine(
@@ -80,8 +67,7 @@ const formSchema = z.object({
       }
     },
     {
-      message:
-        "Invalid input. Please provide a JSON object or double-quoted string.",
+      message: "Invalid input. Please provide a JSON object or double-quoted string.",
     },
   ),
 });
@@ -131,15 +117,12 @@ export const NewDatasetItemForm = (props: {
   const inputValue = form.watch("input");
   const expectedOutputValue = form.watch("expectedOutput");
 
-  const hasInitialValues = Boolean(
-    props.input || props.output || props.metadata,
-  );
+  const hasInitialValues = Boolean(props.input || props.output || props.metadata);
 
   // Track if fields have been touched or modified
   const { touchedFields, dirtyFields } = form.formState;
   const hasInteractedWithInput = touchedFields.input || dirtyFields.input;
-  const hasInteractedWithExpectedOutput =
-    touchedFields.expectedOutput || dirtyFields.expectedOutput;
+  const hasInteractedWithExpectedOutput = touchedFields.expectedOutput || dirtyFields.expectedOutput;
 
   const datasets = api.datasets.allDatasetMeta.useQuery({
     projectId: props.projectId,
@@ -152,11 +135,7 @@ export const NewDatasetItemForm = (props: {
   }, [datasets.data, selectedDatasetIds]);
 
   // Validate against all selected dataset schemas
-  const validation = useDatasetItemValidation(
-    inputValue,
-    expectedOutputValue,
-    selectedDatasets,
-  );
+  const validation = useDatasetItemValidation(inputValue, expectedOutputValue, selectedDatasets);
 
   // Check if any selected dataset has schemas
   const hasInputSchema = selectedDatasets.some((d) => d.inputSchema);
@@ -164,9 +143,7 @@ export const NewDatasetItemForm = (props: {
 
   // Filter validation errors by field
   const inputErrors = validation.errors.filter((e) => e.field === "input");
-  const expectedOutputErrors = validation.errors.filter(
-    (e) => e.field === "expectedOutput",
-  );
+  const expectedOutputErrors = validation.errors.filter((e) => e.field === "expectedOutput");
 
   // Generate placeholders from schema when dataset is selected
   useEffect(() => {
@@ -202,28 +179,19 @@ export const NewDatasetItemForm = (props: {
         });
       }
     }
-  }, [
-    selectedDatasets,
-    hasInitialValues,
-    inputValue,
-    expectedOutputValue,
-    form,
-  ]);
+  }, [selectedDatasets, hasInitialValues, inputValue, expectedOutputValue, form]);
 
   const utils = api.useUtils();
-  const createManyDatasetItemsMutation =
-    api.datasets.createManyDatasetItems.useMutation({
-      onSuccess: () => utils.datasets.invalidate(),
-      onError: (error) => {
-        if (error.message.includes("Body exc")) {
-          setFormError(
-            "Data exceeds maximum size (4.5MB). Please attempt to create dataset item programmatically.",
-          );
-        } else {
-          setFormError(error.message);
-        }
-      },
-    });
+  const createManyDatasetItemsMutation = api.datasets.createManyDatasetItems.useMutation({
+    onSuccess: () => utils.datasets.invalidate(),
+    onError: (error) => {
+      if (error.message.includes("Body exc")) {
+        setFormError("Data exceeds maximum size (4.5MB). Please attempt to create dataset item programmatically.");
+      } else {
+        setFormError(error.message);
+      }
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (props.traceId) {
@@ -254,9 +222,7 @@ export const NewDatasetItemForm = (props: {
           return;
         }
 
-        setFormError(
-          `Item does not match dataset schema. Errors: ${JSON.stringify(result.validationErrors, null, 2)}`,
-        );
+        setFormError(`Item does not match dataset schema. Errors: ${JSON.stringify(result.validationErrors, null, 2)}`);
         console.error(result.validationErrors);
       })
       .catch((error) => {
@@ -266,10 +232,7 @@ export const NewDatasetItemForm = (props: {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex h-full flex-col gap-6", props.className)}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn("flex h-full flex-col gap-6", props.className)}>
         <DialogBody className="grid grid-rows-[auto,1fr]">
           <div className="flex-none">
             <FormField
@@ -284,10 +247,7 @@ export const NewDatasetItemForm = (props: {
                         <Button
                           variant="outline"
                           role="combobox"
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value.length && "text-muted-foreground",
-                          )}
+                          className={cn("w-full justify-between", !field.value.length && "text-muted-foreground")}
                         >
                           {field.value.length > 0
                             ? `${field.value.length} dataset${field.value.length > 1 ? "s" : ""} selected`
@@ -298,13 +258,8 @@ export const NewDatasetItemForm = (props: {
                     </PopoverTrigger>
                     <PopoverContent className="p-0">
                       <InputCommand>
-                        <InputCommandInput
-                          placeholder="Search datasets..."
-                          variant="bottom"
-                        />
-                        <InputCommandEmpty>
-                          No datasets found.
-                        </InputCommandEmpty>
+                        <InputCommandInput placeholder="Search datasets..." variant="bottom" />
+                        <InputCommandEmpty>No datasets found.</InputCommandEmpty>
                         <InputCommandGroup>
                           <ScrollArea className="h-fit">
                             {datasets.data?.map((dataset) => (
@@ -312,12 +267,8 @@ export const NewDatasetItemForm = (props: {
                                 value={dataset.name}
                                 key={dataset.id}
                                 onSelect={() => {
-                                  const newValue = field.value.includes(
-                                    dataset.id,
-                                  )
-                                    ? field.value.filter(
-                                        (id) => id !== dataset.id,
-                                      )
+                                  const newValue = field.value.includes(dataset.id)
+                                    ? field.value.filter((id) => id !== dataset.id)
                                     : [...field.value, dataset.id];
                                   field.onChange(newValue);
                                 }}
@@ -325,16 +276,12 @@ export const NewDatasetItemForm = (props: {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    field.value.includes(dataset.id)
-                                      ? "opacity-100"
-                                      : "opacity-0",
+                                    field.value.includes(dataset.id) ? "opacity-100" : "opacity-0",
                                   )}
                                 />
                                 {dataset.name}
                                 {dataset.id === props.currentDatasetId && (
-                                  <span className="ml-1 text-muted-foreground">
-                                    (current)
-                                  </span>
+                                  <span className="ml-1 text-muted-foreground">(current)</span>
                                 )}
                               </InputCommandItem>
                             ))}
@@ -346,15 +293,9 @@ export const NewDatasetItemForm = (props: {
                   {field.value.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
                       {field.value.map((datasetId) => {
-                        const dataset = datasets.data?.find(
-                          (d) => d.id === datasetId,
-                        );
+                        const dataset = datasets.data?.find((d) => d.id === datasetId);
                         return (
-                          <Badge
-                            key={datasetId}
-                            variant="secondary"
-                            className="mb-1 mr-1"
-                          >
+                          <Badge key={datasetId} variant="secondary" className="mb-1 mr-1">
                             {dataset?.name || datasetId}
                           </Badge>
                         );
@@ -461,12 +402,7 @@ export const NewDatasetItemForm = (props: {
                 <FormItem className="mt-4 flex flex-col gap-2">
                   <FormLabel>Metadata</FormLabel>
                   <FormControl>
-                    <CodeMirrorEditor
-                      mode="json"
-                      value={field.value}
-                      onChange={field.onChange}
-                      minHeight={100}
-                    />
+                    <CodeMirrorEditor mode="json" value={field.value} onChange={field.onChange} minHeight={100} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -480,15 +416,10 @@ export const NewDatasetItemForm = (props: {
               type="submit"
               loading={createManyDatasetItemsMutation.isPending}
               className="w-full"
-              disabled={
-                selectedDatasetCount === 0 ||
-                (validation.hasSchemas && !validation.isValid)
-              }
+              disabled={selectedDatasetCount === 0 || (validation.hasSchemas && !validation.isValid)}
             >
               Add
-              {selectedDatasetCount > 1
-                ? ` to ${selectedDatasetCount} datasets`
-                : " to dataset"}
+              {selectedDatasetCount > 1 ? ` to ${selectedDatasetCount} datasets` : " to dataset"}
             </Button>
             {formError ? (
               <p className="text-red mt-2 text-center">

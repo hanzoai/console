@@ -1,22 +1,11 @@
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
-import {
-  traceException,
-  redis,
-  logger,
-  getCurrentSpan,
-  contextWithHanzoProps,
-} from "@hanzo/shared/src/server";
+import { traceException, redis, logger, getCurrentSpan, contextWithHanzoProps } from "@hanzo/shared/src/server";
 import { telemetry } from "@/src/features/telemetry";
 import { jsonSchema } from "@hanzo/shared";
 import { isPrismaException } from "@/src/utils/exceptions";
-import {
-  MethodNotAllowedError,
-  BaseError,
-  UnauthorizedError,
-  ForbiddenError,
-} from "@hanzo/shared";
+import { MethodNotAllowedError, BaseError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
 import { processEventBatch } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
@@ -47,10 +36,7 @@ export const config = {
  * The last two stages live in a processEventBatch function which is reused for the POST scores endpoint and for
  * legacy event types.
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     await runMiddleware(req, res, cors);
 
@@ -59,13 +45,9 @@ export default async function handler(
 
     // get x-hanzo-xxx headers and add them to the span
     Object.keys(req.headers).forEach((header) => {
-      if (
-        header.toLowerCase().startsWith("x-hanzo") ||
-        header.toLowerCase().startsWith("x_hanzo")
-      ) {
+      if (header.toLowerCase().startsWith("x-hanzo") || header.toLowerCase().startsWith("x_hanzo")) {
         currentSpan?.setAttributes({
-          [`hanzo.header.${header.slice(11).toLowerCase().replaceAll("_", "-")}`]:
-            req.headers[header],
+          [`hanzo.header.${header.slice(11).toLowerCase().replaceAll("_", "-")}`]: req.headers[header],
         });
       }
     });
@@ -73,24 +55,17 @@ export default async function handler(
     if (req.method !== "POST") throw new MethodNotAllowedError();
 
     // CHECK AUTH FOR ALL EVENTS
-    const authCheck = await new ApiAuthService(
-      prisma,
-      redis,
-    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
 
     if (!authCheck.validKey) {
       throw new UnauthorizedError(authCheck.error);
     }
     if (!authCheck.scope.projectId) {
-      throw new UnauthorizedError(
-        "Missing projectId in scope. Are you using an organization key?",
-      );
+      throw new UnauthorizedError("Missing projectId in scope. Are you using an organization key?");
     }
 
     if (authCheck.scope.isIngestionSuspended) {
-      throw new ForbiddenError(
-        "Ingestion suspended: Usage threshold exceeded. Please upgrade your plan.",
-      );
+      throw new ForbiddenError("Ingestion suspended: Usage threshold exceeded. Please upgrade your plan.");
     }
 
     const ctx = contextWithHanzoProps({
@@ -100,11 +75,7 @@ export default async function handler(
     // Execute the rest of the handler within the context
     return opentelemetry.context.with(ctx, async () => {
       try {
-        const rateLimitCheck =
-          await RateLimitService.getInstance().rateLimitRequest(
-            authCheck.scope,
-            "ingestion",
-          );
+        const rateLimitCheck = await RateLimitService.getInstance().rateLimitRequest(authCheck.scope, "ingestion");
 
         if (rateLimitCheck?.isRateLimited()) {
           return rateLimitCheck.sendRestResponseIfLimited(res);
@@ -131,10 +102,7 @@ export default async function handler(
       }
 
       await telemetry();
-      const result = await processEventBatch(
-        parsedSchema.data.batch,
-        authCheck,
-      );
+      const result = await processEventBatch(parsedSchema.data.batch, authCheck);
       return res.status(207).json(result);
     });
   } catch (error: unknown) {
@@ -164,8 +132,7 @@ export default async function handler(
       });
     }
 
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     res.status(500).json({
       message: "Invalid request data",
       errors: [errorMessage],

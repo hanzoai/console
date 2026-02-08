@@ -4,8 +4,7 @@ import { InfoIcon } from "lucide-react";
 import { useBillingInformation } from "./useBillingInformation";
 
 export const BillingScheduleNotification = () => {
-  const { planLabel, cancellation, scheduledPlanSwitch } =
-    useBillingInformation();
+  const { planLabel, cancellation, scheduledPlanSwitch } = useBillingInformation();
 
   if (!scheduledPlanSwitch && !cancellation) {
     return null;
@@ -30,9 +29,7 @@ export const BillingScheduleNotification = () => {
           <div>
             <div className="leading-5">{`Your organization is scheduled to switch from ${planLabel} to ${scheduledPlanSwitch.newPlanLabel} on ${scheduledPlanSwitch.formatted}.`}</div>
             {scheduledPlanSwitch.message && (
-              <div className="mt-2 leading-5 text-blue-800 dark:text-blue-300">
-                {scheduledPlanSwitch.message}
-              </div>
+              <div className="mt-2 leading-5 text-blue-800 dark:text-blue-300">{scheduledPlanSwitch.message}</div>
             )}
           </div>
         </div>

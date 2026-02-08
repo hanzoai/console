@@ -48,15 +48,11 @@ describe("containsAnyMarkdown Function", () => {
   });
 
   it("Detects images", () => {
-    expect(containsAnyMarkdown("![Alt text](http://url/to/img.png)")).toBe(
-      true,
-    );
+    expect(containsAnyMarkdown("![Alt text](http://url/to/img.png)")).toBe(true);
   });
 
   it("Returns false for non-markdown text", () => {
-    expect(
-      containsAnyMarkdown("This is plain text without any markdown syntax"),
-    ).toBe(false);
+    expect(containsAnyMarkdown("This is plain text without any markdown syntax")).toBe(false);
     expect(containsAnyMarkdown("12345")).toBe(false);
     expect(containsAnyMarkdown("Simple text.")).toBe(false);
   });

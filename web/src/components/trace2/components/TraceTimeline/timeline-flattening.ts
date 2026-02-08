@@ -5,11 +5,7 @@
 
 import { type TreeNode } from "../../lib/types";
 import { type FlatTimelineItem, type TimelineMetrics } from "./types";
-import {
-  calculateTimelineOffset,
-  calculateTimelineWidth,
-  SCALE_WIDTH,
-} from "./timeline-calculations";
+import { calculateTimelineOffset, calculateTimelineWidth, SCALE_WIDTH } from "./timeline-calculations";
 
 /**
  * Flattens tree into list for timeline virtualized rendering.
@@ -36,9 +32,7 @@ export function flattenTreeWithTimelineMetrics(
   const flatList: FlatTimelineItem[] = [];
 
   // Sort roots by startTime
-  const sortedRoots = [...roots].sort(
-    (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-  );
+  const sortedRoots = [...roots].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
   // Initialize stack with all roots at depth 0 (in reverse order for correct DFS)
   const stack: Array<{
@@ -67,30 +61,15 @@ export function flattenTreeWithTimelineMetrics(
       ? (currentNode.endTime.getTime() - currentNode.startTime.getTime()) / 1000
       : undefined;
 
-    const startOffset = calculateTimelineOffset(
-      currentNode.startTime,
-      traceStartTime,
-      totalScaleSpan,
-      scaleWidth,
-    );
+    const startOffset = calculateTimelineOffset(currentNode.startTime, traceStartTime, totalScaleSpan, scaleWidth);
 
-    const itemWidth = calculateTimelineWidth(
-      latency ?? 0,
-      totalScaleSpan,
-      scaleWidth,
-    );
+    const itemWidth = calculateTimelineWidth(latency ?? 0, totalScaleSpan, scaleWidth);
 
     // Handle first token time for streaming LLMs (completionStartTime)
     // This is stored on observations that have streaming responses
     const firstTokenTimeOffset =
-      "completionStartTime" in currentNode &&
-      currentNode.completionStartTime instanceof Date
-        ? calculateTimelineOffset(
-            currentNode.completionStartTime,
-            traceStartTime,
-            totalScaleSpan,
-            scaleWidth,
-          )
+      "completionStartTime" in currentNode && currentNode.completionStartTime instanceof Date
+        ? calculateTimelineOffset(currentNode.completionStartTime, traceStartTime, totalScaleSpan, scaleWidth)
         : undefined;
 
     const metrics: TimelineMetrics = {
@@ -110,14 +89,9 @@ export function flattenTreeWithTimelineMetrics(
     });
 
     // If node has children and is not collapsed, add children to stack
-    if (
-      currentNode.children.length > 0 &&
-      !collapsedNodes.has(currentNode.id)
-    ) {
+    if (currentNode.children.length > 0 && !collapsedNodes.has(currentNode.id)) {
       // Sort children by startTime (chronological order)
-      const sortedChildren = [...currentNode.children].sort(
-        (a, b) => a.startTime.getTime() - b.startTime.getTime(),
-      );
+      const sortedChildren = [...currentNode.children].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
       // Push children in REVERSE order to maintain left-to-right DFS traversal
       // (stack is LIFO, so last pushed = first popped)

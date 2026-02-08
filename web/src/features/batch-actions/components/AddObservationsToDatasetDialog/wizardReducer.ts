@@ -41,10 +41,7 @@ const BACK_STEP_MAP: Partial<Record<DialogStep, DialogStep>> = {
   preview: "metadata-mapping",
 };
 
-export function wizardReducer(
-  state: WizardState,
-  action: WizardAction,
-): WizardState {
+export function wizardReducer(state: WizardState, action: WizardAction): WizardState {
   switch (action.type) {
     case "SELECT_MODE":
       return { ...state, step: action.mode };
@@ -105,8 +102,7 @@ export function wizardReducer(
         ...state,
         validation: {
           ...state.validation,
-          [action.field === "input" ? "inputMapping" : "outputMapping"]:
-            action.isValid,
+          [action.field === "input" ? "inputMapping" : "outputMapping"]: action.isValid,
         },
       };
 

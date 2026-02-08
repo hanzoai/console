@@ -1,12 +1,6 @@
 import { z } from "zod/v4";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
-import {
-  filterInterface,
-  sqlInterface,
-} from "@/src/server/api/services/sqlInterface";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import { filterInterface, sqlInterface } from "@/src/server/api/services/sqlInterface";
 import { createHistogramData } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { TRPCError } from "@trpc/server";
 import {
@@ -20,17 +14,8 @@ import {
   DashboardDefinitionSchema,
 } from "@hanzo/shared/src/server";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
-import {
-  type QueryType,
-  query as customQuery,
-} from "@/src/features/query/types";
-import {
-  paginationZod,
-  orderBy,
-  StringNoHTML,
-  InvalidRequestError,
-  singleFilter,
-} from "@hanzo/shared";
+import { type QueryType, query as customQuery } from "@/src/features/query/types";
+import { paginationZod, orderBy, StringNoHTML, InvalidRequestError, singleFilter } from "@hanzo/shared";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 
@@ -103,18 +88,13 @@ export const dashboardRouter = createTRPCRouter({
       const [from, to] = extractFromAndToTimestampsFromFilter(input.filter);
 
       if (from.value > to.value) {
-        logger.error(
-          `from > to, returning empty result: from=${from}, to=${to}`,
-        );
+        logger.error(`from > to, returning empty result: from=${from}, to=${to}`);
         return [];
       }
 
       switch (input.queryName) {
         case "score-aggregate":
-          const scores = await getScoreAggregate(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const scores = await getScoreAggregate(input.projectId, input.filter ?? []);
           return scores.map((row) => ({
             scoreName: row.name,
             scoreSource: row.source,
@@ -123,16 +103,10 @@ export const dashboardRouter = createTRPCRouter({
             countScoreId: Number(row.count),
           })) as DatabaseRow[];
         case "observations-usage-by-type-timeseries":
-          const rowsObsType = await getObservationUsageByTypeByTime(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const rowsObsType = await getObservationUsageByTypeByTime(input.projectId, input.filter ?? []);
           return rowsObsType as DatabaseRow[];
         case "observations-cost-by-type-timeseries":
-          const rowsObsCostByType = await getObservationCostByTypeByTime(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const rowsObsCostByType = await getObservationCostByTypeByTime(input.projectId, input.filter ?? []);
           return rowsObsCostByType as DatabaseRow[];
         default:
           throw new TRPCError({
@@ -149,11 +123,7 @@ export const dashboardRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const data = await getNumericScoreHistogram(
-        input.projectId,
-        input.filter ?? [],
-        input.limit ?? 10000,
-      );
+      const data = await getNumericScoreHistogram(input.projectId, input.filter ?? [], input.limit ?? 10000);
       return createHistogramData(data);
     }),
   executeQuery: protectedProjectProcedure
@@ -182,67 +152,58 @@ export const dashboardRouter = createTRPCRouter({
       }
     }),
 
-  allDashboards: protectedProjectProcedure
-    .input(ListDashboardsInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
+  allDashboards: protectedProjectProcedure.input(ListDashboardsInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const result = await DashboardService.listDashboards({
+      projectId: input.projectId,
+      limit: input.limit,
+      page: input.page,
+      orderBy: input.orderBy,
+    });
+
+    return result;
+  }),
+
+  getDashboard: protectedProjectProcedure.input(GetDashboardInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const dashboard = await DashboardService.getDashboard(input.dashboardId, input.projectId);
+
+    if (!dashboard) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Dashboard not found",
       });
+    }
 
-      const result = await DashboardService.listDashboards({
-        projectId: input.projectId,
-        limit: input.limit,
-        page: input.page,
-        orderBy: input.orderBy,
-      });
+    return dashboard;
+  }),
 
-      return result;
-    }),
+  createDashboard: protectedProjectProcedure.input(CreateDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
 
-  getDashboard: protectedProjectProcedure
-    .input(GetDashboardInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
-      });
+    const dashboard = await DashboardService.createDashboard(
+      input.projectId,
+      input.name,
+      input.description,
+      ctx.session.user.id,
+    );
 
-      const dashboard = await DashboardService.getDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
-
-      if (!dashboard) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Dashboard not found",
-        });
-      }
-
-      return dashboard;
-    }),
-
-  createDashboard: protectedProjectProcedure
-    .input(CreateDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
-      });
-
-      const dashboard = await DashboardService.createDashboard(
-        input.projectId,
-        input.name,
-        input.description,
-        ctx.session.user.id,
-      );
-
-      return dashboard;
-    }),
+    return dashboard;
+  }),
 
   updateDashboardDefinition: protectedProjectProcedure
     .input(UpdateDashboardDefinitionInput)
@@ -263,59 +224,52 @@ export const dashboardRouter = createTRPCRouter({
       return dashboard;
     }),
 
-  updateDashboardMetadata: protectedProjectProcedure
-    .input(UpdateDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
+  updateDashboardMetadata: protectedProjectProcedure.input(UpdateDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
+
+    const dashboard = await DashboardService.updateDashboard(
+      input.dashboardId,
+      input.projectId,
+      input.name,
+      input.description,
+      ctx.session.user.id,
+    );
+
+    return dashboard;
+  }),
+
+  cloneDashboard: protectedProjectProcedure.input(CloneDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
+
+    // Get the source dashboard
+    const sourceDashboard = await DashboardService.getDashboard(input.dashboardId, input.projectId);
+
+    if (!sourceDashboard) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Source dashboard not found",
       });
+    }
 
-      const dashboard = await DashboardService.updateDashboard(
-        input.dashboardId,
-        input.projectId,
-        input.name,
-        input.description,
-        ctx.session.user.id,
-      );
+    // Create a new dashboard with the same data but modified name
+    const clonedDashboard = await DashboardService.createDashboard(
+      input.projectId,
+      `${sourceDashboard.name} (Clone)`,
+      sourceDashboard.description,
+      ctx.session.user.id,
+      sourceDashboard.definition,
+    );
 
-      return dashboard;
-    }),
-
-  cloneDashboard: protectedProjectProcedure
-    .input(CloneDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
-      });
-
-      // Get the source dashboard
-      const sourceDashboard = await DashboardService.getDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
-
-      if (!sourceDashboard) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Source dashboard not found",
-        });
-      }
-
-      // Create a new dashboard with the same data but modified name
-      const clonedDashboard = await DashboardService.createDashboard(
-        input.projectId,
-        `${sourceDashboard.name} (Clone)`,
-        sourceDashboard.description,
-        ctx.session.user.id,
-        sourceDashboard.definition,
-      );
-
-      return clonedDashboard;
-    }),
+    return clonedDashboard;
+  }),
 
   updateDashboardFilters: protectedProjectProcedure
     .input(UpdateDashboardFiltersInput)
@@ -351,10 +305,7 @@ export const dashboardRouter = createTRPCRouter({
         scope: "dashboards:CUD",
       });
 
-      await DashboardService.deleteDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
+      await DashboardService.deleteDashboard(input.dashboardId, input.projectId);
 
       return { success: true };
     }),

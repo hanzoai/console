@@ -36,9 +36,7 @@ export interface TraceSettingsDropdownProps {
   isGraphViewAvailable: boolean;
 }
 
-export function TraceSettingsDropdown({
-  isGraphViewAvailable,
-}: TraceSettingsDropdownProps) {
+export function TraceSettingsDropdown({ isGraphViewAvailable }: TraceSettingsDropdownProps) {
   const capture = usePostHogClientCapture();
 
   // Get all preferences directly from context
@@ -65,63 +63,35 @@ export function TraceSettingsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          title="View Options"
-          className="h-7 w-7"
-        >
+        <Button variant="ghost" size="icon" title="View Options" className="h-7 w-7">
           <Settings2 className="h-3.5 w-3.5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-64 space-x-0 space-y-0 p-0 px-0"
-      >
+      <DropdownMenuContent align="end" className="w-64 space-x-0 space-y-0 p-0 px-0">
         <DropdownMenuLabel>View Options</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <div className="space-y-0 p-0 py-1">
           {/* Show Graph Toggle (only when available) */}
           {isGraphViewAvailable && (
-            <DropdownMenuItem
-              asChild
-              onSelect={(e) => e.preventDefault()}
-              className="space-y-0 px-2 py-1"
-            >
+            <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()} className="space-y-0 px-2 py-1">
               <div className="flex w-full items-center justify-between">
                 <span className="mr-2">Show Graph</span>
-                <Switch
-                  size="sm"
-                  checked={showGraph}
-                  onCheckedChange={setShowGraph}
-                />
+                <Switch size="sm" checked={showGraph} onCheckedChange={setShowGraph} />
               </div>
             </DropdownMenuItem>
           )}
 
           {/* Show Comments Toggle */}
-          <DropdownMenuItem
-            asChild
-            onSelect={(e) => e.preventDefault()}
-            className="px-2 py-1"
-          >
+          <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()} className="px-2 py-1">
             <div className="flex w-full items-center justify-between">
               <span className="mr-2">Show Comments</span>
-              <Switch
-                size="sm"
-                checked={showComments}
-                onCheckedChange={setShowComments}
-              />
+              <Switch size="sm" checked={showComments} onCheckedChange={setShowComments} />
             </div>
           </DropdownMenuItem>
 
           {/* Show Scores Toggle */}
-          <DropdownMenuItem
-            asChild
-            onSelect={(e) => e.preventDefault()}
-            className="px-2 py-1"
-          >
+          <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()} className="px-2 py-1">
             <div className="flex w-full items-center justify-between">
               <span className="mr-2">Show Scores</span>
               <Switch
@@ -138,34 +108,18 @@ export function TraceSettingsDropdown({
           </DropdownMenuItem>
 
           {/* Show Duration Toggle */}
-          <DropdownMenuItem
-            asChild
-            onSelect={(e) => e.preventDefault()}
-            className="px-2 py-1"
-          >
+          <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()} className="px-2 py-1">
             <div className="flex w-full items-center justify-between">
               <span className="mr-2">Show Duration</span>
-              <Switch
-                size="sm"
-                checked={showDuration}
-                onCheckedChange={setShowDuration}
-              />
+              <Switch size="sm" checked={showDuration} onCheckedChange={setShowDuration} />
             </div>
           </DropdownMenuItem>
 
           {/* Show Cost/Tokens Toggle */}
-          <DropdownMenuItem
-            asChild
-            onSelect={(e) => e.preventDefault()}
-            className="px-2 py-1"
-          >
+          <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()} className="px-2 py-1">
             <div className="flex w-full items-center justify-between">
               <span className="mr-2">Show Cost/Tokens</span>
-              <Switch
-                size="sm"
-                checked={showCostTokens}
-                onCheckedChange={setShowCostTokens}
-              />
+              <Switch size="sm" checked={showCostTokens} onCheckedChange={setShowCostTokens} />
             </div>
           </DropdownMenuItem>
 
@@ -174,25 +128,12 @@ export function TraceSettingsDropdown({
             asChild
             onSelect={(e) => e.preventDefault()}
             disabled={!isColorCodeEnabled}
-            className={cn([
-              "px-2 py-1",
-              isColorCodeEnabled ? "" : "cursor-not-allowed",
-            ])}
+            className={cn(["px-2 py-1", isColorCodeEnabled ? "" : "cursor-not-allowed"])}
           >
             <div
-              className={cn(
-                "flex w-full items-center justify-between",
-                !isColorCodeEnabled && "cursor-not-allowed",
-              )}
+              className={cn("flex w-full items-center justify-between", !isColorCodeEnabled && "cursor-not-allowed")}
             >
-              <span
-                className={cn(
-                  "mr-2",
-                  !isColorCodeEnabled && "cursor-not-allowed",
-                )}
-              >
-                Show Color Code Metrics
-              </span>
+              <span className={cn("mr-2", !isColorCodeEnabled && "cursor-not-allowed")}>Show Color Code Metrics</span>
               <Switch
                 size="sm"
                 checked={colorCodeMetrics}
@@ -207,14 +148,10 @@ export function TraceSettingsDropdown({
         {/* Minimum Observation Level Submenu */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <span className="flex items-center">
-              Min Level: {minObservationLevel}
-            </span>
+            <span className="flex items-center">Min Level: {minObservationLevel}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuLabel className="font-semibold">
-              Minimum Level
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="font-semibold">Minimum Level</DropdownMenuLabel>
             {Object.values(ObservationLevel).map((level) => (
               <DropdownMenuItem
                 key={level}

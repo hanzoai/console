@@ -1,9 +1,6 @@
 import { transformDbDatasetRunItemToAPIDatasetRunItemCh } from "@/src/features/public-api/types/datasets";
 import { isPresent } from "@hanzo/shared";
-import {
-  getDatasetRunItemsByDatasetIdCh,
-  getDatasetRunItemsCountByDatasetIdCh,
-} from "@hanzo/shared/src/server";
+import { getDatasetRunItemsByDatasetIdCh, getDatasetRunItemsCountByDatasetIdCh } from "@hanzo/shared/src/server";
 
 type DatasetRunItemsQueryType = {
   datasetId: string;
@@ -13,11 +10,7 @@ type DatasetRunItemsQueryType = {
   projectId: string;
 };
 
-export const generateDatasetRunItemsForPublicApi = async ({
-  props,
-}: {
-  props: DatasetRunItemsQueryType;
-}) => {
+export const generateDatasetRunItemsForPublicApi = async ({ props }: { props: DatasetRunItemsQueryType }) => {
   const { datasetId, projectId, runId, limit, page } = props;
 
   const result = await getDatasetRunItemsByDatasetIdCh({
@@ -36,20 +29,13 @@ export const generateDatasetRunItemsForPublicApi = async ({
       order: "DESC",
     },
     limit: limit,
-    offset:
-      isPresent(page) && isPresent(limit) && page >= 1
-        ? (page - 1) * limit
-        : undefined,
+    offset: isPresent(page) && isPresent(limit) && page >= 1 ? (page - 1) * limit : undefined,
   });
 
   return result.map(transformDbDatasetRunItemToAPIDatasetRunItemCh);
 };
 
-export const getDatasetRunItemsCountForPublicApi = async ({
-  props,
-}: {
-  props: DatasetRunItemsQueryType;
-}) => {
+export const getDatasetRunItemsCountForPublicApi = async ({ props }: { props: DatasetRunItemsQueryType }) => {
   const { datasetId, projectId, runId } = props;
 
   return await getDatasetRunItemsCountByDatasetIdCh({

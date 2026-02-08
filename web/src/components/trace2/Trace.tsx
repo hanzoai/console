@@ -36,20 +36,10 @@ export type TraceProps = {
   context?: "peek" | "fullscreen";
   isValidObservationId?: boolean;
   selectedTab?: string;
-  setSelectedTab?: (
-    newValue?: string | null,
-    updateType?: UrlUpdateType,
-  ) => void;
+  setSelectedTab?: (newValue?: string | null, updateType?: UrlUpdateType) => void;
 };
 
-export function Trace({
-  trace,
-  observations,
-  scores,
-  corrections,
-  projectId,
-  context,
-}: TraceProps) {
+export function Trace({ trace, observations, scores, corrections, projectId, context }: TraceProps) {
   // Fetch comment counts using existing hook
   const { observationCommentCounts, traceCommentCount } = useTraceComments({
     projectId,
@@ -74,11 +64,7 @@ export function Trace({
         corrections={corrections}
         comments={commentsMap}
       >
-        <TraceGraphDataProvider
-          projectId={trace.projectId}
-          traceId={trace.id}
-          observations={observations}
-        >
+        <TraceGraphDataProvider projectId={trace.projectId} traceId={trace.id} observations={observations}>
           <SelectionProvider>
             <SearchProvider>
               <JsonExpansionProvider>
@@ -126,17 +112,11 @@ function TraceContent() {
  * - Horizontal resizable panels with collapse functionality
  * - Navigation panel (left) + Detail panel (right)
  */
-function DesktopTraceContent({
-  shouldShowGraph,
-}: {
-  shouldShowGraph: boolean;
-}) {
+function DesktopTraceContent({ shouldShowGraph }: { shouldShowGraph: boolean }) {
   return (
     <TraceLayoutDesktop>
       <TraceLayoutDesktop.NavigationPanel>
-        <TracePanelNavigationLayoutDesktop
-          secondaryContent={shouldShowGraph ? <TraceGraphView /> : undefined}
-        >
+        <TracePanelNavigationLayoutDesktop secondaryContent={shouldShowGraph ? <TraceGraphView /> : undefined}>
           <TracePanelNavigation />
         </TracePanelNavigationLayoutDesktop>
       </TraceLayoutDesktop.NavigationPanel>
@@ -161,9 +141,7 @@ function MobileTraceContent({ shouldShowGraph }: { shouldShowGraph: boolean }) {
     <div className="h-full w-full">
       <TraceLayoutMobile>
         <TraceLayoutMobile.NavigationPanel>
-          <TracePanelNavigationLayoutMobile
-            secondaryContent={shouldShowGraph ? <TraceGraphView /> : undefined}
-          >
+          <TracePanelNavigationLayoutMobile secondaryContent={shouldShowGraph ? <TraceGraphView /> : undefined}>
             <TracePanelNavigation />
           </TracePanelNavigationLayoutMobile>
         </TraceLayoutMobile.NavigationPanel>

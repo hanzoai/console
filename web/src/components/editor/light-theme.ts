@@ -28,16 +28,7 @@ export const lightThemeStyle: CreateThemeOptions["styles"] = [
   { tag: [t.moduleKeyword, t.controlKeyword], color: "#af00db" },
   { tag: t.heading, fontWeight: "bold", color: "#0070c1" },
   {
-    tag: [
-      t.typeName,
-      t.className,
-      t.tagName,
-      t.number,
-      t.changed,
-      t.annotation,
-      t.self,
-      t.namespace,
-    ],
+    tag: [t.typeName, t.className, t.tagName, t.number, t.changed, t.annotation, t.self, t.namespace],
     color: "#267f99",
   },
   {

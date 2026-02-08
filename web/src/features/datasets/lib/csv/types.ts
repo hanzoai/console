@@ -21,15 +21,7 @@ export type CsvMapping = {
   metadata: CsvColumnPreview[];
 };
 
-export type ColumnType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "null"
-  | "json"
-  | "array"
-  | "unknown"
-  | "mixed";
+export type ColumnType = "string" | "number" | "boolean" | "null" | "json" | "array" | "unknown" | "mixed";
 
 export type CsvColumnPreview = {
   name: string;
@@ -47,11 +39,7 @@ export type CsvPreviewResult = {
 
 type RowProcessor = {
   onHeader?: (headers: string[]) => void | Promise<void>;
-  onRow?: (
-    row: string[],
-    headers: string[],
-    index: number,
-  ) => void | Promise<void>;
+  onRow?: (row: string[], headers: string[], index: number) => void | Promise<void>;
 };
 
 export type ParseOptions = {

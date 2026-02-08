@@ -5,10 +5,7 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import {
-  getDashboardTabs,
-  DASHBOARD_TABS,
-} from "@/src/features/navigation/utils/dashboard-tabs";
+import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation/utils/dashboard-tabs";
 
 export default function Dashboards() {
   const router = useRouter();

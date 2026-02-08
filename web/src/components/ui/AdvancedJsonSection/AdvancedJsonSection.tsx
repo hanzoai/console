@@ -11,13 +11,7 @@
  */
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  WrapText,
-  Minus,
-  ArrowRightToLine,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, WrapText, Minus, ArrowRightToLine } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { AdvancedJsonSectionHeader } from "./AdvancedJsonSectionHeader";
@@ -116,11 +110,8 @@ export function AdvancedJsonSection({
 
   // Section collapse state (different from JSON tree expansion)
   const [internalCollapsed, setInternalCollapsed] = useState(false);
-  const isCollapseControlled =
-    controlledCollapsed !== undefined && onToggleCollapse !== undefined;
-  const sectionCollapsed = isCollapseControlled
-    ? controlledCollapsed
-    : internalCollapsed;
+  const isCollapseControlled = controlledCollapsed !== undefined && onToggleCollapse !== undefined;
+  const sectionCollapsed = isCollapseControlled ? controlledCollapsed : internalCollapsed;
 
   // When virtualized=false (continuous scroll mode), ignore collapse state - always expanded
   const effectiveCollapsed = virtualized === false ? false : sectionCollapsed;
@@ -175,11 +166,7 @@ export function AdvancedJsonSection({
 
   // Compute search matches using the initial tree
   const searchMatches = useMemo(() => {
-    if (
-      !debouncedSearchQuery ||
-      debouncedSearchQuery.trim() === "" ||
-      !initialTree
-    ) {
+    if (!debouncedSearchQuery || debouncedSearchQuery.trim() === "" || !initialTree) {
       return [];
     }
     const matches = searchInTree(initialTree, debouncedSearchQuery, {
@@ -197,10 +184,7 @@ export function AdvancedJsonSection({
 
   const handlePreviousMatch = useCallback(() => {
     if (searchMatches.length === 0) return;
-    const prevIndex =
-      currentMatchIndex === 0
-        ? searchMatches.length - 1
-        : currentMatchIndex - 1;
+    const prevIndex = currentMatchIndex === 0 ? searchMatches.length - 1 : currentMatchIndex - 1;
     setCurrentMatchIndex(prevIndex);
   }, [searchMatches, currentMatchIndex]);
 
@@ -415,11 +399,7 @@ export function AdvancedJsonSection({
       {!effectiveCollapsed && (
         <div
           ref={scrollContainerRef}
-          className={
-            virtualized !== false
-              ? "min-h-0 flex-1 overflow-auto"
-              : "min-h-48 overflow-x-auto"
-          }
+          className={virtualized !== false ? "min-h-0 flex-1 overflow-auto" : "min-h-48 overflow-x-auto"}
           style={{
             backgroundColor: headerBackgroundColor || backgroundColor,
           }}

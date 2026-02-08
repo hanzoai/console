@@ -1,8 +1,5 @@
 import { z } from "zod/v4";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import {
@@ -41,10 +38,7 @@ import { v4 as uuidv4 } from "uuid";
 import { env } from "@/src/env.mjs";
 import { type JobExecution, type PrismaClient } from "@prisma/client";
 import { type JobExecutionState } from "@/src/features/evals/utils/job-execution-utils";
-import {
-  evalConfigFilterColumns,
-  evalConfigsTableCols,
-} from "@/src/server/api/definitions/evalConfigsTable";
+import { evalConfigFilterColumns, evalConfigsTableCols } from "@/src/server/api/definitions/evalConfigsTable";
 import { evalExecutionsFilterCols } from "@/src/server/api/definitions/evalExecutionsTable";
 
 const ConfigWithTemplateSchema = z.object({
@@ -117,10 +111,7 @@ export const CreateEvalTemplate = z.object({
     reasoning: z.string(),
   }),
   cloneSourceId: z.string().optional(),
-  referencedEvaluators: z
-    .enum(EvalReferencedEvaluators)
-    .optional()
-    .default(EvalReferencedEvaluators.PERSIST),
+  referencedEvaluators: z.enum(EvalReferencedEvaluators).optional().default(EvalReferencedEvaluators.PERSIST),
 });
 
 const CreateEvalJobSchema = z.object({
@@ -176,20 +167,10 @@ export const calculateEvaluatorFinalStatus = (
 ): string => {
   // If timeScope is only "EXISTING" and there are no pending jobs and there are some jobs,
   // then the status is "FINISHED", otherwise it's the original status
-  const hasPendingJobs = jobExecutionsByState.some(
-    (je) => je.status === "PENDING",
-  );
-  const totalJobCount = jobExecutionsByState.reduce(
-    (acc, je) => acc + je._count,
-    0,
-  );
+  const hasPendingJobs = jobExecutionsByState.some((je) => je.status === "PENDING");
+  const totalJobCount = jobExecutionsByState.reduce((acc, je) => acc + je._count, 0);
 
-  if (
-    timeScope.length === 1 &&
-    timeScope[0] === "EXISTING" &&
-    !hasPendingJobs &&
-    totalJobCount > 0
-  ) {
+  if (timeScope.length === 1 && timeScope[0] === "EXISTING" && !hasPendingJobs && totalJobCount > 0) {
     return "FINISHED";
   }
 
@@ -207,44 +188,40 @@ export const evalRouter = createTRPCRouter({
       });
       return env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT;
     }),
-  counts: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "evalJob:read",
-      });
+  counts: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "evalJob:read",
+    });
 
-      const [configCount, configActiveCount, templateCount] = await Promise.all(
-        [
-          ctx.prisma.jobConfiguration.count({
-            where: {
-              projectId: input.projectId,
-              jobType: "EVAL",
-            },
-          }),
-          ctx.prisma.jobConfiguration.count({
-            where: {
-              projectId: input.projectId,
-              jobType: "EVAL",
-              status: "ACTIVE",
-            },
-          }),
-          ctx.prisma.evalTemplate.count({
-            where: {
-              projectId: input.projectId,
-            },
-          }),
-        ],
-      );
+    const [configCount, configActiveCount, templateCount] = await Promise.all([
+      ctx.prisma.jobConfiguration.count({
+        where: {
+          projectId: input.projectId,
+          jobType: "EVAL",
+        },
+      }),
+      ctx.prisma.jobConfiguration.count({
+        where: {
+          projectId: input.projectId,
+          jobType: "EVAL",
+          status: "ACTIVE",
+        },
+      }),
+      ctx.prisma.evalTemplate.count({
+        where: {
+          projectId: input.projectId,
+        },
+      }),
+    ]);
 
-      return {
-        configCount,
-        configActiveCount,
-        templateCount,
-      };
-    }),
+    return {
+      configCount,
+      configActiveCount,
+      templateCount,
+    };
+  }),
   allConfigs: protectedProjectProcedure
     .input(
       z.object({
@@ -268,10 +245,7 @@ export const evalRouter = createTRPCRouter({
         "job_configurations",
       );
 
-      const orderByCondition = orderByToPrismaSql(
-        input.orderBy,
-        evalConfigsTableCols,
-      );
+      const orderByCondition = orderByToPrismaSql(input.orderBy, evalConfigsTableCols);
 
       const searchCondition =
         input.searchQuery && input.searchQuery.trim() !== ""
@@ -282,10 +256,7 @@ export const evalRouter = createTRPCRouter({
         // job configs with their templates
         ctx.prisma.$queryRaw<
           Array<
-            Omit<
-              JobConfiguration,
-              "projectId" | "jobType" | "variableMapping" | "sampling" | "delay"
-            > & {
+            Omit<JobConfiguration, "projectId" | "jobType" | "variableMapping" | "sampling" | "delay"> & {
               templateName: string;
               templateVersion: number;
               templateProjectId: string;
@@ -345,19 +316,14 @@ export const evalRouter = createTRPCRouter({
                 projectId: config.templateProjectId,
               }
             : null,
-          jobExecutionsByState: jobExecutionsByState.filter(
-            (je) => je.jobConfigurationId === config.id,
-          ),
+          jobExecutionsByState: jobExecutionsByState.filter((je) => je.jobConfigurationId === config.id),
           finalStatus: calculateEvaluatorFinalStatus(
             config.status,
             Array.isArray(config.timeScope) ? config.timeScope : [],
-            jobExecutionsByState.filter(
-              (je) => je.jobConfigurationId === config.id,
-            ),
+            jobExecutionsByState.filter((je) => je.jobConfigurationId === config.id),
           ),
         })),
-        totalCount:
-          configsCount.length > 0 ? Number(configsCount[0]?.totalCount) : 0,
+        totalCount: configsCount.length > 0 ? Number(configsCount[0]?.totalCount) : 0,
       };
     }),
 
@@ -424,9 +390,7 @@ export const evalRouter = createTRPCRouter({
       const templates = await ctx.prisma.evalTemplate.findMany({
         where: {
           name: input.name,
-          ...(input.isUserManaged
-            ? { projectId: input.projectId }
-            : { projectId: null }),
+          ...(input.isUserManaged ? { projectId: input.projectId } : { projectId: null }),
         },
         orderBy: [{ version: "desc" }],
       });
@@ -577,9 +541,7 @@ export const evalRouter = createTRPCRouter({
           OR: [{ projectId: input.projectId }, { projectId: null }],
           ...(input.id ? { id: input.id } : undefined),
         },
-        ...(input.limit && input.page
-          ? { take: input.limit, skip: input.page * input.limit }
-          : undefined),
+        ...(input.limit && input.page ? { take: input.limit, skip: input.page * input.limit } : undefined),
       });
 
       const count = await ctx.prisma.evalTemplate.count({
@@ -675,264 +637,254 @@ export const evalRouter = createTRPCRouter({
       };
     }),
 
-  createJob: protectedProjectProcedure
-    .input(CreateEvalJobSchema)
-    .mutation(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
+  createJob: protectedProjectProcedure.input(CreateEvalJobSchema).mutation(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "evalJob:CUD",
+    });
+
+    const evalTemplate = await ctx.prisma.evalTemplate.findUnique({
+      where: {
+        id: input.evalTemplateId,
+        OR: [{ projectId: input.projectId }, { projectId: null }],
+      },
+    });
+
+    if (!evalTemplate) {
+      logger.warn(`Template not found for project ${input.projectId} and id ${input.evalTemplateId}`);
+      throw new Error("Template not found");
+    }
+
+    const jobId = uuidv4();
+    await auditLog({
+      session: ctx.session,
+      resourceType: "job",
+      resourceId: jobId,
+      action: "create",
+    });
+
+    const job = await ctx.prisma.jobConfiguration.create({
+      data: {
+        id: jobId,
         projectId: input.projectId,
-        scope: "evalJob:CUD",
-      });
+        jobType: "EVAL",
+        evalTemplateId: input.evalTemplateId,
+        scoreName: input.scoreName,
+        targetObject: input.target,
+        filter: input.filter ?? [],
+        variableMapping: input.mapping,
+        sampling: input.sampling,
+        delay: input.delay,
+        status: "ACTIVE",
+        timeScope: input.timeScope,
+      },
+    });
 
-      const evalTemplate = await ctx.prisma.evalTemplate.findUnique({
-        where: {
-          id: input.evalTemplateId,
-          OR: [{ projectId: input.projectId }, { projectId: null }],
-        },
-      });
+    // Clear the "no job configs" cache since we just created a new job configuration
+    await clearNoJobConfigsCache(input.projectId);
 
-      if (!evalTemplate) {
-        logger.warn(
-          `Template not found for project ${input.projectId} and id ${input.evalTemplateId}`,
-        );
-        throw new Error("Template not found");
+    if (input.timeScope.includes("EXISTING")) {
+      logger.info(`Applying to historical traces for job ${job.id} and project ${input.projectId}`);
+      const batchJobQueue = getQueue(QueueName.BatchActionQueue);
+      if (!batchJobQueue) {
+        throw new Error("Batch job queue not found");
       }
-
-      const jobId = uuidv4();
-      await auditLog({
-        session: ctx.session,
-        resourceType: "job",
-        resourceId: jobId,
-        action: "create",
-      });
-
-      const job = await ctx.prisma.jobConfiguration.create({
-        data: {
-          id: jobId,
-          projectId: input.projectId,
-          jobType: "EVAL",
-          evalTemplateId: input.evalTemplateId,
-          scoreName: input.scoreName,
-          targetObject: input.target,
-          filter: input.filter ?? [],
-          variableMapping: input.mapping,
-          sampling: input.sampling,
-          delay: input.delay,
-          status: "ACTIVE",
-          timeScope: input.timeScope,
-        },
-      });
-
-      // Clear the "no job configs" cache since we just created a new job configuration
-      await clearNoJobConfigsCache(input.projectId);
-
-      if (input.timeScope.includes("EXISTING")) {
-        logger.info(
-          `Applying to historical traces for job ${job.id} and project ${input.projectId}`,
-        );
-        const batchJobQueue = getQueue(QueueName.BatchActionQueue);
-        if (!batchJobQueue) {
-          throw new Error("Batch job queue not found");
-        }
-        await batchJobQueue.add(
-          QueueJobs.BatchActionProcessingJob,
-          {
-            name: QueueJobs.BatchActionProcessingJob,
-            timestamp: new Date(),
-            id: uuidv4(),
-            payload: {
-              projectId: input.projectId,
-              actionId: "eval-create",
-              configId: job.id,
-              cutoffCreatedAt: new Date(),
-              targetObject: input.target,
-              query: {
-                filter: input.filter ?? [],
-                orderBy: {
-                  column: "timestamp",
-                  order: "DESC",
-                },
+      await batchJobQueue.add(
+        QueueJobs.BatchActionProcessingJob,
+        {
+          name: QueueJobs.BatchActionProcessingJob,
+          timestamp: new Date(),
+          id: uuidv4(),
+          payload: {
+            projectId: input.projectId,
+            actionId: "eval-create",
+            configId: job.id,
+            cutoffCreatedAt: new Date(),
+            targetObject: input.target,
+            query: {
+              filter: input.filter ?? [],
+              orderBy: {
+                column: "timestamp",
+                order: "DESC",
               },
             },
           },
-          { delay: input.delay },
-        );
-      }
-    }),
-  createTemplate: protectedProjectProcedure
-    .input(CreateEvalTemplate)
-    .mutation(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "evalTemplate:CUD",
+        },
+        { delay: input.delay },
+      );
+    }
+  }),
+  createTemplate: protectedProjectProcedure.input(CreateEvalTemplate).mutation(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "evalTemplate:CUD",
+    });
+
+    const modelConfig = await DefaultEvalModelService.fetchValidModelConfig(
+      input.projectId,
+      input.provider ?? undefined,
+      input.model ?? undefined,
+      input.modelParams,
+    );
+
+    if (!modelConfig.valid) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No valid llm model found for this project",
+      });
+    }
+
+    try {
+      // Make a test structured output call to validate the LLM key
+      await testModelCall({
+        provider: modelConfig.config.provider,
+        model: modelConfig.config.model,
+        apiKey: modelConfig.config.apiKey,
+        modelConfig: input.modelParams,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message: `Model configuration not valid for evaluation. ${message}`,
+      });
+    }
+
+    /**
+     * CREATION OF PROJECT-LEVEL TEMPLATE
+     *
+     * Option 1: Create a new project-level template
+     * - Find existing project-level templates, templates are unique by [name, projectId]
+     * - If a template already exists, we will create a new version of the template
+     * - Otherwise, we will create a new template with version 1
+     *
+     * Option 2: Clone a hanzo managed template
+     * - Find the hanzo managed template
+     * - Clone the hanzo managed template by creating a new project-level template from the cloned hanzo managed template
+     */
+
+    // find all versions of the project-level template, should return null if input.cloneSourceId is provided
+    return ctx.prisma.$transaction(async (tx) => {
+      const templates = await tx.evalTemplate.findMany({
+        where: {
+          projectId: input.projectId,
+          name: input.name,
+        },
+        orderBy: [{ version: "desc" }],
+        select: {
+          id: true,
+          version: true,
+        },
       });
 
-      const modelConfig = await DefaultEvalModelService.fetchValidModelConfig(
-        input.projectId,
-        input.provider ?? undefined,
-        input.model ?? undefined,
-        input.modelParams,
-      );
+      // find the latest user managed template, should be null if input.cloneSourceId is provided
+      const latestTemplate = Boolean(templates.length) ? templates[0] : undefined;
 
-      if (!modelConfig.valid) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "No valid llm model found for this project",
-        });
-      }
+      // Create a new project-level template either by cloning a hanzo managed template or by creating a new project-level template
+      const evalTemplate = await tx.evalTemplate.create({
+        data: {
+          version: (latestTemplate?.version ?? 0) + 1,
+          name: input.name,
+          projectId: input.projectId,
+          prompt: input.prompt,
+          // if using default model, leave model, provider and modelParams empty
+          // otherwise we will not pull the most recent default evaluation model
+          provider: input.provider,
+          model: input.model,
+          modelParams: input.modelParams ?? undefined,
+          vars: input.vars,
+          outputSchema: input.outputSchema,
+        },
+      });
 
-      try {
-        // Make a test structured output call to validate the LLM key
-        await testModelCall({
-          provider: modelConfig.config.provider,
-          model: modelConfig.config.model,
-          apiKey: modelConfig.config.apiKey,
-          modelConfig: input.modelParams,
-        });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: `Model configuration not valid for evaluation. ${message}`,
-        });
+      /**
+       * END OF CREATION OF PROJECT-LEVEL TEMPLATE
+       * - Net new project-level template has been created, or
+       * - New version of existing project-level template has been created
+       */
+
+      /**
+       * UPDATE OF JOB CONFIGS REFERENCING THE NEW/UPDATED TEMPLATE
+       */
+      if (input.referencedEvaluators === EvalReferencedEvaluators.UPDATE) {
+        /**
+         * Option 2: Clone a hanzo managed template
+         *
+         * - Find the hanzo managed template
+         * - Create a new project-level template from the cloned hanzo managed template
+         * - Update all job configs that had referenced the hanzo managed template to now reference the cloned project-level template
+         */
+        if (input.cloneSourceId) {
+          // find the hanzo managed template to clone
+          const cloneSourceTemplate = await tx.evalTemplate.findUnique({
+            where: {
+              id: input.cloneSourceId,
+              projectId: null,
+            },
+          });
+
+          if (!cloneSourceTemplate) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Hanzo managed template not found",
+            });
+          }
+
+          // find all versions of the hanzo managed template
+          const cloneSourceTemplateList = await tx.evalTemplate.findMany({
+            where: {
+              projectId: null,
+              name: cloneSourceTemplate.name,
+            },
+          });
+
+          if (Boolean(cloneSourceTemplateList.length)) {
+            // update all job configs that had referenced any version of the hanzo managed template to now reference the cloned user managed template
+            await tx.jobConfiguration.updateMany({
+              where: {
+                evalTemplateId: {
+                  in: cloneSourceTemplateList.map((t) => t.id),
+                },
+                projectId: input.projectId,
+              },
+              data: { evalTemplateId: evalTemplate.id },
+            });
+          }
+          /**
+           * Option 1: Create a new project-level template
+           *
+           * - Use previously found versions of the project-level template
+           * - Update all job configs that had referenced any version of the project-level template to now reference the new project-level template
+           */
+        } else if (Boolean(templates.length)) {
+          await tx.jobConfiguration.updateMany({
+            where: {
+              evalTemplateId: { in: templates.map((t) => t.id) },
+              projectId: input.projectId,
+            },
+            data: {
+              evalTemplateId: evalTemplate.id,
+            },
+          });
+        }
       }
 
       /**
-       * CREATION OF PROJECT-LEVEL TEMPLATE
-       *
-       * Option 1: Create a new project-level template
-       * - Find existing project-level templates, templates are unique by [name, projectId]
-       * - If a template already exists, we will create a new version of the template
-       * - Otherwise, we will create a new template with version 1
-       *
-       * Option 2: Clone a hanzo managed template
-       * - Find the hanzo managed template
-       * - Clone the hanzo managed template by creating a new project-level template from the cloned hanzo managed template
+       * END OF UPDATE OF JOB CONFIGS REFERENCING THE NEW/UPDATED TEMPLATE
        */
 
-      // find all versions of the project-level template, should return null if input.cloneSourceId is provided
-      return ctx.prisma.$transaction(async (tx) => {
-        const templates = await tx.evalTemplate.findMany({
-          where: {
-            projectId: input.projectId,
-            name: input.name,
-          },
-          orderBy: [{ version: "desc" }],
-          select: {
-            id: true,
-            version: true,
-          },
-        });
-
-        // find the latest user managed template, should be null if input.cloneSourceId is provided
-        const latestTemplate = Boolean(templates.length)
-          ? templates[0]
-          : undefined;
-
-        // Create a new project-level template either by cloning a hanzo managed template or by creating a new project-level template
-        const evalTemplate = await tx.evalTemplate.create({
-          data: {
-            version: (latestTemplate?.version ?? 0) + 1,
-            name: input.name,
-            projectId: input.projectId,
-            prompt: input.prompt,
-            // if using default model, leave model, provider and modelParams empty
-            // otherwise we will not pull the most recent default evaluation model
-            provider: input.provider,
-            model: input.model,
-            modelParams: input.modelParams ?? undefined,
-            vars: input.vars,
-            outputSchema: input.outputSchema,
-          },
-        });
-
-        /**
-         * END OF CREATION OF PROJECT-LEVEL TEMPLATE
-         * - Net new project-level template has been created, or
-         * - New version of existing project-level template has been created
-         */
-
-        /**
-         * UPDATE OF JOB CONFIGS REFERENCING THE NEW/UPDATED TEMPLATE
-         */
-        if (input.referencedEvaluators === EvalReferencedEvaluators.UPDATE) {
-          /**
-           * Option 2: Clone a hanzo managed template
-           *
-           * - Find the hanzo managed template
-           * - Create a new project-level template from the cloned hanzo managed template
-           * - Update all job configs that had referenced the hanzo managed template to now reference the cloned project-level template
-           */
-          if (input.cloneSourceId) {
-            // find the hanzo managed template to clone
-            const cloneSourceTemplate = await tx.evalTemplate.findUnique({
-              where: {
-                id: input.cloneSourceId,
-                projectId: null,
-              },
-            });
-
-            if (!cloneSourceTemplate) {
-              throw new TRPCError({
-                code: "NOT_FOUND",
-                message: "Hanzo managed template not found",
-              });
-            }
-
-            // find all versions of the hanzo managed template
-            const cloneSourceTemplateList = await tx.evalTemplate.findMany({
-              where: {
-                projectId: null,
-                name: cloneSourceTemplate.name,
-              },
-            });
-
-            if (Boolean(cloneSourceTemplateList.length)) {
-              // update all job configs that had referenced any version of the hanzo managed template to now reference the cloned user managed template
-              await tx.jobConfiguration.updateMany({
-                where: {
-                  evalTemplateId: {
-                    in: cloneSourceTemplateList.map((t) => t.id),
-                  },
-                  projectId: input.projectId,
-                },
-                data: { evalTemplateId: evalTemplate.id },
-              });
-            }
-            /**
-             * Option 1: Create a new project-level template
-             *
-             * - Use previously found versions of the project-level template
-             * - Update all job configs that had referenced any version of the project-level template to now reference the new project-level template
-             */
-          } else if (Boolean(templates.length)) {
-            await tx.jobConfiguration.updateMany({
-              where: {
-                evalTemplateId: { in: templates.map((t) => t.id) },
-                projectId: input.projectId,
-              },
-              data: {
-                evalTemplateId: evalTemplate.id,
-              },
-            });
-          }
-        }
-
-        /**
-         * END OF UPDATE OF JOB CONFIGS REFERENCING THE NEW/UPDATED TEMPLATE
-         */
-
-        await auditLog({
-          session: ctx.session,
-          resourceType: "evalTemplate",
-          resourceId: evalTemplate.id,
-          action: "create",
-        });
-
-        return evalTemplate;
+      await auditLog({
+        session: ctx.session,
+        resourceType: "evalTemplate",
+        resourceId: evalTemplate.id,
+        action: "create",
       });
-    }),
+
+      return evalTemplate;
+    });
+  }),
 
   updateAllDatasetEvalJobStatusByTemplateId: protectedProjectProcedure
     .input(
@@ -943,53 +895,45 @@ export const evalRouter = createTRPCRouter({
         newStatus: z.enum(EvaluatorStatus),
       }),
     )
-    .mutation(
-      async ({
-        ctx,
-        input: { projectId, evalTemplateId, datasetId, newStatus },
-      }) => {
-        throwIfNoProjectAccess({
-          session: ctx.session,
+    .mutation(async ({ ctx, input: { projectId, evalTemplateId, datasetId, newStatus } }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: projectId,
+        scope: "evalJob:CUD",
+      });
+
+      const oldStatus = newStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+      const evaluators = await ctx.prisma.jobConfiguration.findMany({
+        where: {
           projectId: projectId,
-          scope: "evalJob:CUD",
-        });
+          evalTemplateId: evalTemplateId,
+          status: oldStatus,
+          targetObject: "dataset",
+        },
+      });
 
-        const oldStatus = newStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const filteredEvaluators =
+        evaluators?.filter(({ filter }) => {
+          const parsedFilter = z.array(singleFilter).safeParse(filter);
+          if (!parsedFilter.success) return false;
+          if (parsedFilter.data.length === 0) return true;
+          else
+            return parsedFilter.data.some(({ type, value }) => type === "stringOptions" && value.includes(datasetId));
+        }) || [];
 
-        const evaluators = await ctx.prisma.jobConfiguration.findMany({
-          where: {
-            projectId: projectId,
-            evalTemplateId: evalTemplateId,
-            status: oldStatus,
-            targetObject: "dataset",
-          },
-        });
+      await ctx.prisma.jobConfiguration.updateMany({
+        where: {
+          id: { in: filteredEvaluators.map((e) => e.id) },
+        },
+        data: { status: newStatus },
+      });
 
-        const filteredEvaluators =
-          evaluators?.filter(({ filter }) => {
-            const parsedFilter = z.array(singleFilter).safeParse(filter);
-            if (!parsedFilter.success) return false;
-            if (parsedFilter.data.length === 0) return true;
-            else
-              return parsedFilter.data.some(
-                ({ type, value }) =>
-                  type === "stringOptions" && value.includes(datasetId),
-              );
-          }) || [];
-
-        await ctx.prisma.jobConfiguration.updateMany({
-          where: {
-            id: { in: filteredEvaluators.map((e) => e.id) },
-          },
-          data: { status: newStatus },
-        });
-
-        return {
-          success: true,
-          message: `Updated ${filteredEvaluators.length} evaluators to ${newStatus}`,
-        };
-      },
-    ),
+      return {
+        success: true,
+        message: `Updated ${filteredEvaluators.length} evaluators to ${newStatus}`,
+      };
+    }),
 
   updateEvalJob: protectedProjectProcedure
     .input(
@@ -1014,9 +958,7 @@ export const evalRouter = createTRPCRouter({
       });
 
       if (!existingJob) {
-        logger.warn(
-          `Job for update not found for project ${projectId} and id ${evalConfigId}`,
-        );
+        logger.warn(`Job for update not found for project ${projectId} and id ${evalConfigId}`);
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Job not found",
@@ -1037,8 +979,7 @@ export const evalRouter = createTRPCRouter({
         );
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message:
-            "The evaluator ran on existing traces already. This cannot be changed anymore.",
+          message: "The evaluator ran on existing traces already. This cannot be changed anymore.",
         });
       }
 
@@ -1052,8 +993,7 @@ export const evalRouter = createTRPCRouter({
         );
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message:
-            "The evaluator is running on existing traces only and cannot be deactivated.",
+          message: "The evaluator is running on existing traces only and cannot be deactivated.",
         });
       }
 
@@ -1078,9 +1018,7 @@ export const evalRouter = createTRPCRouter({
       }
 
       if (config.timeScope?.includes("EXISTING")) {
-        logger.info(
-          `Applying to historical traces for job ${evalConfigId} and project ${projectId}`,
-        );
+        logger.info(`Applying to historical traces for job ${evalConfigId} and project ${projectId}`);
         const batchJobQueue = getQueue(QueueName.BatchActionQueue);
         if (!batchJobQueue) {
           throw new Error("Batch job queue not found");
@@ -1130,9 +1068,7 @@ export const evalRouter = createTRPCRouter({
       });
 
       if (!existingJob) {
-        logger.warn(
-          `Job for deletion not found for project ${projectId} and id ${evalConfigId}`,
-        );
+        logger.warn(`Job for deletion not found for project ${projectId} and id ${evalConfigId}`);
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Job not found",
@@ -1273,14 +1209,9 @@ export const evalRouter = createTRPCRouter({
         ),
       ]);
 
-      const scoreIds = jobExecutions
-        .map((je) => je.jobOutputScoreId)
-        .filter(isNotNullOrUndefined);
+      const scoreIds = jobExecutions.map((je) => je.jobOutputScoreId).filter(isNotNullOrUndefined);
 
-      const scores =
-        scoreIds.length > 0
-          ? await getScoresByIds(input.projectId, scoreIds)
-          : [];
+      const scores = scoreIds.length > 0 ? await getScoresByIds(input.projectId, scoreIds) : [];
 
       return {
         data: jobExecutions.map((je) => ({
@@ -1351,10 +1282,7 @@ export const evalRouter = createTRPCRouter({
         scope: "evalJob:read",
       });
 
-      const costs = await getCostByEvaluatorIds(
-        input.projectId,
-        input.evaluatorIds,
-      );
+      const costs = await getCostByEvaluatorIds(input.projectId, input.evaluatorIds);
 
       // Convert array to map for easier lookup
       return costs.reduce(

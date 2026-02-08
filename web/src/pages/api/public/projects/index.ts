@@ -6,24 +6,16 @@ import { handleCreateProject } from "@/src/ee/features/admin-api/server/projects
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
 
   if (req.method !== "GET" && req.method !== "POST") {
-    logger.error(
-      `Method not allowed for ${req.method} on /api/public/projects`,
-    );
+    logger.error(`Method not allowed for ${req.method} on /api/public/projects`);
     return res.status(405).json({ message: "Method not allowed" });
   }
 
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(
-    prisma,
-    redis,
-  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     return res.status(401).json({
       message: authCheck.error,
@@ -32,10 +24,7 @@ export default async function handler(
   // END CHECK AUTH
 
   if (req.method === "GET") {
-    if (
-      authCheck.scope.accessLevel !== "project" ||
-      !authCheck.scope.projectId
-    ) {
+    if (authCheck.scope.accessLevel !== "project" || !authCheck.scope.projectId) {
       return res.status(403).json({
         message: "Invalid API key. Are you using an organization key?",
       });
@@ -85,13 +74,9 @@ export default async function handler(
 
   if (req.method === "POST") {
     // Check if using an organization API key
-    if (
-      authCheck.scope.accessLevel !== "organization" ||
-      !authCheck.scope.orgId
-    ) {
+    if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
       return res.status(403).json({
-        message:
-          "Invalid API key. Organization-scoped API key required for this operation.",
+        message: "Invalid API key. Organization-scoped API key required for this operation.",
       });
     }
 

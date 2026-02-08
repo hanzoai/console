@@ -23,10 +23,7 @@ export interface SurveyState {
   currentStep: number;
 }
 
-export type SurveyAction =
-  | { type: "next" }
-  | { type: "back" }
-  | { type: "goToStep"; step: number };
+export type SurveyAction = { type: "next" } | { type: "back" } | { type: "goToStep"; step: number };
 
 export interface SurveyFormData {
   role?: string;

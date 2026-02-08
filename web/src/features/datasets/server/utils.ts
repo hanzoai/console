@@ -24,9 +24,7 @@ const toCostInput = (obs: ObservationTuple) => ({
  * @param observationsByTraceId - Map of trace IDs to their observations (from getObservationsGroupedByTraceId)
  * @returns Array of metrics with id, totalCost, and latency for each run item
  */
-export const calculateRecursiveMetricsForRunItems = <
-  WithIO extends boolean = true,
->(
+export const calculateRecursiveMetricsForRunItems = <WithIO extends boolean = true>(
   runItems: DatasetRunItemDomain<WithIO>[],
   observationsByTraceId: Map<string, ObservationTuple[]>,
 ): Array<{ id: string; totalCost: number; latency: number }> => {
@@ -41,18 +39,13 @@ export const calculateRecursiveMetricsForRunItems = <
       const observationId = runItem.observationId!;
 
       // Find target observation and extract latency
-      const targetObs = observations.find(
-        (obs) => getObservationId(obs) === observationId,
-      );
+      const targetObs = observations.find((obs) => getObservationId(obs) === observationId);
       if (targetObs) {
         latencies.set(observationId, Number(getLatencyMs(targetObs)) / 1000);
       }
 
       // Calculate recursive cost
-      const cost = calculateRecursiveCost(
-        observationId,
-        observations.map(toCostInput),
-      );
+      const cost = calculateRecursiveCost(observationId, observations.map(toCostInput));
       calculatedCosts.set(observationId, cost?.toNumber() ?? 0);
     }
   }

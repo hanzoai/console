@@ -54,9 +54,7 @@ export function useProjectAccess(session: Session | null) {
 
     // Check if user's organizations contain this project
     const userProjects =
-      session?.user?.organizations
-        ?.flatMap((org) => org?.projects?.map((p) => p?.id))
-        .filter(Boolean) ?? [];
+      session?.user?.organizations?.flatMap((org) => org?.projects?.map((p) => p?.id)).filter(Boolean) ?? [];
 
     const hasAccess = userProjects.includes(routerProjectId);
 

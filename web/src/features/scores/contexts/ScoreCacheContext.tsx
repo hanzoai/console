@@ -1,15 +1,6 @@
 import { type ScoreDomain } from "@hanzo/shared";
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
-import {
-  type AnnotationScoreDataType,
-  type ScoreColumn,
-} from "@/src/features/scores/types";
+import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import { type AnnotationScoreDataType, type ScoreColumn } from "@/src/features/scores/types";
 import { composeAggregateScoreKey } from "@/src/features/scores/lib/aggregateScores";
 
 /**
@@ -78,16 +69,12 @@ type ScoreCacheContextValue = {
   getColumnsMap: () => Map<string, ScoreColumn>;
 };
 
-const ScoreCacheContext = createContext<ScoreCacheContextValue | undefined>(
-  undefined,
-);
+const ScoreCacheContext = createContext<ScoreCacheContextValue | undefined>(undefined);
 
 export function ScoreCacheProvider({ children }: { children: ReactNode }) {
   const [cache, setCache] = useState<Map<string, CachedScore>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-  const [columnsCache, setColumnsCache] = useState<Map<string, ScoreColumn>>(
-    new Map(),
-  );
+  const [columnsCache, setColumnsCache] = useState<Map<string, ScoreColumn>>(new Map());
 
   const set = useCallback((id: string, score: CachedScore) => {
     setCache((prev) => {
@@ -167,15 +154,12 @@ export function ScoreCacheProvider({ children }: { children: ReactNode }) {
         sessionId?: string;
       },
     ) => {
-      const matchObservationScore = (
-        mode: "target-and-child-scores" | "target-scores-only",
-      ) => {
+      const matchObservationScore = (mode: "target-and-child-scores" | "target-scores-only") => {
         switch (mode) {
           case "target-and-child-scores":
             return () => true;
           case "target-scores-only":
-            return (s: CachedScore) =>
-              s.observationId === (target.observationId ?? null);
+            return (s: CachedScore) => s.observationId === (target.observationId ?? null);
           default:
             throw new Error(`Invalid mode: ${mode}`);
         }

@@ -8,11 +8,9 @@ import { updatePrompt } from "@/src/features/prompts/server/actions/updatePrompt
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 
 const UpdatePromptBodySchema = z.object({
-  newLabels: z
-    .array(z.string())
-    .refine((labels) => !labels.includes(LATEST_PROMPT_LABEL), {
-      message: "Label 'latest' is always assigned to the latest prompt version",
-    }),
+  newLabels: z.array(z.string()).refine((labels) => !labels.includes(LATEST_PROMPT_LABEL), {
+    message: "Label 'latest' is always assigned to the latest prompt version",
+  }),
 });
 
 export const promptVersionHandler = withMiddlewares({

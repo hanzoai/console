@@ -32,11 +32,7 @@ import { logger } from "@hanzo/shared/src/server";
  * @param req - Next.js API request
  * @param res - Next.js API response
  */
-export async function handleMcpRequest(
-  server: Server,
-  req: NextApiRequest,
-  res: NextApiResponse,
-): Promise<void> {
+export async function handleMcpRequest(server: Server, req: NextApiRequest, res: NextApiResponse): Promise<void> {
   try {
     // Note: CORS headers and OPTIONS handling are now in index.ts (before authentication)
 
@@ -52,8 +48,7 @@ export async function handleMcpRequest(
           jsonrpc: "2.0",
           error: {
             code: -32600,
-            message:
-              "Invalid Request: Accept header must include application/json or text/event-stream",
+            message: "Invalid Request: Accept header must include application/json or text/event-stream",
           },
           id: null,
         });

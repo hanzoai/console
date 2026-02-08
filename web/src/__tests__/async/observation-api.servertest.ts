@@ -1,9 +1,4 @@
-import {
-  createEvent,
-  createObservation,
-  createTrace,
-  createTracesCh,
-} from "@hanzo/shared/src/server";
+import { createEvent, createObservation, createTrace, createTracesCh } from "@hanzo/shared/src/server";
 import { createEventsCh, createObservationsCh } from "@hanzo/shared/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationV1Response } from "@/src/features/public-api/types/observations";
@@ -36,10 +31,7 @@ type ObservationData = {
 };
 
 // Helper to create observation in the appropriate format
-const createObservationData = (
-  useEventsTable: boolean,
-  data: ObservationData,
-) => {
+const createObservationData = (useEventsTable: boolean, data: ObservationData) => {
   if (useEventsTable) {
     // Events table: use microseconds, requires span_id
     return createEvent({
@@ -63,10 +55,7 @@ const createObservationData = (
 };
 
 // Helper to insert observations into the correct table
-const insertObservations = async (
-  useEventsTable: boolean,
-  observations: any[],
-) => {
+const insertObservations = async (useEventsTable: boolean, observations: any[]) => {
   if (useEventsTable) {
     await createEventsCh(observations);
   } else {
@@ -77,12 +66,8 @@ const insertObservations = async (
 describe("/api/public/observations API Endpoint", () => {
   // Test suite factory to run tests against both implementations
   const runTestSuite = (useEventsTable: boolean) => {
-    const suiteName = useEventsTable
-      ? "with events table"
-      : "with observations table";
-    const queryParam = useEventsTable
-      ? "&useEventsTable=true"
-      : "&useEventsTable=false";
+    const suiteName = useEventsTable ? "with events table" : "with observations table";
+    const queryParam = useEventsTable ? "&useEventsTable=true" : "&useEventsTable=false";
     const timeMultiplier = useEventsTable ? 1000 : 1; // microseconds vs milliseconds
 
     describe(`${suiteName}`, () => {
@@ -206,21 +191,11 @@ describe("/api/public/observations API Endpoint", () => {
           expect(fetchedObservations.body.data[0]?.output).toEqual({
             key: "output",
           });
-          expect(fetchedObservations.body.data[0]?.model).toEqual(
-            "gpt-3.5-turbo",
-          );
-          expect(fetchedObservations.body.data[0]?.modelId).toEqual(
-            "clrkwk4cb000408l576jl7koo",
-          );
-          expect(
-            fetchedObservations.body.data[0]?.calculatedInputCost,
-          ).toBeGreaterThan(0);
-          expect(
-            fetchedObservations.body.data[0]?.calculatedOutputCost,
-          ).toBeGreaterThan(0);
-          expect(
-            fetchedObservations.body.data[0]?.calculatedTotalCost,
-          ).toBeGreaterThan(0);
+          expect(fetchedObservations.body.data[0]?.model).toEqual("gpt-3.5-turbo");
+          expect(fetchedObservations.body.data[0]?.modelId).toEqual("clrkwk4cb000408l576jl7koo");
+          expect(fetchedObservations.body.data[0]?.calculatedInputCost).toBeGreaterThan(0);
+          expect(fetchedObservations.body.data[0]?.calculatedOutputCost).toBeGreaterThan(0);
+          expect(fetchedObservations.body.data[0]?.calculatedTotalCost).toBeGreaterThan(0);
         });
 
         it("should fetch all observations, filtered by generations", async () => {
@@ -255,10 +230,7 @@ describe("/api/public/observations API Endpoint", () => {
             type: "SPAN",
           });
 
-          await insertObservations(useEventsTable, [
-            generationObservation,
-            spanObservation,
-          ]);
+          await insertObservations(useEventsTable, [generationObservation, spanObservation]);
 
           const fetchedObservations = await makeZodVerifiedAPICall(
             GetObservationsV1Response,
@@ -286,51 +258,46 @@ describe("/api/public/observations API Endpoint", () => {
           ["name", uuidv4()],
           ["version", uuidv4()],
           ["environment", uuidv4()],
-        ])(
-          "should fetch all observations filtered by a value (%s, %s)",
-          async (prop: string, value: string) => {
-            const traceId = uuidv4();
-            const observationId = uuidv4();
-            const timestamp = new Date("2021-01-01T00:00:00.000Z").getTime();
+        ])("should fetch all observations filtered by a value (%s, %s)", async (prop: string, value: string) => {
+          const traceId = uuidv4();
+          const observationId = uuidv4();
+          const timestamp = new Date("2021-01-01T00:00:00.000Z").getTime();
 
-            if (prop === "userId" || prop === "environment") {
-              const createdTrace = createTrace({
-                id: traceId,
-                [snakeCase(prop)]: value,
-                project_id: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-              });
-
-              await createTracesCh([createdTrace]);
-            }
-
-            const observation = createObservationData(useEventsTable, {
-              id: observationId,
-              trace_id: traceId,
-              start_time: timestamp * timeMultiplier,
-              end_time: timestamp * timeMultiplier,
-              project_id: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-              type: "GENERATION",
+          if (prop === "userId" || prop === "environment") {
+            const createdTrace = createTrace({
+              id: traceId,
               [snakeCase(prop)]: value,
+              project_id: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
             });
 
-            await insertObservations(useEventsTable, [observation]);
+            await createTracesCh([createdTrace]);
+          }
 
-            const observations = await makeZodVerifiedAPICall(
-              GetObservationsV1Response,
-              "GET",
-              `/api/public/observations?${prop}=${value}${queryParam}`,
-            );
+          const observation = createObservationData(useEventsTable, {
+            id: observationId,
+            trace_id: traceId,
+            start_time: timestamp * timeMultiplier,
+            end_time: timestamp * timeMultiplier,
+            project_id: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
+            type: "GENERATION",
+            [snakeCase(prop)]: value,
+          });
 
-            expect(observations.body.meta.totalItems).toBe(1);
-            expect(observations.body.data.length).toBe(1);
-            const obsResult = observations.body.data[0];
-            expect(obsResult.projectId).toBe(
-              "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
-            );
-            if (prop === "userId") return;
-            expect((obsResult as any)[prop]).toBe(value);
-          },
-        );
+          await insertObservations(useEventsTable, [observation]);
+
+          const observations = await makeZodVerifiedAPICall(
+            GetObservationsV1Response,
+            "GET",
+            `/api/public/observations?${prop}=${value}${queryParam}`,
+          );
+
+          expect(observations.body.meta.totalItems).toBe(1);
+          expect(observations.body.data.length).toBe(1);
+          const obsResult = observations.body.data[0];
+          expect(obsResult.projectId).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
+          if (prop === "userId") return;
+          expect((obsResult as any)[prop]).toBe(value);
+        });
 
         it("GET /observations with timestamp filters and pagination", async () => {
           const traceId = uuidv4();
@@ -396,12 +363,8 @@ describe("/api/public/observations API Endpoint", () => {
           );
 
           expect(fetchedObservations.body.data.length).toBe(2);
-          expect(fetchedObservations.body.data[0]?.id).toBe(
-            "observation-2021-03-01",
-          );
-          expect(fetchedObservations.body.data[1]?.id).toBe(
-            "observation-2021-02-01",
-          );
+          expect(fetchedObservations.body.data[0]?.id).toBe("observation-2021-03-01");
+          expect(fetchedObservations.body.data[1]?.id).toBe("observation-2021-02-01");
           expect(fetchedObservations.body.meta.totalItems).toBe(2);
 
           // Test with only fromTimestamp
@@ -413,15 +376,9 @@ describe("/api/public/observations API Endpoint", () => {
           );
 
           expect(fetchedObservations.body.data.length).toBe(3);
-          expect(fetchedObservations.body.data[0]?.id).toBe(
-            "observation-2021-04-01",
-          );
-          expect(fetchedObservations.body.data[1]?.id).toBe(
-            "observation-2021-03-01",
-          );
-          expect(fetchedObservations.body.data[2]?.id).toBe(
-            "observation-2021-02-01",
-          );
+          expect(fetchedObservations.body.data[0]?.id).toBe("observation-2021-04-01");
+          expect(fetchedObservations.body.data[1]?.id).toBe("observation-2021-03-01");
+          expect(fetchedObservations.body.data[2]?.id).toBe("observation-2021-02-01");
           expect(fetchedObservations.body.meta.totalItems).toBe(3);
 
           // Test with only toTimestamp
@@ -433,15 +390,9 @@ describe("/api/public/observations API Endpoint", () => {
           );
 
           expect(fetchedObservations.body.data.length).toBe(3);
-          expect(fetchedObservations.body.data[0]?.id).toBe(
-            "observation-2021-03-01",
-          );
-          expect(fetchedObservations.body.data[1]?.id).toBe(
-            "observation-2021-02-01",
-          );
-          expect(fetchedObservations.body.data[2]?.id).toBe(
-            "observation-2021-01-01",
-          );
+          expect(fetchedObservations.body.data[0]?.id).toBe("observation-2021-03-01");
+          expect(fetchedObservations.body.data[1]?.id).toBe("observation-2021-02-01");
+          expect(fetchedObservations.body.data[2]?.id).toBe("observation-2021-01-01");
           expect(fetchedObservations.body.meta.totalItems).toBe(3);
 
           // test pagination only
@@ -453,9 +404,7 @@ describe("/api/public/observations API Endpoint", () => {
           );
 
           expect(fetchedObservations.body.data.length).toBe(1);
-          expect(fetchedObservations.body.data[0]?.id).toBe(
-            "observation-2021-03-01",
-          );
+          expect(fetchedObservations.body.data[0]?.id).toBe("observation-2021-03-01");
           expect(fetchedObservations.body.meta).toMatchObject({
             totalItems: 4,
             totalPages: 4,

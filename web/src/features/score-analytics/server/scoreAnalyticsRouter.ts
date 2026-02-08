@@ -1,9 +1,6 @@
 import { z } from "zod/v4";
 
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getScoresGroupedByNameSourceType,
   queryClickhouse,
@@ -77,21 +74,12 @@ export const scoreAnalyticsRouter = createTRPCRouter({
         }),
         fromTimestamp: z.date(),
         toTimestamp: z.date(),
-        objectType: z
-          .enum(["all", "trace", "session", "observation", "dataset_run"])
-          .default("all"),
+        objectType: z.enum(["all", "trace", "session", "observation", "dataset_run"]).default("all"),
         mode: z.enum(["single", "two"]).optional(), // Frontend passes "single" when only score1 selected
       }),
     )
     .query(async ({ input }) => {
-      const {
-        projectId,
-        score1,
-        score2,
-        fromTimestamp,
-        toTimestamp,
-        objectType,
-      } = input;
+      const { projectId, score1, score2, fromTimestamp, toTimestamp, objectType } = input;
 
       // Run preflight estimate (uses 1% sampling)
       const estimates = await buildEstimateQuery({
@@ -108,13 +96,10 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       });
 
       // Determine if sampling and FINAL will be used
-      const willSample =
-        estimates.score1Count > SAMPLING_THRESHOLD ||
-        estimates.score2Count > SAMPLING_THRESHOLD;
+      const willSample = estimates.score1Count > SAMPLING_THRESHOLD || estimates.score2Count > SAMPLING_THRESHOLD;
 
       const willSkipFinal =
-        estimates.score1Count >= ADAPTIVE_FINAL_THRESHOLD ||
-        estimates.score2Count >= ADAPTIVE_FINAL_THRESHOLD;
+        estimates.score1Count >= ADAPTIVE_FINAL_THRESHOLD || estimates.score2Count >= ADAPTIVE_FINAL_THRESHOLD;
 
       // Estimate query time based on dataset size
       const estimatedQueryTime =
@@ -194,20 +179,15 @@ export const scoreAnalyticsRouter = createTRPCRouter({
                 // Years
                 { count: 1, unit: "year" },
               ];
-              return allowed.some(
-                (a) => a.count === val.count && a.unit === val.unit,
-              );
+              return allowed.some((a) => a.count === val.count && a.unit === val.unit);
             },
             {
-              message:
-                "Invalid interval. Must be one of the allowed interval combinations.",
+              message: "Invalid interval. Must be one of the allowed interval combinations.",
             },
           )
           .default({ count: 1, unit: "day" }),
         nBins: z.number().int().min(5).max(50).default(10),
-        objectType: z
-          .enum(["all", "trace", "session", "observation", "dataset_run"])
-          .default("all"),
+        objectType: z.enum(["all", "trace", "session", "observation", "dataset_run"]).default("all"),
         // Optional: Pass estimate results from client to avoid duplicate preflight query
         estimateResults: z
           .object({
@@ -219,16 +199,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const {
-        projectId,
-        score1,
-        score2,
-        fromTimestamp,
-        toTimestamp,
-        interval,
-        nBins,
-        objectType,
-      } = input;
+      const { projectId, score1, score2, fromTimestamp, toTimestamp, interval, nBins, objectType } = input;
 
       // Note: The backend always returns both matched and unmatched datasets,
       // as well as individual-bound distributions. The frontend chooses which
@@ -238,9 +209,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       // When true, certain statistical calculations (like Spearman correlation)
       // will be skipped since they're undefined for identical datasets
       const isIdenticalScores =
-        score1.name === score2.name &&
-        score1.source === score2.source &&
-        score1.dataType === score2.dataType;
+        score1.name === score2.name && score1.source === score2.source && score1.dataType === score2.dataType;
 
       // Use estimate results passed from client if available, otherwise run preflight query
       // This avoids duplicate estimate queries when client already called estimateScoreComparisonSize
@@ -262,19 +231,14 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       // Adaptive FINAL logic: Only use FINAL for small datasets to avoid expensive merge
       // For large datasets, skip FINAL to improve performance (scores can be updated, so accuracy matters for recent data)
       const shouldUseFinal =
-        estimates.score1Count < ADAPTIVE_FINAL_THRESHOLD &&
-        estimates.score2Count < ADAPTIVE_FINAL_THRESHOLD;
+        estimates.score1Count < ADAPTIVE_FINAL_THRESHOLD && estimates.score2Count < ADAPTIVE_FINAL_THRESHOLD;
 
       // Hash-based sampling decision: Sample when either score table exceeds threshold
-      const shouldSample =
-        estimates.score1Count > SAMPLING_THRESHOLD ||
-        estimates.score2Count > SAMPLING_THRESHOLD;
+      const shouldSample = estimates.score1Count > SAMPLING_THRESHOLD || estimates.score2Count > SAMPLING_THRESHOLD;
 
       // Calculate rate based on larger table to ensure both tables sample to ~100k rows
       const maxCount = Math.max(estimates.score1Count, estimates.score2Count);
-      const samplingRate = shouldSample
-        ? Math.min(1.0, TARGET_SAMPLE_SIZE / maxCount)
-        : 1.0;
+      const samplingRate = shouldSample ? Math.min(1.0, TARGET_SAMPLE_SIZE / maxCount) : 1.0;
       const samplingPercent = Math.round(samplingRate * 100); // Convert to 0-100 for modulo
 
       // Sampling expression using cityHash64 on composite key (trace_id, observation_id, session_id, dataset_run_id)
@@ -289,22 +253,17 @@ export const scoreAnalyticsRouter = createTRPCRouter({
         : null;
 
       // Determine if this is a single-score or two-score query
-      const isSingleScore =
-        score1.name === score2.name && score1.source === score2.source;
+      const isSingleScore = score1.name === score2.name && score1.source === score2.source;
 
       // Determine if we're dealing with numeric or categorical/boolean data
       // Cross-type comparisons: treat as categorical if either score is non-numeric
       const isCrossType =
-        score1.dataType !== score2.dataType &&
-        (score1.dataType !== "NUMERIC" || score2.dataType !== "NUMERIC");
+        score1.dataType !== score2.dataType && (score1.dataType !== "NUMERIC" || score2.dataType !== "NUMERIC");
 
-      const isNumeric =
-        score1.dataType === "NUMERIC" && score2.dataType === "NUMERIC";
+      const isNumeric = score1.dataType === "NUMERIC" && score2.dataType === "NUMERIC";
       const isCategoricalComparison =
         !isNumeric && // Any non-numeric comparison
-        (score1.dataType === "CATEGORICAL" ||
-          score2.dataType === "CATEGORICAL" ||
-          isCrossType);
+        (score1.dataType === "CATEGORICAL" || score2.dataType === "CATEGORICAL" || isCrossType);
 
       // Build comprehensive analytics query
       const query = buildScoreComparisonQuery({
@@ -370,47 +329,21 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       // Parse results by result_type
       const countsRow = results.find((r) => r.result_type === "counts");
       const heatmapRows = results.filter((r) => r.result_type === "heatmap");
-      const confusionRows = results.filter(
-        (r) => r.result_type === "confusion",
-      );
+      const confusionRows = results.filter((r) => r.result_type === "confusion");
       const statsRow = results.find((r) => r.result_type === "stats");
-      const timeseriesRows = results.filter(
-        (r) => r.result_type === "timeseries",
-      );
-      const dist1Rows = results.filter(
-        (r) => r.result_type === "distribution1",
-      );
-      const dist2Rows = results.filter(
-        (r) => r.result_type === "distribution2",
-      );
+      const timeseriesRows = results.filter((r) => r.result_type === "timeseries");
+      const dist1Rows = results.filter((r) => r.result_type === "distribution1");
+      const dist2Rows = results.filter((r) => r.result_type === "distribution2");
       const stackedRows = results.filter((r) => r.result_type === "stacked");
-      const stackedMatchedRows = results.filter(
-        (r) => r.result_type === "stacked_matched",
-      );
-      const score2CategoriesRows = results.filter(
-        (r) => r.result_type === "score2_categories",
-      );
-      const dist1MatchedRows = results.filter(
-        (r) => r.result_type === "distribution1_matched",
-      );
-      const dist2MatchedRows = results.filter(
-        (r) => r.result_type === "distribution2_matched",
-      );
-      const dist1IndividualRows = results.filter(
-        (r) => r.result_type === "distribution1_individual",
-      );
-      const dist2IndividualRows = results.filter(
-        (r) => r.result_type === "distribution2_individual",
-      );
-      const timeseriesMatchedRows = results.filter(
-        (r) => r.result_type === "timeseries_matched",
-      );
-      const timeseriesCategorical1Rows = results.filter(
-        (r) => r.result_type === "timeseries_categorical1",
-      );
-      const timeseriesCategorical2Rows = results.filter(
-        (r) => r.result_type === "timeseries_categorical2",
-      );
+      const stackedMatchedRows = results.filter((r) => r.result_type === "stacked_matched");
+      const score2CategoriesRows = results.filter((r) => r.result_type === "score2_categories");
+      const dist1MatchedRows = results.filter((r) => r.result_type === "distribution1_matched");
+      const dist2MatchedRows = results.filter((r) => r.result_type === "distribution2_matched");
+      const dist1IndividualRows = results.filter((r) => r.result_type === "distribution1_individual");
+      const dist2IndividualRows = results.filter((r) => r.result_type === "distribution2_individual");
+      const timeseriesMatchedRows = results.filter((r) => r.result_type === "timeseries_matched");
+      const timeseriesCategorical1Rows = results.filter((r) => r.result_type === "timeseries_categorical1");
+      const timeseriesCategorical2Rows = results.filter((r) => r.result_type === "timeseries_categorical2");
       const timeseriesCategorical1MatchedRows = results.filter(
         (r) => r.result_type === "timeseries_categorical1_matched",
       );
@@ -478,9 +411,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
           score2Stack: row.col10 ?? "",
           count: row.col1 ?? 0,
         })),
-        score2Categories: score2CategoriesRows
-          .map((row) => row.col9 ?? "")
-          .filter((c) => c !== ""),
+        score2Categories: score2CategoriesRows.map((row) => row.col9 ?? "").filter((c) => c !== ""),
         // Matched-only datasets for toggle
         timeSeriesMatched: timeseriesMatchedRows.map((row) => ({
           timestamp: new Date((row.col1 ?? 0) * 1000),
@@ -516,20 +447,16 @@ export const scoreAnalyticsRouter = createTRPCRouter({
           category: row.col9 ?? "",
           count: row.col4 ?? 0,
         })),
-        timeSeriesCategorical1Matched: timeseriesCategorical1MatchedRows.map(
-          (row) => ({
-            timestamp: new Date((row.col1 ?? 0) * 1000),
-            category: row.col9 ?? "",
-            count: row.col4 ?? 0,
-          }),
-        ),
-        timeSeriesCategorical2Matched: timeseriesCategorical2MatchedRows.map(
-          (row) => ({
-            timestamp: new Date((row.col1 ?? 0) * 1000),
-            category: row.col9 ?? "",
-            count: row.col4 ?? 0,
-          }),
-        ),
+        timeSeriesCategorical1Matched: timeseriesCategorical1MatchedRows.map((row) => ({
+          timestamp: new Date((row.col1 ?? 0) * 1000),
+          category: row.col9 ?? "",
+          count: row.col4 ?? 0,
+        })),
+        timeSeriesCategorical2Matched: timeseriesCategorical2MatchedRows.map((row) => ({
+          timestamp: new Date((row.col1 ?? 0) * 1000),
+          category: row.col9 ?? "",
+          count: row.col4 ?? 0,
+        })),
         // Sampling metadata for transparency
         samplingMetadata: {
           isSampled: shouldSample,

@@ -24,9 +24,7 @@ import { TRPCError } from "@trpc/server";
  */
 export const createStripeClientReference = (orgId: string) => {
   if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
-    logger.error(
-      "Returning null stripeClientReference, you cannot run the checkout page outside of Hanzo Cloud",
-    );
+    logger.error("Returning null stripeClientReference, you cannot run the checkout page outside of Hanzo Cloud");
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Cannot create stripe client reference outside of Hanzo Cloud",
@@ -42,11 +40,8 @@ export const createStripeClientReference = (orgId: string) => {
  * @param clientReference - The client reference from Stripe (format: "REGION-orgId")
  * @returns true if the reference matches the current cloud region
  */
-export const isStripeClientReferenceFromCurrentCloudRegion = (
-  clientReference: string,
-) =>
-  env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
-  clientReference.startsWith(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
+export const isStripeClientReferenceFromCurrentCloudRegion = (clientReference: string) =>
+  env.NEXT_PUBLIC_HANZO_CLOUD_REGION && clientReference.startsWith(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
 /**
  * Extracts the organization ID from a client reference.

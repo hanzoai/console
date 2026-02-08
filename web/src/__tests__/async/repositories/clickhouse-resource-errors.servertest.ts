@@ -1,8 +1,4 @@
-import {
-  queryClickhouse,
-  queryClickhouseStream,
-  ClickHouseResourceError,
-} from "@hanzo/shared/src/server";
+import { queryClickhouse, queryClickhouseStream, ClickHouseResourceError } from "@hanzo/shared/src/server";
 import { fail } from "assert";
 
 describe("ClickHouse Resource Error Handling", () => {
@@ -17,10 +13,7 @@ describe("ClickHouse Resource Error Handling", () => {
               query: `SELECT throwIf(number >= 2, 'memory limit exceeded: would use 10.23 GiB') AS v FROM system.numbers LIMIT 2000`,
               clickhouseSettings: { max_block_size: `${blockSize}` },
             });
-            fail(
-              "Should have thrown an error, observed instead " +
-                JSON.stringify(res),
-            );
+            fail("Should have thrown an error, observed instead " + JSON.stringify(res));
           } catch (error: any) {
             expect(error).toBeInstanceOf(ClickHouseResourceError);
             expect(error.errorType).toBe("MEMORY_LIMIT");
@@ -98,10 +91,7 @@ describe("ClickHouse Resource Error Handling", () => {
             for await (const item of generator) {
               fullResponse.push(item);
             }
-            fail(
-              "Should have thrown an error, observed instead " +
-                JSON.stringify(fullResponse),
-            );
+            fail("Should have thrown an error, observed instead " + JSON.stringify(fullResponse));
           })(),
         ).rejects.toThrow(ClickHouseResourceError);
       });
@@ -167,28 +157,25 @@ describe("ClickHouse Resource Error Handling", () => {
       },
     ];
 
-    errorPatterns.forEach(
-      ({ name, errorMessage, shouldBeResourceError, errorType }) => {
-        it(`should correctly classify "${name}"`, () => {
-          const error = new Error(errorMessage);
-          const wrappedError =
-            ClickHouseResourceError.wrapIfResourceError(error);
-          const isResourceError = ((err: Error) => {
-            if (err instanceof ClickHouseResourceError) {
-              return true;
-            } else {
-              return false;
-            }
-          })(wrappedError);
-
-          expect(isResourceError).toBe(shouldBeResourceError);
-
-          const resourceError = wrappedError as ClickHouseResourceError;
-          if (shouldBeResourceError && errorType) {
-            expect(resourceError.errorType).toBe(errorType);
+    errorPatterns.forEach(({ name, errorMessage, shouldBeResourceError, errorType }) => {
+      it(`should correctly classify "${name}"`, () => {
+        const error = new Error(errorMessage);
+        const wrappedError = ClickHouseResourceError.wrapIfResourceError(error);
+        const isResourceError = ((err: Error) => {
+          if (err instanceof ClickHouseResourceError) {
+            return true;
+          } else {
+            return false;
           }
-        });
-      },
-    );
+        })(wrappedError);
+
+        expect(isResourceError).toBe(shouldBeResourceError);
+
+        const resourceError = wrappedError as ClickHouseResourceError;
+        if (shouldBeResourceError && errorType) {
+          expect(resourceError.errorType).toBe(errorType);
+        }
+      });
+    });
   });
 });

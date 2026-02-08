@@ -1,10 +1,7 @@
 /** @jest-environment node */
 
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import {
   GetLlmConnectionsV1Response,
   PutLlmConnectionV1Response,
@@ -22,8 +19,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
   let projectId: string;
 
   beforeEach(async () => {
-    const { auth: newAuth, projectId: newProjectId } =
-      await createOrgProjectAndApiKey();
+    const { auth: newAuth, projectId: newProjectId } = await createOrgProjectAndApiKey();
     auth = newAuth;
     projectId = newProjectId;
   });
@@ -407,12 +403,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
         secretKey: "sk-test",
       };
 
-      const response = await makeAPICall(
-        "PUT",
-        "/api/public/llm-connections",
-        createData,
-        "invalid-auth",
-      );
+      const response = await makeAPICall("PUT", "/api/public/llm-connections", createData, "invalid-auth");
 
       expect(response.status).toBe(401);
     });
@@ -570,16 +561,13 @@ describe("/api/public/llm-connections API Endpoints", () => {
             type: "service_account",
             project_id: "test-project",
             private_key_id: "key123",
-            private_key:
-              "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
+            private_key: "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
             client_email: "test@test-project.iam.gserviceaccount.com",
             client_id: "123456789",
             auth_uri: "https://accounts.google.com/o/oauth2/auth",
             token_uri: "https://oauth2.googleapis.com/token",
-            auth_provider_x509_cert_url:
-              "https://www.googleapis.com/oauth2/v1/certs",
-            client_x509_cert_url:
-              "https://www.googleapis.com/robot/v1/metadata/x509/test",
+            auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+            client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/test",
           }),
         },
         auth,
@@ -614,15 +602,9 @@ describe("/api/public/llm-connections API Endpoints", () => {
 
       expect(fullDataResponse.status).toBe(201);
       expect(fullDataResponse.body.baseURL).toBe("https://custom.api.com/v1");
-      expect(fullDataResponse.body.customModels).toEqual([
-        "custom-model-1",
-        "custom-model-2",
-      ]);
+      expect(fullDataResponse.body.customModels).toEqual(["custom-model-1", "custom-model-2"]);
       expect(fullDataResponse.body.withDefaultModels).toBe(false);
-      expect(fullDataResponse.body.extraHeaderKeys).toEqual([
-        "X-API-Version",
-        "X-Custom-Header",
-      ]);
+      expect(fullDataResponse.body.extraHeaderKeys).toEqual(["X-API-Version", "X-Custom-Header"]);
 
       // Test with no optional fields (should use defaults)
       const minimalDataResponse = await makeZodVerifiedAPICall(
@@ -809,9 +791,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.body.displaySecretKey).toBe(
-        "..." + longSecretKey.slice(-4),
-      );
+      expect(response.body.displaySecretKey).toBe("..." + longSecretKey.slice(-4));
     });
 
     it("should handle multiple extra headers", async () => {
@@ -839,9 +819,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
 
       expect(response.status).toBe(201);
       expect(response.body.extraHeaderKeys).toHaveLength(5);
-      expect(response.body.extraHeaderKeys).toEqual(
-        expect.arrayContaining(Object.keys(extraHeaders)),
-      );
+      expect(response.body.extraHeaderKeys).toEqual(expect.arrayContaining(Object.keys(extraHeaders)));
       // Ensure header values are not exposed
       expect(response.body).not.toHaveProperty("extraHeaders");
     });
@@ -896,17 +874,10 @@ describe("/api/public/llm-connections API Endpoints", () => {
           // No config provided
         };
 
-        const response = await makeAPICall(
-          "PUT",
-          "/api/public/llm-connections",
-          createData,
-          auth,
-        );
+        const response = await makeAPICall("PUT", "/api/public/llm-connections", createData, auth);
 
         expect(response.status).toBe(400);
-        expect(JSON.stringify(response.body)).toContain(
-          "Config is required for Bedrock adapter",
-        );
+        expect(JSON.stringify(response.body)).toContain("Config is required for Bedrock adapter");
       });
 
       it("should reject Bedrock connection with invalid config", async () => {
@@ -922,17 +893,10 @@ describe("/api/public/llm-connections API Endpoints", () => {
           },
         };
 
-        const response = await makeAPICall(
-          "PUT",
-          "/api/public/llm-connections",
-          createData,
-          auth,
-        );
+        const response = await makeAPICall("PUT", "/api/public/llm-connections", createData, auth);
 
         expect(response.status).toBe(400);
-        expect(JSON.stringify(response.body)).toContain(
-          "Invalid Bedrock config",
-        );
+        expect(JSON.stringify(response.body)).toContain("Invalid Bedrock config");
       });
 
       it("should create VertexAI connection with location config", async () => {
@@ -943,16 +907,13 @@ describe("/api/public/llm-connections API Endpoints", () => {
             type: "service_account",
             project_id: "test-project",
             private_key_id: "key123",
-            private_key:
-              "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
+            private_key: "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
             client_email: "test@test-project.iam.gserviceaccount.com",
             client_id: "123456789",
             auth_uri: "https://accounts.google.com/o/oauth2/auth",
             token_uri: "https://oauth2.googleapis.com/token",
-            auth_provider_x509_cert_url:
-              "https://www.googleapis.com/oauth2/v1/certs",
-            client_x509_cert_url:
-              "https://www.googleapis.com/robot/v1/metadata/x509/test",
+            auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+            client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/test",
           }),
           config: {
             location: "us-central1",
@@ -980,16 +941,13 @@ describe("/api/public/llm-connections API Endpoints", () => {
             type: "service_account",
             project_id: "test-project",
             private_key_id: "key123",
-            private_key:
-              "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
+            private_key: "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
             client_email: "test@test-project.iam.gserviceaccount.com",
             client_id: "123456789",
             auth_uri: "https://accounts.google.com/o/oauth2/auth",
             token_uri: "https://oauth2.googleapis.com/token",
-            auth_provider_x509_cert_url:
-              "https://www.googleapis.com/oauth2/v1/certs",
-            client_x509_cert_url:
-              "https://www.googleapis.com/robot/v1/metadata/x509/test",
+            auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+            client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/test",
           }),
           // No config - allowed for VertexAI
         };
@@ -1017,17 +975,10 @@ describe("/api/public/llm-connections API Endpoints", () => {
           },
         };
 
-        const response = await makeAPICall(
-          "PUT",
-          "/api/public/llm-connections",
-          createData,
-          auth,
-        );
+        const response = await makeAPICall("PUT", "/api/public/llm-connections", createData, auth);
 
         expect(response.status).toBe(400);
-        expect(JSON.stringify(response.body)).toContain(
-          "Config is not supported for openai adapter",
-        );
+        expect(JSON.stringify(response.body)).toContain("Config is not supported for openai adapter");
       });
 
       it("should update existing Bedrock connection config", async () => {
@@ -1100,9 +1051,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
           auth,
         );
 
-        const connection = response.body.data.find(
-          (c) => c.provider === provider,
-        );
+        const connection = response.body.data.find((c) => c.provider === provider);
         expect(connection?.config).toEqual({ region: "ap-southeast-1" });
       });
 
@@ -1114,33 +1063,23 @@ describe("/api/public/llm-connections API Endpoints", () => {
             type: "service_account",
             project_id: "test-project",
             private_key_id: "key123",
-            private_key:
-              "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
+            private_key: "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----",
             client_email: "test@test-project.iam.gserviceaccount.com",
             client_id: "123456789",
             auth_uri: "https://accounts.google.com/o/oauth2/auth",
             token_uri: "https://oauth2.googleapis.com/token",
-            auth_provider_x509_cert_url:
-              "https://www.googleapis.com/oauth2/v1/certs",
-            client_x509_cert_url:
-              "https://www.googleapis.com/robot/v1/metadata/x509/test",
+            auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+            client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/test",
           }),
           config: {
             region: "us-east-1", // Wrong key - should be 'location'
           },
         };
 
-        const response = await makeAPICall(
-          "PUT",
-          "/api/public/llm-connections",
-          createData,
-          auth,
-        );
+        const response = await makeAPICall("PUT", "/api/public/llm-connections", createData, auth);
 
         expect(response.status).toBe(400);
-        expect(JSON.stringify(response.body)).toContain(
-          "Invalid VertexAI config",
-        );
+        expect(JSON.stringify(response.body)).toContain("Invalid VertexAI config");
       });
     });
   });
@@ -1176,9 +1115,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
     it("should not update connections from different project with PUT", async () => {
       // Create connection in different project
       const { projectId: otherProjectId } = await createOrgProjectAndApiKey();
-      const otherProvider = generateUniqueProvider(
-        "other-provider-cross-project",
-      );
+      const otherProvider = generateUniqueProvider("other-provider-cross-project");
       await prisma.llmApiKeys.create({
         data: {
           projectId: otherProjectId,
@@ -1396,17 +1333,11 @@ describe("/api/public/llm-connections API Endpoints", () => {
       expect(Array.isArray(connection.extraHeaderKeys)).toBe(true);
       expect(typeof connection.createdAt).toBe("string");
       expect(typeof connection.updatedAt).toBe("string");
-      expect(new Date(connection.createdAt).toISOString()).toBe(
-        connection.createdAt,
-      );
-      expect(new Date(connection.updatedAt).toISOString()).toBe(
-        connection.updatedAt,
-      );
+      expect(new Date(connection.createdAt).toISOString()).toBe(connection.createdAt);
+      expect(new Date(connection.updatedAt).toISOString()).toBe(connection.updatedAt);
 
       // Verify baseURL can be string or null
-      expect(
-        connection.baseURL === null || typeof connection.baseURL === "string",
-      ).toBe(true);
+      expect(connection.baseURL === null || typeof connection.baseURL === "string").toBe(true);
     });
 
     it("should never leak sensitive data in any response", async () => {

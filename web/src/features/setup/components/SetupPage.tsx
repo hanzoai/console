@@ -14,10 +14,7 @@ import { NewProjectForm } from "@/src/features/projects/components/NewProjectFor
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { MembershipInvitesPage } from "@/src/features/rbac/components/MembershipInvitesPage";
 import { MembersTable } from "@/src/features/rbac/components/MembersTable";
-import {
-  createProjectRoute,
-  inviteMembersRoute,
-} from "@/src/features/setup/setupRoutes";
+import { createProjectRoute, inviteMembersRoute } from "@/src/features/setup/setupRoutes";
 import { cn } from "@/src/utils/tailwind";
 import { Check } from "lucide-react";
 import { useRouter } from "next/router";
@@ -33,21 +30,14 @@ export function SetupPage() {
   const [orgStep] = useQueryParam("orgstep", StringParam); // "invite-members" | "create-project"
 
   // starts at 1 to align with breadcrumb
-  const stepInt = !organization
-    ? 1
-    : project
-      ? 3
-      : orgStep === "create-project"
-        ? 3
-        : 2;
+  const stepInt = !organization ? 1 : project ? 3 : orgStep === "create-project" ? 3 : 2;
 
   return (
     <ContainerPage
       headerProps={{
         title: "Setup",
         help: {
-          description:
-            "Create a new organization. This will be used to manage your projects and teams.",
+          description: "Create a new organization. This will be used to manage your projects and teams.",
         },
         ...(stepInt === 1 && {
           breadcrumb: [
@@ -62,39 +52,21 @@ export function SetupPage() {
       <Breadcrumb className="mb-3">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbPage
-              className={cn(
-                stepInt !== 1
-                  ? "text-muted-foreground"
-                  : "font-semibold text-foreground",
-              )}
-            >
+            <BreadcrumbPage className={cn(stepInt !== 1 ? "text-muted-foreground" : "font-semibold text-foreground")}>
               1. Create Organization
               {stepInt > 1 && <Check className="ml-1 inline-block h-3 w-3" />}
             </BreadcrumbPage>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage
-              className={cn(
-                stepInt !== 2
-                  ? "text-muted-foreground"
-                  : "font-semibold text-foreground",
-              )}
-            >
+            <BreadcrumbPage className={cn(stepInt !== 2 ? "text-muted-foreground" : "font-semibold text-foreground")}>
               2. Invite Members
               {stepInt > 2 && <Check className="ml-1 inline-block h-3 w-3" />}
             </BreadcrumbPage>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage
-              className={cn(
-                stepInt !== 3
-                  ? "text-muted-foreground"
-                  : "font-semibold text-foreground",
-              )}
-            >
+            <BreadcrumbPage className={cn(stepInt !== 3 ? "text-muted-foreground" : "font-semibold text-foreground")}>
               3. Create Project
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -124,8 +96,7 @@ export function SetupPage() {
               <div>
                 <Header title="Organization Members" />
                 <p className="mb-4 text-sm text-muted-foreground">
-                  Invite members to your organization to collaborate on
-                  projects. You can always add more members later.
+                  Invite members to your organization to collaborate on projects. You can always add more members later.
                 </p>
                 <MembersTable orgId={organization.id} />
               </div>
@@ -141,15 +112,12 @@ export function SetupPage() {
             <div>
               <Header title="New Project" />
               <p className="mb-4 text-sm text-muted-foreground">
-                Projects are used to group traces, datasets, evals and prompts.
-                Multiple environments are best separated via tags within a
-                project.
+                Projects are used to group traces, datasets, evals and prompts. Multiple environments are best separated
+                via tags within a project.
               </p>
               <NewProjectForm
                 orgId={organization.id}
-                onSuccess={(projectId) =>
-                  router.push(`/project/${projectId}/traces`)
-                }
+                onSuccess={(projectId) => router.push(`/project/${projectId}/traces`)}
               />
             </div>
           )

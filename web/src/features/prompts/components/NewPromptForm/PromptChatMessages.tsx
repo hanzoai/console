@@ -19,26 +19,18 @@ import { PromptSelectionDialog } from "../PromptSelectionDialog";
 import type { ControllerRenderProps } from "react-hook-form";
 import type { MessagesContext } from "@/src/components/ChatMessages/types";
 
-type PromptChatMessagesProps = ControllerRenderProps<
-  NewPromptFormSchemaType,
-  "chatPrompt"
-> & {
+type PromptChatMessagesProps = ControllerRenderProps<NewPromptFormSchemaType, "chatPrompt"> & {
   initialMessages: unknown;
   projectId: string | undefined;
 };
 
-export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
-  onChange,
-  initialMessages,
-  projectId,
-}) => {
+export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({ onChange, initialMessages, projectId }) => {
   const [messages, setMessages] = useState<ChatMessageWithId[]>([]);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    const parsedMessages =
-      PromptChatMessageListSchema.safeParse(initialMessages);
+    const parsedMessages = PromptChatMessageListSchema.safeParse(initialMessages);
 
     if (!parsedMessages.success || !parsedMessages.data.length) {
       setMessages([
@@ -82,11 +74,7 @@ export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
       return acc;
     }, new Set<string>());
     if (customRoles.size) {
-      setAvailableRoles([
-        ...customRoles,
-        ChatMessageRole.Assistant,
-        ChatMessageRole.User,
-      ]);
+      setAvailableRoles([...customRoles, ChatMessageRole.Assistant, ChatMessageRole.User]);
     }
   }, [initialMessages]);
 
@@ -97,29 +85,17 @@ export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
     return newMessage;
   }, []);
 
-  const updateMessage: MessagesContext["updateMessage"] = useCallback(
-    (type, id, key, value) => {
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === id ? { ...message, [key]: value } : message,
-        ),
-      );
-    },
-    [],
-  );
+  const updateMessage: MessagesContext["updateMessage"] = useCallback((type, id, key, value) => {
+    setMessages((prev) => prev.map((message) => (message.id === id ? { ...message, [key]: value } : message)));
+  }, []);
 
   const deleteMessage: MessagesContext["deleteMessage"] = useCallback((id) => {
     setMessages((prev) => prev.filter((message) => message.id !== id));
   }, []);
 
-  const replaceMessage: MessagesContext["replaceMessage"] = useCallback(
-    (id, message) => {
-      setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { id, ...message } : m)),
-      );
-    },
-    [],
-  );
+  const replaceMessage: MessagesContext["replaceMessage"] = useCallback((id, message) => {
+    setMessages((prev) => prev.map((m) => (m.id === id ? { id, ...message } : m)));
+  }, []);
 
   useEffect(() => {
     onChange(messages);
@@ -139,11 +115,7 @@ export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
         </Button>
 
         {projectId && (
-          <PromptSelectionDialog
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            projectId={projectId}
-          />
+          <PromptSelectionDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} projectId={projectId} />
         )}
       </div>
 

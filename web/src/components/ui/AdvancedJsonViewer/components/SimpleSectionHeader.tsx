@@ -13,10 +13,7 @@ export interface SimpleSectionHeaderProps {
  *
  * Uses useSectionContext to access section state and toggle function
  */
-export function SimpleSectionHeader({
-  title,
-  sectionKey,
-}: SimpleSectionHeaderProps) {
+export function SimpleSectionHeader({ title, sectionKey }: SimpleSectionHeaderProps) {
   const context = useSectionContext(sectionKey);
 
   return (
@@ -42,16 +39,10 @@ export function SimpleSectionHeader({
           opacity: 0.5,
         }}
       >
-        {context.isExpanded ? (
-          <ChevronDown size={14} />
-        ) : (
-          <ChevronRight size={14} />
-        )}
+        {context.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
       </span>
       <span>{title}</span>
-      <span style={{ marginLeft: "8px", color: "#6b7280", fontWeight: 400 }}>
-        {context.rowCount} rows
-      </span>
+      <span style={{ marginLeft: "8px", color: "#6b7280", fontWeight: 400 }}>{context.rowCount} rows</span>
     </div>
   );
 }

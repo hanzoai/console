@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { DayPicker, UI, SelectionState, DayFlag } from "react-day-picker";
 
 import { cn } from "@/src/utils/tailwind";
@@ -14,13 +9,7 @@ import { buttonVariants } from "@/src/components/ui/button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  disabled,
-  ...props
-}: CalendarProps) {
+function Calendar({ className, classNames, showOutsideDays = true, disabled, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -41,11 +30,9 @@ function Calendar({
         ),
         [UI.MonthGrid]: "w-full border-collapse space-y-1",
         [UI.Weekdays]: "flex",
-        [UI.Weekday]:
-          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        [UI.Weekday]: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         [UI.Week]: "flex w-full mt-2",
-        [UI.Day]:
-          "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+        [UI.Day]: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
         [UI.DayButton]: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100",

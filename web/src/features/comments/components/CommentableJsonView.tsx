@@ -14,12 +14,7 @@ interface CommentableJsonViewProps {
   className?: string;
 }
 
-export function CommentableJsonView({
-  children,
-  dataField,
-  enabled = true,
-  className,
-}: CommentableJsonViewProps) {
+export function CommentableJsonView({ children, dataField, enabled = true, className }: CommentableJsonViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   useTextSelection({ containerRef, dataField, enabled });
 

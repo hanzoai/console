@@ -47,9 +47,7 @@ export function TimelineBar({
         <div
           className={cn(
             "flex rounded-sm border border-border",
-            isSelected
-              ? "ring ring-primary-accent"
-              : "group-hover:ring group-hover:ring-tertiary",
+            isSelected ? "ring ring-primary-accent" : "group-hover:ring group-hover:ring-tertiary",
           )}
           style={{ marginLeft: `${startOffset}px` }}
         >
@@ -73,12 +71,8 @@ export function TimelineBar({
             <div className="-ml-8 flex flex-row items-center justify-start gap-2 text-xs text-muted-foreground">
               <span className="text-xxs text-primary">First token</span>
               <ItemBadge type={node.type} isSmall />
-              <span className="whitespace-nowrap text-sm font-medium text-primary">
-                {node.name}
-              </span>
-              {showComments && commentCount ? (
-                <CommentCountIcon count={commentCount} />
-              ) : null}
+              <span className="whitespace-nowrap text-sm font-medium text-primary">{node.name}</span>
+              {showComments && commentCount ? <CommentCountIcon count={commentCount} /> : null}
               {showDuration && isPresent(latency) && (
                 <span
                   className={cn(
@@ -134,9 +128,7 @@ export function TimelineBar({
           className={cn(
             "flex h-8 items-center justify-start rounded-sm border border-border bg-muted",
             itemWidth ? "" : "border-dashed",
-            isSelected
-              ? "ring ring-primary-accent"
-              : "group-hover:ring group-hover:ring-tertiary",
+            isSelected ? "ring ring-primary-accent" : "group-hover:ring group-hover:ring-tertiary",
           )}
           style={{ width: `${itemWidth || 10}px` }}
         >
@@ -147,12 +139,8 @@ export function TimelineBar({
             )}
           >
             <ItemBadge type={node.type} isSmall />
-            <span className="whitespace-nowrap text-sm font-medium text-primary">
-              {node.name}
-            </span>
-            {showComments && commentCount ? (
-              <CommentCountIcon count={commentCount} />
-            ) : null}
+            <span className="whitespace-nowrap text-sm font-medium text-primary">{node.name}</span>
+            {showComments && commentCount ? <CommentCountIcon count={commentCount} /> : null}
             {showDuration && isPresent(latency) && (
               <span
                 className={cn(

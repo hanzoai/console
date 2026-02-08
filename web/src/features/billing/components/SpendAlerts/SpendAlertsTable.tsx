@@ -44,10 +44,7 @@ export function SpendAlertsTable({ orgId }: SpendAlertsTableProps) {
     isLoading,
     isError,
     refetch,
-  } = api.spendAlerts.getSpendAlerts.useQuery(
-    { orgId },
-    { enabled: hasAccess },
-  );
+  } = api.spendAlerts.getSpendAlerts.useQuery({ orgId }, { enabled: hasAccess });
 
   const rows = useMemo<AlertRow[]>(() => {
     return (spendAlerts ?? []).map((a: any) => ({
@@ -125,10 +122,7 @@ export function SpendAlertsTable({ orgId }: SpendAlertsTableProps) {
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setDeletingAlert(row.original.id)}
-              className="text-destructive"
-            >
+            <DropdownMenuItem onClick={() => setDeletingAlert(row.original.id)} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>

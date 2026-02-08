@@ -14,10 +14,8 @@ export function BatchActionsSettingsPage(props: { projectId: string }) {
     <>
       <Header title="Batch Actions" />
       <p className="mb-4 text-sm">
-        Track the status of bulk operations performed on tables, such as adding
-        observations to datasets, deleting traces, and adding items to
-        annotation queues. Actions are processed asynchronously in the
-        background.
+        Track the status of bulk operations performed on tables, such as adding observations to datasets, deleting
+        traces, and adding items to annotation queues. Actions are processed asynchronously in the background.
       </p>
       {hasAccess ? (
         <SettingsTableCard>
@@ -26,9 +24,7 @@ export function BatchActionsSettingsPage(props: { projectId: string }) {
       ) : (
         <Alert>
           <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>
-            You do not have permission to view batch actions.
-          </AlertDescription>
+          <AlertDescription>You do not have permission to view batch actions.</AlertDescription>
         </Alert>
       )}
     </>

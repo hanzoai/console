@@ -18,20 +18,11 @@ export type UseAgentGraphDataParams = {
  * @param observations - Array of observations with startTime
  * @param enabled - Whether to enable the query (default: true)
  */
-export function useAgentGraphData({
-  projectId,
-  traceId,
-  observations,
-  enabled = true,
-}: UseAgentGraphDataParams) {
+export function useAgentGraphData({ projectId, traceId, observations, enabled = true }: UseAgentGraphDataParams) {
   // Calculate time bounds from observations
   const observationStartTimes = observations.map((o) => o.startTime.getTime());
-  const minStartTime = new Date(
-    Math.min(...observationStartTimes, Date.now()),
-  ).toISOString();
-  const maxStartTime = new Date(
-    Math.max(...observationStartTimes, 0),
-  ).toISOString();
+  const minStartTime = new Date(Math.min(...observationStartTimes, Date.now())).toISOString();
+  const maxStartTime = new Date(Math.max(...observationStartTimes, 0)).toISOString();
 
   const query = api.traces.getAgentGraphData.useQuery(
     {
@@ -64,9 +55,7 @@ const MAX_NODES_FOR_GRAPH_UI = 5000;
 /**
  * Determines if graph view should be available based on observation data.
  */
-export function useIsGraphViewAvailable(
-  agentGraphData: AgentGraphDataResponse[],
-): boolean {
+export function useIsGraphViewAvailable(agentGraphData: AgentGraphDataResponse[]): boolean {
   return useMemo(() => {
     if (agentGraphData.length === 0) {
       return false;
@@ -81,15 +70,11 @@ export function useIsGraphViewAvailable(
     // (not SPAN, EVENT, or GENERATION)
     const hasGraphableObservations = agentGraphData.some(
       (obs) =>
-        obs.observationType !== "SPAN" &&
-        obs.observationType !== "EVENT" &&
-        obs.observationType !== "GENERATION",
+        obs.observationType !== "SPAN" && obs.observationType !== "EVENT" && obs.observationType !== "GENERATION",
     );
 
     // Check for LangGraph data (has step != 0)
-    const hasLangGraphData = agentGraphData.some(
-      (obs) => obs.step != null && obs.step !== 0,
-    );
+    const hasLangGraphData = agentGraphData.some((obs) => obs.step != null && obs.step !== 0);
 
     return hasGraphableObservations || hasLangGraphData;
   }, [agentGraphData]);

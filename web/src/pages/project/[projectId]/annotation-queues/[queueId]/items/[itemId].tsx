@@ -7,11 +7,5 @@ export default function AnnotationQueues() {
   const projectId = router.query.projectId as string;
   const itemId = router.query.itemId as string;
 
-  return (
-    <AnnotationQueuesItem
-      annotationQueueId={annotationQueueId}
-      projectId={projectId}
-      itemId={itemId}
-    />
-  );
+  return <AnnotationQueuesItem annotationQueueId={annotationQueueId} projectId={projectId} itemId={itemId} />;
 }

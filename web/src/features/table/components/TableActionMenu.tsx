@@ -8,10 +8,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { ChevronDown, Trash } from "lucide-react";
 import { Plus } from "lucide-react";
-import {
-  type TableAction,
-  type CustomDialogTableAction,
-} from "@/src/features/table/types";
+import { type TableAction, type CustomDialogTableAction } from "@/src/features/table/types";
 import { TableActionDialog } from "@/src/features/table/components/TableActionDialog";
 import { type BatchExportTableName } from "@hanzo/shared";
 
@@ -29,15 +26,8 @@ const getDefaultIcon = (type: TableAction["type"]) => {
   return <Trash className="mr-2 h-4 w-4" />;
 };
 
-export function TableActionMenu({
-  projectId,
-  actions,
-  tableName,
-  onCustomAction,
-}: TableActionMenuProps) {
-  const [selectedAction, setSelectedAction] = useState<TableAction | null>(
-    null,
-  );
+export function TableActionMenu({ projectId, actions, tableName, onCustomAction }: TableActionMenuProps) {
+  const [selectedAction, setSelectedAction] = useState<TableAction | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const handleActionSelect = (action: TableAction) => {
@@ -65,10 +55,7 @@ export function TableActionMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {actions.map((action) => (
-            <DropdownMenuItem
-              key={action.id}
-              onClick={() => handleActionSelect(action)}
-            >
+            <DropdownMenuItem key={action.id} onClick={() => handleActionSelect(action)}>
               {action.icon || getDefaultIcon(action.type)}
               <span>{action.label}</span>
             </DropdownMenuItem>

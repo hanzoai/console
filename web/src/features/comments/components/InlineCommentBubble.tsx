@@ -13,9 +13,7 @@ interface InlineCommentBubbleProps {
   onAddComment: () => void;
 }
 
-export function InlineCommentBubble({
-  onAddComment,
-}: InlineCommentBubbleProps) {
+export function InlineCommentBubble({ onAddComment }: InlineCommentBubbleProps) {
   const context = useInlineCommentSelectionOptional();
   const [position, setPosition] = useState<{
     top: number;

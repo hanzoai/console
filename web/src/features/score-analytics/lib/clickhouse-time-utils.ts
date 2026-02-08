@@ -35,9 +35,7 @@ import { type IntervalConfig } from "@/src/utils/date-range-utils";
  * // Returns: { count: 1, unit: "hour" }
  * ```
  */
-export const normalizeIntervalForClickHouse = (
-  interval: IntervalConfig,
-): IntervalConfig => {
+export const normalizeIntervalForClickHouse = (interval: IntervalConfig): IntervalConfig => {
   // Special case: 7-day intervals become ISO 8601 weeks (Monday-aligned)
   if (interval.count === 7 && interval.unit === "day") {
     return { count: 7, unit: "day" }; // Will use toStartOfWeek
@@ -74,10 +72,7 @@ export const normalizeIntervalForClickHouse = (
  * // Returns: "toStartOfHour(created_at)"
  * ```
  */
-export const getClickHouseTimeBucketFunction = (
-  timestampField: string,
-  normalizedInterval: IntervalConfig,
-): string => {
+export const getClickHouseTimeBucketFunction = (timestampField: string, normalizedInterval: IntervalConfig): string => {
   const { count, unit } = normalizedInterval;
 
   // Special case: 7-day intervals align to ISO 8601 week (Monday start)

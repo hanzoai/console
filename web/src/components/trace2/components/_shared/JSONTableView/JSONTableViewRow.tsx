@@ -62,9 +62,7 @@ function JSONTableViewRowInner<T>({
         {renderRowPrefix && renderRowPrefix(item, isExpanded)}
 
         {/* Expand icon */}
-        {expandable && (
-          <ChevronIcon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
-        )}
+        {expandable && <ChevronIcon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />}
 
         {/* Column cells */}
         {columns.map((column) => (
@@ -93,6 +91,4 @@ function JSONTableViewRowInner<T>({
   );
 }
 
-export const JSONTableViewRow = memo(
-  JSONTableViewRowInner,
-) as typeof JSONTableViewRowInner;
+export const JSONTableViewRow = memo(JSONTableViewRowInner) as typeof JSONTableViewRowInner;

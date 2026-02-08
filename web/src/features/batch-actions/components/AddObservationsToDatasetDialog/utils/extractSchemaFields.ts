@@ -58,10 +58,7 @@ type JSONSchemaObject = {
  * //   { path: "context.user_id", type: "string", required: false }
  * // ]
  */
-export function extractSchemaFields(
-  schema: unknown,
-  maxDepth: number = 3,
-): SchemaField[] {
+export function extractSchemaFields(schema: unknown, maxDepth: number = 3): SchemaField[] {
   if (!isJsonSchemaObject(schema)) {
     return [];
   }

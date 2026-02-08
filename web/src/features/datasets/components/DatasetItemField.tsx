@@ -2,12 +2,7 @@ import { CodeMirrorEditor } from "@/src/components/editor";
 import { DatasetSchemaHoverCard } from "./DatasetSchemaHoverCard";
 import { DatasetItemFieldSchemaErrors } from "./DatasetItemFieldSchemaErrors";
 import type { Prisma } from "@hanzo/shared";
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { FormControl, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 
 type DatasetError = {
   datasetId: string;
@@ -52,36 +47,15 @@ export const DatasetItemField = ({
   const content = (
     <>
       <div className="flex items-center gap-2">
-        {isFormField ? (
-          <FormLabel>{label}</FormLabel>
-        ) : (
-          <label className="text-sm font-medium">{label}</label>
-        )}
-        {schema && schemaType && (
-          <DatasetSchemaHoverCard
-            schema={schema}
-            schemaType={schemaType}
-            showLabel
-          />
-        )}
+        {isFormField ? <FormLabel>{label}</FormLabel> : <label className="text-sm font-medium">{label}</label>}
+        {schema && schemaType && <DatasetSchemaHoverCard schema={schema} schemaType={schemaType} showLabel />}
       </div>
       {isFormField ? (
         <FormControl>
-          <CodeMirrorEditor
-            mode="json"
-            value={value}
-            onChange={onChange}
-            editable={editable}
-            minHeight={200}
-          />
+          <CodeMirrorEditor mode="json" value={value} onChange={onChange} editable={editable} minHeight={200} />
         </FormControl>
       ) : (
-        <CodeMirrorEditor
-          mode="json"
-          value={value}
-          editable={editable}
-          minHeight={200}
-        />
+        <CodeMirrorEditor mode="json" value={value} editable={editable} minHeight={200} />
       )}
       {isFormField && <FormMessage />}
       {showErrors && hasSchemas && errors.length > 0 && (
@@ -90,9 +64,5 @@ export const DatasetItemField = ({
     </>
   );
 
-  return isFormField ? (
-    <FormItem>{content}</FormItem>
-  ) : (
-    <div className="space-y-2">{content}</div>
-  );
+  return isFormField ? <FormItem>{content}</FormItem> : <div className="space-y-2">{content}</div>;
 };

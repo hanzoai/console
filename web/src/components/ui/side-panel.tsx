@@ -4,13 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SubHeader } from "@/src/components/layouts/header";
 import { cn } from "@/src/utils/tailwind";
 import React from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/src/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/src/components/ui/sheet";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import { Separator } from "@/src/components/ui/separator";
 import useSessionStorage from "@/src/components/useSessionStorage";
@@ -59,10 +53,7 @@ const SidePanel = ({
   const isControlled = openState !== undefined;
   const controlledOpen = openState?.open;
   const onOpenChange = openState?.onOpenChange;
-  const [uncontrolledOpen, setUncontrolledOpen] = useSessionStorage<boolean>(
-    `${id}-showPanel`,
-    true,
-  );
+  const [uncontrolledOpen, setUncontrolledOpen] = useSessionStorage<boolean>(`${id}-showPanel`, true);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -102,10 +93,7 @@ const SidePanel = ({
 
   if (isMobile) {
     return (
-      <Sheet
-        open={isControlled ? showPanel : mobileSheetOpen}
-        onOpenChange={handleMobileOpenChange}
-      >
+      <Sheet open={isControlled ? showPanel : mobileSheetOpen} onOpenChange={handleMobileOpenChange}>
         {!isControlled && (
           <div className="border-l px-1 pt-2">
             <SheetTrigger asChild>
@@ -119,9 +107,7 @@ const SidePanel = ({
           <SheetHeader>
             <SheetTitle>{mobileTitle}</SheetTitle>
           </SheetHeader>
-          <div className="mt-2 flex h-full w-full flex-col gap-2">
-            {children}
-          </div>
+          <div className="mt-2 flex h-full w-full flex-col gap-2">{children}</div>
         </SheetContent>
       </Sheet>
     );
@@ -129,20 +115,9 @@ const SidePanel = ({
 
   return (
     <SidePanelContext.Provider value={contextValue}>
-      <div
-        className={cn(
-          "flex h-full flex-row overflow-hidden border-l",
-          showPanel ? "w-[25vw]" : "w-fit",
-          className,
-        )}
-      >
+      <div className={cn("flex h-full flex-row overflow-hidden border-l", showPanel ? "w-[25vw]" : "w-fit", className)}>
         <div className="grid h-full w-full items-start gap-2 overflow-hidden">
-          <div
-            className={cn(
-              "flex h-full w-full flex-col gap-2",
-              scrollable ? "overflow-y-auto" : "overflow-hidden",
-            )}
-          >
+          <div className={cn("flex h-full w-full flex-col gap-2", scrollable ? "overflow-y-auto" : "overflow-hidden")}>
             {children}
           </div>
         </div>
@@ -171,12 +146,7 @@ const SidePanelHeader = ({ children }: { children: ReactNode }) => {
 
   if (!showPanel) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setShowPanel(true)}
-        title="Show details"
-      >
+      <Button variant="ghost" size="icon" onClick={() => setShowPanel(true)} title="Show details">
         <ChevronLeft className="h-4 w-4" />
       </Button>
     );
@@ -186,12 +156,7 @@ const SidePanelHeader = ({ children }: { children: ReactNode }) => {
     <div className="flex flex-col gap-2">
       <div className="flex h-fit w-full flex-row items-center justify-between p-2 pb-0">
         <div className="flex flex-row items-center gap-1">{children}</div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setShowPanel(false)}
-          title="Hide details"
-        >
+        <Button variant="outline" size="icon" onClick={() => setShowPanel(false)} title="Hide details">
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
@@ -200,32 +165,18 @@ const SidePanelHeader = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const SidePanelTitle = ({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) => <SubHeader title={children?.toString() ?? ""} className={className} />;
+const SidePanelTitle = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <SubHeader title={children?.toString() ?? ""} className={className} />
+);
 
-const SidePanelContent = ({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) => {
+const SidePanelContent = ({ children, className }: { children: ReactNode; className?: string }) => {
   const context = React.useContext(SidePanelContext);
   if (!context) return children;
 
   const { showPanel } = context;
   if (!showPanel) return null;
 
-  return (
-    <div className={cn("flex flex-col items-start gap-4", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("flex flex-col items-start gap-4", className)}>{children}</div>;
 };
 
 export { SidePanel, SidePanelHeader, SidePanelTitle, SidePanelContent };

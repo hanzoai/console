@@ -1,22 +1,8 @@
 import React, { useState } from "react";
 import { api } from "@/src/utils/api";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogBody,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/src/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/src/components/ui/table";
 
 export interface SelectDashboardDialogProps {
   open: boolean;
@@ -33,9 +19,7 @@ export function SelectDashboardDialog({
   onSelectDashboard,
   onSkip,
 }: SelectDashboardDialogProps) {
-  const [selectedDashboardId, setSelectedDashboardId] = useState<string | null>(
-    null,
-  );
+  const [selectedDashboardId, setSelectedDashboardId] = useState<string | null>(null);
 
   const dashboards = api.dashboard.allDashboards.useQuery(
     {
@@ -75,13 +59,9 @@ export function SelectDashboardDialog({
             {dashboards.isLoading ? (
               <div className="py-8 text-center">Loading dashboards...</div>
             ) : dashboards.isError ? (
-              <div className="py-8 text-center text-destructive">
-                Error: {dashboards.error.message}
-              </div>
+              <div className="py-8 text-center text-destructive">Error: {dashboards.error.message}</div>
             ) : dashboards.data?.dashboards.length === 0 ? (
-              <div className="py-8 text-center text-muted-foreground">
-                No dashboards found.
-              </div>
+              <div className="py-8 text-center text-muted-foreground">No dashboards found.</div>
             ) : (
               <Table>
                 <TableHeader>
@@ -104,9 +84,7 @@ export function SelectDashboardDialog({
                         <TableCell className="truncate" title={d.description}>
                           {d.description}
                         </TableCell>
-                        <TableCell>
-                          {new Date(d.updatedAt).toLocaleString()}
-                        </TableCell>
+                        <TableCell>{new Date(d.updatedAt).toLocaleString()}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>

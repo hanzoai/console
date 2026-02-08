@@ -3,10 +3,7 @@ import { type z } from "zod/v4";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { isBooleanDataType } from "@/src/features/scores/lib/helpers";
-import {
-  filterAndValidateDbScoreConfigList,
-  validateDbScoreConfig,
-} from "@hanzo/shared";
+import { filterAndValidateDbScoreConfigList, validateDbScoreConfig } from "@hanzo/shared";
 import { Prisma, prisma } from "@hanzo/shared/src/db";
 import { traceException } from "@hanzo/shared/src/server";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
@@ -77,10 +74,7 @@ export default withMiddlewares({
         skip: (page - 1) * limit,
       });
 
-      const configs = filterAndValidateDbScoreConfigList(
-        rawConfigs,
-        traceException,
-      );
+      const configs = filterAndValidateDbScoreConfigList(rawConfigs, traceException);
 
       const totalItemsRes = await prisma.$queryRaw<{ count: bigint }[]>(
         Prisma.sql`
@@ -92,8 +86,7 @@ export default withMiddlewares({
         `,
       );
 
-      const totalItems =
-        totalItemsRes[0] !== undefined ? Number(totalItemsRes[0].count) : 0;
+      const totalItems = totalItemsRes[0] !== undefined ? Number(totalItemsRes[0].count) : 0;
 
       return {
         data: configs,

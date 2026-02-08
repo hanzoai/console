@@ -11,12 +11,7 @@ import {
   type GetMediaUploadUrlResponse,
   GetMediaUploadUrlResponseSchema,
 } from "@/src/features/media/validation";
-import {
-  type Media,
-  type ObservationMedia,
-  prisma,
-  type TraceMedia,
-} from "@hanzo/shared/src/db";
+import { type Media, type ObservationMedia, prisma, type TraceMedia } from "@hanzo/shared/src/db";
 import { redis } from "@hanzo/shared/src/server";
 
 describe("Media Upload API", () => {
@@ -27,10 +22,7 @@ describe("Media Upload API", () => {
   const fileBytesPNG = fs.readFileSync(imagePathPNG);
   const contentTypePNG = "image/png";
   const contentLengthPNG = fileBytesPNG.length;
-  const sha256HashPNG = crypto
-    .createHash("sha256")
-    .update(fileBytesPNG)
-    .digest("base64");
+  const sha256HashPNG = crypto.createHash("sha256").update(fileBytesPNG).digest("base64");
 
   const validPNG = {
     contentType: contentTypePNG,
@@ -44,10 +36,7 @@ describe("Media Upload API", () => {
   const fileBytesPDF = fs.readFileSync(imagePathPDF);
   const contentTypePDF = "application/pdf";
   const contentLengthPDF = fileBytesPDF.length;
-  const sha256HashPDF = crypto
-    .createHash("sha256")
-    .update(fileBytesPDF)
-    .digest("base64");
+  const sha256HashPDF = crypto.createHash("sha256").update(fileBytesPDF).digest("base64");
 
   const validPDF = {
     contentType: contentTypePDF,
@@ -126,37 +115,27 @@ describe("Media Upload API", () => {
       mediaId = getUploadUrlResponse.body.mediaId;
 
       // Upload file
-      const uploadFileResponse = await fetch(
-        getUploadUrlResponse.body.uploadUrl,
-        {
-          method: "PUT",
-          body: fileBytes,
-          headers: {
-            "Content-Type": contentType,
-            "X-Amz-Checksum-Sha256": sha256Hash,
-          },
+      const uploadFileResponse = await fetch(getUploadUrlResponse.body.uploadUrl, {
+        method: "PUT",
+        body: fileBytes,
+        headers: {
+          "Content-Type": contentType,
+          "X-Amz-Checksum-Sha256": sha256Hash,
         },
-      ).catch((err) => console.error(err));
+      }).catch((err) => console.error(err));
 
-      result.uploadFileResponse = uploadFileResponse
-        ? uploadFileResponse
-        : null;
+      result.uploadFileResponse = uploadFileResponse ? uploadFileResponse : null;
 
       if (!uploadFileResponse) {
         return result;
       }
 
       // Update media record
-      const updateMediaResponse = await makeZodVerifiedAPICallSilent(
-        z.any(),
-        "PATCH",
-        basePath + `/${mediaId}`,
-        {
-          uploadedAt: new Date().toISOString(),
-          uploadHttpStatus: uploadFileResponse.status,
-          uploadHttpError: await uploadFileResponse.text(),
-        },
-      );
+      const updateMediaResponse = await makeZodVerifiedAPICallSilent(z.any(), "PATCH", basePath + `/${mediaId}`, {
+        uploadedAt: new Date().toISOString(),
+        uploadHttpStatus: uploadFileResponse.status,
+        uploadHttpError: await uploadFileResponse.text(),
+      });
       result.updateMediaResponse = updateMediaResponse;
 
       // Get download URL
@@ -167,18 +146,11 @@ describe("Media Upload API", () => {
       );
       result.getDownloadUrlResponse = getDownloadUrlResponse;
 
-      if (
-        !(
-          getDownloadUrlResponse.status === 200 ||
-          getDownloadUrlResponse.status === 201
-        )
-      ) {
+      if (!(getDownloadUrlResponse.status === 200 || getDownloadUrlResponse.status === 201)) {
         return result;
       }
 
-      const fetchMediaAssetResponse = await fetch(
-        getDownloadUrlResponse.body.url,
-      );
+      const fetchMediaAssetResponse = await fetch(getDownloadUrlResponse.body.url);
 
       result.fetchMediaAssetResponse = fetchMediaAssetResponse;
     } catch (error) {
@@ -265,22 +237,14 @@ describe("Media Upload API", () => {
       });
       expect(result.observationMediaRecord).toBeNull();
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPNG.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPNG.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
     }, 10_000);
 
@@ -317,22 +281,14 @@ describe("Media Upload API", () => {
         field,
       });
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPDF.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPDF.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPDF.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPDF.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPDF.sha256Hash);
     }, 10_000);
 
@@ -400,22 +356,14 @@ describe("Media Upload API", () => {
       });
       expect(result.observationMediaRecord).toBeNull();
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPNG.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPNG.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
     }, 10_000);
 
@@ -483,22 +431,14 @@ describe("Media Upload API", () => {
       });
       expect(result.observationMediaRecord).toBeNull();
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPNG.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPNG.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
     }, 10_000);
 
@@ -566,22 +506,14 @@ describe("Media Upload API", () => {
       });
       expect(result.observationMediaRecord).toBeNull();
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPNG.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPNG.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
     }, 10_000);
 
@@ -619,22 +551,16 @@ describe("Media Upload API", () => {
       });
       expect(firstResult.observationMediaRecord).toBeNull();
       expect(firstResult.fetchMediaAssetResponse?.status).toBe(200);
-      expect(
-        firstResult.fetchMediaAssetResponse?.headers.get("content-type"),
-      ).toBe("image/jpeg");
-      expect(
-        firstResult.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(firstResult.fetchMediaAssetResponse?.headers.get("content-type")).toBe("image/jpeg");
+      expect(firstResult.fetchMediaAssetResponse?.headers.get("content-length")).toBe(
+        validPNG.contentLength.toString(),
+      );
 
-      const firstResponseBuffer =
-        await firstResult.fetchMediaAssetResponse?.arrayBuffer();
+      const firstResponseBuffer = await firstResult.fetchMediaAssetResponse?.arrayBuffer();
       if (!firstResponseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const firstResponseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(firstResponseBuffer))
-        .digest("base64");
+      const firstResponseHash = crypto.createHash("sha256").update(Buffer.from(firstResponseBuffer)).digest("base64");
       expect(firstResponseHash).toEqual(validPNG.sha256Hash);
 
       const secondResult = await runMediaUploadEndToEndTest({
@@ -666,22 +592,16 @@ describe("Media Upload API", () => {
       });
       expect(secondResult.observationMediaRecord).toBeNull();
       expect(secondResult.fetchMediaAssetResponse?.status).toBe(200);
-      expect(
-        secondResult.fetchMediaAssetResponse?.headers.get("content-type"),
-      ).toBe(validPNG.contentType);
-      expect(
-        secondResult.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(secondResult.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(secondResult.fetchMediaAssetResponse?.headers.get("content-length")).toBe(
+        validPNG.contentLength.toString(),
+      );
 
-      const responseBuffer =
-        await secondResult.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await secondResult.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
     }, 10_000);
 
@@ -718,22 +638,14 @@ describe("Media Upload API", () => {
       });
       expect(result.observationMediaRecord).toBeNull();
       expect(result.fetchMediaAssetResponse?.status).toBe(200);
-      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(
-        validPNG.contentType,
-      );
-      expect(
-        result.fetchMediaAssetResponse?.headers.get("content-length"),
-      ).toBe(validPNG.contentLength.toString());
+      expect(result.fetchMediaAssetResponse?.headers.get("content-type")).toBe(validPNG.contentType);
+      expect(result.fetchMediaAssetResponse?.headers.get("content-length")).toBe(validPNG.contentLength.toString());
 
-      const responseBuffer =
-        await result.fetchMediaAssetResponse?.arrayBuffer();
+      const responseBuffer = await result.fetchMediaAssetResponse?.arrayBuffer();
       if (!responseBuffer) {
         throw new Error("Response buffer is undefined");
       }
-      const responseHash = crypto
-        .createHash("sha256")
-        .update(Buffer.from(responseBuffer))
-        .digest("base64");
+      const responseHash = crypto.createHash("sha256").update(Buffer.from(responseBuffer)).digest("base64");
       expect(responseHash).toEqual(validPNG.sha256Hash);
 
       const secondResult = await runMediaUploadEndToEndTest({

@@ -14,10 +14,7 @@ const PromptVar = ({ name, isValid }: { name: string; isValid: boolean }) => (
   <span
     dir="ltr"
     style={{ unicodeBidi: "isolate" }}
-    className={cn(
-      isValid ? "text-primary-accent" : "text-destructive",
-      "whitespace-nowrap",
-    )}
+    className={cn(isValid ? "text-primary-accent" : "text-destructive", "whitespace-nowrap")}
   >
     {`{{${name}}}`}
   </span>
@@ -27,13 +24,7 @@ type PromptReference = ParsedPromptDependencyTag & {
   position: number;
 };
 
-const PromptReference = ({
-  promptRef,
-  projectId,
-}: {
-  promptRef: PromptReference;
-  projectId: string;
-}) => {
+const PromptReference = ({ promptRef, projectId }: { promptRef: PromptReference; projectId: string }) => {
   const getPromptUrl = (projectId: string, tag: PromptReference) => {
     const baseUrl = `/project/${projectId}/prompts/`;
     if (tag.type === "version") {
@@ -72,19 +63,11 @@ const PromptReference = ({
 };
 
 // Higher-level function that renders prompt content with all the rich formatting
-export const renderRichPromptContent = (
-  projectId: string,
-  content: string,
-): React.ReactNode[] => {
+export const renderRichPromptContent = (projectId: string, content: string): React.ReactNode[] => {
   if (!content) return [];
 
   const createTextNode = (text: string, key: string) => (
-    <span
-      key={key}
-      dir="auto"
-      style={{ unicodeBidi: "plaintext" }}
-      className="whitespace-pre-wrap break-words"
-    >
+    <span key={key} dir="auto" style={{ unicodeBidi: "plaintext" }} className="whitespace-pre-wrap break-words">
       {text}
     </span>
   );
@@ -94,10 +77,7 @@ export const renderRichPromptContent = (
 
   // Create combined regex that captures both patterns in a single pass
   // Group 1: prompt dependency inner content, Group 2: variable name
-  const combinedRegex = new RegExp(
-    `${PromptDependencyRegex.source}|${MUSTACHE_REGEX.source}`,
-    "g",
-  );
+  const combinedRegex = new RegExp(`${PromptDependencyRegex.source}|${MUSTACHE_REGEX.source}`, "g");
 
   let match;
   while ((match = combinedRegex.exec(content)) !== null) {

@@ -9,11 +9,7 @@ const TabsBar = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <TabsPrimitive.Root
-    ref={ref}
-    className={cn("flex h-full w-full flex-col overflow-hidden", className)}
-    {...props}
-  />
+  <TabsPrimitive.Root ref={ref} className={cn("flex h-full w-full flex-col overflow-hidden", className)} {...props} />
 ));
 TabsBar.displayName = TabsPrimitive.Root.displayName;
 
@@ -23,10 +19,7 @@ const TabsBarList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn(
-      "inline-flex h-8 items-center justify-start border-b bg-transparent",
-      className,
-    )}
+    className={cn("inline-flex h-8 items-center justify-start border-b bg-transparent", className)}
     {...props}
   />
 ));

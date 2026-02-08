@@ -34,12 +34,11 @@ export const LogViewJsonMode = memo(function LogViewJsonMode({
   isCollapsed,
   onToggleCollapse,
 }: LogViewJsonModeProps) {
-  const { data, isLoading, isError, loadAllData, totalCount } =
-    useLogViewAllObservationsIO({
-      items,
-      traceId,
-      projectId,
-    });
+  const { data, isLoading, isError, loadAllData, totalCount } = useLogViewAllObservationsIO({
+    items,
+    traceId,
+    projectId,
+  });
 
   // Auto-load data when JSON mode is rendered
   useEffect(() => {
@@ -54,9 +53,7 @@ export const LogViewJsonMode = memo(function LogViewJsonMode({
       {isLoading && (
         <div className="flex flex-1 items-center justify-center">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          <span className="ml-2 text-sm text-muted-foreground">
-            Loading observations (0/{totalCount})...
-          </span>
+          <span className="ml-2 text-sm text-muted-foreground">Loading observations (0/{totalCount})...</span>
         </div>
       )}
 
@@ -86,9 +83,7 @@ export const LogViewJsonMode = memo(function LogViewJsonMode({
       {/* Empty state */}
       {!data && !isLoading && !isError && (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-sm text-muted-foreground">
-            No observation data available
-          </div>
+          <div className="text-sm text-muted-foreground">No observation data available</div>
         </div>
       )}
     </div>

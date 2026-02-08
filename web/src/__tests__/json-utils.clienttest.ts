@@ -11,8 +11,7 @@
 //
 // ============================================================================
 
-const USER_DEFINED_TEST_INPUT =
-  '{"message": "hello", "nested": "{\\"inner\\": \\"world\\"}"}';
+const USER_DEFINED_TEST_INPUT = '{"message": "hello", "nested": "{\\"inner\\": \\"world\\"}"}';
 
 const USER_DEFINED_TEST_OBJECT: any = {
   // Example: Replace with your own test data from production traces
@@ -165,8 +164,7 @@ describe("deepParseJson (recursive)", () => {
 
     it("should handle default maxDepth of 3", () => {
       const input = {
-        level1:
-          '{"level2": "{\\"level3\\": \\"{\\\\\\"level4\\\\\\": \\\\\\"value\\\\\\"}\\"}"}',
+        level1: '{"level2": "{\\"level3\\": \\"{\\\\\\"level4\\\\\\": \\\\\\"value\\\\\\"}\\"}"}',
       };
 
       const result = deepParseJson(input);
@@ -389,8 +387,7 @@ describe("deepParseJsonIterative", () => {
 
     it("should handle default maxDepth of 3", () => {
       const input = {
-        level1:
-          '{"level2": "{\\"level3\\": \\"{\\\\\\"level4\\\\\\": \\\\\\"value\\\\\\"}\\"}"}',
+        level1: '{"level2": "{\\"level3\\": \\"{\\\\\\"level4\\\\\\": \\\\\\"value\\\\\\"}\\"}"}',
       };
 
       const result = deepParseJsonIterative(input);
@@ -560,9 +557,7 @@ describe("Performance Comparison", () => {
     deepParseJsonIterative(input);
     const iterativeTime = performance.now() - iterativeStart;
 
-    console.log(
-      `Small object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
-    );
+    console.log(`Small object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`);
 
     // Both should complete quickly
     expect(recursiveTime).toBeLessThan(100);
@@ -580,9 +575,7 @@ describe("Performance Comparison", () => {
     deepParseJsonIterative(input);
     const iterativeTime = performance.now() - iterativeStart;
 
-    console.log(
-      `Medium object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
-    );
+    console.log(`Medium object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`);
 
     // Both should complete in reasonable time
     expect(recursiveTime).toBeLessThan(500);
@@ -600,9 +593,7 @@ describe("Performance Comparison", () => {
     deepParseJsonIterative(input);
     const iterativeTime = performance.now() - iterativeStart;
 
-    console.log(
-      `Deep nesting: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
-    );
+    console.log(`Deep nesting: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`);
 
     // Both should handle deep nesting
     expect(recursiveTime).toBeLessThan(1000);
@@ -620,9 +611,7 @@ describe("Performance Comparison", () => {
     deepParseJsonIterative(input);
     const iterativeTime = performance.now() - iterativeStart;
 
-    console.log(
-      `Wide object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
-    );
+    console.log(`Wide object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`);
 
     // Both should handle wide objects
     expect(recursiveTime).toBeLessThan(2000);
@@ -653,18 +642,12 @@ describe("Performance Comparison", () => {
     console.log(`\n=== Performance Summary (${iterations} iterations) ===`);
     console.log(`Recursive average: ${recursiveAvg.toFixed(2)}ms`);
     console.log(`Iterative average: ${iterativeAvg.toFixed(2)}ms`);
-    console.log(
-      `Difference: ${Math.abs(recursiveAvg - iterativeAvg).toFixed(2)}ms`,
-    );
+    console.log(`Difference: ${Math.abs(recursiveAvg - iterativeAvg).toFixed(2)}ms`);
 
     if (recursiveAvg < iterativeAvg) {
-      console.log(
-        `Recursive is ${((iterativeAvg / recursiveAvg - 1) * 100).toFixed(1)}% faster`,
-      );
+      console.log(`Recursive is ${((iterativeAvg / recursiveAvg - 1) * 100).toFixed(1)}% faster`);
     } else {
-      console.log(
-        `Iterative is ${((recursiveAvg / iterativeAvg - 1) * 100).toFixed(1)}% faster`,
-      );
+      console.log(`Iterative is ${((recursiveAvg / iterativeAvg - 1) * 100).toFixed(1)}% faster`);
     }
   });
 
@@ -721,9 +704,7 @@ describe("Performance Comparison", () => {
             `  Depth ${depth}: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
           );
         } else if (!iterativeError) {
-          console.log(
-            `  Depth ${depth}: Recursive STACK OVERFLOW, Iterative ${iterativeTime.toFixed(2)}ms ✓`,
-          );
+          console.log(`  Depth ${depth}: Recursive STACK OVERFLOW, Iterative ${iterativeTime.toFixed(2)}ms ✓`);
         }
 
         // Iterative should never fail
@@ -737,10 +718,7 @@ describe("Performance Comparison", () => {
 
   describe("Large Object Performance", () => {
     // Helper to create large objects with many keys
-    const createLargeObject = (
-      numKeys: number,
-      nestingDepth: number = 2,
-    ): any => {
+    const createLargeObject = (numKeys: number, nestingDepth: number = 2): any => {
       const obj: any = {};
 
       for (let i = 0; i < numKeys; i++) {
@@ -788,9 +766,7 @@ describe("Performance Comparison", () => {
           recursiveTime = performance.now() - recursiveStart;
         } catch (e: any) {
           recursiveError = true;
-          console.log(
-            `  ${name} (${sizeKB}KB): Recursive FAILED - ${e.message}`,
-          );
+          console.log(`  ${name} (${sizeKB}KB): Recursive FAILED - ${e.message}`);
         }
 
         // Test iterative
@@ -802,30 +778,22 @@ describe("Performance Comparison", () => {
           iterativeTime = performance.now() - iterativeStart;
         } catch (e: any) {
           iterativeError = true;
-          console.log(
-            `  ${name} (${sizeKB}KB): Iterative FAILED - ${e.message}`,
-          );
+          console.log(`  ${name} (${sizeKB}KB): Iterative FAILED - ${e.message}`);
         }
 
         if (!recursiveError && !iterativeError) {
           const _ratio = (iterativeTime / recursiveTime).toFixed(2);
-          const winner =
-            iterativeTime < recursiveTime ? "ITERATIVE" : "RECURSIVE";
+          const winner = iterativeTime < recursiveTime ? "ITERATIVE" : "RECURSIVE";
           const speedup =
             iterativeTime < recursiveTime
               ? `${((recursiveTime / iterativeTime - 1) * 100).toFixed(0)}% faster`
               : `${((iterativeTime / recursiveTime - 1) * 100).toFixed(0)}% slower`;
-          const sizeMB =
-            parseFloat(sizeKB) > 1000
-              ? `${(parseFloat(sizeKB) / 1024).toFixed(1)}MB`
-              : `${sizeKB}KB`;
+          const sizeMB = parseFloat(sizeKB) > 1000 ? `${(parseFloat(sizeKB) / 1024).toFixed(1)}MB` : `${sizeKB}KB`;
           console.log(
             `  ${name} (${sizeMB}): Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms → ${winner} ${speedup}`,
           );
         } else if (!iterativeError) {
-          console.log(
-            `  ${name}: Recursive ERROR, Iterative ${iterativeTime.toFixed(2)}ms ✓`,
-          );
+          console.log(`  ${name}: Recursive ERROR, Iterative ${iterativeTime.toFixed(2)}ms ✓`);
         }
 
         // Both should complete (or hit size limit gracefully)
@@ -898,8 +866,7 @@ describe("Performance Comparison", () => {
 
         if (!recursiveError && !iterativeError) {
           const _ratio = (iterativeTime / recursiveTime).toFixed(2);
-          const winner =
-            iterativeTime < recursiveTime ? "ITERATIVE" : "RECURSIVE";
+          const winner = iterativeTime < recursiveTime ? "ITERATIVE" : "RECURSIVE";
           const speedup =
             iterativeTime < recursiveTime
               ? `${((recursiveTime / iterativeTime - 1) * 100).toFixed(0)}% faster`
@@ -908,9 +875,7 @@ describe("Performance Comparison", () => {
             `  ${name}: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms → ${winner} ${speedup}`,
           );
         } else if (!iterativeError) {
-          console.log(
-            `  ${name}: Recursive STACK OVERFLOW, Iterative ${iterativeTime.toFixed(2)}ms ✓`,
-          );
+          console.log(`  ${name}: Recursive STACK OVERFLOW, Iterative ${iterativeTime.toFixed(2)}ms ✓`);
         }
 
         // Iterative should never fail
@@ -994,9 +959,7 @@ describe("Performance Comparison", () => {
 
       expect(result.outer.normal).toBe("value");
       expect(Object.hasOwnProperty.call(result.outer, "__proto__")).toBe(false);
-      expect(Object.hasOwnProperty.call(result.outer, "constructor")).toBe(
-        false,
-      );
+      expect(Object.hasOwnProperty.call(result.outer, "constructor")).toBe(false);
     });
 
     it("should filter dangerous keys in nested objects (iterative)", () => {
@@ -1012,9 +975,7 @@ describe("Performance Comparison", () => {
 
       expect(result.outer.normal).toBe("value");
       expect(Object.hasOwnProperty.call(result.outer, "__proto__")).toBe(false);
-      expect(Object.hasOwnProperty.call(result.outer, "constructor")).toBe(
-        false,
-      );
+      expect(Object.hasOwnProperty.call(result.outer, "constructor")).toBe(false);
     });
 
     it("should preserve normal keys that are not dangerous", () => {
@@ -1046,9 +1007,7 @@ describe("Performance Comparison", () => {
     // Use unlimited depth and size for custom object testing
     // Change these if you want to test with limits:
     const options = { maxDepth: Infinity, maxSize: Infinity };
-    console.log(
-      `Using options: maxDepth=${options.maxDepth}, maxSize=${options.maxSize}`,
-    );
+    console.log(`Using options: maxDepth=${options.maxDepth}, maxSize=${options.maxSize}`);
 
     const input1 = JSON.parse(JSON.stringify(USER_DEFINED_TEST_OBJECT));
     const input2 = JSON.parse(JSON.stringify(USER_DEFINED_TEST_OBJECT));
@@ -1062,21 +1021,15 @@ describe("Performance Comparison", () => {
     const iterativeTime = performance.now() - iterativeStart;
 
     const _ratio = (iterativeTime / recursiveTime).toFixed(2);
-    const winner =
-      iterativeTime < recursiveTime ? "✓ ITERATIVE FASTER" : "RECURSIVE FASTER";
+    const winner = iterativeTime < recursiveTime ? "✓ ITERATIVE FASTER" : "RECURSIVE FASTER";
     const speedup =
       iterativeTime < recursiveTime
         ? `(${((recursiveTime / iterativeTime - 1) * 100).toFixed(0)}% faster)`
         : `(${((iterativeTime / recursiveTime - 1) * 100).toFixed(0)}% slower)`;
 
-    console.log(
-      `Custom object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`,
-    );
+    console.log(`Custom object: Recursive ${recursiveTime.toFixed(2)}ms, Iterative ${iterativeTime.toFixed(2)}ms`);
     console.log(`Result: ${winner} ${speedup}`);
-    console.log(
-      "Results match:",
-      JSON.stringify(recursiveResult) === JSON.stringify(iterativeResult),
-    );
+    console.log("Results match:", JSON.stringify(recursiveResult) === JSON.stringify(iterativeResult));
 
     expect(recursiveResult).toEqual(iterativeResult);
   });

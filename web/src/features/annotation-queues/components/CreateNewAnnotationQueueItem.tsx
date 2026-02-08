@@ -46,8 +46,7 @@ export const CreateNewAnnotationQueueItem = ({
   );
   const utils = api.useUtils();
   const addToQueueMutation = api.annotationQueueItems.createMany.useMutation();
-  const removeFromQueueMutation =
-    api.annotationQueueItems.deleteMany.useMutation();
+  const removeFromQueueMutation = api.annotationQueueItems.deleteMany.useMutation();
 
   const handleQueueItemToggle = useCallback(
     async (queueId: string, queueName: string, itemId?: string) => {
@@ -60,9 +59,7 @@ export const CreateNewAnnotationQueueItem = ({
             queueId,
           });
         } else {
-          const confirmRemoval = confirm(
-            `Are you sure you want to remove this item from the queue "${queueName}"?`,
-          );
+          const confirmRemoval = confirm(`Are you sure you want to remove this item from the queue "${queueName}"?`);
           if (confirmRemoval) {
             await removeFromQueueMutation.mutateAsync({
               projectId,
@@ -80,14 +77,7 @@ export const CreateNewAnnotationQueueItem = ({
         console.error("Error toggling queue item:", error);
       }
     },
-    [
-      addToQueueMutation,
-      removeFromQueueMutation,
-      projectId,
-      objectId,
-      objectType,
-      utils.annotationQueues,
-    ],
+    [addToQueueMutation, removeFromQueueMutation, projectId, objectId, objectType, utils.annotationQueues],
   );
 
   if (session.status !== "authenticated" || queues.isLoading) {
@@ -116,12 +106,7 @@ export const CreateNewAnnotationQueueItem = ({
       }}
     >
       <DropdownMenuTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          disabled={!hasAccess}
-          className="rounded-l-none rounded-r-md border-l-2"
-        >
+        <Button variant={variant} size={size} disabled={!hasAccess} className="rounded-l-none rounded-r-md border-l-2">
           {queues.data?.totalCount ? (
             <span className="relative mr-1 text-xs">
               <ChevronDown className="h-3 w-3 text-secondary-foreground" />
@@ -154,13 +139,7 @@ export const CreateNewAnnotationQueueItem = ({
               }}
             >
               {queue.name}
-              {queue.status && (
-                <StatusBadge
-                  type={queue.status.toLowerCase()}
-                  isLive={false}
-                  className="ml-2"
-                />
-              )}
+              {queue.status && <StatusBadge type={queue.status.toLowerCase()} isLive={false} className="ml-2" />}
             </DropdownMenuCheckboxItem>
           ))
         ) : (
@@ -174,16 +153,10 @@ export const CreateNewAnnotationQueueItem = ({
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          key="manage-queues"
-          className="hover:bg-accent"
-          asChild
-        >
+        <DropdownMenuItem key="manage-queues" className="hover:bg-accent" asChild>
           <div>
             <ExternalLink className="mr-2 h-4 w-4" />
-            <Link href={`/project/${projectId}/annotation-queues`}>
-              Manage queues
-            </Link>
+            <Link href={`/project/${projectId}/annotation-queues`}>Manage queues</Link>
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

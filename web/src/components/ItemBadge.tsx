@@ -102,14 +102,9 @@ export function ItemBadge({
   const Icon = iconMap[type] || ListTree; // Default to ListTree if unknown type
 
   // Modify this line to ensure the icon is properly sized
-  const iconClass = cn(
-    iconVariants({ type }),
-    isSmall ? "h-3 w-3" : "h-4 w-4",
-    className,
-  );
+  const iconClass = cn(iconVariants({ type }), isSmall ? "h-3 w-3" : "h-4 w-4", className);
 
-  const label =
-    String(type).charAt(0).toUpperCase() + String(type).slice(1).toLowerCase();
+  const label = String(type).charAt(0).toUpperCase() + String(type).slice(1).toLowerCase();
 
   return (
     <Badge

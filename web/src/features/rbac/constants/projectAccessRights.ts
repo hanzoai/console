@@ -261,5 +261,4 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
   NONE: [],
 };
 
-export const projectNoneRoleComment =
-  "Do not override the organization role for this project.";
+export const projectNoneRoleComment = "Do not override the organization role for this project.";

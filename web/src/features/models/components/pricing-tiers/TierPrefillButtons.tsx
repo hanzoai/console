@@ -10,10 +10,7 @@ type TierPrefillButtonsProps = {
 
 export type { TierPrefillButtonsProps };
 
-export function TierPrefillButtons({
-  tierIndex,
-  form,
-}: TierPrefillButtonsProps) {
+export function TierPrefillButtons({ tierIndex, form }: TierPrefillButtonsProps) {
   const prices = form.watch(`pricingTiers.${tierIndex}.prices`) || {};
 
   return (

@@ -13,10 +13,7 @@ import {
   shouldSkipObservationsFinal,
 } from "@hanzo/shared/src/server";
 import { AGGREGATABLE_SCORE_TYPES, type OrderByState } from "@hanzo/shared";
-import {
-  TRACE_FIELD_GROUPS,
-  type TraceFieldGroup,
-} from "@/src/features/public-api/types/traces";
+import { TRACE_FIELD_GROUPS, type TraceFieldGroup } from "@/src/features/public-api/types/traces";
 import { env } from "@/src/env.mjs";
 
 import type { FilterState } from "@hanzo/shared";
@@ -66,31 +63,19 @@ async function buildTracesBaseQuery(
   fromTimeFilter?: DateTimeFilter | undefined;
 }> {
   // ClickHouse query optimizations for List Traces API
-  const disableObservationsFinal = await shouldSkipObservationsFinal(
-    props.projectId,
-  );
-  const propagateObservationsTimeBounds =
-    env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
+  const disableObservationsFinal = await shouldSkipObservationsFinal(props.projectId);
+  const propagateObservationsTimeBounds = env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
 
-  let filter = deriveFilters(
-    props,
-    filterParams,
-    advancedFilters,
-    tracesTableUiColumnDefinitions,
-  );
+  let filter = deriveFilters(props, filterParams, advancedFilters, tracesTableUiColumnDefinitions);
   const appliedFilter = filter.apply();
 
   const fromTimeFilter = filter.find(
     (f) =>
-      f.clickhouseTable === "traces" &&
-      f.field.includes("timestamp") &&
-      (f.operator === ">=" || f.operator === ">"),
+      f.clickhouseTable === "traces" && f.field.includes("timestamp") && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
   const toTimeFilter = filter.find(
     (f) =>
-      f.clickhouseTable === "traces" &&
-      f.field.includes("timestamp") &&
-      (f.operator === "<=" || f.operator === "<"),
+      f.clickhouseTable === "traces" && f.field.includes("timestamp") && (f.operator === "<=" || f.operator === "<"),
   ) as DateTimeFilter | undefined;
 
   // We need to drop the clickhousePrefix here to make the filter work for the observations and scores tables.
@@ -107,38 +92,25 @@ async function buildTracesBaseQuery(
   const shouldUseSkipIndexes = filter.some(
     (f) =>
       f.clickhouseTable === "traces" &&
-      ["user_id", "session_id", "metadata"].some((skipIndexCol) =>
-        f.field.includes(skipIndexCol),
-      ),
+      ["user_id", "session_id", "metadata"].some((skipIndexCol) => f.field.includes(skipIndexCol)),
   );
 
   // Check if any filters reference the observations or scores tables
-  const filtersNeedObservations = filter.some(
-    (f) => f.clickhouseTable === "observations",
-  );
+  const filtersNeedObservations = filter.some((f) => f.clickhouseTable === "observations");
   const filtersNeedScores = filter.some((f) => f.clickhouseTable === "scores");
 
   // Check if filters specifically reference score aggregation columns
-  const hasScoreAggregationFilters = filter.some(
-    (f) => f.field === "s.scores_avg" || f.field === "s.score_categories",
-  );
+  const hasScoreAggregationFilters = filter.some((f) => f.field === "s.scores_avg" || f.field === "s.score_categories");
 
   // Build CTEs conditionally based on requested fields OR filters
   const ctes = [];
 
-  if (
-    select.includeObservations ||
-    select.includeMetrics ||
-    filtersNeedObservations
-  ) {
+  if (select.includeObservations || select.includeMetrics || filtersNeedObservations) {
     // Conditionally add FINAL based on env var and whether metrics are requested
-    const shouldUseFinal =
-      (select.includeMetrics || filtersNeedObservations) &&
-      !disableObservationsFinal;
+    const shouldUseFinal = (select.includeMetrics || filtersNeedObservations) && !disableObservationsFinal;
 
     // Include metrics in CTE if requested OR if filters need them
-    const includeMetricsInCTE =
-      select.includeMetrics || filtersNeedObservations;
+    const includeMetricsInCTE = select.includeMetrics || filtersNeedObservations;
 
     ctes.push(`
     observation_stats AS (
@@ -232,8 +204,7 @@ async function buildTracesBaseQuery(
   // This may still return stale information if the orderBy key was updated between traces or if a filter
   // applies only to a stale value.
   const chOrderBy =
-    (orderByToClickhouseSql(orderBy || [], orderByColumns) ||
-      "ORDER BY t.timestamp desc") +
+    (orderByToClickhouseSql(orderBy || [], orderByColumns) || "ORDER BY t.timestamp desc") +
     (shouldUseSkipIndexes ? ", t.event_ts desc" : "");
 
   const queryMiddle = `
@@ -289,14 +260,10 @@ async function buildTracesBaseQuery(
     projectId: props.projectId,
     dataTypes: AGGREGATABLE_SCORE_TYPES,
     ...(props.limit !== undefined ? { limit: props.limit } : {}),
-    ...(props.page !== undefined
-      ? { offset: (props.page - 1) * props.limit }
-      : {}),
+    ...(props.page !== undefined ? { offset: (props.page - 1) * props.limit } : {}),
     ...(fromTimeFilter
       ? {
-          cteFromTimeFilter: convertDateToClickhouseDateTime(
-            fromTimeFilter.value,
-          ),
+          cteFromTimeFilter: convertDateToClickhouseDateTime(fromTimeFilter.value),
         }
       : {}),
     ...(toTimeFilter && propagateObservationsTimeBounds
@@ -383,12 +350,7 @@ export const getTracesCountForPublicApi = async ({
   props: TraceQueryType;
   advancedFilters?: FilterState;
 }) => {
-  let filter = deriveFilters(
-    props,
-    filterParams,
-    advancedFilters,
-    tracesTableUiColumnDefinitions,
-  );
+  let filter = deriveFilters(props, filterParams, advancedFilters, tracesTableUiColumnDefinitions);
   const appliedFilter = filter.apply();
 
   let query = `
@@ -417,9 +379,7 @@ export const getTracesCountForPublicApi = async ({
     ));
   }
 
-  const timestamp = props.fromTimestamp
-    ? new Date(props.fromTimestamp)
-    : undefined;
+  const timestamp = props.fromTimestamp ? new Date(props.fromTimestamp) : undefined;
 
   return measureAndReturn({
     operationName: "getTracesCountForPublicApi",

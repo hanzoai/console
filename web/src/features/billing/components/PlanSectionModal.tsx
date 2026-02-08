@@ -1,10 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
 import { api } from "@/src/utils/api";
 import React from "react";
@@ -23,41 +18,34 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   orgId,
   currentSubscription,
 }) => {
-  const { mutate: createCheckoutSession } =
-    api.cloudBilling.createStripeCheckoutSession.useMutation({
-      onSuccess: (url) => {
-        if (url) window.location.href = url;
-      },
-      onError: (error) => {
-        console.error("Failed to create checkout session", error);
-        // TODO: Add error handling toast/notification
-      },
-    });
+  const { mutate: createCheckoutSession } = api.cloudBilling.createStripeCheckoutSession.useMutation({
+    onSuccess: (url) => {
+      if (url) window.location.href = url;
+    },
+    onError: (error) => {
+      console.error("Failed to create checkout session", error);
+      // TODO: Add error handling toast/notification
+    },
+  });
 
-  const { mutate: cancelSubscription } =
-    api.cloudBilling.cancelStripeSubscription.useMutation({
-      onSuccess: () => {
-        // Optionally refresh subscription or show success message
-        onClose();
-      },
-      onError: (error: { message: string }) => {
-        console.error("Failed to change subscription", error.message);
-        // TODO: Add error handling toast/notification
-      },
-    });
+  const { mutate: cancelSubscription } = api.cloudBilling.cancelStripeSubscription.useMutation({
+    onSuccess: () => {
+      // Optionally refresh subscription or show success message
+      onClose();
+    },
+    onError: (error: { message: string }) => {
+      console.error("Failed to change subscription", error.message);
+      // TODO: Add error handling toast/notification
+    },
+  });
 
   // Filter out credit-related products
   const availablePlans = stripeProducts.filter(
-    (product) =>
-      product.checkout &&
-      product.title !== "Credits" &&
-      product.active &&
-      product.active === true,
+    (product) => product.checkout && product.title !== "Credits" && product.active && product.active === true,
   );
 
   const isActiveSubscription =
-    currentSubscription &&
-    !["canceled", "incomplete_expired"].includes(currentSubscription.status);
+    currentSubscription && !["canceled", "incomplete_expired"].includes(currentSubscription.status);
 
   // Add debug logging for available plans
   console.log(
@@ -82,16 +70,11 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     });
 
     // Find the plan details
-    const plan = availablePlans.find(
-      (p) => p.stripeProductId === stripeProductId,
-    );
+    const plan = availablePlans.find((p) => p.stripeProductId === stripeProductId);
     const planName = plan?.title || "Unknown";
 
     // Check if current subscription exists and is not in a terminal state
-    if (
-      isActiveSubscription &&
-      currentSubscription.plan.id === stripeProductId
-    ) {
+    if (isActiveSubscription && currentSubscription.plan.id === stripeProductId) {
       console.log("Cancelling subscription for product:", stripeProductId);
       // Track cancellation intent
       billingAnalytics.subscriptionCanceled({
@@ -121,17 +104,13 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>
-            {currentSubscription ? "Change Your Plan" : "Choose a Plan"}
-          </DialogTitle>
+          <DialogTitle>{currentSubscription ? "Change Your Plan" : "Choose a Plan"}</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-6 md:grid-cols-3">
           {availablePlans.map((product) => {
             // Calculate button state for each plan
-            const isPlanActive =
-              isActiveSubscription &&
-              currentSubscription.plan.id === product.stripeProductId;
+            const isPlanActive = isActiveSubscription && currentSubscription.plan.id === product.stripeProductId;
 
             console.log(`Plan ${product.title} comparison:`, {
               productId: product.stripeProductId,
@@ -141,14 +120,9 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
             });
 
             return (
-              <div
-                key={product.id}
-                className="flex flex-col rounded-lg border p-6"
-              >
+              <div key={product.id} className="flex flex-col rounded-lg border p-6">
                 <h3 className="mb-4 text-xl font-bold">{product.title}</h3>
-                <p className="mb-4 text-muted-foreground">
-                  {product.description}
-                </p>
+                <p className="mb-4 text-muted-foreground">{product.description}</p>
 
                 <div className="mt-auto">
                   <Button
@@ -158,8 +132,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                   >
                     {isPlanActive
                       ? "Cancel Plan"
-                      : (isActiveSubscription ? "Change to " : "Upgrade to ") +
-                        product.title}
+                      : (isActiveSubscription ? "Change to " : "Upgrade to ") + product.title}
                   </Button>
                 </div>
               </div>

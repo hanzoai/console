@@ -15,13 +15,7 @@ type PromptLinkingEditorProps = {
   className?: string;
 };
 
-export function PromptLinkingEditor({
-  value,
-  onChange,
-  onBlur,
-  minHeight,
-  className,
-}: PromptLinkingEditorProps) {
+export function PromptLinkingEditor({ value, onChange, onBlur, minHeight, className }: PromptLinkingEditorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const projectId = useProjectIdFromURL();
   const editorRef = useRef<ReactCodeMirrorRef>(null);
@@ -43,10 +37,7 @@ export function PromptLinkingEditor({
     if (cursorPosition === null) return;
 
     // Insert the tag at the stored cursor position
-    const newValue =
-      value.substring(0, cursorPosition) +
-      tag +
-      value.substring(cursorPosition);
+    const newValue = value.substring(0, cursorPosition) + tag + value.substring(cursorPosition);
 
     if (onChange) {
       onChange(newValue);

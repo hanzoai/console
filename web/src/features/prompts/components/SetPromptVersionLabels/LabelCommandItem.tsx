@@ -11,9 +11,7 @@ export const LabelCommandItem = (props: {
   const { label, selectedLabels, setSelectedLabels } = props;
   const handleLabelChange = () => {
     setSelectedLabels((prev) => {
-      return prev.includes(label)
-        ? prev.filter((l) => l !== label)
-        : [...prev, label];
+      return prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label];
     });
   };
 
@@ -25,16 +23,9 @@ export const LabelCommandItem = (props: {
       type="button"
       variant="ghost"
       onClick={handleLabelChange}
-      className={cn(
-        "w-full justify-start px-2 py-1 text-sm",
-        isSelected && "font-bold",
-      )}
+      className={cn("w-full justify-start px-2 py-1 text-sm", isSelected && "font-bold")}
     >
-      {isSelected ? (
-        <CircleCheckIcon className="mr-2 h-4 w-4" />
-      ) : (
-        <CircleIcon className="mr-2 h-4 w-4 opacity-20" />
-      )}
+      {isSelected ? <CircleCheckIcon className="mr-2 h-4 w-4" /> : <CircleIcon className="mr-2 h-4 w-4 opacity-20" />}
       {label}
     </Button>
   );

@@ -8,11 +8,7 @@ import {
   InputCommandList,
   InputCommandSeparator,
 } from "@/src/components/ui/input-command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { getAllModels } from "@/src/features/dashboard/components/hooks";
 import { cn } from "@/src/utils/tailwind";
 import { type FilterState } from "@hanzo/shared";
@@ -39,12 +35,7 @@ export const ModelSelectorPopover = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-56 justify-between"
-        >
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-56 justify-between">
           {buttonText}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -55,12 +46,7 @@ export const ModelSelectorPopover = ({
           <InputCommandEmpty>No model found.</InputCommandEmpty>
           <InputCommandGroup>
             <InputCommandItem onSelect={handleSelectAll}>
-              <Check
-                className={cn(
-                  "mr-2 h-4 w-4",
-                  isAllSelected ? "opacity-100" : "opacity-0",
-                )}
-              />
+              <Check className={cn("mr-2 h-4 w-4", isAllSelected ? "opacity-100" : "opacity-0")} />
               <span>
                 <p className="font-semibold">Select All</p>
               </span>
@@ -72,25 +58,14 @@ export const ModelSelectorPopover = ({
                   key={model.model}
                   onSelect={() => {
                     setSelectedModels((prev) =>
-                      prev.includes(model.model)
-                        ? prev.filter((m) => m !== model.model)
-                        : [...prev, model.model],
+                      prev.includes(model.model) ? prev.filter((m) => m !== model.model) : [...prev, model.model],
                     );
                   }}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedModels.includes(model.model)
-                        ? "opacity-100"
-                        : "opacity-0",
-                    )}
+                    className={cn("mr-2 h-4 w-4", selectedModels.includes(model.model) ? "opacity-100" : "opacity-0")}
                   />
-                  {!model.model || model.model === "" ? (
-                    <i>none</i>
-                  ) : (
-                    model.model
-                  )}
+                  {!model.model || model.model === "" ? <i>none</i> : model.model}
                 </InputCommandItem>
               ))}
             </InputCommandList>
@@ -107,21 +82,14 @@ export const useModelSelection = (
   fromTimestamp: Date,
   toTimestamp: Date,
 ) => {
-  const allModels = getAllModels(
-    projectId,
-    globalFilterState,
-    fromTimestamp,
-    toTimestamp,
-  );
+  const allModels = getAllModels(projectId, globalFilterState, fromTimestamp, toTimestamp);
 
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [firstAllModelUpdate, setFirstAllModelUpdate] = useState(true);
 
   const isAllSelected = selectedModels.length === allModels.length;
 
-  const buttonText = isAllSelected
-    ? "All models"
-    : `${selectedModels.length} selected`;
+  const buttonText = isAllSelected ? "All models" : `${selectedModels.length} selected`;
 
   const handleSelectAll = () => {
     setSelectedModels(isAllSelected ? [] : [...allModels.map((m) => m.model)]);

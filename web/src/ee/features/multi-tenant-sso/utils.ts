@@ -7,9 +7,7 @@
  * Returns the SSO auth provider ID for a given domain.
  * In community edition, always returns null (no SSO enforcement).
  */
-export const getSsoAuthProviderIdForDomain = async (
-  _domain: string,
-): Promise<string | null> => {
+export const getSsoAuthProviderIdForDomain = async (_domain: string): Promise<string | null> => {
   return null;
 };
 
@@ -35,9 +33,6 @@ export const loadSsoProviders = (): never[] => {
  */
 export const findMultiTenantSsoConfig = async (_params: {
   providerId: string;
-}): Promise<
-  | { isMultiTenantSsoProvider: true; domain: string }
-  | { isMultiTenantSsoProvider: false; domain: null }
-> => {
+}): Promise<{ isMultiTenantSsoProvider: true; domain: string } | { isMultiTenantSsoProvider: false; domain: null }> => {
   return { isMultiTenantSsoProvider: false, domain: null };
 };

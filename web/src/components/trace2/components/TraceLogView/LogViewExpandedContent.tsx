@@ -19,9 +19,7 @@ export interface LogViewExpandedContentProps {
   /** Optional external expansion state for JSON tree (non-virtualized mode) */
   externalExpansionState?: Record<string, boolean> | boolean;
   /** Callback when expansion state changes (non-virtualized mode) */
-  onExternalExpansionChange?: (
-    expansion: Record<string, boolean> | boolean,
-  ) => void;
+  onExternalExpansionChange?: (expansion: Record<string, boolean> | boolean) => void;
 }
 
 /**
@@ -97,9 +95,7 @@ export const LogViewExpandedContent = memo(function LogViewExpandedContent({
       )}
 
       {!jsonData && !isLoading && !isError && (
-        <div className="py-2 pl-6 text-xs text-muted-foreground">
-          No input/output/metadata
-        </div>
+        <div className="py-2 pl-6 text-xs text-muted-foreground">No input/output/metadata</div>
       )}
     </div>
   );

@@ -2,10 +2,7 @@ import { type FilterState } from "@hanzo/shared";
 import { usdFormatter } from "@/src/utils/numbers";
 
 // traces do not have a startTime or endTime column, so we need to map these to the timestamp column
-export const createTracesTimeFilter = (
-  filters: FilterState,
-  columnName = "timestamp",
-) => {
+export const createTracesTimeFilter = (filters: FilterState, columnName = "timestamp") => {
   return filters.map((f) => {
     if (f.column === "startTime" || f.column === "endTime") {
       return {
@@ -19,9 +16,5 @@ export const createTracesTimeFilter = (
 };
 
 export const totalCostDashboardFormatted = (totalCost?: number) => {
-  return totalCost
-    ? totalCost < 5
-      ? usdFormatter(totalCost, 2, 6)
-      : usdFormatter(totalCost, 2, 2)
-    : usdFormatter(0);
+  return totalCost ? (totalCost < 5 ? usdFormatter(totalCost, 2, 6) : usdFormatter(totalCost, 2, 2)) : usdFormatter(0);
 };

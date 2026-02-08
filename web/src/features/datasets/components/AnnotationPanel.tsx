@@ -1,9 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/src/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/src/components/ui/resizable";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { CommentsSection } from "@/src/features/annotation-queues/components/shared/CommentsSection";
@@ -18,33 +14,20 @@ export const AnnotationPanel = ({ projectId }: { projectId: string }) => {
   const [hasCommentDraft, setHasCommentDraft] = useState(false);
   const { activeCell, clearActiveCell } = useActiveCell();
 
-  const [verticalSize, setVerticalSize] = useSessionStorage(
-    `annotationQueueDrawerVertical-compare-${projectId}`,
-    60,
-  );
+  const [verticalSize, setVerticalSize] = useSessionStorage(`annotationQueueDrawerVertical-compare-${projectId}`, 60);
 
   if (!activeCell) {
     return <Skeleton className="h-full w-full" />;
   }
 
-  const hasNonAnnotationScores = Object.keys(activeCell.scoreAggregates).some(
-    (key) => {
-      const { source } = decomposeAggregateScoreKey(key);
-      return source !== "ANNOTATION";
-    },
-  );
+  const hasNonAnnotationScores = Object.keys(activeCell.scoreAggregates).some((key) => {
+    const { source } = decomposeAggregateScoreKey(key);
+    return source !== "ANNOTATION";
+  });
 
   return (
-    <ResizablePanelGroup
-      direction="vertical"
-      onLayout={(sizes) => setVerticalSize(sizes[0])}
-      className="h-full"
-    >
-      <ResizablePanel
-        className="w-full overflow-y-auto p-2"
-        minSize={30}
-        defaultSize={verticalSize}
-      >
+    <ResizablePanelGroup direction="vertical" onLayout={(sizes) => setVerticalSize(sizes[0])} className="h-full">
+      <ResizablePanel className="w-full overflow-y-auto p-2" minSize={30} defaultSize={verticalSize}>
         {activeCell ? (
           <>
             <AnnotationForm
@@ -68,10 +51,7 @@ export const AnnotationPanel = ({ projectId }: { projectId: string }) => {
                   variant="outline"
                   size="icon"
                   onClick={() => {
-                    if (hasCommentDraft)
-                      toast.error(
-                        "Please save or discard your comment before proceeding",
-                      );
+                    if (hasCommentDraft) toast.error("Please save or discard your comment before proceeding");
                     else clearActiveCell();
                   }}
                 >
@@ -81,8 +61,7 @@ export const AnnotationPanel = ({ projectId }: { projectId: string }) => {
             />
             {hasNonAnnotationScores && (
               <div className="mt-4 text-xs text-muted-foreground">
-                API and eval scores visible on left. Add manual annotations
-                above.
+                API and eval scores visible on left. Add manual annotations above.
               </div>
             )}
           </>

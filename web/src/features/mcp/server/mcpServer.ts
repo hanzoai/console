@@ -12,10 +12,7 @@
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import {
-  ListToolsRequestSchema,
-  CallToolRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+import { ListToolsRequestSchema, CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { ServerContext } from "../types";
 import { toolRegistry } from "./registry";
 import { logger } from "@hanzo/shared/src/server";

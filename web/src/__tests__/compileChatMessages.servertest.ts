@@ -1,10 +1,6 @@
 /** @jest-environment node */
 
-import {
-  ChatMessageType,
-  compileChatMessages,
-  extractPlaceholderNames,
-} from "@hanzo/shared";
+import { ChatMessageType, compileChatMessages, extractPlaceholderNames } from "@hanzo/shared";
 
 describe("compileChatMessages", () => {
   it("should compile message placeholders with provided values", () => {
@@ -33,11 +29,7 @@ describe("compileChatMessages", () => {
     };
 
     // Simulate compilation logic that would happen in playground/experiments
-    const compiledMessages = compileChatMessages(
-      promptTemplate,
-      placeholderValues,
-      textVariables,
-    );
+    const compiledMessages = compileChatMessages(promptTemplate, placeholderValues, textVariables);
 
     expect(compiledMessages).toEqual([
       { role: "system", content: "You are a helpful assistant." },
@@ -83,10 +75,7 @@ describe("compileChatMessages", () => {
       ],
     };
 
-    const compiledMessages = compileChatMessages(
-      promptTemplate,
-      placeholderValues,
-    );
+    const compiledMessages = compileChatMessages(promptTemplate, placeholderValues);
 
     expect(compiledMessages).toHaveLength(4);
     expect(compiledMessages[0]).toEqual({
@@ -130,10 +119,7 @@ describe("compileChatMessages", () => {
     };
 
     // No text variables provided
-    const compiledMessages = compileChatMessages(
-      promptTemplate,
-      placeholderValues,
-    );
+    const compiledMessages = compileChatMessages(promptTemplate, placeholderValues);
 
     expect(compiledMessages).toEqual([
       {

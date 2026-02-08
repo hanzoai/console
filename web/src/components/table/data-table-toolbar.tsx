@@ -11,29 +11,14 @@ import {
   type TableViewPresetTableName,
   type TracingSearchType,
 } from "@hanzo/shared";
-import {
-  type RowSelectionState,
-  type ColumnOrderState,
-  type VisibilityState,
-} from "@tanstack/react-table";
+import { type RowSelectionState, type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
 import { type HanzoColumnDef } from "@/src/components/table/types";
-import {
-  DataTableRowHeightSwitch,
-  type RowHeight,
-} from "@/src/components/table/data-table-row-height-switch";
-import {
-  Search,
-  ChevronDown,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { DataTableRowHeightSwitch, type RowHeight } from "@/src/components/table/data-table-row-height-switch";
+import { Search, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { TimeRangePicker } from "@/src/components/date-picker";
-import {
-  type TimeRange,
-  TABLE_AGGREGATION_OPTIONS,
-} from "@/src/utils/date-range-utils";
+import { type TimeRange, TABLE_AGGREGATION_OPTIONS } from "@/src/utils/date-range-utils";
 import { DataTableSelectAllBanner } from "@/src/components/table/data-table-multi-select-actions/data-table-select-all-banner";
 import { cn } from "@/src/utils/tailwind";
 import DocPopup from "@/src/components/layouts/doc-popup";
@@ -47,10 +32,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { useDataTableControls } from "@/src/components/table/data-table-controls";
 import { MultiSelect as MultiSelectFilter } from "@/src/features/filters/components/multi-select";
-import {
-  DataTableRefreshButton,
-  type RefreshInterval,
-} from "@/src/components/table/data-table-refresh-button";
+import { DataTableRefreshButton, type RefreshInterval } from "@/src/components/table/data-table-refresh-button";
 
 export interface MultiSelect {
   selectAll: boolean;
@@ -101,9 +83,7 @@ interface DataTableToolbarProps<TData, TValue> {
   searchConfig?: SearchConfig;
   actionButtons?: React.ReactNode;
   filterState?: FilterState;
-  setFilterState?:
-    | Dispatch<SetStateAction<FilterState>>
-    | ((newState: FilterState) => void);
+  setFilterState?: Dispatch<SetStateAction<FilterState>> | ((newState: FilterState) => void);
   columnVisibility?: VisibilityState;
   setColumnVisibility?: Dispatch<SetStateAction<VisibilityState>>;
   columnOrder?: ColumnOrderState;
@@ -152,13 +132,10 @@ export function DataTableToolbar<TData, TValue>({
   filterWithAI = false,
   viewModeToggle,
 }: DataTableToolbarProps<TData, TValue>) {
-  const [searchString, setSearchString] = useState(
-    searchConfig?.currentQuery ?? "",
-  );
+  const [searchString, setSearchString] = useState(searchConfig?.currentQuery ?? "");
 
   const capture = usePostHogClientCapture();
-  const { open: controlsPanelOpen, setOpen: setControlsPanelOpen } =
-    useDataTableControls();
+  const { open: controlsPanelOpen, setOpen: setControlsPanelOpen } = useDataTableControls();
 
   // Only show the toggle button when we're using the new sidebar
   const hasNewSidebar = !filterColumnDefinition && filterState !== undefined;
@@ -172,11 +149,7 @@ export function DataTableToolbar<TData, TValue>({
             onClick={() => setControlsPanelOpen(!controlsPanelOpen)}
             className="flex h-8 items-center gap-2 text-sm"
           >
-            {controlsPanelOpen ? (
-              <PanelLeftClose className="h-4 w-4" />
-            ) : (
-              <PanelLeftOpen className="h-4 w-4" />
-            )}
+            {controlsPanelOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
             <span>{controlsPanelOpen ? "Hide" : "Show"} filters</span>
             {filterState && filterState.length > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
@@ -191,9 +164,7 @@ export function DataTableToolbar<TData, TValue>({
             <div
               className={cn(
                 "flex h-8 flex-1 items-center border border-input bg-background pl-2",
-                searchConfig.setSearchType
-                  ? "rounded-l-md rounded-r-none border-r-0"
-                  : "rounded-l-md rounded-r-md",
+                searchConfig.setSearchType ? "rounded-l-md rounded-r-none border-r-0" : "rounded-l-md rounded-r-md",
               )}
             >
               <Button
@@ -241,28 +212,21 @@ export function DataTableToolbar<TData, TValue>({
                     className="w-30 flex items-center justify-between gap-1 rounded-l-none border-l-0"
                   >
                     <span className="flex items-center gap-1 truncate">
-                      {searchConfig.tableAllowsFullTextSearch &&
-                      (searchConfig.searchType ?? []).includes("content")
-                        ? (searchConfig.customDropdownLabels?.fullText ??
-                          "Full Text")
-                        : (searchConfig.customDropdownLabels?.metadata ??
-                          "IDs / Names")}
+                      {searchConfig.tableAllowsFullTextSearch && (searchConfig.searchType ?? []).includes("content")
+                        ? (searchConfig.customDropdownLabels?.fullText ?? "Full Text")
+                        : (searchConfig.customDropdownLabels?.metadata ?? "IDs / Names")}
                       <DocPopup
                         description={
                           searchConfig.tableAllowsFullTextSearch &&
-                          (searchConfig.searchType ?? []).includes(
-                            "content",
-                          ) ? (
+                          (searchConfig.searchType ?? []).includes("content") ? (
                             <p className="text-xs font-normal text-primary">
-                              Searches in Input/Output and{" "}
-                              {searchConfig.metadataSearchFields?.join(", ")}.
+                              Searches in Input/Output and {searchConfig.metadataSearchFields?.join(", ")}.
                               {!searchConfig.hidePerformanceWarning &&
                                 " For improved performance, please filter the table down."}
                             </p>
                           ) : (
                             <p className="text-xs font-normal text-primary">
-                              Searches in{" "}
-                              {searchConfig.metadataSearchFields?.join(", ")}.
+                              Searches in {searchConfig.metadataSearchFields?.join(", ")}.
                             </p>
                           )
                         }
@@ -274,35 +238,23 @@ export function DataTableToolbar<TData, TValue>({
                 <DropdownMenuContent align="end">
                   <DropdownMenuRadioGroup
                     value={
-                      searchConfig.tableAllowsFullTextSearch &&
-                      (searchConfig.searchType ?? []).includes("content")
+                      searchConfig.tableAllowsFullTextSearch && (searchConfig.searchType ?? []).includes("content")
                         ? "metadata_fulltext"
                         : "metadata"
                     }
                     onValueChange={(value) => {
-                      if (
-                        !searchConfig.tableAllowsFullTextSearch &&
-                        value === "metadata_fulltext"
-                      )
-                        return;
+                      if (!searchConfig.tableAllowsFullTextSearch && value === "metadata_fulltext") return;
 
                       const newSearchType =
-                        value === "metadata_fulltext"
-                          ? ["id" as const, "content" as const]
-                          : ["id" as const];
+                        value === "metadata_fulltext" ? ["id" as const, "content" as const] : ["id" as const];
                       searchConfig.setSearchType?.(newSearchType);
                     }}
                   >
                     <DropdownMenuRadioItem value="metadata">
-                      {searchConfig.customDropdownLabels?.metadata ??
-                        "IDs / Names"}
+                      {searchConfig.customDropdownLabels?.metadata ?? "IDs / Names"}
                     </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem
-                      value="metadata_fulltext"
-                      disabled={!searchConfig.tableAllowsFullTextSearch}
-                    >
-                      {searchConfig.customDropdownLabels?.fullText ??
-                        "Full Text"}
+                    <DropdownMenuRadioItem value="metadata_fulltext" disabled={!searchConfig.tableAllowsFullTextSearch}>
+                      {searchConfig.customDropdownLabels?.fullText ?? "Full Text"}
                     </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
@@ -369,19 +321,14 @@ export function DataTableToolbar<TData, TValue>({
             />
           )}
           {!!rowHeight && !!setRowHeight && (
-            <DataTableRowHeightSwitch
-              rowHeight={rowHeight}
-              setRowHeight={setRowHeight}
-            />
+            <DataTableRowHeightSwitch rowHeight={rowHeight} setRowHeight={setRowHeight} />
           )}
           {actionButtons}
         </div>
       </div>
-      {multiSelect &&
-        multiSelect.pageIndex === 0 &&
-        multiSelect.selectedRowIds.length === multiSelect.pageSize && (
-          <DataTableSelectAllBanner {...multiSelect} />
-        )}
+      {multiSelect && multiSelect.pageIndex === 0 && multiSelect.selectedRowIds.length === multiSelect.pageSize && (
+        <DataTableSelectAllBanner {...multiSelect} />
+      )}
     </div>
   );
 }

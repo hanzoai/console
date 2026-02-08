@@ -14,25 +14,11 @@ import { useSession } from "next-auth/react";
  * Security risks are taken care of by a validation in api.utilities.validateImgUrl
  * Fetching image will fail if SSL/TLS certificate is invalid or expired, will be handled by onError
  * Do not use this customLoader in production if you are not using the above mentioned security measures */
-const customLoader = ({
-  src,
-  width,
-  quality,
-}: {
-  src: string;
-  width: number;
-  quality?: number;
-}) => {
+const customLoader = ({ src, width, quality }: { src: string; width: number; quality?: number }) => {
   return src + (width && quality ? `?w=${width}&q=${quality || 75}` : "");
 };
 
-const ImageErrorDisplay = ({
-  src,
-  displayError,
-}: {
-  src: string;
-  displayError: string;
-}) => (
+const ImageErrorDisplay = ({ src, displayError }: { src: string; displayError: string }) => (
   <div className="grid grid-cols-[auto,1fr] items-center gap-2">
     <span title={displayError} className="h-4 w-4">
       <ImageOff className="h-4 w-4" />
@@ -59,20 +45,12 @@ export const ResizableImage = ({
   const [isImageVisible, setIsImageVisible] = useState(isDefaultVisible);
   const session = useSession();
   const isValidImage = api.utilities.validateImgUrl.useQuery(src, {
-    enabled:
-      session.status === "authenticated" &&
-      isImageVisible &&
-      shouldValidateImageSource,
+    enabled: session.status === "authenticated" && isImageVisible && shouldValidateImageSource,
     initialData: { isValid: true },
   });
 
   if (session.status !== "authenticated") {
-    return (
-      <ImageErrorDisplay
-        src={src}
-        displayError="Images not rendered on public traces and observations"
-      />
-    );
+    return <ImageErrorDisplay src={src} displayError="Images not rendered on public traces and observations" />;
   }
 
   if (isValidImage.isLoading && isImageVisible) {
@@ -90,12 +68,7 @@ export const ResizableImage = ({
       {hasFetchError ? (
         <ImageErrorDisplay src={src} displayError={displayError} />
       ) : (
-        <div
-          className={cn(
-            "group relative w-full overflow-hidden",
-            isZoomedIn ? "h-1/2 w-1/2" : "h-full w-full",
-          )}
-        >
+        <div className={cn("group relative w-full overflow-hidden", isZoomedIn ? "h-1/2 w-1/2" : "h-full w-full")}>
           {isImageVisible && isValidImage.data?.isValid ? (
             <>
               <Image
@@ -119,11 +92,7 @@ export const ResizableImage = ({
                 size="icon"
                 onClick={() => setIsZoomedIn(!isZoomedIn)}
               >
-                {isZoomedIn ? (
-                  <Maximize2 className="h-4 w-4"></Maximize2>
-                ) : (
-                  <Minimize2 className="h-4 w-4"></Minimize2>
-                )}
+                {isZoomedIn ? <Maximize2 className="h-4 w-4"></Maximize2> : <Minimize2 className="h-4 w-4"></Minimize2>}
               </Button>
             </>
           ) : (
@@ -138,12 +107,7 @@ export const ResizableImage = ({
                 Load Image
               </Button>
               <div className="flex min-w-0 flex-1 items-center overflow-hidden">
-                <Link
-                  href={src}
-                  title={src}
-                  className="truncate underline"
-                  target="_blank"
-                >
+                <Link href={src} title={src} className="truncate underline" target="_blank">
                   {src}
                 </Link>
               </div>

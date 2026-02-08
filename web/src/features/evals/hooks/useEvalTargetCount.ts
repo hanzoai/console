@@ -1,8 +1,5 @@
 import { api } from "@/src/utils/api";
-import {
-  type EvalFormType,
-  isTraceTarget,
-} from "@/src/features/evals/utils/evaluator-form-utils";
+import { type EvalFormType, isTraceTarget } from "@/src/features/evals/utils/evaluator-form-utils";
 
 interface UseEvalTargetCountProps {
   projectId: string;
@@ -43,20 +40,13 @@ export function useEvalTargetCount({
     enabled: enabled && isTrace,
   });
 
-  const datasetCountQuery = api.datasets.countAllDatasetItems.useQuery(
-    baseAllCountFilter,
-    {
-      enabled: enabled && !isTrace,
-    },
-  );
+  const datasetCountQuery = api.datasets.countAllDatasetItems.useQuery(baseAllCountFilter, {
+    enabled: enabled && !isTrace,
+  });
 
   return {
-    isLoading: isTrace
-      ? tracesCountQuery.isLoading
-      : datasetCountQuery.isLoading,
-    totalCount: isTrace
-      ? tracesCountQuery.data?.totalCount
-      : datasetCountQuery.data?.totalCount,
+    isLoading: isTrace ? tracesCountQuery.isLoading : datasetCountQuery.isLoading,
+    totalCount: isTrace ? tracesCountQuery.data?.totalCount : datasetCountQuery.data?.totalCount,
     isTraceTarget: isTrace,
   };
 }

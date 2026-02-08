@@ -2,11 +2,7 @@ import { useMemo, useState, useRef } from "react";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { File, Image as ImageIcon, Volume2, Video } from "lucide-react";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { api } from "@/src/utils/api";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 
@@ -67,11 +63,7 @@ function ImagePreview({ src }: { src?: string }) {
       aria-label="Open image in new tab"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt="Media preview"
-        className="h-full w-full object-cover"
-      />
+      <img src={src} alt="Media preview" className="h-full w-full object-cover" />
     </button>
   );
 }
@@ -123,9 +115,7 @@ function MediaPreview({ mediaItem }: { mediaItem: MediaReturnType }) {
  */
 export function MediaButtonGroup({ media }: MediaButtonGroupProps) {
   const [openCategory, setOpenCategory] = useState<MediaCategory | null>(null);
-  const [clickedCategory, setClickedCategory] = useState<MediaCategory | null>(
-    null,
-  );
+  const [clickedCategory, setClickedCategory] = useState<MediaCategory | null>(null);
   const justClickedRef = useRef<MediaCategory | null>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -138,9 +128,7 @@ export function MediaButtonGroup({ media }: MediaButtonGroupProps) {
     const videoMedia = media.filter((m) => m.contentType.startsWith("video"));
     const documentMedia = media.filter(
       (m) =>
-        !m.contentType.startsWith("image") &&
-        !m.contentType.startsWith("audio") &&
-        !m.contentType.startsWith("video"),
+        !m.contentType.startsWith("image") && !m.contentType.startsWith("audio") && !m.contentType.startsWith("video"),
     );
 
     if (imageMedia.length > 0) {
@@ -263,10 +251,7 @@ export function MediaButtonGroup({ media }: MediaButtonGroupProps) {
                 closeTimeoutRef.current = null;
               }
               // Keep it open when hovering over content
-              if (
-                clickedCategory === null ||
-                clickedCategory === group.category
-              ) {
+              if (clickedCategory === null || clickedCategory === group.category) {
                 setOpenCategory(group.category);
               }
             }}

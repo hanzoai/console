@@ -9,23 +9,11 @@ export const AggUsageBadge = (props: {
   variant?: "default" | "secondary" | "destructive" | "outline" | "tertiary";
 }) => {
   const usage = {
-    inputUsage: props.observations
-      .map((o) => o.inputUsage)
-      .reduce((a, b) => a + b, 0),
-    outputUsage: props.observations
-      .map((o) => o.outputUsage)
-      .reduce((a, b) => a + b, 0),
-    totalUsage: props.observations
-      .map((o) => o.totalUsage)
-      .reduce((a, b) => a + b, 0),
+    inputUsage: props.observations.map((o) => o.inputUsage).reduce((a, b) => a + b, 0),
+    outputUsage: props.observations.map((o) => o.outputUsage).reduce((a, b) => a + b, 0),
+    totalUsage: props.observations.map((o) => o.totalUsage).reduce((a, b) => a + b, 0),
   };
-  return (
-    <TokenUsageBadge
-      {...usage}
-      rightIcon={props.rightIcon}
-      variant={props.variant}
-    />
-  );
+  return <TokenUsageBadge {...usage} rightIcon={props.rightIcon} variant={props.variant} />;
 };
 
 export const TokenUsageBadge = (
@@ -53,12 +41,7 @@ export const TokenUsageBadge = (
         }
       : props;
 
-  if (
-    usage.inputUsage === 0 &&
-    usage.outputUsage === 0 &&
-    usage.totalUsage === 0
-  )
-    return <></>;
+  if (usage.inputUsage === 0 && usage.outputUsage === 0 && usage.totalUsage === 0) return <></>;
 
   const content = `${numberFormatter(usage.inputUsage, 0)} → ${numberFormatter(usage.outputUsage, 0)} (∑ ${numberFormatter(usage.totalUsage, 0)})`;
 

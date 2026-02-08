@@ -1,9 +1,5 @@
 import { api } from "@/src/utils/api";
-import {
-  type ScoreSourceType,
-  type FilterState,
-  type ScoreDataTypeType,
-} from "@hanzo/shared";
+import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/shared";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import React from "react";
 import { BarChart, type CustomTooltipProps } from "@tremor/react";
@@ -57,18 +53,13 @@ export function NumericScoreHistogram(props: {
     },
   );
 
-  const { chartData, chartLabels } = histogram.data
-    ? histogram.data
-    : { chartData: [], chartLabels: [] };
+  const { chartData, chartLabels } = histogram.data ? histogram.data : { chartData: [], chartLabels: [] };
 
   const colors = getColorsForCategories(chartLabels);
   const paddedChartData = padChartData(chartData);
 
   const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
-    <Tooltip
-      {...tooltipProps}
-      formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()}
-    />
+    <Tooltip {...tooltipProps} formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()} />
   );
 
   return histogram.isLoading || !Boolean(chartData.length) ? (
@@ -81,9 +72,7 @@ export function NumericScoreHistogram(props: {
         index="binLabel"
         categories={chartLabels}
         colors={colors}
-        valueFormatter={(number: number) =>
-          Intl.NumberFormat("en-US").format(number).toString()
-        }
+        valueFormatter={(number: number) => Intl.NumberFormat("en-US").format(number).toString()}
         yAxisWidth={48}
         barCategoryGap={"0%"}
         customTooltip={TooltipComponent}

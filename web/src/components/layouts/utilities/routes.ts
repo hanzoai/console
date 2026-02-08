@@ -40,21 +40,13 @@ const groupProcessedNavigation = (items: NavigationItem[]) => {
   };
 };
 
-export function processNavigation(
-  mapNavigation: (route: Route) => NavigationItem | null,
-) {
+export function processNavigation(mapNavigation: (route: Route) => NavigationItem | null) {
   // First process all routes (apply filtering, permissions, etc.)
-  const allProcessedItems = ROUTES.map(mapNavigation).filter(
-    (item): item is NavigationItem => Boolean(item),
-  );
+  const allProcessedItems = ROUTES.map(mapNavigation).filter((item): item is NavigationItem => Boolean(item));
 
   // Then group the processed items by section
-  const mainItems = allProcessedItems.filter(
-    (item) => item.section === RouteSection.Main,
-  );
-  const secondaryItems = allProcessedItems.filter(
-    (item) => item.section === RouteSection.Secondary,
-  );
+  const mainItems = allProcessedItems.filter((item) => item.section === RouteSection.Main);
+  const secondaryItems = allProcessedItems.filter((item) => item.section === RouteSection.Secondary);
 
   const mainNavigation = groupProcessedNavigation(mainItems);
   const secondaryNavigation = groupProcessedNavigation(secondaryItems);

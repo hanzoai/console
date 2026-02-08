@@ -30,12 +30,7 @@ function contentToString(content: unknown): string {
         textParts.push(item.text);
       } else if (isOpenAIImageContentPart(item)) {
         textParts.push("[Image]");
-      } else if (
-        item &&
-        typeof item === "object" &&
-        "type" in item &&
-        item.type === "input_audio"
-      ) {
+      } else if (item && typeof item === "object" && "type" in item && item.type === "input_audio") {
         textParts.push("[Audio]");
       }
     }
@@ -49,9 +44,7 @@ function contentToString(content: unknown): string {
   return JSON.stringify(content);
 }
 
-export function convertChatMlToPlayground(
-  msg: ChatMlMessage,
-): ChatMessage | PlaceholderMessage | null {
+export function convertChatMlToPlayground(msg: ChatMlMessage): ChatMessage | PlaceholderMessage | null {
   // Handle placeholder messages
   if (msg.type === "placeholder") {
     return {
@@ -74,10 +67,7 @@ export function convertChatMlToPlayground(
       if (tc.name && !tc.function) {
         name = tc.name;
         try {
-          args =
-            typeof tc.arguments === "string"
-              ? JSON.parse(tc.arguments)
-              : (tc.arguments ?? {});
+          args = typeof tc.arguments === "string" ? JSON.parse(tc.arguments) : (tc.arguments ?? {});
         } catch {
           args = {};
         }
@@ -112,16 +102,12 @@ export function convertChatMlToPlayground(
 
   // Handle tool results
   // Check top-level field first, then fall back to json field
-  const toolCallId =
-    msg.tool_call_id || jsonData?.tool_call_id || jsonData?.toolCallId;
+  const toolCallId = msg.tool_call_id || jsonData?.tool_call_id || jsonData?.toolCallId;
   if (toolCallId) {
     // If content is undefined but we have rich data in json.json (spread tool result),
     // use that for playground display
     // this happens if for complex tool calls isRichToolResult applies
-    const toolContent =
-      msg.content !== undefined && msg.content !== null
-        ? msg.content
-        : jsonData;
+    const toolContent = msg.content !== undefined && msg.content !== null ? msg.content : jsonData;
 
     return {
       role: ChatMessageRole.Tool,

@@ -19,11 +19,7 @@ export const ExpandListButton = ({
   }
 
   return (
-    <Button
-      className="mt-2"
-      variant="ghost"
-      onClick={() => setExpanded(!isExpanded)}
-    >
+    <Button className="mt-2" variant="ghost" onClick={() => setExpanded(!isExpanded)}>
       {isExpanded ? (
         <>
           <ChevronUp className="mr-2 h-4 w-4" /> See less

@@ -5,10 +5,7 @@ import Page from "@/src/components/layouts/page";
 import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { DashboardWidgetTable } from "@/src/features/widgets";
-import {
-  getDashboardTabs,
-  DASHBOARD_TABS,
-} from "@/src/features/navigation/utils/dashboard-tabs";
+import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation/utils/dashboard-tabs";
 
 export default function Widgets() {
   const router = useRouter();

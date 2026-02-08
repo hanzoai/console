@@ -2,48 +2,43 @@ import { z } from "zod/v4";
 
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { decrypt, encrypt } from "@hanzo/shared/encryption";
 import { mixpanelIntegrationFormSchema } from "@/src/features/mixpanel-integration/types";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env.mjs";
 
 export const mixpanelIntegrationRouter = createTRPCRouter({
-  get: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ input, ctx }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "integrations:CRUD",
+  get: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ input, ctx }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "integrations:CRUD",
+    });
+    try {
+      const dbConfig = await ctx.prisma.mixpanelIntegration.findFirst({
+        where: {
+          projectId: input.projectId,
+        },
       });
-      try {
-        const dbConfig = await ctx.prisma.mixpanelIntegration.findFirst({
-          where: {
-            projectId: input.projectId,
-          },
-        });
 
-        if (!dbConfig) {
-          return null;
-        }
-
-        const { encryptedMixpanelProjectToken, ...config } = dbConfig;
-
-        return {
-          ...config,
-          mixpanelProjectToken: decrypt(encryptedMixpanelProjectToken),
-        };
-      } catch (e) {
-        console.error("mixpanel integration get", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      if (!dbConfig) {
+        return null;
       }
-    }),
+
+      const { encryptedMixpanelProjectToken, ...config } = dbConfig;
+
+      return {
+        ...config,
+        mixpanelProjectToken: decrypt(encryptedMixpanelProjectToken),
+      };
+    } catch (e) {
+      console.error("mixpanel integration get", e);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 
   update: protectedProjectProcedure
     .input(mixpanelIntegrationFormSchema.extend({ projectId: z.string() }))
@@ -94,32 +89,30 @@ export const mixpanelIntegrationRouter = createTRPCRouter({
         },
       });
     }),
-  delete: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      try {
-        throwIfNoProjectAccess({
-          session: ctx.session,
-          projectId: input.projectId,
-          scope: "integrations:CRUD",
-        });
-        await auditLog({
-          session: ctx.session,
-          action: "delete",
-          resourceType: "mixpanelIntegration",
-          resourceId: input.projectId,
-        });
+  delete: protectedProjectProcedure.input(z.object({ projectId: z.string() })).mutation(async ({ input, ctx }) => {
+    try {
+      throwIfNoProjectAccess({
+        session: ctx.session,
+        projectId: input.projectId,
+        scope: "integrations:CRUD",
+      });
+      await auditLog({
+        session: ctx.session,
+        action: "delete",
+        resourceType: "mixpanelIntegration",
+        resourceId: input.projectId,
+      });
 
-        await ctx.prisma.mixpanelIntegration.delete({
-          where: {
-            projectId: input.projectId,
-          },
-        });
-      } catch (e) {
-        console.log("mixpanel integration delete", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
-    }),
+      await ctx.prisma.mixpanelIntegration.delete({
+        where: {
+          projectId: input.projectId,
+        },
+      });
+    } catch (e) {
+      console.log("mixpanel integration delete", e);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 });

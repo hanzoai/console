@@ -1,8 +1,5 @@
 import { cn } from "@/src/utils/tailwind";
-import {
-  type IntervalConfig,
-  type TimeRange,
-} from "@/src/utils/date-range-utils";
+import { type IntervalConfig, type TimeRange } from "@/src/utils/date-range-utils";
 import { formatChartTooltipTimestamp } from "./chart-formatters";
 import { useChart } from "@/src/components/ui/chart";
 
@@ -66,9 +63,7 @@ export function ScoreChartTooltip({
   }
 
   // Filter out duplicates
-  const uniquePayload = Array.from(
-    new Map(payload.map((item) => [item.name ?? item.dataKey, item])).values(),
-  );
+  const uniquePayload = Array.from(new Map(payload.map((item) => [item.name ?? item.dataKey, item])).values());
 
   // Sort payload by config key order for stable tooltip across columns
   // This maintains consistent ordering (e.g., alphabetical + unmatched last)
@@ -102,13 +97,8 @@ export function ScoreChartTooltip({
     formattedLabel = label;
   } else if (interval && timeRange && label) {
     // Format timestamp using interval-aware formatting (for numeric timestamps)
-    const timestamp =
-      typeof label === "number" ? new Date(label) : new Date(label);
-    formattedLabel = formatChartTooltipTimestamp(
-      timestamp,
-      interval,
-      timeRange,
-    );
+    const timestamp = typeof label === "number" ? new Date(label) : new Date(label);
+    formattedLabel = formatChartTooltipTimestamp(timestamp, interval, timeRange);
   } else {
     // Fallback to string representation
     formattedLabel = String(label ?? "");
@@ -118,9 +108,7 @@ export function ScoreChartTooltip({
     <div className="rounded-md border border-border bg-background opacity-100 shadow-lg">
       {/* Header with timestamp/label */}
       <div className={cn("border-b border-border px-3 py-1.5")}>
-        <p className={cn("text-sm font-medium text-muted-foreground")}>
-          {formattedLabel}
-        </p>
+        <p className={cn("text-sm font-medium text-muted-foreground")}>{formattedLabel}</p>
       </div>
 
       {/* Data series with values */}
@@ -131,10 +119,7 @@ export function ScoreChartTooltip({
           const seriesLabel = config[seriesKey]?.label || seriesKey;
 
           return (
-            <div
-              key={`${index}-${entry.name}`}
-              className="flex items-center gap-2"
-            >
+            <div key={`${index}-${entry.name}`} className="flex items-center gap-2">
               {/* Color indicator */}
               <div
                 className="h-3 w-3 flex-shrink-0 rounded-sm"
@@ -144,13 +129,9 @@ export function ScoreChartTooltip({
               />
 
               {/* Series label from config */}
-              <span className="flex-1 text-sm text-muted-foreground">
-                {seriesLabel?.toString() ?? ""}
-              </span>
+              <span className="flex-1 text-sm text-muted-foreground">{seriesLabel?.toString() ?? ""}</span>
               {/* Formatted value */}
-              <span className="text-sm font-medium text-foreground">
-                {valueFormatter(Number(entry.value ?? 0))}
-              </span>
+              <span className="text-sm font-medium text-foreground">{valueFormatter(Number(entry.value ?? 0))}</span>
             </div>
           );
         })}

@@ -4,12 +4,7 @@ import useColumnVisibility from "@/src/features/column-visibility/hooks/useColum
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { type Prisma } from "@hanzo/shared/src/db";
-import {
-  useQueryParams,
-  withDefault,
-  NumberParam,
-  StringParam,
-} from "use-query-params";
+import { useQueryParams, withDefault, NumberParam, StringParam } from "use-query-params";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
@@ -20,16 +15,9 @@ import { EditModelButton } from "@/src/features/models/components/EditModelButto
 import { CloneModelButton } from "@/src/features/models/components/CloneModelButton";
 import { PriceBreakdownTooltip } from "@/src/features/models/components/PriceBreakdownTooltip";
 import { UserCircle2Icon, PlusIcon } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import {
-  HanzoIcon as _HanzoIcon,
-  HanzoCloudIcon,
-} from "@/src/components/HanzoLogo";
+import { HanzoIcon as _HanzoIcon, HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { useRouter } from "next/router";
 import { PriceUnitSelector } from "@/src/features/models/components/PriceUnitSelector";
 import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnitMultiplier";
@@ -54,15 +42,12 @@ export type ModelTableRow = {
 const modelConfigDescriptions = {
   modelName:
     "Standardized model name. Generations are assigned to this model name if they match the `matchPattern` upon ingestion.",
-  matchPattern:
-    "Regex pattern to match `model` parameter of generations to model pricing",
-  startDate:
-    "Date to start pricing model. If not set, model is active unless a more recent version exists.",
+  matchPattern: "Regex pattern to match `model` parameter of generations to model pricing",
+  startDate: "Date to start pricing model. If not set, model is active unless a more recent version exists.",
   prices: "Prices per usage type",
   tokenizerId:
     "Tokenizer used for this model to calculate token counts if none are ingested. Pick from list of supported tokenizers.",
-  config:
-    "Some tokenizers require additional configuration (e.g. openai tiktoken). See docs for details.",
+  config: "Some tokenizers require additional configuration (e.g. openai tiktoken). See docs for details.",
   maintainer:
     "Maintainer of the model.  managed models can be cloned, user managed models can be edited and deleted. To supersede a  managed model, set the custom model name to the Hanzo model name.",
   lastUsed: "Start time of the latest generation using this model",
@@ -123,11 +108,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
         description: modelConfigDescriptions.modelName,
       },
       cell: ({ row }) => {
-        return (
-          <span className="truncate font-mono text-xs font-semibold">
-            {row.original.modelName}
-          </span>
-        );
+        return <span className="truncate font-mono text-xs font-semibold">{row.original.modelName}</span>;
       },
       size: 120,
     },
@@ -145,15 +126,9 @@ export default function ModelTable({ projectId }: { projectId: string }) {
           <div className="flex justify-center">
             <Tooltip>
               <TooltipTrigger>
-                {isHanzo ? (
-                  <HanzoCloudIcon size={16} />
-                ) : (
-                  <UserCircle2Icon className="h-4 w-4" />
-                )}
+                {isHanzo ? <HanzoCloudIcon size={16} /> : <UserCircle2Icon className="h-4 w-4" />}
               </TooltipTrigger>
-              <TooltipContent>
-                {isHanzo ? "Hanzo maintained" : "User maintained"}
-              </TooltipContent>
+              <TooltipContent>{isHanzo ? "Hanzo maintained" : "User maintained"}</TooltipContent>
             </Tooltip>
           </div>
         );
@@ -170,9 +145,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const value: string = row.getValue("matchPattern");
 
-        return value ? (
-          <span className="truncate font-mono text-xs">{value}</span>
-        ) : null;
+        return value ? <span className="truncate font-mono text-xs">{value}</span> : null;
       },
     },
     {
@@ -188,8 +161,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       },
       size: 120,
       cell: ({ row }) => {
-        const prices: Record<string, number> | undefined =
-          row.getValue("prices");
+        const prices: Record<string, number> | undefined = row.getValue("prices");
 
         return (
           <PriceBreakdownTooltip
@@ -224,9 +196,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => {
         const value: Prisma.JsonValue | undefined = row.getValue("config");
 
-        return value ? (
-          <IOTableCell data={value} singleLine={rowHeight === "s"} />
-        ) : null;
+        return value ? <IOTableCell data={value} singleLine={rowHeight === "s"} /> : null;
       },
     },
     {
@@ -250,38 +220,22 @@ export default function ModelTable({ projectId }: { projectId: string }) {
       size: 120,
       cell: ({ row }) => {
         return row.original.maintainer !== "Hanzo" ? (
-          <div
-            className="flex items-center gap-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <EditModelButton
-              projectId={projectId}
-              modelData={row.original.serverResponse}
-            />
-            <DeleteModelButton
-              projectId={projectId}
-              modelData={row.original.serverResponse}
-            />
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <EditModelButton projectId={projectId} modelData={row.original.serverResponse} />
+            <DeleteModelButton projectId={projectId} modelData={row.original.serverResponse} />
           </div>
         ) : (
           <div onClick={(e) => e.stopPropagation()}>
-            <CloneModelButton
-              projectId={projectId}
-              modelData={row.original.serverResponse}
-            />
+            <CloneModelButton projectId={projectId} modelData={row.original.serverResponse} />
           </div>
         );
       },
     },
   ];
 
-  const [columnVisibility, setColumnVisibility] =
-    useColumnVisibility<ModelTableRow>("modelsColumnVisibility", columns);
+  const [columnVisibility, setColumnVisibility] = useColumnVisibility<ModelTableRow>("modelsColumnVisibility", columns);
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<ModelTableRow>(
-    "modelsColumnOrder",
-    columns,
-  );
+  const [columnOrder, setColumnOrder] = useColumnOrder<ModelTableRow>("modelsColumnOrder", columns);
 
   const convertToTableRow = (model: GetModelResult): ModelTableRow => {
     // Get default tier prices for backward compatibility
@@ -350,9 +304,7 @@ export default function ModelTable({ projectId }: { projectId: string }) {
                 : {
                     isLoading: false,
                     isError: false,
-                    data: safeExtract(models.data, "models", []).map((t) =>
-                      convertToTableRow(t),
-                    ),
+                    data: safeExtract(models.data, "models", []).map((t) => convertToTableRow(t)),
                   }
           }
           pagination={{

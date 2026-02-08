@@ -31,9 +31,7 @@ type InvoiceRow = {
 export function BillingInvoiceTable() {
   const { organization } = useBillingInformation();
   const isCloudBillingAvailable = useIsCloudBillingAvailable();
-  const shouldShowTable =
-    isCloudBillingAvailable &&
-    Boolean(organization?.cloudConfig?.stripe?.customerId);
+  const shouldShowTable = isCloudBillingAvailable && Boolean(organization?.cloudConfig?.stripe?.customerId);
 
   const [virtualTotal, setVirtualTotal] = useState(9999);
   const [paginationState, setPaginationState] = useState<{
@@ -56,8 +54,7 @@ export function BillingInvoiceTable() {
     },
   );
 
-  const isFirstPage =
-    !paginationState.startingAfter && !paginationState.endingBefore;
+  const isFirstPage = !paginationState.startingAfter && !paginationState.endingBefore;
   const hasMore = invoicesQuery.data?.hasMore ?? false;
 
   const rows = useMemo(() => {
@@ -97,17 +94,10 @@ export function BillingInvoiceTable() {
   // When we fetch a page that reports hasMore === false, lock in the exact size
   useEffect(() => {
     if (!invoicesQuery.isFetching && !hasMore) {
-      const finalCount =
-        paginationState.pageIndex * paginationState.pageSize + rows.length;
+      const finalCount = paginationState.pageIndex * paginationState.pageSize + rows.length;
       setVirtualTotal(finalCount); // one-way only; stays stable afterwards
     }
-  }, [
-    hasMore,
-    invoicesQuery.isFetching,
-    paginationState.pageIndex,
-    paginationState.pageSize,
-    rows.length,
-  ]);
+  }, [hasMore, invoicesQuery.isFetching, paginationState.pageIndex, paginationState.pageSize, rows.length]);
 
   const columns: HanzoColumnDef<InvoiceRow>[] = [
     {
@@ -133,12 +123,7 @@ export function BillingInvoiceTable() {
       cell: ({ row }) => {
         const status = (row.getValue("status") as string | null)?.toLowerCase();
         if (!status) return null;
-        const variant =
-          status === "paid"
-            ? "secondary"
-            : status === "open"
-              ? "outline"
-              : "default";
+        const variant = status === "paid" ? "secondary" : status === "open" ? "outline" : "default";
         return <Badge variant={variant as any}>{status}</Badge>;
       },
     },
@@ -223,14 +208,11 @@ export function BillingInvoiceTable() {
 
   // Helpers to derive cursors from the current page rows (exclude preview) as fallback
   const firstNonPreviewId = rows.find((r) => r.id !== "preview")?.id;
-  const lastNonPreviewId = [...rows]
-    .reverse()
-    .find((r) => r.id !== "preview")?.id;
+  const lastNonPreviewId = [...rows].reverse().find((r) => r.id !== "preview")?.id;
 
   // 3) Guard "Next" when already at the end to avoid useless queries + flicker
   const onPaginationChange = (updater: any) => {
-    const next =
-      typeof updater === "function" ? updater(paginationState) : updater;
+    const next = typeof updater === "function" ? updater(paginationState) : updater;
 
     // forward click but no more pages? ignore
     if (next.pageIndex > paginationState.pageIndex && !hasMore) {
@@ -248,10 +230,8 @@ export function BillingInvoiceTable() {
     }
     if (next.pageIndex === paginationState.pageIndex) return;
 
-    const freshNext =
-      (invoicesQuery.data as any)?.cursors?.next ?? lastNonPreviewId;
-    const freshPrev =
-      (invoicesQuery.data as any)?.cursors?.prev ?? firstNonPreviewId;
+    const freshNext = (invoicesQuery.data as any)?.cursors?.next ?? lastNonPreviewId;
+    const freshPrev = (invoicesQuery.data as any)?.cursors?.prev ?? firstNonPreviewId;
 
     if (next.pageIndex === 0 && paginationState.pageIndex > 0) {
       setPaginationState({

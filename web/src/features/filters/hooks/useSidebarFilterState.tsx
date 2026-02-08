@@ -1,16 +1,7 @@
 import { useCallback, useMemo, useEffect } from "react";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
-import {
-  type FilterState,
-  singleFilter,
-  type SingleValueOption,
-  type ColumnDefinition,
-} from "@hanzo/shared";
-import {
-  computeSelectedValues,
-  encodeFiltersGeneric,
-  decodeFiltersGeneric,
-} from "../lib/filter-query-encoding";
+import { type FilterState, singleFilter, type SingleValueOption, type ColumnDefinition } from "@hanzo/shared";
+import { computeSelectedValues, encodeFiltersGeneric, decodeFiltersGeneric } from "../lib/filter-query-encoding";
 import { normalizeFilterColumnNames } from "../lib/filter-transform";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import useLocalStorage from "@/src/components/useLocalStorage";
@@ -24,10 +15,7 @@ import type { FilterConfig } from "../lib/filter-config";
  * @param columnDefinitions - Column definitions for validation and normalization
  * @returns Normalized and validated FilterState
  */
-export function decodeAndNormalizeFilters(
-  filtersQuery: string,
-  columnDefinitions: ColumnDefinition[],
-): FilterState {
+export function decodeAndNormalizeFilters(filtersQuery: string, columnDefinitions: ColumnDefinition[]): FilterState {
   try {
     const filters = decodeFiltersGeneric(filtersQuery);
 
@@ -59,21 +47,11 @@ function computeNumericRange(
   defaultMin: number,
   defaultMax: number,
 ): [number, number] {
-  const minFilter = filterState.find(
-    (f) => f.column === column && f.type === "number" && f.operator === ">=",
-  );
-  const maxFilter = filterState.find(
-    (f) => f.column === column && f.type === "number" && f.operator === "<=",
-  );
+  const minFilter = filterState.find((f) => f.column === column && f.type === "number" && f.operator === ">=");
+  const maxFilter = filterState.find((f) => f.column === column && f.type === "number" && f.operator === "<=");
 
-  const minValue =
-    minFilter && typeof minFilter.value === "number"
-      ? minFilter.value
-      : defaultMin;
-  const maxValue =
-    maxFilter && typeof maxFilter.value === "number"
-      ? maxFilter.value
-      : defaultMax;
+  const minValue = minFilter && typeof minFilter.value === "number" ? minFilter.value : defaultMin;
+  const maxValue = maxFilter && typeof maxFilter.value === "number" ? maxFilter.value : defaultMax;
 
   return [minValue, maxValue];
 }
@@ -121,15 +99,9 @@ export interface CategoricalUIFilter extends BaseUIFilter {
    */
   textFilters?: TextFilterEntry[];
   // Add a new text filter. Automatically clears checkbox selections.
-  onTextFilterAdd?: (
-    operator: "contains" | "does not contain",
-    value: string,
-  ) => void;
+  onTextFilterAdd?: (operator: "contains" | "does not contain", value: string) => void;
   // Remove a text filter by operator and value
-  onTextFilterRemove?: (
-    operator: "contains" | "does not contain",
-    value: string,
-  ) => void;
+  onTextFilterRemove?: (operator: "contains" | "does not contain", value: string) => void;
   // True if any text filters are active for this column
   hasTextFilters?: boolean;
   // True if any checkboxes are selected (excluding "all selected" state)
@@ -230,18 +202,11 @@ function processOptions(options: (string | SingleValueOption)[]): {
   return { values, counts: counts.size > 0 ? counts : EMPTY_MAP };
 }
 
-type UpdateFilter = (
-  column: string,
-  values: string[],
-  operator?: "any of" | "none of" | "all of",
-) => void;
+type UpdateFilter = (column: string, values: string[], operator?: "any of" | "none of" | "all of") => void;
 
 export function useSidebarFilterState(
   config: FilterConfig,
-  options: Record<
-    string,
-    (string | SingleValueOption)[] | Record<string, string[]> | undefined
-  >,
+  options: Record<string, (string | SingleValueOption)[] | Record<string, string[]> | undefined>,
   projectId?: string,
   loading?: boolean,
   /**
@@ -268,10 +233,7 @@ export function useSidebarFilterState(
     [setExpandedString],
   );
 
-  const [filtersQuery, setFiltersQuery] = useQueryParam(
-    "filter",
-    withDefault(StringParam, ""),
-  );
+  const [filtersQuery, setFiltersQuery] = useQueryParam("filter", withDefault(StringParam, ""));
 
   const filterState: FilterState = useMemo(() => {
     // If URL persistence is disabled, return empty filter state
@@ -294,10 +256,7 @@ export function useSidebarFilterState(
   const storageKey = projectId
     ? `${config.tableName}-${projectId}-env-defaults-v1`
     : `${config.tableName}-env-defaults-v1`;
-  const [defaultsApplied, setDefaultsApplied] = useLocalStorage<boolean>(
-    storageKey,
-    false,
-  );
+  const [defaultsApplied, setDefaultsApplied] = useLocalStorage<boolean>(storageKey, false);
 
   // init default env filters on first load to deselect envs prefixed with "hanzo-"
   useEffect(() => {
@@ -306,22 +265,15 @@ export function useSidebarFilterState(
     if (filterState.length > 0 || defaultsApplied) return;
 
     // only if there is an environment facet
-    const environmentFacet = config.facets.find(
-      (f) => f.column === "environment" && f.type === "categorical",
-    );
+    const environmentFacet = config.facets.find((f) => f.column === "environment" && f.type === "categorical");
     if (!environmentFacet) return;
 
     const environmentOptions = options["environment"];
-    if (!Array.isArray(environmentOptions) || environmentOptions.length === 0)
-      return;
+    if (!Array.isArray(environmentOptions) || environmentOptions.length === 0) return;
 
-    const environments = environmentOptions.map((opt) =>
-      typeof opt === "string" ? opt : opt.value,
-    );
+    const environments = environmentOptions.map((opt) => (typeof opt === "string" ? opt : opt.value));
 
-    const hanzoEnvironments = environments.filter((env) =>
-      env.startsWith("hanzo-"),
-    );
+    const hanzoEnvironments = environments.filter((env) => env.startsWith("hanzo-"));
 
     // exclude hanzo- environments if there are any
     if (hanzoEnvironments.length > 0) {
@@ -364,9 +316,7 @@ export function useSidebarFilterState(
       const facet = config.facets.find((f) => f.column === column);
       if (!facet) return current;
 
-      const colDef = config.columnDefinitions.find(
-        (c) => c.id === column || c.name === column,
-      );
+      const colDef = config.columnDefinitions.find((c) => c.id === column || c.name === column);
       const colType = colDef?.type;
 
       // Handle boolean facets
@@ -414,9 +364,7 @@ export function useSidebarFilterState(
         return current;
       }
 
-      const availableValues = availableValuesRaw.map((opt) =>
-        typeof opt === "string" ? opt : opt.value,
-      );
+      const availableValues = availableValuesRaw.map((opt) => (typeof opt === "string" ? opt : opt.value));
 
       // Determine operator and values based on context
       let finalOperator: "any of" | "none of" | "all of";
@@ -431,8 +379,7 @@ export function useSidebarFilterState(
         // (only for implicit/checkbox-based selection, not when operator is explicitly set)
         if (
           values.length === 0 ||
-          (values.length === availableValues.length &&
-            availableValues.every((v) => values.includes(v)))
+          (values.length === availableValues.length && availableValues.every((v) => values.includes(v)))
         ) {
           return other;
         }
@@ -447,17 +394,13 @@ export function useSidebarFilterState(
           finalValues = deselected;
         } else if (
           existingFilter.operator === "none of" &&
-          (existingFilter.type === "stringOptions" ||
-            existingFilter.type === "arrayOptions")
+          (existingFilter.type === "stringOptions" || existingFilter.type === "arrayOptions")
         ) {
           // Existing "none of" filter - keep "none of", update to deselected items
           const deselected = availableValues.filter((v) => !values.includes(v));
           finalOperator = "none of";
           finalValues = deselected;
-        } else if (
-          existingFilter.operator === "all of" &&
-          existingFilter.type === "arrayOptions"
-        ) {
+        } else if (existingFilter.operator === "all of" && existingFilter.type === "arrayOptions") {
           // Existing "all of" filter - keep "all of" with selected items
           finalOperator = "all of";
           finalValues = values;
@@ -487,8 +430,7 @@ export function useSidebarFilterState(
       // finalOperator can be "all of" because UpdateFilter type signature allows it,
       // but this shouldn't happen. UI only shows operator toggle for arrayOptions,
       // which cannot be set to "all of". We just prevent a TS build error here.
-      const stringOperator: "any of" | "none of" =
-        finalOperator === "all of" ? "any of" : finalOperator;
+      const stringOperator: "any of" | "none of" = finalOperator === "all of" ? "any of" : finalOperator;
 
       return [
         ...other,
@@ -554,10 +496,7 @@ export function useSidebarFilterState(
       }
 
       // Only works for arrayOptions and stringOptions filters
-      if (
-        existingFilter.type !== "arrayOptions" &&
-        existingFilter.type !== "stringOptions"
-      ) {
+      if (existingFilter.type !== "arrayOptions" && existingFilter.type !== "stringOptions") {
         return;
       }
 
@@ -565,9 +504,7 @@ export function useSidebarFilterState(
       // For "none of", we need to compute the actual selected values
       const availableValuesRaw = options[column];
       const availableValues = Array.isArray(availableValuesRaw)
-        ? availableValuesRaw.map((opt) =>
-            typeof opt === "string" ? opt : opt.value,
-          )
+        ? availableValuesRaw.map((opt) => (typeof opt === "string" ? opt : opt.value))
         : [];
 
       let currentValues: string[];
@@ -586,12 +523,7 @@ export function useSidebarFilterState(
   );
 
   const updateNumericFilter = useCallback(
-    (
-      column: string,
-      value: [number, number] | null,
-      _defaultMin: number,
-      _defaultMax: number,
-    ) => {
+    (column: string, value: [number, number] | null, _defaultMin: number, _defaultMax: number) => {
       // Remove existing numeric filters for this column
       const withoutNumeric = filterState.filter((f) => f.column !== column);
 
@@ -651,22 +583,14 @@ export function useSidebarFilterState(
   // Text filter management for categorical filters
   // Mutually exclusive with checkbox selections
   const addTextFilter = useCallback(
-    (
-      column: string,
-      operator: "contains" | "does not contain",
-      value: string,
-    ) => {
+    (column: string, operator: "contains" | "does not contain", value: string) => {
       if (!value.trim()) {
         return;
       }
 
       // Remove all checkbox filters (stringOptions/arrayOptions) for this column
       const withoutCheckboxFilters = filterState.filter(
-        (f) =>
-          !(
-            f.column === column &&
-            (f.type === "stringOptions" || f.type === "arrayOptions")
-          ),
+        (f) => !(f.column === column && (f.type === "stringOptions" || f.type === "arrayOptions")),
       );
 
       // Add the new text filter
@@ -684,19 +608,9 @@ export function useSidebarFilterState(
   );
 
   const removeTextFilter = useCallback(
-    (
-      column: string,
-      operator: "contains" | "does not contain",
-      value: string,
-    ) => {
+    (column: string, operator: "contains" | "does not contain", value: string) => {
       const newFilters = filterState.filter(
-        (f) =>
-          !(
-            f.column === column &&
-            f.type === "string" &&
-            f.operator === operator &&
-            f.value === value
-          ),
+        (f) => !(f.column === column && f.type === "string" && f.operator === operator && f.value === value),
       );
 
       setFilterState(newFilters);
@@ -721,16 +635,9 @@ export function useSidebarFilterState(
     return config.facets
       .map((facet): UIFilter | null => {
         if (facet.type === "numeric") {
-          const currentRange = computeNumericRange(
-            facet.column,
-            filterState,
-            facet.min,
-            facet.max,
-          );
+          const currentRange = computeNumericRange(facet.column, filterState, facet.min, facet.max);
           // Check if there are any numeric filters for this column
-          const isActive = filterState.some(
-            (f) => f.column === facet.column && f.type === "number",
-          );
+          const isActive = filterState.some((f) => f.column === facet.column && f.type === "number");
           return {
             type: "numeric",
             column: facet.column,
@@ -743,10 +650,8 @@ export function useSidebarFilterState(
             loading: false,
             expanded: expandedSet.has(facet.column),
             isActive,
-            onChange: (value: [number, number]) =>
-              updateNumericFilter(facet.column, value, facet.min, facet.max),
-            onReset: () =>
-              updateNumericFilter(facet.column, null, facet.min, facet.max),
+            onChange: (value: [number, number]) => updateNumericFilter(facet.column, value, facet.min, facet.max),
+            onReset: () => updateNumericFilter(facet.column, null, facet.min, facet.max),
           };
         }
 
@@ -754,10 +659,7 @@ export function useSidebarFilterState(
         if (facet.type === "string") {
           const filterEntry = filterByColumn.get(facet.column);
           const currentValue =
-            filterEntry?.type === "string" &&
-            typeof filterEntry.value === "string"
-              ? filterEntry.value
-              : "";
+            filterEntry?.type === "string" && typeof filterEntry.value === "string" ? filterEntry.value : "";
           const isActive = currentValue.trim() !== "";
 
           return {
@@ -769,8 +671,7 @@ export function useSidebarFilterState(
             loading: false,
             expanded: expandedSet.has(facet.column),
             isActive,
-            onChange: (value: string) =>
-              updateStringFilter(facet.column, value),
+            onChange: (value: string) => updateStringFilter(facet.column, value),
             onReset: () => updateStringFilter(facet.column, ""),
           };
         }
@@ -789,13 +690,11 @@ export function useSidebarFilterState(
           }>;
 
           // Convert to KeyValueFilterEntry array
-          const activeFilters: KeyValueFilterEntry[] = categoryFilters.map(
-            (f) => ({
-              key: f.key,
-              operator: f.operator,
-              value: f.value,
-            }),
-          );
+          const activeFilters: KeyValueFilterEntry[] = categoryFilters.map((f) => ({
+            key: f.key,
+            operator: f.operator,
+            value: f.value,
+          }));
 
           const isActive = activeFilters.length > 0;
 
@@ -805,8 +704,7 @@ export function useSidebarFilterState(
           // Extract key options from availableValues if not defined in facet
           const keyOptions =
             facet.keyOptions ??
-            (typeof availableValues === "object" &&
-            !Array.isArray(availableValues)
+            (typeof availableValues === "object" && !Array.isArray(availableValues)
               ? Object.keys(availableValues as Record<string, string[]>)
               : undefined);
 
@@ -818,8 +716,7 @@ export function useSidebarFilterState(
             value: activeFilters,
             keyOptions,
             availableValues:
-              typeof availableValues === "object" &&
-              !Array.isArray(availableValues)
+              typeof availableValues === "object" && !Array.isArray(availableValues)
                 ? (availableValues as Record<string, string[]>)
                 : ({} as Record<string, string[]>),
             loading: shouldShowLoading(facet.column),
@@ -828,15 +725,12 @@ export function useSidebarFilterState(
             onChange: (filters: KeyValueFilterEntry[]) => {
               // Remove all existing categoryOptions filters for this column
               const withoutCategory = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "categoryOptions"),
+                (f) => !(f.column === facet.column && f.type === "categoryOptions"),
               );
 
               // Only add filters that have both key and values selected
               // This filters at the filterState level, not the UI level
-              const validFilters = filters.filter(
-                (entry) => entry.key && entry.value.length > 0,
-              );
+              const validFilters = filters.filter((entry) => entry.key && entry.value.length > 0);
 
               const newFilters: FilterState = [
                 ...withoutCategory,
@@ -854,8 +748,7 @@ export function useSidebarFilterState(
             onReset: () => {
               // Remove all categoryOptions filters for this column
               const newFilters = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "categoryOptions"),
+                (f) => !(f.column === facet.column && f.type === "categoryOptions"),
               );
               setFilterState(newFilters);
             },
@@ -876,12 +769,11 @@ export function useSidebarFilterState(
           }>;
 
           // Convert to NumericKeyValueFilterEntry array
-          const activeFilters: NumericKeyValueFilterEntry[] =
-            numericFilters.map((f) => ({
-              key: f.key,
-              operator: f.operator,
-              value: f.value,
-            }));
+          const activeFilters: NumericKeyValueFilterEntry[] = numericFilters.map((f) => ({
+            key: f.key,
+            operator: f.operator,
+            value: f.value,
+          }));
 
           const isActive = activeFilters.length > 0;
 
@@ -890,9 +782,7 @@ export function useSidebarFilterState(
           const keyOptions =
             facet.keyOptions ??
             (Array.isArray(availableKeys)
-              ? availableKeys.map((opt) =>
-                  typeof opt === "string" ? opt : opt.value,
-                )
+              ? availableKeys.map((opt) => (typeof opt === "string" ? opt : opt.value))
               : undefined);
 
           return {
@@ -908,14 +798,11 @@ export function useSidebarFilterState(
             onChange: (filters: NumericKeyValueFilterEntry[]) => {
               // Remove all existing numberObject filters for this column
               const withoutNumeric = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "numberObject"),
+                (f) => !(f.column === facet.column && f.type === "numberObject"),
               );
 
               // Only add filters that have key and valid numeric value
-              const validFilters = filters.filter(
-                (entry) => entry.key && entry.value !== "",
-              );
+              const validFilters = filters.filter((entry) => entry.key && entry.value !== "");
 
               const newFilters: FilterState = [
                 ...withoutNumeric,
@@ -932,10 +819,7 @@ export function useSidebarFilterState(
             },
             onReset: () => {
               // Remove all numberObject filters for this column
-              const newFilters = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "numberObject"),
-              );
+              const newFilters = filterState.filter((f) => !(f.column === facet.column && f.type === "numberObject"));
               setFilterState(newFilters);
             },
           };
@@ -955,13 +839,11 @@ export function useSidebarFilterState(
           }>;
 
           // Convert to StringKeyValueFilterEntry array
-          const activeFilters: StringKeyValueFilterEntry[] = stringFilters.map(
-            (f) => ({
-              key: f.key,
-              operator: f.operator,
-              value: f.value,
-            }),
-          );
+          const activeFilters: StringKeyValueFilterEntry[] = stringFilters.map((f) => ({
+            key: f.key,
+            operator: f.operator,
+            value: f.value,
+          }));
 
           const isActive = activeFilters.length > 0;
 
@@ -970,9 +852,7 @@ export function useSidebarFilterState(
           const keyOptions =
             facet.keyOptions ??
             (Array.isArray(availableKeys)
-              ? availableKeys.map((opt) =>
-                  typeof opt === "string" ? opt : opt.value,
-                )
+              ? availableKeys.map((opt) => (typeof opt === "string" ? opt : opt.value))
               : undefined);
 
           return {
@@ -988,14 +868,11 @@ export function useSidebarFilterState(
             onChange: (filters: StringKeyValueFilterEntry[]) => {
               // Remove all existing stringObject filters for this column
               const withoutString = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "stringObject"),
+                (f) => !(f.column === facet.column && f.type === "stringObject"),
               );
 
               // Only add filters that have key and non-empty value
-              const validFilters = filters.filter(
-                (entry) => entry.key && entry.value.trim() !== "",
-              );
+              const validFilters = filters.filter((entry) => entry.key && entry.value.trim() !== "");
 
               const newFilters: FilterState = [
                 ...withoutString,
@@ -1012,10 +889,7 @@ export function useSidebarFilterState(
             },
             onReset: () => {
               // Remove all stringObject filters for this column
-              const newFilters = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "stringObject"),
-              );
+              const newFilters = filterState.filter((f) => !(f.column === facet.column && f.type === "stringObject"));
               setFilterState(newFilters);
             },
           };
@@ -1052,18 +926,12 @@ export function useSidebarFilterState(
               }
               if (values.includes(trueLabel) && !values.includes(falseLabel)) {
                 updateFilter(facet.column, [trueLabel]);
-              } else if (
-                values.includes(falseLabel) &&
-                !values.includes(trueLabel)
-              ) {
+              } else if (values.includes(falseLabel) && !values.includes(trueLabel)) {
                 updateFilter(facet.column, [falseLabel]);
               }
             },
             onOnlyChange: (value: string) => {
-              if (
-                selectedOptions.length === 1 &&
-                selectedOptions.includes(value)
-              ) {
+              if (selectedOptions.length === 1 && selectedOptions.includes(value)) {
                 updateFilter(facet.column, []);
               } else {
                 updateFilter(facet.column, [value]);
@@ -1076,14 +944,10 @@ export function useSidebarFilterState(
         // Handle categorical
         const availableValuesRaw = options[facet.column] ?? [];
         // For nested structures, default to empty array (shouldn't happen for categorical)
-        const availableValuesWithOptions = Array.isArray(availableValuesRaw)
-          ? availableValuesRaw
-          : [];
+        const availableValuesWithOptions = Array.isArray(availableValuesRaw) ? availableValuesRaw : [];
 
         // Extract counts and values to display along multi-select values
-        const { values: availableValues, counts } = Array.isArray(
-          availableValuesWithOptions,
-        )
+        const { values: availableValues, counts } = Array.isArray(availableValuesWithOptions)
           ? processOptions(availableValuesWithOptions)
           : { values: [], counts: EMPTY_MAP };
 
@@ -1091,22 +955,15 @@ export function useSidebarFilterState(
         // Only arrayOptions columns get the ANY/ALL toggle
         // - arrayOptions: multi-valued arrays (e.g., tags on a trace)
         // - stringOptions: single-valued strings (e.g., environment)
-        const colDef = config.columnDefinitions.find(
-          (c) => c.id === facet.column,
-        );
+        const colDef = config.columnDefinitions.find((c) => c.id === facet.column);
         const isArrayOptions = colDef?.type === "arrayOptions";
 
         // Get the checkbox filter (stringOptions/arrayOptions) for this column
         const checkboxFilter = filterState.find(
-          (f) =>
-            f.column === facet.column &&
-            (f.type === "stringOptions" || f.type === "arrayOptions"),
+          (f) => f.column === facet.column && (f.type === "stringOptions" || f.type === "arrayOptions"),
         );
 
-        const selectedValues = computeSelectedValues(
-          availableValues,
-          checkboxFilter,
-        );
+        const selectedValues = computeSelectedValues(availableValues, checkboxFilter);
 
         // Determine current operator for ANY/ALL toggle
         // When a user selects items in an arrayOptions filter, we expose a toggle
@@ -1117,10 +974,8 @@ export function useSidebarFilterState(
         let currentOperator: "any of" | "all of" | undefined;
         if (
           checkboxFilter &&
-          (checkboxFilter.type === "arrayOptions" ||
-            checkboxFilter.type === "stringOptions") &&
-          (checkboxFilter.operator === "any of" ||
-            checkboxFilter.operator === "all of")
+          (checkboxFilter.type === "arrayOptions" || checkboxFilter.type === "stringOptions") &&
+          (checkboxFilter.operator === "any of" || checkboxFilter.operator === "all of")
         ) {
           currentOperator = checkboxFilter.operator;
         } else if (isArrayOptions && selectedValues.length > 0) {
@@ -1144,16 +999,13 @@ export function useSidebarFilterState(
           }));
 
         const hasTextFilters = textFilters.length > 0;
-        const hasCheckboxSelections =
-          selectedValues.length > 0 &&
-          selectedValues.length !== availableValues.length;
+        const hasCheckboxSelections = selectedValues.length > 0 && selectedValues.length !== availableValues.length;
 
         // isActive check: filter is active if we have text filters OR checkbox selections
         // Special case: "all of" with all values selected is still an active filter
         const isActive =
           hasTextFilters ||
-          (currentOperator === "all of" &&
-            selectedValues.length === availableValues.length) ||
+          (currentOperator === "all of" && selectedValues.length === availableValues.length) ||
           hasCheckboxSelections;
 
         return {
@@ -1186,26 +1038,18 @@ export function useSidebarFilterState(
                   f.column === facet.column &&
                   (f.type === "stringOptions" ||
                     f.type === "arrayOptions" ||
-                    (f.type === "string" &&
-                      (f.operator === "contains" ||
-                        f.operator === "does not contain")))
+                    (f.type === "string" && (f.operator === "contains" || f.operator === "does not contain")))
                 ),
             );
             setFilterState(withoutAll);
           },
           // Only add operator toggle for arrayOptions columns
           operator: isArrayOptions ? currentOperator : undefined,
-          onOperatorChange: isArrayOptions
-            ? (op: "any of" | "all of") => updateOperator(facet.column, op)
-            : undefined,
+          onOperatorChange: isArrayOptions ? (op: "any of" | "all of") => updateOperator(facet.column, op) : undefined,
           // Text filter support - ONLY for stringOptions, NOT arrayOptions or boolean
           textFilters: !isArrayOptions ? textFilters : undefined,
-          onTextFilterAdd: !isArrayOptions
-            ? (op, val) => addTextFilter(facet.column, op, val)
-            : undefined,
-          onTextFilterRemove: !isArrayOptions
-            ? (op, val) => removeTextFilter(facet.column, op, val)
-            : undefined,
+          onTextFilterAdd: !isArrayOptions ? (op, val) => addTextFilter(facet.column, op, val) : undefined,
+          onTextFilterRemove: !isArrayOptions ? (op, val) => removeTextFilter(facet.column, op, val) : undefined,
           hasTextFilters: !isArrayOptions ? hasTextFilters : undefined,
           hasCheckboxSelections,
         };

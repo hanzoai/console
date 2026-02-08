@@ -13,11 +13,7 @@ export type UseMediaParams = {
  * @param traceId - Trace ID (required)
  * @param observationId - Observation ID (optional, for observation-level media)
  */
-export function useMedia({
-  projectId,
-  traceId,
-  observationId,
-}: UseMediaParams) {
+export function useMedia({ projectId, traceId, observationId }: UseMediaParams) {
   return api.media.getByTraceOrObservationId.useQuery(
     {
       projectId,

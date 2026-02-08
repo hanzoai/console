@@ -2,11 +2,7 @@ import { type NextApiRequest } from "next";
 import { verifyAuth } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "@/src/env.mjs";
-import {
-  createOrgProjectAndApiKey,
-  hashSecretKey,
-  getDisplaySecretKey,
-} from "@hanzo/shared/src/server";
+import { createOrgProjectAndApiKey, hashSecretKey, getDisplaySecretKey } from "@hanzo/shared/src/server";
 
 describe("Admin API Key Authentication", () => {
   const ADMIN_API_KEY = "test-admin-key-123";
@@ -90,9 +86,7 @@ describe("Admin API Key Authentication", () => {
 
       const mockReq = {
         headers: {
-          authorization:
-            "Basic " +
-            Buffer.from(`${publicKey}:${secretKey}`).toString("base64"),
+          authorization: "Basic " + Buffer.from(`${publicKey}:${secretKey}`).toString("base64"),
         },
       } as NextApiRequest;
 
@@ -243,8 +237,7 @@ describe("Admin API Key Authentication", () => {
 
       await expect(verifyAuth(mockReq, true)).rejects.toEqual({
         status: 400,
-        message:
-          "x-hanzo-project-id header is required for admin API key authentication",
+        message: "x-hanzo-project-id header is required for admin API key authentication",
       });
     });
 

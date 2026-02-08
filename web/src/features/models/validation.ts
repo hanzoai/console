@@ -1,24 +1,15 @@
 import { z } from "zod/v4";
-import {
-  PricingTierConditionSchema,
-  PricingTierInputSchema,
-  validatePricingTiers,
-} from "@hanzo/shared";
+import { PricingTierConditionSchema, PricingTierInputSchema, validatePricingTiers } from "@hanzo/shared";
 
 export const UsageTypeSchema = z.string().regex(/^[a-zA-Z0-9_-]+$/);
 export const PriceSchema = z.number().nonnegative();
 export const TokenizerSchema = z.enum(["openai", "claude"]).nullish();
 // Input version: allows optional prices for form
-export const PriceMapInputSchema = z.record(
-  UsageTypeSchema,
-  PriceSchema.optional(),
-);
+export const PriceMapInputSchema = z.record(UsageTypeSchema, PriceSchema.optional());
 
 // Output version: filtered to only defined prices
 export const PriceMapSchema = PriceMapInputSchema.transform((obj) => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, value]) => Boolean(value)),
-  ) as Record<string, number>;
+  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => Boolean(value))) as Record<string, number>;
 }).pipe(z.record(UsageTypeSchema, PriceSchema));
 
 export const PricingTierSchema = z.object({
@@ -50,10 +41,7 @@ export const GetModelResultSchema = z.object({
   projectId: z.string().nullable(),
   modelName: z.string(),
   matchPattern: z.string(),
-  tokenizerConfig: z.union([
-    z.record(z.string(), z.union([z.string(), z.coerce.number()])).nullable(),
-    z.string(),
-  ]),
+  tokenizerConfig: z.union([z.record(z.string(), z.union([z.string(), z.coerce.number()])).nullable(), z.string()]),
   tokenizerId: TokenizerSchema,
   pricingTiers: z.array(PricingTierSchema),
 });
@@ -73,9 +61,7 @@ export const UpsertModelSchema = z
         return value === "None" ? null : value;
       })
       .pipe(TokenizerSchema.nullish()),
-    tokenizerConfig: z
-      .record(z.string(), z.union([z.string(), z.coerce.number()]))
-      .optional(),
+    tokenizerConfig: z.record(z.string(), z.union([z.string(), z.coerce.number()])).optional(),
     pricingTiers: z.array(PricingTierInputSchema),
   })
   .refine(

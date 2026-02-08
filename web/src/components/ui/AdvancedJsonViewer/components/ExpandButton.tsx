@@ -17,13 +17,7 @@ interface ExpandButtonProps {
   isToggling?: boolean; // Show spinner when toggling
 }
 
-export function ExpandButton({
-  isExpanded,
-  isExpandable,
-  onClick,
-  theme,
-  isToggling = false,
-}: ExpandButtonProps) {
+export function ExpandButton({ isExpanded, isExpandable, onClick, theme, isToggling = false }: ExpandButtonProps) {
   if (!isExpandable) {
     // Empty placeholder to maintain alignment
     return <span className="inline-block w-4" />;
@@ -50,9 +44,7 @@ export function ExpandButton({
         padding: 0,
         opacity: isToggling ? 0.5 : 0.3,
       }}
-      aria-label={
-        isToggling ? "Processing..." : isExpanded ? "Collapse" : "Expand"
-      }
+      aria-label={isToggling ? "Processing..." : isExpanded ? "Collapse" : "Expand"}
       disabled={isToggling}
     >
       <Icon size={14} />

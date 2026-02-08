@@ -27,11 +27,7 @@ const formatMessages = (messages: any[], excludeKeys: string[] = []) => {
     messages.map((m) =>
       Object.fromEntries(
         Object.entries(m)
-          .filter(
-            ([k]) =>
-              !excludeKeys.includes(k) &&
-              (k !== "type" || m.type === "placeholder"),
-          )
+          .filter(([k]) => !excludeKeys.includes(k) && (k !== "type" || m.type === "placeholder"))
           .sort(([a], [b]) => a.localeCompare(b)),
       ),
     ),
@@ -40,13 +36,9 @@ const formatMessages = (messages: any[], excludeKeys: string[] = []) => {
   );
 };
 
-export const ReviewPromptDialog: React.FC<ReviewPromptDialogProps> = (
-  props,
-) => {
-  const { initialPrompt, children, getNewPromptValues, onConfirm, isLoading } =
-    props;
-  const [newPromptValue, setNewPromptValues] =
-    React.useState<NewPromptFormSchemaType | null>(null);
+export const ReviewPromptDialog: React.FC<ReviewPromptDialogProps> = (props) => {
+  const { initialPrompt, children, getNewPromptValues, onConfirm, isLoading } = props;
+  const [newPromptValue, setNewPromptValues] = React.useState<NewPromptFormSchemaType | null>(null);
   const [open, setOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -56,20 +48,14 @@ export const ReviewPromptDialog: React.FC<ReviewPromptDialogProps> = (
   }, [open, setNewPromptValues, getNewPromptValues]);
 
   const initialPromptContent =
-    initialPrompt.type === "text"
-      ? (initialPrompt.prompt as string)
-      : formatMessages(initialPrompt.prompt as any[]);
+    initialPrompt.type === "text" ? (initialPrompt.prompt as string) : formatMessages(initialPrompt.prompt as any[]);
 
   const newPromptContent =
     initialPrompt.type === "text"
       ? (newPromptValue?.textPrompt ?? "")
       : formatMessages(newPromptValue?.chatPrompt ?? [], ["id"]);
 
-  const newConfig = JSON.stringify(
-    JSON.parse(newPromptValue?.config ?? "{}"),
-    null,
-    2,
-  );
+  const newConfig = JSON.stringify(JSON.parse(newPromptValue?.config ?? "{}"), null, 2);
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
@@ -110,12 +96,7 @@ export const ReviewPromptDialog: React.FC<ReviewPromptDialogProps> = (
         </DialogBody>
 
         <DialogFooter className="flex flex-row">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setOpen(false)}
-            className="min-w-[8rem]"
-          >
+          <Button type="button" variant="secondary" onClick={() => setOpen(false)} className="min-w-[8rem]">
             Cancel
           </Button>
           <Button

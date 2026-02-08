@@ -2,9 +2,7 @@ import { z } from "zod/v4";
 import { singleFilter } from "@hanzo/shared";
 
 export type ViewDeclarationType = z.infer<typeof viewDeclaration>;
-export type DimensionsDeclarationType = z.infer<
-  typeof viewDeclaration
->["dimensions"];
+export type DimensionsDeclarationType = z.infer<typeof viewDeclaration>["dimensions"];
 
 export const viewDeclaration = z.object({
   name: z.string(),
@@ -61,11 +59,7 @@ export const views = z.enum([
 ]);
 
 // V2 views - excludes "traces" which is not supported in v2 API
-export const viewsV2 = z.enum([
-  "observations",
-  "scores-numeric",
-  "scores-categorical",
-]);
+export const viewsV2 = z.enum(["observations", "scores-numeric", "scores-categorical"]);
 
 export const viewVersions = z.enum(["v1", "v2"]);
 export type ViewVersion = z.infer<typeof viewVersions>;
@@ -93,14 +87,7 @@ export const metric = z.object({
   aggregation: metricAggregations,
 });
 
-export const granularities = z.enum([
-  "auto",
-  "minute",
-  "hour",
-  "day",
-  "week",
-  "month",
-]);
+export const granularities = z.enum(["auto", "minute", "hour", "day", "week", "month"]);
 
 export type QueryType = z.infer<typeof query>;
 

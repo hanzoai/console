@@ -25,9 +25,7 @@ export default withMiddlewares({
       const includesTrace = requestedFields.includes("trace");
       const hasTraceFilters = Boolean(query.userId || query.traceTags);
 
-      logger.info(
-        `fields: ${query.fields}, includesTrace: ${includesTrace}, hasTraceFilters: ${hasTraceFilters}`,
-      );
+      logger.info(`fields: ${query.fields}, includesTrace: ${includesTrace}, hasTraceFilters: ${hasTraceFilters}`);
 
       if (!includesTrace && hasTraceFilters) {
         throw new InvalidRequestError(

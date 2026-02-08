@@ -3,21 +3,8 @@ import { useFieldArray } from "react-hook-form";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Checkbox } from "@/src/components/ui/checkbox";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import type { UseFormReturn } from "react-hook-form";
 import type { FormUpsertModel } from "../../validation";
 
@@ -28,10 +15,7 @@ type TierConditionsEditorProps = {
 
 export type { TierConditionsEditorProps };
 
-export function TierConditionsEditor({
-  tierIndex,
-  form,
-}: TierConditionsEditorProps) {
+export function TierConditionsEditor({ tierIndex, form }: TierConditionsEditorProps) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: `pricingTiers.${tierIndex}.conditions`,
@@ -61,23 +45,15 @@ export function TierConditionsEditor({
 
       {fields.length === 0 && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          <strong>Warning:</strong> Non-default tiers require at least one
-          condition. This tier will fail validation.
+          <strong>Warning:</strong> Non-default tiers require at least one condition. This tier will fail validation.
         </div>
       )}
 
       {fields.map((condition, conditionIndex) => (
         <div key={condition.id} className="space-y-3 rounded-lg border p-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              Condition {conditionIndex + 1}
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => remove(conditionIndex)}
-            >
+            <span className="text-sm font-medium">Condition {conditionIndex + 1}</span>
+            <Button type="button" variant="ghost" size="sm" onClick={() => remove(conditionIndex)}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -92,9 +68,7 @@ export function TierConditionsEditor({
                 <FormControl>
                   <Input {...field} placeholder="^input" />
                 </FormControl>
-                <FormDescription>
-                  Match usage type keys (e.g., ^input, .*cache.*, output_tokens)
-                </FormDescription>
+                <FormDescription>Match usage type keys (e.g., ^input, .*cache.*, output_tokens)</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -114,9 +88,7 @@ export function TierConditionsEditor({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="gt">&gt; (greater than)</SelectItem>
-                      <SelectItem value="gte">
-                        &gt;= (greater or equal)
-                      </SelectItem>
+                      <SelectItem value="gte">&gt;= (greater or equal)</SelectItem>
                       <SelectItem value="lt">&lt; (less than)</SelectItem>
                       <SelectItem value="lte">&lt;= (less or equal)</SelectItem>
                       <SelectItem value="eq">= (equals)</SelectItem>
@@ -135,13 +107,7 @@ export function TierConditionsEditor({
                 <FormItem>
                   <FormLabel>Value</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
+                    <Input type="number" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value))} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,10 +122,7 @@ export function TierConditionsEditor({
             render={({ field }) => (
               <FormItem className="flex items-center gap-2">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <FormLabel className="!mt-0">Case sensitive</FormLabel>
               </FormItem>

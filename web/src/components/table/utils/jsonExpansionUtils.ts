@@ -33,14 +33,7 @@ export interface JsonTableRow {
   id: string;
   key: string;
   value: unknown;
-  type:
-    | "string"
-    | "number"
-    | "boolean"
-    | "object"
-    | "array"
-    | "null"
-    | "undefined";
+  type: "string" | "number" | "boolean" | "object" | "array" | "null" | "undefined";
   hasChildren: boolean;
   level: number;
   subRows?: JsonTableRow[];
@@ -58,8 +51,7 @@ function getValueType(value: unknown): JsonTableRow["type"] {
 
 function hasChildren(value: unknown, valueType: JsonTableRow["type"]): boolean {
   return (
-    (valueType === "object" &&
-      Object.keys(value as Record<string, unknown>).length > 0) ||
+    (valueType === "object" && Object.keys(value as Record<string, unknown>).length > 0) ||
     (valueType === "array" && Array.isArray(value) && value.length > 0)
   );
 }
@@ -86,9 +78,7 @@ export function transformJsonToTableData(
     ];
   }
 
-  const entries = Array.isArray(json)
-    ? json.map((item, index) => [index.toString(), item])
-    : Object.entries(json);
+  const entries = Array.isArray(json) ? json.map((item, index) => [index.toString(), item]) : Object.entries(json);
 
   entries.forEach(([key, value]) => {
     const id = parentId ? `${parentId}-${key}` : key;
@@ -112,13 +102,7 @@ export function transformJsonToTableData(
         row.subRows = []; // Empty initially
       } else {
         // Normal processing or nested children
-        const children = transformJsonToTableData(
-          value,
-          key,
-          level + 1,
-          id,
-          lazy,
-        );
+        const children = transformJsonToTableData(value, key, level + 1, id, lazy);
         row.subRows = children;
         row.childrenGenerated = true;
       }

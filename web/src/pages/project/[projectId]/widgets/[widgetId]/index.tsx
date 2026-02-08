@@ -19,16 +19,15 @@ export default function EditWidget() {
 
   // Fetch the widget details
   const utils = api.useUtils();
-  const { data: widgetData, isLoading: isWidgetLoading } =
-    api.dashboardWidgets.get.useQuery(
-      {
-        projectId,
-        widgetId,
-      },
-      {
-        enabled: Boolean(projectId) && Boolean(widgetId),
-      },
-    );
+  const { data: widgetData, isLoading: isWidgetLoading } = api.dashboardWidgets.get.useQuery(
+    {
+      projectId,
+      widgetId,
+    },
+    {
+      enabled: Boolean(projectId) && Boolean(widgetId),
+    },
+  );
 
   // Update widget mutation
   const updateWidgetMutation = api.dashboardWidgets.update.useMutation({
@@ -42,9 +41,7 @@ export default function EditWidget() {
       });
       // Navigate back to dashboard if provided else widgets list
       if (dashboardId) {
-        void router.push(
-          `/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${widgetId}`,
-        );
+        void router.push(`/project/${projectId}/dashboards/${dashboardId}?addWidgetId=${widgetId}`);
       } else {
         void router.push(`/project/${projectId}/widgets`);
       }
@@ -109,10 +106,7 @@ export default function EditWidget() {
             // Keep single values for backward compatibility and fallbacks
             dimension: widgetData.dimensions.slice().shift()?.field ?? "none",
             measure: widgetData.metrics.slice().shift()?.measure ?? "count",
-            aggregation:
-              (widgetData.metrics.slice().shift()?.agg as z.infer<
-                typeof metricAggregations
-              >) ?? "count",
+            aggregation: (widgetData.metrics.slice().shift()?.agg as z.infer<typeof metricAggregations>) ?? "count",
             filters: widgetData.filters,
             chartType: widgetData.chartType,
             chartConfig: widgetData.chartConfig,

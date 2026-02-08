@@ -8,11 +8,7 @@ import { useAnalyticsUrlState } from "@/src/features/score-analytics/lib/analyti
 import { type TimeRange } from "@/src/utils/date-range-utils";
 import { type ScoreOption } from "./charts/ScoreCombobox";
 import { Badge } from "@/src/components/ui/badge";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 
 export interface ScoreAnalyticsHeaderProps {
   scoreOptions: ScoreOption[];
@@ -89,8 +85,8 @@ export function ScoreAnalyticsHeader({
             <div className="space-y-2">
               <h4 className="text-sm font-semibold">Beta Feature</h4>
               <p className="text-sm text-muted-foreground">
-                Score analytics is currently in beta. We&apos;re actively
-                improving this feature and would love to hear your feedback.
+                Score analytics is currently in beta. We&apos;re actively improving this feature and would love to hear
+                your feedback.
               </p>
               <a
                 href="https://hanzo.com/discussions"
@@ -111,11 +107,7 @@ export function ScoreAnalyticsHeader({
 
       {/* Right: Filters */}
       <div className="flex items-center gap-2">
-        <ObjectTypeFilter
-          value={urlState.objectType}
-          onChange={setObjectType}
-          className="h-8 w-[140px]"
-        />
+        <ObjectTypeFilter value={urlState.objectType} onChange={setObjectType} className="h-8 w-[140px]" />
         <TimeRangePicker
           timeRange={timeRange}
           onTimeRangeChange={onTimeRangeChange}

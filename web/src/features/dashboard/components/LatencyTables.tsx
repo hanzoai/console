@@ -7,10 +7,7 @@ import { api } from "@/src/utils/api";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { truncate } from "@/src/utils/string";
 import { Popup } from "@/src/components/layouts/doc-popup";
-import {
-  type QueryType,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
 
 export const LatencyTables = ({
   projectId,
@@ -140,30 +137,19 @@ export const LatencyTables = ({
           .filter((item) => item.name !== null)
           .map((item, i) => [
             <div key={`${item.name as string}-${i}`}>
-              <Popup
-                triggerContent={truncate(item.name as string)}
-                description={item.name as string}
-              />
+              <Popup triggerContent={truncate(item.name as string)} description={item.name as string} />
             </div>,
             <RightAlignedCell key={`${i}-p50`}>
-              {item.p50_latency
-                ? formatIntervalSeconds(Number(item.p50_latency) / 1000, 3)
-                : "-"}
+              {item.p50_latency ? formatIntervalSeconds(Number(item.p50_latency) / 1000, 3) : "-"}
             </RightAlignedCell>,
             <RightAlignedCell key={`${i}-p90`}>
-              {item.p90_latency
-                ? formatIntervalSeconds(Number(item.p90_latency) / 1000, 3)
-                : "-"}
+              {item.p90_latency ? formatIntervalSeconds(Number(item.p90_latency) / 1000, 3) : "-"}
             </RightAlignedCell>,
             <RightAlignedCell key={`${i}-p95`}>
-              {item.p95_latency
-                ? formatIntervalSeconds(Number(item.p95_latency) / 1000, 3)
-                : "-"}
+              {item.p95_latency ? formatIntervalSeconds(Number(item.p95_latency) / 1000, 3) : "-"}
             </RightAlignedCell>,
             <RightAlignedCell key={`${i}-p99`}>
-              {item.p99_latency
-                ? formatIntervalSeconds(Number(item.p99_latency) / 1000, 3)
-                : "-"}
+              {item.p99_latency ? formatIntervalSeconds(Number(item.p99_latency) / 1000, 3) : "-"}
             </RightAlignedCell>,
           ])
       : [];

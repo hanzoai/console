@@ -42,9 +42,7 @@ export type PromptModelState = {
   setSelectedPromptName: (name: string) => void;
   selectedPromptVersion: number | null;
   setSelectedPromptVersion: (version: number | null) => void;
-  promptsByName:
-    | Record<string, Array<{ id: string; version: number; labels: string[] }>>
-    | undefined;
+  promptsByName: Record<string, Array<{ id: string; version: number; labels: string[] }>> | undefined;
 };
 
 export type ModelState = {

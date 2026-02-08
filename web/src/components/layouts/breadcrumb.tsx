@@ -17,19 +17,10 @@ import {
 import { env } from "@/src/env.mjs";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 
-import {
-  ChevronDownIcon,
-  LoaderCircle,
-  PlusIcon,
-  Settings,
-  Slash,
-} from "lucide-react";
+import { ChevronDownIcon, LoaderCircle, PlusIcon, Settings, Slash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import {
-  createOrganizationRoute,
-  createProjectRoute,
-} from "@/src/features/setup/setupRoutes";
+import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
 import { isCloudPlan, planLabels } from "@hanzo/shared";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -67,9 +58,7 @@ const BreadcrumbComponent = ({
   const truncatePathBeforeDynamicSegments = (path: string) => {
     const allowlistedIds = ["[projectId]", "[organizationId]", "[page]"];
     const segments = router.route.split("/");
-    const idSegments = segments.filter(
-      (segment) => segment.startsWith("[") && segment.endsWith("]"),
-    );
+    const idSegments = segments.filter((segment) => segment.startsWith("[") && segment.endsWith("]"));
     const stopSegment = idSegments.filter((id) => !allowlistedIds.includes(id));
     if (stopSegment.length === 0) return path;
     const stopIndex = segments.indexOf(stopSegment[0]);
@@ -79,18 +68,12 @@ const BreadcrumbComponent = ({
 
   const getProjectPath = (projectId: string) =>
     router.query.projectId
-      ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-          router.query.projectId as string,
-          projectId,
-        )
+      ? truncatePathBeforeDynamicSegments(router.asPath).replace(router.query.projectId as string, projectId)
       : `/project/${projectId}`;
 
   const getOrgPath = (orgId: string) =>
     router.query.organizationId
-      ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-          router.query.organizationId as string,
-          orgId,
-        )
+      ? truncatePathBeforeDynamicSegments(router.asPath).replace(router.query.organizationId as string, orgId)
       : `/organization/${orgId}`;
 
   return (
@@ -100,15 +83,11 @@ const BreadcrumbComponent = ({
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-1 text-sm text-primary">
               {organization?.name ?? "Organization"}
-              {isCloudPlan(organization?.plan) &&
-                organization.id !== env.NEXT_PUBLIC_DEMO_ORG_ID && (
-                  <Badge
-                    className="ml-1 px-1 py-0 text-xs font-normal"
-                    variant="secondary"
-                  >
-                    {planLabels[organization.plan]}
-                  </Badge>
-                )}
+              {isCloudPlan(organization?.plan) && organization.id !== env.NEXT_PUBLIC_DEMO_ORG_ID && (
+                <Badge className="ml-1 px-1 py-0 text-xs font-normal" variant="secondary">
+                  {planLabels[organization.plan]}
+                </Badge>
+              )}
               <ChevronDownIcon className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -131,33 +110,21 @@ const BreadcrumbComponent = ({
                     })
                     .map((dropdownOrg) => (
                       <Fragment key={dropdownOrg.id}>
-                        {env.NEXT_PUBLIC_DEMO_ORG_ID === dropdownOrg.id && (
-                          <DropdownMenuSeparator />
-                        )}
+                        {env.NEXT_PUBLIC_DEMO_ORG_ID === dropdownOrg.id && <DropdownMenuSeparator />}
                         <DropdownMenuItem asChild>
-                          <Link
-                            href={getOrgPath(dropdownOrg.id)}
-                            className="flex cursor-pointer justify-between"
-                          >
+                          <Link href={getOrgPath(dropdownOrg.id)} className="flex cursor-pointer justify-between">
                             <span
                               className="max-w-36 overflow-hidden overflow-ellipsis whitespace-nowrap"
                               title={dropdownOrg.name}
                             >
                               {dropdownOrg.name}
                             </span>
-                            <Button
-                              asChild
-                              variant="ghost"
-                              size="xs"
-                              className="-my-1 ml-4 hover:bg-background"
-                            >
+                            <Button asChild variant="ghost" size="xs" className="-my-1 ml-4 hover:bg-background">
                               <div
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  router.push(
-                                    `/organization/${dropdownOrg.id}/settings`,
-                                  );
+                                  router.push(`/organization/${dropdownOrg.id}/settings`);
                                 }}
                               >
                                 <Settings size={12} />
@@ -176,17 +143,9 @@ const BreadcrumbComponent = ({
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      className="h-8 w-full text-sm font-normal"
-                      asChild
-                    >
+                    <Button variant="ghost" size="xs" className="h-8 w-full text-sm font-normal" asChild>
                       <Link href={createOrganizationRoute}>
-                        <PlusIcon
-                          className="mr-1.5 h-4 w-4"
-                          aria-hidden="true"
-                        />
+                        <PlusIcon className="mr-1.5 h-4 w-4" aria-hidden="true" />
                         New Organization
                       </Link>
                     </Button>
@@ -208,10 +167,7 @@ const BreadcrumbComponent = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 <DropdownMenuItem asChild className="font-semibold">
-                  <Link
-                    href={`/organization/${organization.id}`}
-                    className="cursor-pointer"
-                  >
+                  <Link href={`/organization/${organization.id}`} className="cursor-pointer">
                     Projects
                   </Link>
                 </DropdownMenuItem>
@@ -232,19 +188,12 @@ const BreadcrumbComponent = ({
                             >
                               {dropdownProject.name}
                             </span>
-                            <Button
-                              asChild
-                              variant="ghost"
-                              size="xs"
-                              className="-my-1 ml-4 hover:bg-background"
-                            >
+                            <Button asChild variant="ghost" size="xs" className="-my-1 ml-4 hover:bg-background">
                               <div
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  router.push(
-                                    `/project/${dropdownProject.id}/settings`,
-                                  );
+                                  router.push(`/project/${dropdownProject.id}/settings`);
                                 }}
                               >
                                 <Settings size={12} />
@@ -262,17 +211,9 @@ const BreadcrumbComponent = ({
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        className="h-8 w-full text-sm font-normal"
-                        asChild
-                      >
+                      <Button variant="ghost" size="xs" className="h-8 w-full text-sm font-normal" asChild>
                         <Link href={createProjectRoute(organization.id)}>
-                          <PlusIcon
-                            className="mr-1.5 h-4 w-4"
-                            aria-hidden="true"
-                          />
+                          <PlusIcon className="mr-1.5 h-4 w-4" aria-hidden="true" />
                           New Project
                         </Link>
                       </Button>

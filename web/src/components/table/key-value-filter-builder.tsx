@@ -1,18 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -70,13 +60,7 @@ const STRING_OPERATOR_LABELS = {
 } as const;
 
 export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
-  const {
-    mode,
-    keyOptions,
-    activeFilters,
-    onChange,
-    keyPlaceholder = "Key",
-  } = props;
+  const { mode, keyOptions, activeFilters, onChange, keyPlaceholder = "Key" } = props;
   const availableValues = mode === "categorical" ? props.availableValues : {};
 
   // Track which popover is open (by index)
@@ -86,17 +70,12 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
   // Initialize once from activeFilters but don't sync on every change
   // This allows incomplete filter rows to persist in the UI while being edited
   const [localFilters, setLocalFilters] = useState<
-    | KeyValueFilterEntry[]
-    | NumericKeyValueFilterEntry[]
-    | StringKeyValueFilterEntry[]
+    KeyValueFilterEntry[] | NumericKeyValueFilterEntry[] | StringKeyValueFilterEntry[]
   >(() => (activeFilters.length > 0 ? activeFilters : []));
 
   const handleFilterChange = (
     index: number,
-    updates:
-      | Partial<KeyValueFilterEntry>
-      | Partial<NumericKeyValueFilterEntry>
-      | Partial<StringKeyValueFilterEntry>,
+    updates: Partial<KeyValueFilterEntry> | Partial<NumericKeyValueFilterEntry> | Partial<StringKeyValueFilterEntry>,
   ) => {
     // TypeScript can't narrow the union array type automatically, so we narrow explicitly based on mode
     if (mode === "categorical") {
@@ -183,45 +162,27 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
     <div className="flex flex-col gap-4 px-4 py-1">
       {/* Filter rows */}
       {localFilters.map((filter, index) => {
-        const availableValuesForKey = filter.key
-          ? (availableValues[filter.key] ?? [])
-          : [];
+        const availableValuesForKey = filter.key ? (availableValues[filter.key] ?? []) : [];
 
         return (
-          <div
-            key={index}
-            className="flex flex-col gap-2 border-b pb-3 last:border-b-0 last:pb-0"
-          >
+          <div key={index} className="flex flex-col gap-2 border-b pb-3 last:border-b-0 last:pb-0">
             {/* Key input and delete button row */}
             <div className="flex items-center gap-2">
               {keyOptions ? (
                 // Combobox for known keys
                 <Popover
                   open={openPopoverIndex === index}
-                  onOpenChange={(open) =>
-                    setOpenPopoverIndex(open ? index : null)
-                  }
+                  onOpenChange={(open) => setOpenPopoverIndex(open ? index : null)}
                 >
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className="flex-1 justify-between text-left font-normal"
-                    >
-                      <span
-                        className={cn(!filter.key && "text-muted-foreground")}
-                      >
-                        {filter.key || keyPlaceholder}
-                      </span>
+                    <Button variant="outline" role="combobox" className="flex-1 justify-between text-left font-normal">
+                      <span className={cn(!filter.key && "text-muted-foreground")}>{filter.key || keyPlaceholder}</span>
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[200px] p-0" align="start">
                     <InputCommand>
-                      <InputCommandInput
-                        placeholder="Search keys..."
-                        variant="bottom"
-                      />
+                      <InputCommandInput placeholder="Search keys..." variant="bottom" />
                       <InputCommandList>
                         <InputCommandEmpty>No keys found.</InputCommandEmpty>
                         <InputCommandGroup>
@@ -237,14 +198,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                                 setOpenPopoverIndex(null); // Close after selection
                               }}
                             >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  option === filter.key
-                                    ? "visible"
-                                    : "invisible",
-                                )}
-                              />
+                              <Check className={cn("mr-2 h-4 w-4", option === filter.key ? "visible" : "invisible")} />
                               {option}
                             </InputCommandItem>
                           ))}
@@ -269,12 +223,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
               )}
 
               {/* Delete button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemoveFilter(index)}
-                className="h-8 w-8 p-0"
-              >
+              <Button variant="ghost" size="sm" onClick={() => handleRemoveFilter(index)} className="h-8 w-8 p-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -304,9 +253,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                   title="Values"
                   options={availableValuesForKey.map((v) => ({ value: v }))}
                   values={filter.value as string[]}
-                  onValueChange={(values) =>
-                    handleFilterChange(index, { value: values })
-                  }
+                  onValueChange={(values) => handleFilterChange(index, { value: values })}
                   disabled={!filter.key}
                 />
               </>
@@ -325,13 +272,11 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(NUMERIC_OPERATOR_LABELS).map(
-                      ([op, label]) => (
-                        <SelectItem key={op} value={op}>
-                          {label}
-                        </SelectItem>
-                      ),
-                    )}
+                    {Object.entries(NUMERIC_OPERATOR_LABELS).map(([op, label]) => (
+                      <SelectItem key={op} value={op}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -342,8 +287,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                   value={filter.value}
                   onChange={(e) =>
                     handleFilterChange(index, {
-                      value:
-                        e.target.value === "" ? "" : parseFloat(e.target.value),
+                      value: e.target.value === "" ? "" : parseFloat(e.target.value),
                     })
                   }
                   disabled={!filter.key}
@@ -364,13 +308,11 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(STRING_OPERATOR_LABELS).map(
-                      ([op, label]) => (
-                        <SelectItem key={op} value={op}>
-                          {label}
-                        </SelectItem>
-                      ),
-                    )}
+                    {Object.entries(STRING_OPERATOR_LABELS).map(([op, label]) => (
+                      <SelectItem key={op} value={op}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -393,12 +335,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
       })}
 
       {/* Add filter button */}
-      <Button
-        onClick={handleAddFilter}
-        size="sm"
-        variant="outline"
-        className="w-full"
-      >
+      <Button onClick={handleAddFilter} size="sm" variant="outline" className="w-full">
         <Plus className="mr-2 h-4 w-4" />
         Add filter
       </Button>

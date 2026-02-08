@@ -48,34 +48,19 @@ export function DataTableRefreshButton({
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="w-auto rounded-l-none border-l-0 px-2"
-          >
+          <Button variant="outline" size="icon" className="w-auto rounded-l-none border-l-0 px-2">
             <ChevronDown className="h-4 w-4" />
-            <span className="ml-1 text-sm">
-              {activeInterval?.label ?? "Off"}
-            </span>
+            <span className="ml-1 text-sm">{activeInterval?.label ?? "Off"}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuRadioGroup
             value={String(interval)}
-            onValueChange={(value) =>
-              setInterval(
-                value === "null" ? null : (Number(value) as RefreshInterval),
-              )
-            }
+            onValueChange={(value) => setInterval(value === "null" ? null : (Number(value) as RefreshInterval))}
           >
             {REFRESH_INTERVALS.map((option) => (
-              <DropdownMenuRadioItem
-                key={String(option.value)}
-                value={String(option.value)}
-              >
-                {option.label === "Off"
-                  ? "Auto-refresh off"
-                  : `Every ${option.label}`}
+              <DropdownMenuRadioItem key={String(option.value)} value={String(option.value)}>
+                {option.label === "Off" ? "Auto-refresh off" : `Every ${option.label}`}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

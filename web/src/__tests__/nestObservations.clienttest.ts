@@ -12,9 +12,7 @@ import { nestObservations } from "@/src/components/trace2/lib/helpers";
 import { type ObservationReturnType } from "@/src/server/api/routers/traces";
 
 describe("nestObservations", () => {
-  const createMockObservation = (
-    overrides: Partial<ObservationReturnType> = {},
-  ): ObservationReturnType => ({
+  const createMockObservation = (overrides: Partial<ObservationReturnType> = {}): ObservationReturnType => ({
     id: "mock-id",
     name: "Mock Observation",
     type: "SPAN",

@@ -9,11 +9,7 @@ import {
   PostScoresBodyV1,
   PostScoresResponseV1,
 } from "@hanzo/shared";
-import {
-  eventTypes,
-  logger,
-  processEventBatch,
-} from "@hanzo/shared/src/server";
+import { eventTypes, logger, processEventBatch } from "@hanzo/shared/src/server";
 import { ScoresApiService } from "@/src/features/public-api/server/scores-api-service";
 
 export default withMiddlewares({
@@ -34,9 +30,7 @@ export default withMiddlewares({
       const result = await processEventBatch([event], auth);
       if (result.errors.length > 0) {
         const error = result.errors[0];
-        res
-          .status(error.status)
-          .json({ message: error.error ?? error.message });
+        res.status(error.status).json({ message: error.error ?? error.message });
         return { id: "" }; // dummy return
       }
       if (result.successes.length !== 1) {

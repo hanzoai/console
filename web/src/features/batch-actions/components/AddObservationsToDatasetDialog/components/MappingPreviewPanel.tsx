@@ -2,16 +2,8 @@ import { useMemo, useEffect, useRef } from "react";
 import { ArrowDown, AlertCircle, CheckCircle2 } from "lucide-react";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import type {
-  FieldMappingConfig,
-  SourceField,
-  ObservationPreviewData,
-  SchemaValidationError,
-} from "../types";
-import {
-  applyFieldMappingConfig,
-  validateFieldAgainstSchema,
-} from "@hanzo/shared";
+import type { FieldMappingConfig, SourceField, ObservationPreviewData, SchemaValidationError } from "../types";
+import { applyFieldMappingConfig, validateFieldAgainstSchema } from "@hanzo/shared";
 
 type MappingPreviewPanelProps = {
   fieldLabel: string;
@@ -22,10 +14,7 @@ type MappingPreviewPanelProps = {
   /** JSON Schema to validate the result against */
   schema?: unknown;
   /** Callback when validation state changes */
-  onValidationChange?: (
-    isValid: boolean,
-    errors: SchemaValidationError[],
-  ) => void;
+  onValidationChange?: (isValid: boolean, errors: SchemaValidationError[]) => void;
 };
 
 export function MappingPreviewPanel({
@@ -117,11 +106,7 @@ export function MappingPreviewPanel({
     const prev = prevValidationRef.current;
 
     // Only call if values actually changed
-    if (
-      !prev ||
-      prev.isValid !== validationResult.isValid ||
-      prev.errorsJson !== errorsJson
-    ) {
+    if (!prev || prev.isValid !== validationResult.isValid || prev.errorsJson !== errorsJson) {
       prevValidationRef.current = {
         isValid: validationResult.isValid,
         errorsJson,
@@ -138,10 +123,7 @@ export function MappingPreviewPanel({
       }
       if (config.custom.type === "keyValueMap") {
         // For keyValueMap type, multiple sources may be used
-        const sources = new Set(
-          config.custom.keyValueMapConfig?.entries.map((e) => e.sourceField) ??
-            [],
-        );
+        const sources = new Set(config.custom.keyValueMapConfig?.entries.map((e) => e.sourceField) ?? []);
         if (sources.size === 1) {
           return `observation.${Array.from(sources)[0]}`;
         }
@@ -156,9 +138,7 @@ export function MappingPreviewPanel({
       <div className="space-y-4">
         <div>
           <h3 className="text-sm font-semibold">Preview</h3>
-          <p className="text-xs text-muted-foreground">
-            Sample from first observation
-          </p>
+          <p className="text-xs text-muted-foreground">Sample from first observation</p>
         </div>
         <Skeleton className="h-32 w-full" />
         <Skeleton className="h-32 w-full" />
@@ -171,14 +151,10 @@ export function MappingPreviewPanel({
       <div className="space-y-4">
         <div>
           <h3 className="text-sm font-semibold">Preview</h3>
-          <p className="text-xs text-muted-foreground">
-            Sample from first observation
-          </p>
+          <p className="text-xs text-muted-foreground">Sample from first observation</p>
         </div>
         <div className="flex h-64 items-center justify-center rounded-md border bg-muted/30 p-4">
-          <p className="text-sm text-muted-foreground">
-            No observation data available
-          </p>
+          <p className="text-sm text-muted-foreground">No observation data available</p>
         </div>
       </div>
     );
@@ -188,16 +164,12 @@ export function MappingPreviewPanel({
     <div className="space-y-2">
       <div>
         <h3 className="text-sm font-semibold">Preview</h3>
-        <p className="text-xs text-muted-foreground">
-          Sample from first observation
-        </p>
+        <p className="text-xs text-muted-foreground">Sample from first observation</p>
       </div>
 
       {/* Source data */}
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground">
-          Source: {sourceLabel}
-        </p>
+        <p className="text-xs font-medium text-muted-foreground">Source: {sourceLabel}</p>
         <div className="max-h-[21vh] overflow-auto rounded-md border bg-muted/30">
           <JSONView json={sourceData} className="text-xs" />
         </div>
@@ -211,9 +183,7 @@ export function MappingPreviewPanel({
       {/* Result data */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <p className="text-xs font-medium text-muted-foreground">
-            Result: Dataset Item {fieldLabel}
-          </p>
+          <p className="text-xs font-medium text-muted-foreground">Result: Dataset Item {fieldLabel}</p>
           {/* Validation status indicator */}
           {hasSchema && config.mode !== "none" && (
             <div className="flex items-center gap-1">
@@ -227,9 +197,7 @@ export function MappingPreviewPanel({
         </div>
         <div
           className={`max-h-[21vh] overflow-auto rounded-md border bg-background ${
-            hasSchema && !validationResult.isValid && config.mode !== "none"
-              ? "border-destructive"
-              : ""
+            hasSchema && !validationResult.isValid && config.mode !== "none" ? "border-destructive" : ""
           }`}
         >
           {config.mode === "none" ? (
@@ -240,23 +208,18 @@ export function MappingPreviewPanel({
         </div>
 
         {/* Validation errors */}
-        {hasSchema &&
-          !validationResult.isValid &&
-          validationResult.errors.length > 0 && (
-            <div className="max-h-[5vh] overflow-y-auto rounded-md border border-destructive/50 bg-destructive/10 p-2">
-              <p className="mb-1 text-xs font-medium text-destructive">
-                Schema validation errors:
-              </p>
-              <ul className="space-y-0.5">
-                {validationResult.errors.map((error, idx) => (
-                  <li key={idx} className="text-xs text-destructive">
-                    <span className="font-mono">{error.path || "root"}</span>:{" "}
-                    {error.message}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {hasSchema && !validationResult.isValid && validationResult.errors.length > 0 && (
+          <div className="max-h-[5vh] overflow-y-auto rounded-md border border-destructive/50 bg-destructive/10 p-2">
+            <p className="mb-1 text-xs font-medium text-destructive">Schema validation errors:</p>
+            <ul className="space-y-0.5">
+              {validationResult.errors.map((error, idx) => (
+                <li key={idx} className="text-xs text-destructive">
+                  <span className="font-mono">{error.path || "root"}</span>: {error.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

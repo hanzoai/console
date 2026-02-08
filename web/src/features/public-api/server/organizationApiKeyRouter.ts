@@ -1,9 +1,6 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import {
-  createTRPCRouter,
-  protectedOrganizationProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedOrganizationProcedure } from "@/src/server/api/trpc";
 import * as z from "zod/v4";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { redis } from "@hanzo/shared/src/server";
@@ -127,10 +124,6 @@ export const organizationApiKeysRouter = createTRPCRouter({
         action: "delete",
       });
 
-      return await new ApiAuthService(ctx.prisma, redis).deleteApiKey(
-        input.id,
-        input.orgId,
-        "ORGANIZATION",
-      );
+      return await new ApiAuthService(ctx.prisma, redis).deleteApiKey(input.id, input.orgId, "ORGANIZATION");
     }),
 });

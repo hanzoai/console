@@ -10,12 +10,7 @@ import { useRef, type ReactNode } from "react";
 
 interface VirtualizedListProps<T> {
   items: T[];
-  renderItem: (params: {
-    item: T;
-    index: number;
-    isSelected: boolean;
-    onSelect: () => void;
-  }) => ReactNode;
+  renderItem: (params: { item: T; index: number; isSelected: boolean; onSelect: () => void }) => ReactNode;
   selectedItemId?: string | null;
   onSelectItem: (id: string) => void;
   getItemId: (item: T) => string;

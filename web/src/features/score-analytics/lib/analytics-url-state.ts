@@ -1,11 +1,6 @@
 import { useQueryParams, StringParam, withDefault } from "use-query-params";
 
-export type ObjectType =
-  | "all"
-  | "trace"
-  | "session"
-  | "observation"
-  | "dataset_run";
+export type ObjectType = "all" | "trace" | "session" | "observation" | "dataset_run";
 
 export interface ScoreAnalyticsUrlState {
   score1?: string;

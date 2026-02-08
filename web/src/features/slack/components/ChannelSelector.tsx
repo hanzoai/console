@@ -11,11 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { api } from "@/src/utils/api";
 
@@ -132,9 +128,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
     // Apply search filter
     if (searchValue.trim()) {
       const searchTerm = searchValue.toLowerCase().trim();
-      channels = channels.filter((channel) =>
-        channel.name.toLowerCase().includes(searchTerm),
-      );
+      channels = channels.filter((channel) => channel.name.toLowerCase().includes(searchTerm));
     }
 
     // Sort channels: public channels first, then private, then by name
@@ -149,9 +143,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
   // Get selected channel info
   const selectedChannel = useMemo(() => {
     if (!selectedChannelId || !channelsData?.channels) return null;
-    return channelsData.channels.find(
-      (channel) => channel.id === selectedChannelId,
-    );
+    return channelsData.channels.find((channel) => channel.id === selectedChannelId);
   }, [selectedChannelId, channelsData?.channels]);
 
   // Handle channel selection
@@ -211,8 +203,7 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
         </div>
         <Alert>
           <AlertDescription>
-            Failed to load channels. Please check your Slack connection and try
-            again.
+            Failed to load channels. Please check your Slack connection and try again.
           </AlertDescription>
         </Alert>
       </div>
@@ -241,17 +232,9 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
           </PopoverTrigger>
           <PopoverContent className="w-full p-0" align="start">
             <Command shouldFilter={false}>
-              <CommandInput
-                placeholder="Search channels..."
-                value={searchValue}
-                onValueChange={setSearchValue}
-              />
+              <CommandInput placeholder="Search channels..." value={searchValue} onValueChange={setSearchValue} />
               <CommandList>
-                <CommandEmpty>
-                  {searchValue
-                    ? "No channels match your search."
-                    : "No channels available."}
-                </CommandEmpty>
+                <CommandEmpty>{searchValue ? "No channels match your search." : "No channels available."}</CommandEmpty>
                 <CommandGroup>
                   {filteredChannels.map((channel) => (
                     <CommandItem
@@ -270,15 +253,8 @@ export const ChannelSelector: React.FC<ChannelSelectorProps> = ({
         </Popover>
 
         {showRefreshButton && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={disabled || isRefreshing}
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={disabled || isRefreshing}>
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
         )}
       </div>

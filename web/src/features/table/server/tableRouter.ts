@@ -1,8 +1,5 @@
 import { generateBatchActionId } from "./helpers";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { GetIsBatchActionInProgressSchema } from "@hanzo/shared";
 import { BatchActionQueue, logger } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
@@ -14,11 +11,7 @@ export const tableRouter = createTRPCRouter({
     .input(GetIsBatchActionInProgressSchema)
     .query(async ({ input }) => {
       const { projectId, tableName, actionId } = input;
-      const batchActionId = generateBatchActionId(
-        projectId,
-        actionId,
-        tableName,
-      );
+      const batchActionId = generateBatchActionId(projectId, actionId, tableName);
 
       const batchActionQueue = BatchActionQueue.getInstance();
 

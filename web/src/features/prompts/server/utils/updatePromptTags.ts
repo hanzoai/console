@@ -15,12 +15,9 @@ export const updatePromptTagsOnAllVersions = async ({
     where: { projectId, name: promptName },
   });
 
-  if (previousVersions.length === 0)
-    return { touchedPromptIds: [], updates: [] };
+  if (previousVersions.length === 0) return { touchedPromptIds: [], updates: [] };
 
-  const touchedPromptIds = previousVersions.map(
-    (prevVersion) => prevVersion.id,
-  );
+  const touchedPromptIds = previousVersions.map((prevVersion) => prevVersion.id);
 
   return {
     touchedPromptIds,

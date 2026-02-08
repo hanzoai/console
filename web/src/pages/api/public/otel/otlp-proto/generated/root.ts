@@ -5,8 +5,7 @@ const $Reader = $protobuf.Reader;
 const $Writer = $protobuf.Writer;
 const $util = $protobuf.util;
 // Exported root namespace
-export const $root =
-  $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
+export const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
 $root.opentelemetry = (function () {
   /**
    * Namespace opentelemetry.
@@ -58,13 +57,8 @@ $root.opentelemetry = (function () {
            */
           function AnyValue(properties) {
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * AnyValue stringValue.
@@ -159,53 +153,26 @@ $root.opentelemetry = (function () {
            */
           AnyValue.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.stringValue != null &&
-              Object.hasOwnProperty.call(message, "stringValue")
-            )
-              writer
-                .uint32(/* id 1, wireType 2 =*/ 10)
-                .string(message.stringValue);
-            if (
-              message.boolValue != null &&
-              Object.hasOwnProperty.call(message, "boolValue")
-            )
+            if (message.stringValue != null && Object.hasOwnProperty.call(message, "stringValue"))
+              writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.stringValue);
+            if (message.boolValue != null && Object.hasOwnProperty.call(message, "boolValue"))
               writer.uint32(/* id 2, wireType 0 =*/ 16).bool(message.boolValue);
-            if (
-              message.intValue != null &&
-              Object.hasOwnProperty.call(message, "intValue")
-            )
+            if (message.intValue != null && Object.hasOwnProperty.call(message, "intValue"))
               writer.uint32(/* id 3, wireType 0 =*/ 24).int64(message.intValue);
-            if (
-              message.doubleValue != null &&
-              Object.hasOwnProperty.call(message, "doubleValue")
-            )
-              writer
-                .uint32(/* id 4, wireType 1 =*/ 33)
-                .double(message.doubleValue);
-            if (
-              message.arrayValue != null &&
-              Object.hasOwnProperty.call(message, "arrayValue")
-            )
+            if (message.doubleValue != null && Object.hasOwnProperty.call(message, "doubleValue"))
+              writer.uint32(/* id 4, wireType 1 =*/ 33).double(message.doubleValue);
+            if (message.arrayValue != null && Object.hasOwnProperty.call(message, "arrayValue"))
               $root.opentelemetry.proto.common.v1.ArrayValue.encode(
                 message.arrayValue,
                 writer.uint32(/* id 5, wireType 2 =*/ 42).fork(),
               ).ldelim();
-            if (
-              message.kvlistValue != null &&
-              Object.hasOwnProperty.call(message, "kvlistValue")
-            )
+            if (message.kvlistValue != null && Object.hasOwnProperty.call(message, "kvlistValue"))
               $root.opentelemetry.proto.common.v1.KeyValueList.encode(
                 message.kvlistValue,
                 writer.uint32(/* id 6, wireType 2 =*/ 50).fork(),
               ).ldelim();
-            if (
-              message.bytesValue != null &&
-              Object.hasOwnProperty.call(message, "bytesValue")
-            )
-              writer
-                .uint32(/* id 7, wireType 2 =*/ 58)
-                .bytes(message.bytesValue);
+            if (message.bytesValue != null && Object.hasOwnProperty.call(message, "bytesValue"))
+              writer.uint32(/* id 7, wireType 2 =*/ 58).bytes(message.bytesValue);
             return writer;
           };
           /**
@@ -255,19 +222,14 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 5: {
-                  message.arrayValue =
-                    $root.opentelemetry.proto.common.v1.ArrayValue.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.arrayValue = $root.opentelemetry.proto.common.v1.ArrayValue.decode(reader, reader.uint32());
                   break;
                 }
                 case 6: {
-                  message.kvlistValue =
-                    $root.opentelemetry.proto.common.v1.KeyValueList.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.kvlistValue = $root.opentelemetry.proto.common.v1.KeyValueList.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 7: {
@@ -304,89 +266,53 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           AnyValue.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
-            if (
-              message.stringValue != null &&
-              message.hasOwnProperty("stringValue")
-            ) {
+            if (message.stringValue != null && message.hasOwnProperty("stringValue")) {
               properties.value = 1;
-              if (!$util.isString(message.stringValue))
-                return "stringValue: string expected";
+              if (!$util.isString(message.stringValue)) return "stringValue: string expected";
             }
-            if (
-              message.boolValue != null &&
-              message.hasOwnProperty("boolValue")
-            ) {
+            if (message.boolValue != null && message.hasOwnProperty("boolValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
-              if (typeof message.boolValue !== "boolean")
-                return "boolValue: boolean expected";
+              if (typeof message.boolValue !== "boolean") return "boolValue: boolean expected";
             }
-            if (
-              message.intValue != null &&
-              message.hasOwnProperty("intValue")
-            ) {
+            if (message.intValue != null && message.hasOwnProperty("intValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               if (
                 !$util.isInteger(message.intValue) &&
-                !(
-                  message.intValue &&
-                  $util.isInteger(message.intValue.low) &&
-                  $util.isInteger(message.intValue.high)
-                )
+                !(message.intValue && $util.isInteger(message.intValue.low) && $util.isInteger(message.intValue.high))
               )
                 return "intValue: integer|Long expected";
             }
-            if (
-              message.doubleValue != null &&
-              message.hasOwnProperty("doubleValue")
-            ) {
+            if (message.doubleValue != null && message.hasOwnProperty("doubleValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
-              if (typeof message.doubleValue !== "number")
-                return "doubleValue: number expected";
+              if (typeof message.doubleValue !== "number") return "doubleValue: number expected";
             }
-            if (
-              message.arrayValue != null &&
-              message.hasOwnProperty("arrayValue")
-            ) {
+            if (message.arrayValue != null && message.hasOwnProperty("arrayValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               {
-                var error =
-                  $root.opentelemetry.proto.common.v1.ArrayValue.verify(
-                    message.arrayValue,
-                  );
+                var error = $root.opentelemetry.proto.common.v1.ArrayValue.verify(message.arrayValue);
                 if (error) return "arrayValue." + error;
               }
             }
-            if (
-              message.kvlistValue != null &&
-              message.hasOwnProperty("kvlistValue")
-            ) {
+            if (message.kvlistValue != null && message.hasOwnProperty("kvlistValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               {
-                var error =
-                  $root.opentelemetry.proto.common.v1.KeyValueList.verify(
-                    message.kvlistValue,
-                  );
+                var error = $root.opentelemetry.proto.common.v1.KeyValueList.verify(message.kvlistValue);
                 if (error) return "kvlistValue." + error;
               }
             }
-            if (
-              message.bytesValue != null &&
-              message.hasOwnProperty("bytesValue")
-            ) {
+            if (message.bytesValue != null && message.hasOwnProperty("bytesValue")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               if (
                 !(
-                  (message.bytesValue &&
-                    typeof message.bytesValue.length === "number") ||
+                  (message.bytesValue && typeof message.bytesValue.length === "number") ||
                   $util.isString(message.bytesValue)
                 )
               )
@@ -403,60 +329,35 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.common.v1.AnyValue} AnyValue
            */
           AnyValue.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.common.v1.AnyValue)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.common.v1.AnyValue) return object;
             var message = new $root.opentelemetry.proto.common.v1.AnyValue();
-            if (object.stringValue != null)
-              message.stringValue = String(object.stringValue);
-            if (object.boolValue != null)
-              message.boolValue = Boolean(object.boolValue);
+            if (object.stringValue != null) message.stringValue = String(object.stringValue);
+            if (object.boolValue != null) message.boolValue = Boolean(object.boolValue);
             if (object.intValue != null)
-              if ($util.Long)
-                (message.intValue = $util.Long.fromValue(
-                  object.intValue,
-                )).unsigned = false;
-              else if (typeof object.intValue === "string")
-                message.intValue = parseInt(object.intValue, 10);
-              else if (typeof object.intValue === "number")
-                message.intValue = object.intValue;
+              if ($util.Long) (message.intValue = $util.Long.fromValue(object.intValue)).unsigned = false;
+              else if (typeof object.intValue === "string") message.intValue = parseInt(object.intValue, 10);
+              else if (typeof object.intValue === "number") message.intValue = object.intValue;
               else if (typeof object.intValue === "object")
-                message.intValue = new $util.LongBits(
-                  object.intValue.low >>> 0,
-                  object.intValue.high >>> 0,
-                ).toNumber();
-            if (object.doubleValue != null)
-              message.doubleValue = Number(object.doubleValue);
+                message.intValue = new $util.LongBits(object.intValue.low >>> 0, object.intValue.high >>> 0).toNumber();
+            if (object.doubleValue != null) message.doubleValue = Number(object.doubleValue);
             if (object.arrayValue != null) {
               if (typeof object.arrayValue !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.AnyValue.arrayValue: object expected",
-                );
-              message.arrayValue =
-                $root.opentelemetry.proto.common.v1.ArrayValue.fromObject(
-                  object.arrayValue,
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.AnyValue.arrayValue: object expected");
+              message.arrayValue = $root.opentelemetry.proto.common.v1.ArrayValue.fromObject(object.arrayValue);
             }
             if (object.kvlistValue != null) {
               if (typeof object.kvlistValue !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.AnyValue.kvlistValue: object expected",
-                );
-              message.kvlistValue =
-                $root.opentelemetry.proto.common.v1.KeyValueList.fromObject(
-                  object.kvlistValue,
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.AnyValue.kvlistValue: object expected");
+              message.kvlistValue = $root.opentelemetry.proto.common.v1.KeyValueList.fromObject(object.kvlistValue);
             }
             if (object.bytesValue != null)
               if (typeof object.bytesValue === "string")
                 $util.base64.decode(
                   object.bytesValue,
-                  (message.bytesValue = $util.newBuffer(
-                    $util.base64.length(object.bytesValue),
-                  )),
+                  (message.bytesValue = $util.newBuffer($util.base64.length(object.bytesValue))),
                   0,
                 );
-              else if (object.bytesValue.length >= 0)
-                message.bytesValue = object.bytesValue;
+              else if (object.bytesValue.length >= 0) message.bytesValue = object.bytesValue;
             return message;
           };
           /**
@@ -471,84 +372,46 @@ $root.opentelemetry = (function () {
           AnyValue.toObject = function toObject(message, options) {
             if (!options) options = {};
             var object = {};
-            if (
-              message.stringValue != null &&
-              message.hasOwnProperty("stringValue")
-            ) {
+            if (message.stringValue != null && message.hasOwnProperty("stringValue")) {
               object.stringValue = message.stringValue;
               if (options.oneofs) object.value = "stringValue";
             }
-            if (
-              message.boolValue != null &&
-              message.hasOwnProperty("boolValue")
-            ) {
+            if (message.boolValue != null && message.hasOwnProperty("boolValue")) {
               object.boolValue = message.boolValue;
               if (options.oneofs) object.value = "boolValue";
             }
-            if (
-              message.intValue != null &&
-              message.hasOwnProperty("intValue")
-            ) {
+            if (message.intValue != null && message.hasOwnProperty("intValue")) {
               if (typeof message.intValue === "number")
-                object.intValue =
-                  options.longs === String
-                    ? String(message.intValue)
-                    : message.intValue;
+                object.intValue = options.longs === String ? String(message.intValue) : message.intValue;
               else
                 object.intValue =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.intValue)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.intValue.low >>> 0,
-                          message.intValue.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.intValue.low >>> 0, message.intValue.high >>> 0).toNumber()
                       : message.intValue;
               if (options.oneofs) object.value = "intValue";
             }
-            if (
-              message.doubleValue != null &&
-              message.hasOwnProperty("doubleValue")
-            ) {
+            if (message.doubleValue != null && message.hasOwnProperty("doubleValue")) {
               object.doubleValue =
-                options.json && !isFinite(message.doubleValue)
-                  ? String(message.doubleValue)
-                  : message.doubleValue;
+                options.json && !isFinite(message.doubleValue) ? String(message.doubleValue) : message.doubleValue;
               if (options.oneofs) object.value = "doubleValue";
             }
-            if (
-              message.arrayValue != null &&
-              message.hasOwnProperty("arrayValue")
-            ) {
-              object.arrayValue =
-                $root.opentelemetry.proto.common.v1.ArrayValue.toObject(
-                  message.arrayValue,
-                  options,
-                );
+            if (message.arrayValue != null && message.hasOwnProperty("arrayValue")) {
+              object.arrayValue = $root.opentelemetry.proto.common.v1.ArrayValue.toObject(message.arrayValue, options);
               if (options.oneofs) object.value = "arrayValue";
             }
-            if (
-              message.kvlistValue != null &&
-              message.hasOwnProperty("kvlistValue")
-            ) {
-              object.kvlistValue =
-                $root.opentelemetry.proto.common.v1.KeyValueList.toObject(
-                  message.kvlistValue,
-                  options,
-                );
+            if (message.kvlistValue != null && message.hasOwnProperty("kvlistValue")) {
+              object.kvlistValue = $root.opentelemetry.proto.common.v1.KeyValueList.toObject(
+                message.kvlistValue,
+                options,
+              );
               if (options.oneofs) object.value = "kvlistValue";
             }
-            if (
-              message.bytesValue != null &&
-              message.hasOwnProperty("bytesValue")
-            ) {
+            if (message.bytesValue != null && message.hasOwnProperty("bytesValue")) {
               object.bytesValue =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.bytesValue,
-                      0,
-                      message.bytesValue.length,
-                    )
+                  ? $util.base64.encode(message.bytesValue, 0, message.bytesValue.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.bytesValue)
                     : message.bytesValue;
@@ -564,10 +427,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           AnyValue.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for AnyValue
@@ -603,13 +463,8 @@ $root.opentelemetry = (function () {
           function ArrayValue(properties) {
             this.values = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ArrayValue values.
@@ -657,10 +512,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ArrayValue.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ArrayValue.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -682,14 +534,8 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.values && message.values.length))
-                    message.values = [];
-                  message.values.push(
-                    $root.opentelemetry.proto.common.v1.AnyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.values && message.values.length)) message.values = [];
+                  message.values.push($root.opentelemetry.proto.common.v1.AnyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 default:
@@ -722,15 +568,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ArrayValue.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.values != null && message.hasOwnProperty("values")) {
-              if (!Array.isArray(message.values))
-                return "values: array expected";
+              if (!Array.isArray(message.values)) return "values: array expected";
               for (var i = 0; i < message.values.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(
-                  message.values[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(message.values[i]);
                 if (error) return "values." + error;
               }
             }
@@ -745,26 +587,16 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.common.v1.ArrayValue} ArrayValue
            */
           ArrayValue.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.common.v1.ArrayValue
-            )
-              return object;
+            if (object instanceof $root.opentelemetry.proto.common.v1.ArrayValue) return object;
             var message = new $root.opentelemetry.proto.common.v1.ArrayValue();
             if (object.values) {
               if (!Array.isArray(object.values))
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.ArrayValue.values: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.ArrayValue.values: array expected");
               message.values = [];
               for (var i = 0; i < object.values.length; ++i) {
                 if (typeof object.values[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.common.v1.ArrayValue.values: object expected",
-                  );
-                message.values[i] =
-                  $root.opentelemetry.proto.common.v1.AnyValue.fromObject(
-                    object.values[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.common.v1.ArrayValue.values: object expected");
+                message.values[i] = $root.opentelemetry.proto.common.v1.AnyValue.fromObject(object.values[i]);
               }
             }
             return message;
@@ -785,11 +617,7 @@ $root.opentelemetry = (function () {
             if (message.values && message.values.length) {
               object.values = [];
               for (var j = 0; j < message.values.length; ++j)
-                object.values[j] =
-                  $root.opentelemetry.proto.common.v1.AnyValue.toObject(
-                    message.values[j],
-                    options,
-                  );
+                object.values[j] = $root.opentelemetry.proto.common.v1.AnyValue.toObject(message.values[j], options);
             }
             return object;
           };
@@ -801,10 +629,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ArrayValue.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ArrayValue
@@ -840,13 +665,8 @@ $root.opentelemetry = (function () {
           function KeyValueList(properties) {
             this.values = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * KeyValueList values.
@@ -894,10 +714,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          KeyValueList.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          KeyValueList.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -919,14 +736,8 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.values && message.values.length))
-                    message.values = [];
-                  message.values.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.values && message.values.length)) message.values = [];
+                  message.values.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 default:
@@ -959,15 +770,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           KeyValueList.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.values != null && message.hasOwnProperty("values")) {
-              if (!Array.isArray(message.values))
-                return "values: array expected";
+              if (!Array.isArray(message.values)) return "values: array expected";
               for (var i = 0; i < message.values.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.values[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.values[i]);
                 if (error) return "values." + error;
               }
             }
@@ -982,27 +789,16 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.common.v1.KeyValueList} KeyValueList
            */
           KeyValueList.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.common.v1.KeyValueList
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.common.v1.KeyValueList();
+            if (object instanceof $root.opentelemetry.proto.common.v1.KeyValueList) return object;
+            var message = new $root.opentelemetry.proto.common.v1.KeyValueList();
             if (object.values) {
               if (!Array.isArray(object.values))
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.KeyValueList.values: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.KeyValueList.values: array expected");
               message.values = [];
               for (var i = 0; i < object.values.length; ++i) {
                 if (typeof object.values[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.common.v1.KeyValueList.values: object expected",
-                  );
-                message.values[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.values[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.common.v1.KeyValueList.values: object expected");
+                message.values[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.values[i]);
               }
             }
             return message;
@@ -1023,11 +819,7 @@ $root.opentelemetry = (function () {
             if (message.values && message.values.length) {
               object.values = [];
               for (var j = 0; j < message.values.length; ++j)
-                object.values[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.values[j],
-                    options,
-                  );
+                object.values[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(message.values[j], options);
             }
             return object;
           };
@@ -1039,10 +831,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           KeyValueList.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for KeyValueList
@@ -1056,9 +845,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.common.v1.KeyValueList"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.common.v1.KeyValueList";
           };
           return KeyValueList;
         })();
@@ -1080,13 +867,8 @@ $root.opentelemetry = (function () {
            */
           function KeyValue(properties) {
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * KeyValue key.
@@ -1124,15 +906,9 @@ $root.opentelemetry = (function () {
            */
           KeyValue.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.key != null &&
-              Object.hasOwnProperty.call(message, "key")
-            )
+            if (message.key != null && Object.hasOwnProperty.call(message, "key"))
               writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.key);
-            if (
-              message.value != null &&
-              Object.hasOwnProperty.call(message, "value")
-            )
+            if (message.value != null && Object.hasOwnProperty.call(message, "value"))
               $root.opentelemetry.proto.common.v1.AnyValue.encode(
                 message.value,
                 writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
@@ -1174,11 +950,7 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 2: {
-                  message.value =
-                    $root.opentelemetry.proto.common.v1.AnyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.value = $root.opentelemetry.proto.common.v1.AnyValue.decode(reader, reader.uint32());
                   break;
                 }
                 default:
@@ -1211,14 +983,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           KeyValue.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.key != null && message.hasOwnProperty("key"))
               if (!$util.isString(message.key)) return "key: string expected";
             if (message.value != null && message.hasOwnProperty("value")) {
-              var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(
-                message.value,
-              );
+              var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(message.value);
               if (error) return "value." + error;
             }
             return null;
@@ -1232,19 +1001,13 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.common.v1.KeyValue} KeyValue
            */
           KeyValue.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.common.v1.KeyValue)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.common.v1.KeyValue) return object;
             var message = new $root.opentelemetry.proto.common.v1.KeyValue();
             if (object.key != null) message.key = String(object.key);
             if (object.value != null) {
               if (typeof object.value !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.KeyValue.value: object expected",
-                );
-              message.value =
-                $root.opentelemetry.proto.common.v1.AnyValue.fromObject(
-                  object.value,
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.KeyValue.value: object expected");
+              message.value = $root.opentelemetry.proto.common.v1.AnyValue.fromObject(object.value);
             }
             return message;
           };
@@ -1264,14 +1027,9 @@ $root.opentelemetry = (function () {
               object.key = "";
               object.value = null;
             }
-            if (message.key != null && message.hasOwnProperty("key"))
-              object.key = message.key;
+            if (message.key != null && message.hasOwnProperty("key")) object.key = message.key;
             if (message.value != null && message.hasOwnProperty("value"))
-              object.value =
-                $root.opentelemetry.proto.common.v1.AnyValue.toObject(
-                  message.value,
-                  options,
-                );
+              object.value = $root.opentelemetry.proto.common.v1.AnyValue.toObject(message.value, options);
             return object;
           };
           /**
@@ -1282,10 +1040,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           KeyValue.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for KeyValue
@@ -1324,13 +1079,8 @@ $root.opentelemetry = (function () {
           function InstrumentationScope(properties) {
             this.attributes = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * InstrumentationScope name.
@@ -1382,15 +1132,9 @@ $root.opentelemetry = (function () {
            */
           InstrumentationScope.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.name != null &&
-              Object.hasOwnProperty.call(message, "name")
-            )
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
               writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.name);
-            if (
-              message.version != null &&
-              Object.hasOwnProperty.call(message, "version")
-            )
+            if (message.version != null && Object.hasOwnProperty.call(message, "version"))
               writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.version);
             if (message.attributes != null && message.attributes.length)
               for (var i = 0; i < message.attributes.length; ++i)
@@ -1398,13 +1142,8 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 3, wireType 2 =*/ 26).fork(),
                 ).ldelim();
-            if (
-              message.droppedAttributesCount != null &&
-              Object.hasOwnProperty.call(message, "droppedAttributesCount")
-            )
-              writer
-                .uint32(/* id 4, wireType 0 =*/ 32)
-                .uint32(message.droppedAttributesCount);
+            if (message.droppedAttributesCount != null && Object.hasOwnProperty.call(message, "droppedAttributesCount"))
+              writer.uint32(/* id 4, wireType 0 =*/ 32).uint32(message.droppedAttributesCount);
             return writer;
           };
           /**
@@ -1416,10 +1155,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          InstrumentationScope.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          InstrumentationScope.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -1436,8 +1172,7 @@ $root.opentelemetry = (function () {
           InstrumentationScope.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.common.v1.InstrumentationScope();
+              message = new $root.opentelemetry.proto.common.v1.InstrumentationScope();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
@@ -1450,14 +1185,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 3: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 4: {
@@ -1481,9 +1210,7 @@ $root.opentelemetry = (function () {
            * @throws {Error} If the payload is not a reader or valid buffer
            * @throws {$protobuf.util.ProtocolError} If required fields are missing
            */
-          InstrumentationScope.decodeDelimited = function decodeDelimited(
-            reader,
-          ) {
+          InstrumentationScope.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader)) reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
           };
@@ -1496,32 +1223,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           InstrumentationScope.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.name != null && message.hasOwnProperty("name"))
               if (!$util.isString(message.name)) return "name: string expected";
             if (message.version != null && message.hasOwnProperty("version"))
-              if (!$util.isString(message.version))
-                return "version: string expected";
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+              if (!$util.isString(message.version)) return "version: string expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
-              if (!$util.isInteger(message.droppedAttributesCount))
-                return "droppedAttributesCount: integer expected";
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+              if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
             return null;
           };
           /**
@@ -1533,36 +1248,22 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.common.v1.InstrumentationScope} InstrumentationScope
            */
           InstrumentationScope.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.common.v1.InstrumentationScope
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.common.v1.InstrumentationScope();
+            if (object instanceof $root.opentelemetry.proto.common.v1.InstrumentationScope) return object;
+            var message = new $root.opentelemetry.proto.common.v1.InstrumentationScope();
             if (object.name != null) message.name = String(object.name);
-            if (object.version != null)
-              message.version = String(object.version);
+            if (object.version != null) message.version = String(object.version);
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.common.v1.InstrumentationScope.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.common.v1.InstrumentationScope.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.common.v1.InstrumentationScope.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.common.v1.InstrumentationScope.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.droppedAttributesCount != null)
-              message.droppedAttributesCount =
-                object.droppedAttributesCount >>> 0;
+              message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
             return message;
           };
           /**
@@ -1583,23 +1284,17 @@ $root.opentelemetry = (function () {
               object.version = "";
               object.droppedAttributesCount = 0;
             }
-            if (message.name != null && message.hasOwnProperty("name"))
-              object.name = message.name;
-            if (message.version != null && message.hasOwnProperty("version"))
-              object.version = message.version;
+            if (message.name != null && message.hasOwnProperty("name")) object.name = message.name;
+            if (message.version != null && message.hasOwnProperty("version")) object.version = message.version;
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
               object.droppedAttributesCount = message.droppedAttributesCount;
             return object;
           };
@@ -1611,10 +1306,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           InstrumentationScope.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for InstrumentationScope
@@ -1628,10 +1320,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix +
-              "/opentelemetry.proto.common.v1.InstrumentationScope"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.common.v1.InstrumentationScope";
           };
           return InstrumentationScope;
         })();
@@ -1672,13 +1361,8 @@ $root.opentelemetry = (function () {
           function Resource(properties) {
             this.attributes = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Resource attributes.
@@ -1722,13 +1406,8 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
                 ).ldelim();
-            if (
-              message.droppedAttributesCount != null &&
-              Object.hasOwnProperty.call(message, "droppedAttributesCount")
-            )
-              writer
-                .uint32(/* id 2, wireType 0 =*/ 16)
-                .uint32(message.droppedAttributesCount);
+            if (message.droppedAttributesCount != null && Object.hasOwnProperty.call(message, "droppedAttributesCount"))
+              writer.uint32(/* id 2, wireType 0 =*/ 16).uint32(message.droppedAttributesCount);
             return writer;
           };
           /**
@@ -1762,14 +1441,8 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 2: {
@@ -1806,27 +1479,16 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Resource.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
-              if (!$util.isInteger(message.droppedAttributesCount))
-                return "droppedAttributesCount: integer expected";
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+              if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
             return null;
           };
           /**
@@ -1838,31 +1500,20 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.resource.v1.Resource} Resource
            */
           Resource.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.resource.v1.Resource
-            )
-              return object;
+            if (object instanceof $root.opentelemetry.proto.resource.v1.Resource) return object;
             var message = new $root.opentelemetry.proto.resource.v1.Resource();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.resource.v1.Resource.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.resource.v1.Resource.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.resource.v1.Resource.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.resource.v1.Resource.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.droppedAttributesCount != null)
-              message.droppedAttributesCount =
-                object.droppedAttributesCount >>> 0;
+              message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
             return message;
           };
           /**
@@ -1882,16 +1533,12 @@ $root.opentelemetry = (function () {
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
               object.droppedAttributesCount = message.droppedAttributesCount;
             return object;
           };
@@ -1903,10 +1550,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Resource.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Resource
@@ -1960,13 +1604,8 @@ $root.opentelemetry = (function () {
           function TracesData(properties) {
             this.resourceSpans = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * TracesData resourceSpans.
@@ -2014,10 +1653,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          TracesData.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          TracesData.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -2039,13 +1675,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.resourceSpans && message.resourceSpans.length))
-                    message.resourceSpans = [];
+                  if (!(message.resourceSpans && message.resourceSpans.length)) message.resourceSpans = [];
                   message.resourceSpans.push(
-                    $root.opentelemetry.proto.trace.v1.ResourceSpans.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.trace.v1.ResourceSpans.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -2079,19 +1711,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           TracesData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resourceSpans != null &&
-              message.hasOwnProperty("resourceSpans")
-            ) {
-              if (!Array.isArray(message.resourceSpans))
-                return "resourceSpans: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resourceSpans != null && message.hasOwnProperty("resourceSpans")) {
+              if (!Array.isArray(message.resourceSpans)) return "resourceSpans: array expected";
               for (var i = 0; i < message.resourceSpans.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.trace.v1.ResourceSpans.verify(
-                    message.resourceSpans[i],
-                  );
+                var error = $root.opentelemetry.proto.trace.v1.ResourceSpans.verify(message.resourceSpans[i]);
                 if (error) return "resourceSpans." + error;
               }
             }
@@ -2106,24 +1730,18 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.trace.v1.TracesData} TracesData
            */
           TracesData.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.trace.v1.TracesData)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.trace.v1.TracesData) return object;
             var message = new $root.opentelemetry.proto.trace.v1.TracesData();
             if (object.resourceSpans) {
               if (!Array.isArray(object.resourceSpans))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.TracesData.resourceSpans: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.TracesData.resourceSpans: array expected");
               message.resourceSpans = [];
               for (var i = 0; i < object.resourceSpans.length; ++i) {
                 if (typeof object.resourceSpans[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.TracesData.resourceSpans: object expected",
-                  );
-                message.resourceSpans[i] =
-                  $root.opentelemetry.proto.trace.v1.ResourceSpans.fromObject(
-                    object.resourceSpans[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.TracesData.resourceSpans: object expected");
+                message.resourceSpans[i] = $root.opentelemetry.proto.trace.v1.ResourceSpans.fromObject(
+                  object.resourceSpans[i],
+                );
               }
             }
             return message;
@@ -2144,11 +1762,10 @@ $root.opentelemetry = (function () {
             if (message.resourceSpans && message.resourceSpans.length) {
               object.resourceSpans = [];
               for (var j = 0; j < message.resourceSpans.length; ++j)
-                object.resourceSpans[j] =
-                  $root.opentelemetry.proto.trace.v1.ResourceSpans.toObject(
-                    message.resourceSpans[j],
-                    options,
-                  );
+                object.resourceSpans[j] = $root.opentelemetry.proto.trace.v1.ResourceSpans.toObject(
+                  message.resourceSpans[j],
+                  options,
+                );
             }
             return object;
           };
@@ -2160,10 +1777,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           TracesData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for TracesData
@@ -2201,13 +1815,8 @@ $root.opentelemetry = (function () {
           function ResourceSpans(properties) {
             this.scopeSpans = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ResourceSpans resource.
@@ -2252,10 +1861,7 @@ $root.opentelemetry = (function () {
            */
           ResourceSpans.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.resource != null &&
-              Object.hasOwnProperty.call(message, "resource")
-            )
+            if (message.resource != null && Object.hasOwnProperty.call(message, "resource"))
               $root.opentelemetry.proto.resource.v1.Resource.encode(
                 message.resource,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -2266,13 +1872,8 @@ $root.opentelemetry = (function () {
                   message.scopeSpans[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -2284,10 +1885,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ResourceSpans.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ResourceSpans.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -2309,21 +1907,13 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.resource =
-                    $root.opentelemetry.proto.resource.v1.Resource.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.resource = $root.opentelemetry.proto.resource.v1.Resource.decode(reader, reader.uint32());
                   break;
                 }
                 case 2: {
-                  if (!(message.scopeSpans && message.scopeSpans.length))
-                    message.scopeSpans = [];
+                  if (!(message.scopeSpans && message.scopeSpans.length)) message.scopeSpans = [];
                   message.scopeSpans.push(
-                    $root.opentelemetry.proto.trace.v1.ScopeSpans.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.trace.v1.ScopeSpans.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -2361,37 +1951,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ResourceSpans.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resource != null &&
-              message.hasOwnProperty("resource")
-            ) {
-              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(
-                message.resource,
-              );
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resource != null && message.hasOwnProperty("resource")) {
+              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(message.resource);
               if (error) return "resource." + error;
             }
-            if (
-              message.scopeSpans != null &&
-              message.hasOwnProperty("scopeSpans")
-            ) {
-              if (!Array.isArray(message.scopeSpans))
-                return "scopeSpans: array expected";
+            if (message.scopeSpans != null && message.hasOwnProperty("scopeSpans")) {
+              if (!Array.isArray(message.scopeSpans)) return "scopeSpans: array expected";
               for (var i = 0; i < message.scopeSpans.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.trace.v1.ScopeSpans.verify(
-                    message.scopeSpans[i],
-                  );
+                var error = $root.opentelemetry.proto.trace.v1.ScopeSpans.verify(message.scopeSpans[i]);
                 if (error) return "scopeSpans." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -2403,41 +1976,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.trace.v1.ResourceSpans} ResourceSpans
            */
           ResourceSpans.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.trace.v1.ResourceSpans
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.trace.v1.ResourceSpans();
+            if (object instanceof $root.opentelemetry.proto.trace.v1.ResourceSpans) return object;
+            var message = new $root.opentelemetry.proto.trace.v1.ResourceSpans();
             if (object.resource != null) {
               if (typeof object.resource !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.ResourceSpans.resource: object expected",
-                );
-              message.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.fromObject(
-                  object.resource,
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.ResourceSpans.resource: object expected");
+              message.resource = $root.opentelemetry.proto.resource.v1.Resource.fromObject(object.resource);
             }
             if (object.scopeSpans) {
               if (!Array.isArray(object.scopeSpans))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.ResourceSpans.scopeSpans: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.ResourceSpans.scopeSpans: array expected");
               message.scopeSpans = [];
               for (var i = 0; i < object.scopeSpans.length; ++i) {
                 if (typeof object.scopeSpans[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.ResourceSpans.scopeSpans: object expected",
-                  );
-                message.scopeSpans[i] =
-                  $root.opentelemetry.proto.trace.v1.ScopeSpans.fromObject(
-                    object.scopeSpans[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.ResourceSpans.scopeSpans: object expected");
+                message.scopeSpans[i] = $root.opentelemetry.proto.trace.v1.ScopeSpans.fromObject(object.scopeSpans[i]);
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -2458,25 +2014,16 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.resource != null && message.hasOwnProperty("resource"))
-              object.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.toObject(
-                  message.resource,
-                  options,
-                );
+              object.resource = $root.opentelemetry.proto.resource.v1.Resource.toObject(message.resource, options);
             if (message.scopeSpans && message.scopeSpans.length) {
               object.scopeSpans = [];
               for (var j = 0; j < message.scopeSpans.length; ++j)
-                object.scopeSpans[j] =
-                  $root.opentelemetry.proto.trace.v1.ScopeSpans.toObject(
-                    message.scopeSpans[j],
-                    options,
-                  );
+                object.scopeSpans[j] = $root.opentelemetry.proto.trace.v1.ScopeSpans.toObject(
+                  message.scopeSpans[j],
+                  options,
+                );
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -2487,10 +2034,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ResourceSpans.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ResourceSpans
@@ -2504,9 +2048,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.trace.v1.ResourceSpans"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.trace.v1.ResourceSpans";
           };
           return ResourceSpans;
         })();
@@ -2530,13 +2072,8 @@ $root.opentelemetry = (function () {
           function ScopeSpans(properties) {
             this.spans = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ScopeSpans scope.
@@ -2581,10 +2118,7 @@ $root.opentelemetry = (function () {
            */
           ScopeSpans.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.scope != null &&
-              Object.hasOwnProperty.call(message, "scope")
-            )
+            if (message.scope != null && Object.hasOwnProperty.call(message, "scope"))
               $root.opentelemetry.proto.common.v1.InstrumentationScope.encode(
                 message.scope,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -2595,13 +2129,8 @@ $root.opentelemetry = (function () {
                   message.spans[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -2613,10 +2142,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ScopeSpans.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ScopeSpans.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -2638,22 +2164,15 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.scope =
-                    $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 2: {
-                  if (!(message.spans && message.spans.length))
-                    message.spans = [];
-                  message.spans.push(
-                    $root.opentelemetry.proto.trace.v1.Span.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.spans && message.spans.length)) message.spans = [];
+                  message.spans.push($root.opentelemetry.proto.trace.v1.Span.decode(reader, reader.uint32()));
                   break;
                 }
                 case 3: {
@@ -2690,30 +2209,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ScopeSpans.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.scope != null && message.hasOwnProperty("scope")) {
-              var error =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(
-                  message.scope,
-                );
+              var error = $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(message.scope);
               if (error) return "scope." + error;
             }
             if (message.spans != null && message.hasOwnProperty("spans")) {
               if (!Array.isArray(message.spans)) return "spans: array expected";
               for (var i = 0; i < message.spans.length; ++i) {
-                var error = $root.opentelemetry.proto.trace.v1.Span.verify(
-                  message.spans[i],
-                );
+                var error = $root.opentelemetry.proto.trace.v1.Span.verify(message.spans[i]);
                 if (error) return "spans." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -2725,38 +2234,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.trace.v1.ScopeSpans} ScopeSpans
            */
           ScopeSpans.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.trace.v1.ScopeSpans)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.trace.v1.ScopeSpans) return object;
             var message = new $root.opentelemetry.proto.trace.v1.ScopeSpans();
             if (object.scope != null) {
               if (typeof object.scope !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.ScopeSpans.scope: object expected",
-                );
-              message.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(
-                  object.scope,
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.ScopeSpans.scope: object expected");
+              message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(object.scope);
             }
             if (object.spans) {
               if (!Array.isArray(object.spans))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.ScopeSpans.spans: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.ScopeSpans.spans: array expected");
               message.spans = [];
               for (var i = 0; i < object.spans.length; ++i) {
                 if (typeof object.spans[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.ScopeSpans.spans: object expected",
-                  );
-                message.spans[i] =
-                  $root.opentelemetry.proto.trace.v1.Span.fromObject(
-                    object.spans[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.ScopeSpans.spans: object expected");
+                message.spans[i] = $root.opentelemetry.proto.trace.v1.Span.fromObject(object.spans[i]);
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -2777,25 +2272,13 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.scope != null && message.hasOwnProperty("scope"))
-              object.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(
-                  message.scope,
-                  options,
-                );
+              object.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(message.scope, options);
             if (message.spans && message.spans.length) {
               object.spans = [];
               for (var j = 0; j < message.spans.length; ++j)
-                object.spans[j] =
-                  $root.opentelemetry.proto.trace.v1.Span.toObject(
-                    message.spans[j],
-                    options,
-                  );
+                object.spans[j] = $root.opentelemetry.proto.trace.v1.Span.toObject(message.spans[j], options);
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -2806,10 +2289,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ScopeSpans.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ScopeSpans
@@ -2861,13 +2341,8 @@ $root.opentelemetry = (function () {
             this.events = [];
             this.links = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Span traceId.
@@ -2996,97 +2471,47 @@ $root.opentelemetry = (function () {
            */
           Span.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.traceId != null &&
-              Object.hasOwnProperty.call(message, "traceId")
-            )
+            if (message.traceId != null && Object.hasOwnProperty.call(message, "traceId"))
               writer.uint32(/* id 1, wireType 2 =*/ 10).bytes(message.traceId);
-            if (
-              message.spanId != null &&
-              Object.hasOwnProperty.call(message, "spanId")
-            )
+            if (message.spanId != null && Object.hasOwnProperty.call(message, "spanId"))
               writer.uint32(/* id 2, wireType 2 =*/ 18).bytes(message.spanId);
-            if (
-              message.traceState != null &&
-              Object.hasOwnProperty.call(message, "traceState")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.traceState);
-            if (
-              message.parentSpanId != null &&
-              Object.hasOwnProperty.call(message, "parentSpanId")
-            )
-              writer
-                .uint32(/* id 4, wireType 2 =*/ 34)
-                .bytes(message.parentSpanId);
-            if (
-              message.name != null &&
-              Object.hasOwnProperty.call(message, "name")
-            )
+            if (message.traceState != null && Object.hasOwnProperty.call(message, "traceState"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.traceState);
+            if (message.parentSpanId != null && Object.hasOwnProperty.call(message, "parentSpanId"))
+              writer.uint32(/* id 4, wireType 2 =*/ 34).bytes(message.parentSpanId);
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
               writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.name);
-            if (
-              message.kind != null &&
-              Object.hasOwnProperty.call(message, "kind")
-            )
+            if (message.kind != null && Object.hasOwnProperty.call(message, "kind"))
               writer.uint32(/* id 6, wireType 0 =*/ 48).int32(message.kind);
-            if (
-              message.startTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "startTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 7, wireType 1 =*/ 57)
-                .fixed64(message.startTimeUnixNano);
-            if (
-              message.endTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "endTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 8, wireType 1 =*/ 65)
-                .fixed64(message.endTimeUnixNano);
+            if (message.startTimeUnixNano != null && Object.hasOwnProperty.call(message, "startTimeUnixNano"))
+              writer.uint32(/* id 7, wireType 1 =*/ 57).fixed64(message.startTimeUnixNano);
+            if (message.endTimeUnixNano != null && Object.hasOwnProperty.call(message, "endTimeUnixNano"))
+              writer.uint32(/* id 8, wireType 1 =*/ 65).fixed64(message.endTimeUnixNano);
             if (message.attributes != null && message.attributes.length)
               for (var i = 0; i < message.attributes.length; ++i)
                 $root.opentelemetry.proto.common.v1.KeyValue.encode(
                   message.attributes[i],
                   writer.uint32(/* id 9, wireType 2 =*/ 74).fork(),
                 ).ldelim();
-            if (
-              message.droppedAttributesCount != null &&
-              Object.hasOwnProperty.call(message, "droppedAttributesCount")
-            )
-              writer
-                .uint32(/* id 10, wireType 0 =*/ 80)
-                .uint32(message.droppedAttributesCount);
+            if (message.droppedAttributesCount != null && Object.hasOwnProperty.call(message, "droppedAttributesCount"))
+              writer.uint32(/* id 10, wireType 0 =*/ 80).uint32(message.droppedAttributesCount);
             if (message.events != null && message.events.length)
               for (var i = 0; i < message.events.length; ++i)
                 $root.opentelemetry.proto.trace.v1.Span.Event.encode(
                   message.events[i],
                   writer.uint32(/* id 11, wireType 2 =*/ 90).fork(),
                 ).ldelim();
-            if (
-              message.droppedEventsCount != null &&
-              Object.hasOwnProperty.call(message, "droppedEventsCount")
-            )
-              writer
-                .uint32(/* id 12, wireType 0 =*/ 96)
-                .uint32(message.droppedEventsCount);
+            if (message.droppedEventsCount != null && Object.hasOwnProperty.call(message, "droppedEventsCount"))
+              writer.uint32(/* id 12, wireType 0 =*/ 96).uint32(message.droppedEventsCount);
             if (message.links != null && message.links.length)
               for (var i = 0; i < message.links.length; ++i)
                 $root.opentelemetry.proto.trace.v1.Span.Link.encode(
                   message.links[i],
                   writer.uint32(/* id 13, wireType 2 =*/ 106).fork(),
                 ).ldelim();
-            if (
-              message.droppedLinksCount != null &&
-              Object.hasOwnProperty.call(message, "droppedLinksCount")
-            )
-              writer
-                .uint32(/* id 14, wireType 0 =*/ 112)
-                .uint32(message.droppedLinksCount);
-            if (
-              message.status != null &&
-              Object.hasOwnProperty.call(message, "status")
-            )
+            if (message.droppedLinksCount != null && Object.hasOwnProperty.call(message, "droppedLinksCount"))
+              writer.uint32(/* id 14, wireType 0 =*/ 112).uint32(message.droppedLinksCount);
+            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
               $root.opentelemetry.proto.trace.v1.Status.encode(
                 message.status,
                 writer.uint32(/* id 15, wireType 2 =*/ 122).fork(),
@@ -3156,14 +2581,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 9: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 10: {
@@ -3171,14 +2590,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 11: {
-                  if (!(message.events && message.events.length))
-                    message.events = [];
-                  message.events.push(
-                    $root.opentelemetry.proto.trace.v1.Span.Event.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.events && message.events.length)) message.events = [];
+                  message.events.push($root.opentelemetry.proto.trace.v1.Span.Event.decode(reader, reader.uint32()));
                   break;
                 }
                 case 12: {
@@ -3186,14 +2599,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 13: {
-                  if (!(message.links && message.links.length))
-                    message.links = [];
-                  message.links.push(
-                    $root.opentelemetry.proto.trace.v1.Span.Link.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.links && message.links.length)) message.links = [];
+                  message.links.push($root.opentelemetry.proto.trace.v1.Span.Link.decode(reader, reader.uint32()));
                   break;
                 }
                 case 14: {
@@ -3201,11 +2608,7 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 15: {
-                  message.status =
-                    $root.opentelemetry.proto.trace.v1.Status.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.status = $root.opentelemetry.proto.trace.v1.Status.decode(reader, reader.uint32());
                   break;
                 }
                 default:
@@ -3238,40 +2641,19 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Span.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.traceId != null && message.hasOwnProperty("traceId"))
-              if (
-                !(
-                  (message.traceId &&
-                    typeof message.traceId.length === "number") ||
-                  $util.isString(message.traceId)
-                )
-              )
+              if (!((message.traceId && typeof message.traceId.length === "number") || $util.isString(message.traceId)))
                 return "traceId: buffer expected";
             if (message.spanId != null && message.hasOwnProperty("spanId"))
-              if (
-                !(
-                  (message.spanId &&
-                    typeof message.spanId.length === "number") ||
-                  $util.isString(message.spanId)
-                )
-              )
+              if (!((message.spanId && typeof message.spanId.length === "number") || $util.isString(message.spanId)))
                 return "spanId: buffer expected";
-            if (
-              message.traceState != null &&
-              message.hasOwnProperty("traceState")
-            )
-              if (!$util.isString(message.traceState))
-                return "traceState: string expected";
-            if (
-              message.parentSpanId != null &&
-              message.hasOwnProperty("parentSpanId")
-            )
+            if (message.traceState != null && message.hasOwnProperty("traceState"))
+              if (!$util.isString(message.traceState)) return "traceState: string expected";
+            if (message.parentSpanId != null && message.hasOwnProperty("parentSpanId"))
               if (
                 !(
-                  (message.parentSpanId &&
-                    typeof message.parentSpanId.length === "number") ||
+                  (message.parentSpanId && typeof message.parentSpanId.length === "number") ||
                   $util.isString(message.parentSpanId)
                 )
               )
@@ -3290,10 +2672,7 @@ $root.opentelemetry = (function () {
                 case 5:
                   break;
               }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (
                 !$util.isInteger(message.startTimeUnixNano) &&
                 !(
@@ -3303,10 +2682,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "startTimeUnixNano: integer|Long expected";
-            if (
-              message.endTimeUnixNano != null &&
-              message.hasOwnProperty("endTimeUnixNano")
-            )
+            if (message.endTimeUnixNano != null && message.hasOwnProperty("endTimeUnixNano"))
               if (
                 !$util.isInteger(message.endTimeUnixNano) &&
                 !(
@@ -3316,61 +2692,35 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "endTimeUnixNano: integer|Long expected";
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
-              if (!$util.isInteger(message.droppedAttributesCount))
-                return "droppedAttributesCount: integer expected";
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+              if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
             if (message.events != null && message.hasOwnProperty("events")) {
-              if (!Array.isArray(message.events))
-                return "events: array expected";
+              if (!Array.isArray(message.events)) return "events: array expected";
               for (var i = 0; i < message.events.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.trace.v1.Span.Event.verify(
-                    message.events[i],
-                  );
+                var error = $root.opentelemetry.proto.trace.v1.Span.Event.verify(message.events[i]);
                 if (error) return "events." + error;
               }
             }
-            if (
-              message.droppedEventsCount != null &&
-              message.hasOwnProperty("droppedEventsCount")
-            )
-              if (!$util.isInteger(message.droppedEventsCount))
-                return "droppedEventsCount: integer expected";
+            if (message.droppedEventsCount != null && message.hasOwnProperty("droppedEventsCount"))
+              if (!$util.isInteger(message.droppedEventsCount)) return "droppedEventsCount: integer expected";
             if (message.links != null && message.hasOwnProperty("links")) {
               if (!Array.isArray(message.links)) return "links: array expected";
               for (var i = 0; i < message.links.length; ++i) {
-                var error = $root.opentelemetry.proto.trace.v1.Span.Link.verify(
-                  message.links[i],
-                );
+                var error = $root.opentelemetry.proto.trace.v1.Span.Link.verify(message.links[i]);
                 if (error) return "links." + error;
               }
             }
-            if (
-              message.droppedLinksCount != null &&
-              message.hasOwnProperty("droppedLinksCount")
-            )
-              if (!$util.isInteger(message.droppedLinksCount))
-                return "droppedLinksCount: integer expected";
+            if (message.droppedLinksCount != null && message.hasOwnProperty("droppedLinksCount"))
+              if (!$util.isInteger(message.droppedLinksCount)) return "droppedLinksCount: integer expected";
             if (message.status != null && message.hasOwnProperty("status")) {
-              var error = $root.opentelemetry.proto.trace.v1.Status.verify(
-                message.status,
-              );
+              var error = $root.opentelemetry.proto.trace.v1.Status.verify(message.status);
               if (error) return "status." + error;
             }
             return null;
@@ -3384,44 +2734,33 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.trace.v1.Span} Span
            */
           Span.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.trace.v1.Span)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.trace.v1.Span) return object;
             var message = new $root.opentelemetry.proto.trace.v1.Span();
             if (object.traceId != null)
               if (typeof object.traceId === "string")
                 $util.base64.decode(
                   object.traceId,
-                  (message.traceId = $util.newBuffer(
-                    $util.base64.length(object.traceId),
-                  )),
+                  (message.traceId = $util.newBuffer($util.base64.length(object.traceId))),
                   0,
                 );
-              else if (object.traceId.length >= 0)
-                message.traceId = object.traceId;
+              else if (object.traceId.length >= 0) message.traceId = object.traceId;
             if (object.spanId != null)
               if (typeof object.spanId === "string")
                 $util.base64.decode(
                   object.spanId,
-                  (message.spanId = $util.newBuffer(
-                    $util.base64.length(object.spanId),
-                  )),
+                  (message.spanId = $util.newBuffer($util.base64.length(object.spanId))),
                   0,
                 );
-              else if (object.spanId.length >= 0)
-                message.spanId = object.spanId;
-            if (object.traceState != null)
-              message.traceState = String(object.traceState);
+              else if (object.spanId.length >= 0) message.spanId = object.spanId;
+            if (object.traceState != null) message.traceState = String(object.traceState);
             if (object.parentSpanId != null)
               if (typeof object.parentSpanId === "string")
                 $util.base64.decode(
                   object.parentSpanId,
-                  (message.parentSpanId = $util.newBuffer(
-                    $util.base64.length(object.parentSpanId),
-                  )),
+                  (message.parentSpanId = $util.newBuffer($util.base64.length(object.parentSpanId))),
                   0,
                 );
-              else if (object.parentSpanId.length >= 0)
-                message.parentSpanId = object.parentSpanId;
+              else if (object.parentSpanId.length >= 0) message.parentSpanId = object.parentSpanId;
             if (object.name != null) message.name = String(object.name);
             switch (object.kind) {
               default:
@@ -3457,14 +2796,9 @@ $root.opentelemetry = (function () {
             }
             if (object.startTimeUnixNano != null)
               if ($util.Long)
-                (message.startTimeUnixNano = $util.Long.fromValue(
-                  object.startTimeUnixNano,
-                )).unsigned = false;
+                (message.startTimeUnixNano = $util.Long.fromValue(object.startTimeUnixNano)).unsigned = false;
               else if (typeof object.startTimeUnixNano === "string")
-                message.startTimeUnixNano = parseInt(
-                  object.startTimeUnixNano,
-                  10,
-                );
+                message.startTimeUnixNano = parseInt(object.startTimeUnixNano, 10);
               else if (typeof object.startTimeUnixNano === "number")
                 message.startTimeUnixNano = object.startTimeUnixNano;
               else if (typeof object.startTimeUnixNano === "object")
@@ -3473,14 +2807,10 @@ $root.opentelemetry = (function () {
                   object.startTimeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.endTimeUnixNano != null)
-              if ($util.Long)
-                (message.endTimeUnixNano = $util.Long.fromValue(
-                  object.endTimeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.endTimeUnixNano = $util.Long.fromValue(object.endTimeUnixNano)).unsigned = false;
               else if (typeof object.endTimeUnixNano === "string")
                 message.endTimeUnixNano = parseInt(object.endTimeUnixNano, 10);
-              else if (typeof object.endTimeUnixNano === "number")
-                message.endTimeUnixNano = object.endTimeUnixNano;
+              else if (typeof object.endTimeUnixNano === "number") message.endTimeUnixNano = object.endTimeUnixNano;
               else if (typeof object.endTimeUnixNano === "object")
                 message.endTimeUnixNano = new $util.LongBits(
                   object.endTimeUnixNano.low >>> 0,
@@ -3488,71 +2818,42 @@ $root.opentelemetry = (function () {
                 ).toNumber();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.Span.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.Span.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.Span.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.Span.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.droppedAttributesCount != null)
-              message.droppedAttributesCount =
-                object.droppedAttributesCount >>> 0;
+              message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
             if (object.events) {
               if (!Array.isArray(object.events))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.Span.events: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.Span.events: array expected");
               message.events = [];
               for (var i = 0; i < object.events.length; ++i) {
                 if (typeof object.events[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.Span.events: object expected",
-                  );
-                message.events[i] =
-                  $root.opentelemetry.proto.trace.v1.Span.Event.fromObject(
-                    object.events[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.Span.events: object expected");
+                message.events[i] = $root.opentelemetry.proto.trace.v1.Span.Event.fromObject(object.events[i]);
               }
             }
-            if (object.droppedEventsCount != null)
-              message.droppedEventsCount = object.droppedEventsCount >>> 0;
+            if (object.droppedEventsCount != null) message.droppedEventsCount = object.droppedEventsCount >>> 0;
             if (object.links) {
               if (!Array.isArray(object.links))
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.Span.links: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.Span.links: array expected");
               message.links = [];
               for (var i = 0; i < object.links.length; ++i) {
                 if (typeof object.links[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.Span.links: object expected",
-                  );
-                message.links[i] =
-                  $root.opentelemetry.proto.trace.v1.Span.Link.fromObject(
-                    object.links[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.Span.links: object expected");
+                message.links[i] = $root.opentelemetry.proto.trace.v1.Span.Link.fromObject(object.links[i]);
               }
             }
-            if (object.droppedLinksCount != null)
-              message.droppedLinksCount = object.droppedLinksCount >>> 0;
+            if (object.droppedLinksCount != null) message.droppedLinksCount = object.droppedLinksCount >>> 0;
             if (object.status != null) {
               if (typeof object.status !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.trace.v1.Span.status: object expected",
-                );
-              message.status =
-                $root.opentelemetry.proto.trace.v1.Status.fromObject(
-                  object.status,
-                );
+                throw TypeError(".opentelemetry.proto.trace.v1.Span.status: object expected");
+              message.status = $root.opentelemetry.proto.trace.v1.Status.fromObject(object.status);
             }
             return message;
           };
@@ -3577,45 +2878,31 @@ $root.opentelemetry = (function () {
               if (options.bytes === String) object.traceId = "";
               else {
                 object.traceId = [];
-                if (options.bytes !== Array)
-                  object.traceId = $util.newBuffer(object.traceId);
+                if (options.bytes !== Array) object.traceId = $util.newBuffer(object.traceId);
               }
               if (options.bytes === String) object.spanId = "";
               else {
                 object.spanId = [];
-                if (options.bytes !== Array)
-                  object.spanId = $util.newBuffer(object.spanId);
+                if (options.bytes !== Array) object.spanId = $util.newBuffer(object.spanId);
               }
               object.traceState = "";
               if (options.bytes === String) object.parentSpanId = "";
               else {
                 object.parentSpanId = [];
-                if (options.bytes !== Array)
-                  object.parentSpanId = $util.newBuffer(object.parentSpanId);
+                if (options.bytes !== Array) object.parentSpanId = $util.newBuffer(object.parentSpanId);
               }
               object.name = "";
-              object.kind =
-                options.enums === String ? "SPAN_KIND_UNSPECIFIED" : 0;
+              object.kind = options.enums === String ? "SPAN_KIND_UNSPECIFIED" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.startTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.startTimeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.endTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.endTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.endTimeUnixNano = options.longs === String ? "0" : 0;
               object.droppedAttributesCount = 0;
               object.droppedEventsCount = 0;
               object.droppedLinksCount = 0;
@@ -3624,93 +2911,56 @@ $root.opentelemetry = (function () {
             if (message.traceId != null && message.hasOwnProperty("traceId"))
               object.traceId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.traceId,
-                      0,
-                      message.traceId.length,
-                    )
+                  ? $util.base64.encode(message.traceId, 0, message.traceId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.traceId)
                     : message.traceId;
             if (message.spanId != null && message.hasOwnProperty("spanId"))
               object.spanId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.spanId,
-                      0,
-                      message.spanId.length,
-                    )
+                  ? $util.base64.encode(message.spanId, 0, message.spanId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.spanId)
                     : message.spanId;
-            if (
-              message.traceState != null &&
-              message.hasOwnProperty("traceState")
-            )
+            if (message.traceState != null && message.hasOwnProperty("traceState"))
               object.traceState = message.traceState;
-            if (
-              message.parentSpanId != null &&
-              message.hasOwnProperty("parentSpanId")
-            )
+            if (message.parentSpanId != null && message.hasOwnProperty("parentSpanId"))
               object.parentSpanId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.parentSpanId,
-                      0,
-                      message.parentSpanId.length,
-                    )
+                  ? $util.base64.encode(message.parentSpanId, 0, message.parentSpanId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.parentSpanId)
                     : message.parentSpanId;
-            if (message.name != null && message.hasOwnProperty("name"))
-              object.name = message.name;
+            if (message.name != null && message.hasOwnProperty("name")) object.name = message.name;
             if (message.kind != null && message.hasOwnProperty("kind"))
               object.kind =
                 options.enums === String
-                  ? $root.opentelemetry.proto.trace.v1.Span.SpanKind[
-                      message.kind
-                    ] === undefined
+                  ? $root.opentelemetry.proto.trace.v1.Span.SpanKind[message.kind] === undefined
                     ? message.kind
-                    : $root.opentelemetry.proto.trace.v1.Span.SpanKind[
-                        message.kind
-                      ]
+                    : $root.opentelemetry.proto.trace.v1.Span.SpanKind[message.kind]
                   : message.kind;
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (typeof message.startTimeUnixNano === "number")
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? String(message.startTimeUnixNano)
-                    : message.startTimeUnixNano;
+                  options.longs === String ? String(message.startTimeUnixNano) : message.startTimeUnixNano;
               else
                 object.startTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.startTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.startTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.startTimeUnixNano.low >>> 0,
                           message.startTimeUnixNano.high >>> 0,
                         ).toNumber()
                       : message.startTimeUnixNano;
-            if (
-              message.endTimeUnixNano != null &&
-              message.hasOwnProperty("endTimeUnixNano")
-            )
+            if (message.endTimeUnixNano != null && message.hasOwnProperty("endTimeUnixNano"))
               if (typeof message.endTimeUnixNano === "number")
                 object.endTimeUnixNano =
-                  options.longs === String
-                    ? String(message.endTimeUnixNano)
-                    : message.endTimeUnixNano;
+                  options.longs === String ? String(message.endTimeUnixNano) : message.endTimeUnixNano;
               else
                 object.endTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.endTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.endTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.endTimeUnixNano.low >>> 0,
@@ -3720,51 +2970,29 @@ $root.opentelemetry = (function () {
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
               object.droppedAttributesCount = message.droppedAttributesCount;
             if (message.events && message.events.length) {
               object.events = [];
               for (var j = 0; j < message.events.length; ++j)
-                object.events[j] =
-                  $root.opentelemetry.proto.trace.v1.Span.Event.toObject(
-                    message.events[j],
-                    options,
-                  );
+                object.events[j] = $root.opentelemetry.proto.trace.v1.Span.Event.toObject(message.events[j], options);
             }
-            if (
-              message.droppedEventsCount != null &&
-              message.hasOwnProperty("droppedEventsCount")
-            )
+            if (message.droppedEventsCount != null && message.hasOwnProperty("droppedEventsCount"))
               object.droppedEventsCount = message.droppedEventsCount;
             if (message.links && message.links.length) {
               object.links = [];
               for (var j = 0; j < message.links.length; ++j)
-                object.links[j] =
-                  $root.opentelemetry.proto.trace.v1.Span.Link.toObject(
-                    message.links[j],
-                    options,
-                  );
+                object.links[j] = $root.opentelemetry.proto.trace.v1.Span.Link.toObject(message.links[j], options);
             }
-            if (
-              message.droppedLinksCount != null &&
-              message.hasOwnProperty("droppedLinksCount")
-            )
+            if (message.droppedLinksCount != null && message.hasOwnProperty("droppedLinksCount"))
               object.droppedLinksCount = message.droppedLinksCount;
             if (message.status != null && message.hasOwnProperty("status"))
-              object.status =
-                $root.opentelemetry.proto.trace.v1.Status.toObject(
-                  message.status,
-                  options,
-                );
+              object.status = $root.opentelemetry.proto.trace.v1.Status.toObject(message.status, options);
             return object;
           };
           /**
@@ -3775,10 +3003,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Span.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Span
@@ -3837,13 +3062,8 @@ $root.opentelemetry = (function () {
             function Event(properties) {
               this.attributes = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * Event timeUnixNano.
@@ -3895,17 +3115,9 @@ $root.opentelemetry = (function () {
              */
             Event.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.timeUnixNano != null &&
-                Object.hasOwnProperty.call(message, "timeUnixNano")
-              )
-                writer
-                  .uint32(/* id 1, wireType 1 =*/ 9)
-                  .fixed64(message.timeUnixNano);
-              if (
-                message.name != null &&
-                Object.hasOwnProperty.call(message, "name")
-              )
+              if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+                writer.uint32(/* id 1, wireType 1 =*/ 9).fixed64(message.timeUnixNano);
+              if (message.name != null && Object.hasOwnProperty.call(message, "name"))
                 writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.name);
               if (message.attributes != null && message.attributes.length)
                 for (var i = 0; i < message.attributes.length; ++i)
@@ -3917,9 +3129,7 @@ $root.opentelemetry = (function () {
                 message.droppedAttributesCount != null &&
                 Object.hasOwnProperty.call(message, "droppedAttributesCount")
               )
-                writer
-                  .uint32(/* id 4, wireType 0 =*/ 32)
-                  .uint32(message.droppedAttributesCount);
+                writer.uint32(/* id 4, wireType 0 =*/ 32).uint32(message.droppedAttributesCount);
               return writer;
             };
             /**
@@ -3961,13 +3171,9 @@ $root.opentelemetry = (function () {
                     break;
                   }
                   case 3: {
-                    if (!(message.attributes && message.attributes.length))
-                      message.attributes = [];
+                    if (!(message.attributes && message.attributes.length)) message.attributes = [];
                     message.attributes.push(
-                      $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                        reader,
-                        reader.uint32(),
-                      ),
+                      $root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()),
                     );
                     break;
                   }
@@ -4005,12 +3211,8 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Event.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.timeUnixNano != null &&
-                message.hasOwnProperty("timeUnixNano")
-              )
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
                 if (
                   !$util.isInteger(message.timeUnixNano) &&
                   !(
@@ -4021,28 +3223,16 @@ $root.opentelemetry = (function () {
                 )
                   return "timeUnixNano: integer|Long expected";
               if (message.name != null && message.hasOwnProperty("name"))
-                if (!$util.isString(message.name))
-                  return "name: string expected";
-              if (
-                message.attributes != null &&
-                message.hasOwnProperty("attributes")
-              ) {
-                if (!Array.isArray(message.attributes))
-                  return "attributes: array expected";
+                if (!$util.isString(message.name)) return "name: string expected";
+              if (message.attributes != null && message.hasOwnProperty("attributes")) {
+                if (!Array.isArray(message.attributes)) return "attributes: array expected";
                 for (var i = 0; i < message.attributes.length; ++i) {
-                  var error =
-                    $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                      message.attributes[i],
-                    );
+                  var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                   if (error) return "attributes." + error;
                 }
               }
-              if (
-                message.droppedAttributesCount != null &&
-                message.hasOwnProperty("droppedAttributesCount")
-              )
-                if (!$util.isInteger(message.droppedAttributesCount))
-                  return "droppedAttributesCount: integer expected";
+              if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+                if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
               return null;
             };
             /**
@@ -4054,20 +3244,13 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.trace.v1.Span.Event} Event
              */
             Event.fromObject = function fromObject(object) {
-              if (
-                object instanceof $root.opentelemetry.proto.trace.v1.Span.Event
-              )
-                return object;
+              if (object instanceof $root.opentelemetry.proto.trace.v1.Span.Event) return object;
               var message = new $root.opentelemetry.proto.trace.v1.Span.Event();
               if (object.timeUnixNano != null)
-                if ($util.Long)
-                  (message.timeUnixNano = $util.Long.fromValue(
-                    object.timeUnixNano,
-                  )).unsigned = false;
+                if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
                 else if (typeof object.timeUnixNano === "string")
                   message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-                else if (typeof object.timeUnixNano === "number")
-                  message.timeUnixNano = object.timeUnixNano;
+                else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
                 else if (typeof object.timeUnixNano === "object")
                   message.timeUnixNano = new $util.LongBits(
                     object.timeUnixNano.low >>> 0,
@@ -4076,24 +3259,16 @@ $root.opentelemetry = (function () {
               if (object.name != null) message.name = String(object.name);
               if (object.attributes) {
                 if (!Array.isArray(object.attributes))
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.Span.Event.attributes: array expected",
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.Span.Event.attributes: array expected");
                 message.attributes = [];
                 for (var i = 0; i < object.attributes.length; ++i) {
                   if (typeof object.attributes[i] !== "object")
-                    throw TypeError(
-                      ".opentelemetry.proto.trace.v1.Span.Event.attributes: object expected",
-                    );
-                  message.attributes[i] =
-                    $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                      object.attributes[i],
-                    );
+                    throw TypeError(".opentelemetry.proto.trace.v1.Span.Event.attributes: object expected");
+                  message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
                 }
               }
               if (object.droppedAttributesCount != null)
-                message.droppedAttributesCount =
-                  object.droppedAttributesCount >>> 0;
+                message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
               return message;
             };
             /**
@@ -4113,49 +3288,31 @@ $root.opentelemetry = (function () {
                 if ($util.Long) {
                   var long = new $util.Long(0, 0, false);
                   object.timeUnixNano =
-                    options.longs === String
-                      ? long.toString()
-                      : options.longs === Number
-                        ? long.toNumber()
-                        : long;
+                    options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else object.timeUnixNano = options.longs === String ? "0" : 0;
                 object.name = "";
                 object.droppedAttributesCount = 0;
               }
-              if (
-                message.timeUnixNano != null &&
-                message.hasOwnProperty("timeUnixNano")
-              )
+              if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
                 if (typeof message.timeUnixNano === "number")
-                  object.timeUnixNano =
-                    options.longs === String
-                      ? String(message.timeUnixNano)
-                      : message.timeUnixNano;
+                  object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
                 else
                   object.timeUnixNano =
                     options.longs === String
                       ? $util.Long.prototype.toString.call(message.timeUnixNano)
                       : options.longs === Number
-                        ? new $util.LongBits(
-                            message.timeUnixNano.low >>> 0,
-                            message.timeUnixNano.high >>> 0,
-                          ).toNumber()
+                        ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                         : message.timeUnixNano;
-              if (message.name != null && message.hasOwnProperty("name"))
-                object.name = message.name;
+              if (message.name != null && message.hasOwnProperty("name")) object.name = message.name;
               if (message.attributes && message.attributes.length) {
                 object.attributes = [];
                 for (var j = 0; j < message.attributes.length; ++j)
-                  object.attributes[j] =
-                    $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                      message.attributes[j],
-                      options,
-                    );
+                  object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                    message.attributes[j],
+                    options,
+                  );
               }
-              if (
-                message.droppedAttributesCount != null &&
-                message.hasOwnProperty("droppedAttributesCount")
-              )
+              if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
                 object.droppedAttributesCount = message.droppedAttributesCount;
               return object;
             };
@@ -4167,10 +3324,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             Event.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for Event
@@ -4210,13 +3364,8 @@ $root.opentelemetry = (function () {
             function Link(properties) {
               this.attributes = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * Link traceId.
@@ -4275,25 +3424,12 @@ $root.opentelemetry = (function () {
              */
             Link.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.traceId != null &&
-                Object.hasOwnProperty.call(message, "traceId")
-              )
-                writer
-                  .uint32(/* id 1, wireType 2 =*/ 10)
-                  .bytes(message.traceId);
-              if (
-                message.spanId != null &&
-                Object.hasOwnProperty.call(message, "spanId")
-              )
+              if (message.traceId != null && Object.hasOwnProperty.call(message, "traceId"))
+                writer.uint32(/* id 1, wireType 2 =*/ 10).bytes(message.traceId);
+              if (message.spanId != null && Object.hasOwnProperty.call(message, "spanId"))
                 writer.uint32(/* id 2, wireType 2 =*/ 18).bytes(message.spanId);
-              if (
-                message.traceState != null &&
-                Object.hasOwnProperty.call(message, "traceState")
-              )
-                writer
-                  .uint32(/* id 3, wireType 2 =*/ 26)
-                  .string(message.traceState);
+              if (message.traceState != null && Object.hasOwnProperty.call(message, "traceState"))
+                writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.traceState);
               if (message.attributes != null && message.attributes.length)
                 for (var i = 0; i < message.attributes.length; ++i)
                   $root.opentelemetry.proto.common.v1.KeyValue.encode(
@@ -4304,9 +3440,7 @@ $root.opentelemetry = (function () {
                 message.droppedAttributesCount != null &&
                 Object.hasOwnProperty.call(message, "droppedAttributesCount")
               )
-                writer
-                  .uint32(/* id 5, wireType 0 =*/ 40)
-                  .uint32(message.droppedAttributesCount);
+                writer.uint32(/* id 5, wireType 0 =*/ 40).uint32(message.droppedAttributesCount);
               return writer;
             };
             /**
@@ -4352,13 +3486,9 @@ $root.opentelemetry = (function () {
                     break;
                   }
                   case 4: {
-                    if (!(message.attributes && message.attributes.length))
-                      message.attributes = [];
+                    if (!(message.attributes && message.attributes.length)) message.attributes = [];
                     message.attributes.push(
-                      $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                        reader,
-                        reader.uint32(),
-                      ),
+                      $root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()),
                     );
                     break;
                   }
@@ -4396,52 +3526,26 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Link.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
+              if (typeof message !== "object" || message === null) return "object expected";
               if (message.traceId != null && message.hasOwnProperty("traceId"))
                 if (
-                  !(
-                    (message.traceId &&
-                      typeof message.traceId.length === "number") ||
-                    $util.isString(message.traceId)
-                  )
+                  !((message.traceId && typeof message.traceId.length === "number") || $util.isString(message.traceId))
                 )
                   return "traceId: buffer expected";
               if (message.spanId != null && message.hasOwnProperty("spanId"))
-                if (
-                  !(
-                    (message.spanId &&
-                      typeof message.spanId.length === "number") ||
-                    $util.isString(message.spanId)
-                  )
-                )
+                if (!((message.spanId && typeof message.spanId.length === "number") || $util.isString(message.spanId)))
                   return "spanId: buffer expected";
-              if (
-                message.traceState != null &&
-                message.hasOwnProperty("traceState")
-              )
-                if (!$util.isString(message.traceState))
-                  return "traceState: string expected";
-              if (
-                message.attributes != null &&
-                message.hasOwnProperty("attributes")
-              ) {
-                if (!Array.isArray(message.attributes))
-                  return "attributes: array expected";
+              if (message.traceState != null && message.hasOwnProperty("traceState"))
+                if (!$util.isString(message.traceState)) return "traceState: string expected";
+              if (message.attributes != null && message.hasOwnProperty("attributes")) {
+                if (!Array.isArray(message.attributes)) return "attributes: array expected";
                 for (var i = 0; i < message.attributes.length; ++i) {
-                  var error =
-                    $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                      message.attributes[i],
-                    );
+                  var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                   if (error) return "attributes." + error;
                 }
               }
-              if (
-                message.droppedAttributesCount != null &&
-                message.hasOwnProperty("droppedAttributesCount")
-              )
-                if (!$util.isInteger(message.droppedAttributesCount))
-                  return "droppedAttributesCount: integer expected";
+              if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+                if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
               return null;
             };
             /**
@@ -4453,55 +3557,37 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.trace.v1.Span.Link} Link
              */
             Link.fromObject = function fromObject(object) {
-              if (
-                object instanceof $root.opentelemetry.proto.trace.v1.Span.Link
-              )
-                return object;
+              if (object instanceof $root.opentelemetry.proto.trace.v1.Span.Link) return object;
               var message = new $root.opentelemetry.proto.trace.v1.Span.Link();
               if (object.traceId != null)
                 if (typeof object.traceId === "string")
                   $util.base64.decode(
                     object.traceId,
-                    (message.traceId = $util.newBuffer(
-                      $util.base64.length(object.traceId),
-                    )),
+                    (message.traceId = $util.newBuffer($util.base64.length(object.traceId))),
                     0,
                   );
-                else if (object.traceId.length >= 0)
-                  message.traceId = object.traceId;
+                else if (object.traceId.length >= 0) message.traceId = object.traceId;
               if (object.spanId != null)
                 if (typeof object.spanId === "string")
                   $util.base64.decode(
                     object.spanId,
-                    (message.spanId = $util.newBuffer(
-                      $util.base64.length(object.spanId),
-                    )),
+                    (message.spanId = $util.newBuffer($util.base64.length(object.spanId))),
                     0,
                   );
-                else if (object.spanId.length >= 0)
-                  message.spanId = object.spanId;
-              if (object.traceState != null)
-                message.traceState = String(object.traceState);
+                else if (object.spanId.length >= 0) message.spanId = object.spanId;
+              if (object.traceState != null) message.traceState = String(object.traceState);
               if (object.attributes) {
                 if (!Array.isArray(object.attributes))
-                  throw TypeError(
-                    ".opentelemetry.proto.trace.v1.Span.Link.attributes: array expected",
-                  );
+                  throw TypeError(".opentelemetry.proto.trace.v1.Span.Link.attributes: array expected");
                 message.attributes = [];
                 for (var i = 0; i < object.attributes.length; ++i) {
                   if (typeof object.attributes[i] !== "object")
-                    throw TypeError(
-                      ".opentelemetry.proto.trace.v1.Span.Link.attributes: object expected",
-                    );
-                  message.attributes[i] =
-                    $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                      object.attributes[i],
-                    );
+                    throw TypeError(".opentelemetry.proto.trace.v1.Span.Link.attributes: object expected");
+                  message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
                 }
               }
               if (object.droppedAttributesCount != null)
-                message.droppedAttributesCount =
-                  object.droppedAttributesCount >>> 0;
+                message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
               return message;
             };
             /**
@@ -4521,14 +3607,12 @@ $root.opentelemetry = (function () {
                 if (options.bytes === String) object.traceId = "";
                 else {
                   object.traceId = [];
-                  if (options.bytes !== Array)
-                    object.traceId = $util.newBuffer(object.traceId);
+                  if (options.bytes !== Array) object.traceId = $util.newBuffer(object.traceId);
                 }
                 if (options.bytes === String) object.spanId = "";
                 else {
                   object.spanId = [];
-                  if (options.bytes !== Array)
-                    object.spanId = $util.newBuffer(object.spanId);
+                  if (options.bytes !== Array) object.spanId = $util.newBuffer(object.spanId);
                 }
                 object.traceState = "";
                 object.droppedAttributesCount = 0;
@@ -4536,43 +3620,28 @@ $root.opentelemetry = (function () {
               if (message.traceId != null && message.hasOwnProperty("traceId"))
                 object.traceId =
                   options.bytes === String
-                    ? $util.base64.encode(
-                        message.traceId,
-                        0,
-                        message.traceId.length,
-                      )
+                    ? $util.base64.encode(message.traceId, 0, message.traceId.length)
                     : options.bytes === Array
                       ? Array.prototype.slice.call(message.traceId)
                       : message.traceId;
               if (message.spanId != null && message.hasOwnProperty("spanId"))
                 object.spanId =
                   options.bytes === String
-                    ? $util.base64.encode(
-                        message.spanId,
-                        0,
-                        message.spanId.length,
-                      )
+                    ? $util.base64.encode(message.spanId, 0, message.spanId.length)
                     : options.bytes === Array
                       ? Array.prototype.slice.call(message.spanId)
                       : message.spanId;
-              if (
-                message.traceState != null &&
-                message.hasOwnProperty("traceState")
-              )
+              if (message.traceState != null && message.hasOwnProperty("traceState"))
                 object.traceState = message.traceState;
               if (message.attributes && message.attributes.length) {
                 object.attributes = [];
                 for (var j = 0; j < message.attributes.length; ++j)
-                  object.attributes[j] =
-                    $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                      message.attributes[j],
-                      options,
-                    );
+                  object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                    message.attributes[j],
+                    options,
+                  );
               }
-              if (
-                message.droppedAttributesCount != null &&
-                message.hasOwnProperty("droppedAttributesCount")
-              )
+              if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
                 object.droppedAttributesCount = message.droppedAttributesCount;
               return object;
             };
@@ -4584,10 +3653,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             Link.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for Link
@@ -4625,13 +3691,8 @@ $root.opentelemetry = (function () {
            */
           function Status(properties) {
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Status message.
@@ -4669,15 +3730,9 @@ $root.opentelemetry = (function () {
            */
           Status.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.message != null &&
-              Object.hasOwnProperty.call(message, "message")
-            )
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
               writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.message);
-            if (
-              message.code != null &&
-              Object.hasOwnProperty.call(message, "code")
-            )
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
               writer.uint32(/* id 3, wireType 0 =*/ 24).int32(message.code);
             return writer;
           };
@@ -4749,11 +3804,9 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Status.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.message != null && message.hasOwnProperty("message"))
-              if (!$util.isString(message.message))
-                return "message: string expected";
+              if (!$util.isString(message.message)) return "message: string expected";
             if (message.code != null && message.hasOwnProperty("code"))
               switch (message.code) {
                 default:
@@ -4774,11 +3827,9 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.trace.v1.Status} Status
            */
           Status.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.trace.v1.Status)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.trace.v1.Status) return object;
             var message = new $root.opentelemetry.proto.trace.v1.Status();
-            if (object.message != null)
-              message.message = String(object.message);
+            if (object.message != null) message.message = String(object.message);
             switch (object.code) {
               default:
                 if (typeof object.code === "number") {
@@ -4817,18 +3868,13 @@ $root.opentelemetry = (function () {
               object.message = "";
               object.code = options.enums === String ? "STATUS_CODE_UNSET" : 0;
             }
-            if (message.message != null && message.hasOwnProperty("message"))
-              object.message = message.message;
+            if (message.message != null && message.hasOwnProperty("message")) object.message = message.message;
             if (message.code != null && message.hasOwnProperty("code"))
               object.code =
                 options.enums === String
-                  ? $root.opentelemetry.proto.trace.v1.Status.StatusCode[
-                      message.code
-                    ] === undefined
+                  ? $root.opentelemetry.proto.trace.v1.Status.StatusCode[message.code] === undefined
                     ? message.code
-                    : $root.opentelemetry.proto.trace.v1.Status.StatusCode[
-                        message.code
-                      ]
+                    : $root.opentelemetry.proto.trace.v1.Status.StatusCode[message.code]
                   : message.code;
             return object;
           };
@@ -4840,10 +3886,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Status.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Status
@@ -4913,21 +3956,10 @@ $root.opentelemetry = (function () {
              * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              */
-            function TraceService(
-              rpcImpl,
-              requestDelimited,
-              responseDelimited,
-            ) {
-              $protobuf.rpc.Service.call(
-                this,
-                rpcImpl,
-                requestDelimited,
-                responseDelimited,
-              );
+            function TraceService(rpcImpl, requestDelimited, responseDelimited) {
+              $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
             }
-            (TraceService.prototype = Object.create(
-              $protobuf.rpc.Service.prototype,
-            )).constructor = TraceService;
+            (TraceService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = TraceService;
             /**
              * Creates new TraceService service using the specified rpc implementation.
              * @function create
@@ -4938,11 +3970,7 @@ $root.opentelemetry = (function () {
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              * @returns {TraceService} RPC service. Useful where requests and/or responses are streamed.
              */
-            TraceService.create = function create(
-              rpcImpl,
-              requestDelimited,
-              responseDelimited,
-            ) {
+            TraceService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
               return new this(rpcImpl, requestDelimited, responseDelimited);
             };
             /**
@@ -4964,16 +3992,11 @@ $root.opentelemetry = (function () {
              * @variation 1
              */
             Object.defineProperty(
-              (TraceService.prototype["export"] = function export_(
-                request,
-                callback,
-              ) {
+              (TraceService.prototype["export"] = function export_(request, callback) {
                 return this.rpcCall(
                   export_,
-                  $root.opentelemetry.proto.collector.trace.v1
-                    .ExportTraceServiceRequest,
-                  $root.opentelemetry.proto.collector.trace.v1
-                    .ExportTraceServiceResponse,
+                  $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest,
+                  $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse,
                   request,
                   callback,
                 );
@@ -5010,13 +4033,8 @@ $root.opentelemetry = (function () {
             function ExportTraceServiceRequest(properties) {
               this.resourceSpans = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportTraceServiceRequest resourceSpans.
@@ -5024,8 +4042,7 @@ $root.opentelemetry = (function () {
              * @memberof opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest
              * @instance
              */
-            ExportTraceServiceRequest.prototype.resourceSpans =
-              $util.emptyArray;
+            ExportTraceServiceRequest.prototype.resourceSpans = $util.emptyArray;
             /**
              * Creates a new ExportTraceServiceRequest instance using the specified properties.
              * @function create
@@ -5046,10 +4063,7 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTraceServiceRequest.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportTraceServiceRequest.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
               if (message.resourceSpans != null && message.resourceSpans.length)
                 for (var i = 0; i < message.resourceSpans.length; ++i)
@@ -5068,10 +4082,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTraceServiceRequest.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportTraceServiceRequest.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportTraceServiceRequest message from the specified reader or buffer.
              * @function decode
@@ -5086,21 +4099,14 @@ $root.opentelemetry = (function () {
             ExportTraceServiceRequest.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest();
+                message = new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                   case 1: {
-                    if (
-                      !(message.resourceSpans && message.resourceSpans.length)
-                    )
-                      message.resourceSpans = [];
+                    if (!(message.resourceSpans && message.resourceSpans.length)) message.resourceSpans = [];
                     message.resourceSpans.push(
-                      $root.opentelemetry.proto.trace.v1.ResourceSpans.decode(
-                        reader,
-                        reader.uint32(),
-                      ),
+                      $root.opentelemetry.proto.trace.v1.ResourceSpans.decode(reader, reader.uint32()),
                     );
                     break;
                   }
@@ -5121,11 +4127,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportTraceServiceRequest.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportTraceServiceRequest.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportTraceServiceRequest message.
              * @function verify
@@ -5135,19 +4140,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportTraceServiceRequest.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.resourceSpans != null &&
-                message.hasOwnProperty("resourceSpans")
-              ) {
-                if (!Array.isArray(message.resourceSpans))
-                  return "resourceSpans: array expected";
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.resourceSpans != null && message.hasOwnProperty("resourceSpans")) {
+                if (!Array.isArray(message.resourceSpans)) return "resourceSpans: array expected";
                 for (var i = 0; i < message.resourceSpans.length; ++i) {
-                  var error =
-                    $root.opentelemetry.proto.trace.v1.ResourceSpans.verify(
-                      message.resourceSpans[i],
-                    );
+                  var error = $root.opentelemetry.proto.trace.v1.ResourceSpans.verify(message.resourceSpans[i]);
                   if (error) return "resourceSpans." + error;
                 }
               }
@@ -5162,14 +4159,9 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest} ExportTraceServiceRequest
              */
             ExportTraceServiceRequest.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.trace.v1
-                  .ExportTraceServiceRequest
-              )
+              if (object instanceof $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest();
+              var message = new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest();
               if (object.resourceSpans) {
                 if (!Array.isArray(object.resourceSpans))
                   throw TypeError(
@@ -5181,10 +4173,9 @@ $root.opentelemetry = (function () {
                     throw TypeError(
                       ".opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest.resourceSpans: object expected",
                     );
-                  message.resourceSpans[i] =
-                    $root.opentelemetry.proto.trace.v1.ResourceSpans.fromObject(
-                      object.resourceSpans[i],
-                    );
+                  message.resourceSpans[i] = $root.opentelemetry.proto.trace.v1.ResourceSpans.fromObject(
+                    object.resourceSpans[i],
+                  );
                 }
               }
               return message;
@@ -5198,21 +4189,17 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportTraceServiceRequest.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportTraceServiceRequest.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.arrays || options.defaults) object.resourceSpans = [];
               if (message.resourceSpans && message.resourceSpans.length) {
                 object.resourceSpans = [];
                 for (var j = 0; j < message.resourceSpans.length; ++j)
-                  object.resourceSpans[j] =
-                    $root.opentelemetry.proto.trace.v1.ResourceSpans.toObject(
-                      message.resourceSpans[j],
-                      options,
-                    );
+                  object.resourceSpans[j] = $root.opentelemetry.proto.trace.v1.ResourceSpans.toObject(
+                    message.resourceSpans[j],
+                    options,
+                  );
               }
               return object;
             };
@@ -5224,10 +4211,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportTraceServiceRequest.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportTraceServiceRequest
@@ -5237,16 +4221,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportTraceServiceRequest.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportTraceServiceRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest";
             };
             return ExportTraceServiceRequest;
           })();
@@ -5267,13 +4246,8 @@ $root.opentelemetry = (function () {
              */
             function ExportTraceServiceResponse(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportTraceServiceResponse partialSuccess.
@@ -5302,15 +4276,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTraceServiceResponse.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportTraceServiceResponse.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.partialSuccess != null &&
-                Object.hasOwnProperty.call(message, "partialSuccess")
-              )
+              if (message.partialSuccess != null && Object.hasOwnProperty.call(message, "partialSuccess"))
                 $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess.encode(
                   message.partialSuccess,
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -5326,10 +4294,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTraceServiceResponse.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportTraceServiceResponse.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportTraceServiceResponse message from the specified reader or buffer.
              * @function decode
@@ -5341,14 +4308,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportTraceServiceResponse.decode = function decode(
-              reader,
-              length,
-            ) {
+            ExportTraceServiceResponse.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse();
+                message = new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -5377,11 +4340,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportTraceServiceResponse.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportTraceServiceResponse.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportTraceServiceResponse message.
              * @function verify
@@ -5391,16 +4353,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportTraceServiceResponse.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              ) {
-                var error =
-                  $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess.verify(
-                    message.partialSuccess,
-                  );
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess")) {
+                var error = $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess.verify(
+                  message.partialSuccess,
+                );
                 if (error) return "partialSuccess." + error;
               }
               return null;
@@ -5413,17 +4370,10 @@ $root.opentelemetry = (function () {
              * @param {Object.<string,*>} object Plain object
              * @returns {opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse} ExportTraceServiceResponse
              */
-            ExportTraceServiceResponse.fromObject = function fromObject(
-              object,
-            ) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.trace.v1
-                  .ExportTraceServiceResponse
-              )
+            ExportTraceServiceResponse.fromObject = function fromObject(object) {
+              if (object instanceof $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse();
+              var message = new $root.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse();
               if (object.partialSuccess != null) {
                 if (typeof object.partialSuccess !== "object")
                   throw TypeError(
@@ -5445,22 +4395,15 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportTraceServiceResponse.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportTraceServiceResponse.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) object.partialSuccess = null;
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              )
-                object.partialSuccess =
-                  $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess.toObject(
-                    message.partialSuccess,
-                    options,
-                  );
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess"))
+                object.partialSuccess = $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess.toObject(
+                  message.partialSuccess,
+                  options,
+                );
               return object;
             };
             /**
@@ -5471,10 +4414,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportTraceServiceResponse.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportTraceServiceResponse
@@ -5484,16 +4424,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportTraceServiceResponse.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportTraceServiceResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse";
             };
             return ExportTraceServiceResponse;
           })();
@@ -5515,13 +4450,8 @@ $root.opentelemetry = (function () {
              */
             function ExportTracePartialSuccess(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportTracePartialSuccess rejectedSpans.
@@ -5557,25 +4487,12 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTracePartialSuccess.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportTracePartialSuccess.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.rejectedSpans != null &&
-                Object.hasOwnProperty.call(message, "rejectedSpans")
-              )
-                writer
-                  .uint32(/* id 1, wireType 0 =*/ 8)
-                  .int64(message.rejectedSpans);
-              if (
-                message.errorMessage != null &&
-                Object.hasOwnProperty.call(message, "errorMessage")
-              )
-                writer
-                  .uint32(/* id 2, wireType 2 =*/ 18)
-                  .string(message.errorMessage);
+              if (message.rejectedSpans != null && Object.hasOwnProperty.call(message, "rejectedSpans"))
+                writer.uint32(/* id 1, wireType 0 =*/ 8).int64(message.rejectedSpans);
+              if (message.errorMessage != null && Object.hasOwnProperty.call(message, "errorMessage"))
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.errorMessage);
               return writer;
             };
             /**
@@ -5587,10 +4504,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportTracePartialSuccess.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportTracePartialSuccess.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportTracePartialSuccess message from the specified reader or buffer.
              * @function decode
@@ -5605,8 +4521,7 @@ $root.opentelemetry = (function () {
             ExportTracePartialSuccess.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess();
+                message = new $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -5635,11 +4550,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportTracePartialSuccess.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportTracePartialSuccess.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportTracePartialSuccess message.
              * @function verify
@@ -5649,12 +4563,8 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportTracePartialSuccess.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.rejectedSpans != null &&
-                message.hasOwnProperty("rejectedSpans")
-              )
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.rejectedSpans != null && message.hasOwnProperty("rejectedSpans"))
                 if (
                   !$util.isInteger(message.rejectedSpans) &&
                   !(
@@ -5664,12 +4574,8 @@ $root.opentelemetry = (function () {
                   )
                 )
                   return "rejectedSpans: integer|Long expected";
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
-                if (!$util.isString(message.errorMessage))
-                  return "errorMessage: string expected";
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
+                if (!$util.isString(message.errorMessage)) return "errorMessage: string expected";
               return null;
             };
             /**
@@ -5681,30 +4587,20 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess} ExportTracePartialSuccess
              */
             ExportTracePartialSuccess.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.trace.v1
-                  .ExportTracePartialSuccess
-              )
+              if (object instanceof $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess();
+              var message = new $root.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess();
               if (object.rejectedSpans != null)
-                if ($util.Long)
-                  (message.rejectedSpans = $util.Long.fromValue(
-                    object.rejectedSpans,
-                  )).unsigned = false;
+                if ($util.Long) (message.rejectedSpans = $util.Long.fromValue(object.rejectedSpans)).unsigned = false;
                 else if (typeof object.rejectedSpans === "string")
                   message.rejectedSpans = parseInt(object.rejectedSpans, 10);
-                else if (typeof object.rejectedSpans === "number")
-                  message.rejectedSpans = object.rejectedSpans;
+                else if (typeof object.rejectedSpans === "number") message.rejectedSpans = object.rejectedSpans;
                 else if (typeof object.rejectedSpans === "object")
                   message.rejectedSpans = new $util.LongBits(
                     object.rejectedSpans.low >>> 0,
                     object.rejectedSpans.high >>> 0,
                   ).toNumber();
-              if (object.errorMessage != null)
-                message.errorMessage = String(object.errorMessage);
+              if (object.errorMessage != null) message.errorMessage = String(object.errorMessage);
               return message;
             };
             /**
@@ -5716,50 +4612,32 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportTracePartialSuccess.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportTracePartialSuccess.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) {
                 if ($util.Long) {
                   var long = new $util.Long(0, 0, false);
                   object.rejectedSpans =
-                    options.longs === String
-                      ? long.toString()
-                      : options.longs === Number
-                        ? long.toNumber()
-                        : long;
-                } else
-                  object.rejectedSpans = options.longs === String ? "0" : 0;
+                    options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else object.rejectedSpans = options.longs === String ? "0" : 0;
                 object.errorMessage = "";
               }
-              if (
-                message.rejectedSpans != null &&
-                message.hasOwnProperty("rejectedSpans")
-              )
+              if (message.rejectedSpans != null && message.hasOwnProperty("rejectedSpans"))
                 if (typeof message.rejectedSpans === "number")
                   object.rejectedSpans =
-                    options.longs === String
-                      ? String(message.rejectedSpans)
-                      : message.rejectedSpans;
+                    options.longs === String ? String(message.rejectedSpans) : message.rejectedSpans;
                 else
                   object.rejectedSpans =
                     options.longs === String
-                      ? $util.Long.prototype.toString.call(
-                          message.rejectedSpans,
-                        )
+                      ? $util.Long.prototype.toString.call(message.rejectedSpans)
                       : options.longs === Number
                         ? new $util.LongBits(
                             message.rejectedSpans.low >>> 0,
                             message.rejectedSpans.high >>> 0,
                           ).toNumber()
                         : message.rejectedSpans;
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
                 object.errorMessage = message.errorMessage;
               return object;
             };
@@ -5771,10 +4649,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportTracePartialSuccess.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportTracePartialSuccess
@@ -5784,16 +4659,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportTracePartialSuccess.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportTracePartialSuccess.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess";
             };
             return ExportTracePartialSuccess;
           })();
@@ -5826,21 +4696,10 @@ $root.opentelemetry = (function () {
              * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              */
-            function MetricsService(
-              rpcImpl,
-              requestDelimited,
-              responseDelimited,
-            ) {
-              $protobuf.rpc.Service.call(
-                this,
-                rpcImpl,
-                requestDelimited,
-                responseDelimited,
-              );
+            function MetricsService(rpcImpl, requestDelimited, responseDelimited) {
+              $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
             }
-            (MetricsService.prototype = Object.create(
-              $protobuf.rpc.Service.prototype,
-            )).constructor = MetricsService;
+            (MetricsService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = MetricsService;
             /**
              * Creates new MetricsService service using the specified rpc implementation.
              * @function create
@@ -5851,11 +4710,7 @@ $root.opentelemetry = (function () {
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              * @returns {MetricsService} RPC service. Useful where requests and/or responses are streamed.
              */
-            MetricsService.create = function create(
-              rpcImpl,
-              requestDelimited,
-              responseDelimited,
-            ) {
+            MetricsService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
               return new this(rpcImpl, requestDelimited, responseDelimited);
             };
             /**
@@ -5877,16 +4732,11 @@ $root.opentelemetry = (function () {
              * @variation 1
              */
             Object.defineProperty(
-              (MetricsService.prototype["export"] = function export_(
-                request,
-                callback,
-              ) {
+              (MetricsService.prototype["export"] = function export_(request, callback) {
                 return this.rpcCall(
                   export_,
-                  $root.opentelemetry.proto.collector.metrics.v1
-                    .ExportMetricsServiceRequest,
-                  $root.opentelemetry.proto.collector.metrics.v1
-                    .ExportMetricsServiceResponse,
+                  $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest,
+                  $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse,
                   request,
                   callback,
                 );
@@ -5923,13 +4773,8 @@ $root.opentelemetry = (function () {
             function ExportMetricsServiceRequest(properties) {
               this.resourceMetrics = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportMetricsServiceRequest resourceMetrics.
@@ -5937,8 +4782,7 @@ $root.opentelemetry = (function () {
              * @memberof opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest
              * @instance
              */
-            ExportMetricsServiceRequest.prototype.resourceMetrics =
-              $util.emptyArray;
+            ExportMetricsServiceRequest.prototype.resourceMetrics = $util.emptyArray;
             /**
              * Creates a new ExportMetricsServiceRequest instance using the specified properties.
              * @function create
@@ -5959,15 +4803,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsServiceRequest.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportMetricsServiceRequest.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.resourceMetrics != null &&
-                message.resourceMetrics.length
-              )
+              if (message.resourceMetrics != null && message.resourceMetrics.length)
                 for (var i = 0; i < message.resourceMetrics.length; ++i)
                   $root.opentelemetry.proto.metrics.v1.ResourceMetrics.encode(
                     message.resourceMetrics[i],
@@ -5984,10 +4822,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsServiceRequest.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportMetricsServiceRequest.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportMetricsServiceRequest message from the specified reader or buffer.
              * @function decode
@@ -5999,30 +4836,17 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsServiceRequest.decode = function decode(
-              reader,
-              length,
-            ) {
+            ExportMetricsServiceRequest.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest();
+                message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                   case 1: {
-                    if (
-                      !(
-                        message.resourceMetrics &&
-                        message.resourceMetrics.length
-                      )
-                    )
-                      message.resourceMetrics = [];
+                    if (!(message.resourceMetrics && message.resourceMetrics.length)) message.resourceMetrics = [];
                     message.resourceMetrics.push(
-                      $root.opentelemetry.proto.metrics.v1.ResourceMetrics.decode(
-                        reader,
-                        reader.uint32(),
-                      ),
+                      $root.opentelemetry.proto.metrics.v1.ResourceMetrics.decode(reader, reader.uint32()),
                     );
                     break;
                   }
@@ -6043,11 +4867,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsServiceRequest.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportMetricsServiceRequest.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportMetricsServiceRequest message.
              * @function verify
@@ -6057,19 +4880,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportMetricsServiceRequest.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.resourceMetrics != null &&
-                message.hasOwnProperty("resourceMetrics")
-              ) {
-                if (!Array.isArray(message.resourceMetrics))
-                  return "resourceMetrics: array expected";
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.resourceMetrics != null && message.hasOwnProperty("resourceMetrics")) {
+                if (!Array.isArray(message.resourceMetrics)) return "resourceMetrics: array expected";
                 for (var i = 0; i < message.resourceMetrics.length; ++i) {
-                  var error =
-                    $root.opentelemetry.proto.metrics.v1.ResourceMetrics.verify(
-                      message.resourceMetrics[i],
-                    );
+                  var error = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.verify(message.resourceMetrics[i]);
                   if (error) return "resourceMetrics." + error;
                 }
               }
@@ -6083,17 +4898,10 @@ $root.opentelemetry = (function () {
              * @param {Object.<string,*>} object Plain object
              * @returns {opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest} ExportMetricsServiceRequest
              */
-            ExportMetricsServiceRequest.fromObject = function fromObject(
-              object,
-            ) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.metrics.v1
-                  .ExportMetricsServiceRequest
-              )
+            ExportMetricsServiceRequest.fromObject = function fromObject(object) {
+              if (object instanceof $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest();
+              var message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest();
               if (object.resourceMetrics) {
                 if (!Array.isArray(object.resourceMetrics))
                   throw TypeError(
@@ -6105,10 +4913,9 @@ $root.opentelemetry = (function () {
                     throw TypeError(
                       ".opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.resourceMetrics: object expected",
                     );
-                  message.resourceMetrics[i] =
-                    $root.opentelemetry.proto.metrics.v1.ResourceMetrics.fromObject(
-                      object.resourceMetrics[i],
-                    );
+                  message.resourceMetrics[i] = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.fromObject(
+                    object.resourceMetrics[i],
+                  );
                 }
               }
               return message;
@@ -6122,22 +4929,17 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportMetricsServiceRequest.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportMetricsServiceRequest.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
-              if (options.arrays || options.defaults)
-                object.resourceMetrics = [];
+              if (options.arrays || options.defaults) object.resourceMetrics = [];
               if (message.resourceMetrics && message.resourceMetrics.length) {
                 object.resourceMetrics = [];
                 for (var j = 0; j < message.resourceMetrics.length; ++j)
-                  object.resourceMetrics[j] =
-                    $root.opentelemetry.proto.metrics.v1.ResourceMetrics.toObject(
-                      message.resourceMetrics[j],
-                      options,
-                    );
+                  object.resourceMetrics[j] = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.toObject(
+                    message.resourceMetrics[j],
+                    options,
+                  );
               }
               return object;
             };
@@ -6149,10 +4951,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportMetricsServiceRequest.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportMetricsServiceRequest
@@ -6162,16 +4961,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportMetricsServiceRequest.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportMetricsServiceRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest";
             };
             return ExportMetricsServiceRequest;
           })();
@@ -6192,13 +4986,8 @@ $root.opentelemetry = (function () {
              */
             function ExportMetricsServiceResponse(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportMetricsServiceResponse partialSuccess.
@@ -6227,15 +5016,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsServiceResponse.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportMetricsServiceResponse.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.partialSuccess != null &&
-                Object.hasOwnProperty.call(message, "partialSuccess")
-              )
+              if (message.partialSuccess != null && Object.hasOwnProperty.call(message, "partialSuccess"))
                 $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess.encode(
                   message.partialSuccess,
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -6251,10 +5034,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsServiceResponse.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportMetricsServiceResponse.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportMetricsServiceResponse message from the specified reader or buffer.
              * @function decode
@@ -6266,14 +5048,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsServiceResponse.decode = function decode(
-              reader,
-              length,
-            ) {
+            ExportMetricsServiceResponse.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse();
+                message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6302,11 +5080,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsServiceResponse.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportMetricsServiceResponse.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportMetricsServiceResponse message.
              * @function verify
@@ -6316,16 +5093,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportMetricsServiceResponse.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              ) {
-                var error =
-                  $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess.verify(
-                    message.partialSuccess,
-                  );
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess")) {
+                var error = $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess.verify(
+                  message.partialSuccess,
+                );
                 if (error) return "partialSuccess." + error;
               }
               return null;
@@ -6338,17 +5110,10 @@ $root.opentelemetry = (function () {
              * @param {Object.<string,*>} object Plain object
              * @returns {opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse} ExportMetricsServiceResponse
              */
-            ExportMetricsServiceResponse.fromObject = function fromObject(
-              object,
-            ) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.metrics.v1
-                  .ExportMetricsServiceResponse
-              )
+            ExportMetricsServiceResponse.fromObject = function fromObject(object) {
+              if (object instanceof $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse();
+              var message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse();
               if (object.partialSuccess != null) {
                 if (typeof object.partialSuccess !== "object")
                   throw TypeError(
@@ -6370,17 +5135,11 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportMetricsServiceResponse.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportMetricsServiceResponse.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) object.partialSuccess = null;
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              )
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess"))
                 object.partialSuccess =
                   $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess.toObject(
                     message.partialSuccess,
@@ -6396,10 +5155,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportMetricsServiceResponse.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportMetricsServiceResponse
@@ -6409,16 +5165,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportMetricsServiceResponse.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportMetricsServiceResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse";
             };
             return ExportMetricsServiceResponse;
           })();
@@ -6440,13 +5191,8 @@ $root.opentelemetry = (function () {
              */
             function ExportMetricsPartialSuccess(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportMetricsPartialSuccess rejectedDataPoints.
@@ -6482,25 +5228,12 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsPartialSuccess.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportMetricsPartialSuccess.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.rejectedDataPoints != null &&
-                Object.hasOwnProperty.call(message, "rejectedDataPoints")
-              )
-                writer
-                  .uint32(/* id 1, wireType 0 =*/ 8)
-                  .int64(message.rejectedDataPoints);
-              if (
-                message.errorMessage != null &&
-                Object.hasOwnProperty.call(message, "errorMessage")
-              )
-                writer
-                  .uint32(/* id 2, wireType 2 =*/ 18)
-                  .string(message.errorMessage);
+              if (message.rejectedDataPoints != null && Object.hasOwnProperty.call(message, "rejectedDataPoints"))
+                writer.uint32(/* id 1, wireType 0 =*/ 8).int64(message.rejectedDataPoints);
+              if (message.errorMessage != null && Object.hasOwnProperty.call(message, "errorMessage"))
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.errorMessage);
               return writer;
             };
             /**
@@ -6512,10 +5245,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportMetricsPartialSuccess.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportMetricsPartialSuccess.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportMetricsPartialSuccess message from the specified reader or buffer.
              * @function decode
@@ -6527,14 +5259,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsPartialSuccess.decode = function decode(
-              reader,
-              length,
-            ) {
+            ExportMetricsPartialSuccess.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess();
+                message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -6563,11 +5291,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportMetricsPartialSuccess.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportMetricsPartialSuccess.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportMetricsPartialSuccess message.
              * @function verify
@@ -6577,12 +5304,8 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportMetricsPartialSuccess.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.rejectedDataPoints != null &&
-                message.hasOwnProperty("rejectedDataPoints")
-              )
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.rejectedDataPoints != null && message.hasOwnProperty("rejectedDataPoints"))
                 if (
                   !$util.isInteger(message.rejectedDataPoints) &&
                   !(
@@ -6592,12 +5315,8 @@ $root.opentelemetry = (function () {
                   )
                 )
                   return "rejectedDataPoints: integer|Long expected";
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
-                if (!$util.isString(message.errorMessage))
-                  return "errorMessage: string expected";
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
+                if (!$util.isString(message.errorMessage)) return "errorMessage: string expected";
               return null;
             };
             /**
@@ -6608,27 +5327,15 @@ $root.opentelemetry = (function () {
              * @param {Object.<string,*>} object Plain object
              * @returns {opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess} ExportMetricsPartialSuccess
              */
-            ExportMetricsPartialSuccess.fromObject = function fromObject(
-              object,
-            ) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.metrics.v1
-                  .ExportMetricsPartialSuccess
-              )
+            ExportMetricsPartialSuccess.fromObject = function fromObject(object) {
+              if (object instanceof $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess();
+              var message = new $root.opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess();
               if (object.rejectedDataPoints != null)
                 if ($util.Long)
-                  (message.rejectedDataPoints = $util.Long.fromValue(
-                    object.rejectedDataPoints,
-                  )).unsigned = false;
+                  (message.rejectedDataPoints = $util.Long.fromValue(object.rejectedDataPoints)).unsigned = false;
                 else if (typeof object.rejectedDataPoints === "string")
-                  message.rejectedDataPoints = parseInt(
-                    object.rejectedDataPoints,
-                    10,
-                  );
+                  message.rejectedDataPoints = parseInt(object.rejectedDataPoints, 10);
                 else if (typeof object.rejectedDataPoints === "number")
                   message.rejectedDataPoints = object.rejectedDataPoints;
                 else if (typeof object.rejectedDataPoints === "object")
@@ -6636,8 +5343,7 @@ $root.opentelemetry = (function () {
                     object.rejectedDataPoints.low >>> 0,
                     object.rejectedDataPoints.high >>> 0,
                   ).toNumber();
-              if (object.errorMessage != null)
-                message.errorMessage = String(object.errorMessage);
+              if (object.errorMessage != null) message.errorMessage = String(object.errorMessage);
               return message;
             };
             /**
@@ -6649,51 +5355,32 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportMetricsPartialSuccess.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportMetricsPartialSuccess.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) {
                 if ($util.Long) {
                   var long = new $util.Long(0, 0, false);
                   object.rejectedDataPoints =
-                    options.longs === String
-                      ? long.toString()
-                      : options.longs === Number
-                        ? long.toNumber()
-                        : long;
-                } else
-                  object.rejectedDataPoints =
-                    options.longs === String ? "0" : 0;
+                    options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else object.rejectedDataPoints = options.longs === String ? "0" : 0;
                 object.errorMessage = "";
               }
-              if (
-                message.rejectedDataPoints != null &&
-                message.hasOwnProperty("rejectedDataPoints")
-              )
+              if (message.rejectedDataPoints != null && message.hasOwnProperty("rejectedDataPoints"))
                 if (typeof message.rejectedDataPoints === "number")
                   object.rejectedDataPoints =
-                    options.longs === String
-                      ? String(message.rejectedDataPoints)
-                      : message.rejectedDataPoints;
+                    options.longs === String ? String(message.rejectedDataPoints) : message.rejectedDataPoints;
                 else
                   object.rejectedDataPoints =
                     options.longs === String
-                      ? $util.Long.prototype.toString.call(
-                          message.rejectedDataPoints,
-                        )
+                      ? $util.Long.prototype.toString.call(message.rejectedDataPoints)
                       : options.longs === Number
                         ? new $util.LongBits(
                             message.rejectedDataPoints.low >>> 0,
                             message.rejectedDataPoints.high >>> 0,
                           ).toNumber()
                         : message.rejectedDataPoints;
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
                 object.errorMessage = message.errorMessage;
               return object;
             };
@@ -6705,10 +5392,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportMetricsPartialSuccess.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportMetricsPartialSuccess
@@ -6718,16 +5402,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportMetricsPartialSuccess.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportMetricsPartialSuccess.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess";
             };
             return ExportMetricsPartialSuccess;
           })();
@@ -6761,16 +5440,9 @@ $root.opentelemetry = (function () {
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              */
             function LogsService(rpcImpl, requestDelimited, responseDelimited) {
-              $protobuf.rpc.Service.call(
-                this,
-                rpcImpl,
-                requestDelimited,
-                responseDelimited,
-              );
+              $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
             }
-            (LogsService.prototype = Object.create(
-              $protobuf.rpc.Service.prototype,
-            )).constructor = LogsService;
+            (LogsService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = LogsService;
             /**
              * Creates new LogsService service using the specified rpc implementation.
              * @function create
@@ -6781,11 +5453,7 @@ $root.opentelemetry = (function () {
              * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
              * @returns {LogsService} RPC service. Useful where requests and/or responses are streamed.
              */
-            LogsService.create = function create(
-              rpcImpl,
-              requestDelimited,
-              responseDelimited,
-            ) {
+            LogsService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
               return new this(rpcImpl, requestDelimited, responseDelimited);
             };
             /**
@@ -6807,16 +5475,11 @@ $root.opentelemetry = (function () {
              * @variation 1
              */
             Object.defineProperty(
-              (LogsService.prototype["export"] = function export_(
-                request,
-                callback,
-              ) {
+              (LogsService.prototype["export"] = function export_(request, callback) {
                 return this.rpcCall(
                   export_,
-                  $root.opentelemetry.proto.collector.logs.v1
-                    .ExportLogsServiceRequest,
-                  $root.opentelemetry.proto.collector.logs.v1
-                    .ExportLogsServiceResponse,
+                  $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest,
+                  $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse,
                   request,
                   callback,
                 );
@@ -6853,13 +5516,8 @@ $root.opentelemetry = (function () {
             function ExportLogsServiceRequest(properties) {
               this.resourceLogs = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportLogsServiceRequest resourceLogs.
@@ -6907,10 +5565,7 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportLogsServiceRequest.encodeDelimited = function encodeDelimited(
-              message,
-              writer,
-            ) {
+            ExportLogsServiceRequest.encodeDelimited = function encodeDelimited(message, writer) {
               return this.encode(message, writer).ldelim();
             };
             /**
@@ -6927,19 +5582,14 @@ $root.opentelemetry = (function () {
             ExportLogsServiceRequest.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest();
+                message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                   case 1: {
-                    if (!(message.resourceLogs && message.resourceLogs.length))
-                      message.resourceLogs = [];
+                    if (!(message.resourceLogs && message.resourceLogs.length)) message.resourceLogs = [];
                     message.resourceLogs.push(
-                      $root.opentelemetry.proto.logs.v1.ResourceLogs.decode(
-                        reader,
-                        reader.uint32(),
-                      ),
+                      $root.opentelemetry.proto.logs.v1.ResourceLogs.decode(reader, reader.uint32()),
                     );
                     break;
                   }
@@ -6960,9 +5610,7 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportLogsServiceRequest.decodeDelimited = function decodeDelimited(
-              reader,
-            ) {
+            ExportLogsServiceRequest.decodeDelimited = function decodeDelimited(reader) {
               if (!(reader instanceof $Reader)) reader = new $Reader(reader);
               return this.decode(reader, reader.uint32());
             };
@@ -6975,19 +5623,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportLogsServiceRequest.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.resourceLogs != null &&
-                message.hasOwnProperty("resourceLogs")
-              ) {
-                if (!Array.isArray(message.resourceLogs))
-                  return "resourceLogs: array expected";
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.resourceLogs != null && message.hasOwnProperty("resourceLogs")) {
+                if (!Array.isArray(message.resourceLogs)) return "resourceLogs: array expected";
                 for (var i = 0; i < message.resourceLogs.length; ++i) {
-                  var error =
-                    $root.opentelemetry.proto.logs.v1.ResourceLogs.verify(
-                      message.resourceLogs[i],
-                    );
+                  var error = $root.opentelemetry.proto.logs.v1.ResourceLogs.verify(message.resourceLogs[i]);
                   if (error) return "resourceLogs." + error;
                 }
               }
@@ -7002,14 +5642,8 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest} ExportLogsServiceRequest
              */
             ExportLogsServiceRequest.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.logs.v1
-                  .ExportLogsServiceRequest
-              )
-                return object;
-              var message =
-                new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest();
+              if (object instanceof $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest) return object;
+              var message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest();
               if (object.resourceLogs) {
                 if (!Array.isArray(object.resourceLogs))
                   throw TypeError(
@@ -7021,10 +5655,9 @@ $root.opentelemetry = (function () {
                     throw TypeError(
                       ".opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest.resourceLogs: object expected",
                     );
-                  message.resourceLogs[i] =
-                    $root.opentelemetry.proto.logs.v1.ResourceLogs.fromObject(
-                      object.resourceLogs[i],
-                    );
+                  message.resourceLogs[i] = $root.opentelemetry.proto.logs.v1.ResourceLogs.fromObject(
+                    object.resourceLogs[i],
+                  );
                 }
               }
               return message;
@@ -7038,21 +5671,17 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportLogsServiceRequest.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportLogsServiceRequest.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.arrays || options.defaults) object.resourceLogs = [];
               if (message.resourceLogs && message.resourceLogs.length) {
                 object.resourceLogs = [];
                 for (var j = 0; j < message.resourceLogs.length; ++j)
-                  object.resourceLogs[j] =
-                    $root.opentelemetry.proto.logs.v1.ResourceLogs.toObject(
-                      message.resourceLogs[j],
-                      options,
-                    );
+                  object.resourceLogs[j] = $root.opentelemetry.proto.logs.v1.ResourceLogs.toObject(
+                    message.resourceLogs[j],
+                    options,
+                  );
               }
               return object;
             };
@@ -7064,10 +5693,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportLogsServiceRequest.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportLogsServiceRequest
@@ -7077,16 +5703,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportLogsServiceRequest.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportLogsServiceRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest";
             };
             return ExportLogsServiceRequest;
           })();
@@ -7107,13 +5728,8 @@ $root.opentelemetry = (function () {
              */
             function ExportLogsServiceResponse(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportLogsServiceResponse partialSuccess.
@@ -7142,15 +5758,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportLogsServiceResponse.encode = function encode(
-              message,
-              writer,
-            ) {
+            ExportLogsServiceResponse.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.partialSuccess != null &&
-                Object.hasOwnProperty.call(message, "partialSuccess")
-              )
+              if (message.partialSuccess != null && Object.hasOwnProperty.call(message, "partialSuccess"))
                 $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess.encode(
                   message.partialSuccess,
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -7166,10 +5776,9 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportLogsServiceResponse.encodeDelimited =
-              function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-              };
+            ExportLogsServiceResponse.encodeDelimited = function encodeDelimited(message, writer) {
+              return this.encode(message, writer).ldelim();
+            };
             /**
              * Decodes an ExportLogsServiceResponse message from the specified reader or buffer.
              * @function decode
@@ -7184,8 +5793,7 @@ $root.opentelemetry = (function () {
             ExportLogsServiceResponse.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse();
+                message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7214,11 +5822,10 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportLogsServiceResponse.decodeDelimited =
-              function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-              };
+            ExportLogsServiceResponse.decodeDelimited = function decodeDelimited(reader) {
+              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+              return this.decode(reader, reader.uint32());
+            };
             /**
              * Verifies an ExportLogsServiceResponse message.
              * @function verify
@@ -7228,16 +5835,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportLogsServiceResponse.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              ) {
-                var error =
-                  $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess.verify(
-                    message.partialSuccess,
-                  );
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess")) {
+                var error = $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess.verify(
+                  message.partialSuccess,
+                );
                 if (error) return "partialSuccess." + error;
               }
               return null;
@@ -7251,14 +5853,9 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse} ExportLogsServiceResponse
              */
             ExportLogsServiceResponse.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.logs.v1
-                  .ExportLogsServiceResponse
-              )
+              if (object instanceof $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse();
+              var message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse();
               if (object.partialSuccess != null) {
                 if (typeof object.partialSuccess !== "object")
                   throw TypeError(
@@ -7280,22 +5877,15 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportLogsServiceResponse.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportLogsServiceResponse.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) object.partialSuccess = null;
-              if (
-                message.partialSuccess != null &&
-                message.hasOwnProperty("partialSuccess")
-              )
-                object.partialSuccess =
-                  $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess.toObject(
-                    message.partialSuccess,
-                    options,
-                  );
+              if (message.partialSuccess != null && message.hasOwnProperty("partialSuccess"))
+                object.partialSuccess = $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess.toObject(
+                  message.partialSuccess,
+                  options,
+                );
               return object;
             };
             /**
@@ -7306,10 +5896,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportLogsServiceResponse.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportLogsServiceResponse
@@ -7319,16 +5906,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportLogsServiceResponse.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportLogsServiceResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse";
             };
             return ExportLogsServiceResponse;
           })();
@@ -7350,13 +5932,8 @@ $root.opentelemetry = (function () {
              */
             function ExportLogsPartialSuccess(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ExportLogsPartialSuccess rejectedLogRecords.
@@ -7394,20 +5971,10 @@ $root.opentelemetry = (function () {
              */
             ExportLogsPartialSuccess.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.rejectedLogRecords != null &&
-                Object.hasOwnProperty.call(message, "rejectedLogRecords")
-              )
-                writer
-                  .uint32(/* id 1, wireType 0 =*/ 8)
-                  .int64(message.rejectedLogRecords);
-              if (
-                message.errorMessage != null &&
-                Object.hasOwnProperty.call(message, "errorMessage")
-              )
-                writer
-                  .uint32(/* id 2, wireType 2 =*/ 18)
-                  .string(message.errorMessage);
+              if (message.rejectedLogRecords != null && Object.hasOwnProperty.call(message, "rejectedLogRecords"))
+                writer.uint32(/* id 1, wireType 0 =*/ 8).int64(message.rejectedLogRecords);
+              if (message.errorMessage != null && Object.hasOwnProperty.call(message, "errorMessage"))
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.errorMessage);
               return writer;
             };
             /**
@@ -7419,10 +5986,7 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ExportLogsPartialSuccess.encodeDelimited = function encodeDelimited(
-              message,
-              writer,
-            ) {
+            ExportLogsPartialSuccess.encodeDelimited = function encodeDelimited(message, writer) {
               return this.encode(message, writer).ldelim();
             };
             /**
@@ -7439,8 +6003,7 @@ $root.opentelemetry = (function () {
             ExportLogsPartialSuccess.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess();
+                message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -7469,9 +6032,7 @@ $root.opentelemetry = (function () {
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            ExportLogsPartialSuccess.decodeDelimited = function decodeDelimited(
-              reader,
-            ) {
+            ExportLogsPartialSuccess.decodeDelimited = function decodeDelimited(reader) {
               if (!(reader instanceof $Reader)) reader = new $Reader(reader);
               return this.decode(reader, reader.uint32());
             };
@@ -7484,12 +6045,8 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ExportLogsPartialSuccess.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.rejectedLogRecords != null &&
-                message.hasOwnProperty("rejectedLogRecords")
-              )
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.rejectedLogRecords != null && message.hasOwnProperty("rejectedLogRecords"))
                 if (
                   !$util.isInteger(message.rejectedLogRecords) &&
                   !(
@@ -7499,12 +6056,8 @@ $root.opentelemetry = (function () {
                   )
                 )
                   return "rejectedLogRecords: integer|Long expected";
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
-                if (!$util.isString(message.errorMessage))
-                  return "errorMessage: string expected";
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
+                if (!$util.isString(message.errorMessage)) return "errorMessage: string expected";
               return null;
             };
             /**
@@ -7516,24 +6069,13 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess} ExportLogsPartialSuccess
              */
             ExportLogsPartialSuccess.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.collector.logs.v1
-                  .ExportLogsPartialSuccess
-              )
-                return object;
-              var message =
-                new $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess();
+              if (object instanceof $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess) return object;
+              var message = new $root.opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess();
               if (object.rejectedLogRecords != null)
                 if ($util.Long)
-                  (message.rejectedLogRecords = $util.Long.fromValue(
-                    object.rejectedLogRecords,
-                  )).unsigned = false;
+                  (message.rejectedLogRecords = $util.Long.fromValue(object.rejectedLogRecords)).unsigned = false;
                 else if (typeof object.rejectedLogRecords === "string")
-                  message.rejectedLogRecords = parseInt(
-                    object.rejectedLogRecords,
-                    10,
-                  );
+                  message.rejectedLogRecords = parseInt(object.rejectedLogRecords, 10);
                 else if (typeof object.rejectedLogRecords === "number")
                   message.rejectedLogRecords = object.rejectedLogRecords;
                 else if (typeof object.rejectedLogRecords === "object")
@@ -7541,8 +6083,7 @@ $root.opentelemetry = (function () {
                     object.rejectedLogRecords.low >>> 0,
                     object.rejectedLogRecords.high >>> 0,
                   ).toNumber();
-              if (object.errorMessage != null)
-                message.errorMessage = String(object.errorMessage);
+              if (object.errorMessage != null) message.errorMessage = String(object.errorMessage);
               return message;
             };
             /**
@@ -7554,51 +6095,32 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            ExportLogsPartialSuccess.toObject = function toObject(
-              message,
-              options,
-            ) {
+            ExportLogsPartialSuccess.toObject = function toObject(message, options) {
               if (!options) options = {};
               var object = {};
               if (options.defaults) {
                 if ($util.Long) {
                   var long = new $util.Long(0, 0, false);
                   object.rejectedLogRecords =
-                    options.longs === String
-                      ? long.toString()
-                      : options.longs === Number
-                        ? long.toNumber()
-                        : long;
-                } else
-                  object.rejectedLogRecords =
-                    options.longs === String ? "0" : 0;
+                    options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else object.rejectedLogRecords = options.longs === String ? "0" : 0;
                 object.errorMessage = "";
               }
-              if (
-                message.rejectedLogRecords != null &&
-                message.hasOwnProperty("rejectedLogRecords")
-              )
+              if (message.rejectedLogRecords != null && message.hasOwnProperty("rejectedLogRecords"))
                 if (typeof message.rejectedLogRecords === "number")
                   object.rejectedLogRecords =
-                    options.longs === String
-                      ? String(message.rejectedLogRecords)
-                      : message.rejectedLogRecords;
+                    options.longs === String ? String(message.rejectedLogRecords) : message.rejectedLogRecords;
                 else
                   object.rejectedLogRecords =
                     options.longs === String
-                      ? $util.Long.prototype.toString.call(
-                          message.rejectedLogRecords,
-                        )
+                      ? $util.Long.prototype.toString.call(message.rejectedLogRecords)
                       : options.longs === Number
                         ? new $util.LongBits(
                             message.rejectedLogRecords.low >>> 0,
                             message.rejectedLogRecords.high >>> 0,
                           ).toNumber()
                         : message.rejectedLogRecords;
-              if (
-                message.errorMessage != null &&
-                message.hasOwnProperty("errorMessage")
-              )
+              if (message.errorMessage != null && message.hasOwnProperty("errorMessage"))
                 object.errorMessage = message.errorMessage;
               return object;
             };
@@ -7610,10 +6132,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ExportLogsPartialSuccess.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ExportLogsPartialSuccess
@@ -7623,16 +6142,11 @@ $root.opentelemetry = (function () {
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            ExportLogsPartialSuccess.getTypeUrl = function getTypeUrl(
-              typeUrlPrefix,
-            ) {
+            ExportLogsPartialSuccess.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.collector.logs.v1.ExportLogsPartialSuccess";
             };
             return ExportLogsPartialSuccess;
           })();
@@ -7674,13 +6188,8 @@ $root.opentelemetry = (function () {
           function MetricsData(properties) {
             this.resourceMetrics = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * MetricsData resourceMetrics.
@@ -7711,10 +6220,7 @@ $root.opentelemetry = (function () {
            */
           MetricsData.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.resourceMetrics != null &&
-              message.resourceMetrics.length
-            )
+            if (message.resourceMetrics != null && message.resourceMetrics.length)
               for (var i = 0; i < message.resourceMetrics.length; ++i)
                 $root.opentelemetry.proto.metrics.v1.ResourceMetrics.encode(
                   message.resourceMetrics[i],
@@ -7731,10 +6237,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          MetricsData.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          MetricsData.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -7756,15 +6259,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (
-                    !(message.resourceMetrics && message.resourceMetrics.length)
-                  )
-                    message.resourceMetrics = [];
+                  if (!(message.resourceMetrics && message.resourceMetrics.length)) message.resourceMetrics = [];
                   message.resourceMetrics.push(
-                    $root.opentelemetry.proto.metrics.v1.ResourceMetrics.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.ResourceMetrics.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -7798,19 +6295,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           MetricsData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resourceMetrics != null &&
-              message.hasOwnProperty("resourceMetrics")
-            ) {
-              if (!Array.isArray(message.resourceMetrics))
-                return "resourceMetrics: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resourceMetrics != null && message.hasOwnProperty("resourceMetrics")) {
+              if (!Array.isArray(message.resourceMetrics)) return "resourceMetrics: array expected";
               for (var i = 0; i < message.resourceMetrics.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.ResourceMetrics.verify(
-                    message.resourceMetrics[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.verify(message.resourceMetrics[i]);
                 if (error) return "resourceMetrics." + error;
               }
             }
@@ -7825,27 +6314,18 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.MetricsData} MetricsData
            */
           MetricsData.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.metrics.v1.MetricsData
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.MetricsData();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.MetricsData) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.MetricsData();
             if (object.resourceMetrics) {
               if (!Array.isArray(object.resourceMetrics))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.MetricsData.resourceMetrics: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.MetricsData.resourceMetrics: array expected");
               message.resourceMetrics = [];
               for (var i = 0; i < object.resourceMetrics.length; ++i) {
                 if (typeof object.resourceMetrics[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.MetricsData.resourceMetrics: object expected",
-                  );
-                message.resourceMetrics[i] =
-                  $root.opentelemetry.proto.metrics.v1.ResourceMetrics.fromObject(
-                    object.resourceMetrics[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.MetricsData.resourceMetrics: object expected");
+                message.resourceMetrics[i] = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.fromObject(
+                  object.resourceMetrics[i],
+                );
               }
             }
             return message;
@@ -7866,11 +6346,10 @@ $root.opentelemetry = (function () {
             if (message.resourceMetrics && message.resourceMetrics.length) {
               object.resourceMetrics = [];
               for (var j = 0; j < message.resourceMetrics.length; ++j)
-                object.resourceMetrics[j] =
-                  $root.opentelemetry.proto.metrics.v1.ResourceMetrics.toObject(
-                    message.resourceMetrics[j],
-                    options,
-                  );
+                object.resourceMetrics[j] = $root.opentelemetry.proto.metrics.v1.ResourceMetrics.toObject(
+                  message.resourceMetrics[j],
+                  options,
+                );
             }
             return object;
           };
@@ -7882,10 +6361,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           MetricsData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for MetricsData
@@ -7899,9 +6375,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.metrics.v1.MetricsData"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.MetricsData";
           };
           return MetricsData;
         })();
@@ -7925,13 +6399,8 @@ $root.opentelemetry = (function () {
           function ResourceMetrics(properties) {
             this.scopeMetrics = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ResourceMetrics resource.
@@ -7976,10 +6445,7 @@ $root.opentelemetry = (function () {
            */
           ResourceMetrics.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.resource != null &&
-              Object.hasOwnProperty.call(message, "resource")
-            )
+            if (message.resource != null && Object.hasOwnProperty.call(message, "resource"))
               $root.opentelemetry.proto.resource.v1.Resource.encode(
                 message.resource,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -7990,13 +6456,8 @@ $root.opentelemetry = (function () {
                   message.scopeMetrics[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -8008,10 +6469,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ResourceMetrics.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ResourceMetrics.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -8028,27 +6486,18 @@ $root.opentelemetry = (function () {
           ResourceMetrics.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.ResourceMetrics();
+              message = new $root.opentelemetry.proto.metrics.v1.ResourceMetrics();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.resource =
-                    $root.opentelemetry.proto.resource.v1.Resource.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.resource = $root.opentelemetry.proto.resource.v1.Resource.decode(reader, reader.uint32());
                   break;
                 }
                 case 2: {
-                  if (!(message.scopeMetrics && message.scopeMetrics.length))
-                    message.scopeMetrics = [];
+                  if (!(message.scopeMetrics && message.scopeMetrics.length)) message.scopeMetrics = [];
                   message.scopeMetrics.push(
-                    $root.opentelemetry.proto.metrics.v1.ScopeMetrics.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.ScopeMetrics.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -8086,37 +6535,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ResourceMetrics.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resource != null &&
-              message.hasOwnProperty("resource")
-            ) {
-              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(
-                message.resource,
-              );
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resource != null && message.hasOwnProperty("resource")) {
+              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(message.resource);
               if (error) return "resource." + error;
             }
-            if (
-              message.scopeMetrics != null &&
-              message.hasOwnProperty("scopeMetrics")
-            ) {
-              if (!Array.isArray(message.scopeMetrics))
-                return "scopeMetrics: array expected";
+            if (message.scopeMetrics != null && message.hasOwnProperty("scopeMetrics")) {
+              if (!Array.isArray(message.scopeMetrics)) return "scopeMetrics: array expected";
               for (var i = 0; i < message.scopeMetrics.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.ScopeMetrics.verify(
-                    message.scopeMetrics[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.ScopeMetrics.verify(message.scopeMetrics[i]);
                 if (error) return "scopeMetrics." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -8128,42 +6560,26 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.ResourceMetrics} ResourceMetrics
            */
           ResourceMetrics.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.ResourceMetrics
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.ResourceMetrics();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.ResourceMetrics) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.ResourceMetrics();
             if (object.resource != null) {
               if (typeof object.resource !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.ResourceMetrics.resource: object expected",
-                );
-              message.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.fromObject(
-                  object.resource,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.ResourceMetrics.resource: object expected");
+              message.resource = $root.opentelemetry.proto.resource.v1.Resource.fromObject(object.resource);
             }
             if (object.scopeMetrics) {
               if (!Array.isArray(object.scopeMetrics))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.ResourceMetrics.scopeMetrics: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.ResourceMetrics.scopeMetrics: array expected");
               message.scopeMetrics = [];
               for (var i = 0; i < object.scopeMetrics.length; ++i) {
                 if (typeof object.scopeMetrics[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.ResourceMetrics.scopeMetrics: object expected",
-                  );
-                message.scopeMetrics[i] =
-                  $root.opentelemetry.proto.metrics.v1.ScopeMetrics.fromObject(
-                    object.scopeMetrics[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.ResourceMetrics.scopeMetrics: object expected");
+                message.scopeMetrics[i] = $root.opentelemetry.proto.metrics.v1.ScopeMetrics.fromObject(
+                  object.scopeMetrics[i],
+                );
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -8184,25 +6600,16 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.resource != null && message.hasOwnProperty("resource"))
-              object.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.toObject(
-                  message.resource,
-                  options,
-                );
+              object.resource = $root.opentelemetry.proto.resource.v1.Resource.toObject(message.resource, options);
             if (message.scopeMetrics && message.scopeMetrics.length) {
               object.scopeMetrics = [];
               for (var j = 0; j < message.scopeMetrics.length; ++j)
-                object.scopeMetrics[j] =
-                  $root.opentelemetry.proto.metrics.v1.ScopeMetrics.toObject(
-                    message.scopeMetrics[j],
-                    options,
-                  );
+                object.scopeMetrics[j] = $root.opentelemetry.proto.metrics.v1.ScopeMetrics.toObject(
+                  message.scopeMetrics[j],
+                  options,
+                );
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -8213,10 +6620,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ResourceMetrics.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ResourceMetrics
@@ -8230,9 +6634,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ResourceMetrics"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ResourceMetrics";
           };
           return ResourceMetrics;
         })();
@@ -8256,13 +6658,8 @@ $root.opentelemetry = (function () {
           function ScopeMetrics(properties) {
             this.metrics = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ScopeMetrics scope.
@@ -8307,10 +6704,7 @@ $root.opentelemetry = (function () {
            */
           ScopeMetrics.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.scope != null &&
-              Object.hasOwnProperty.call(message, "scope")
-            )
+            if (message.scope != null && Object.hasOwnProperty.call(message, "scope"))
               $root.opentelemetry.proto.common.v1.InstrumentationScope.encode(
                 message.scope,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -8321,13 +6715,8 @@ $root.opentelemetry = (function () {
                   message.metrics[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -8339,10 +6728,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ScopeMetrics.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ScopeMetrics.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -8364,22 +6750,15 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.scope =
-                    $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 2: {
-                  if (!(message.metrics && message.metrics.length))
-                    message.metrics = [];
-                  message.metrics.push(
-                    $root.opentelemetry.proto.metrics.v1.Metric.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.metrics && message.metrics.length)) message.metrics = [];
+                  message.metrics.push($root.opentelemetry.proto.metrics.v1.Metric.decode(reader, reader.uint32()));
                   break;
                 }
                 case 3: {
@@ -8416,31 +6795,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ScopeMetrics.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.scope != null && message.hasOwnProperty("scope")) {
-              var error =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(
-                  message.scope,
-                );
+              var error = $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(message.scope);
               if (error) return "scope." + error;
             }
             if (message.metrics != null && message.hasOwnProperty("metrics")) {
-              if (!Array.isArray(message.metrics))
-                return "metrics: array expected";
+              if (!Array.isArray(message.metrics)) return "metrics: array expected";
               for (var i = 0; i < message.metrics.length; ++i) {
-                var error = $root.opentelemetry.proto.metrics.v1.Metric.verify(
-                  message.metrics[i],
-                );
+                var error = $root.opentelemetry.proto.metrics.v1.Metric.verify(message.metrics[i]);
                 if (error) return "metrics." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -8452,42 +6820,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.ScopeMetrics} ScopeMetrics
            */
           ScopeMetrics.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.ScopeMetrics
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.ScopeMetrics();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.ScopeMetrics) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.ScopeMetrics();
             if (object.scope != null) {
               if (typeof object.scope !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.ScopeMetrics.scope: object expected",
-                );
-              message.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(
-                  object.scope,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.ScopeMetrics.scope: object expected");
+              message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(object.scope);
             }
             if (object.metrics) {
               if (!Array.isArray(object.metrics))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.ScopeMetrics.metrics: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.ScopeMetrics.metrics: array expected");
               message.metrics = [];
               for (var i = 0; i < object.metrics.length; ++i) {
                 if (typeof object.metrics[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.ScopeMetrics.metrics: object expected",
-                  );
-                message.metrics[i] =
-                  $root.opentelemetry.proto.metrics.v1.Metric.fromObject(
-                    object.metrics[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.ScopeMetrics.metrics: object expected");
+                message.metrics[i] = $root.opentelemetry.proto.metrics.v1.Metric.fromObject(object.metrics[i]);
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -8508,25 +6858,13 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.scope != null && message.hasOwnProperty("scope"))
-              object.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(
-                  message.scope,
-                  options,
-                );
+              object.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(message.scope, options);
             if (message.metrics && message.metrics.length) {
               object.metrics = [];
               for (var j = 0; j < message.metrics.length; ++j)
-                object.metrics[j] =
-                  $root.opentelemetry.proto.metrics.v1.Metric.toObject(
-                    message.metrics[j],
-                    options,
-                  );
+                object.metrics[j] = $root.opentelemetry.proto.metrics.v1.Metric.toObject(message.metrics[j], options);
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -8537,10 +6875,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ScopeMetrics.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ScopeMetrics
@@ -8554,9 +6889,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ScopeMetrics"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ScopeMetrics";
           };
           return ScopeMetrics;
         })();
@@ -8584,13 +6917,8 @@ $root.opentelemetry = (function () {
            */
           function Metric(properties) {
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Metric name.
@@ -8657,15 +6985,7 @@ $root.opentelemetry = (function () {
            * @instance
            */
           Object.defineProperty(Metric.prototype, "data", {
-            get: $util.oneOfGetter(
-              ($oneOfFields = [
-                "gauge",
-                "sum",
-                "histogram",
-                "exponentialHistogram",
-                "summary",
-              ]),
-            ),
+            get: $util.oneOfGetter(($oneOfFields = ["gauge", "sum", "histogram", "exponentialHistogram", "summary"])),
             set: $util.oneOfSetter($oneOfFields),
           });
           /**
@@ -8690,59 +7010,33 @@ $root.opentelemetry = (function () {
            */
           Metric.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.name != null &&
-              Object.hasOwnProperty.call(message, "name")
-            )
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
               writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.name);
-            if (
-              message.description != null &&
-              Object.hasOwnProperty.call(message, "description")
-            )
-              writer
-                .uint32(/* id 2, wireType 2 =*/ 18)
-                .string(message.description);
-            if (
-              message.unit != null &&
-              Object.hasOwnProperty.call(message, "unit")
-            )
+            if (message.description != null && Object.hasOwnProperty.call(message, "description"))
+              writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.description);
+            if (message.unit != null && Object.hasOwnProperty.call(message, "unit"))
               writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.unit);
-            if (
-              message.gauge != null &&
-              Object.hasOwnProperty.call(message, "gauge")
-            )
+            if (message.gauge != null && Object.hasOwnProperty.call(message, "gauge"))
               $root.opentelemetry.proto.metrics.v1.Gauge.encode(
                 message.gauge,
                 writer.uint32(/* id 5, wireType 2 =*/ 42).fork(),
               ).ldelim();
-            if (
-              message.sum != null &&
-              Object.hasOwnProperty.call(message, "sum")
-            )
+            if (message.sum != null && Object.hasOwnProperty.call(message, "sum"))
               $root.opentelemetry.proto.metrics.v1.Sum.encode(
                 message.sum,
                 writer.uint32(/* id 7, wireType 2 =*/ 58).fork(),
               ).ldelim();
-            if (
-              message.histogram != null &&
-              Object.hasOwnProperty.call(message, "histogram")
-            )
+            if (message.histogram != null && Object.hasOwnProperty.call(message, "histogram"))
               $root.opentelemetry.proto.metrics.v1.Histogram.encode(
                 message.histogram,
                 writer.uint32(/* id 9, wireType 2 =*/ 74).fork(),
               ).ldelim();
-            if (
-              message.exponentialHistogram != null &&
-              Object.hasOwnProperty.call(message, "exponentialHistogram")
-            )
+            if (message.exponentialHistogram != null && Object.hasOwnProperty.call(message, "exponentialHistogram"))
               $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.encode(
                 message.exponentialHistogram,
                 writer.uint32(/* id 10, wireType 2 =*/ 82).fork(),
               ).ldelim();
-            if (
-              message.summary != null &&
-              Object.hasOwnProperty.call(message, "summary")
-            )
+            if (message.summary != null && Object.hasOwnProperty.call(message, "summary"))
               $root.opentelemetry.proto.metrics.v1.Summary.encode(
                 message.summary,
                 writer.uint32(/* id 11, wireType 2 =*/ 90).fork(),
@@ -8792,42 +7086,26 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 5: {
-                  message.gauge =
-                    $root.opentelemetry.proto.metrics.v1.Gauge.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.gauge = $root.opentelemetry.proto.metrics.v1.Gauge.decode(reader, reader.uint32());
                   break;
                 }
                 case 7: {
-                  message.sum = $root.opentelemetry.proto.metrics.v1.Sum.decode(
+                  message.sum = $root.opentelemetry.proto.metrics.v1.Sum.decode(reader, reader.uint32());
+                  break;
+                }
+                case 9: {
+                  message.histogram = $root.opentelemetry.proto.metrics.v1.Histogram.decode(reader, reader.uint32());
+                  break;
+                }
+                case 10: {
+                  message.exponentialHistogram = $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.decode(
                     reader,
                     reader.uint32(),
                   );
                   break;
                 }
-                case 9: {
-                  message.histogram =
-                    $root.opentelemetry.proto.metrics.v1.Histogram.decode(
-                      reader,
-                      reader.uint32(),
-                    );
-                  break;
-                }
-                case 10: {
-                  message.exponentialHistogram =
-                    $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.decode(
-                      reader,
-                      reader.uint32(),
-                    );
-                  break;
-                }
                 case 11: {
-                  message.summary =
-                    $root.opentelemetry.proto.metrics.v1.Summary.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.summary = $root.opentelemetry.proto.metrics.v1.Summary.decode(reader, reader.uint32());
                   break;
                 }
                 default:
@@ -8860,25 +7138,18 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Metric.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
             if (message.name != null && message.hasOwnProperty("name"))
               if (!$util.isString(message.name)) return "name: string expected";
-            if (
-              message.description != null &&
-              message.hasOwnProperty("description")
-            )
-              if (!$util.isString(message.description))
-                return "description: string expected";
+            if (message.description != null && message.hasOwnProperty("description"))
+              if (!$util.isString(message.description)) return "description: string expected";
             if (message.unit != null && message.hasOwnProperty("unit"))
               if (!$util.isString(message.unit)) return "unit: string expected";
             if (message.gauge != null && message.hasOwnProperty("gauge")) {
               properties.data = 1;
               {
-                var error = $root.opentelemetry.proto.metrics.v1.Gauge.verify(
-                  message.gauge,
-                );
+                var error = $root.opentelemetry.proto.metrics.v1.Gauge.verify(message.gauge);
                 if (error) return "gauge." + error;
               }
             }
@@ -8886,37 +7157,25 @@ $root.opentelemetry = (function () {
               if (properties.data === 1) return "data: multiple values";
               properties.data = 1;
               {
-                var error = $root.opentelemetry.proto.metrics.v1.Sum.verify(
-                  message.sum,
-                );
+                var error = $root.opentelemetry.proto.metrics.v1.Sum.verify(message.sum);
                 if (error) return "sum." + error;
               }
             }
-            if (
-              message.histogram != null &&
-              message.hasOwnProperty("histogram")
-            ) {
+            if (message.histogram != null && message.hasOwnProperty("histogram")) {
               if (properties.data === 1) return "data: multiple values";
               properties.data = 1;
               {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.Histogram.verify(
-                    message.histogram,
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.Histogram.verify(message.histogram);
                 if (error) return "histogram." + error;
               }
             }
-            if (
-              message.exponentialHistogram != null &&
-              message.hasOwnProperty("exponentialHistogram")
-            ) {
+            if (message.exponentialHistogram != null && message.hasOwnProperty("exponentialHistogram")) {
               if (properties.data === 1) return "data: multiple values";
               properties.data = 1;
               {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.verify(
-                    message.exponentialHistogram,
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.verify(
+                  message.exponentialHistogram,
+                );
                 if (error) return "exponentialHistogram." + error;
               }
             }
@@ -8924,9 +7183,7 @@ $root.opentelemetry = (function () {
               if (properties.data === 1) return "data: multiple values";
               properties.data = 1;
               {
-                var error = $root.opentelemetry.proto.metrics.v1.Summary.verify(
-                  message.summary,
-                );
+                var error = $root.opentelemetry.proto.metrics.v1.Summary.verify(message.summary);
                 if (error) return "summary." + error;
               }
             }
@@ -8941,61 +7198,37 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Metric} Metric
            */
           Metric.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.metrics.v1.Metric)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Metric) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Metric();
             if (object.name != null) message.name = String(object.name);
-            if (object.description != null)
-              message.description = String(object.description);
+            if (object.description != null) message.description = String(object.description);
             if (object.unit != null) message.unit = String(object.unit);
             if (object.gauge != null) {
               if (typeof object.gauge !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Metric.gauge: object expected",
-                );
-              message.gauge =
-                $root.opentelemetry.proto.metrics.v1.Gauge.fromObject(
-                  object.gauge,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Metric.gauge: object expected");
+              message.gauge = $root.opentelemetry.proto.metrics.v1.Gauge.fromObject(object.gauge);
             }
             if (object.sum != null) {
               if (typeof object.sum !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Metric.sum: object expected",
-                );
-              message.sum = $root.opentelemetry.proto.metrics.v1.Sum.fromObject(
-                object.sum,
-              );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Metric.sum: object expected");
+              message.sum = $root.opentelemetry.proto.metrics.v1.Sum.fromObject(object.sum);
             }
             if (object.histogram != null) {
               if (typeof object.histogram !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Metric.histogram: object expected",
-                );
-              message.histogram =
-                $root.opentelemetry.proto.metrics.v1.Histogram.fromObject(
-                  object.histogram,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Metric.histogram: object expected");
+              message.histogram = $root.opentelemetry.proto.metrics.v1.Histogram.fromObject(object.histogram);
             }
             if (object.exponentialHistogram != null) {
               if (typeof object.exponentialHistogram !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Metric.exponentialHistogram: object expected",
-                );
-              message.exponentialHistogram =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.fromObject(
-                  object.exponentialHistogram,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Metric.exponentialHistogram: object expected");
+              message.exponentialHistogram = $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.fromObject(
+                object.exponentialHistogram,
+              );
             }
             if (object.summary != null) {
               if (typeof object.summary !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Metric.summary: object expected",
-                );
-              message.summary =
-                $root.opentelemetry.proto.metrics.v1.Summary.fromObject(
-                  object.summary,
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Metric.summary: object expected");
+              message.summary = $root.opentelemetry.proto.metrics.v1.Summary.fromObject(object.summary);
             }
             return message;
           };
@@ -9016,58 +7249,31 @@ $root.opentelemetry = (function () {
               object.description = "";
               object.unit = "";
             }
-            if (message.name != null && message.hasOwnProperty("name"))
-              object.name = message.name;
-            if (
-              message.description != null &&
-              message.hasOwnProperty("description")
-            )
+            if (message.name != null && message.hasOwnProperty("name")) object.name = message.name;
+            if (message.description != null && message.hasOwnProperty("description"))
               object.description = message.description;
-            if (message.unit != null && message.hasOwnProperty("unit"))
-              object.unit = message.unit;
+            if (message.unit != null && message.hasOwnProperty("unit")) object.unit = message.unit;
             if (message.gauge != null && message.hasOwnProperty("gauge")) {
-              object.gauge =
-                $root.opentelemetry.proto.metrics.v1.Gauge.toObject(
-                  message.gauge,
-                  options,
-                );
+              object.gauge = $root.opentelemetry.proto.metrics.v1.Gauge.toObject(message.gauge, options);
               if (options.oneofs) object.data = "gauge";
             }
             if (message.sum != null && message.hasOwnProperty("sum")) {
-              object.sum = $root.opentelemetry.proto.metrics.v1.Sum.toObject(
-                message.sum,
-                options,
-              );
+              object.sum = $root.opentelemetry.proto.metrics.v1.Sum.toObject(message.sum, options);
               if (options.oneofs) object.data = "sum";
             }
-            if (
-              message.histogram != null &&
-              message.hasOwnProperty("histogram")
-            ) {
-              object.histogram =
-                $root.opentelemetry.proto.metrics.v1.Histogram.toObject(
-                  message.histogram,
-                  options,
-                );
+            if (message.histogram != null && message.hasOwnProperty("histogram")) {
+              object.histogram = $root.opentelemetry.proto.metrics.v1.Histogram.toObject(message.histogram, options);
               if (options.oneofs) object.data = "histogram";
             }
-            if (
-              message.exponentialHistogram != null &&
-              message.hasOwnProperty("exponentialHistogram")
-            ) {
-              object.exponentialHistogram =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.toObject(
-                  message.exponentialHistogram,
-                  options,
-                );
+            if (message.exponentialHistogram != null && message.hasOwnProperty("exponentialHistogram")) {
+              object.exponentialHistogram = $root.opentelemetry.proto.metrics.v1.ExponentialHistogram.toObject(
+                message.exponentialHistogram,
+                options,
+              );
               if (options.oneofs) object.data = "exponentialHistogram";
             }
             if (message.summary != null && message.hasOwnProperty("summary")) {
-              object.summary =
-                $root.opentelemetry.proto.metrics.v1.Summary.toObject(
-                  message.summary,
-                  options,
-                );
+              object.summary = $root.opentelemetry.proto.metrics.v1.Summary.toObject(message.summary, options);
               if (options.oneofs) object.data = "summary";
             }
             return object;
@@ -9080,10 +7286,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Metric.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Metric
@@ -9119,13 +7322,8 @@ $root.opentelemetry = (function () {
           function Gauge(properties) {
             this.dataPoints = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Gauge dataPoints.
@@ -9195,13 +7393,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.dataPoints && message.dataPoints.length))
-                    message.dataPoints = [];
+                  if (!(message.dataPoints && message.dataPoints.length)) message.dataPoints = [];
                   message.dataPoints.push(
-                    $root.opentelemetry.proto.metrics.v1.NumberDataPoint.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.NumberDataPoint.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -9235,19 +7429,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Gauge.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.dataPoints != null &&
-              message.hasOwnProperty("dataPoints")
-            ) {
-              if (!Array.isArray(message.dataPoints))
-                return "dataPoints: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.dataPoints != null && message.hasOwnProperty("dataPoints")) {
+              if (!Array.isArray(message.dataPoints)) return "dataPoints: array expected";
               for (var i = 0; i < message.dataPoints.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.verify(
-                    message.dataPoints[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.verify(message.dataPoints[i]);
                 if (error) return "dataPoints." + error;
               }
             }
@@ -9262,24 +7448,18 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Gauge} Gauge
            */
           Gauge.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.metrics.v1.Gauge)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Gauge) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Gauge();
             if (object.dataPoints) {
               if (!Array.isArray(object.dataPoints))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Gauge.dataPoints: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Gauge.dataPoints: array expected");
               message.dataPoints = [];
               for (var i = 0; i < object.dataPoints.length; ++i) {
                 if (typeof object.dataPoints[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.Gauge.dataPoints: object expected",
-                  );
-                message.dataPoints[i] =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.fromObject(
-                    object.dataPoints[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.Gauge.dataPoints: object expected");
+                message.dataPoints[i] = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.fromObject(
+                  object.dataPoints[i],
+                );
               }
             }
             return message;
@@ -9300,11 +7480,10 @@ $root.opentelemetry = (function () {
             if (message.dataPoints && message.dataPoints.length) {
               object.dataPoints = [];
               for (var j = 0; j < message.dataPoints.length; ++j)
-                object.dataPoints[j] =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.toObject(
-                    message.dataPoints[j],
-                    options,
-                  );
+                object.dataPoints[j] = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.toObject(
+                  message.dataPoints[j],
+                  options,
+                );
             }
             return object;
           };
@@ -9316,10 +7495,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Gauge.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Gauge
@@ -9357,13 +7533,8 @@ $root.opentelemetry = (function () {
           function Sum(properties) {
             this.dataPoints = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Sum dataPoints.
@@ -9414,20 +7585,10 @@ $root.opentelemetry = (function () {
                   message.dataPoints[i],
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
                 ).ldelim();
-            if (
-              message.aggregationTemporality != null &&
-              Object.hasOwnProperty.call(message, "aggregationTemporality")
-            )
-              writer
-                .uint32(/* id 2, wireType 0 =*/ 16)
-                .int32(message.aggregationTemporality);
-            if (
-              message.isMonotonic != null &&
-              Object.hasOwnProperty.call(message, "isMonotonic")
-            )
-              writer
-                .uint32(/* id 3, wireType 0 =*/ 24)
-                .bool(message.isMonotonic);
+            if (message.aggregationTemporality != null && Object.hasOwnProperty.call(message, "aggregationTemporality"))
+              writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.aggregationTemporality);
+            if (message.isMonotonic != null && Object.hasOwnProperty.call(message, "isMonotonic"))
+              writer.uint32(/* id 3, wireType 0 =*/ 24).bool(message.isMonotonic);
             return writer;
           };
           /**
@@ -9461,13 +7622,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.dataPoints && message.dataPoints.length))
-                    message.dataPoints = [];
+                  if (!(message.dataPoints && message.dataPoints.length)) message.dataPoints = [];
                   message.dataPoints.push(
-                    $root.opentelemetry.proto.metrics.v1.NumberDataPoint.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.NumberDataPoint.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -9509,26 +7666,15 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Sum.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.dataPoints != null &&
-              message.hasOwnProperty("dataPoints")
-            ) {
-              if (!Array.isArray(message.dataPoints))
-                return "dataPoints: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.dataPoints != null && message.hasOwnProperty("dataPoints")) {
+              if (!Array.isArray(message.dataPoints)) return "dataPoints: array expected";
               for (var i = 0; i < message.dataPoints.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.verify(
-                    message.dataPoints[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.verify(message.dataPoints[i]);
                 if (error) return "dataPoints." + error;
               }
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               switch (message.aggregationTemporality) {
                 default:
                   return "aggregationTemporality: enum value expected";
@@ -9537,12 +7683,8 @@ $root.opentelemetry = (function () {
                 case 2:
                   break;
               }
-            if (
-              message.isMonotonic != null &&
-              message.hasOwnProperty("isMonotonic")
-            )
-              if (typeof message.isMonotonic !== "boolean")
-                return "isMonotonic: boolean expected";
+            if (message.isMonotonic != null && message.hasOwnProperty("isMonotonic"))
+              if (typeof message.isMonotonic !== "boolean") return "isMonotonic: boolean expected";
             return null;
           };
           /**
@@ -9554,31 +7696,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Sum} Sum
            */
           Sum.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.metrics.v1.Sum)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Sum) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Sum();
             if (object.dataPoints) {
               if (!Array.isArray(object.dataPoints))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Sum.dataPoints: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Sum.dataPoints: array expected");
               message.dataPoints = [];
               for (var i = 0; i < object.dataPoints.length; ++i) {
                 if (typeof object.dataPoints[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.Sum.dataPoints: object expected",
-                  );
-                message.dataPoints[i] =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.fromObject(
-                    object.dataPoints[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.Sum.dataPoints: object expected");
+                message.dataPoints[i] = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.fromObject(
+                  object.dataPoints[i],
+                );
               }
             }
             switch (object.aggregationTemporality) {
               default:
                 if (typeof object.aggregationTemporality === "number") {
-                  message.aggregationTemporality =
-                    object.aggregationTemporality;
+                  message.aggregationTemporality = object.aggregationTemporality;
                   break;
                 }
                 break;
@@ -9595,8 +7730,7 @@ $root.opentelemetry = (function () {
                 message.aggregationTemporality = 2;
                 break;
             }
-            if (object.isMonotonic != null)
-              message.isMonotonic = Boolean(object.isMonotonic);
+            if (object.isMonotonic != null) message.isMonotonic = Boolean(object.isMonotonic);
             return message;
           };
           /**
@@ -9613,38 +7747,26 @@ $root.opentelemetry = (function () {
             var object = {};
             if (options.arrays || options.defaults) object.dataPoints = [];
             if (options.defaults) {
-              object.aggregationTemporality =
-                options.enums === String
-                  ? "AGGREGATION_TEMPORALITY_UNSPECIFIED"
-                  : 0;
+              object.aggregationTemporality = options.enums === String ? "AGGREGATION_TEMPORALITY_UNSPECIFIED" : 0;
               object.isMonotonic = false;
             }
             if (message.dataPoints && message.dataPoints.length) {
               object.dataPoints = [];
               for (var j = 0; j < message.dataPoints.length; ++j)
-                object.dataPoints[j] =
-                  $root.opentelemetry.proto.metrics.v1.NumberDataPoint.toObject(
-                    message.dataPoints[j],
-                    options,
-                  );
+                object.dataPoints[j] = $root.opentelemetry.proto.metrics.v1.NumberDataPoint.toObject(
+                  message.dataPoints[j],
+                  options,
+                );
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               object.aggregationTemporality =
                 options.enums === String
-                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[
-                      message.aggregationTemporality
-                    ] === undefined
+                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality] ===
+                    undefined
                     ? message.aggregationTemporality
-                    : $root.opentelemetry.proto.metrics.v1
-                        .AggregationTemporality[message.aggregationTemporality]
+                    : $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality]
                   : message.aggregationTemporality;
-            if (
-              message.isMonotonic != null &&
-              message.hasOwnProperty("isMonotonic")
-            )
+            if (message.isMonotonic != null && message.hasOwnProperty("isMonotonic"))
               object.isMonotonic = message.isMonotonic;
             return object;
           };
@@ -9656,10 +7778,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Sum.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Sum
@@ -9696,13 +7815,8 @@ $root.opentelemetry = (function () {
           function Histogram(properties) {
             this.dataPoints = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Histogram dataPoints.
@@ -9746,13 +7860,8 @@ $root.opentelemetry = (function () {
                   message.dataPoints[i],
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
                 ).ldelim();
-            if (
-              message.aggregationTemporality != null &&
-              Object.hasOwnProperty.call(message, "aggregationTemporality")
-            )
-              writer
-                .uint32(/* id 2, wireType 0 =*/ 16)
-                .int32(message.aggregationTemporality);
+            if (message.aggregationTemporality != null && Object.hasOwnProperty.call(message, "aggregationTemporality"))
+              writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.aggregationTemporality);
             return writer;
           };
           /**
@@ -9764,10 +7873,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          Histogram.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          Histogram.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -9789,13 +7895,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.dataPoints && message.dataPoints.length))
-                    message.dataPoints = [];
+                  if (!(message.dataPoints && message.dataPoints.length)) message.dataPoints = [];
                   message.dataPoints.push(
-                    $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -9833,26 +7935,15 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Histogram.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.dataPoints != null &&
-              message.hasOwnProperty("dataPoints")
-            ) {
-              if (!Array.isArray(message.dataPoints))
-                return "dataPoints: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.dataPoints != null && message.hasOwnProperty("dataPoints")) {
+              if (!Array.isArray(message.dataPoints)) return "dataPoints: array expected";
               for (var i = 0; i < message.dataPoints.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.verify(
-                    message.dataPoints[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.verify(message.dataPoints[i]);
                 if (error) return "dataPoints." + error;
               }
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               switch (message.aggregationTemporality) {
                 default:
                   return "aggregationTemporality: enum value expected";
@@ -9872,33 +7963,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Histogram} Histogram
            */
           Histogram.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.metrics.v1.Histogram
-            )
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Histogram) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Histogram();
             if (object.dataPoints) {
               if (!Array.isArray(object.dataPoints))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Histogram.dataPoints: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Histogram.dataPoints: array expected");
               message.dataPoints = [];
               for (var i = 0; i < object.dataPoints.length; ++i) {
                 if (typeof object.dataPoints[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.Histogram.dataPoints: object expected",
-                  );
-                message.dataPoints[i] =
-                  $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.fromObject(
-                    object.dataPoints[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.Histogram.dataPoints: object expected");
+                message.dataPoints[i] = $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.fromObject(
+                  object.dataPoints[i],
+                );
               }
             }
             switch (object.aggregationTemporality) {
               default:
                 if (typeof object.aggregationTemporality === "number") {
-                  message.aggregationTemporality =
-                    object.aggregationTemporality;
+                  message.aggregationTemporality = object.aggregationTemporality;
                   break;
                 }
                 break;
@@ -9931,31 +8013,22 @@ $root.opentelemetry = (function () {
             var object = {};
             if (options.arrays || options.defaults) object.dataPoints = [];
             if (options.defaults)
-              object.aggregationTemporality =
-                options.enums === String
-                  ? "AGGREGATION_TEMPORALITY_UNSPECIFIED"
-                  : 0;
+              object.aggregationTemporality = options.enums === String ? "AGGREGATION_TEMPORALITY_UNSPECIFIED" : 0;
             if (message.dataPoints && message.dataPoints.length) {
               object.dataPoints = [];
               for (var j = 0; j < message.dataPoints.length; ++j)
-                object.dataPoints[j] =
-                  $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.toObject(
-                    message.dataPoints[j],
-                    options,
-                  );
+                object.dataPoints[j] = $root.opentelemetry.proto.metrics.v1.HistogramDataPoint.toObject(
+                  message.dataPoints[j],
+                  options,
+                );
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               object.aggregationTemporality =
                 options.enums === String
-                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[
-                      message.aggregationTemporality
-                    ] === undefined
+                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality] ===
+                    undefined
                     ? message.aggregationTemporality
-                    : $root.opentelemetry.proto.metrics.v1
-                        .AggregationTemporality[message.aggregationTemporality]
+                    : $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality]
                   : message.aggregationTemporality;
             return object;
           };
@@ -9967,10 +8040,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Histogram.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Histogram
@@ -10007,13 +8077,8 @@ $root.opentelemetry = (function () {
           function ExponentialHistogram(properties) {
             this.dataPoints = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ExponentialHistogram dataPoints.
@@ -10057,13 +8122,8 @@ $root.opentelemetry = (function () {
                   message.dataPoints[i],
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
                 ).ldelim();
-            if (
-              message.aggregationTemporality != null &&
-              Object.hasOwnProperty.call(message, "aggregationTemporality")
-            )
-              writer
-                .uint32(/* id 2, wireType 0 =*/ 16)
-                .int32(message.aggregationTemporality);
+            if (message.aggregationTemporality != null && Object.hasOwnProperty.call(message, "aggregationTemporality"))
+              writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.aggregationTemporality);
             return writer;
           };
           /**
@@ -10075,10 +8135,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ExponentialHistogram.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ExponentialHistogram.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -10095,19 +8152,14 @@ $root.opentelemetry = (function () {
           ExponentialHistogram.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.ExponentialHistogram();
+              message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogram();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.dataPoints && message.dataPoints.length))
-                    message.dataPoints = [];
+                  if (!(message.dataPoints && message.dataPoints.length)) message.dataPoints = [];
                   message.dataPoints.push(
-                    $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -10132,9 +8184,7 @@ $root.opentelemetry = (function () {
            * @throws {Error} If the payload is not a reader or valid buffer
            * @throws {$protobuf.util.ProtocolError} If required fields are missing
            */
-          ExponentialHistogram.decodeDelimited = function decodeDelimited(
-            reader,
-          ) {
+          ExponentialHistogram.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader)) reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
           };
@@ -10147,26 +8197,17 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ExponentialHistogram.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.dataPoints != null &&
-              message.hasOwnProperty("dataPoints")
-            ) {
-              if (!Array.isArray(message.dataPoints))
-                return "dataPoints: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.dataPoints != null && message.hasOwnProperty("dataPoints")) {
+              if (!Array.isArray(message.dataPoints)) return "dataPoints: array expected";
               for (var i = 0; i < message.dataPoints.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.verify(
-                    message.dataPoints[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.verify(
+                  message.dataPoints[i],
+                );
                 if (error) return "dataPoints." + error;
               }
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               switch (message.aggregationTemporality) {
                 default:
                   return "aggregationTemporality: enum value expected";
@@ -10186,35 +8227,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.ExponentialHistogram} ExponentialHistogram
            */
           ExponentialHistogram.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.ExponentialHistogram
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.ExponentialHistogram();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.ExponentialHistogram) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogram();
             if (object.dataPoints) {
               if (!Array.isArray(object.dataPoints))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.ExponentialHistogram.dataPoints: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.ExponentialHistogram.dataPoints: array expected");
               message.dataPoints = [];
               for (var i = 0; i < object.dataPoints.length; ++i) {
                 if (typeof object.dataPoints[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.ExponentialHistogram.dataPoints: object expected",
-                  );
-                message.dataPoints[i] =
-                  $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.fromObject(
-                    object.dataPoints[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.ExponentialHistogram.dataPoints: object expected");
+                message.dataPoints[i] = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.fromObject(
+                  object.dataPoints[i],
+                );
               }
             }
             switch (object.aggregationTemporality) {
               default:
                 if (typeof object.aggregationTemporality === "number") {
-                  message.aggregationTemporality =
-                    object.aggregationTemporality;
+                  message.aggregationTemporality = object.aggregationTemporality;
                   break;
                 }
                 break;
@@ -10247,31 +8277,22 @@ $root.opentelemetry = (function () {
             var object = {};
             if (options.arrays || options.defaults) object.dataPoints = [];
             if (options.defaults)
-              object.aggregationTemporality =
-                options.enums === String
-                  ? "AGGREGATION_TEMPORALITY_UNSPECIFIED"
-                  : 0;
+              object.aggregationTemporality = options.enums === String ? "AGGREGATION_TEMPORALITY_UNSPECIFIED" : 0;
             if (message.dataPoints && message.dataPoints.length) {
               object.dataPoints = [];
               for (var j = 0; j < message.dataPoints.length; ++j)
-                object.dataPoints[j] =
-                  $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.toObject(
-                    message.dataPoints[j],
-                    options,
-                  );
+                object.dataPoints[j] = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.toObject(
+                  message.dataPoints[j],
+                  options,
+                );
             }
-            if (
-              message.aggregationTemporality != null &&
-              message.hasOwnProperty("aggregationTemporality")
-            )
+            if (message.aggregationTemporality != null && message.hasOwnProperty("aggregationTemporality"))
               object.aggregationTemporality =
                 options.enums === String
-                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[
-                      message.aggregationTemporality
-                    ] === undefined
+                  ? $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality] ===
+                    undefined
                     ? message.aggregationTemporality
-                    : $root.opentelemetry.proto.metrics.v1
-                        .AggregationTemporality[message.aggregationTemporality]
+                    : $root.opentelemetry.proto.metrics.v1.AggregationTemporality[message.aggregationTemporality]
                   : message.aggregationTemporality;
             return object;
           };
@@ -10283,10 +8304,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ExponentialHistogram.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ExponentialHistogram
@@ -10300,10 +8318,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix +
-              "/opentelemetry.proto.metrics.v1.ExponentialHistogram"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ExponentialHistogram";
           };
           return ExponentialHistogram;
         })();
@@ -10325,13 +8340,8 @@ $root.opentelemetry = (function () {
           function Summary(properties) {
             this.dataPoints = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Summary dataPoints.
@@ -10401,13 +8411,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.dataPoints && message.dataPoints.length))
-                    message.dataPoints = [];
+                  if (!(message.dataPoints && message.dataPoints.length)) message.dataPoints = [];
                   message.dataPoints.push(
-                    $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -10441,19 +8447,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Summary.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.dataPoints != null &&
-              message.hasOwnProperty("dataPoints")
-            ) {
-              if (!Array.isArray(message.dataPoints))
-                return "dataPoints: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.dataPoints != null && message.hasOwnProperty("dataPoints")) {
+              if (!Array.isArray(message.dataPoints)) return "dataPoints: array expected";
               for (var i = 0; i < message.dataPoints.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.verify(
-                    message.dataPoints[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.verify(message.dataPoints[i]);
                 if (error) return "dataPoints." + error;
               }
             }
@@ -10468,24 +8466,18 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Summary} Summary
            */
           Summary.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.metrics.v1.Summary)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Summary) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Summary();
             if (object.dataPoints) {
               if (!Array.isArray(object.dataPoints))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Summary.dataPoints: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Summary.dataPoints: array expected");
               message.dataPoints = [];
               for (var i = 0; i < object.dataPoints.length; ++i) {
                 if (typeof object.dataPoints[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.Summary.dataPoints: object expected",
-                  );
-                message.dataPoints[i] =
-                  $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.fromObject(
-                    object.dataPoints[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.Summary.dataPoints: object expected");
+                message.dataPoints[i] = $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.fromObject(
+                  object.dataPoints[i],
+                );
               }
             }
             return message;
@@ -10506,11 +8498,10 @@ $root.opentelemetry = (function () {
             if (message.dataPoints && message.dataPoints.length) {
               object.dataPoints = [];
               for (var j = 0; j < message.dataPoints.length; ++j)
-                object.dataPoints[j] =
-                  $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.toObject(
-                    message.dataPoints[j],
-                    options,
-                  );
+                object.dataPoints[j] = $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.toObject(
+                  message.dataPoints[j],
+                  options,
+                );
             }
             return object;
           };
@@ -10522,10 +8513,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Summary.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Summary
@@ -10570,8 +8558,7 @@ $root.opentelemetry = (function () {
           var valuesById = {},
             values = Object.create(valuesById);
           values[(valuesById[0] = "DATA_POINT_FLAGS_DO_NOT_USE")] = 0;
-          values[(valuesById[1] = "DATA_POINT_FLAGS_NO_RECORDED_VALUE_MASK")] =
-            1;
+          values[(valuesById[1] = "DATA_POINT_FLAGS_NO_RECORDED_VALUE_MASK")] = 1;
           return values;
         })();
         v1.NumberDataPoint = (function () {
@@ -10599,13 +8586,8 @@ $root.opentelemetry = (function () {
             this.attributes = [];
             this.exemplars = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * NumberDataPoint attributes.
@@ -10690,37 +8672,19 @@ $root.opentelemetry = (function () {
            */
           NumberDataPoint.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.startTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "startTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 2, wireType 1 =*/ 17)
-                .fixed64(message.startTimeUnixNano);
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 3, wireType 1 =*/ 25)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.asDouble != null &&
-              Object.hasOwnProperty.call(message, "asDouble")
-            )
-              writer
-                .uint32(/* id 4, wireType 1 =*/ 33)
-                .double(message.asDouble);
+            if (message.startTimeUnixNano != null && Object.hasOwnProperty.call(message, "startTimeUnixNano"))
+              writer.uint32(/* id 2, wireType 1 =*/ 17).fixed64(message.startTimeUnixNano);
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 3, wireType 1 =*/ 25).fixed64(message.timeUnixNano);
+            if (message.asDouble != null && Object.hasOwnProperty.call(message, "asDouble"))
+              writer.uint32(/* id 4, wireType 1 =*/ 33).double(message.asDouble);
             if (message.exemplars != null && message.exemplars.length)
               for (var i = 0; i < message.exemplars.length; ++i)
                 $root.opentelemetry.proto.metrics.v1.Exemplar.encode(
                   message.exemplars[i],
                   writer.uint32(/* id 5, wireType 2 =*/ 42).fork(),
                 ).ldelim();
-            if (
-              message.asInt != null &&
-              Object.hasOwnProperty.call(message, "asInt")
-            )
+            if (message.asInt != null && Object.hasOwnProperty.call(message, "asInt"))
               writer.uint32(/* id 6, wireType 1 =*/ 49).sfixed64(message.asInt);
             if (message.attributes != null && message.attributes.length)
               for (var i = 0; i < message.attributes.length; ++i)
@@ -10728,10 +8692,7 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 7, wireType 2 =*/ 58).fork(),
                 ).ldelim();
-            if (
-              message.flags != null &&
-              Object.hasOwnProperty.call(message, "flags")
-            )
+            if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
               writer.uint32(/* id 8, wireType 0 =*/ 64).uint32(message.flags);
             return writer;
           };
@@ -10744,10 +8705,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          NumberDataPoint.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          NumberDataPoint.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -10764,20 +8722,13 @@ $root.opentelemetry = (function () {
           NumberDataPoint.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.NumberDataPoint();
+              message = new $root.opentelemetry.proto.metrics.v1.NumberDataPoint();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 7: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 2: {
@@ -10797,14 +8748,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 5: {
-                  if (!(message.exemplars && message.exemplars.length))
-                    message.exemplars = [];
-                  message.exemplars.push(
-                    $root.opentelemetry.proto.metrics.v1.Exemplar.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.exemplars && message.exemplars.length)) message.exemplars = [];
+                  message.exemplars.push($root.opentelemetry.proto.metrics.v1.Exemplar.decode(reader, reader.uint32()));
                   break;
                 }
                 case 8: {
@@ -10841,26 +8786,16 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           NumberDataPoint.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (
                 !$util.isInteger(message.startTimeUnixNano) &&
                 !(
@@ -10870,10 +8805,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "startTimeUnixNano: integer|Long expected";
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -10883,44 +8815,28 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "timeUnixNano: integer|Long expected";
-            if (
-              message.asDouble != null &&
-              message.hasOwnProperty("asDouble")
-            ) {
+            if (message.asDouble != null && message.hasOwnProperty("asDouble")) {
               properties.value = 1;
-              if (typeof message.asDouble !== "number")
-                return "asDouble: number expected";
+              if (typeof message.asDouble !== "number") return "asDouble: number expected";
             }
             if (message.asInt != null && message.hasOwnProperty("asInt")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               if (
                 !$util.isInteger(message.asInt) &&
-                !(
-                  message.asInt &&
-                  $util.isInteger(message.asInt.low) &&
-                  $util.isInteger(message.asInt.high)
-                )
+                !(message.asInt && $util.isInteger(message.asInt.low) && $util.isInteger(message.asInt.high))
               )
                 return "asInt: integer|Long expected";
             }
-            if (
-              message.exemplars != null &&
-              message.hasOwnProperty("exemplars")
-            ) {
-              if (!Array.isArray(message.exemplars))
-                return "exemplars: array expected";
+            if (message.exemplars != null && message.hasOwnProperty("exemplars")) {
+              if (!Array.isArray(message.exemplars)) return "exemplars: array expected";
               for (var i = 0; i < message.exemplars.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.verify(
-                    message.exemplars[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.Exemplar.verify(message.exemplars[i]);
                 if (error) return "exemplars." + error;
               }
             }
             if (message.flags != null && message.hasOwnProperty("flags"))
-              if (!$util.isInteger(message.flags))
-                return "flags: integer expected";
+              if (!$util.isInteger(message.flags)) return "flags: integer expected";
             return null;
           };
           /**
@@ -10932,40 +8848,23 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.NumberDataPoint} NumberDataPoint
            */
           NumberDataPoint.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.NumberDataPoint
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.NumberDataPoint();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.NumberDataPoint) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.NumberDataPoint();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.NumberDataPoint.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.NumberDataPoint.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.NumberDataPoint.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.NumberDataPoint.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.startTimeUnixNano != null)
               if ($util.Long)
-                (message.startTimeUnixNano = $util.Long.fromValue(
-                  object.startTimeUnixNano,
-                )).unsigned = false;
+                (message.startTimeUnixNano = $util.Long.fromValue(object.startTimeUnixNano)).unsigned = false;
               else if (typeof object.startTimeUnixNano === "string")
-                message.startTimeUnixNano = parseInt(
-                  object.startTimeUnixNano,
-                  10,
-                );
+                message.startTimeUnixNano = parseInt(object.startTimeUnixNano, 10);
               else if (typeof object.startTimeUnixNano === "number")
                 message.startTimeUnixNano = object.startTimeUnixNano;
               else if (typeof object.startTimeUnixNano === "object")
@@ -10974,49 +8873,30 @@ $root.opentelemetry = (function () {
                   object.startTimeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
                   object.timeUnixNano.high >>> 0,
                 ).toNumber();
-            if (object.asDouble != null)
-              message.asDouble = Number(object.asDouble);
+            if (object.asDouble != null) message.asDouble = Number(object.asDouble);
             if (object.asInt != null)
-              if ($util.Long)
-                (message.asInt = $util.Long.fromValue(object.asInt)).unsigned =
-                  false;
-              else if (typeof object.asInt === "string")
-                message.asInt = parseInt(object.asInt, 10);
-              else if (typeof object.asInt === "number")
-                message.asInt = object.asInt;
+              if ($util.Long) (message.asInt = $util.Long.fromValue(object.asInt)).unsigned = false;
+              else if (typeof object.asInt === "string") message.asInt = parseInt(object.asInt, 10);
+              else if (typeof object.asInt === "number") message.asInt = object.asInt;
               else if (typeof object.asInt === "object")
-                message.asInt = new $util.LongBits(
-                  object.asInt.low >>> 0,
-                  object.asInt.high >>> 0,
-                ).toNumber();
+                message.asInt = new $util.LongBits(object.asInt.low >>> 0, object.asInt.high >>> 0).toNumber();
             if (object.exemplars) {
               if (!Array.isArray(object.exemplars))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.NumberDataPoint.exemplars: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.NumberDataPoint.exemplars: array expected");
               message.exemplars = [];
               for (var i = 0; i < object.exemplars.length; ++i) {
                 if (typeof object.exemplars[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.NumberDataPoint.exemplars: object expected",
-                  );
-                message.exemplars[i] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(
-                    object.exemplars[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.NumberDataPoint.exemplars: object expected");
+                message.exemplars[i] = $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(object.exemplars[i]);
               }
             }
             if (object.flags != null) message.flags = object.flags >>> 0;
@@ -11042,112 +8922,73 @@ $root.opentelemetry = (function () {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.startTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.startTimeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
               object.flags = 0;
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (typeof message.startTimeUnixNano === "number")
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? String(message.startTimeUnixNano)
-                    : message.startTimeUnixNano;
+                  options.longs === String ? String(message.startTimeUnixNano) : message.startTimeUnixNano;
               else
                 object.startTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.startTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.startTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.startTimeUnixNano.low >>> 0,
                           message.startTimeUnixNano.high >>> 0,
                         ).toNumber()
                       : message.startTimeUnixNano;
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
-            if (
-              message.asDouble != null &&
-              message.hasOwnProperty("asDouble")
-            ) {
+            if (message.asDouble != null && message.hasOwnProperty("asDouble")) {
               object.asDouble =
-                options.json && !isFinite(message.asDouble)
-                  ? String(message.asDouble)
-                  : message.asDouble;
+                options.json && !isFinite(message.asDouble) ? String(message.asDouble) : message.asDouble;
               if (options.oneofs) object.value = "asDouble";
             }
             if (message.exemplars && message.exemplars.length) {
               object.exemplars = [];
               for (var j = 0; j < message.exemplars.length; ++j)
-                object.exemplars[j] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
-                    message.exemplars[j],
-                    options,
-                  );
+                object.exemplars[j] = $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
+                  message.exemplars[j],
+                  options,
+                );
             }
             if (message.asInt != null && message.hasOwnProperty("asInt")) {
               if (typeof message.asInt === "number")
-                object.asInt =
-                  options.longs === String
-                    ? String(message.asInt)
-                    : message.asInt;
+                object.asInt = options.longs === String ? String(message.asInt) : message.asInt;
               else
                 object.asInt =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.asInt)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.asInt.low >>> 0,
-                          message.asInt.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.asInt.low >>> 0, message.asInt.high >>> 0).toNumber()
                       : message.asInt;
               if (options.oneofs) object.value = "asInt";
             }
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (message.flags != null && message.hasOwnProperty("flags"))
-              object.flags = message.flags;
+            if (message.flags != null && message.hasOwnProperty("flags")) object.flags = message.flags;
             return object;
           };
           /**
@@ -11158,10 +8999,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           NumberDataPoint.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for NumberDataPoint
@@ -11175,9 +9013,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.metrics.v1.NumberDataPoint"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.NumberDataPoint";
           };
           return NumberDataPoint;
         })();
@@ -11212,13 +9048,8 @@ $root.opentelemetry = (function () {
             this.explicitBounds = [];
             this.exemplars = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * HistogramDataPoint attributes.
@@ -11336,43 +9167,22 @@ $root.opentelemetry = (function () {
            */
           HistogramDataPoint.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.startTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "startTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 2, wireType 1 =*/ 17)
-                .fixed64(message.startTimeUnixNano);
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 3, wireType 1 =*/ 25)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.count != null &&
-              Object.hasOwnProperty.call(message, "count")
-            )
+            if (message.startTimeUnixNano != null && Object.hasOwnProperty.call(message, "startTimeUnixNano"))
+              writer.uint32(/* id 2, wireType 1 =*/ 17).fixed64(message.startTimeUnixNano);
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 3, wireType 1 =*/ 25).fixed64(message.timeUnixNano);
+            if (message.count != null && Object.hasOwnProperty.call(message, "count"))
               writer.uint32(/* id 4, wireType 1 =*/ 33).fixed64(message.count);
-            if (
-              message.sum != null &&
-              Object.hasOwnProperty.call(message, "sum")
-            )
+            if (message.sum != null && Object.hasOwnProperty.call(message, "sum"))
               writer.uint32(/* id 5, wireType 1 =*/ 41).double(message.sum);
             if (message.bucketCounts != null && message.bucketCounts.length) {
               writer.uint32(/* id 6, wireType 2 =*/ 50).fork();
-              for (var i = 0; i < message.bucketCounts.length; ++i)
-                writer.fixed64(message.bucketCounts[i]);
+              for (var i = 0; i < message.bucketCounts.length; ++i) writer.fixed64(message.bucketCounts[i]);
               writer.ldelim();
             }
-            if (
-              message.explicitBounds != null &&
-              message.explicitBounds.length
-            ) {
+            if (message.explicitBounds != null && message.explicitBounds.length) {
               writer.uint32(/* id 7, wireType 2 =*/ 58).fork();
-              for (var i = 0; i < message.explicitBounds.length; ++i)
-                writer.double(message.explicitBounds[i]);
+              for (var i = 0; i < message.explicitBounds.length; ++i) writer.double(message.explicitBounds[i]);
               writer.ldelim();
             }
             if (message.exemplars != null && message.exemplars.length)
@@ -11387,20 +9197,11 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 9, wireType 2 =*/ 74).fork(),
                 ).ldelim();
-            if (
-              message.flags != null &&
-              Object.hasOwnProperty.call(message, "flags")
-            )
+            if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
               writer.uint32(/* id 10, wireType 0 =*/ 80).uint32(message.flags);
-            if (
-              message.min != null &&
-              Object.hasOwnProperty.call(message, "min")
-            )
+            if (message.min != null && Object.hasOwnProperty.call(message, "min"))
               writer.uint32(/* id 11, wireType 1 =*/ 89).double(message.min);
-            if (
-              message.max != null &&
-              Object.hasOwnProperty.call(message, "max")
-            )
+            if (message.max != null && Object.hasOwnProperty.call(message, "max"))
               writer.uint32(/* id 12, wireType 1 =*/ 97).double(message.max);
             return writer;
           };
@@ -11413,10 +9214,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          HistogramDataPoint.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          HistogramDataPoint.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -11433,20 +9231,13 @@ $root.opentelemetry = (function () {
           HistogramDataPoint.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.HistogramDataPoint();
+              message = new $root.opentelemetry.proto.metrics.v1.HistogramDataPoint();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 9: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 2: {
@@ -11466,36 +9257,24 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 6: {
-                  if (!(message.bucketCounts && message.bucketCounts.length))
-                    message.bucketCounts = [];
+                  if (!(message.bucketCounts && message.bucketCounts.length)) message.bucketCounts = [];
                   if ((tag & 7) === 2) {
                     var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
-                      message.bucketCounts.push(reader.fixed64());
+                    while (reader.pos < end2) message.bucketCounts.push(reader.fixed64());
                   } else message.bucketCounts.push(reader.fixed64());
                   break;
                 }
                 case 7: {
-                  if (
-                    !(message.explicitBounds && message.explicitBounds.length)
-                  )
-                    message.explicitBounds = [];
+                  if (!(message.explicitBounds && message.explicitBounds.length)) message.explicitBounds = [];
                   if ((tag & 7) === 2) {
                     var end2 = reader.uint32() + reader.pos;
-                    while (reader.pos < end2)
-                      message.explicitBounds.push(reader.double());
+                    while (reader.pos < end2) message.explicitBounds.push(reader.double());
                   } else message.explicitBounds.push(reader.double());
                   break;
                 }
                 case 8: {
-                  if (!(message.exemplars && message.exemplars.length))
-                    message.exemplars = [];
-                  message.exemplars.push(
-                    $root.opentelemetry.proto.metrics.v1.Exemplar.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.exemplars && message.exemplars.length)) message.exemplars = [];
+                  message.exemplars.push($root.opentelemetry.proto.metrics.v1.Exemplar.decode(reader, reader.uint32()));
                   break;
                 }
                 case 10: {
@@ -11527,9 +9306,7 @@ $root.opentelemetry = (function () {
            * @throws {Error} If the payload is not a reader or valid buffer
            * @throws {$protobuf.util.ProtocolError} If required fields are missing
            */
-          HistogramDataPoint.decodeDelimited = function decodeDelimited(
-            reader,
-          ) {
+          HistogramDataPoint.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader)) reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
           };
@@ -11542,26 +9319,16 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           HistogramDataPoint.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (
                 !$util.isInteger(message.startTimeUnixNano) &&
                 !(
@@ -11571,10 +9338,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "startTimeUnixNano: integer|Long expected";
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -11587,24 +9351,15 @@ $root.opentelemetry = (function () {
             if (message.count != null && message.hasOwnProperty("count"))
               if (
                 !$util.isInteger(message.count) &&
-                !(
-                  message.count &&
-                  $util.isInteger(message.count.low) &&
-                  $util.isInteger(message.count.high)
-                )
+                !(message.count && $util.isInteger(message.count.low) && $util.isInteger(message.count.high))
               )
                 return "count: integer|Long expected";
             if (message.sum != null && message.hasOwnProperty("sum")) {
               properties._sum = 1;
-              if (typeof message.sum !== "number")
-                return "sum: number expected";
+              if (typeof message.sum !== "number") return "sum: number expected";
             }
-            if (
-              message.bucketCounts != null &&
-              message.hasOwnProperty("bucketCounts")
-            ) {
-              if (!Array.isArray(message.bucketCounts))
-                return "bucketCounts: array expected";
+            if (message.bucketCounts != null && message.hasOwnProperty("bucketCounts")) {
+              if (!Array.isArray(message.bucketCounts)) return "bucketCounts: array expected";
               for (var i = 0; i < message.bucketCounts.length; ++i)
                 if (
                   !$util.isInteger(message.bucketCounts[i]) &&
@@ -11616,42 +9371,27 @@ $root.opentelemetry = (function () {
                 )
                   return "bucketCounts: integer|Long[] expected";
             }
-            if (
-              message.explicitBounds != null &&
-              message.hasOwnProperty("explicitBounds")
-            ) {
-              if (!Array.isArray(message.explicitBounds))
-                return "explicitBounds: array expected";
+            if (message.explicitBounds != null && message.hasOwnProperty("explicitBounds")) {
+              if (!Array.isArray(message.explicitBounds)) return "explicitBounds: array expected";
               for (var i = 0; i < message.explicitBounds.length; ++i)
-                if (typeof message.explicitBounds[i] !== "number")
-                  return "explicitBounds: number[] expected";
+                if (typeof message.explicitBounds[i] !== "number") return "explicitBounds: number[] expected";
             }
-            if (
-              message.exemplars != null &&
-              message.hasOwnProperty("exemplars")
-            ) {
-              if (!Array.isArray(message.exemplars))
-                return "exemplars: array expected";
+            if (message.exemplars != null && message.hasOwnProperty("exemplars")) {
+              if (!Array.isArray(message.exemplars)) return "exemplars: array expected";
               for (var i = 0; i < message.exemplars.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.verify(
-                    message.exemplars[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.Exemplar.verify(message.exemplars[i]);
                 if (error) return "exemplars." + error;
               }
             }
             if (message.flags != null && message.hasOwnProperty("flags"))
-              if (!$util.isInteger(message.flags))
-                return "flags: integer expected";
+              if (!$util.isInteger(message.flags)) return "flags: integer expected";
             if (message.min != null && message.hasOwnProperty("min")) {
               properties._min = 1;
-              if (typeof message.min !== "number")
-                return "min: number expected";
+              if (typeof message.min !== "number") return "min: number expected";
             }
             if (message.max != null && message.hasOwnProperty("max")) {
               properties._max = 1;
-              if (typeof message.max !== "number")
-                return "max: number expected";
+              if (typeof message.max !== "number") return "max: number expected";
             }
             return null;
           };
@@ -11664,40 +9404,23 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.HistogramDataPoint} HistogramDataPoint
            */
           HistogramDataPoint.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.HistogramDataPoint
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.HistogramDataPoint();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.HistogramDataPoint) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.HistogramDataPoint();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.HistogramDataPoint.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.HistogramDataPoint.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.startTimeUnixNano != null)
               if ($util.Long)
-                (message.startTimeUnixNano = $util.Long.fromValue(
-                  object.startTimeUnixNano,
-                )).unsigned = false;
+                (message.startTimeUnixNano = $util.Long.fromValue(object.startTimeUnixNano)).unsigned = false;
               else if (typeof object.startTimeUnixNano === "string")
-                message.startTimeUnixNano = parseInt(
-                  object.startTimeUnixNano,
-                  10,
-                );
+                message.startTimeUnixNano = parseInt(object.startTimeUnixNano, 10);
               else if (typeof object.startTimeUnixNano === "number")
                 message.startTimeUnixNano = object.startTimeUnixNano;
               else if (typeof object.startTimeUnixNano === "object")
@@ -11706,51 +9429,32 @@ $root.opentelemetry = (function () {
                   object.startTimeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
                   object.timeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.count != null)
-              if ($util.Long)
-                (message.count = $util.Long.fromValue(object.count)).unsigned =
-                  false;
-              else if (typeof object.count === "string")
-                message.count = parseInt(object.count, 10);
-              else if (typeof object.count === "number")
-                message.count = object.count;
+              if ($util.Long) (message.count = $util.Long.fromValue(object.count)).unsigned = false;
+              else if (typeof object.count === "string") message.count = parseInt(object.count, 10);
+              else if (typeof object.count === "number") message.count = object.count;
               else if (typeof object.count === "object")
-                message.count = new $util.LongBits(
-                  object.count.low >>> 0,
-                  object.count.high >>> 0,
-                ).toNumber();
+                message.count = new $util.LongBits(object.count.low >>> 0, object.count.high >>> 0).toNumber();
             if (object.sum != null) message.sum = Number(object.sum);
             if (object.bucketCounts) {
               if (!Array.isArray(object.bucketCounts))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.HistogramDataPoint.bucketCounts: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.bucketCounts: array expected");
               message.bucketCounts = [];
               for (var i = 0; i < object.bucketCounts.length; ++i)
                 if ($util.Long)
-                  (message.bucketCounts[i] = $util.Long.fromValue(
-                    object.bucketCounts[i],
-                  )).unsigned = false;
+                  (message.bucketCounts[i] = $util.Long.fromValue(object.bucketCounts[i])).unsigned = false;
                 else if (typeof object.bucketCounts[i] === "string")
-                  message.bucketCounts[i] = parseInt(
-                    object.bucketCounts[i],
-                    10,
-                  );
-                else if (typeof object.bucketCounts[i] === "number")
-                  message.bucketCounts[i] = object.bucketCounts[i];
+                  message.bucketCounts[i] = parseInt(object.bucketCounts[i], 10);
+                else if (typeof object.bucketCounts[i] === "number") message.bucketCounts[i] = object.bucketCounts[i];
                 else if (typeof object.bucketCounts[i] === "object")
                   message.bucketCounts[i] = new $util.LongBits(
                     object.bucketCounts[i].low >>> 0,
@@ -11759,28 +9463,19 @@ $root.opentelemetry = (function () {
             }
             if (object.explicitBounds) {
               if (!Array.isArray(object.explicitBounds))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.HistogramDataPoint.explicitBounds: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.explicitBounds: array expected");
               message.explicitBounds = [];
               for (var i = 0; i < object.explicitBounds.length; ++i)
                 message.explicitBounds[i] = Number(object.explicitBounds[i]);
             }
             if (object.exemplars) {
               if (!Array.isArray(object.exemplars))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.HistogramDataPoint.exemplars: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.exemplars: array expected");
               message.exemplars = [];
               for (var i = 0; i < object.exemplars.length; ++i) {
                 if (typeof object.exemplars[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.HistogramDataPoint.exemplars: object expected",
-                  );
-                message.exemplars[i] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(
-                    object.exemplars[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.HistogramDataPoint.exemplars: object expected");
+                message.exemplars[i] = $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(object.exemplars[i]);
               }
             }
             if (object.flags != null) message.flags = object.flags >>> 0;
@@ -11810,94 +9505,56 @@ $root.opentelemetry = (function () {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.startTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.startTimeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.count =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.count = options.longs === String ? "0" : 0;
               object.flags = 0;
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (typeof message.startTimeUnixNano === "number")
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? String(message.startTimeUnixNano)
-                    : message.startTimeUnixNano;
+                  options.longs === String ? String(message.startTimeUnixNano) : message.startTimeUnixNano;
               else
                 object.startTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.startTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.startTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.startTimeUnixNano.low >>> 0,
                           message.startTimeUnixNano.high >>> 0,
                         ).toNumber()
                       : message.startTimeUnixNano;
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
             if (message.count != null && message.hasOwnProperty("count"))
               if (typeof message.count === "number")
-                object.count =
-                  options.longs === String
-                    ? String(message.count)
-                    : message.count;
+                object.count = options.longs === String ? String(message.count) : message.count;
               else
                 object.count =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.count)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.count.low >>> 0,
-                          message.count.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.count.low >>> 0, message.count.high >>> 0).toNumber()
                       : message.count;
             if (message.sum != null && message.hasOwnProperty("sum")) {
-              object.sum =
-                options.json && !isFinite(message.sum)
-                  ? String(message.sum)
-                  : message.sum;
+              object.sum = options.json && !isFinite(message.sum) ? String(message.sum) : message.sum;
               if (options.oneofs) object._sum = "sum";
             }
             if (message.bucketCounts && message.bucketCounts.length) {
@@ -11905,15 +9562,11 @@ $root.opentelemetry = (function () {
               for (var j = 0; j < message.bucketCounts.length; ++j)
                 if (typeof message.bucketCounts[j] === "number")
                   object.bucketCounts[j] =
-                    options.longs === String
-                      ? String(message.bucketCounts[j])
-                      : message.bucketCounts[j];
+                    options.longs === String ? String(message.bucketCounts[j]) : message.bucketCounts[j];
                 else
                   object.bucketCounts[j] =
                     options.longs === String
-                      ? $util.Long.prototype.toString.call(
-                          message.bucketCounts[j],
-                        )
+                      ? $util.Long.prototype.toString.call(message.bucketCounts[j])
                       : options.longs === Number
                         ? new $util.LongBits(
                             message.bucketCounts[j].low >>> 0,
@@ -11932,35 +9585,26 @@ $root.opentelemetry = (function () {
             if (message.exemplars && message.exemplars.length) {
               object.exemplars = [];
               for (var j = 0; j < message.exemplars.length; ++j)
-                object.exemplars[j] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
-                    message.exemplars[j],
-                    options,
-                  );
+                object.exemplars[j] = $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
+                  message.exemplars[j],
+                  options,
+                );
             }
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (message.flags != null && message.hasOwnProperty("flags"))
-              object.flags = message.flags;
+            if (message.flags != null && message.hasOwnProperty("flags")) object.flags = message.flags;
             if (message.min != null && message.hasOwnProperty("min")) {
-              object.min =
-                options.json && !isFinite(message.min)
-                  ? String(message.min)
-                  : message.min;
+              object.min = options.json && !isFinite(message.min) ? String(message.min) : message.min;
               if (options.oneofs) object._min = "min";
             }
             if (message.max != null && message.hasOwnProperty("max")) {
-              object.max =
-                options.json && !isFinite(message.max)
-                  ? String(message.max)
-                  : message.max;
+              object.max = options.json && !isFinite(message.max) ? String(message.max) : message.max;
               if (options.oneofs) object._max = "max";
             }
             return object;
@@ -11973,10 +9617,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           HistogramDataPoint.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for HistogramDataPoint
@@ -11990,10 +9631,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix +
-              "/opentelemetry.proto.metrics.v1.HistogramDataPoint"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.HistogramDataPoint";
           };
           return HistogramDataPoint;
         })();
@@ -12029,13 +9667,8 @@ $root.opentelemetry = (function () {
             this.attributes = [];
             this.exemplars = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ExponentialHistogramDataPoint attributes.
@@ -12138,32 +9771,20 @@ $root.opentelemetry = (function () {
           // OneOf field names bound to virtual getters and setters
           var $oneOfFields;
           // Virtual OneOf for proto3 optional field
-          Object.defineProperty(
-            ExponentialHistogramDataPoint.prototype,
-            "_sum",
-            {
-              get: $util.oneOfGetter(($oneOfFields = ["sum"])),
-              set: $util.oneOfSetter($oneOfFields),
-            },
-          );
+          Object.defineProperty(ExponentialHistogramDataPoint.prototype, "_sum", {
+            get: $util.oneOfGetter(($oneOfFields = ["sum"])),
+            set: $util.oneOfSetter($oneOfFields),
+          });
           // Virtual OneOf for proto3 optional field
-          Object.defineProperty(
-            ExponentialHistogramDataPoint.prototype,
-            "_min",
-            {
-              get: $util.oneOfGetter(($oneOfFields = ["min"])),
-              set: $util.oneOfSetter($oneOfFields),
-            },
-          );
+          Object.defineProperty(ExponentialHistogramDataPoint.prototype, "_min", {
+            get: $util.oneOfGetter(($oneOfFields = ["min"])),
+            set: $util.oneOfSetter($oneOfFields),
+          });
           // Virtual OneOf for proto3 optional field
-          Object.defineProperty(
-            ExponentialHistogramDataPoint.prototype,
-            "_max",
-            {
-              get: $util.oneOfGetter(($oneOfFields = ["max"])),
-              set: $util.oneOfSetter($oneOfFields),
-            },
-          );
+          Object.defineProperty(ExponentialHistogramDataPoint.prototype, "_max", {
+            get: $util.oneOfGetter(($oneOfFields = ["max"])),
+            set: $util.oneOfSetter($oneOfFields),
+          });
           /**
            * Creates a new ExponentialHistogramDataPoint instance using the specified properties.
            * @function create
@@ -12184,10 +9805,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ExponentialHistogramDataPoint.encode = function encode(
-            message,
-            writer,
-          ) {
+          ExponentialHistogramDataPoint.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
             if (message.attributes != null && message.attributes.length)
               for (var i = 0; i < message.attributes.length; ++i)
@@ -12195,62 +9813,29 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
                 ).ldelim();
-            if (
-              message.startTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "startTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 2, wireType 1 =*/ 17)
-                .fixed64(message.startTimeUnixNano);
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 3, wireType 1 =*/ 25)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.count != null &&
-              Object.hasOwnProperty.call(message, "count")
-            )
+            if (message.startTimeUnixNano != null && Object.hasOwnProperty.call(message, "startTimeUnixNano"))
+              writer.uint32(/* id 2, wireType 1 =*/ 17).fixed64(message.startTimeUnixNano);
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 3, wireType 1 =*/ 25).fixed64(message.timeUnixNano);
+            if (message.count != null && Object.hasOwnProperty.call(message, "count"))
               writer.uint32(/* id 4, wireType 1 =*/ 33).fixed64(message.count);
-            if (
-              message.sum != null &&
-              Object.hasOwnProperty.call(message, "sum")
-            )
+            if (message.sum != null && Object.hasOwnProperty.call(message, "sum"))
               writer.uint32(/* id 5, wireType 1 =*/ 41).double(message.sum);
-            if (
-              message.scale != null &&
-              Object.hasOwnProperty.call(message, "scale")
-            )
+            if (message.scale != null && Object.hasOwnProperty.call(message, "scale"))
               writer.uint32(/* id 6, wireType 0 =*/ 48).sint32(message.scale);
-            if (
-              message.zeroCount != null &&
-              Object.hasOwnProperty.call(message, "zeroCount")
-            )
-              writer
-                .uint32(/* id 7, wireType 1 =*/ 57)
-                .fixed64(message.zeroCount);
-            if (
-              message.positive != null &&
-              Object.hasOwnProperty.call(message, "positive")
-            )
+            if (message.zeroCount != null && Object.hasOwnProperty.call(message, "zeroCount"))
+              writer.uint32(/* id 7, wireType 1 =*/ 57).fixed64(message.zeroCount);
+            if (message.positive != null && Object.hasOwnProperty.call(message, "positive"))
               $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.encode(
                 message.positive,
                 writer.uint32(/* id 8, wireType 2 =*/ 66).fork(),
               ).ldelim();
-            if (
-              message.negative != null &&
-              Object.hasOwnProperty.call(message, "negative")
-            )
+            if (message.negative != null && Object.hasOwnProperty.call(message, "negative"))
               $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.encode(
                 message.negative,
                 writer.uint32(/* id 9, wireType 2 =*/ 74).fork(),
               ).ldelim();
-            if (
-              message.flags != null &&
-              Object.hasOwnProperty.call(message, "flags")
-            )
+            if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
               writer.uint32(/* id 10, wireType 0 =*/ 80).uint32(message.flags);
             if (message.exemplars != null && message.exemplars.length)
               for (var i = 0; i < message.exemplars.length; ++i)
@@ -12258,23 +9843,12 @@ $root.opentelemetry = (function () {
                   message.exemplars[i],
                   writer.uint32(/* id 11, wireType 2 =*/ 90).fork(),
                 ).ldelim();
-            if (
-              message.min != null &&
-              Object.hasOwnProperty.call(message, "min")
-            )
+            if (message.min != null && Object.hasOwnProperty.call(message, "min"))
               writer.uint32(/* id 12, wireType 1 =*/ 97).double(message.min);
-            if (
-              message.max != null &&
-              Object.hasOwnProperty.call(message, "max")
-            )
+            if (message.max != null && Object.hasOwnProperty.call(message, "max"))
               writer.uint32(/* id 13, wireType 1 =*/ 105).double(message.max);
-            if (
-              message.zeroThreshold != null &&
-              Object.hasOwnProperty.call(message, "zeroThreshold")
-            )
-              writer
-                .uint32(/* id 14, wireType 1 =*/ 113)
-                .double(message.zeroThreshold);
+            if (message.zeroThreshold != null && Object.hasOwnProperty.call(message, "zeroThreshold"))
+              writer.uint32(/* id 14, wireType 1 =*/ 113).double(message.zeroThreshold);
             return writer;
           };
           /**
@@ -12286,10 +9860,9 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ExponentialHistogramDataPoint.encodeDelimited =
-            function encodeDelimited(message, writer) {
-              return this.encode(message, writer).ldelim();
-            };
+          ExponentialHistogramDataPoint.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+          };
           /**
            * Decodes an ExponentialHistogramDataPoint message from the specified reader or buffer.
            * @function decode
@@ -12301,26 +9874,16 @@ $root.opentelemetry = (function () {
            * @throws {Error} If the payload is not a reader or valid buffer
            * @throws {$protobuf.util.ProtocolError} If required fields are missing
            */
-          ExponentialHistogramDataPoint.decode = function decode(
-            reader,
-            length,
-          ) {
+          ExponentialHistogramDataPoint.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint();
+              message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 2: {
@@ -12348,19 +9911,17 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 8: {
-                  message.positive =
-                    $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.positive = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 9: {
-                  message.negative =
-                    $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.negative = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 10: {
@@ -12368,14 +9929,8 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 11: {
-                  if (!(message.exemplars && message.exemplars.length))
-                    message.exemplars = [];
-                  message.exemplars.push(
-                    $root.opentelemetry.proto.metrics.v1.Exemplar.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.exemplars && message.exemplars.length)) message.exemplars = [];
+                  message.exemplars.push($root.opentelemetry.proto.metrics.v1.Exemplar.decode(reader, reader.uint32()));
                   break;
                 }
                 case 12: {
@@ -12407,11 +9962,10 @@ $root.opentelemetry = (function () {
            * @throws {Error} If the payload is not a reader or valid buffer
            * @throws {$protobuf.util.ProtocolError} If required fields are missing
            */
-          ExponentialHistogramDataPoint.decodeDelimited =
-            function decodeDelimited(reader) {
-              if (!(reader instanceof $Reader)) reader = new $Reader(reader);
-              return this.decode(reader, reader.uint32());
-            };
+          ExponentialHistogramDataPoint.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+          };
           /**
            * Verifies an ExponentialHistogramDataPoint message.
            * @function verify
@@ -12421,26 +9975,16 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ExponentialHistogramDataPoint.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (
                 !$util.isInteger(message.startTimeUnixNano) &&
                 !(
@@ -12450,10 +9994,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "startTimeUnixNano: integer|Long expected";
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -12466,25 +10007,16 @@ $root.opentelemetry = (function () {
             if (message.count != null && message.hasOwnProperty("count"))
               if (
                 !$util.isInteger(message.count) &&
-                !(
-                  message.count &&
-                  $util.isInteger(message.count.low) &&
-                  $util.isInteger(message.count.high)
-                )
+                !(message.count && $util.isInteger(message.count.low) && $util.isInteger(message.count.high))
               )
                 return "count: integer|Long expected";
             if (message.sum != null && message.hasOwnProperty("sum")) {
               properties._sum = 1;
-              if (typeof message.sum !== "number")
-                return "sum: number expected";
+              if (typeof message.sum !== "number") return "sum: number expected";
             }
             if (message.scale != null && message.hasOwnProperty("scale"))
-              if (!$util.isInteger(message.scale))
-                return "scale: integer expected";
-            if (
-              message.zeroCount != null &&
-              message.hasOwnProperty("zeroCount")
-            )
+              if (!$util.isInteger(message.scale)) return "scale: integer expected";
+            if (message.zeroCount != null && message.hasOwnProperty("zeroCount"))
               if (
                 !$util.isInteger(message.zeroCount) &&
                 !(
@@ -12494,59 +10026,37 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "zeroCount: integer|Long expected";
-            if (
-              message.positive != null &&
-              message.hasOwnProperty("positive")
-            ) {
-              var error =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.verify(
-                  message.positive,
-                );
+            if (message.positive != null && message.hasOwnProperty("positive")) {
+              var error = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.verify(
+                message.positive,
+              );
               if (error) return "positive." + error;
             }
-            if (
-              message.negative != null &&
-              message.hasOwnProperty("negative")
-            ) {
-              var error =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.verify(
-                  message.negative,
-                );
+            if (message.negative != null && message.hasOwnProperty("negative")) {
+              var error = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.verify(
+                message.negative,
+              );
               if (error) return "negative." + error;
             }
             if (message.flags != null && message.hasOwnProperty("flags"))
-              if (!$util.isInteger(message.flags))
-                return "flags: integer expected";
-            if (
-              message.exemplars != null &&
-              message.hasOwnProperty("exemplars")
-            ) {
-              if (!Array.isArray(message.exemplars))
-                return "exemplars: array expected";
+              if (!$util.isInteger(message.flags)) return "flags: integer expected";
+            if (message.exemplars != null && message.hasOwnProperty("exemplars")) {
+              if (!Array.isArray(message.exemplars)) return "exemplars: array expected";
               for (var i = 0; i < message.exemplars.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.verify(
-                    message.exemplars[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.Exemplar.verify(message.exemplars[i]);
                 if (error) return "exemplars." + error;
               }
             }
             if (message.min != null && message.hasOwnProperty("min")) {
               properties._min = 1;
-              if (typeof message.min !== "number")
-                return "min: number expected";
+              if (typeof message.min !== "number") return "min: number expected";
             }
             if (message.max != null && message.hasOwnProperty("max")) {
               properties._max = 1;
-              if (typeof message.max !== "number")
-                return "max: number expected";
+              if (typeof message.max !== "number") return "max: number expected";
             }
-            if (
-              message.zeroThreshold != null &&
-              message.hasOwnProperty("zeroThreshold")
-            )
-              if (typeof message.zeroThreshold !== "number")
-                return "zeroThreshold: number expected";
+            if (message.zeroThreshold != null && message.hasOwnProperty("zeroThreshold"))
+              if (typeof message.zeroThreshold !== "number") return "zeroThreshold: number expected";
             return null;
           };
           /**
@@ -12557,16 +10067,9 @@ $root.opentelemetry = (function () {
            * @param {Object.<string,*>} object Plain object
            * @returns {opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint} ExponentialHistogramDataPoint
            */
-          ExponentialHistogramDataPoint.fromObject = function fromObject(
-            object,
-          ) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint();
+          ExponentialHistogramDataPoint.fromObject = function fromObject(object) {
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
                 throw TypeError(
@@ -12578,22 +10081,14 @@ $root.opentelemetry = (function () {
                   throw TypeError(
                     ".opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.attributes: object expected",
                   );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.startTimeUnixNano != null)
               if ($util.Long)
-                (message.startTimeUnixNano = $util.Long.fromValue(
-                  object.startTimeUnixNano,
-                )).unsigned = false;
+                (message.startTimeUnixNano = $util.Long.fromValue(object.startTimeUnixNano)).unsigned = false;
               else if (typeof object.startTimeUnixNano === "string")
-                message.startTimeUnixNano = parseInt(
-                  object.startTimeUnixNano,
-                  10,
-                );
+                message.startTimeUnixNano = parseInt(object.startTimeUnixNano, 10);
               else if (typeof object.startTimeUnixNano === "number")
                 message.startTimeUnixNano = object.startTimeUnixNano;
               else if (typeof object.startTimeUnixNano === "object")
@@ -12602,43 +10097,27 @@ $root.opentelemetry = (function () {
                   object.startTimeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
                   object.timeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.count != null)
-              if ($util.Long)
-                (message.count = $util.Long.fromValue(object.count)).unsigned =
-                  false;
-              else if (typeof object.count === "string")
-                message.count = parseInt(object.count, 10);
-              else if (typeof object.count === "number")
-                message.count = object.count;
+              if ($util.Long) (message.count = $util.Long.fromValue(object.count)).unsigned = false;
+              else if (typeof object.count === "string") message.count = parseInt(object.count, 10);
+              else if (typeof object.count === "number") message.count = object.count;
               else if (typeof object.count === "object")
-                message.count = new $util.LongBits(
-                  object.count.low >>> 0,
-                  object.count.high >>> 0,
-                ).toNumber();
+                message.count = new $util.LongBits(object.count.low >>> 0, object.count.high >>> 0).toNumber();
             if (object.sum != null) message.sum = Number(object.sum);
             if (object.scale != null) message.scale = object.scale | 0;
             if (object.zeroCount != null)
-              if ($util.Long)
-                (message.zeroCount = $util.Long.fromValue(
-                  object.zeroCount,
-                )).unsigned = false;
-              else if (typeof object.zeroCount === "string")
-                message.zeroCount = parseInt(object.zeroCount, 10);
-              else if (typeof object.zeroCount === "number")
-                message.zeroCount = object.zeroCount;
+              if ($util.Long) (message.zeroCount = $util.Long.fromValue(object.zeroCount)).unsigned = false;
+              else if (typeof object.zeroCount === "string") message.zeroCount = parseInt(object.zeroCount, 10);
+              else if (typeof object.zeroCount === "number") message.zeroCount = object.zeroCount;
               else if (typeof object.zeroCount === "object")
                 message.zeroCount = new $util.LongBits(
                   object.zeroCount.low >>> 0,
@@ -12649,20 +10128,18 @@ $root.opentelemetry = (function () {
                 throw TypeError(
                   ".opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.positive: object expected",
                 );
-              message.positive =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.fromObject(
-                  object.positive,
-                );
+              message.positive = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.fromObject(
+                object.positive,
+              );
             }
             if (object.negative != null) {
               if (typeof object.negative !== "object")
                 throw TypeError(
                   ".opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.negative: object expected",
                 );
-              message.negative =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.fromObject(
-                  object.negative,
-                );
+              message.negative = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.fromObject(
+                object.negative,
+              );
             }
             if (object.flags != null) message.flags = object.flags >>> 0;
             if (object.exemplars) {
@@ -12676,16 +10153,12 @@ $root.opentelemetry = (function () {
                   throw TypeError(
                     ".opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.exemplars: object expected",
                   );
-                message.exemplars[i] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(
-                    object.exemplars[i],
-                  );
+                message.exemplars[i] = $root.opentelemetry.proto.metrics.v1.Exemplar.fromObject(object.exemplars[i]);
               }
             }
             if (object.min != null) message.min = Number(object.min);
             if (object.max != null) message.max = Number(object.max);
-            if (object.zeroThreshold != null)
-              message.zeroThreshold = Number(object.zeroThreshold);
+            if (object.zeroThreshold != null) message.zeroThreshold = Number(object.zeroThreshold);
             return message;
           };
           /**
@@ -12697,10 +10170,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.IConversionOptions} [options] Conversion options
            * @returns {Object.<string,*>} Plain object
            */
-          ExponentialHistogramDataPoint.toObject = function toObject(
-            message,
-            options,
-          ) {
+          ExponentialHistogramDataPoint.toObject = function toObject(message, options) {
             if (!options) options = {};
             var object = {};
             if (options.arrays || options.defaults) {
@@ -12711,40 +10181,23 @@ $root.opentelemetry = (function () {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.startTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.startTimeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.count =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.count = options.longs === String ? "0" : 0;
               object.scale = 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.zeroCount =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.zeroCount = options.longs === String ? "0" : 0;
               object.positive = null;
               object.negative = null;
@@ -12754,137 +10207,88 @@ $root.opentelemetry = (function () {
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (typeof message.startTimeUnixNano === "number")
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? String(message.startTimeUnixNano)
-                    : message.startTimeUnixNano;
+                  options.longs === String ? String(message.startTimeUnixNano) : message.startTimeUnixNano;
               else
                 object.startTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.startTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.startTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.startTimeUnixNano.low >>> 0,
                           message.startTimeUnixNano.high >>> 0,
                         ).toNumber()
                       : message.startTimeUnixNano;
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
             if (message.count != null && message.hasOwnProperty("count"))
               if (typeof message.count === "number")
-                object.count =
-                  options.longs === String
-                    ? String(message.count)
-                    : message.count;
+                object.count = options.longs === String ? String(message.count) : message.count;
               else
                 object.count =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.count)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.count.low >>> 0,
-                          message.count.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.count.low >>> 0, message.count.high >>> 0).toNumber()
                       : message.count;
             if (message.sum != null && message.hasOwnProperty("sum")) {
-              object.sum =
-                options.json && !isFinite(message.sum)
-                  ? String(message.sum)
-                  : message.sum;
+              object.sum = options.json && !isFinite(message.sum) ? String(message.sum) : message.sum;
               if (options.oneofs) object._sum = "sum";
             }
-            if (message.scale != null && message.hasOwnProperty("scale"))
-              object.scale = message.scale;
-            if (
-              message.zeroCount != null &&
-              message.hasOwnProperty("zeroCount")
-            )
+            if (message.scale != null && message.hasOwnProperty("scale")) object.scale = message.scale;
+            if (message.zeroCount != null && message.hasOwnProperty("zeroCount"))
               if (typeof message.zeroCount === "number")
-                object.zeroCount =
-                  options.longs === String
-                    ? String(message.zeroCount)
-                    : message.zeroCount;
+                object.zeroCount = options.longs === String ? String(message.zeroCount) : message.zeroCount;
               else
                 object.zeroCount =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.zeroCount)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.zeroCount.low >>> 0,
-                          message.zeroCount.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.zeroCount.low >>> 0, message.zeroCount.high >>> 0).toNumber()
                       : message.zeroCount;
             if (message.positive != null && message.hasOwnProperty("positive"))
-              object.positive =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.toObject(
-                  message.positive,
-                  options,
-                );
+              object.positive = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.toObject(
+                message.positive,
+                options,
+              );
             if (message.negative != null && message.hasOwnProperty("negative"))
-              object.negative =
-                $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.toObject(
-                  message.negative,
-                  options,
-                );
-            if (message.flags != null && message.hasOwnProperty("flags"))
-              object.flags = message.flags;
+              object.negative = $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets.toObject(
+                message.negative,
+                options,
+              );
+            if (message.flags != null && message.hasOwnProperty("flags")) object.flags = message.flags;
             if (message.exemplars && message.exemplars.length) {
               object.exemplars = [];
               for (var j = 0; j < message.exemplars.length; ++j)
-                object.exemplars[j] =
-                  $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
-                    message.exemplars[j],
-                    options,
-                  );
+                object.exemplars[j] = $root.opentelemetry.proto.metrics.v1.Exemplar.toObject(
+                  message.exemplars[j],
+                  options,
+                );
             }
             if (message.min != null && message.hasOwnProperty("min")) {
-              object.min =
-                options.json && !isFinite(message.min)
-                  ? String(message.min)
-                  : message.min;
+              object.min = options.json && !isFinite(message.min) ? String(message.min) : message.min;
               if (options.oneofs) object._min = "min";
             }
             if (message.max != null && message.hasOwnProperty("max")) {
-              object.max =
-                options.json && !isFinite(message.max)
-                  ? String(message.max)
-                  : message.max;
+              object.max = options.json && !isFinite(message.max) ? String(message.max) : message.max;
               if (options.oneofs) object._max = "max";
             }
-            if (
-              message.zeroThreshold != null &&
-              message.hasOwnProperty("zeroThreshold")
-            )
+            if (message.zeroThreshold != null && message.hasOwnProperty("zeroThreshold"))
               object.zeroThreshold =
                 options.json && !isFinite(message.zeroThreshold)
                   ? String(message.zeroThreshold)
@@ -12899,10 +10303,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ExponentialHistogramDataPoint.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ExponentialHistogramDataPoint
@@ -12912,16 +10313,11 @@ $root.opentelemetry = (function () {
            * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
            * @returns {string} The default type url
            */
-          ExponentialHistogramDataPoint.getTypeUrl = function getTypeUrl(
-            typeUrlPrefix,
-          ) {
+          ExponentialHistogramDataPoint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix +
-              "/opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint";
           };
           ExponentialHistogramDataPoint.Buckets = (function () {
             /**
@@ -12942,13 +10338,8 @@ $root.opentelemetry = (function () {
             function Buckets(properties) {
               this.bucketCounts = [];
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * Buckets offset.
@@ -12986,15 +10377,11 @@ $root.opentelemetry = (function () {
              */
             Buckets.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.offset != null &&
-                Object.hasOwnProperty.call(message, "offset")
-              )
+              if (message.offset != null && Object.hasOwnProperty.call(message, "offset"))
                 writer.uint32(/* id 1, wireType 0 =*/ 8).sint32(message.offset);
               if (message.bucketCounts != null && message.bucketCounts.length) {
                 writer.uint32(/* id 2, wireType 2 =*/ 18).fork();
-                for (var i = 0; i < message.bucketCounts.length; ++i)
-                  writer.uint64(message.bucketCounts[i]);
+                for (var i = 0; i < message.bucketCounts.length; ++i) writer.uint64(message.bucketCounts[i]);
                 writer.ldelim();
               }
               return writer;
@@ -13008,10 +10395,7 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            Buckets.encodeDelimited = function encodeDelimited(
-              message,
-              writer,
-            ) {
+            Buckets.encodeDelimited = function encodeDelimited(message, writer) {
               return this.encode(message, writer).ldelim();
             };
             /**
@@ -13028,8 +10412,7 @@ $root.opentelemetry = (function () {
             Buckets.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets();
+                message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -13038,12 +10421,10 @@ $root.opentelemetry = (function () {
                     break;
                   }
                   case 2: {
-                    if (!(message.bucketCounts && message.bucketCounts.length))
-                      message.bucketCounts = [];
+                    if (!(message.bucketCounts && message.bucketCounts.length)) message.bucketCounts = [];
                     if ((tag & 7) === 2) {
                       var end2 = reader.uint32() + reader.pos;
-                      while (reader.pos < end2)
-                        message.bucketCounts.push(reader.uint64());
+                      while (reader.pos < end2) message.bucketCounts.push(reader.uint64());
                     } else message.bucketCounts.push(reader.uint64());
                     break;
                   }
@@ -13077,17 +10458,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Buckets.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
+              if (typeof message !== "object" || message === null) return "object expected";
               if (message.offset != null && message.hasOwnProperty("offset"))
-                if (!$util.isInteger(message.offset))
-                  return "offset: integer expected";
-              if (
-                message.bucketCounts != null &&
-                message.hasOwnProperty("bucketCounts")
-              ) {
-                if (!Array.isArray(message.bucketCounts))
-                  return "bucketCounts: array expected";
+                if (!$util.isInteger(message.offset)) return "offset: integer expected";
+              if (message.bucketCounts != null && message.hasOwnProperty("bucketCounts")) {
+                if (!Array.isArray(message.bucketCounts)) return "bucketCounts: array expected";
                 for (var i = 0; i < message.bucketCounts.length; ++i)
                   if (
                     !$util.isInteger(message.bucketCounts[i]) &&
@@ -13110,14 +10485,9 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets} Buckets
              */
             Buckets.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.metrics.v1
-                  .ExponentialHistogramDataPoint.Buckets
-              )
+              if (object instanceof $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets();
+              var message = new $root.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets();
               if (object.offset != null) message.offset = object.offset | 0;
               if (object.bucketCounts) {
                 if (!Array.isArray(object.bucketCounts))
@@ -13127,16 +10497,10 @@ $root.opentelemetry = (function () {
                 message.bucketCounts = [];
                 for (var i = 0; i < object.bucketCounts.length; ++i)
                   if ($util.Long)
-                    (message.bucketCounts[i] = $util.Long.fromValue(
-                      object.bucketCounts[i],
-                    )).unsigned = true;
+                    (message.bucketCounts[i] = $util.Long.fromValue(object.bucketCounts[i])).unsigned = true;
                   else if (typeof object.bucketCounts[i] === "string")
-                    message.bucketCounts[i] = parseInt(
-                      object.bucketCounts[i],
-                      10,
-                    );
-                  else if (typeof object.bucketCounts[i] === "number")
-                    message.bucketCounts[i] = object.bucketCounts[i];
+                    message.bucketCounts[i] = parseInt(object.bucketCounts[i], 10);
+                  else if (typeof object.bucketCounts[i] === "number") message.bucketCounts[i] = object.bucketCounts[i];
                   else if (typeof object.bucketCounts[i] === "object")
                     message.bucketCounts[i] = new $util.LongBits(
                       object.bucketCounts[i].low >>> 0,
@@ -13159,22 +10523,17 @@ $root.opentelemetry = (function () {
               var object = {};
               if (options.arrays || options.defaults) object.bucketCounts = [];
               if (options.defaults) object.offset = 0;
-              if (message.offset != null && message.hasOwnProperty("offset"))
-                object.offset = message.offset;
+              if (message.offset != null && message.hasOwnProperty("offset")) object.offset = message.offset;
               if (message.bucketCounts && message.bucketCounts.length) {
                 object.bucketCounts = [];
                 for (var j = 0; j < message.bucketCounts.length; ++j)
                   if (typeof message.bucketCounts[j] === "number")
                     object.bucketCounts[j] =
-                      options.longs === String
-                        ? String(message.bucketCounts[j])
-                        : message.bucketCounts[j];
+                      options.longs === String ? String(message.bucketCounts[j]) : message.bucketCounts[j];
                   else
                     object.bucketCounts[j] =
                       options.longs === String
-                        ? $util.Long.prototype.toString.call(
-                            message.bucketCounts[j],
-                          )
+                        ? $util.Long.prototype.toString.call(message.bucketCounts[j])
                         : options.longs === Number
                           ? new $util.LongBits(
                               message.bucketCounts[j].low >>> 0,
@@ -13192,10 +10551,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             Buckets.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for Buckets
@@ -13209,10 +10565,7 @@ $root.opentelemetry = (function () {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets";
             };
             return Buckets;
           })();
@@ -13243,13 +10596,8 @@ $root.opentelemetry = (function () {
             this.attributes = [];
             this.quantileValues = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * SummaryDataPoint attributes.
@@ -13322,29 +10670,13 @@ $root.opentelemetry = (function () {
            */
           SummaryDataPoint.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.startTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "startTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 2, wireType 1 =*/ 17)
-                .fixed64(message.startTimeUnixNano);
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 3, wireType 1 =*/ 25)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.count != null &&
-              Object.hasOwnProperty.call(message, "count")
-            )
+            if (message.startTimeUnixNano != null && Object.hasOwnProperty.call(message, "startTimeUnixNano"))
+              writer.uint32(/* id 2, wireType 1 =*/ 17).fixed64(message.startTimeUnixNano);
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 3, wireType 1 =*/ 25).fixed64(message.timeUnixNano);
+            if (message.count != null && Object.hasOwnProperty.call(message, "count"))
               writer.uint32(/* id 4, wireType 1 =*/ 33).fixed64(message.count);
-            if (
-              message.sum != null &&
-              Object.hasOwnProperty.call(message, "sum")
-            )
+            if (message.sum != null && Object.hasOwnProperty.call(message, "sum"))
               writer.uint32(/* id 5, wireType 1 =*/ 41).double(message.sum);
             if (message.quantileValues != null && message.quantileValues.length)
               for (var i = 0; i < message.quantileValues.length; ++i)
@@ -13358,10 +10690,7 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 7, wireType 2 =*/ 58).fork(),
                 ).ldelim();
-            if (
-              message.flags != null &&
-              Object.hasOwnProperty.call(message, "flags")
-            )
+            if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
               writer.uint32(/* id 8, wireType 0 =*/ 64).uint32(message.flags);
             return writer;
           };
@@ -13374,10 +10703,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          SummaryDataPoint.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          SummaryDataPoint.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -13394,20 +10720,13 @@ $root.opentelemetry = (function () {
           SummaryDataPoint.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length,
-              message =
-                new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint();
+              message = new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint();
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 7: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 2: {
@@ -13427,10 +10746,7 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 6: {
-                  if (
-                    !(message.quantileValues && message.quantileValues.length)
-                  )
-                    message.quantileValues = [];
+                  if (!(message.quantileValues && message.quantileValues.length)) message.quantileValues = [];
                   message.quantileValues.push(
                     $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile.decode(
                       reader,
@@ -13473,25 +10789,15 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           SummaryDataPoint.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (
                 !$util.isInteger(message.startTimeUnixNano) &&
                 !(
@@ -13501,10 +10807,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "startTimeUnixNano: integer|Long expected";
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -13517,33 +10820,22 @@ $root.opentelemetry = (function () {
             if (message.count != null && message.hasOwnProperty("count"))
               if (
                 !$util.isInteger(message.count) &&
-                !(
-                  message.count &&
-                  $util.isInteger(message.count.low) &&
-                  $util.isInteger(message.count.high)
-                )
+                !(message.count && $util.isInteger(message.count.low) && $util.isInteger(message.count.high))
               )
                 return "count: integer|Long expected";
             if (message.sum != null && message.hasOwnProperty("sum"))
-              if (typeof message.sum !== "number")
-                return "sum: number expected";
-            if (
-              message.quantileValues != null &&
-              message.hasOwnProperty("quantileValues")
-            ) {
-              if (!Array.isArray(message.quantileValues))
-                return "quantileValues: array expected";
+              if (typeof message.sum !== "number") return "sum: number expected";
+            if (message.quantileValues != null && message.hasOwnProperty("quantileValues")) {
+              if (!Array.isArray(message.quantileValues)) return "quantileValues: array expected";
               for (var i = 0; i < message.quantileValues.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile.verify(
-                    message.quantileValues[i],
-                  );
+                var error = $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile.verify(
+                  message.quantileValues[i],
+                );
                 if (error) return "quantileValues." + error;
               }
             }
             if (message.flags != null && message.hasOwnProperty("flags"))
-              if (!$util.isInteger(message.flags))
-                return "flags: integer expected";
+              if (!$util.isInteger(message.flags)) return "flags: integer expected";
             return null;
           };
           /**
@@ -13555,40 +10847,23 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.SummaryDataPoint} SummaryDataPoint
            */
           SummaryDataPoint.fromObject = function fromObject(object) {
-            if (
-              object instanceof
-              $root.opentelemetry.proto.metrics.v1.SummaryDataPoint
-            )
-              return object;
-            var message =
-              new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint();
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.SummaryDataPoint) return object;
+            var message = new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint();
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.SummaryDataPoint.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.SummaryDataPoint.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.SummaryDataPoint.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.SummaryDataPoint.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.startTimeUnixNano != null)
               if ($util.Long)
-                (message.startTimeUnixNano = $util.Long.fromValue(
-                  object.startTimeUnixNano,
-                )).unsigned = false;
+                (message.startTimeUnixNano = $util.Long.fromValue(object.startTimeUnixNano)).unsigned = false;
               else if (typeof object.startTimeUnixNano === "string")
-                message.startTimeUnixNano = parseInt(
-                  object.startTimeUnixNano,
-                  10,
-                );
+                message.startTimeUnixNano = parseInt(object.startTimeUnixNano, 10);
               else if (typeof object.startTimeUnixNano === "number")
                 message.startTimeUnixNano = object.startTimeUnixNano;
               else if (typeof object.startTimeUnixNano === "object")
@@ -13597,44 +10872,29 @@ $root.opentelemetry = (function () {
                   object.startTimeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
                   object.timeUnixNano.high >>> 0,
                 ).toNumber();
             if (object.count != null)
-              if ($util.Long)
-                (message.count = $util.Long.fromValue(object.count)).unsigned =
-                  false;
-              else if (typeof object.count === "string")
-                message.count = parseInt(object.count, 10);
-              else if (typeof object.count === "number")
-                message.count = object.count;
+              if ($util.Long) (message.count = $util.Long.fromValue(object.count)).unsigned = false;
+              else if (typeof object.count === "string") message.count = parseInt(object.count, 10);
+              else if (typeof object.count === "number") message.count = object.count;
               else if (typeof object.count === "object")
-                message.count = new $util.LongBits(
-                  object.count.low >>> 0,
-                  object.count.high >>> 0,
-                ).toNumber();
+                message.count = new $util.LongBits(object.count.low >>> 0, object.count.high >>> 0).toNumber();
             if (object.sum != null) message.sum = Number(object.sum);
             if (object.quantileValues) {
               if (!Array.isArray(object.quantileValues))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.SummaryDataPoint.quantileValues: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.SummaryDataPoint.quantileValues: array expected");
               message.quantileValues = [];
               for (var i = 0; i < object.quantileValues.length; ++i) {
                 if (typeof object.quantileValues[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.SummaryDataPoint.quantileValues: object expected",
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.SummaryDataPoint.quantileValues: object expected");
                 message.quantileValues[i] =
                   $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile.fromObject(
                     object.quantileValues[i],
@@ -13664,95 +10924,57 @@ $root.opentelemetry = (function () {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.startTimeUnixNano = options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.startTimeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.count =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.count = options.longs === String ? "0" : 0;
               object.sum = 0;
               object.flags = 0;
             }
-            if (
-              message.startTimeUnixNano != null &&
-              message.hasOwnProperty("startTimeUnixNano")
-            )
+            if (message.startTimeUnixNano != null && message.hasOwnProperty("startTimeUnixNano"))
               if (typeof message.startTimeUnixNano === "number")
                 object.startTimeUnixNano =
-                  options.longs === String
-                    ? String(message.startTimeUnixNano)
-                    : message.startTimeUnixNano;
+                  options.longs === String ? String(message.startTimeUnixNano) : message.startTimeUnixNano;
               else
                 object.startTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.startTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.startTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.startTimeUnixNano.low >>> 0,
                           message.startTimeUnixNano.high >>> 0,
                         ).toNumber()
                       : message.startTimeUnixNano;
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
             if (message.count != null && message.hasOwnProperty("count"))
               if (typeof message.count === "number")
-                object.count =
-                  options.longs === String
-                    ? String(message.count)
-                    : message.count;
+                object.count = options.longs === String ? String(message.count) : message.count;
               else
                 object.count =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.count)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.count.low >>> 0,
-                          message.count.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.count.low >>> 0, message.count.high >>> 0).toNumber()
                       : message.count;
             if (message.sum != null && message.hasOwnProperty("sum"))
-              object.sum =
-                options.json && !isFinite(message.sum)
-                  ? String(message.sum)
-                  : message.sum;
+              object.sum = options.json && !isFinite(message.sum) ? String(message.sum) : message.sum;
             if (message.quantileValues && message.quantileValues.length) {
               object.quantileValues = [];
               for (var j = 0; j < message.quantileValues.length; ++j)
@@ -13765,14 +10987,12 @@ $root.opentelemetry = (function () {
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (message.flags != null && message.hasOwnProperty("flags"))
-              object.flags = message.flags;
+            if (message.flags != null && message.hasOwnProperty("flags")) object.flags = message.flags;
             return object;
           };
           /**
@@ -13783,10 +11003,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           SummaryDataPoint.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for SummaryDataPoint
@@ -13800,9 +11017,7 @@ $root.opentelemetry = (function () {
             if (typeUrlPrefix === undefined) {
               typeUrlPrefix = "type.googleapis.com";
             }
-            return (
-              typeUrlPrefix + "/opentelemetry.proto.metrics.v1.SummaryDataPoint"
-            );
+            return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.SummaryDataPoint";
           };
           SummaryDataPoint.ValueAtQuantile = (function () {
             /**
@@ -13822,13 +11037,8 @@ $root.opentelemetry = (function () {
              */
             function ValueAtQuantile(properties) {
               if (properties)
-                for (
-                  var keys = Object.keys(properties), i = 0;
-                  i < keys.length;
-                  ++i
-                )
-                  if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                  if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
             }
             /**
              * ValueAtQuantile quantile.
@@ -13866,17 +11076,9 @@ $root.opentelemetry = (function () {
              */
             ValueAtQuantile.encode = function encode(message, writer) {
               if (!writer) writer = $Writer.create();
-              if (
-                message.quantile != null &&
-                Object.hasOwnProperty.call(message, "quantile")
-              )
-                writer
-                  .uint32(/* id 1, wireType 1 =*/ 9)
-                  .double(message.quantile);
-              if (
-                message.value != null &&
-                Object.hasOwnProperty.call(message, "value")
-              )
+              if (message.quantile != null && Object.hasOwnProperty.call(message, "quantile"))
+                writer.uint32(/* id 1, wireType 1 =*/ 9).double(message.quantile);
+              if (message.value != null && Object.hasOwnProperty.call(message, "value"))
                 writer.uint32(/* id 2, wireType 1 =*/ 17).double(message.value);
               return writer;
             };
@@ -13889,10 +11091,7 @@ $root.opentelemetry = (function () {
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            ValueAtQuantile.encodeDelimited = function encodeDelimited(
-              message,
-              writer,
-            ) {
+            ValueAtQuantile.encodeDelimited = function encodeDelimited(message, writer) {
               return this.encode(message, writer).ldelim();
             };
             /**
@@ -13909,8 +11108,7 @@ $root.opentelemetry = (function () {
             ValueAtQuantile.decode = function decode(reader, length) {
               if (!(reader instanceof $Reader)) reader = $Reader.create(reader);
               var end = length === undefined ? reader.len : reader.pos + length,
-                message =
-                  new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile();
+                message = new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile();
               while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -13952,17 +11150,11 @@ $root.opentelemetry = (function () {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             ValueAtQuantile.verify = function verify(message) {
-              if (typeof message !== "object" || message === null)
-                return "object expected";
-              if (
-                message.quantile != null &&
-                message.hasOwnProperty("quantile")
-              )
-                if (typeof message.quantile !== "number")
-                  return "quantile: number expected";
+              if (typeof message !== "object" || message === null) return "object expected";
+              if (message.quantile != null && message.hasOwnProperty("quantile"))
+                if (typeof message.quantile !== "number") return "quantile: number expected";
               if (message.value != null && message.hasOwnProperty("value"))
-                if (typeof message.value !== "number")
-                  return "value: number expected";
+                if (typeof message.value !== "number") return "value: number expected";
               return null;
             };
             /**
@@ -13974,16 +11166,10 @@ $root.opentelemetry = (function () {
              * @returns {opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile} ValueAtQuantile
              */
             ValueAtQuantile.fromObject = function fromObject(object) {
-              if (
-                object instanceof
-                $root.opentelemetry.proto.metrics.v1.SummaryDataPoint
-                  .ValueAtQuantile
-              )
+              if (object instanceof $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile)
                 return object;
-              var message =
-                new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile();
-              if (object.quantile != null)
-                message.quantile = Number(object.quantile);
+              var message = new $root.opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile();
+              if (object.quantile != null) message.quantile = Number(object.quantile);
               if (object.value != null) message.value = Number(object.value);
               return message;
             };
@@ -14003,19 +11189,11 @@ $root.opentelemetry = (function () {
                 object.quantile = 0;
                 object.value = 0;
               }
-              if (
-                message.quantile != null &&
-                message.hasOwnProperty("quantile")
-              )
+              if (message.quantile != null && message.hasOwnProperty("quantile"))
                 object.quantile =
-                  options.json && !isFinite(message.quantile)
-                    ? String(message.quantile)
-                    : message.quantile;
+                  options.json && !isFinite(message.quantile) ? String(message.quantile) : message.quantile;
               if (message.value != null && message.hasOwnProperty("value"))
-                object.value =
-                  options.json && !isFinite(message.value)
-                    ? String(message.value)
-                    : message.value;
+                object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
               return object;
             };
             /**
@@ -14026,10 +11204,7 @@ $root.opentelemetry = (function () {
              * @returns {Object.<string,*>} JSON object
              */
             ValueAtQuantile.prototype.toJSON = function toJSON() {
-              return this.constructor.toObject(
-                this,
-                $protobuf.util.toJSONOptions,
-              );
+              return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
             /**
              * Gets the default type url for ValueAtQuantile
@@ -14043,10 +11218,7 @@ $root.opentelemetry = (function () {
               if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
               }
-              return (
-                typeUrlPrefix +
-                "/opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile"
-              );
+              return typeUrlPrefix + "/opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile";
             };
             return ValueAtQuantile;
           })();
@@ -14075,13 +11247,8 @@ $root.opentelemetry = (function () {
           function Exemplar(properties) {
             this.filteredAttributes = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * Exemplar filteredAttributes.
@@ -14159,39 +11326,17 @@ $root.opentelemetry = (function () {
            */
           Exemplar.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 2, wireType 1 =*/ 17)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.asDouble != null &&
-              Object.hasOwnProperty.call(message, "asDouble")
-            )
-              writer
-                .uint32(/* id 3, wireType 1 =*/ 25)
-                .double(message.asDouble);
-            if (
-              message.spanId != null &&
-              Object.hasOwnProperty.call(message, "spanId")
-            )
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 2, wireType 1 =*/ 17).fixed64(message.timeUnixNano);
+            if (message.asDouble != null && Object.hasOwnProperty.call(message, "asDouble"))
+              writer.uint32(/* id 3, wireType 1 =*/ 25).double(message.asDouble);
+            if (message.spanId != null && Object.hasOwnProperty.call(message, "spanId"))
               writer.uint32(/* id 4, wireType 2 =*/ 34).bytes(message.spanId);
-            if (
-              message.traceId != null &&
-              Object.hasOwnProperty.call(message, "traceId")
-            )
+            if (message.traceId != null && Object.hasOwnProperty.call(message, "traceId"))
               writer.uint32(/* id 5, wireType 2 =*/ 42).bytes(message.traceId);
-            if (
-              message.asInt != null &&
-              Object.hasOwnProperty.call(message, "asInt")
-            )
+            if (message.asInt != null && Object.hasOwnProperty.call(message, "asInt"))
               writer.uint32(/* id 6, wireType 1 =*/ 49).sfixed64(message.asInt);
-            if (
-              message.filteredAttributes != null &&
-              message.filteredAttributes.length
-            )
+            if (message.filteredAttributes != null && message.filteredAttributes.length)
               for (var i = 0; i < message.filteredAttributes.length; ++i)
                 $root.opentelemetry.proto.common.v1.KeyValue.encode(
                   message.filteredAttributes[i],
@@ -14230,18 +11375,10 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 7: {
-                  if (
-                    !(
-                      message.filteredAttributes &&
-                      message.filteredAttributes.length
-                    )
-                  )
+                  if (!(message.filteredAttributes && message.filteredAttributes.length))
                     message.filteredAttributes = [];
                   message.filteredAttributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -14295,26 +11432,16 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           Exemplar.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             var properties = {};
-            if (
-              message.filteredAttributes != null &&
-              message.hasOwnProperty("filteredAttributes")
-            ) {
-              if (!Array.isArray(message.filteredAttributes))
-                return "filteredAttributes: array expected";
+            if (message.filteredAttributes != null && message.hasOwnProperty("filteredAttributes")) {
+              if (!Array.isArray(message.filteredAttributes)) return "filteredAttributes: array expected";
               for (var i = 0; i < message.filteredAttributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.filteredAttributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.filteredAttributes[i]);
                 if (error) return "filteredAttributes." + error;
               }
             }
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -14324,44 +11451,24 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "timeUnixNano: integer|Long expected";
-            if (
-              message.asDouble != null &&
-              message.hasOwnProperty("asDouble")
-            ) {
+            if (message.asDouble != null && message.hasOwnProperty("asDouble")) {
               properties.value = 1;
-              if (typeof message.asDouble !== "number")
-                return "asDouble: number expected";
+              if (typeof message.asDouble !== "number") return "asDouble: number expected";
             }
             if (message.asInt != null && message.hasOwnProperty("asInt")) {
               if (properties.value === 1) return "value: multiple values";
               properties.value = 1;
               if (
                 !$util.isInteger(message.asInt) &&
-                !(
-                  message.asInt &&
-                  $util.isInteger(message.asInt.low) &&
-                  $util.isInteger(message.asInt.high)
-                )
+                !(message.asInt && $util.isInteger(message.asInt.low) && $util.isInteger(message.asInt.high))
               )
                 return "asInt: integer|Long expected";
             }
             if (message.spanId != null && message.hasOwnProperty("spanId"))
-              if (
-                !(
-                  (message.spanId &&
-                    typeof message.spanId.length === "number") ||
-                  $util.isString(message.spanId)
-                )
-              )
+              if (!((message.spanId && typeof message.spanId.length === "number") || $util.isString(message.spanId)))
                 return "spanId: buffer expected";
             if (message.traceId != null && message.hasOwnProperty("traceId"))
-              if (
-                !(
-                  (message.traceId &&
-                    typeof message.traceId.length === "number") ||
-                  $util.isString(message.traceId)
-                )
-              )
+              if (!((message.traceId && typeof message.traceId.length === "number") || $util.isString(message.traceId)))
                 return "traceId: buffer expected";
             return null;
           };
@@ -14374,77 +11481,53 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.metrics.v1.Exemplar} Exemplar
            */
           Exemplar.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.metrics.v1.Exemplar)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.metrics.v1.Exemplar) return object;
             var message = new $root.opentelemetry.proto.metrics.v1.Exemplar();
             if (object.filteredAttributes) {
               if (!Array.isArray(object.filteredAttributes))
-                throw TypeError(
-                  ".opentelemetry.proto.metrics.v1.Exemplar.filteredAttributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.metrics.v1.Exemplar.filteredAttributes: array expected");
               message.filteredAttributes = [];
               for (var i = 0; i < object.filteredAttributes.length; ++i) {
                 if (typeof object.filteredAttributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.metrics.v1.Exemplar.filteredAttributes: object expected",
-                  );
-                message.filteredAttributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.filteredAttributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.metrics.v1.Exemplar.filteredAttributes: object expected");
+                message.filteredAttributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
+                  object.filteredAttributes[i],
+                );
               }
             }
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
                   object.timeUnixNano.high >>> 0,
                 ).toNumber();
-            if (object.asDouble != null)
-              message.asDouble = Number(object.asDouble);
+            if (object.asDouble != null) message.asDouble = Number(object.asDouble);
             if (object.asInt != null)
-              if ($util.Long)
-                (message.asInt = $util.Long.fromValue(object.asInt)).unsigned =
-                  false;
-              else if (typeof object.asInt === "string")
-                message.asInt = parseInt(object.asInt, 10);
-              else if (typeof object.asInt === "number")
-                message.asInt = object.asInt;
+              if ($util.Long) (message.asInt = $util.Long.fromValue(object.asInt)).unsigned = false;
+              else if (typeof object.asInt === "string") message.asInt = parseInt(object.asInt, 10);
+              else if (typeof object.asInt === "number") message.asInt = object.asInt;
               else if (typeof object.asInt === "object")
-                message.asInt = new $util.LongBits(
-                  object.asInt.low >>> 0,
-                  object.asInt.high >>> 0,
-                ).toNumber();
+                message.asInt = new $util.LongBits(object.asInt.low >>> 0, object.asInt.high >>> 0).toNumber();
             if (object.spanId != null)
               if (typeof object.spanId === "string")
                 $util.base64.decode(
                   object.spanId,
-                  (message.spanId = $util.newBuffer(
-                    $util.base64.length(object.spanId),
-                  )),
+                  (message.spanId = $util.newBuffer($util.base64.length(object.spanId))),
                   0,
                 );
-              else if (object.spanId.length >= 0)
-                message.spanId = object.spanId;
+              else if (object.spanId.length >= 0) message.spanId = object.spanId;
             if (object.traceId != null)
               if (typeof object.traceId === "string")
                 $util.base64.decode(
                   object.traceId,
-                  (message.traceId = $util.newBuffer(
-                    $util.base64.length(object.traceId),
-                  )),
+                  (message.traceId = $util.newBuffer($util.base64.length(object.traceId))),
                   0,
                 );
-              else if (object.traceId.length >= 0)
-                message.traceId = object.traceId;
+              else if (object.traceId.length >= 0) message.traceId = object.traceId;
             return message;
           };
           /**
@@ -14459,111 +11542,72 @@ $root.opentelemetry = (function () {
           Exemplar.toObject = function toObject(message, options) {
             if (!options) options = {};
             var object = {};
-            if (options.arrays || options.defaults)
-              object.filteredAttributes = [];
+            if (options.arrays || options.defaults) object.filteredAttributes = [];
             if (options.defaults) {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
               if (options.bytes === String) object.spanId = "";
               else {
                 object.spanId = [];
-                if (options.bytes !== Array)
-                  object.spanId = $util.newBuffer(object.spanId);
+                if (options.bytes !== Array) object.spanId = $util.newBuffer(object.spanId);
               }
               if (options.bytes === String) object.traceId = "";
               else {
                 object.traceId = [];
-                if (options.bytes !== Array)
-                  object.traceId = $util.newBuffer(object.traceId);
+                if (options.bytes !== Array) object.traceId = $util.newBuffer(object.traceId);
               }
             }
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
-            if (
-              message.asDouble != null &&
-              message.hasOwnProperty("asDouble")
-            ) {
+            if (message.asDouble != null && message.hasOwnProperty("asDouble")) {
               object.asDouble =
-                options.json && !isFinite(message.asDouble)
-                  ? String(message.asDouble)
-                  : message.asDouble;
+                options.json && !isFinite(message.asDouble) ? String(message.asDouble) : message.asDouble;
               if (options.oneofs) object.value = "asDouble";
             }
             if (message.spanId != null && message.hasOwnProperty("spanId"))
               object.spanId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.spanId,
-                      0,
-                      message.spanId.length,
-                    )
+                  ? $util.base64.encode(message.spanId, 0, message.spanId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.spanId)
                     : message.spanId;
             if (message.traceId != null && message.hasOwnProperty("traceId"))
               object.traceId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.traceId,
-                      0,
-                      message.traceId.length,
-                    )
+                  ? $util.base64.encode(message.traceId, 0, message.traceId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.traceId)
                     : message.traceId;
             if (message.asInt != null && message.hasOwnProperty("asInt")) {
               if (typeof message.asInt === "number")
-                object.asInt =
-                  options.longs === String
-                    ? String(message.asInt)
-                    : message.asInt;
+                object.asInt = options.longs === String ? String(message.asInt) : message.asInt;
               else
                 object.asInt =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.asInt)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.asInt.low >>> 0,
-                          message.asInt.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.asInt.low >>> 0, message.asInt.high >>> 0).toNumber()
                       : message.asInt;
               if (options.oneofs) object.value = "asInt";
             }
-            if (
-              message.filteredAttributes &&
-              message.filteredAttributes.length
-            ) {
+            if (message.filteredAttributes && message.filteredAttributes.length) {
               object.filteredAttributes = [];
               for (var j = 0; j < message.filteredAttributes.length; ++j)
-                object.filteredAttributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.filteredAttributes[j],
-                    options,
-                  );
+                object.filteredAttributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.filteredAttributes[j],
+                  options,
+                );
             }
             return object;
           };
@@ -14575,10 +11619,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           Exemplar.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for Exemplar
@@ -14632,13 +11673,8 @@ $root.opentelemetry = (function () {
           function LogsData(properties) {
             this.resourceLogs = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * LogsData resourceLogs.
@@ -14708,13 +11744,9 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  if (!(message.resourceLogs && message.resourceLogs.length))
-                    message.resourceLogs = [];
+                  if (!(message.resourceLogs && message.resourceLogs.length)) message.resourceLogs = [];
                   message.resourceLogs.push(
-                    $root.opentelemetry.proto.logs.v1.ResourceLogs.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
+                    $root.opentelemetry.proto.logs.v1.ResourceLogs.decode(reader, reader.uint32()),
                   );
                   break;
                 }
@@ -14748,19 +11780,11 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           LogsData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resourceLogs != null &&
-              message.hasOwnProperty("resourceLogs")
-            ) {
-              if (!Array.isArray(message.resourceLogs))
-                return "resourceLogs: array expected";
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resourceLogs != null && message.hasOwnProperty("resourceLogs")) {
+              if (!Array.isArray(message.resourceLogs)) return "resourceLogs: array expected";
               for (var i = 0; i < message.resourceLogs.length; ++i) {
-                var error =
-                  $root.opentelemetry.proto.logs.v1.ResourceLogs.verify(
-                    message.resourceLogs[i],
-                  );
+                var error = $root.opentelemetry.proto.logs.v1.ResourceLogs.verify(message.resourceLogs[i]);
                 if (error) return "resourceLogs." + error;
               }
             }
@@ -14775,24 +11799,18 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.logs.v1.LogsData} LogsData
            */
           LogsData.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.logs.v1.LogsData)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.logs.v1.LogsData) return object;
             var message = new $root.opentelemetry.proto.logs.v1.LogsData();
             if (object.resourceLogs) {
               if (!Array.isArray(object.resourceLogs))
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.LogsData.resourceLogs: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.LogsData.resourceLogs: array expected");
               message.resourceLogs = [];
               for (var i = 0; i < object.resourceLogs.length; ++i) {
                 if (typeof object.resourceLogs[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.logs.v1.LogsData.resourceLogs: object expected",
-                  );
-                message.resourceLogs[i] =
-                  $root.opentelemetry.proto.logs.v1.ResourceLogs.fromObject(
-                    object.resourceLogs[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.logs.v1.LogsData.resourceLogs: object expected");
+                message.resourceLogs[i] = $root.opentelemetry.proto.logs.v1.ResourceLogs.fromObject(
+                  object.resourceLogs[i],
+                );
               }
             }
             return message;
@@ -14813,11 +11831,10 @@ $root.opentelemetry = (function () {
             if (message.resourceLogs && message.resourceLogs.length) {
               object.resourceLogs = [];
               for (var j = 0; j < message.resourceLogs.length; ++j)
-                object.resourceLogs[j] =
-                  $root.opentelemetry.proto.logs.v1.ResourceLogs.toObject(
-                    message.resourceLogs[j],
-                    options,
-                  );
+                object.resourceLogs[j] = $root.opentelemetry.proto.logs.v1.ResourceLogs.toObject(
+                  message.resourceLogs[j],
+                  options,
+                );
             }
             return object;
           };
@@ -14829,10 +11846,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           LogsData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for LogsData
@@ -14870,13 +11884,8 @@ $root.opentelemetry = (function () {
           function ResourceLogs(properties) {
             this.scopeLogs = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ResourceLogs resource.
@@ -14921,10 +11930,7 @@ $root.opentelemetry = (function () {
            */
           ResourceLogs.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.resource != null &&
-              Object.hasOwnProperty.call(message, "resource")
-            )
+            if (message.resource != null && Object.hasOwnProperty.call(message, "resource"))
               $root.opentelemetry.proto.resource.v1.Resource.encode(
                 message.resource,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -14935,13 +11941,8 @@ $root.opentelemetry = (function () {
                   message.scopeLogs[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -14953,10 +11954,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ResourceLogs.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ResourceLogs.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -14978,22 +11976,12 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.resource =
-                    $root.opentelemetry.proto.resource.v1.Resource.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.resource = $root.opentelemetry.proto.resource.v1.Resource.decode(reader, reader.uint32());
                   break;
                 }
                 case 2: {
-                  if (!(message.scopeLogs && message.scopeLogs.length))
-                    message.scopeLogs = [];
-                  message.scopeLogs.push(
-                    $root.opentelemetry.proto.logs.v1.ScopeLogs.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.scopeLogs && message.scopeLogs.length)) message.scopeLogs = [];
+                  message.scopeLogs.push($root.opentelemetry.proto.logs.v1.ScopeLogs.decode(reader, reader.uint32()));
                   break;
                 }
                 case 3: {
@@ -15030,36 +12018,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ResourceLogs.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.resource != null &&
-              message.hasOwnProperty("resource")
-            ) {
-              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(
-                message.resource,
-              );
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.resource != null && message.hasOwnProperty("resource")) {
+              var error = $root.opentelemetry.proto.resource.v1.Resource.verify(message.resource);
               if (error) return "resource." + error;
             }
-            if (
-              message.scopeLogs != null &&
-              message.hasOwnProperty("scopeLogs")
-            ) {
-              if (!Array.isArray(message.scopeLogs))
-                return "scopeLogs: array expected";
+            if (message.scopeLogs != null && message.hasOwnProperty("scopeLogs")) {
+              if (!Array.isArray(message.scopeLogs)) return "scopeLogs: array expected";
               for (var i = 0; i < message.scopeLogs.length; ++i) {
-                var error = $root.opentelemetry.proto.logs.v1.ScopeLogs.verify(
-                  message.scopeLogs[i],
-                );
+                var error = $root.opentelemetry.proto.logs.v1.ScopeLogs.verify(message.scopeLogs[i]);
                 if (error) return "scopeLogs." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -15071,40 +12043,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.logs.v1.ResourceLogs} ResourceLogs
            */
           ResourceLogs.fromObject = function fromObject(object) {
-            if (
-              object instanceof $root.opentelemetry.proto.logs.v1.ResourceLogs
-            )
-              return object;
+            if (object instanceof $root.opentelemetry.proto.logs.v1.ResourceLogs) return object;
             var message = new $root.opentelemetry.proto.logs.v1.ResourceLogs();
             if (object.resource != null) {
               if (typeof object.resource !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.ResourceLogs.resource: object expected",
-                );
-              message.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.fromObject(
-                  object.resource,
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.ResourceLogs.resource: object expected");
+              message.resource = $root.opentelemetry.proto.resource.v1.Resource.fromObject(object.resource);
             }
             if (object.scopeLogs) {
               if (!Array.isArray(object.scopeLogs))
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.ResourceLogs.scopeLogs: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.ResourceLogs.scopeLogs: array expected");
               message.scopeLogs = [];
               for (var i = 0; i < object.scopeLogs.length; ++i) {
                 if (typeof object.scopeLogs[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.logs.v1.ResourceLogs.scopeLogs: object expected",
-                  );
-                message.scopeLogs[i] =
-                  $root.opentelemetry.proto.logs.v1.ScopeLogs.fromObject(
-                    object.scopeLogs[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.logs.v1.ResourceLogs.scopeLogs: object expected");
+                message.scopeLogs[i] = $root.opentelemetry.proto.logs.v1.ScopeLogs.fromObject(object.scopeLogs[i]);
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -15125,25 +12081,16 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.resource != null && message.hasOwnProperty("resource"))
-              object.resource =
-                $root.opentelemetry.proto.resource.v1.Resource.toObject(
-                  message.resource,
-                  options,
-                );
+              object.resource = $root.opentelemetry.proto.resource.v1.Resource.toObject(message.resource, options);
             if (message.scopeLogs && message.scopeLogs.length) {
               object.scopeLogs = [];
               for (var j = 0; j < message.scopeLogs.length; ++j)
-                object.scopeLogs[j] =
-                  $root.opentelemetry.proto.logs.v1.ScopeLogs.toObject(
-                    message.scopeLogs[j],
-                    options,
-                  );
+                object.scopeLogs[j] = $root.opentelemetry.proto.logs.v1.ScopeLogs.toObject(
+                  message.scopeLogs[j],
+                  options,
+                );
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -15154,10 +12101,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ResourceLogs.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ResourceLogs
@@ -15195,13 +12139,8 @@ $root.opentelemetry = (function () {
           function ScopeLogs(properties) {
             this.logRecords = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * ScopeLogs scope.
@@ -15246,10 +12185,7 @@ $root.opentelemetry = (function () {
            */
           ScopeLogs.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.scope != null &&
-              Object.hasOwnProperty.call(message, "scope")
-            )
+            if (message.scope != null && Object.hasOwnProperty.call(message, "scope"))
               $root.opentelemetry.proto.common.v1.InstrumentationScope.encode(
                 message.scope,
                 writer.uint32(/* id 1, wireType 2 =*/ 10).fork(),
@@ -15260,13 +12196,8 @@ $root.opentelemetry = (function () {
                   message.logRecords[i],
                   writer.uint32(/* id 2, wireType 2 =*/ 18).fork(),
                 ).ldelim();
-            if (
-              message.schemaUrl != null &&
-              Object.hasOwnProperty.call(message, "schemaUrl")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.schemaUrl);
+            if (message.schemaUrl != null && Object.hasOwnProperty.call(message, "schemaUrl"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.schemaUrl);
             return writer;
           };
           /**
@@ -15278,10 +12209,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          ScopeLogs.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          ScopeLogs.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -15303,22 +12231,15 @@ $root.opentelemetry = (function () {
               var tag = reader.uint32();
               switch (tag >>> 3) {
                 case 1: {
-                  message.scope =
-                    $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.decode(
+                    reader,
+                    reader.uint32(),
+                  );
                   break;
                 }
                 case 2: {
-                  if (!(message.logRecords && message.logRecords.length))
-                    message.logRecords = [];
-                  message.logRecords.push(
-                    $root.opentelemetry.proto.logs.v1.LogRecord.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.logRecords && message.logRecords.length)) message.logRecords = [];
+                  message.logRecords.push($root.opentelemetry.proto.logs.v1.LogRecord.decode(reader, reader.uint32()));
                   break;
                 }
                 case 3: {
@@ -15355,34 +12276,20 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           ScopeLogs.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected";
             if (message.scope != null && message.hasOwnProperty("scope")) {
-              var error =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(
-                  message.scope,
-                );
+              var error = $root.opentelemetry.proto.common.v1.InstrumentationScope.verify(message.scope);
               if (error) return "scope." + error;
             }
-            if (
-              message.logRecords != null &&
-              message.hasOwnProperty("logRecords")
-            ) {
-              if (!Array.isArray(message.logRecords))
-                return "logRecords: array expected";
+            if (message.logRecords != null && message.hasOwnProperty("logRecords")) {
+              if (!Array.isArray(message.logRecords)) return "logRecords: array expected";
               for (var i = 0; i < message.logRecords.length; ++i) {
-                var error = $root.opentelemetry.proto.logs.v1.LogRecord.verify(
-                  message.logRecords[i],
-                );
+                var error = $root.opentelemetry.proto.logs.v1.LogRecord.verify(message.logRecords[i]);
                 if (error) return "logRecords." + error;
               }
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              if (!$util.isString(message.schemaUrl))
-                return "schemaUrl: string expected";
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl"))
+              if (!$util.isString(message.schemaUrl)) return "schemaUrl: string expected";
             return null;
           };
           /**
@@ -15394,38 +12301,24 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.logs.v1.ScopeLogs} ScopeLogs
            */
           ScopeLogs.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.logs.v1.ScopeLogs)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.logs.v1.ScopeLogs) return object;
             var message = new $root.opentelemetry.proto.logs.v1.ScopeLogs();
             if (object.scope != null) {
               if (typeof object.scope !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.ScopeLogs.scope: object expected",
-                );
-              message.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(
-                  object.scope,
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.ScopeLogs.scope: object expected");
+              message.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.fromObject(object.scope);
             }
             if (object.logRecords) {
               if (!Array.isArray(object.logRecords))
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.ScopeLogs.logRecords: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.ScopeLogs.logRecords: array expected");
               message.logRecords = [];
               for (var i = 0; i < object.logRecords.length; ++i) {
                 if (typeof object.logRecords[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.logs.v1.ScopeLogs.logRecords: object expected",
-                  );
-                message.logRecords[i] =
-                  $root.opentelemetry.proto.logs.v1.LogRecord.fromObject(
-                    object.logRecords[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.logs.v1.ScopeLogs.logRecords: object expected");
+                message.logRecords[i] = $root.opentelemetry.proto.logs.v1.LogRecord.fromObject(object.logRecords[i]);
               }
             }
-            if (object.schemaUrl != null)
-              message.schemaUrl = String(object.schemaUrl);
+            if (object.schemaUrl != null) message.schemaUrl = String(object.schemaUrl);
             return message;
           };
           /**
@@ -15446,25 +12339,16 @@ $root.opentelemetry = (function () {
               object.schemaUrl = "";
             }
             if (message.scope != null && message.hasOwnProperty("scope"))
-              object.scope =
-                $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(
-                  message.scope,
-                  options,
-                );
+              object.scope = $root.opentelemetry.proto.common.v1.InstrumentationScope.toObject(message.scope, options);
             if (message.logRecords && message.logRecords.length) {
               object.logRecords = [];
               for (var j = 0; j < message.logRecords.length; ++j)
-                object.logRecords[j] =
-                  $root.opentelemetry.proto.logs.v1.LogRecord.toObject(
-                    message.logRecords[j],
-                    options,
-                  );
+                object.logRecords[j] = $root.opentelemetry.proto.logs.v1.LogRecord.toObject(
+                  message.logRecords[j],
+                  options,
+                );
             }
-            if (
-              message.schemaUrl != null &&
-              message.hasOwnProperty("schemaUrl")
-            )
-              object.schemaUrl = message.schemaUrl;
+            if (message.schemaUrl != null && message.hasOwnProperty("schemaUrl")) object.schemaUrl = message.schemaUrl;
             return object;
           };
           /**
@@ -15475,10 +12359,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           ScopeLogs.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for ScopeLogs
@@ -15597,13 +12478,8 @@ $root.opentelemetry = (function () {
           function LogRecord(properties) {
             this.attributes = [];
             if (properties)
-              for (
-                var keys = Object.keys(properties), i = 0;
-                i < keys.length;
-                ++i
-              )
-                if (properties[keys[i]] != null)
-                  this[keys[i]] = properties[keys[i]];
+              for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]];
           }
           /**
            * LogRecord timeUnixNano.
@@ -15697,31 +12573,13 @@ $root.opentelemetry = (function () {
            */
           LogRecord.encode = function encode(message, writer) {
             if (!writer) writer = $Writer.create();
-            if (
-              message.timeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "timeUnixNano")
-            )
-              writer
-                .uint32(/* id 1, wireType 1 =*/ 9)
-                .fixed64(message.timeUnixNano);
-            if (
-              message.severityNumber != null &&
-              Object.hasOwnProperty.call(message, "severityNumber")
-            )
-              writer
-                .uint32(/* id 2, wireType 0 =*/ 16)
-                .int32(message.severityNumber);
-            if (
-              message.severityText != null &&
-              Object.hasOwnProperty.call(message, "severityText")
-            )
-              writer
-                .uint32(/* id 3, wireType 2 =*/ 26)
-                .string(message.severityText);
-            if (
-              message.body != null &&
-              Object.hasOwnProperty.call(message, "body")
-            )
+            if (message.timeUnixNano != null && Object.hasOwnProperty.call(message, "timeUnixNano"))
+              writer.uint32(/* id 1, wireType 1 =*/ 9).fixed64(message.timeUnixNano);
+            if (message.severityNumber != null && Object.hasOwnProperty.call(message, "severityNumber"))
+              writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.severityNumber);
+            if (message.severityText != null && Object.hasOwnProperty.call(message, "severityText"))
+              writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.severityText);
+            if (message.body != null && Object.hasOwnProperty.call(message, "body"))
               $root.opentelemetry.proto.common.v1.AnyValue.encode(
                 message.body,
                 writer.uint32(/* id 5, wireType 2 =*/ 42).fork(),
@@ -15732,35 +12590,16 @@ $root.opentelemetry = (function () {
                   message.attributes[i],
                   writer.uint32(/* id 6, wireType 2 =*/ 50).fork(),
                 ).ldelim();
-            if (
-              message.droppedAttributesCount != null &&
-              Object.hasOwnProperty.call(message, "droppedAttributesCount")
-            )
-              writer
-                .uint32(/* id 7, wireType 0 =*/ 56)
-                .uint32(message.droppedAttributesCount);
-            if (
-              message.flags != null &&
-              Object.hasOwnProperty.call(message, "flags")
-            )
+            if (message.droppedAttributesCount != null && Object.hasOwnProperty.call(message, "droppedAttributesCount"))
+              writer.uint32(/* id 7, wireType 0 =*/ 56).uint32(message.droppedAttributesCount);
+            if (message.flags != null && Object.hasOwnProperty.call(message, "flags"))
               writer.uint32(/* id 8, wireType 5 =*/ 69).fixed32(message.flags);
-            if (
-              message.traceId != null &&
-              Object.hasOwnProperty.call(message, "traceId")
-            )
+            if (message.traceId != null && Object.hasOwnProperty.call(message, "traceId"))
               writer.uint32(/* id 9, wireType 2 =*/ 74).bytes(message.traceId);
-            if (
-              message.spanId != null &&
-              Object.hasOwnProperty.call(message, "spanId")
-            )
+            if (message.spanId != null && Object.hasOwnProperty.call(message, "spanId"))
               writer.uint32(/* id 10, wireType 2 =*/ 82).bytes(message.spanId);
-            if (
-              message.observedTimeUnixNano != null &&
-              Object.hasOwnProperty.call(message, "observedTimeUnixNano")
-            )
-              writer
-                .uint32(/* id 11, wireType 1 =*/ 89)
-                .fixed64(message.observedTimeUnixNano);
+            if (message.observedTimeUnixNano != null && Object.hasOwnProperty.call(message, "observedTimeUnixNano"))
+              writer.uint32(/* id 11, wireType 1 =*/ 89).fixed64(message.observedTimeUnixNano);
             return writer;
           };
           /**
@@ -15772,10 +12611,7 @@ $root.opentelemetry = (function () {
            * @param {$protobuf.Writer} [writer] Writer to encode to
            * @returns {$protobuf.Writer} Writer
            */
-          LogRecord.encodeDelimited = function encodeDelimited(
-            message,
-            writer,
-          ) {
+          LogRecord.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
           };
           /**
@@ -15813,22 +12649,12 @@ $root.opentelemetry = (function () {
                   break;
                 }
                 case 5: {
-                  message.body =
-                    $root.opentelemetry.proto.common.v1.AnyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    );
+                  message.body = $root.opentelemetry.proto.common.v1.AnyValue.decode(reader, reader.uint32());
                   break;
                 }
                 case 6: {
-                  if (!(message.attributes && message.attributes.length))
-                    message.attributes = [];
-                  message.attributes.push(
-                    $root.opentelemetry.proto.common.v1.KeyValue.decode(
-                      reader,
-                      reader.uint32(),
-                    ),
-                  );
+                  if (!(message.attributes && message.attributes.length)) message.attributes = [];
+                  message.attributes.push($root.opentelemetry.proto.common.v1.KeyValue.decode(reader, reader.uint32()));
                   break;
                 }
                 case 7: {
@@ -15877,12 +12703,8 @@ $root.opentelemetry = (function () {
            * @returns {string|null} `null` if valid, otherwise the reason why it is not
            */
           LogRecord.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-              return "object expected";
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (typeof message !== "object" || message === null) return "object expected";
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (
                 !$util.isInteger(message.timeUnixNano) &&
                 !(
@@ -15892,10 +12714,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "timeUnixNano: integer|Long expected";
-            if (
-              message.observedTimeUnixNano != null &&
-              message.hasOwnProperty("observedTimeUnixNano")
-            )
+            if (message.observedTimeUnixNano != null && message.hasOwnProperty("observedTimeUnixNano"))
               if (
                 !$util.isInteger(message.observedTimeUnixNano) &&
                 !(
@@ -15905,10 +12724,7 @@ $root.opentelemetry = (function () {
                 )
               )
                 return "observedTimeUnixNano: integer|Long expected";
-            if (
-              message.severityNumber != null &&
-              message.hasOwnProperty("severityNumber")
-            )
+            if (message.severityNumber != null && message.hasOwnProperty("severityNumber"))
               switch (message.severityNumber) {
                 default:
                   return "severityNumber: enum value expected";
@@ -15939,57 +12755,28 @@ $root.opentelemetry = (function () {
                 case 24:
                   break;
               }
-            if (
-              message.severityText != null &&
-              message.hasOwnProperty("severityText")
-            )
-              if (!$util.isString(message.severityText))
-                return "severityText: string expected";
+            if (message.severityText != null && message.hasOwnProperty("severityText"))
+              if (!$util.isString(message.severityText)) return "severityText: string expected";
             if (message.body != null && message.hasOwnProperty("body")) {
-              var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(
-                message.body,
-              );
+              var error = $root.opentelemetry.proto.common.v1.AnyValue.verify(message.body);
               if (error) return "body." + error;
             }
-            if (
-              message.attributes != null &&
-              message.hasOwnProperty("attributes")
-            ) {
-              if (!Array.isArray(message.attributes))
-                return "attributes: array expected";
+            if (message.attributes != null && message.hasOwnProperty("attributes")) {
+              if (!Array.isArray(message.attributes)) return "attributes: array expected";
               for (var i = 0; i < message.attributes.length; ++i) {
-                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(
-                  message.attributes[i],
-                );
+                var error = $root.opentelemetry.proto.common.v1.KeyValue.verify(message.attributes[i]);
                 if (error) return "attributes." + error;
               }
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
-              if (!$util.isInteger(message.droppedAttributesCount))
-                return "droppedAttributesCount: integer expected";
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
+              if (!$util.isInteger(message.droppedAttributesCount)) return "droppedAttributesCount: integer expected";
             if (message.flags != null && message.hasOwnProperty("flags"))
-              if (!$util.isInteger(message.flags))
-                return "flags: integer expected";
+              if (!$util.isInteger(message.flags)) return "flags: integer expected";
             if (message.traceId != null && message.hasOwnProperty("traceId"))
-              if (
-                !(
-                  (message.traceId &&
-                    typeof message.traceId.length === "number") ||
-                  $util.isString(message.traceId)
-                )
-              )
+              if (!((message.traceId && typeof message.traceId.length === "number") || $util.isString(message.traceId)))
                 return "traceId: buffer expected";
             if (message.spanId != null && message.hasOwnProperty("spanId"))
-              if (
-                !(
-                  (message.spanId &&
-                    typeof message.spanId.length === "number") ||
-                  $util.isString(message.spanId)
-                )
-              )
+              if (!((message.spanId && typeof message.spanId.length === "number") || $util.isString(message.spanId)))
                 return "spanId: buffer expected";
             return null;
           };
@@ -16002,18 +12789,13 @@ $root.opentelemetry = (function () {
            * @returns {opentelemetry.proto.logs.v1.LogRecord} LogRecord
            */
           LogRecord.fromObject = function fromObject(object) {
-            if (object instanceof $root.opentelemetry.proto.logs.v1.LogRecord)
-              return object;
+            if (object instanceof $root.opentelemetry.proto.logs.v1.LogRecord) return object;
             var message = new $root.opentelemetry.proto.logs.v1.LogRecord();
             if (object.timeUnixNano != null)
-              if ($util.Long)
-                (message.timeUnixNano = $util.Long.fromValue(
-                  object.timeUnixNano,
-                )).unsigned = false;
+              if ($util.Long) (message.timeUnixNano = $util.Long.fromValue(object.timeUnixNano)).unsigned = false;
               else if (typeof object.timeUnixNano === "string")
                 message.timeUnixNano = parseInt(object.timeUnixNano, 10);
-              else if (typeof object.timeUnixNano === "number")
-                message.timeUnixNano = object.timeUnixNano;
+              else if (typeof object.timeUnixNano === "number") message.timeUnixNano = object.timeUnixNano;
               else if (typeof object.timeUnixNano === "object")
                 message.timeUnixNano = new $util.LongBits(
                   object.timeUnixNano.low >>> 0,
@@ -16021,14 +12803,9 @@ $root.opentelemetry = (function () {
                 ).toNumber();
             if (object.observedTimeUnixNano != null)
               if ($util.Long)
-                (message.observedTimeUnixNano = $util.Long.fromValue(
-                  object.observedTimeUnixNano,
-                )).unsigned = false;
+                (message.observedTimeUnixNano = $util.Long.fromValue(object.observedTimeUnixNano)).unsigned = false;
               else if (typeof object.observedTimeUnixNano === "string")
-                message.observedTimeUnixNano = parseInt(
-                  object.observedTimeUnixNano,
-                  10,
-                );
+                message.observedTimeUnixNano = parseInt(object.observedTimeUnixNano, 10);
               else if (typeof object.observedTimeUnixNano === "number")
                 message.observedTimeUnixNano = object.observedTimeUnixNano;
               else if (typeof object.observedTimeUnixNano === "object")
@@ -16144,61 +12921,41 @@ $root.opentelemetry = (function () {
                 message.severityNumber = 24;
                 break;
             }
-            if (object.severityText != null)
-              message.severityText = String(object.severityText);
+            if (object.severityText != null) message.severityText = String(object.severityText);
             if (object.body != null) {
               if (typeof object.body !== "object")
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.LogRecord.body: object expected",
-                );
-              message.body =
-                $root.opentelemetry.proto.common.v1.AnyValue.fromObject(
-                  object.body,
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.LogRecord.body: object expected");
+              message.body = $root.opentelemetry.proto.common.v1.AnyValue.fromObject(object.body);
             }
             if (object.attributes) {
               if (!Array.isArray(object.attributes))
-                throw TypeError(
-                  ".opentelemetry.proto.logs.v1.LogRecord.attributes: array expected",
-                );
+                throw TypeError(".opentelemetry.proto.logs.v1.LogRecord.attributes: array expected");
               message.attributes = [];
               for (var i = 0; i < object.attributes.length; ++i) {
                 if (typeof object.attributes[i] !== "object")
-                  throw TypeError(
-                    ".opentelemetry.proto.logs.v1.LogRecord.attributes: object expected",
-                  );
-                message.attributes[i] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.fromObject(
-                    object.attributes[i],
-                  );
+                  throw TypeError(".opentelemetry.proto.logs.v1.LogRecord.attributes: object expected");
+                message.attributes[i] = $root.opentelemetry.proto.common.v1.KeyValue.fromObject(object.attributes[i]);
               }
             }
             if (object.droppedAttributesCount != null)
-              message.droppedAttributesCount =
-                object.droppedAttributesCount >>> 0;
+              message.droppedAttributesCount = object.droppedAttributesCount >>> 0;
             if (object.flags != null) message.flags = object.flags >>> 0;
             if (object.traceId != null)
               if (typeof object.traceId === "string")
                 $util.base64.decode(
                   object.traceId,
-                  (message.traceId = $util.newBuffer(
-                    $util.base64.length(object.traceId),
-                  )),
+                  (message.traceId = $util.newBuffer($util.base64.length(object.traceId))),
                   0,
                 );
-              else if (object.traceId.length >= 0)
-                message.traceId = object.traceId;
+              else if (object.traceId.length >= 0) message.traceId = object.traceId;
             if (object.spanId != null)
               if (typeof object.spanId === "string")
                 $util.base64.decode(
                   object.spanId,
-                  (message.spanId = $util.newBuffer(
-                    $util.base64.length(object.spanId),
-                  )),
+                  (message.spanId = $util.newBuffer($util.base64.length(object.spanId))),
                   0,
                 );
-              else if (object.spanId.length >= 0)
-                message.spanId = object.spanId;
+              else if (object.spanId.length >= 0) message.spanId = object.spanId;
             return message;
           };
           /**
@@ -16218,14 +12975,9 @@ $root.opentelemetry = (function () {
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.timeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
               } else object.timeUnixNano = options.longs === String ? "0" : 0;
-              object.severityNumber =
-                options.enums === String ? "SEVERITY_NUMBER_UNSPECIFIED" : 0;
+              object.severityNumber = options.enums === String ? "SEVERITY_NUMBER_UNSPECIFIED" : 0;
               object.severityText = "";
               object.body = null;
               object.droppedAttributesCount = 0;
@@ -16233,124 +12985,73 @@ $root.opentelemetry = (function () {
               if (options.bytes === String) object.traceId = "";
               else {
                 object.traceId = [];
-                if (options.bytes !== Array)
-                  object.traceId = $util.newBuffer(object.traceId);
+                if (options.bytes !== Array) object.traceId = $util.newBuffer(object.traceId);
               }
               if (options.bytes === String) object.spanId = "";
               else {
                 object.spanId = [];
-                if (options.bytes !== Array)
-                  object.spanId = $util.newBuffer(object.spanId);
+                if (options.bytes !== Array) object.spanId = $util.newBuffer(object.spanId);
               }
               if ($util.Long) {
                 var long = new $util.Long(0, 0, false);
                 object.observedTimeUnixNano =
-                  options.longs === String
-                    ? long.toString()
-                    : options.longs === Number
-                      ? long.toNumber()
-                      : long;
-              } else
-                object.observedTimeUnixNano =
-                  options.longs === String ? "0" : 0;
+                  options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+              } else object.observedTimeUnixNano = options.longs === String ? "0" : 0;
             }
-            if (
-              message.timeUnixNano != null &&
-              message.hasOwnProperty("timeUnixNano")
-            )
+            if (message.timeUnixNano != null && message.hasOwnProperty("timeUnixNano"))
               if (typeof message.timeUnixNano === "number")
-                object.timeUnixNano =
-                  options.longs === String
-                    ? String(message.timeUnixNano)
-                    : message.timeUnixNano;
+                object.timeUnixNano = options.longs === String ? String(message.timeUnixNano) : message.timeUnixNano;
               else
                 object.timeUnixNano =
                   options.longs === String
                     ? $util.Long.prototype.toString.call(message.timeUnixNano)
                     : options.longs === Number
-                      ? new $util.LongBits(
-                          message.timeUnixNano.low >>> 0,
-                          message.timeUnixNano.high >>> 0,
-                        ).toNumber()
+                      ? new $util.LongBits(message.timeUnixNano.low >>> 0, message.timeUnixNano.high >>> 0).toNumber()
                       : message.timeUnixNano;
-            if (
-              message.severityNumber != null &&
-              message.hasOwnProperty("severityNumber")
-            )
+            if (message.severityNumber != null && message.hasOwnProperty("severityNumber"))
               object.severityNumber =
                 options.enums === String
-                  ? $root.opentelemetry.proto.logs.v1.SeverityNumber[
-                      message.severityNumber
-                    ] === undefined
+                  ? $root.opentelemetry.proto.logs.v1.SeverityNumber[message.severityNumber] === undefined
                     ? message.severityNumber
-                    : $root.opentelemetry.proto.logs.v1.SeverityNumber[
-                        message.severityNumber
-                      ]
+                    : $root.opentelemetry.proto.logs.v1.SeverityNumber[message.severityNumber]
                   : message.severityNumber;
-            if (
-              message.severityText != null &&
-              message.hasOwnProperty("severityText")
-            )
+            if (message.severityText != null && message.hasOwnProperty("severityText"))
               object.severityText = message.severityText;
             if (message.body != null && message.hasOwnProperty("body"))
-              object.body =
-                $root.opentelemetry.proto.common.v1.AnyValue.toObject(
-                  message.body,
-                  options,
-                );
+              object.body = $root.opentelemetry.proto.common.v1.AnyValue.toObject(message.body, options);
             if (message.attributes && message.attributes.length) {
               object.attributes = [];
               for (var j = 0; j < message.attributes.length; ++j)
-                object.attributes[j] =
-                  $root.opentelemetry.proto.common.v1.KeyValue.toObject(
-                    message.attributes[j],
-                    options,
-                  );
+                object.attributes[j] = $root.opentelemetry.proto.common.v1.KeyValue.toObject(
+                  message.attributes[j],
+                  options,
+                );
             }
-            if (
-              message.droppedAttributesCount != null &&
-              message.hasOwnProperty("droppedAttributesCount")
-            )
+            if (message.droppedAttributesCount != null && message.hasOwnProperty("droppedAttributesCount"))
               object.droppedAttributesCount = message.droppedAttributesCount;
-            if (message.flags != null && message.hasOwnProperty("flags"))
-              object.flags = message.flags;
+            if (message.flags != null && message.hasOwnProperty("flags")) object.flags = message.flags;
             if (message.traceId != null && message.hasOwnProperty("traceId"))
               object.traceId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.traceId,
-                      0,
-                      message.traceId.length,
-                    )
+                  ? $util.base64.encode(message.traceId, 0, message.traceId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.traceId)
                     : message.traceId;
             if (message.spanId != null && message.hasOwnProperty("spanId"))
               object.spanId =
                 options.bytes === String
-                  ? $util.base64.encode(
-                      message.spanId,
-                      0,
-                      message.spanId.length,
-                    )
+                  ? $util.base64.encode(message.spanId, 0, message.spanId.length)
                   : options.bytes === Array
                     ? Array.prototype.slice.call(message.spanId)
                     : message.spanId;
-            if (
-              message.observedTimeUnixNano != null &&
-              message.hasOwnProperty("observedTimeUnixNano")
-            )
+            if (message.observedTimeUnixNano != null && message.hasOwnProperty("observedTimeUnixNano"))
               if (typeof message.observedTimeUnixNano === "number")
                 object.observedTimeUnixNano =
-                  options.longs === String
-                    ? String(message.observedTimeUnixNano)
-                    : message.observedTimeUnixNano;
+                  options.longs === String ? String(message.observedTimeUnixNano) : message.observedTimeUnixNano;
               else
                 object.observedTimeUnixNano =
                   options.longs === String
-                    ? $util.Long.prototype.toString.call(
-                        message.observedTimeUnixNano,
-                      )
+                    ? $util.Long.prototype.toString.call(message.observedTimeUnixNano)
                     : options.longs === Number
                       ? new $util.LongBits(
                           message.observedTimeUnixNano.low >>> 0,
@@ -16367,10 +13068,7 @@ $root.opentelemetry = (function () {
            * @returns {Object.<string,*>} JSON object
            */
           LogRecord.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions,
-            );
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
           };
           /**
            * Gets the default type url for LogRecord

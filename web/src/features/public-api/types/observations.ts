@@ -114,9 +114,7 @@ export const APIObservation = z
 export const transformDbToApiObservation = (
   observation: (Observation | EventsObservation) & ObservationPriceFields,
 ): z.infer<typeof APIObservation> => {
-  const reducedUsageDetails = reduceUsageOrCostDetails(
-    observation.usageDetails,
-  );
+  const reducedUsageDetails = reduceUsageOrCostDetails(observation.usageDetails);
   const reducedCostDetails = reduceUsageOrCostDetails(observation.costDetails);
 
   const unit = "TOKENS";
@@ -242,9 +240,7 @@ export type ObservationsCursorV2Type = z.infer<typeof ObservationsCursorV2>;
  * Schema for base64-encoded cursor string
  * Used in API responses - just a plain string, no transformation
  */
-export const EncodedObservationsCursorV2String = z
-  .string()
-  .describe("Base64-encoded cursor for pagination");
+export const EncodedObservationsCursorV2String = z.string().describe("Base64-encoded cursor for pagination");
 
 /**
  * Schema for base64-encoded cursor in API requests
@@ -266,15 +262,11 @@ export const EncodedObservationsCursorV2 = z
 /**
  * Encodes a cursor object to base64 string for API response
  */
-export const encodeCursor = (
-  cursor: ObservationsCursorV2Type,
-): z.infer<typeof EncodedObservationsCursorV2String> => {
+export const encodeCursor = (cursor: ObservationsCursorV2Type): z.infer<typeof EncodedObservationsCursorV2String> => {
   return Buffer.from(
     JSON.stringify({
       lastStartTimeTo:
-        cursor.lastStartTimeTo instanceof Date
-          ? cursor.lastStartTimeTo.toISOString()
-          : cursor.lastStartTimeTo,
+        cursor.lastStartTimeTo instanceof Date ? cursor.lastStartTimeTo.toISOString() : cursor.lastStartTimeTo,
       lastTraceId: cursor.lastTraceId,
       lastId: cursor.lastId,
     }),
@@ -293,9 +285,7 @@ export const GetObservationsV2Query = z.object({
       return v
         .split(",")
         .map((f) => f.trim())
-        .filter((f): f is ObservationFieldGroup =>
-          OBSERVATION_FIELD_GROUPS.includes(f as ObservationFieldGroup),
-        );
+        .filter((f): f is ObservationFieldGroup => OBSERVATION_FIELD_GROUPS.includes(f as ObservationFieldGroup));
     })
     .pipe(z.array(z.enum(OBSERVATION_FIELD_GROUPS)).nullable()),
   // Metadata expansion keys (optional)

@@ -1,10 +1,5 @@
 import type z from "zod/v4";
-import type {
-  ViewVersion,
-  ViewDeclarationType,
-  DimensionsDeclarationType,
-  views,
-} from "@/src/features/query/types";
+import type { ViewVersion, ViewDeclarationType, DimensionsDeclarationType, views } from "@/src/features/query/types";
 import { InvalidRequestError } from "@hanzo/shared";
 
 // The data model defines all available dimensions, measures, and the timeDimension for a given view.
@@ -12,8 +7,7 @@ import { InvalidRequestError } from "@hanzo/shared";
 
 export const traceView: ViewDeclarationType = {
   name: "traces",
-  description:
-    "Traces represent a group of observations and typically represent a single request or operation.",
+  description: "Traces represent a group of observations and typically represent a single request or operation.",
   dimensions: {
     id: {
       sql: "traces.id",
@@ -25,8 +19,7 @@ export const traceView: ViewDeclarationType = {
       sql: "traces.name",
       alias: "name",
       type: "string",
-      description:
-        "Name assigned to the trace (often the endpoint or operation).",
+      description: "Name assigned to the trace (often the endpoint or operation).",
     },
     tags: {
       sql: "traces.tags",
@@ -114,8 +107,7 @@ export const traceView: ViewDeclarationType = {
       alias: "latency",
       type: "integer",
       relationTable: "observations",
-      description:
-        "Elapsed time between the first and last observation inside the trace.",
+      description: "Elapsed time between the first and last observation inside the trace.",
       unit: "millisecond",
     },
     totalTokens: {
@@ -138,14 +130,12 @@ export const traceView: ViewDeclarationType = {
   tableRelations: {
     observations: {
       name: "observations",
-      joinConditionSql:
-        "ON traces.id = observations.trace_id AND traces.project_id = observations.project_id",
+      joinConditionSql: "ON traces.id = observations.trace_id AND traces.project_id = observations.project_id",
       timeDimension: "start_time",
     },
     scores: {
       name: "scores",
-      joinConditionSql:
-        "ON traces.id = scores.trace_id AND traces.project_id = scores.project_id",
+      joinConditionSql: "ON traces.id = scores.trace_id AND traces.project_id = scores.project_id",
       timeDimension: "timestamp",
     },
   },
@@ -156,8 +146,7 @@ export const traceView: ViewDeclarationType = {
 
 export const eventsTracesView: ViewDeclarationType = {
   name: "events_traces",
-  description:
-    "Traces built from events table aggregation - mirrors v1 traces view with 100% API compatibility.",
+  description: "Traces built from events table aggregation - mirrors v1 traces view with 100% API compatibility.",
   dimensions: {
     id: {
       sql: "events_traces.trace_id",
@@ -171,26 +160,22 @@ export const eventsTracesView: ViewDeclarationType = {
       sql: "nullIf(events_traces.trace_name, '')",
       alias: "name",
       type: "string",
-      description:
-        "Name assigned to the trace (often the endpoint or operation).",
-      aggregationFunction:
-        "argMaxIf(events_traces.trace_name, events_traces.event_ts, events_traces.trace_name <> '')",
+      description: "Name assigned to the trace (often the endpoint or operation).",
+      aggregationFunction: "argMaxIf(events_traces.trace_name, events_traces.event_ts, events_traces.trace_name <> '')",
     },
     tags: {
       sql: "events_traces.tags",
       alias: "tags",
       type: "string[]",
       description: "User-defined tags associated with the trace.",
-      aggregationFunction:
-        "arrayDistinct(flatten(groupArray(events_traces.tags)))",
+      aggregationFunction: "arrayDistinct(flatten(groupArray(events_traces.tags)))",
     },
     userId: {
       sql: "nullIf(events_traces.user_id, '')",
       alias: "userId",
       type: "string",
       description: "Identifier of the user triggering the trace.",
-      aggregationFunction:
-        "argMaxIf(events_traces.user_id, events_traces.event_ts, events_traces.user_id <> '')",
+      aggregationFunction: "argMaxIf(events_traces.user_id, events_traces.event_ts, events_traces.user_id <> '')",
       highCardinality: true,
     },
     sessionId: {
@@ -198,8 +183,7 @@ export const eventsTracesView: ViewDeclarationType = {
       alias: "sessionId",
       type: "string",
       description: "Identifier of the session triggering the trace.",
-      aggregationFunction:
-        "argMaxIf(events_traces.session_id, events_traces.event_ts, events_traces.session_id <> '')",
+      aggregationFunction: "argMaxIf(events_traces.session_id, events_traces.event_ts, events_traces.session_id <> '')",
       highCardinality: true,
     },
     release: {
@@ -207,16 +191,14 @@ export const eventsTracesView: ViewDeclarationType = {
       alias: "release",
       type: "string",
       description: "Release version of the trace.",
-      aggregationFunction:
-        "argMaxIf(events_traces.release, events_traces.event_ts, events_traces.release <> '')",
+      aggregationFunction: "argMaxIf(events_traces.release, events_traces.event_ts, events_traces.release <> '')",
     },
     version: {
       sql: "nullIf(events_traces.version, '')",
       alias: "version",
       type: "string",
       description: "Version of the trace.",
-      aggregationFunction:
-        "argMaxIf(events_traces.version, events_traces.event_ts, events_traces.version <> '')",
+      aggregationFunction: "argMaxIf(events_traces.version, events_traces.event_ts, events_traces.version <> '')",
     },
     environment: {
       sql: "nullIf(events_traces.environment, '')",
@@ -231,8 +213,7 @@ export const eventsTracesView: ViewDeclarationType = {
       alias: "timestampMonth",
       type: "string",
       description: "Month of the trace timestamp in YYYY-MM format.",
-      aggregationFunction:
-        "formatDateTime(min(events_traces.start_time), '%Y-%m')",
+      aggregationFunction: "formatDateTime(min(events_traces.start_time), '%Y-%m')",
     },
   },
   measures: {
@@ -276,8 +257,7 @@ export const eventsTracesView: ViewDeclarationType = {
       sql: "date_diff('millisecond', min(events_traces.start_time), max(events_traces.end_time))",
       alias: "latency",
       type: "integer",
-      description:
-        "Elapsed time between the first and last observation inside the trace.",
+      description: "Elapsed time between the first and last observation inside the trace.",
       unit: "millisecond",
     },
     totalTokens: {
@@ -298,8 +278,7 @@ export const eventsTracesView: ViewDeclarationType = {
   tableRelations: {
     scores: {
       name: "scores",
-      joinConditionSql:
-        "ON events_traces.trace_id = scores.trace_id AND events_traces.project_id = scores.project_id",
+      joinConditionSql: "ON events_traces.trace_id = scores.trace_id AND events_traces.project_id = scores.project_id",
       timeDimension: "timestamp",
     },
   },
@@ -342,15 +321,13 @@ export const observationsView: ViewDeclarationType = {
       sql: "observations.parent_observation_id",
       alias: "parentObservationId",
       type: "string",
-      description:
-        "Identifier of the parent observation. Empty for the root span.",
+      description: "Identifier of the parent observation. Empty for the root span.",
     },
     type: {
       sql: "observations.type",
       alias: "type",
       type: "string",
-      description:
-        "Type of the observation. Can be a SPAN, GENERATION, or EVENT.",
+      description: "Type of the observation. Can be a SPAN, GENERATION, or EVENT.",
     },
     name: {
       sql: "observations.name",
@@ -456,8 +433,7 @@ export const observationsView: ViewDeclarationType = {
       aggs: { agg1: "any" },
       alias: "latency",
       type: "integer",
-      description:
-        "Latency of an individual observation (start time to end time).",
+      description: "Latency of an individual observation (start time to end time).",
       unit: "millisecond",
     },
     streamingLatency: {
@@ -466,8 +442,7 @@ export const observationsView: ViewDeclarationType = {
       aggs: { agg1: "any" },
       alias: "streamingLatency",
       type: "integer",
-      description:
-        "Latency of the generation step (completion start time to end time).",
+      description: "Latency of the generation step (completion start time to end time).",
       unit: "millisecond",
     },
     inputTokens: {
@@ -511,8 +486,7 @@ export const observationsView: ViewDeclarationType = {
       aggs: { agg1: "sumMap", agg2: "any" },
       alias: "tokensPerSecond",
       type: "decimal",
-      description:
-        "Average number of tokens consumed per second by the observation.",
+      description: "Average number of tokens consumed per second by the observation.",
       unit: "tokens/s",
     },
     inputCost: {
@@ -576,14 +550,12 @@ export const observationsView: ViewDeclarationType = {
   tableRelations: {
     traces: {
       name: "traces",
-      joinConditionSql:
-        "ON observations.trace_id = traces.id AND observations.project_id = traces.project_id",
+      joinConditionSql: "ON observations.trace_id = traces.id AND observations.project_id = traces.project_id",
       timeDimension: "timestamp",
     },
     scores: {
       name: "scores",
-      joinConditionSql:
-        "ON observations.id = scores.observation_id AND observations.project_id = scores.project_id",
+      joinConditionSql: "ON observations.id = scores.observation_id AND observations.project_id = scores.project_id",
       timeDimension: "timestamp",
     },
   },
@@ -743,10 +715,7 @@ const scoresV2BaseDimensions: DimensionsDeclarationType = {
 };
 
 // Factory for shared score-specific dimensions (both numeric and categorical)
-const createScoreSpecificDimensions = (
-  tableAlias: string,
-  isV2: boolean = false,
-): DimensionsDeclarationType => ({
+const createScoreSpecificDimensions = (tableAlias: string, isV2: boolean = false): DimensionsDeclarationType => ({
   id: {
     sql: `${tableAlias}.id`,
     alias: "id",
@@ -776,8 +745,7 @@ const createScoreSpecificDimensions = (
     sql: `${tableAlias}.data_type`,
     alias: "dataType",
     type: "string",
-    description:
-      "Internal data type of the score (NUMERIC, BOOLEAN, CATEGORICAL).",
+    description: "Internal data type of the score (NUMERIC, BOOLEAN, CATEGORICAL).",
   },
   traceId: {
     sql: `${tableAlias}.trace_id`,
@@ -816,22 +784,17 @@ const createScoreSpecificDimensions = (
 // Shared table relations factory
 const createScoreTableRelations = (
   version: "v1" | "v2",
-): Record<
-  string,
-  { name: string; joinConditionSql: string; timeDimension: string }
-> => {
+): Record<string, { name: string; joinConditionSql: string; timeDimension: string }> => {
   if (version === "v1") {
     return {
       traces: {
         name: "traces",
-        joinConditionSql:
-          "ON scores.trace_id = traces.id AND scores.project_id = traces.project_id",
+        joinConditionSql: "ON scores.trace_id = traces.id AND scores.project_id = traces.project_id",
         timeDimension: "timestamp",
       },
       observations: {
         name: "observations",
-        joinConditionSql:
-          "ON scores.observation_id = observations.id AND scores.project_id = observations.project_id",
+        joinConditionSql: "ON scores.observation_id = observations.id AND scores.project_id = observations.project_id",
         timeDimension: "start_time",
       },
     };
@@ -854,8 +817,7 @@ const createScoreTableRelations = (
 };
 
 function scoresNumericViewBase(version: "v1" | "v2"): ViewDeclarationType {
-  const baseDimensions =
-    version === "v1" ? scoreBaseDimensions : scoresV2BaseDimensions;
+  const baseDimensions = version === "v1" ? scoreBaseDimensions : scoresV2BaseDimensions;
   return {
     name: "scores_numeric",
     description:
@@ -901,12 +863,10 @@ function scoresNumericViewBase(version: "v1" | "v2"): ViewDeclarationType {
 }
 
 function scoresCategoricalViewBase(version: "v1" | "v2"): ViewDeclarationType {
-  const baseDimensions =
-    version === "v1" ? scoreBaseDimensions : scoresV2BaseDimensions;
+  const baseDimensions = version === "v1" ? scoreBaseDimensions : scoresV2BaseDimensions;
   return {
     name: "scores_categorical",
-    description:
-      "Scores are flexible objects that are used for evaluations. This view contains categorical scores.",
+    description: "Scores are flexible objects that are used for evaluations. This view contains categorical scores.",
     dimensions: {
       ...baseDimensions,
       ...createScoreSpecificDimensions("scores_categorical", version === "v2"),
@@ -940,18 +900,14 @@ function scoresCategoricalViewBase(version: "v1" | "v2"): ViewDeclarationType {
   };
 }
 
-export const scoresNumericView: ViewDeclarationType =
-  scoresNumericViewBase("v1");
+export const scoresNumericView: ViewDeclarationType = scoresNumericViewBase("v1");
 
-export const scoresCategoricalView: ViewDeclarationType =
-  scoresCategoricalViewBase("v1");
+export const scoresCategoricalView: ViewDeclarationType = scoresCategoricalViewBase("v1");
 
 // v2 Scores Views
-export const scoresNumericViewV2: ViewDeclarationType =
-  scoresNumericViewBase("v2");
+export const scoresNumericViewV2: ViewDeclarationType = scoresNumericViewBase("v2");
 
-export const scoresCategoricalViewV2: ViewDeclarationType =
-  scoresCategoricalViewBase("v2");
+export const scoresCategoricalViewV2: ViewDeclarationType = scoresCategoricalViewBase("v2");
 
 // Events-Observations View - queries from events table instead of observations table
 export const eventsObservationsView: ViewDeclarationType = {
@@ -983,16 +939,14 @@ export const eventsObservationsView: ViewDeclarationType = {
       sql: "nullIf(events_observations.parent_span_id, '')",
       alias: "parentObservationId",
       type: "string",
-      description:
-        "Identifier of the parent observation. Empty for the root span.",
+      description: "Identifier of the parent observation. Empty for the root span.",
       highCardinality: true,
     },
     type: {
       sql: "events_observations.type",
       alias: "type",
       type: "string",
-      description:
-        "Type of the observation. Can be a SPAN, GENERATION, or EVENT.",
+      description: "Type of the observation. Can be a SPAN, GENERATION, or EVENT.",
     },
     name: {
       sql: "events_observations.name",
@@ -1057,8 +1011,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       sql: "nullIf(events_observations.version, '')",
       alias: "traceVersion",
       type: "string",
-      description:
-        "Version of the parent trace (backwards-compatible with v1, maps to denormalized version field).",
+      description: "Version of the parent trace (backwards-compatible with v1, maps to denormalized version field).",
     },
     providedModelName: {
       sql: "nullIf(events_observations.provided_model_name, '')",
@@ -1111,8 +1064,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       aggs: { agg1: "any" },
       alias: "latency",
       type: "integer",
-      description:
-        "Latency of an individual observation (start time to end time).",
+      description: "Latency of an individual observation (start time to end time).",
       unit: "millisecond",
     },
     streamingLatency: {
@@ -1120,8 +1072,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       aggs: { agg1: "any" },
       alias: "streamingLatency",
       type: "integer",
-      description:
-        "Latency of the generation step (completion start time to end time).",
+      description: "Latency of the generation step (completion start time to end time).",
       unit: "millisecond",
     },
     inputTokens: {
@@ -1162,8 +1113,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       aggs: { agg1: "sumMap", agg2: "any" },
       alias: "tokensPerSecond",
       type: "decimal",
-      description:
-        "Average number of tokens consumed per second by the observation.",
+      description: "Average number of tokens consumed per second by the observation.",
       unit: "tokens/s",
     },
     inputCost: {
@@ -1263,10 +1213,7 @@ export const viewDeclarations: VersionedViewDeclarations = {
 } as const;
 
 // Helper function for view resolution
-export function getViewDeclaration(
-  viewName: z.infer<typeof views>,
-  version: ViewVersion = "v1",
-): ViewDeclarationType {
+export function getViewDeclaration(viewName: z.infer<typeof views>, version: ViewVersion = "v1"): ViewDeclarationType {
   const versionViews = viewDeclarations[version];
 
   // TypeScript knows the exact shape of each version now

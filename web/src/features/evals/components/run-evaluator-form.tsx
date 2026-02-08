@@ -8,11 +8,7 @@ type RunEvaluatorFormProps = {
   evalTemplates: RouterOutputs["evals"]["allTemplates"]["templates"];
 };
 
-export function RunEvaluatorForm({
-  projectId,
-  evaluatorId,
-  evalTemplates,
-}: RunEvaluatorFormProps) {
+export function RunEvaluatorForm({ projectId, evaluatorId, evalTemplates }: RunEvaluatorFormProps) {
   return (
     <Card className="grid max-h-[90vh] overflow-y-auto p-3">
       <EvaluatorForm

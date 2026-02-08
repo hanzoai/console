@@ -1,14 +1,7 @@
 import { type GetServerSideProps } from "next";
 import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { Button } from "@/src/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -97,19 +90,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   return {
     props: {
       authProviders: {
-        google:
-          env.AUTH_GOOGLE_CLIENT_ID !== undefined &&
-          env.AUTH_GOOGLE_CLIENT_SECRET !== undefined,
-        github:
-          env.AUTH_GITHUB_CLIENT_ID !== undefined &&
-          env.AUTH_GITHUB_CLIENT_SECRET !== undefined,
+        google: env.AUTH_GOOGLE_CLIENT_ID !== undefined && env.AUTH_GOOGLE_CLIENT_SECRET !== undefined,
+        github: env.AUTH_GITHUB_CLIENT_ID !== undefined && env.AUTH_GITHUB_CLIENT_SECRET !== undefined,
         githubEnterprise:
           env.AUTH_GITHUB_ENTERPRISE_CLIENT_ID !== undefined &&
           env.AUTH_GITHUB_ENTERPRISE_CLIENT_SECRET !== undefined &&
           env.AUTH_GITHUB_ENTERPRISE_BASE_URL !== undefined,
-        gitlab:
-          env.AUTH_GITLAB_CLIENT_ID !== undefined &&
-          env.AUTH_GITLAB_CLIENT_SECRET !== undefined,
+        gitlab: env.AUTH_GITLAB_CLIENT_ID !== undefined && env.AUTH_GITLAB_CLIENT_SECRET !== undefined,
         okta:
           env.AUTH_OKTA_CLIENT_ID !== undefined &&
           env.AUTH_OKTA_CLIENT_SECRET !== undefined &&
@@ -144,17 +131,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
               : true
             : false,
         workos:
-          env.AUTH_WORKOS_CLIENT_ID !== undefined &&
-          env.AUTH_WORKOS_CLIENT_SECRET !== undefined
+          env.AUTH_WORKOS_CLIENT_ID !== undefined && env.AUTH_WORKOS_CLIENT_SECRET !== undefined
             ? env.AUTH_WORKOS_ORGANIZATION_ID !== undefined
               ? { organizationId: env.AUTH_WORKOS_ORGANIZATION_ID }
               : env.AUTH_WORKOS_CONNECTION_ID !== undefined
                 ? { connectionId: env.AUTH_WORKOS_CONNECTION_ID }
                 : true
             : false,
-        wordpress:
-          env.AUTH_WORDPRESS_CLIENT_ID !== undefined &&
-          env.AUTH_WORDPRESS_CLIENT_SECRET !== undefined,
+        wordpress: env.AUTH_WORDPRESS_CLIENT_ID !== undefined && env.AUTH_WORDPRESS_CLIENT_SECRET !== undefined,
         custom:
           env.AUTH_CUSTOM_CLIENT_ID !== undefined &&
           env.AUTH_CUSTOM_CLIENT_SECRET !== undefined &&
@@ -169,10 +153,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
           env.HANZO_IAM_SERVER_URL !== undefined,
       },
       signUpDisabled: env.AUTH_DISABLE_SIGNUP === "true",
-      runningOnHuggingFaceSpaces: env.NEXTAUTH_URL?.replace(
-        "/api/auth",
-        "",
-      ).endsWith(".hf.space"),
+      runningOnHuggingFaceSpaces: env.NEXTAUTH_URL?.replace("/api/auth", "").endsWith(".hf.space"),
     },
   };
 };
@@ -192,8 +173,7 @@ export function SSOButtons({
   onProviderSelect?: (provider: NextAuthProvider) => void;
 }) {
   const capture = usePostHogClientCapture();
-  const [providerSigningIn, setProviderSigningIn] =
-    useState<NextAuthProvider | null>(null);
+  const [providerSigningIn, setProviderSigningIn] = useState<NextAuthProvider | null>(null);
 
   // Count available auth methods (including credentials if available)
   const availableProviders = Object.entries(authProviders).filter(
@@ -223,17 +203,13 @@ export function SSOButtons({
 
   return (
     // any authprovider from props is enabled
-    Object.entries(authProviders).some(
-      ([name, enabled]) => enabled && name !== "credentials",
-    ) ? (
+    Object.entries(authProviders).some(([name, enabled]) => enabled && name !== "credentials") ? (
       <div>
         {showSeparator ? (
           action === "sign in" ? (
             <div className="my-6 border-t border-border"></div>
           ) : (
-            <div className="my-6 text-center text-xs text-muted-foreground">
-              or {action} with
-            </div>
+            <div className="my-6 text-center text-xs text-muted-foreground">or {action} with</div>
           )
         ) : null}
         <div className="flex flex-row flex-wrap items-center justify-center gap-2">
@@ -243,9 +219,7 @@ export function SSOButtons({
               label="Google"
               onClick={() => handleSignIn("google")}
               loading={providerSigningIn === "google"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "google"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "google"}
             />
           )}
           {authProviders.github && (
@@ -254,9 +228,7 @@ export function SSOButtons({
               label="GitHub"
               onClick={() => handleSignIn("github")}
               loading={providerSigningIn === "github"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "github"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "github"}
             />
           )}
           {authProviders.githubEnterprise && (
@@ -265,9 +237,7 @@ export function SSOButtons({
               label="GitHub Enterprise"
               onClick={() => handleSignIn("github-enterprise")}
               loading={providerSigningIn === "github-enterprise"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "github-enterprise"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "github-enterprise"}
             />
           )}
           {authProviders.gitlab && (
@@ -276,9 +246,7 @@ export function SSOButtons({
               label="Gitlab"
               onClick={() => handleSignIn("gitlab")}
               loading={providerSigningIn === "gitlab"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "gitlab"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "gitlab"}
             />
           )}
           {authProviders.azureAd && (
@@ -287,9 +255,7 @@ export function SSOButtons({
               label="Azure AD"
               onClick={() => handleSignIn("azure-ad")}
               loading={providerSigningIn === "azure-ad"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "azure-ad"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "azure-ad"}
             />
           )}
           {authProviders.okta && (
@@ -298,9 +264,7 @@ export function SSOButtons({
               label="Okta"
               onClick={() => handleSignIn("okta")}
               loading={providerSigningIn === "okta"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "okta"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "okta"}
             />
           )}
           {authProviders.authentik && (
@@ -309,9 +273,7 @@ export function SSOButtons({
               label="Authentik"
               onClick={() => handleSignIn("authentik")}
               loading={providerSigningIn === "authentik"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "authentik"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "authentik"}
             />
           )}
           {authProviders.onelogin && (
@@ -320,9 +282,7 @@ export function SSOButtons({
               label="OneLogin"
               onClick={() => handleSignIn("onelogin")}
               loading={providerSigningIn === "onelogin"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "onelogin"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "onelogin"}
             />
           )}
           {authProviders.auth0 && (
@@ -331,9 +291,7 @@ export function SSOButtons({
               label="Auth0"
               onClick={() => handleSignIn("auth0")}
               loading={providerSigningIn === "auth0"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "auth0"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "auth0"}
             />
           )}
           {authProviders.cognito && (
@@ -342,79 +300,59 @@ export function SSOButtons({
               label="Cognito"
               onClick={() => handleSignIn("cognito")}
               loading={providerSigningIn === "cognito"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "cognito"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "cognito"}
             />
           )}
           {authProviders.keycloak && (
             <AuthProviderButton
               icon={<SiKeycloak className="mr-3" size={18} />}
-              label={
-                typeof authProviders.keycloak === "object"
-                  ? authProviders.keycloak.name
-                  : "Keycloak"
-              }
+              label={typeof authProviders.keycloak === "object" ? authProviders.keycloak.name : "Keycloak"}
               onClick={() => {
                 capture("sign_in:button_click", { provider: "keycloak" });
                 onProviderSelect?.("keycloak");
                 void signIn("keycloak");
               }}
               loading={providerSigningIn === "keycloak"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "keycloak"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "keycloak"}
             />
           )}
-          {typeof authProviders.workos === "object" &&
-            "connectionId" in authProviders.workos && (
-              <AuthProviderButton
-                icon={<Code className="mr-3" size={18} />}
-                label="WorkOS"
-                onClick={() => {
-                  capture("sign_in:button_click", { provider: "workos" });
-                  onProviderSelect?.("workos");
-                  void signIn("workos", undefined, {
-                    connection: (
-                      authProviders.workos as { connectionId: string }
-                    ).connectionId,
-                  });
-                }}
-                loading={providerSigningIn === "workos"}
-                showLastUsedBadge={
-                  hasMultipleAuthMethods && lastUsedMethod === "workos"
-                }
-              />
-            )}
-          {typeof authProviders.workos === "object" &&
-            "organizationId" in authProviders.workos && (
-              <AuthProviderButton
-                icon={<Code className="mr-3" size={18} />}
-                label="WorkOS"
-                onClick={() => {
-                  capture("sign_in:button_click", { provider: "workos" });
-                  onProviderSelect?.("workos");
-                  void signIn("workos", undefined, {
-                    organization: (
-                      authProviders.workos as { organizationId: string }
-                    ).organizationId,
-                  });
-                }}
-                loading={providerSigningIn === "workos"}
-                showLastUsedBadge={
-                  hasMultipleAuthMethods && lastUsedMethod === "workos"
-                }
-              />
-            )}
+          {typeof authProviders.workos === "object" && "connectionId" in authProviders.workos && (
+            <AuthProviderButton
+              icon={<Code className="mr-3" size={18} />}
+              label="WorkOS"
+              onClick={() => {
+                capture("sign_in:button_click", { provider: "workos" });
+                onProviderSelect?.("workos");
+                void signIn("workos", undefined, {
+                  connection: (authProviders.workos as { connectionId: string }).connectionId,
+                });
+              }}
+              loading={providerSigningIn === "workos"}
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "workos"}
+            />
+          )}
+          {typeof authProviders.workos === "object" && "organizationId" in authProviders.workos && (
+            <AuthProviderButton
+              icon={<Code className="mr-3" size={18} />}
+              label="WorkOS"
+              onClick={() => {
+                capture("sign_in:button_click", { provider: "workos" });
+                onProviderSelect?.("workos");
+                void signIn("workos", undefined, {
+                  organization: (authProviders.workos as { organizationId: string }).organizationId,
+                });
+              }}
+              loading={providerSigningIn === "workos"}
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "workos"}
+            />
+          )}
           {authProviders.workos === true && (
             <>
               <AuthProviderButton
                 icon={<Code className="mr-3" size={18} />}
                 label="WorkOS (organization)"
                 onClick={() => {
-                  const organization = window.prompt(
-                    "Please enter your organization ID",
-                  );
+                  const organization = window.prompt("Please enter your organization ID");
                   if (organization) {
                     capture("sign_in:button_click", { provider: "workos" });
                     onProviderSelect?.("workos");
@@ -424,17 +362,13 @@ export function SSOButtons({
                   }
                 }}
                 loading={providerSigningIn === "workos"}
-                showLastUsedBadge={
-                  hasMultipleAuthMethods && lastUsedMethod === "workos"
-                }
+                showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "workos"}
               />
               <AuthProviderButton
                 icon={<Code className="mr-3" size={18} />}
                 label="WorkOS (connection)"
                 onClick={() => {
-                  const connection = window.prompt(
-                    "Please enter your connection ID",
-                  );
+                  const connection = window.prompt("Please enter your connection ID");
                   if (connection) {
                     capture("sign_in:button_click", { provider: "workos" });
                     onProviderSelect?.("workos");
@@ -444,9 +378,7 @@ export function SSOButtons({
                   }
                 }}
                 loading={providerSigningIn === "workos"}
-                showLastUsedBadge={
-                  hasMultipleAuthMethods && lastUsedMethod === "workos"
-                }
+                showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "workos"}
               />
             </>
           )}
@@ -456,9 +388,7 @@ export function SSOButtons({
               label="WordPress"
               onClick={() => handleSignIn("wordpress")}
               loading={providerSigningIn === "wordpress"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "wordpress"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "wordpress"}
             />
           )}
           {authProviders.custom && (
@@ -467,9 +397,7 @@ export function SSOButtons({
               label={authProviders.custom.name}
               onClick={() => handleSignIn("custom")}
               loading={providerSigningIn === "custom"}
-              showLastUsedBadge={
-                hasMultipleAuthMethods && lastUsedMethod === "custom"
-              }
+              showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "custom"}
             />
           )}
           {authProviders.hanzoIam && (
@@ -505,11 +433,7 @@ export function useHuggingFaceRedirect(runningOnHuggingFaceSpaces: boolean) {
       }
     };
 
-    if (
-      runningOnHuggingFaceSpaces &&
-      typeof window !== "undefined" &&
-      isInIframe()
-    ) {
+    if (runningOnHuggingFaceSpaces && typeof window !== "undefined" && isInIframe()) {
       void router.push("/auth/hf-spaces");
     }
   }, [router, runningOnHuggingFaceSpaces]);
@@ -523,56 +447,37 @@ const signInErrors = [
   },
 ];
 
-export default function SignIn({
-  authProviders,
-  signUpDisabled,
-  runningOnHuggingFaceSpaces,
-}: PageProps) {
+export default function SignIn({ authProviders, signUpDisabled, runningOnHuggingFaceSpaces }: PageProps) {
   const router = useRouter();
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
 
   // handle NextAuth error codes: https://next-auth.js.org/configuration/pages#sign-in-page
-  const nextAuthError =
-    typeof router.query.error === "string"
-      ? decodeURIComponent(router.query.error)
-      : null;
+  const nextAuthError = typeof router.query.error === "string" ? decodeURIComponent(router.query.error) : null;
   const nextAuthErrorDescription =
-    typeof router.query.error_description === "string"
-      ? decodeURIComponent(router.query.error_description)
-      : null;
+    typeof router.query.error_description === "string" ? decodeURIComponent(router.query.error_description) : null;
 
   // Use error_description from IdP if available, otherwise use mapped error or error code
   const errorMessage = nextAuthErrorDescription
     ? nextAuthErrorDescription
-    : (signInErrors.find((e) => e.code === nextAuthError)?.description ??
-      nextAuthError);
+    : (signInErrors.find((e) => e.code === nextAuthError)?.description ?? nextAuthError);
 
   useEffect(() => {
     // log unexpected sign in errors to Sentry
     // An error is unexpected if it's not in our mapped errors and has no IdP error_description
-    if (
-      nextAuthError &&
-      !nextAuthErrorDescription &&
-      !signInErrors.find((e) => e.code === nextAuthError)
-    ) {
+    if (nextAuthError && !nextAuthErrorDescription && !signInErrors.find((e) => e.code === nextAuthError)) {
       captureException(new Error(`Sign in error: ${nextAuthError}`));
     }
   }, [nextAuthError, nextAuthErrorDescription]);
 
-  const [credentialsFormError, setCredentialsFormError] = useState<
-    string | null
-  >(errorMessage);
+  const [credentialsFormError, setCredentialsFormError] = useState<string | null>(errorMessage);
   // Two-step login flow: ask for email first, detect SSO, then either redirect to SSO or reveal password field.
   // Skip this flow when no SSO is configured - show password field immediately
-  const [showPasswordStep, setShowPasswordStep] = useState<boolean>(
-    !authProviders.sso,
-  );
+  const [showPasswordStep, setShowPasswordStep] = useState<boolean>(!authProviders.sso);
   const [continueLoading, setContinueLoading] = useState<boolean>(false);
-  const [lastUsedAuthMethod, setLastUsedAuthMethod] =
-    useLocalStorage<NextAuthProvider | null>(
-      "hanzo_last_used_auth_method",
-      null,
-    );
+  const [lastUsedAuthMethod, setLastUsedAuthMethod] = useLocalStorage<NextAuthProvider | null>(
+    "hanzo_last_used_auth_method",
+    null,
+  );
 
   const capture = usePostHogClientCapture();
   const { isHanzoCloud } = useHanzoCloudRegion();
@@ -588,9 +493,7 @@ export default function SignIn({
   const emailParam = router.query.email as string | undefined;
 
   // Validate targetPath to prevent open redirect attacks
-  const targetPath = queryTargetPath
-    ? getSafeRedirectPath(queryTargetPath)
-    : undefined;
+  const targetPath = queryTargetPath ? getSafeRedirectPath(queryTargetPath) : undefined;
 
   // Credentials
   const credentialsForm = useForm({
@@ -600,9 +503,7 @@ export default function SignIn({
       password: "",
     },
   });
-  async function onCredentialsSubmit(
-    values: z.infer<typeof credentialAuthForm>,
-  ) {
+  async function onCredentialsSubmit(values: z.infer<typeof credentialAuthForm>) {
     setCredentialsFormError(null);
     try {
       capture("sign_in:button_click", { provider: "email/password" });
@@ -621,15 +522,9 @@ export default function SignIn({
         captureException(new Error("Sign in result is undefined"));
       } else if (!result.ok) {
         if (!result.error) {
-          captureException(
-            new Error(
-              `Sign in result error is falsy, result: ${JSON.stringify(result)}`,
-            ),
-          );
+          captureException(new Error(`Sign in result error is falsy, result: ${JSON.stringify(result)}`));
         }
-        setCredentialsFormError(
-          result?.error ?? "An unexpected error occurred.",
-        );
+        setCredentialsFormError(result?.error ?? "An unexpected error occurred.");
       }
     } catch (error) {
       captureException(error);
@@ -666,14 +561,11 @@ export default function SignIn({
     const domain = email.data.split("@")[1]?.toLowerCase();
 
     try {
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ domain }),
-        },
-      );
+      const res = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain }),
+      });
 
       if (res.ok) {
         // Enterprise SSO found – redirect straight away
@@ -694,18 +586,14 @@ export default function SignIn({
       setTimeout(() => {
         // Find and focus the password input
         // Ref did not work, so we use a more specific selector
-        const passwordInput = document.querySelector(
-          'input[name="password"]',
-        ) as HTMLInputElement;
+        const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
         if (passwordInput) {
           passwordInput.focus();
         }
       }, 100);
     } catch (error) {
       console.error(error);
-      setCredentialsFormError(
-        "Unable to check SSO configuration. Please try again.",
-      );
+      setCredentialsFormError("Unable to check SSO configuration. Please try again.");
     } finally {
       setContinueLoading(false);
     }
@@ -731,8 +619,8 @@ export default function SignIn({
 
         {isHanzoCloud && (
           <div className="-mb-4 mt-4 rounded-lg bg-card p-3 text-center text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-6">
-            If you are experiencing issues signing in, please force refresh this
-            page (CMD + SHIFT + R) or clear your browser cache.{" "}
+            If you are experiencing issues signing in, please force refresh this page (CMD + SHIFT + R) or clear your
+            browser cache.{" "}
             <a
               href="mailto:support@hanzo.com"
               className="cursor-pointer whitespace-nowrap text-xs font-medium text-primary-accent hover:text-hover-primary-accent"
@@ -812,15 +700,10 @@ export default function SignIn({
                     <Button
                       type="submit"
                       className="w-full"
-                      loading={
-                        showPasswordStep
-                          ? credentialsForm.formState.isSubmitting
-                          : continueLoading
-                      }
+                      loading={showPasswordStep ? credentialsForm.formState.isSubmitting : continueLoading}
                       disabled={
                         credentialsForm.watch("email") === "" ||
-                        (showPasswordStep &&
-                          credentialsForm.watch("password") === "")
+                        (showPasswordStep && credentialsForm.watch("password") === "")
                       }
                       data-testid="submit-email-password-sign-in-form"
                     >
@@ -831,10 +714,7 @@ export default function SignIn({
                 <div
                   className={cn(
                     "mt-1 text-center text-xs text-muted-foreground",
-                    hasMultipleAuthMethods &&
-                      lastUsedAuthMethod === "credentials"
-                      ? "block"
-                      : "hidden",
+                    hasMultipleAuthMethods && lastUsedAuthMethod === "credentials" ? "block" : "hidden",
                   )}
                 >
                   Last used
@@ -846,8 +726,7 @@ export default function SignIn({
                 {credentialsFormError}
                 <br />
                 Contact support if this error is unexpected.{" "}
-                {isHanzoCloud &&
-                  "Make sure you are using the correct cloud data region."}
+                {isHanzoCloud && "Make sure you are using the correct cloud data region."}
               </div>
             ) : null}
             <SSOButtons
@@ -857,9 +736,7 @@ export default function SignIn({
             />
           </div>
 
-          {!signUpDisabled &&
-          env.NEXT_PUBLIC_SIGN_UP_DISABLED !== "true" &&
-          authProviders.credentials ? (
+          {!signUpDisabled && env.NEXT_PUBLIC_SIGN_UP_DISABLED !== "true" && authProviders.credentials ? (
             <p className="mt-10 text-center text-sm text-muted-foreground">
               No account yet?{" "}
               <Link

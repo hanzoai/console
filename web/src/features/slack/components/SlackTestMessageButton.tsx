@@ -81,8 +81,7 @@ export const SlackTestMessageButton: React.FC<SlackTestMessageButtonProps> = ({
   };
 
   // Determine if button should be disabled
-  const isDisabled =
-    disabled || !hasAccess || testMessageMutation.isPending || !selectedChannel;
+  const isDisabled = disabled || !hasAccess || testMessageMutation.isPending || !selectedChannel;
 
   return (
     <Button

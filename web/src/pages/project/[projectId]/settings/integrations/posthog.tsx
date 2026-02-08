@@ -43,26 +43,17 @@ export default function PosthogIntegrationSettings() {
     },
   );
 
-  const status =
-    state.isInitialLoading || !hasAccess
-      ? undefined
-      : state.data?.enabled
-        ? "active"
-        : "inactive";
+  const status = state.isInitialLoading || !hasAccess ? undefined : state.data?.enabled ? "active" : "inactive";
 
   return (
     <ContainerPage
       headerProps={{
         title: "PostHog Integration",
-        breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
-        ],
+        breadcrumb: [{ name: "Settings", href: `/project/${projectId}/settings` }],
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/integrations/analytics/posthog">
-              Integration Docs ↗
-            </Link>
+            <Link href="https://hanzo.com/integrations/analytics/posthog">Integration Docs ↗</Link>
           </Button>
         ),
       }}
@@ -72,16 +63,13 @@ export default function PosthogIntegrationSettings() {
         <Link href="https://posthog.com" className="underline">
           PostHog
         </Link>{" "}
-        (OSS product analytics) to make Hanzo Cloud events/metrics available in
-        your PostHog dashboards. Upon activation, all historical data from your
-        project will be synced. After the initial sync, new data is
-        automatically synced every hour to keep your PostHog dashboards up to
-        date.
+        (OSS product analytics) to make Hanzo Cloud events/metrics available in your PostHog dashboards. Upon
+        activation, all historical data from your project will be synced. After the initial sync, new data is
+        automatically synced every hour to keep your PostHog dashboards up to date.
       </p>
       {!hasAccess && (
         <p className="text-sm">
-          You current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
+          You current role does not grant you access to these settings, please reach out to your project admin or owner.
         </p>
       )}
       {hasAccess && (
@@ -89,11 +77,7 @@ export default function PosthogIntegrationSettings() {
           <Header title="Configuration" />
           <Card className="p-3">
             <PostHogLogo className="mb-4 w-36 text-foreground" />
-            <PostHogIntegrationSettings
-              state={state.data}
-              projectId={projectId}
-              isLoading={state.isLoading}
-            />
+            <PostHogIntegrationSettings state={state.data} projectId={projectId} isLoading={state.isLoading} />
           </Card>
         </>
       )}
@@ -102,9 +86,7 @@ export default function PosthogIntegrationSettings() {
           <Header title="Status" className="mt-8" />
           <p className="text-sm text-primary">
             Data synced until:{" "}
-            {state.data?.lastSyncAt
-              ? new Date(state.data.lastSyncAt).toLocaleString()
-              : "Never (pending)"}
+            {state.data?.lastSyncAt ? new Date(state.data.lastSyncAt).toLocaleString() : "Never (pending)"}
           </p>
         </>
       )}
@@ -153,9 +135,7 @@ const PostHogIntegrationSettings = ({
     },
   });
 
-  async function onSubmit(
-    values: z.infer<typeof posthogIntegrationFormSchema>,
-  ) {
+  async function onSubmit(values: z.infer<typeof posthogIntegrationFormSchema>) {
     capture("integrations:posthog_form_submitted");
     mut.mutate({
       projectId,
@@ -175,10 +155,7 @@ const PostHogIntegrationSettings = ({
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>
-                US region: https://us.posthog.com; EU region:
-                https://eu.posthog.com
-              </FormDescription>
+              <FormDescription>US region: https://us.posthog.com; EU region: https://eu.posthog.com</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -218,11 +195,7 @@ const PostHogIntegrationSettings = ({
         />
       </form>
       <div className="mt-8 flex gap-2">
-        <Button
-          loading={mut.isPending}
-          onClick={posthogForm.handleSubmit(onSubmit)}
-          disabled={isLoading}
-        >
+        <Button loading={mut.isPending} onClick={posthogForm.handleSubmit(onSubmit)} disabled={isLoading}>
           Save
         </Button>
         <Button
@@ -230,11 +203,7 @@ const PostHogIntegrationSettings = ({
           loading={mutDelete.isPending}
           disabled={isLoading || !!!state}
           onClick={() => {
-            if (
-              confirm(
-                "Are you sure you want to reset the PostHog integration for this project?",
-              )
-            )
+            if (confirm("Are you sure you want to reset the PostHog integration for this project?"))
               mutDelete.mutate({ projectId });
           }}
         >

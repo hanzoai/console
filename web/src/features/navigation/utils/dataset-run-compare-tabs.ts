@@ -5,13 +5,9 @@ export const DATASET_RUN_COMPARE_TABS = {
   CHARTS: "charts",
 } as const;
 
-export type DatasetRunCompareTab =
-  (typeof DATASET_RUN_COMPARE_TABS)[keyof typeof DATASET_RUN_COMPARE_TABS];
+export type DatasetRunCompareTab = (typeof DATASET_RUN_COMPARE_TABS)[keyof typeof DATASET_RUN_COMPARE_TABS];
 
-export const getDatasetRunCompareTabs = (
-  projectId: string,
-  datasetId: string,
-) => [
+export const getDatasetRunCompareTabs = (projectId: string, datasetId: string) => [
   {
     value: DATASET_RUN_COMPARE_TABS.COMPARE,
     label: "Outputs",

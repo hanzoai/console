@@ -6,15 +6,8 @@
 
 import { type JsonKeyProps } from "../types";
 import { isArrayIndex } from "../utils/jsonTypes";
-import {
-  highlightTextWithComments,
-  COMMENT_HIGHLIGHT_COLOR,
-} from "../utils/highlightText";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { highlightTextWithComments, COMMENT_HIGHLIGHT_COLOR } from "../utils/highlightText";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 
 export function JsonKey({
   keyName,
@@ -39,12 +32,7 @@ export function JsonKey({
     .filter((range) => range.end > 0 && range.start < range.end);
 
   // Apply search and comment highlighting
-  const segments = highlightTextWithComments(
-    keyString,
-    highlightStart,
-    highlightEnd,
-    keyCommentRanges,
-  );
+  const segments = highlightTextWithComments(keyString, highlightStart, highlightEnd, keyCommentRanges);
 
   return (
     <span
@@ -76,11 +64,7 @@ export function JsonKey({
           return (
             <Tooltip key={index}>
               <TooltipTrigger asChild>{highlightedSpan}</TooltipTrigger>
-              <TooltipContent
-                side="top"
-                align="start"
-                className="max-w-xs px-2 py-1 text-xs"
-              >
+              <TooltipContent side="top" align="start" className="max-w-xs px-2 py-1 text-xs">
                 {segment.preview}
               </TooltipContent>
             </Tooltip>

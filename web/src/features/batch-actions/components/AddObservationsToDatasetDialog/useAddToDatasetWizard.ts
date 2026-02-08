@@ -26,14 +26,7 @@ export type UseAddToDatasetWizardProps = {
 };
 
 export function useAddToDatasetWizard(props: UseAddToDatasetWizardProps) {
-  const {
-    projectId,
-    selectedObservationIds,
-    query,
-    selectAll,
-    totalCount,
-    exampleObservation,
-  } = props;
+  const { projectId, selectedObservationIds, query, selectAll, totalCount, exampleObservation } = props;
 
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
 
@@ -165,22 +158,14 @@ export function useAddToDatasetWizard(props: UseAddToDatasetWizardProps) {
   }, []);
 
   const handleDatasetCreated = useCallback(
-    (params: {
-      id: string;
-      name: string;
-      inputSchema: unknown;
-      expectedOutputSchema: unknown;
-    }) => {
+    (params: { id: string; name: string; inputSchema: unknown; expectedOutputSchema: unknown }) => {
       dispatch({ type: "DATASET_CREATED", dataset: params });
     },
     [],
   );
 
   const handleMappingConfigChange = useCallback(
-    (
-      field: "input" | "expectedOutput" | "metadata",
-      config: FieldMappingConfig,
-    ) => {
+    (field: "input" | "expectedOutput" | "metadata", config: FieldMappingConfig) => {
       dispatch({ type: "UPDATE_MAPPING", field, config });
     },
     [],
@@ -195,37 +180,25 @@ export function useAddToDatasetWizard(props: UseAddToDatasetWizardProps) {
     dispatch({ type: "UPDATE_MAPPING", field: "expectedOutput", config });
   }, []);
 
-  const handleMetadataConfigChange = useCallback(
-    (config: FieldMappingConfig) => {
-      dispatch({ type: "UPDATE_MAPPING", field: "metadata", config });
-    },
-    [],
-  );
+  const handleMetadataConfigChange = useCallback((config: FieldMappingConfig) => {
+    dispatch({ type: "UPDATE_MAPPING", field: "metadata", config });
+  }, []);
 
-  const handleCreateValidationChange = useCallback(
-    (isValid: boolean, isCreating: boolean) => {
-      dispatch({
-        type: "SET_CREATE_VALIDATION",
-        canContinue: isValid,
-        isCreating,
-      });
-    },
-    [],
-  );
+  const handleCreateValidationChange = useCallback((isValid: boolean, isCreating: boolean) => {
+    dispatch({
+      type: "SET_CREATE_VALIDATION",
+      canContinue: isValid,
+      isCreating,
+    });
+  }, []);
 
-  const handleInputValidationChange = useCallback(
-    (isValid: boolean, _errors: SchemaValidationError[]) => {
-      dispatch({ type: "SET_MAPPING_VALIDATION", field: "input", isValid });
-    },
-    [],
-  );
+  const handleInputValidationChange = useCallback((isValid: boolean, _errors: SchemaValidationError[]) => {
+    dispatch({ type: "SET_MAPPING_VALIDATION", field: "input", isValid });
+  }, []);
 
-  const handleOutputValidationChange = useCallback(
-    (isValid: boolean, _errors: SchemaValidationError[]) => {
-      dispatch({ type: "SET_MAPPING_VALIDATION", field: "output", isValid });
-    },
-    [],
-  );
+  const handleOutputValidationChange = useCallback((isValid: boolean, _errors: SchemaValidationError[]) => {
+    dispatch({ type: "SET_MAPPING_VALIDATION", field: "output", isValid });
+  }, []);
 
   // Derived state
   const canContinueFromSelect = useMemo(
@@ -241,15 +214,10 @@ export function useAddToDatasetWizard(props: UseAddToDatasetWizardProps) {
         return !state.createStep.canContinue || state.createStep.isCreating;
       case "input-mapping":
         // Block if schema validation fails (only when schema exists)
-        return (
-          state.dataset.inputSchema !== null && !state.validation.inputMapping
-        );
+        return state.dataset.inputSchema !== null && !state.validation.inputMapping;
       case "output-mapping":
         // Block if schema validation fails (only when schema exists)
-        return (
-          state.dataset.expectedOutputSchema !== null &&
-          !state.validation.outputMapping
-        );
+        return state.dataset.expectedOutputSchema !== null && !state.validation.outputMapping;
       case "preview":
         return state.submission.isSubmitting;
       default:
@@ -272,9 +240,7 @@ export function useAddToDatasetWizard(props: UseAddToDatasetWizardProps) {
       case "select":
         return "Continue";
       case "create":
-        return state.createStep.isCreating
-          ? "Creating..."
-          : "Create & Continue";
+        return state.createStep.isCreating ? "Creating..." : "Create & Continue";
       case "input-mapping":
       case "output-mapping":
       case "metadata-mapping":

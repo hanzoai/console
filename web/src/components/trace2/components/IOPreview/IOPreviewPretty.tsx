@@ -20,12 +20,8 @@ interface JsonInputOutputViewProps {
   hideOutput: boolean;
   inputExpansionState?: Record<string, boolean> | boolean;
   outputExpansionState?: Record<string, boolean> | boolean;
-  onInputExpansionChange?: (
-    expansion: Record<string, boolean> | boolean,
-  ) => void;
-  onOutputExpansionChange?: (
-    expansion: Record<string, boolean> | boolean,
-  ) => void;
+  onInputExpansionChange?: (expansion: Record<string, boolean> | boolean) => void;
+  onOutputExpansionChange?: (expansion: Record<string, boolean> | boolean) => void;
 }
 
 function JsonInputOutputView({
@@ -145,16 +141,13 @@ export function IOPreviewPretty({
   // IMPORTANT: Don't parse while isParsing=true to avoid double-parsing with different object references
   const parsedInput = isParsing
     ? undefined // Wait for Web Worker to finish
-    : (preParsedInput ??
-      deepParseJson(input, { maxSize: 300_000, maxDepth: 2 }));
+    : (preParsedInput ?? deepParseJson(input, { maxSize: 300_000, maxDepth: 2 }));
   const parsedOutput = isParsing
     ? undefined
-    : (preParsedOutput ??
-      deepParseJson(output, { maxSize: 300_000, maxDepth: 2 }));
+    : (preParsedOutput ?? deepParseJson(output, { maxSize: 300_000, maxDepth: 2 }));
   const parsedMetadata = isParsing
     ? undefined
-    : (preParsedMetadata ??
-      deepParseJson(metadata, { maxSize: 100_000, maxDepth: 2 }));
+    : (preParsedMetadata ?? deepParseJson(metadata, { maxSize: 100_000, maxDepth: 2 }));
 
   // Parse ChatML format
   const {
@@ -166,15 +159,7 @@ export function IOPreviewPretty({
     messageToToolCallNumbers,
     toolNameToDefinitionNumber,
     inputMessageCount,
-  } = useChatMLParser(
-    input,
-    output,
-    metadata,
-    observationName,
-    parsedInput,
-    parsedOutput,
-    parsedMetadata,
-  );
+  } = useChatMLParser(input, output, metadata, observationName, parsedInput, parsedOutput, parsedMetadata);
 
   // Determine if markdown is safe to render (content size check)
   const shouldRenderMarkdown = useMemo(() => {

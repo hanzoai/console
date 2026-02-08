@@ -98,9 +98,7 @@ export const TIME_RANGES = {
 
 export type TimeRangePresets = Exclude<keyof typeof TIME_RANGES, "custom">;
 
-const ABBREVIATION_TO_KEY = new Map(
-  Object.entries(TIME_RANGES).map(([key, def]) => [def.abbreviation, key]),
-);
+const ABBREVIATION_TO_KEY = new Map(Object.entries(TIME_RANGES).map(([key, def]) => [def.abbreviation, key]));
 
 export const DEFAULT_DASHBOARD_AGGREGATION_SELECTION = "last1Day" as const;
 export const DASHBOARD_AGGREGATION_PLACEHOLDER = "custom" as const;
@@ -130,51 +128,33 @@ export const TABLE_AGGREGATION_OPTIONS = [
   "last90Days",
 ] as const;
 
-export type DashboardDateRangeAggregationOption =
-  (typeof DASHBOARD_AGGREGATION_OPTIONS)[number];
+export type DashboardDateRangeAggregationOption = (typeof DASHBOARD_AGGREGATION_OPTIONS)[number];
 
 export type TableDateRange = {
   from: Date;
   to?: Date;
 };
 
-export type TableDateRangeAggregationOption =
-  (typeof TABLE_AGGREGATION_OPTIONS)[number];
+export type TableDateRangeAggregationOption = (typeof TABLE_AGGREGATION_OPTIONS)[number];
 
 export type DashboardDateRange = {
   from: Date;
   to: Date;
 };
 
-export type DateRangeAggregationOption =
-  | DashboardDateRangeAggregationOption
-  | TableDateRangeAggregationOption;
+export type DateRangeAggregationOption = DashboardDateRangeAggregationOption | TableDateRangeAggregationOption;
 
-export type DashboardDateRangeOptions =
-  | DashboardDateRangeAggregationOption
-  | typeof DASHBOARD_AGGREGATION_PLACEHOLDER;
+export type DashboardDateRangeOptions = DashboardDateRangeAggregationOption | typeof DASHBOARD_AGGREGATION_PLACEHOLDER;
 
-export type TableDateRangeOptions =
-  | TableDateRangeAggregationOption
-  | typeof TABLE_AGGREGATION_PLACEHOLDER;
+export type TableDateRangeOptions = TableDateRangeAggregationOption | typeof TABLE_AGGREGATION_PLACEHOLDER;
 
-export type DashboardDateRangeAggregationSettings = Record<
-  DashboardDateRangeAggregationOption,
-  TimeRangeDefinition
->;
+export type DashboardDateRangeAggregationSettings = Record<DashboardDateRangeAggregationOption, TimeRangeDefinition>;
 
-export const dateTimeAggregationOptions = [
-  ...TABLE_AGGREGATION_OPTIONS,
-  ...DASHBOARD_AGGREGATION_OPTIONS,
-] as const;
+export const dateTimeAggregationOptions = [...TABLE_AGGREGATION_OPTIONS, ...DASHBOARD_AGGREGATION_OPTIONS] as const;
 
-export const dashboardDateRangeAggregationSettings: DashboardDateRangeAggregationSettings =
-  Object.fromEntries(
-    DASHBOARD_AGGREGATION_OPTIONS.map((option) => [
-      option,
-      TIME_RANGES[option as keyof typeof TIME_RANGES],
-    ]),
-  ) as DashboardDateRangeAggregationSettings;
+export const dashboardDateRangeAggregationSettings: DashboardDateRangeAggregationSettings = Object.fromEntries(
+  DASHBOARD_AGGREGATION_OPTIONS.map((option) => [option, TIME_RANGES[option as keyof typeof TIME_RANGES]]),
+) as DashboardDateRangeAggregationSettings;
 
 export const SelectedTimeOptionSchema = z
   .discriminatedUnion("filterSource", [
@@ -205,14 +185,8 @@ export const isDashboardDateRangeOptionAvailable = ({
 
 type SelectedTimeOption = z.infer<typeof SelectedTimeOptionSchema>;
 
-const TABLE_DATE_RANGE_AGGREGATION_SETTINGS = new Map<
-  TableDateRangeAggregationOption,
-  number | null
->(
-  TABLE_AGGREGATION_OPTIONS.map((option) => [
-    option,
-    TIME_RANGES[option].minutes,
-  ]),
+const TABLE_DATE_RANGE_AGGREGATION_SETTINGS = new Map<TableDateRangeAggregationOption, number | null>(
+  TABLE_AGGREGATION_OPTIONS.map((option) => [option, TIME_RANGES[option].minutes]),
 );
 
 export const isTableDataRangeOptionAvailable = ({
@@ -230,9 +204,7 @@ export const isTableDataRangeOptionAvailable = ({
   return limitDays >= durationMinutes / (24 * 60);
 };
 
-export const getDateFromOption = (
-  selectedTimeOption: SelectedTimeOption,
-): Date | undefined => {
+export const getDateFromOption = (selectedTimeOption: SelectedTimeOption): Date | undefined => {
   if (!selectedTimeOption) return undefined;
 
   const { filterSource, option } = selectedTimeOption;
@@ -242,10 +214,7 @@ export const getDateFromOption = (
 
     return addMinutes(new Date(), -setting);
   } else if (filterSource === "DASHBOARD") {
-    const setting =
-      dashboardDateRangeAggregationSettings[
-        option as keyof typeof dashboardDateRangeAggregationSettings
-      ];
+    const setting = dashboardDateRangeAggregationSettings[option as keyof typeof dashboardDateRangeAggregationSettings];
 
     if (!setting.minutes) return undefined; // Handle null minutes (like allTime)
     return addMinutes(new Date(), -setting.minutes);
@@ -260,25 +229,17 @@ export function isValidDashboardDateRangeAggregationOption(
   return (DASHBOARD_AGGREGATION_OPTIONS as readonly string[]).includes(value);
 }
 
-export function isValidTableDateRangeAggregationOption(
-  value?: string,
-): value is TableDateRangeAggregationOption {
+export function isValidTableDateRangeAggregationOption(value?: string): value is TableDateRangeAggregationOption {
   if (!value) return false;
   return (TABLE_AGGREGATION_OPTIONS as readonly string[]).includes(value);
 }
 
 export function getAbbreviatedTimeRange(option: string): string {
-  return (
-    TIME_RANGES[option as keyof typeof TIME_RANGES]?.abbreviation || option
-  );
+  return TIME_RANGES[option as keyof typeof TIME_RANGES]?.abbreviation || option;
 }
 
-export function getFullTimeRangeFromAbbreviated(
-  abbreviated: string,
-): DateRangeAggregationOption | null {
-  return (
-    (ABBREVIATION_TO_KEY.get(abbreviated) as DateRangeAggregationOption) || null
-  );
+export function getFullTimeRangeFromAbbreviated(abbreviated: string): DateRangeAggregationOption | null {
+  return (ABBREVIATION_TO_KEY.get(abbreviated) as DateRangeAggregationOption) || null;
 }
 
 export function getTimeRangeLabel(option: string): string {
@@ -306,19 +267,12 @@ export const findClosestDashboardInterval = (
 
 // Helper function to check if time represents full day
 export const isFullDay = (date: Date) => {
-  return (
-    date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0
-  );
+  return date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
 };
 
 // Helper function to check if date range represents full days
 export const isFullDayRange = (from: Date, to: Date) => {
-  return (
-    isFullDay(from) &&
-    to.getHours() === 23 &&
-    to.getMinutes() === 59 &&
-    to.getSeconds() === 59
-  );
+  return isFullDay(from) && to.getHours() === 23 && to.getMinutes() === 59 && to.getSeconds() === 59;
 };
 
 // Format date range with smart year display and time inclusion
@@ -363,13 +317,7 @@ export type TimeRange = RelativeTimeRange | AbsoluteTimeRange;
 /**
  * Supported interval units for time series aggregation
  */
-export type IntervalUnit =
-  | "second"
-  | "minute"
-  | "hour"
-  | "day"
-  | "month"
-  | "year";
+export type IntervalUnit = "second" | "minute" | "hour" | "day" | "month" | "year";
 
 /**
  * Interval configuration with count and unit
@@ -414,9 +362,7 @@ export const ALLOWED_INTERVALS: readonly IntervalConfig[] = [
   { count: 1, unit: "year" },
 ] as const;
 
-export const toAbsoluteTimeRange = (
-  timeRange: TimeRange,
-): AbsoluteTimeRange | null => {
+export const toAbsoluteTimeRange = (timeRange: TimeRange): AbsoluteTimeRange | null => {
   if ("from" in timeRange) {
     return timeRange;
   }
@@ -536,9 +482,7 @@ export function getOptimalInterval(
  * @param timeRange - The time range (relative or absolute)
  * @returns Interval suitable for score analytics API ("hour" | "day" | "week" | "month")
  */
-export function getScoreAnalyticsInterval(
-  timeRange: TimeRange,
-): "hour" | "day" | "week" | "month" {
+export function getScoreAnalyticsInterval(timeRange: TimeRange): "hour" | "day" | "week" | "month" {
   // Handle preset ranges
   if ("range" in timeRange) {
     const preset = TIME_RANGES[timeRange.range as keyof typeof TIME_RANGES];
@@ -661,10 +605,7 @@ export function rangeFromString<T extends string>(
  * @param timeRange - The time range (relative or absolute)
  * @returns date-fns format string for axis labels
  */
-export function getChartAxisFormat(
-  interval: IntervalConfig,
-  timeRange: TimeRange,
-): string {
+export function getChartAxisFormat(interval: IntervalConfig, timeRange: TimeRange): string {
   const { unit } = interval;
 
   // Calculate duration for context-aware formatting
@@ -672,8 +613,7 @@ export function getChartAxisFormat(
   let durationHours: number | null = null;
 
   if (absoluteRange) {
-    const durationMs =
-      absoluteRange.to.getTime() - absoluteRange.from.getTime();
+    const durationMs = absoluteRange.to.getTime() - absoluteRange.from.getTime();
     durationHours = durationMs / (1000 * 60 * 60);
   }
 
@@ -722,10 +662,7 @@ export function getChartAxisFormat(
  * @param timeRange - The time range (relative or absolute)
  * @returns date-fns format string for tooltip timestamps
  */
-export function getChartTooltipFormat(
-  interval: IntervalConfig,
-  timeRange: TimeRange,
-): string {
+export function getChartTooltipFormat(interval: IntervalConfig, timeRange: TimeRange): string {
   const { unit } = interval;
 
   switch (unit) {

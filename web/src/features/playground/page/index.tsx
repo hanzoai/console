@@ -34,8 +34,7 @@ import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
  */
 export default function PlaygroundPage() {
   const projectId = useProjectIdFromURL();
-  const { windowIds, isLoaded, addWindowWithCopy, removeWindowId } =
-    usePersistedWindowIds();
+  const { windowIds, isLoaded, addWindowWithCopy, removeWindowId } = usePersistedWindowIds();
 
   // Global coordination hook for managing window actions
   const {
@@ -91,8 +90,7 @@ export default function PlaygroundPage() {
         headerProps={{
           title: "Playground",
           help: {
-            description:
-              "A sandbox to test and iterate your prompts across multiple windows",
+            description: "A sandbox to test and iterate your prompts across multiple windows",
             href: "https://hanzo.com/docs/prompt-management/features/playground",
           },
         }}
@@ -106,8 +104,7 @@ export default function PlaygroundPage() {
 
   // Execution status and control states
   const executionStatus = globalIsExecutingAll
-    ? getExecutionStatus() ||
-      `Executing ${windowIds.length} window${windowIds.length === 1 ? "" : "s"}`
+    ? getExecutionStatus() || `Executing ${windowIds.length} window${windowIds.length === 1 ? "" : "s"}`
     : getExecutionStatus();
   const isRunAllDisabled = globalIsExecutingAll || !hasAnyModelConfigured;
 
@@ -123,8 +120,7 @@ export default function PlaygroundPage() {
       headerProps={{
         title: "Playground",
         help: {
-          description:
-            "A sandbox to test and iterate your prompts across multiple windows",
+          description: "A sandbox to test and iterate your prompts across multiple windows",
           href: "https://hanzo.com/docs/prompt-management/features/playground",
         },
         actionButtonsRight: (
@@ -140,9 +136,7 @@ export default function PlaygroundPage() {
                   <span className="hidden sm:inline">•</span>
                   <div className="flex items-center gap-1">
                     <Loader2 className="h-3 w-3 animate-spin" />
-                    <span className="hidden whitespace-nowrap sm:inline">
-                      {executionStatus}
-                    </span>
+                    <span className="hidden whitespace-nowrap sm:inline">{executionStatus}</span>
                   </div>
                 </>
               )}
@@ -160,11 +154,7 @@ export default function PlaygroundPage() {
                   : "Execute all playground windows simultaneously"
               }
             >
-              {globalIsExecutingAll ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                <Play className="h-3 w-3" />
-              )}
+              {globalIsExecutingAll ? <Loader2 className="h-3 w-3 animate-spin" /> : <Play className="h-3 w-3" />}
               <span className="hidden lg:inline">Run All (Ctrl + Enter)</span>
             </Button>
 
@@ -175,15 +165,9 @@ export default function PlaygroundPage() {
       }}
     >
       <div className="flex h-full flex-col">
-        {!hasAnyModelConfigured && projectId && (
-          <NoModelConfiguredAlert projectId={projectId} />
-        )}
+        {!hasAnyModelConfigured && projectId && <NoModelConfiguredAlert projectId={projectId} />}
         <div className="flex-1 overflow-hidden">
-          <MultiWindowPlayground
-            windowState={windowState}
-            onRemoveWindow={removeWindow}
-            onAddWindow={addWindow}
-          />
+          <MultiWindowPlayground windowState={windowState} onRemoveWindow={removeWindow} onAddWindow={addWindow} />
         </div>
       </div>
     </Page>

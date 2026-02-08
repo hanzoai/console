@@ -75,9 +75,7 @@ export interface ScoreAnalyticsContextValue extends UseScoreAnalyticsQueryResult
   isEstimating: boolean;
 }
 
-const ScoreAnalyticsContext = createContext<
-  ScoreAnalyticsContextValue | undefined
->(undefined);
+const ScoreAnalyticsContext = createContext<ScoreAnalyticsContextValue | undefined>(undefined);
 
 // ============================================================================
 // Provider Component
@@ -103,10 +101,7 @@ export interface ScoreAnalyticsProviderProps {
  * </ScoreAnalyticsProvider>
  * ```
  */
-export function ScoreAnalyticsProvider({
-  params,
-  children,
-}: ScoreAnalyticsProviderProps) {
+export function ScoreAnalyticsProvider({ params, children }: ScoreAnalyticsProviderProps) {
   // Step 1: Run estimate query first
   // Enable for both single-score and two-score modes to provide loading indicators
   // and sampling transparency
@@ -120,8 +115,7 @@ export function ScoreAnalyticsProvider({
       projectId: params.projectId,
       score1: params.score1 ?? { name: "", dataType: "", source: "" },
       // For single-score mode, pass score1 as score2 (backend will detect identical scores)
-      score2: params.score2 ??
-        params.score1 ?? { name: "", dataType: "", source: "" },
+      score2: params.score2 ?? params.score1 ?? { name: "", dataType: "", source: "" },
       fromTimestamp: params.fromTimestamp,
       toTimestamp: params.toTimestamp,
       objectType: params.objectType ?? "all",
@@ -192,22 +186,10 @@ export function ScoreAnalyticsProvider({
       estimate: estimateQuery.data,
       isEstimating: estimateQuery.isLoading,
     }),
-    [
-      queryResult,
-      colors,
-      params,
-      colorMappings,
-      getColorForScore,
-      estimateQuery.data,
-      estimateQuery.isLoading,
-    ],
+    [queryResult, colors, params, colorMappings, getColorForScore, estimateQuery.data, estimateQuery.isLoading],
   );
 
-  return (
-    <ScoreAnalyticsContext.Provider value={contextValue}>
-      {children}
-    </ScoreAnalyticsContext.Provider>
-  );
+  return <ScoreAnalyticsContext.Provider value={contextValue}>{children}</ScoreAnalyticsContext.Provider>;
 }
 
 // ============================================================================
@@ -242,9 +224,7 @@ export function useScoreAnalytics(): ScoreAnalyticsContextValue {
   const context = useContext(ScoreAnalyticsContext);
 
   if (!context) {
-    throw new Error(
-      "useScoreAnalytics must be used within a ScoreAnalyticsProvider",
-    );
+    throw new Error("useScoreAnalytics must be used within a ScoreAnalyticsProvider");
   }
 
   return context;
@@ -257,17 +237,13 @@ export function useScoreAnalytics(): ScoreAnalyticsContextValue {
 /**
  * Type guard to check if colors are for two scores
  */
-export function isTwoScoreColors(
-  colors: ScoreColors,
-): colors is TwoScoreColors {
+export function isTwoScoreColors(colors: ScoreColors): colors is TwoScoreColors {
   return "score1" in colors && "score2" in colors;
 }
 
 /**
  * Type guard to check if colors are for single score
  */
-export function isSingleScoreColors(
-  colors: ScoreColors,
-): colors is SingleScoreColors {
+export function isSingleScoreColors(colors: ScoreColors): colors is SingleScoreColors {
   return "score" in colors && !("score1" in colors);
 }

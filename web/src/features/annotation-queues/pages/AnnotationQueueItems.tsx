@@ -11,12 +11,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import Page from "@/src/components/layouts/page";
-import {
-  SidePanel,
-  SidePanelContent,
-  SidePanelHeader,
-  SidePanelTitle,
-} from "@/src/components/ui/side-panel";
+import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
 
@@ -59,9 +54,7 @@ export default function QueueItems() {
           </Button>
         ) : (
           <Button asChild>
-            <Link
-              href={`/project/${projectId}/annotation-queues/${queueId}/items`}
-            >
+            <Link href={`/project/${projectId}/annotation-queues/${queueId}/items`}>
               <ClipboardPen className="mr-1 h-4 w-4" />
               <span className="text-sm">Process queue</span>
             </Link>
@@ -73,18 +66,10 @@ export default function QueueItems() {
         <div className="flex h-full flex-col overflow-hidden">
           <AnnotationQueueItemsTable projectId={projectId} queueId={queueId} />
         </div>
-        <SidePanel
-          mobileTitle={queue.data?.name ?? "Queue details"}
-          id="queue-details"
-        >
+        <SidePanel mobileTitle={queue.data?.name ?? "Queue details"} id="queue-details">
           <SidePanelHeader>
-            <SidePanelTitle>
-              {queue.data?.name ?? "Queue details"}
-            </SidePanelTitle>
-            <CreateOrEditAnnotationQueueButton
-              projectId={projectId}
-              queueId={queueId}
-            />
+            <SidePanelTitle>{queue.data?.name ?? "Queue details"}</SidePanelTitle>
+            <CreateOrEditAnnotationQueueButton projectId={projectId} queueId={queueId} />
           </SidePanelHeader>
           <SidePanelContent>
             {queue.isLoading ? (
@@ -92,9 +77,7 @@ export default function QueueItems() {
             ) : (
               <>
                 {queue.data?.description && (
-                  <CardDescription className="text-sm">
-                    {queue.data?.description}
-                  </CardDescription>
+                  <CardDescription className="text-sm">{queue.data?.description}</CardDescription>
                 )}
                 <div className="flex flex-col gap-2">
                   <SubHeaderLabel title="Score Configs" />
