@@ -5,13 +5,7 @@ import { Card } from "@/src/components/ui/card";
 import { type RouterOutputs } from "@/src/utils/api";
 import { getNumberFromMap } from "@/src/utils/map-utils";
 import Link from "next/link";
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  useLayoutEffect,
-} from "react";
+import React, { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer";
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
 import { ItemBadge } from "@/src/components/ItemBadge";
@@ -74,9 +68,7 @@ const TraceRow = React.memo(
                   <span className="text-xs font-medium">
                     {trace.name} ({trace.id})&nbsp;↗
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    {trace.timestamp.toLocaleString()}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{trace.timestamp.toLocaleString()}</span>
                 </div>
               </Link>
               <div className="flex flex-wrap gap-2">
@@ -210,11 +202,7 @@ export const LazyTraceRow = React.forwardRef<
 
   return (
     <div ref={combinedRef} className="pb-3">
-      {shouldLoad ? (
-        <TraceRow showCorrections={showCorrections} {...cardProps} />
-      ) : (
-        <TraceSkeleton />
-      )}
+      {shouldLoad ? <TraceRow showCorrections={showCorrections} {...cardProps} /> : <TraceSkeleton />}
     </div>
   );
 });

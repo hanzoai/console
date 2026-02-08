@@ -29,10 +29,7 @@ export function highlightTextWithComments(
   type: "search" | "comment" | null;
   preview?: string;
 }> {
-  if (
-    !commentRanges?.length &&
-    (searchStart === undefined || searchEnd === undefined)
-  ) {
+  if (!commentRanges?.length && (searchStart === undefined || searchEnd === undefined)) {
     return [{ text, type: null }];
   }
 

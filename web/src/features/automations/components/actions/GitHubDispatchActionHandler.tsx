@@ -2,11 +2,7 @@ import React from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { type BaseActionHandler } from "./BaseActionHandler";
 import { GitHubDispatchActionForm } from "./GitHubDispatchActionForm";
-import {
-  type AutomationDomain,
-  type ActionCreate,
-  type ActionDomain,
-} from "@hanzo/shared";
+import { type AutomationDomain, type ActionCreate, type ActionDomain } from "@hanzo/shared";
 import { z } from "zod/v4";
 
 // Define the form schema for GitHub dispatch actions
@@ -19,16 +15,12 @@ export const GitHubDispatchActionFormSchema = z.object({
   }),
 });
 
-type GitHubDispatchActionFormData = z.infer<
-  typeof GitHubDispatchActionFormSchema
->;
+type GitHubDispatchActionFormData = z.infer<typeof GitHubDispatchActionFormSchema>;
 
 export class GitHubDispatchActionHandler implements BaseActionHandler<GitHubDispatchActionFormData> {
   actionType = "GITHUB_DISPATCH" as const;
 
-  getDefaultValues(
-    automation?: AutomationDomain,
-  ): GitHubDispatchActionFormData {
+  getDefaultValues(automation?: AutomationDomain): GitHubDispatchActionFormData {
     return {
       githubDispatch: {
         url:
@@ -71,10 +63,7 @@ export class GitHubDispatchActionHandler implements BaseActionHandler<GitHubDisp
     }
 
     // Token is required only if there's no existing token (displayGitHubToken)
-    if (
-      !formData.githubDispatch?.githubToken &&
-      !formData.githubDispatch?.displayGitHubToken
-    ) {
+    if (!formData.githubDispatch?.githubToken && !formData.githubDispatch?.displayGitHubToken) {
       errors.push("GitHub token is required");
     }
 
@@ -88,15 +77,9 @@ export class GitHubDispatchActionHandler implements BaseActionHandler<GitHubDisp
     return {
       type: "GITHUB_DISPATCH",
       // Only include fields if they have values (for updates)
-      ...(formData.githubDispatch?.url
-        ? { url: formData.githubDispatch.url }
-        : {}),
-      ...(formData.githubDispatch?.eventType
-        ? { eventType: formData.githubDispatch.eventType }
-        : {}),
-      ...(formData.githubDispatch?.githubToken
-        ? { githubToken: formData.githubDispatch.githubToken }
-        : {}),
+      ...(formData.githubDispatch?.url ? { url: formData.githubDispatch.url } : {}),
+      ...(formData.githubDispatch?.eventType ? { eventType: formData.githubDispatch.eventType } : {}),
+      ...(formData.githubDispatch?.githubToken ? { githubToken: formData.githubDispatch.githubToken } : {}),
     };
   }
 

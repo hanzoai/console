@@ -18,9 +18,7 @@ export function DatasetVersionWarningBanner({
   className = "",
   changeCounts,
 }: DatasetVersionWarningBannerProps) {
-  const totalChanges = changeCounts
-    ? changeCounts.upserts + changeCounts.deletes
-    : 0;
+  const totalChanges = changeCounts ? changeCounts.upserts + changeCounts.deletes : 0;
   const hasChanges = totalChanges > 0;
 
   return (
@@ -32,26 +30,17 @@ export function DatasetVersionWarningBanner({
         <div className="flex items-center justify-between gap-4">
           <p className="break-words text-sm text-muted-foreground">
             Viewing version from{" "}
-            <span className="font-medium text-foreground">
-              {format(selectedVersion, "MMM d, yyyy 'at' h:mm a")}
-            </span>
+            <span className="font-medium text-foreground">{format(selectedVersion, "MMM d, yyyy 'at' h:mm a")}</span>
           </p>
-          <Button
-            onClick={resetToLatest}
-            variant="link"
-            className="h-auto shrink-0 p-0 text-sm underline-offset-4"
-          >
+          <Button onClick={resetToLatest} variant="link" className="h-auto shrink-0 p-0 text-sm underline-offset-4">
             Return to latest
           </Button>
         </div>
         {changeCounts && hasChanges && (
           <p className="text-xs text-muted-foreground">
-            {totalChanges} change{totalChanges !== 1 ? "s" : ""} since this
-            version,
-            {changeCounts.upserts > 0 &&
-              ` ${changeCounts.upserts} upsert${changeCounts.upserts !== 1 ? "s" : ""}`}
-            {changeCounts.deletes > 0 &&
-              ` ${changeCounts.deletes} delete${changeCounts.deletes !== 1 ? "s" : ""}`}
+            {totalChanges} change{totalChanges !== 1 ? "s" : ""} since this version,
+            {changeCounts.upserts > 0 && ` ${changeCounts.upserts} upsert${changeCounts.upserts !== 1 ? "s" : ""}`}
+            {changeCounts.deletes > 0 && ` ${changeCounts.deletes} delete${changeCounts.deletes !== 1 ? "s" : ""}`}
           </p>
         )}
       </div>

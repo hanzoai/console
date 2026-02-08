@@ -102,9 +102,7 @@ export type ScoreOptions = {
   stringValue: Array<SingleValueOption>;
 };
 
-export function scoresTableColsWithOptions(
-  options?: ScoreOptions,
-): ColumnDefinition[] {
+export function scoresTableColsWithOptions(options?: ScoreOptions): ColumnDefinition[] {
   return scoresTableCols.map((col) => {
     if (col.id === "name") {
       return formatColumnOptions(col, options?.name ?? []);

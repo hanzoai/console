@@ -1,20 +1,11 @@
 import { useState, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
 import { ScoreTimeSeriesChart } from "../charts/ScoreTimeSeriesChart";
 import { SamplingDetailsHoverCard } from "../SamplingDetailsHoverCard";
-import {
-  getScoreCategoryColors,
-  getScoreBooleanColors,
-} from "@/src/features/score-analytics/lib/color-scales";
+import { getScoreCategoryColors, getScoreBooleanColors } from "@/src/features/score-analytics/lib/color-scales";
 
 type TimelineTab = "score1" | "score2" | "all" | "matched";
 
@@ -33,8 +24,7 @@ type TimelineTab = "score1" | "score2" | "all" | "matched";
  * - Numeric vs categorical data types
  */
 export function TimelineChartCard() {
-  const { data, isLoading, params, colorMappings, getColorForScore } =
-    useScoreAnalytics();
+  const { data, isLoading, params, colorMappings, getColorForScore } = useScoreAnalytics();
   const [activeTab, setActiveTab] = useState<TimelineTab>("all");
 
   // Calculate overall average for numeric data (for description)
@@ -45,9 +35,7 @@ export function TimelineChartCard() {
     const timeSeries = data.timeSeries.numeric.all;
     if (timeSeries.length === 0) return 0;
 
-    const validValues = timeSeries
-      .map((t) => t.avg1)
-      .filter((v): v is number => v !== null);
+    const validValues = timeSeries.map((t) => t.avg1).filter((v): v is number => v !== null);
     if (validValues.length === 0) return 0;
 
     return validValues.reduce((sum, v) => sum + v, 0) / validValues.length;
@@ -85,10 +73,7 @@ export function TimelineChartCard() {
     }
 
     // Numeric: Transform data based on active tab
-    const sourceData =
-      activeTab === "matched"
-        ? timeSeries.numeric.matched
-        : timeSeries.numeric.all;
+    const sourceData = activeTab === "matched" ? timeSeries.numeric.matched : timeSeries.numeric.all;
 
     if (activeTab === "score1") {
       // Return only score1 data (avg1)
@@ -183,20 +168,14 @@ export function TimelineChartCard() {
     );
 
     // Overall average for numeric
-    if (
-      dataType === "NUMERIC" &&
-      overallAverage !== null &&
-      overallAverage > 0
-    ) {
+    if (dataType === "NUMERIC" && overallAverage !== null && overallAverage > 0) {
       parts.push(`Overall avg: ${overallAverage.toFixed(3)}`);
     }
 
     // Matched count for two-score mode
     if (mode === "two" && statistics.comparison) {
       if (activeTab === "matched") {
-        parts.push(
-          `${statistics.comparison.matchedCount.toLocaleString()} matched`,
-        );
+        parts.push(`${statistics.comparison.matchedCount.toLocaleString()} matched`);
       }
     }
 
@@ -253,10 +232,7 @@ export function TimelineChartCard() {
   };
 
   // Build full tab labels for title attribute (hover tooltip)
-  const score1FullLabel =
-    score1.name === score2?.name
-      ? `${score1.source} · ${score1.name}`
-      : score1.name;
+  const score1FullLabel = score1.name === score2?.name ? `${score1.source} · ${score1.name}` : score1.name;
 
   const score2FullLabel = score2
     ? score2.name === score1.name
@@ -273,33 +249,19 @@ export function TimelineChartCard() {
               <CardTitle className="flex items-center gap-2">
                 Trend Over Time
                 {data.samplingMetadata.isSampled && (
-                  <SamplingDetailsHoverCard
-                    samplingMetadata={data.samplingMetadata}
-                    showLabel
-                  />
+                  <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} showLabel />
                 )}
               </CardTitle>
               <CardDescription>{description}</CardDescription>
             </div>
           </div>
           {showTabs && (
-            <Tabs
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v as TimelineTab)}
-            >
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TimelineTab)}>
               <TabsList className="h-7">
-                <TabsTrigger
-                  value="score1"
-                  title={score1FullLabel}
-                  className="h-5 px-2 text-xs"
-                >
+                <TabsTrigger value="score1" title={score1FullLabel} className="h-5 px-2 text-xs">
                   {truncateLabel(score1FullLabel)}
                 </TabsTrigger>
-                <TabsTrigger
-                  value="score2"
-                  title={score2FullLabel}
-                  className="h-5 px-2 text-xs"
-                >
+                <TabsTrigger value="score2" title={score2FullLabel} className="h-5 px-2 text-xs">
                   {truncateLabel(score2FullLabel)}
                 </TabsTrigger>
                 <TabsTrigger value="all" className="h-5 px-2 text-xs">

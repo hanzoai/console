@@ -143,9 +143,7 @@ describe("prompts trpc", () => {
       const updatedPrompt2 = await prisma.prompt.findUnique({
         where: { id: prompt2.id },
       });
-      expect(updatedPrompt2?.labels).toEqual(
-        expect.arrayContaining(["production", "latest"]),
-      );
+      expect(updatedPrompt2?.labels).toEqual(expect.arrayContaining(["production", "latest"]));
 
       await waitForExpect(async () => {
         const executions = await prisma.automationExecution.findMany({
@@ -272,9 +270,7 @@ describe("prompts trpc", () => {
 
       expect(updatedPrompts).toHaveLength(3);
       updatedPrompts.forEach((prompt) => {
-        expect(prompt.tags).toEqual(
-          expect.arrayContaining(["new-tag", "updated-tag"]),
-        );
+        expect(prompt.tags).toEqual(expect.arrayContaining(["new-tag", "updated-tag"]));
         expect(prompt.tags).not.toContain("old-tag");
       });
 
@@ -683,9 +679,7 @@ describe("prompts trpc", () => {
       });
 
       expect(contentSearchResults.prompts).toHaveLength(1);
-      expect(contentSearchResults.prompts[0].name).toBe(
-        "customer-service-prompt",
-      );
+      expect(contentSearchResults.prompts[0].name).toBe("customer-service-prompt");
 
       // Test 2: Search by prompt name
       const nameSearchResults = await caller.prompts.all({

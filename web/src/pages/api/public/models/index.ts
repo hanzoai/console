@@ -94,9 +94,7 @@ export default withMiddlewares({
     fn: async ({ body, auth }) => {
       const validRegex = await isValidPostgresRegex(body.matchPattern, prisma);
       if (!validRegex) {
-        throw new InvalidRequestError(
-          "matchPattern is not a valid regex pattern (Postgres)",
-        );
+        throw new InvalidRequestError("matchPattern is not a valid regex pattern (Postgres)");
       }
       const { tokenizerConfig, pricingTiers: tierData, ...rest } = body;
 
@@ -109,9 +107,7 @@ export default withMiddlewares({
         });
 
         if (existingModelName) {
-          throw new InvalidRequestError(
-            `Model name '${body.modelName}' already exists in project`,
-          );
+          throw new InvalidRequestError(`Model name '${body.modelName}' already exists in project`);
         }
 
         // 1. Create model

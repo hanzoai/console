@@ -421,15 +421,11 @@ describe("/api/public/v2/scores API Endpoint", () => {
               expect.objectContaining({
                 trace: null,
                 ...(val.sessionId === sessionId ? { sessionId } : {}),
-                ...(val.datasetRunId
-                  ? { datasetRunId: expect.any(String) }
-                  : {}),
+                ...(val.datasetRunId ? { datasetRunId: expect.any(String) } : {}),
               }),
             );
             // Check that one of the two conditions is true
-            expect(
-              val.sessionId === sessionId || val.datasetRunId,
-            ).toBeTruthy();
+            expect(val.sessionId === sessionId || val.datasetRunId).toBeTruthy();
           }
         }
       });
@@ -611,11 +607,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
             environment: "staging",
           });
 
-          await createScoresCh([
-            sessionScoreWithEnv,
-            sessionScoreDefaultEnv,
-            traceScoreWithEnv,
-          ]);
+          await createScoresCh([sessionScoreWithEnv, sessionScoreDefaultEnv, traceScoreWithEnv]);
         });
 
         it("should return session scores when filtering by environment", async () => {
@@ -1458,9 +1450,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
         );
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toContain(
-          "Scores needs to be selected always",
-        );
+        expect(response.body.message).toContain("Scores needs to be selected always");
       });
 
       it("should handle multiple scores with fields=score", async () => {
@@ -1556,9 +1546,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
         );
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toContain(
-          "Cannot filter by trace properties",
-        );
+        expect(response.body.message).toContain("Cannot filter by trace properties");
       });
 
       it("should return 400 when filtering by traceTags without trace field", async () => {
@@ -1595,9 +1583,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
         );
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toContain(
-          "Cannot filter by trace properties",
-        );
+        expect(response.body.message).toContain("Cannot filter by trace properties");
       });
 
       it("should allow userId filter when trace field is included", async () => {

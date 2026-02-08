@@ -1,9 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";
 
@@ -13,11 +9,7 @@ interface ReactionBarProps {
   onReactionToggle: (emoji: string, hasReacted: boolean) => void;
 }
 
-export function ReactionBar({
-  projectId,
-  commentId,
-  onReactionToggle,
-}: ReactionBarProps) {
+export function ReactionBar({ projectId, commentId, onReactionToggle }: ReactionBarProps) {
   const { data: reactions } = api.commentReactions.listForComment.useQuery({
     projectId,
     commentId,
@@ -37,18 +29,12 @@ export function ReactionBar({
             size="sm"
             className={cn(
               "h-6 gap-1 rounded-full px-2 text-sm transition-colors",
-              reaction.hasReacted
-                ? "bg-primary/10 hover:bg-primary/20"
-                : "bg-muted/20 hover:bg-muted/40",
+              reaction.hasReacted ? "bg-primary/10 hover:bg-primary/20" : "bg-muted/20 hover:bg-muted/40",
             )}
-            onClick={() =>
-              onReactionToggle(reaction.emoji, reaction.hasReacted)
-            }
+            onClick={() => onReactionToggle(reaction.emoji, reaction.hasReacted)}
           >
             <span>{reaction.emoji}</span>
-            <span className="text-[0.6rem] text-muted-foreground/80">
-              {reaction.count}
-            </span>
+            <span className="text-[0.6rem] text-muted-foreground/80">{reaction.count}</span>
           </Button>
         );
 

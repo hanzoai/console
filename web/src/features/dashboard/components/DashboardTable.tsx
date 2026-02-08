@@ -37,13 +37,7 @@ type DashboardTableRow = {
   owner: "PROJECT" | "HANZO";
 };
 
-function CloneDashboardButton({
-  dashboardId,
-  projectId,
-}: {
-  dashboardId: string;
-  projectId: string;
-}) {
+function CloneDashboardButton({ dashboardId, projectId }: { dashboardId: string; projectId: string }) {
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" });
   const capture = usePostHogClientCapture();
@@ -75,12 +69,7 @@ function CloneDashboardButton({
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="default"
-      disabled={!hasAccess}
-      onClick={handleCloneDashboard}
-    >
+    <Button variant="ghost" size="default" disabled={!hasAccess} onClick={handleCloneDashboard}>
       <Copy className="mr-2 h-4 w-4" />
       Clone
     </Button>
@@ -103,12 +92,7 @@ function EditDashboardButton({
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="default"
-        disabled={!hasAccess}
-        onClick={() => setIsDialogOpen(true)}
-      >
+      <Button variant="ghost" size="default" disabled={!hasAccess} onClick={() => setIsDialogOpen(true)}>
         <Edit className="mr-2 h-4 w-4" />
         Edit
       </Button>
@@ -259,18 +243,11 @@ export function DashboardTable() {
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
-                  <CloneDashboardButton
-                    dashboardId={id}
-                    projectId={projectId}
-                  />
+                  <CloneDashboardButton dashboardId={id} projectId={projectId} />
                 </DropdownMenuItem>
                 {owner === "PROJECT" && (
                   <DropdownMenuItem asChild>
-                    <DeleteDashboardButton
-                      itemId={id}
-                      projectId={projectId}
-                      isTableAction
-                    />
+                    <DeleteDashboardButton itemId={id} projectId={projectId} isTableAction />
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -308,9 +285,7 @@ export function DashboardTable() {
         state: paginationState,
       }}
       onRowClick={(row) => {
-        router.push(
-          `/project/${projectId}/dashboards/${encodeURIComponent(row.id)}`,
-        );
+        router.push(`/project/${projectId}/dashboards/${encodeURIComponent(row.id)}`);
       }}
     />
   );

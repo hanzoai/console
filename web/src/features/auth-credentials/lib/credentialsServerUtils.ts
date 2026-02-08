@@ -11,13 +11,8 @@ import { compare, hash } from "bcryptjs";
  * to their account.
  * @returns {Promise<string>} - A promise that resolves to the id of the user that was created.
  */
-export async function createUserEmailPassword(
-  email: string,
-  password: string,
-  name: string,
-) {
-  if (!isValidPassword(password))
-    throw new Error("Password needs to be at least 8 characters long.");
+export async function createUserEmailPassword(email: string, password: string, name: string) {
+  if (!isValidPassword(password)) throw new Error("Password needs to be at least 8 characters long.");
 
   const hashedPassword = await hashPassword(password);
   // check that no user exists with this email
@@ -48,8 +43,7 @@ export async function createUserEmailPassword(
 }
 
 export async function updateUserPassword(userId: string, password: string) {
-  if (!isValidPassword(password))
-    throw new Error("Password needs to be at least 8 characters long.");
+  if (!isValidPassword(password)) throw new Error("Password needs to be at least 8 characters long.");
 
   const hashedPassword = await hashPassword(password);
   await prisma.user.update({

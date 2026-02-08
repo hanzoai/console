@@ -16,22 +16,14 @@ const readStoredColumnOrder = (localStorageKey: string): string[] => {
   }
 };
 
-function useColumnOrder<TData>(
-  localStorageKey: string,
-  columns: HanzoColumnDef<TData>[],
-) {
-  const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
-    localStorageKey,
-    [],
-  );
+function useColumnOrder<TData>(localStorageKey: string, columns: HanzoColumnDef<TData>[]) {
+  const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(localStorageKey, []);
 
   useEffect(() => {
     const appColumnIds = columns.map((c) => c.accessorKey);
     const storedColumnIds = readStoredColumnOrder(localStorageKey);
 
-    const finalColumnOrder: string[] = storedColumnIds.filter((id) =>
-      appColumnIds.includes(id),
-    );
+    const finalColumnOrder: string[] = storedColumnIds.filter((id) => appColumnIds.includes(id));
 
     appColumnIds.forEach((id) => {
       if (!finalColumnOrder.includes(id)) {

@@ -1,8 +1,5 @@
 import type { DatasetItemDomain } from "@hanzo/shared";
-import {
-  stringifyDatasetItemData,
-  type DatasetSchema,
-} from "../utils/datasetItemUtils";
+import { stringifyDatasetItemData, type DatasetSchema } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
 
 type DatasetItemViewModeContentProps = {
@@ -15,11 +12,7 @@ type DatasetItemViewModeContentProps = {
  * Renders the latest version of a dataset item in view mode.
  * Handles loading and not-found states.
  */
-export const DatasetItemViewModeContent = ({
-  item,
-  isLoading,
-  dataset,
-}: DatasetItemViewModeContentProps) => {
+export const DatasetItemViewModeContent = ({ item, isLoading, dataset }: DatasetItemViewModeContentProps) => {
   if (isLoading) {
     return <div className="text-sm text-muted-foreground">Loading...</div>;
   }
@@ -29,9 +22,7 @@ export const DatasetItemViewModeContent = ({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="text-muted-foreground">
           <p className="text-lg font-medium">Dataset item not found</p>
-          <p className="mt-2 text-sm">
-            This dataset item does not exist or has been deleted.
-          </p>
+          <p className="mt-2 text-sm">This dataset item does not exist or has been deleted.</p>
         </div>
       </div>
     );

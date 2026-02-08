@@ -1,10 +1,6 @@
 import { distance } from "fastest-levenshtein";
 
-export function findDefaultColumn(
-  columns: { name: string }[],
-  title: string,
-  index: number,
-): string | undefined {
+export function findDefaultColumn(columns: { name: string }[], title: string, index: number): string | undefined {
   if (columns.length <= index) {
     return undefined;
   }
@@ -29,9 +25,7 @@ export function findDefaultColumn(
   const threshold = 0.7; // Similarity threshold (0-1)
 
   // First try exact matches (case insensitive)
-  const exactMatch = columns.find((col) =>
-    possibleNames.some((name) => col.name.toLowerCase() === name.toLowerCase()),
-  );
+  const exactMatch = columns.find((col) => possibleNames.some((name) => col.name.toLowerCase() === name.toLowerCase()));
   if (exactMatch) return exactMatch.name;
 
   // Then try fuzzy matching
@@ -44,8 +38,7 @@ export function findDefaultColumn(
     for (const name of possibleNames) {
       // Calculate similarity score (0-1)
       const maxLength = Math.max(col.name.length, name.length);
-      const similarity =
-        1 - distance(col.name.toLowerCase(), name.toLowerCase()) / maxLength;
+      const similarity = 1 - distance(col.name.toLowerCase(), name.toLowerCase()) / maxLength;
 
       if (similarity > threshold && similarity > bestMatch.similarity) {
         bestMatch = {

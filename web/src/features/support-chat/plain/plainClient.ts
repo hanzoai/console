@@ -82,17 +82,11 @@ function formatPlainError(error: unknown): {
   code: "BAD_REQUEST" | "INTERNAL_SERVER_ERROR";
 } {
   const e = error as any;
-  const errorMessage =
-    e?.message || e?.errorDetails?.message || String(error) || "";
+  const errorMessage = e?.message || e?.errorDetails?.message || String(error) || "";
   const msg = errorMessage.toLowerCase();
 
   // File size errors
-  if (
-    msg.includes("file size") ||
-    msg.includes("too large") ||
-    msg.includes(">6mb") ||
-    msg.includes("larger than")
-  ) {
+  if (msg.includes("file size") || msg.includes("too large") || msg.includes(">6mb") || msg.includes("larger than")) {
     return {
       message: `File is too large. Maximum file size is ${(PLAIN_MAX_FILE_SIZE_BYTES / (1024 * 1024)).toFixed(0)}MB per file.`,
       code: "BAD_REQUEST",
@@ -154,10 +148,7 @@ export function generateTenantExternalId(orgId: string, region: string) {
 }
 
 // ===== Customers =====
-export async function ensureCustomer(
-  ctx: PlainCtx,
-  params: { email: string; fullName?: string },
-): Promise<string> {
+export async function ensureCustomer(ctx: PlainCtx, params: { email: string; fullName?: string }): Promise<string> {
   const { client } = ctx;
   const { email, fullName } = params;
 
@@ -204,10 +195,7 @@ export async function createAttachmentUploadUrls(
     // Handle Plain API errors with user-friendly messages
     if (r.error) {
       const formatted = formatPlainError(r.error);
-      logger.error(
-        "createAttachmentUploadUrl failed",
-        describeSdkError(r.error),
-      );
+      logger.error("createAttachmentUploadUrl failed", describeSdkError(r.error));
       throw new TRPCError({
         code: formatted.code,
         message: formatted.message,
@@ -252,34 +240,24 @@ export async function syncTenantsAndTiers(
         externalId: extId,
       });
       if (upsertTenantRes.error) {
-        logger.error(
-          "upsertTenant failed",
-          describeSdkError(upsertTenantRes.error),
-        );
+        logger.error("upsertTenant failed", describeSdkError(upsertTenantRes.error));
         return;
       }
 
-      const tierExternalId =
-        org?.id === demoOrgId ? "cloud:demo" : (org?.plan ?? "default");
+      const tierExternalId = org?.id === demoOrgId ? "cloud:demo" : (org?.plan ?? "default");
       const tierRes = await client.updateTenantTier({
         tenantIdentifier: { externalId: extId },
         tierIdentifier: { externalId: tierExternalId },
       });
       if (tierRes.error) {
-        logger.error(
-          "updateTenantTier failed",
-          describeSdkError(tierRes.error),
-        );
+        logger.error("updateTenantTier failed", describeSdkError(tierRes.error));
       }
     }),
   );
 }
 
 // ===== Tenant memberships (best-effort / non-throwing) =====
-async function fetchAllCustomerTenantMemberships(
-  ctx: PlainCtx,
-  customerId: string,
-) {
+async function fetchAllCustomerTenantMemberships(ctx: PlainCtx, customerId: string) {
   const { client } = ctx;
   type Membership = { tenant: { externalId: string } };
   const out: Membership[] = [];
@@ -293,18 +271,13 @@ async function fetchAllCustomerTenantMemberships(
       after,
     });
     if (r.error) {
-      logger.error(
-        "getCustomerTenantMemberships failed",
-        describeSdkError(r.error),
-      );
+      logger.error("getCustomerTenantMemberships failed", describeSdkError(r.error));
       break;
     }
     const memberships = r.data?.tenantMemberships as Membership[] | undefined;
     if (memberships?.length) out.push(...memberships);
 
-    const pageInfo = r.data?.pageInfo as
-      | { hasNextPage?: boolean; endCursor?: string }
-      | undefined;
+    const pageInfo = r.data?.pageInfo as { hasNextPage?: boolean; endCursor?: string } | undefined;
     if (pageInfo?.hasNextPage && pageInfo.endCursor) {
       after = pageInfo.endCursor;
     } else {
@@ -328,37 +301,24 @@ export async function syncCustomerTenantMemberships(
   if (!region) return;
   if (!Array.isArray(user?.organizations)) return;
 
-  const currentMemberships = await fetchAllCustomerTenantMemberships(
-    ctx,
-    customerId,
-  );
+  const currentMemberships = await fetchAllCustomerTenantMemberships(ctx, customerId);
 
   const regionPrefix = `cloud_${region}_org_`;
   const existingTenantIdsInRegion = currentMemberships
     .map((m) => m.tenant.externalId)
     .filter((id) => id?.startsWith(regionPrefix));
 
-  const targetTenantIds: string[] = user.organizations.map((org) =>
-    generateTenantExternalId(org.id, region),
-  );
+  const targetTenantIds: string[] = user.organizations.map((org) => generateTenantExternalId(org.id, region));
 
-  const toRemove = existingTenantIdsInRegion.filter(
-    (id) => !targetTenantIds.includes(id),
-  );
-  const toAdd = targetTenantIds.filter(
-    (id) => !existingTenantIdsInRegion.includes(id),
-  );
+  const toRemove = existingTenantIdsInRegion.filter((id) => !targetTenantIds.includes(id));
+  const toAdd = targetTenantIds.filter((id) => !existingTenantIdsInRegion.includes(id));
 
   if (toRemove.length) {
     const r = await client.removeCustomerFromTenants({
       customerIdentifier: { emailAddress: email },
       tenantIdentifiers: toRemove.map((externalId) => ({ externalId })),
     });
-    if (r.error)
-      logger.error(
-        "removeCustomerFromTenants failed",
-        describeSdkError(r.error),
-      );
+    if (r.error) logger.error("removeCustomerFromTenants failed", describeSdkError(r.error));
   }
 
   if (toAdd.length) {
@@ -366,8 +326,7 @@ export async function syncCustomerTenantMemberships(
       customerIdentifier: { emailAddress: email },
       tenantIdentifiers: toAdd.map((externalId) => ({ externalId })),
     });
-    if (r.error)
-      logger.error("addCustomerToTenants failed", describeSdkError(r.error));
+    if (r.error) logger.error("addCustomerToTenants failed", describeSdkError(r.error));
   }
 }
 
@@ -415,8 +374,7 @@ function buildThreadFields(input: {
           } as const,
         ]
       : []),
-    ...(input.topLevel === "Product Features" &&
-    THREAD_FIELDS.topicProductFeaturesSubtype
+    ...(input.topLevel === "Product Features" && THREAD_FIELDS.topicProductFeaturesSubtype
       ? [
           {
             key: THREAD_FIELDS.topicProductFeaturesSubtype,
@@ -485,9 +443,7 @@ export async function createSupportThread(
     customerIdentifier: { emailAddress: input.email },
     components,
     threadFields,
-    tenantIdentifier: input.tenantExternalId
-      ? { externalId: input.tenantExternalId }
-      : undefined,
+    tenantIdentifier: input.tenantExternalId ? { externalId: input.tenantExternalId } : undefined,
     attachmentIds: attachmentIds.length ? attachmentIds : undefined,
   });
 
@@ -502,17 +458,12 @@ export async function createSupportThread(
       title: input.title,
       customerIdentifier: { emailAddress: input.email },
       components,
-      tenantIdentifier: input.tenantExternalId
-        ? { externalId: input.tenantExternalId }
-        : undefined,
+      tenantIdentifier: input.tenantExternalId ? { externalId: input.tenantExternalId } : undefined,
       attachmentIds: attachmentIds.length ? attachmentIds : undefined,
     });
 
     const thread = unwrap("createThread (retry without threadFields)", retry); // throws on error
-    const createdAt =
-      thread.createdAt?.__typename === "DateTime"
-        ? thread.createdAt.iso8601
-        : undefined;
+    const createdAt = thread.createdAt?.__typename === "DateTime" ? thread.createdAt.iso8601 : undefined;
 
     return {
       threadId: thread.id,
@@ -523,10 +474,7 @@ export async function createSupportThread(
   }
 
   const thread = unwrap("createThread", createdWithFields); // throws on error
-  const createdAt =
-    thread.createdAt?.__typename === "DateTime"
-      ? thread.createdAt.iso8601
-      : undefined;
+  const createdAt = thread.createdAt?.__typename === "DateTime" ? thread.createdAt.iso8601 : undefined;
 
   return {
     threadId: thread.id,
@@ -580,10 +528,7 @@ export async function replyToThread(
     threadId: input.threadId,
     textContent: input.originalMessage,
     markdownContent: input.originalMessage,
-    attachmentIds:
-      input.attachmentIds && input.attachmentIds.length
-        ? input.attachmentIds
-        : undefined,
+    attachmentIds: input.attachmentIds && input.attachmentIds.length ? input.attachmentIds : undefined,
     impersonation:
       input.impersonate === true
         ? {
@@ -640,9 +585,7 @@ export async function createThread(
     title: input.title,
     customerIdentifier: { emailAddress: input.email },
     threadFields,
-    tenantIdentifier: input.tenantExternalId
-      ? { externalId: input.tenantExternalId }
-      : undefined,
+    tenantIdentifier: input.tenantExternalId ? { externalId: input.tenantExternalId } : undefined,
     description: input.message,
   });
 
@@ -656,20 +599,12 @@ export async function createThread(
     const retry = await client.createThread({
       title: input.title,
       customerIdentifier: { emailAddress: input.email },
-      tenantIdentifier: input.tenantExternalId
-        ? { externalId: input.tenantExternalId }
-        : undefined,
+      tenantIdentifier: input.tenantExternalId ? { externalId: input.tenantExternalId } : undefined,
       description: input.message,
     });
 
-    const thread = unwrap(
-      "createThread (no initial message, retry without threadFields)",
-      retry,
-    );
-    const createdAt =
-      thread.createdAt?.__typename === "DateTime"
-        ? thread.createdAt.iso8601
-        : undefined;
+    const thread = unwrap("createThread (no initial message, retry without threadFields)", retry);
+    const createdAt = thread.createdAt?.__typename === "DateTime" ? thread.createdAt.iso8601 : undefined;
 
     return {
       threadId: thread.id,
@@ -680,10 +615,7 @@ export async function createThread(
   }
 
   const thread = unwrap("createThread (no initial message)", createdWithFields);
-  const createdAt =
-    thread.createdAt?.__typename === "DateTime"
-      ? thread.createdAt.iso8601
-      : undefined;
+  const createdAt = thread.createdAt?.__typename === "DateTime" ? thread.createdAt.iso8601 : undefined;
 
   return {
     threadId: thread.id,

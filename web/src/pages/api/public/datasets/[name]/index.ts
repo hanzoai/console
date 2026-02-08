@@ -7,10 +7,7 @@ import {
   transformDbDatasetItemDomainToAPIDatasetItem,
   transformDbDatasetToAPIDataset,
 } from "@/src/features/public-api/types/datasets";
-import {
-  createDatasetItemFilterState,
-  getDatasetItems,
-} from "@hanzo/shared/src/server";
+import { createDatasetItemFilterState, getDatasetItems } from "@hanzo/shared/src/server";
 import { HanzoNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({

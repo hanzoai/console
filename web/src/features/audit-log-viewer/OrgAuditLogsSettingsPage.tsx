@@ -13,15 +13,12 @@ export function OrgAuditLogsSettingsPage(props: { orgId: string }) {
 
   const body = !hasEntitlement ? (
     <p className="text-sm text-muted-foreground">
-      Audit logs are an Enterprise feature. Upgrade your plan to track all
-      changes made to your organization.
+      Audit logs are an Enterprise feature. Upgrade your plan to track all changes made to your organization.
     </p>
   ) : !hasAccess ? (
     <Alert>
       <AlertTitle>Access Denied</AlertTitle>
-      <AlertDescription>
-        Contact your organization administrator to request access.
-      </AlertDescription>
+      <AlertDescription>Contact your organization administrator to request access.</AlertDescription>
     </Alert>
   ) : (
     <AuditLogsTable scope="organization" orgId={props.orgId} />
@@ -31,9 +28,8 @@ export function OrgAuditLogsSettingsPage(props: { orgId: string }) {
     <>
       <Header title="Organization Audit Logs" />
       <p className="mb-2 text-sm text-muted-foreground">
-        Track who changed what in your organization and when. Monitor
-        organization settings, project creation/deletion, and membership changes
-        over time.
+        Track who changed what in your organization and when. Monitor organization settings, project creation/deletion,
+        and membership changes over time.
       </p>
       {body}
     </>

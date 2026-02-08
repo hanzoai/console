@@ -45,24 +45,16 @@ export function VirtualizedTree<T extends { id: string; children: T[] }>({
 }: VirtualizedTreeProps<T>) {
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const flattenedItems = useMemo(
-    () => flattenTree(roots, collapsedNodes),
-    [roots, collapsedNodes],
-  );
+  const flattenedItems = useMemo(() => flattenTree(roots, collapsedNodes), [roots, collapsedNodes]);
 
   const defaultEstimateSize = () => defaultRowHeight;
 
   const rowVirtualizer = useVirtualizer({
     count: flattenedItems.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: estimateSize
-      ? (index) => estimateSize(flattenedItems[index]!.node, index)
-      : defaultEstimateSize,
+    estimateSize: estimateSize ? (index) => estimateSize(flattenedItems[index]!.node, index) : defaultEstimateSize,
     overscan,
-    measureElement:
-      typeof window !== "undefined"
-        ? (element) => element.getBoundingClientRect().height
-        : undefined,
+    measureElement: typeof window !== "undefined" ? (element) => element.getBoundingClientRect().height : undefined,
   });
 
   // Auto-scroll to selected node on initial load (URL-based navigation only)
@@ -70,14 +62,8 @@ export function VirtualizedTree<T extends { id: string; children: T[] }>({
   const hasScrolledRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (
-      selectedNodeId &&
-      !hasScrolledRef.current &&
-      selectedNodeId === initialNodeIdRef.current
-    ) {
-      const index = flattenedItems.findIndex(
-        (item) => item.node.id === selectedNodeId,
-      );
+    if (selectedNodeId && !hasScrolledRef.current && selectedNodeId === initialNodeIdRef.current) {
+      const index = flattenedItems.findIndex((item) => item.node.id === selectedNodeId);
 
       if (index !== -1) {
         // Use behavior: "auto" for instant scroll on initial load to prevent

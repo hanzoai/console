@@ -13,13 +13,9 @@ import { useEffect, useMemo, useState } from "react";
  * @note Column state is initialized once on mount from localStorage.
  */
 export const useColumnSizing = (tableId: string) => {
-  const [storedSizing, setStoredSizing] = useLocalStorage<ColumnSizingState>(
-    `table-columns-${tableId}`,
-    {},
-  );
+  const [storedSizing, setStoredSizing] = useLocalStorage<ColumnSizingState>(`table-columns-${tableId}`, {});
 
-  const [columnSizing, setColumnSizing] =
-    useState<ColumnSizingState>(storedSizing);
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(storedSizing);
 
   // Debounced storage update
   const debouncedSave = useMemo(

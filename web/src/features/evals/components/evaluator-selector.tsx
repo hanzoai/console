@@ -1,10 +1,5 @@
 import { type EvalTemplate } from "@hanzo/shared";
-import {
-  AlertCircle,
-  CheckIcon,
-  ExternalLink,
-  ExternalLinkIcon,
-} from "lucide-react";
+import { AlertCircle, CheckIcon, ExternalLink, ExternalLinkIcon } from "lucide-react";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -16,11 +11,7 @@ import {
 } from "@/src/components/ui/input-command";
 import { useState } from "react";
 import { cn } from "@/src/utils/tailwind";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { useSingleTemplateValidation } from "@/src/features/evals/hooks/useSingleTemplateValidation";
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
@@ -30,11 +21,7 @@ interface EvaluatorSelectorProps {
   projectId: string;
   evalTemplates: EvalTemplate[];
   selectedTemplateId?: string;
-  onTemplateSelect: (
-    templateId: string,
-    name: string,
-    version?: number,
-  ) => void;
+  onTemplateSelect: (templateId: string, name: string, version?: number) => void;
   onCreateNew?: () => void;
 }
 
@@ -64,8 +51,7 @@ export function EvaluatorSelector({
   );
 
   // Ensure per-name arrays are sorted by createdAt ascending so last is latest
-  const sortByCreatedAt = (arr: EvalTemplate[]) =>
-    arr.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const sortByCreatedAt = (arr: EvalTemplate[]) => arr.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   Object.values(groupedTemplates.custom).forEach(sortByCreatedAt);
   Object.values(groupedTemplates.hanzo).forEach(sortByCreatedAt);
 
@@ -91,8 +77,7 @@ export function EvaluatorSelector({
   };
 
   // Check if we have results
-  const hasResults =
-    filteredTemplates.hanzo.length > 0 || filteredTemplates.custom.length > 0;
+  const hasResults = filteredTemplates.hanzo.length > 0 || filteredTemplates.custom.length > 0;
 
   const { isTemplateInvalid } = useSingleTemplateValidation({
     projectId,
@@ -108,9 +93,7 @@ export function EvaluatorSelector({
         variant="bottom"
       />
       <InputCommandList className="max-h-full flex-1 overflow-y-auto">
-        {!hasResults && (
-          <InputCommandEmpty>No evaluator found.</InputCommandEmpty>
-        )}
+        {!hasResults && <InputCommandEmpty>No evaluator found.</InputCommandEmpty>}
 
         {filteredTemplates.custom.length > 0 && (
           <>
@@ -124,17 +107,9 @@ export function EvaluatorSelector({
                     key={`custom-${name}`}
                     disabled={isInvalid}
                     onSelect={() => {
-                      onTemplateSelect(
-                        latestVersion.id,
-                        name,
-                        latestVersion.version,
-                      );
+                      onTemplateSelect(latestVersion.id, name, latestVersion.version);
                     }}
-                    className={cn(
-                      "group",
-                      templateData.some((t) => t.id === selectedTemplateId) &&
-                        "bg-secondary",
-                    )}
+                    className={cn("group", templateData.some((t) => t.id === selectedTemplateId) && "bg-secondary")}
                   >
                     {name}
                     {isInvalid && (
@@ -202,22 +177,12 @@ export function EvaluatorSelector({
                     key={`hanzo-${name}`}
                     disabled={isInvalid}
                     onSelect={() => {
-                      onTemplateSelect(
-                        latestVersion.id,
-                        name,
-                        latestVersion.version,
-                      );
+                      onTemplateSelect(latestVersion.id, name, latestVersion.version);
                     }}
-                    className={cn(
-                      "group",
-                      templateData.some((t) => t.id === selectedTemplateId) &&
-                        "bg-secondary",
-                    )}
+                    className={cn("group", templateData.some((t) => t.id === selectedTemplateId) && "bg-secondary")}
                   >
                     <div className="mr-1">{name}</div>
-                    <MaintainerTooltip
-                      maintainer={getMaintainer(latestVersion)}
-                    />
+                    <MaintainerTooltip maintainer={getMaintainer(latestVersion)} />
                     {isInvalid && (
                       <Tooltip>
                         <TooltipTrigger asChild>

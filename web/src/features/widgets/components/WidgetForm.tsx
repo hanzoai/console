@@ -1,17 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/src/components/ui/card";
 import { api } from "@/src/utils/api";
-import {
-  metricAggregations,
-  type QueryType,
-  mapLegacyUiTableFilterToView,
-} from "@/src/features/query";
+import { metricAggregations, type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Select,
@@ -32,10 +21,7 @@ import startCase from "lodash/startCase";
 import { DatePickerWithRange } from "@/src/components/date-picker";
 import { InlineFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { useDashboardDateRange } from "@/src/hooks/useDashboardDateRange";
-import {
-  toAbsoluteTimeRange,
-  type DashboardDateRangeOptions,
-} from "@/src/utils/date-range-utils";
+import { toAbsoluteTimeRange, type DashboardDateRangeOptions } from "@/src/utils/date-range-utils";
 import { type ColumnDefinition } from "@hanzo/shared";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { type DataPoint } from "@/src/features/widgets/chart-library/chart-props";
@@ -44,26 +30,9 @@ import { type DashboardWidgetChartType } from "@hanzo/shared/src/db";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { type FilterState } from "@hanzo/shared";
 import { isTimeSeriesChart } from "@/src/features/widgets/chart-library/utils";
-import {
-  BarChart,
-  PieChart,
-  LineChart,
-  BarChartHorizontal,
-  Hash,
-  BarChart3,
-  Table,
-  Plus,
-  X,
-} from "lucide-react";
-import {
-  buildWidgetName,
-  buildWidgetDescription,
-  formatMetricName,
-} from "@/src/features/widgets/utils";
-import {
-  MAX_PIVOT_TABLE_DIMENSIONS,
-  MAX_PIVOT_TABLE_METRICS,
-} from "@/src/features/widgets/utils/pivot-table-utils";
+import { BarChart, PieChart, LineChart, BarChartHorizontal, Hash, BarChart3, Table, Plus, X } from "lucide-react";
+import { buildWidgetName, buildWidgetDescription, formatMetricName } from "@/src/features/widgets/utils";
+import { MAX_PIVOT_TABLE_DIMENSIONS, MAX_PIVOT_TABLE_METRICS } from "@/src/features/widgets/utils/pivot-table-utils";
 
 type ChartType = {
   group: "time-series" | "total-value";
@@ -186,9 +155,7 @@ export function WidgetForm({
 }) {
   // State for form fields
   const [widgetName, setWidgetName] = useState<string>(initialValues.name);
-  const [widgetDescription, setWidgetDescription] = useState<string>(
-    initialValues.description,
-  );
+  const [widgetDescription, setWidgetDescription] = useState<string>(initialValues.description);
 
   // Determine if this is an existing widget (editing mode)
   const isExistingWidget = Boolean(widgetId);
@@ -196,17 +163,13 @@ export function WidgetForm({
   // Disables further auto-updates once the user edits name or description
   const [autoLocked, setAutoLocked] = useState<boolean>(isExistingWidget);
 
-  const [selectedView, setSelectedView] = useState<z.infer<typeof views>>(
-    initialValues.view,
-  );
+  const [selectedView, setSelectedView] = useState<z.infer<typeof views>>(initialValues.view);
 
   // For regular charts: single metric selection
-  const [selectedMeasure, setSelectedMeasure] = useState<string>(
-    initialValues.measure,
+  const [selectedMeasure, setSelectedMeasure] = useState<string>(initialValues.measure);
+  const [selectedAggregation, setSelectedAggregation] = useState<z.infer<typeof metricAggregations>>(
+    initialValues.aggregation,
   );
-  const [selectedAggregation, setSelectedAggregation] = useState<
-    z.infer<typeof metricAggregations>
-  >(initialValues.aggregation);
 
   // For pivot tables: multiple metrics selection
   const [selectedMetrics, setSelectedMetrics] = useState<SelectedMetric[]>(
@@ -229,29 +192,20 @@ export function WidgetForm({
         ],
   );
 
-  const [selectedDimension, setSelectedDimension] = useState<string>(
-    initialValues.dimension,
-  );
+  const [selectedDimension, setSelectedDimension] = useState<string>(initialValues.dimension);
 
   // Pivot table dimensions state (for PIVOT_TABLE chart type)
   const [pivotDimensions, setPivotDimensions] = useState<string[]>(
-    initialValues.chartType === "PIVOT_TABLE" &&
-      initialValues.dimensions?.length
+    initialValues.chartType === "PIVOT_TABLE" && initialValues.dimensions?.length
       ? // Initialize from complete dimensions data (editing mode)
         initialValues.dimensions.map((dim) => dim.field)
       : // Default to empty array (new widget)
         [],
   );
 
-  const [selectedChartType, setSelectedChartType] = useState<string>(
-    initialValues.chartType,
-  );
-  const [rowLimit, setRowLimit] = useState<number>(
-    initialValues.chartConfig?.row_limit ?? 100,
-  );
-  const [histogramBins, setHistogramBins] = useState<number>(
-    initialValues.chartConfig?.bins ?? 10,
-  );
+  const [selectedChartType, setSelectedChartType] = useState<string>(initialValues.chartType);
+  const [rowLimit, setRowLimit] = useState<number>(initialValues.chartConfig?.row_limit ?? 100);
+  const [histogramBins, setHistogramBins] = useState<number>(initialValues.chartConfig?.bins ?? 10);
 
   // Default sort configuration for pivot tables
   const [defaultSortColumn, setDefaultSortColumn] = useState<string>(
@@ -279,10 +233,7 @@ export function WidgetForm({
     return "custom" as const;
   }, [timeRange]);
 
-  const setDateRangeAndOption = (
-    option: DashboardDateRangeOptions,
-    range?: { from: Date; to: Date },
-  ) => {
+  const setDateRangeAndOption = (option: DashboardDateRangeOptions, range?: { from: Date; to: Date }) => {
     if (option === "custom") {
       if (range) {
         setTimeRange({
@@ -315,9 +266,7 @@ export function WidgetForm({
   // Static sort state for pivot table preview (non-interactive)
   const previewSortState = useMemo(
     () =>
-      selectedChartType === "PIVOT_TABLE" &&
-      defaultSortColumn &&
-      defaultSortColumn !== "none"
+      selectedChartType === "PIVOT_TABLE" && defaultSortColumn && defaultSortColumn !== "none"
         ? { column: defaultSortColumn, order: defaultSortOrder }
         : null,
     [selectedChartType, defaultSortColumn, defaultSortOrder],
@@ -337,11 +286,7 @@ export function WidgetForm({
   };
 
   // Helper function for updating pivot table metrics
-  const updatePivotMetric = (
-    index: number,
-    measure: string,
-    aggregation?: z.infer<typeof metricAggregations>,
-  ) => {
+  const updatePivotMetric = (index: number, measure: string, aggregation?: z.infer<typeof metricAggregations>) => {
     const newMetrics = [...selectedMetrics];
 
     if (measure && measure !== "none") {
@@ -359,9 +304,7 @@ export function WidgetForm({
         } else {
           // Use the first available aggregation as default
           finalAggregation =
-            availableAggregations.length > 0
-              ? availableAggregations[0]
-              : ("sum" as z.infer<typeof metricAggregations>);
+            availableAggregations.length > 0 ? availableAggregations[0] : ("sum" as z.infer<typeof metricAggregations>);
         }
       }
 
@@ -440,24 +383,23 @@ export function WidgetForm({
     },
   );
 
-  const environmentFilterOptions =
-    api.projects.environmentFilterOptions.useQuery(
-      {
-        projectId,
-        fromTimestamp: dateRange?.from,
-      },
-      {
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+  const environmentFilterOptions = api.projects.environmentFilterOptions.useQuery(
+    {
+      projectId,
+      fromTimestamp: dateRange?.from,
+    },
+    {
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity,
       },
-    );
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: Infinity,
+    },
+  );
   const environmentOptions =
     environmentFilterOptions.data?.map((value) => ({
       value: value.environment,
@@ -569,8 +511,7 @@ export function WidgetForm({
   // When chart type does not support breakdown, wipe the breakdown dimension
   useEffect(() => {
     if (
-      chartTypes.find((c) => c.value === selectedChartType)
-        ?.supportsBreakdown === false &&
+      chartTypes.find((c) => c.value === selectedChartType)?.supportsBreakdown === false &&
       selectedDimension !== "none"
     ) {
       setSelectedDimension("none");
@@ -595,8 +536,7 @@ export function WidgetForm({
   // When chart type does not support breakdown, wipe the breakdown dimension
   useEffect(() => {
     if (
-      chartTypes.find((c) => c.value === selectedChartType)
-        ?.supportsBreakdown === false &&
+      chartTypes.find((c) => c.value === selectedChartType)?.supportsBreakdown === false &&
       selectedDimension !== "none"
     ) {
       setSelectedDimension("none");
@@ -606,17 +546,11 @@ export function WidgetForm({
   // Set aggregation based on chart type and metric, with histogram chart type taking priority
   useEffect(() => {
     // Histogram chart type always takes priority
-    if (
-      selectedChartType === "HISTOGRAM" &&
-      selectedAggregation !== "histogram"
-    ) {
+    if (selectedChartType === "HISTOGRAM" && selectedAggregation !== "histogram") {
       setSelectedAggregation("histogram");
     }
     // If switching away from histogram chart type and aggregation is still histogram, reset to appropriate default
-    else if (
-      selectedChartType !== "HISTOGRAM" &&
-      selectedAggregation === "histogram"
-    ) {
+    else if (selectedChartType !== "HISTOGRAM" && selectedAggregation === "histogram") {
       if (selectedMeasure === "count") {
         setSelectedAggregation("count");
       } else {
@@ -624,11 +558,7 @@ export function WidgetForm({
       }
     }
     // Only set to "count" for count metric if not using histogram chart type
-    else if (
-      selectedMeasure === "count" &&
-      selectedChartType !== "HISTOGRAM" &&
-      selectedAggregation !== "count"
-    ) {
+    else if (selectedMeasure === "count" && selectedChartType !== "HISTOGRAM" && selectedAggregation !== "count") {
       setSelectedAggregation("count");
     }
   }, [selectedMeasure, selectedAggregation, selectedChartType]);
@@ -636,17 +566,11 @@ export function WidgetForm({
   // Set aggregation based on chart type and metric, with histogram chart type taking priority
   useEffect(() => {
     // Histogram chart type always takes priority
-    if (
-      selectedChartType === "HISTOGRAM" &&
-      selectedAggregation !== "histogram"
-    ) {
+    if (selectedChartType === "HISTOGRAM" && selectedAggregation !== "histogram") {
       setSelectedAggregation("histogram");
     }
     // If switching away from histogram chart type and aggregation is still histogram, reset to appropriate default
-    else if (
-      selectedChartType !== "HISTOGRAM" &&
-      selectedAggregation === "histogram"
-    ) {
+    else if (selectedChartType !== "HISTOGRAM" && selectedAggregation === "histogram") {
       if (selectedMeasure === "count") {
         setSelectedAggregation("count");
       } else {
@@ -654,11 +578,7 @@ export function WidgetForm({
       }
     }
     // Only set to "count" for count metric if not using histogram chart type
-    else if (
-      selectedMeasure === "count" &&
-      selectedChartType !== "HISTOGRAM" &&
-      selectedAggregation !== "count"
-    ) {
+    else if (selectedMeasure === "count" && selectedChartType !== "HISTOGRAM" && selectedAggregation !== "count") {
       setSelectedAggregation("count");
     }
   }, [selectedMeasure, selectedAggregation, selectedChartType]);
@@ -681,12 +601,9 @@ export function WidgetForm({
             .filter((m) => m.measure === measureKey)
             .map((m) => m.aggregation);
 
-          const availableAggregationsForMeasure =
-            metricAggregations.options.filter(
-              (agg) =>
-                agg !== "histogram" &&
-                !selectedAggregationsForMeasure.includes(agg),
-            );
+          const availableAggregationsForMeasure = metricAggregations.options.filter(
+            (agg) => agg !== "histogram" && !selectedAggregationsForMeasure.includes(agg),
+          );
 
           return availableAggregationsForMeasure.length > 0;
         })
@@ -694,9 +611,7 @@ export function WidgetForm({
           value: key,
           label: startCase(key),
         }))
-        .sort((a, b) =>
-          a.label.localeCompare(b.label, "en", { sensitivity: "base" }),
-        );
+        .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" }));
     }
 
     // For regular charts, show all metrics
@@ -705,25 +620,15 @@ export function WidgetForm({
         value: key,
         label: startCase(key),
       }))
-      .sort((a, b) =>
-        a.label.localeCompare(b.label, "en", { sensitivity: "base" }),
-      );
+      .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" }));
   }, [selectedView, selectedChartType, selectedMetrics]);
 
   // Get available aggregations for a specific metric index in pivot tables
-  const getAvailableAggregations = (
-    metricIndex: number,
-    measureKey: string,
-  ): z.infer<typeof metricAggregations>[] => {
+  const getAvailableAggregations = (metricIndex: number, measureKey: string): z.infer<typeof metricAggregations>[] => {
     if (selectedChartType === "PIVOT_TABLE" && measureKey) {
       return metricAggregations.options.filter(
         (agg) =>
-          !selectedMetrics.some(
-            (m, idx) =>
-              idx !== metricIndex &&
-              m.measure === measureKey &&
-              m.aggregation === agg,
-          ),
+          !selectedMetrics.some((m, idx) => idx !== metricIndex && m.measure === measureKey && m.aggregation === agg),
       ) as z.infer<typeof metricAggregations>[];
     }
     return metricAggregations.options as z.infer<typeof metricAggregations>[];
@@ -737,9 +642,7 @@ export function WidgetForm({
         .filter(([measureKey]) => {
           // For count, there's only one aggregation option
           if (measureKey === "count") {
-            return !selectedMetrics.some(
-              (m, idx) => idx !== metricIndex && m.measure === "count",
-            );
+            return !selectedMetrics.some((m, idx) => idx !== metricIndex && m.measure === "count");
           }
 
           // For other measures, check if there are any aggregations left
@@ -747,12 +650,9 @@ export function WidgetForm({
             .filter((m, idx) => idx !== metricIndex && m.measure === measureKey)
             .map((m) => m.aggregation);
 
-          const availableAggregationsForMeasure =
-            metricAggregations.options.filter(
-              (agg) =>
-                agg !== "histogram" &&
-                !selectedAggregationsForMeasure.includes(agg),
-            );
+          const availableAggregationsForMeasure = metricAggregations.options.filter(
+            (agg) => agg !== "histogram" && !selectedAggregationsForMeasure.includes(agg),
+          );
 
           return availableAggregationsForMeasure.length > 0;
         })
@@ -760,9 +660,7 @@ export function WidgetForm({
           value: key,
           label: startCase(key),
         }))
-        .sort((a, b) =>
-          a.label.localeCompare(b.label, "en", { sensitivity: "base" }),
-        );
+        .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" }));
     }
     return availableMetrics;
   };
@@ -775,17 +673,13 @@ export function WidgetForm({
         value: key,
         label: startCase(key),
       }))
-      .sort((a, b) =>
-        a.label.localeCompare(b.label, "en", { sensitivity: "base" }),
-      );
+      .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" }));
   }, [selectedView]);
 
   // Create a dynamic query based on the selected view
   const query = useMemo<QueryType>(() => {
     // Calculate fromTimestamp and toTimestamp from dateRange
-    const fromTimestamp = dateRange
-      ? dateRange.from
-      : new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000); // Default to last 7 days
+    const fromTimestamp = dateRange ? dateRange.from : new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000); // Default to last 7 days
     const toTimestamp = dateRange ? dateRange.to : new Date();
 
     // Determine dimensions based on chart type
@@ -817,11 +711,7 @@ export function WidgetForm({
       dimensions: queryDimensions,
       metrics: queryMetrics,
       filters: [...mapLegacyUiTableFilterToView(selectedView, userFilterState)],
-      timeDimension: isTimeSeriesChart(
-        selectedChartType as DashboardWidgetChartType,
-      )
-        ? { granularity: "auto" }
-        : null,
+      timeDimension: isTimeSeriesChart(selectedChartType as DashboardWidgetChartType) ? { granularity: "auto" } : null,
       fromTimestamp: fromTimestamp.toISOString(),
       toTimestamp: toTimestamp.toISOString(),
       orderBy:
@@ -829,9 +719,7 @@ export function WidgetForm({
           ? [
               {
                 field: previewSortState.column,
-                direction: previewSortState.order.toLowerCase() as
-                  | "asc"
-                  | "desc",
+                direction: previewSortState.order.toLowerCase() as "asc" | "desc",
               },
             ]
           : null,
@@ -892,8 +780,7 @@ export function WidgetForm({
           // For pivot tables, preserve all raw data fields
           // The PivotTable component will extract the appropriate metric fields
           return {
-            dimension:
-              pivotDimensions.length > 0 ? pivotDimensions[0] : "dimension", // Fallback for compatibility
+            dimension: pivotDimensions.length > 0 ? pivotDimensions[0] : "dimension", // Fallback for compatibility
             metric: 0, // Placeholder - not used for pivot tables
             time_dimension: item["time_dimension"],
             // Include all original query fields for pivot table processing
@@ -910,8 +797,7 @@ export function WidgetForm({
                 ? (() => {
                     const val = item[dimensionField];
                     if (typeof val === "string") return val;
-                    if (val === null || val === undefined || val === "")
-                      return "n/a";
+                    if (val === null || val === undefined || val === "") return "n/a";
                     if (Array.isArray(val)) return val.join(", ");
                     return String(val);
                   })()
@@ -921,14 +807,7 @@ export function WidgetForm({
           };
         }
       }) ?? [],
-    [
-      queryResult.data,
-      selectedAggregation,
-      selectedDimension,
-      selectedMeasure,
-      selectedChartType,
-      pivotDimensions,
-    ],
+    [queryResult.data, selectedAggregation, selectedDimension, selectedMeasure, selectedChartType, pivotDimensions],
   );
 
   const handleSaveWidget = () => {
@@ -938,14 +817,9 @@ export function WidgetForm({
     }
 
     // Validate pivot table requirements
-    const validMetrics = selectedMetrics.filter(
-      (m) => m.measure && m.measure !== "",
-    );
+    const validMetrics = selectedMetrics.filter((m) => m.measure && m.measure !== "");
     if (selectedChartType === "PIVOT_TABLE" && validMetrics.length === 0) {
-      showErrorToast(
-        "Error",
-        "At least one metric is required for pivot tables",
-      );
+      showErrorToast("Error", "At least one metric is required for pivot tables");
       return;
     }
 
@@ -973,9 +847,7 @@ export function WidgetForm({
             ],
       filters: mapLegacyUiTableFilterToView(selectedView, userFilterState),
       chartType: selectedChartType as DashboardWidgetChartType,
-      chartConfig: isTimeSeriesChart(
-        selectedChartType as DashboardWidgetChartType,
-      )
+      chartConfig: isTimeSeriesChart(selectedChartType as DashboardWidgetChartType)
         ? { type: selectedChartType as DashboardWidgetChartType }
         : selectedChartType === "HISTOGRAM"
           ? {
@@ -1014,9 +886,7 @@ export function WidgetForm({
     // For pivot tables, extract actual metric names for the new formatting
     const isPivotTable = selectedChartType === "PIVOT_TABLE";
 
-    const validMetricsForNaming = selectedMetrics.filter(
-      (m) => m.measure && m.measure !== "",
-    );
+    const validMetricsForNaming = selectedMetrics.filter((m) => m.measure && m.measure !== "");
     const metricNames =
       isPivotTable && validMetricsForNaming.length > 0
         ? validMetricsForNaming.map((m) => m.id) // Use the ID which is "${aggregation}_${measure}"
@@ -1055,9 +925,7 @@ export function WidgetForm({
 
     // For pivot tables, extract actual metric names for the new formatting
     const isPivotTable = selectedChartType === "PIVOT_TABLE";
-    const validMetricsForDescription = selectedMetrics.filter(
-      (m) => m.measure && m.measure !== "",
-    );
+    const validMetricsForDescription = selectedMetrics.filter((m) => m.measure && m.measure !== "");
     const metricNames =
       isPivotTable && validMetricsForDescription.length > 0
         ? validMetricsForDescription.map((m) => m.id) // Use the ID which is "${aggregation}_${measure}"
@@ -1093,9 +961,7 @@ export function WidgetForm({
         <Card className="flex h-full flex-col">
           <CardHeader>
             <CardTitle>Widget Configuration</CardTitle>
-            <CardDescription>
-              Configure your widget by selecting data and visualization options
-            </CardDescription>
+            <CardDescription>Configure your widget by selecting data and visualization options</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 overflow-y-auto">
             {/* Data Selection Section */}
@@ -1120,8 +986,7 @@ export function WidgetForm({
                       // Handle pivot table metrics - filter out invalid measures for the new view
                       if (selectedChartType === "PIVOT_TABLE") {
                         const validMetrics = selectedMetrics.filter(
-                          (metric) =>
-                            metric.measure in newViewDeclaration.measures,
+                          (metric) => metric.measure in newViewDeclaration.measures,
                         );
 
                         // Ensure we have at least one valid metric (count is always available)
@@ -1129,9 +994,7 @@ export function WidgetForm({
                           validMetrics.push({
                             id: "count_count",
                             measure: "count",
-                            aggregation: "count" as z.infer<
-                              typeof metricAggregations
-                            >,
+                            aggregation: "count" as z.infer<typeof metricAggregations>,
                             label: "Count Count",
                           });
                         }
@@ -1140,24 +1003,17 @@ export function WidgetForm({
 
                         // Handle pivot table dimensions - filter out invalid dimensions for the new view
                         const validDimensions = pivotDimensions.filter(
-                          (dimension) =>
-                            dimension in newViewDeclaration.dimensions,
+                          (dimension) => dimension in newViewDeclaration.dimensions,
                         );
                         setPivotDimensions(validDimensions);
                       }
 
                       // Remove invalid filters based on the new view
                       if (newView !== "scores-categorical") {
-                        setUserFilterState((prev) =>
-                          prev.filter(
-                            (filter) => filter.column !== "stringValue",
-                          ),
-                        );
+                        setUserFilterState((prev) => prev.filter((filter) => filter.column !== "stringValue"));
                       }
                       if (newView === "scores-numeric") {
-                        setUserFilterState((prev) =>
-                          prev.filter((filter) => filter.column !== "value"),
-                        );
+                        setUserFilterState((prev) => prev.filter((filter) => filter.column !== "value"));
                       }
                     }
                     setSelectedView(value as z.infer<typeof views>);
@@ -1181,148 +1037,120 @@ export function WidgetForm({
 
               {/* Metrics Selection */}
               <div className="space-y-2">
-                <Label htmlFor="metrics-select">
-                  {selectedChartType === "PIVOT_TABLE" ? "Metrics" : "Metric"}
-                </Label>
+                <Label htmlFor="metrics-select">{selectedChartType === "PIVOT_TABLE" ? "Metrics" : "Metric"}</Label>
 
                 {/* For pivot tables: multiple metrics selection */}
                 {selectedChartType === "PIVOT_TABLE" ? (
                   <div className="space-y-3">
                     {/* Metric selection dropdowns */}
-                    {Array.from(
-                      { length: Math.max(1, selectedMetrics.length) },
-                      (_, index) => {
-                        const isEnabled =
-                          index === 0 ||
-                          (selectedMetrics[index - 1] &&
-                            selectedMetrics[index - 1].measure);
-                        const currentMetric = selectedMetrics[index];
-                        const currentMeasure = currentMetric?.measure || "";
-                        const currentAggregation =
-                          currentMetric?.aggregation || "sum";
+                    {Array.from({ length: Math.max(1, selectedMetrics.length) }, (_, index) => {
+                      const isEnabled =
+                        index === 0 || (selectedMetrics[index - 1] && selectedMetrics[index - 1].measure);
+                      const currentMetric = selectedMetrics[index];
+                      const currentMeasure = currentMetric?.measure || "";
+                      const currentAggregation = currentMetric?.aggregation || "sum";
 
-                        const metricsForIndex = getAvailableMetrics(index);
-                        const aggregationsForIndex = getAvailableAggregations(
-                          index,
-                          currentMeasure,
-                        );
+                      const metricsForIndex = getAvailableMetrics(index);
+                      const aggregationsForIndex = getAvailableAggregations(index, currentMeasure);
 
-                        const canEdit = metricsForIndex.length > 0;
+                      const canEdit = metricsForIndex.length > 0;
 
-                        return (
-                          <div key={index} className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Label htmlFor={`pivot-metric-${index}`}>
-                                Metric {index + 1}{" "}
-                                {index === 0 ? "(Required)" : "(Optional)"}
-                              </Label>
-                              {index > 0 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeMetricSlot(index)}
-                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
+                      return (
+                        <div key={index} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor={`pivot-metric-${index}`}>
+                              Metric {index + 1} {index === 0 ? "(Required)" : "(Optional)"}
+                            </Label>
+                            {index > 0 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeMetricSlot(index)}
+                                className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                              <Select
+                                value={currentMeasure}
+                                onValueChange={(value) =>
+                                  updatePivotMetric(
+                                    index,
+                                    value,
+                                    // Don't pass current aggregation when measure changes
+                                    // Let the function determine the best default
+                                    undefined,
+                                  )
+                                }
+                                disabled={!isEnabled || !canEdit}
+                              >
+                                <SelectTrigger id={`pivot-metric-${index}`}>
+                                  <SelectValue
+                                    placeholder={
+                                      !isEnabled
+                                        ? "Select previous metric first"
+                                        : !canEdit
+                                          ? "No more measures available"
+                                          : "Select measure"
+                                    }
+                                  />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {metricsForIndex.map((metric) => {
+                                    const meta = viewDeclarations.v1[selectedView]?.measures?.[metric.value];
+                                    return (
+                                      <WidgetPropertySelectItem
+                                        key={metric.value}
+                                        value={metric.value}
+                                        label={metric.label}
+                                        description={meta?.description}
+                                        unit={meta?.unit}
+                                        type={meta?.type}
+                                      />
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
                             </div>
-                            <div className="flex items-center gap-2">
+
+                            {currentMeasure && currentMeasure !== "count" && (
                               <div className="flex-1">
                                 <Select
-                                  value={currentMeasure}
+                                  value={currentAggregation}
                                   onValueChange={(value) =>
                                     updatePivotMetric(
                                       index,
-                                      value,
-                                      // Don't pass current aggregation when measure changes
-                                      // Let the function determine the best default
-                                      undefined,
+                                      currentMeasure,
+                                      value as z.infer<typeof metricAggregations>,
                                     )
                                   }
-                                  disabled={!isEnabled || !canEdit}
                                 >
-                                  <SelectTrigger id={`pivot-metric-${index}`}>
-                                    <SelectValue
-                                      placeholder={
-                                        !isEnabled
-                                          ? "Select previous metric first"
-                                          : !canEdit
-                                            ? "No more measures available"
-                                            : "Select measure"
-                                      }
-                                    />
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select aggregation" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {metricsForIndex.map((metric) => {
-                                      const meta =
-                                        viewDeclarations.v1[selectedView]
-                                          ?.measures?.[metric.value];
-                                      return (
-                                        <WidgetPropertySelectItem
-                                          key={metric.value}
-                                          value={metric.value}
-                                          label={metric.label}
-                                          description={meta?.description}
-                                          unit={meta?.unit}
-                                          type={meta?.type}
-                                        />
-                                      );
-                                    })}
+                                    {aggregationsForIndex.map((aggregation) => (
+                                      <SelectItem key={aggregation} value={aggregation}>
+                                        {startCase(aggregation)}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </div>
-
-                              {currentMeasure && currentMeasure !== "count" && (
-                                <div className="flex-1">
-                                  <Select
-                                    value={currentAggregation}
-                                    onValueChange={(value) =>
-                                      updatePivotMetric(
-                                        index,
-                                        currentMeasure,
-                                        value as z.infer<
-                                          typeof metricAggregations
-                                        >,
-                                      )
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select aggregation" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {aggregationsForIndex.map(
-                                        (aggregation) => (
-                                          <SelectItem
-                                            key={aggregation}
-                                            value={aggregation}
-                                          >
-                                            {startCase(aggregation)}
-                                          </SelectItem>
-                                        ),
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-                            </div>
+                            )}
                           </div>
-                        );
-                      },
-                    )}
+                        </div>
+                      );
+                    })}
 
                     {/* Add new metric button */}
                     {selectedMetrics.length < MAX_PIVOT_TABLE_METRICS &&
-                      getAvailableMetrics(selectedMetrics.length).length >
-                        0 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addNewMetricSlot}
-                          className="w-full"
-                        >
+                      getAvailableMetrics(selectedMetrics.length).length > 0 && (
+                        <Button type="button" variant="outline" size="sm" onClick={addNewMetricSlot} className="w-full">
                           <Plus className="mr-1 h-3 w-3" />
                           Add Metric {selectedMetrics.length + 1}
                         </Button>
@@ -1331,19 +1159,13 @@ export function WidgetForm({
                 ) : (
                   /* For regular charts: single metric selection */
                   <div className="space-y-2">
-                    <Select
-                      value={selectedMeasure}
-                      onValueChange={(value) => setSelectedMeasure(value)}
-                    >
+                    <Select value={selectedMeasure} onValueChange={(value) => setSelectedMeasure(value)}>
                       <SelectTrigger id="metrics-select">
                         <SelectValue placeholder="Select metrics" />
                       </SelectTrigger>
                       <SelectContent>
                         {availableMetrics.map((metric) => {
-                          const meta =
-                            viewDeclarations.v1[selectedView]?.measures?.[
-                              metric.value
-                            ];
+                          const meta = viewDeclarations.v1[selectedView]?.measures?.[metric.value];
                           return (
                             <WidgetPropertySelectItem
                               key={metric.value}
@@ -1362,11 +1184,7 @@ export function WidgetForm({
                         <Select
                           value={selectedAggregation}
                           disabled={selectedChartType === "HISTOGRAM"} // Disable when histogram chart type is selected
-                          onValueChange={(value) =>
-                            setSelectedAggregation(
-                              value as z.infer<typeof metricAggregations>,
-                            )
-                          }
+                          onValueChange={(value) => setSelectedAggregation(value as z.infer<typeof metricAggregations>)}
                         >
                           <SelectTrigger id="aggregation-select">
                             <SelectValue placeholder="Select Aggregation" />
@@ -1381,8 +1199,7 @@ export function WidgetForm({
                         </Select>
                         {selectedChartType === "HISTOGRAM" && (
                           <p className="text-xs text-muted-foreground">
-                            Aggregation is automatically set to
-                            &quot;histogram&quot; for histogram charts
+                            Aggregation is automatically set to &quot;histogram&quot; for histogram charts
                           </p>
                         )}
                       </div>
@@ -1399,38 +1216,24 @@ export function WidgetForm({
                     columns={filterColumns}
                     filterState={userFilterState}
                     onChange={setUserFilterState}
-                    columnsWithCustomSelect={[
-                      "environment",
-                      "traceName",
-                      "tags",
-                      "providedModelName",
-                    ]}
+                    columnsWithCustomSelect={["environment", "traceName", "tags", "providedModelName"]}
                   />
                 </div>
               </div>
 
               {/* Dimension Selection - Regular charts (Breakdown) */}
-              {chartTypes.find((c) => c.value === selectedChartType)
-                ?.supportsBreakdown &&
+              {chartTypes.find((c) => c.value === selectedChartType)?.supportsBreakdown &&
                 selectedChartType !== "PIVOT_TABLE" && (
                   <div className="space-y-2">
-                    <Label htmlFor="dimension-select">
-                      Breakdown Dimension (Optional)
-                    </Label>
-                    <Select
-                      value={selectedDimension}
-                      onValueChange={setSelectedDimension}
-                    >
+                    <Label htmlFor="dimension-select">Breakdown Dimension (Optional)</Label>
+                    <Select value={selectedDimension} onValueChange={setSelectedDimension}>
                       <SelectTrigger id="dimension-select">
                         <SelectValue placeholder="Select a dimension" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">None</SelectItem>
                         {availableDimensions.map((dimension) => {
-                          const meta =
-                            viewDeclarations.v1[selectedView]?.dimensions?.[
-                              dimension.value
-                            ];
+                          const meta = viewDeclarations.v1[selectedView]?.dimensions?.[dimension.value];
                           return (
                             <WidgetPropertySelectItem
                               key={dimension.value}
@@ -1451,77 +1254,53 @@ export function WidgetForm({
               {selectedChartType === "PIVOT_TABLE" && (
                 <div className="space-y-4">
                   <div>
-                    <h4 className="mb-2 text-sm font-semibold">
-                      Row Dimensions
-                    </h4>
+                    <h4 className="mb-2 text-sm font-semibold">Row Dimensions</h4>
                     <p className="mb-3 text-xs text-muted-foreground">
-                      Configure up to {MAX_PIVOT_TABLE_DIMENSIONS} dimensions
-                      for pivot table rows. Each dimension creates groupings
-                      with subtotals.
+                      Configure up to {MAX_PIVOT_TABLE_DIMENSIONS} dimensions for pivot table rows. Each dimension
+                      creates groupings with subtotals.
                     </p>
                   </div>
 
-                  {Array.from(
-                    { length: MAX_PIVOT_TABLE_DIMENSIONS },
-                    (_, index) => {
-                      const isEnabled =
-                        index === 0 || pivotDimensions[index - 1]; // Enable if first or previous is selected
-                      const selectedDimensions = pivotDimensions.slice(
-                        0,
-                        index,
-                      ); // Exclude current and later dimensions
-                      const currentValue = pivotDimensions[index] || "";
+                  {Array.from({ length: MAX_PIVOT_TABLE_DIMENSIONS }, (_, index) => {
+                    const isEnabled = index === 0 || pivotDimensions[index - 1]; // Enable if first or previous is selected
+                    const selectedDimensions = pivotDimensions.slice(0, index); // Exclude current and later dimensions
+                    const currentValue = pivotDimensions[index] || "";
 
-                      return (
-                        <div key={index} className="space-y-2">
-                          <Label htmlFor={`pivot-dimension-${index}`}>
-                            Dimension {index + 1} (Optional)
-                          </Label>
-                          <Select
-                            value={currentValue}
-                            onValueChange={(value) =>
-                              updatePivotDimension(index, value)
-                            }
-                            disabled={!isEnabled}
-                          >
-                            <SelectTrigger id={`pivot-dimension-${index}`}>
-                              <SelectValue
-                                placeholder={
-                                  isEnabled
-                                    ? "Select a dimension"
-                                    : "Select previous dimension first"
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {index >= 0 && (
-                                <SelectItem value="none">None</SelectItem>
-                              )}
-                              {availableDimensions
-                                .filter(
-                                  (d) => !selectedDimensions.includes(d.value),
-                                )
-                                .map((dimension) => {
-                                  const meta =
-                                    viewDeclarations.v1[selectedView]
-                                      ?.dimensions?.[dimension.value];
-                                  return (
-                                    <WidgetPropertySelectItem
-                                      key={dimension.value}
-                                      value={dimension.value}
-                                      label={dimension.label}
-                                      description={meta?.description}
-                                      unit={meta?.unit}
-                                      type={meta?.type}
-                                    />
-                                  );
-                                })}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      );
-                    },
-                  )}
+                    return (
+                      <div key={index} className="space-y-2">
+                        <Label htmlFor={`pivot-dimension-${index}`}>Dimension {index + 1} (Optional)</Label>
+                        <Select
+                          value={currentValue}
+                          onValueChange={(value) => updatePivotDimension(index, value)}
+                          disabled={!isEnabled}
+                        >
+                          <SelectTrigger id={`pivot-dimension-${index}`}>
+                            <SelectValue
+                              placeholder={isEnabled ? "Select a dimension" : "Select previous dimension first"}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {index >= 0 && <SelectItem value="none">None</SelectItem>}
+                            {availableDimensions
+                              .filter((d) => !selectedDimensions.includes(d.value))
+                              .map((dimension) => {
+                                const meta = viewDeclarations.v1[selectedView]?.dimensions?.[dimension.value];
+                                return (
+                                  <WidgetPropertySelectItem
+                                    key={dimension.value}
+                                    value={dimension.value}
+                                    label={dimension.label}
+                                    description={meta?.description}
+                                    unit={meta?.unit}
+                                    type={meta?.type}
+                                  />
+                                );
+                              })}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -1529,22 +1308,17 @@ export function WidgetForm({
               {selectedChartType === "PIVOT_TABLE" && (
                 <div className="space-y-4">
                   <div>
-                    <h4 className="mb-2 text-sm font-semibold">
-                      Default Sort Configuration
-                    </h4>
+                    <h4 className="mb-2 text-sm font-semibold">Default Sort Configuration</h4>
                     <p className="mb-3 text-xs text-muted-foreground">
-                      Configure the default sort order for the pivot table. This
-                      will be applied when the widget is first loaded.
+                      Configure the default sort order for the pivot table. This will be applied when the widget is
+                      first loaded.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="default-sort-column">Sort Column</Label>
-                      <Select
-                        value={defaultSortColumn}
-                        onValueChange={setDefaultSortColumn}
-                      >
+                      <Select value={defaultSortColumn} onValueChange={setDefaultSortColumn}>
                         <SelectTrigger id="default-sort-column">
                           <SelectValue placeholder="Select a column to sort by" />
                         </SelectTrigger>
@@ -1552,10 +1326,7 @@ export function WidgetForm({
                           <SelectItem value="none">No default sort</SelectItem>
                           {/* Show available metrics as sort options */}
                           {selectedMetrics
-                            .filter(
-                              (metric) =>
-                                metric.measure && metric.measure !== "",
-                            )
+                            .filter((metric) => metric.measure && metric.measure !== "")
                             .map((metric) => (
                               <SelectItem key={metric.id} value={metric.id}>
                                 {formatMetricName(metric.id)}
@@ -1569,12 +1340,8 @@ export function WidgetForm({
                       <Label htmlFor="default-sort-order">Sort Order</Label>
                       <Select
                         value={defaultSortOrder}
-                        onValueChange={(value: "ASC" | "DESC") =>
-                          setDefaultSortOrder(value)
-                        }
-                        disabled={
-                          !defaultSortColumn || defaultSortColumn === "none"
-                        }
+                        onValueChange={(value: "ASC" | "DESC") => setDefaultSortOrder(value)}
+                        disabled={!defaultSortColumn || defaultSortColumn === "none"}
                       >
                         <SelectTrigger id="default-sort-order">
                           <SelectValue />
@@ -1625,10 +1392,7 @@ export function WidgetForm({
               {/* Chart Type Selection */}
               <div className="space-y-2">
                 <Label htmlFor="chart-type-select">Chart Type</Label>
-                <Select
-                  value={selectedChartType}
-                  onValueChange={setSelectedChartType}
-                >
+                <Select value={selectedChartType} onValueChange={setSelectedChartType}>
                   <SelectTrigger id="chart-type-select">
                     <SelectValue placeholder="Select a chart type" />
                   </SelectTrigger>
@@ -1678,9 +1442,7 @@ export function WidgetForm({
                       setDateRangeAndOption(option, range);
                     }
                   }}
-                  selectedOption={
-                    (selectedOption ?? "custom") as DashboardDateRangeOptions
-                  }
+                  selectedOption={(selectedOption ?? "custom") as DashboardDateRangeOptions}
                   className="w-full"
                 />
               </div>
@@ -1707,15 +1469,10 @@ export function WidgetForm({
               )}
 
               {/* Row Limit Selection - Only shown for non-time series charts that support breakdown */}
-              {chartTypes.find((c) => c.value === selectedChartType)
-                ?.supportsBreakdown &&
-                !isTimeSeriesChart(
-                  selectedChartType as DashboardWidgetChartType,
-                ) && (
+              {chartTypes.find((c) => c.value === selectedChartType)?.supportsBreakdown &&
+                !isTimeSeriesChart(selectedChartType as DashboardWidgetChartType) && (
                   <div className="space-y-2">
-                    <Label htmlFor="row-limit">
-                      Breakdown Row Limit (0-1000)
-                    </Label>
+                    <Label htmlFor="row-limit">Breakdown Row Limit (0-1000)</Label>
                     <Input
                       id="row-limit"
                       type="number"
@@ -1782,19 +1539,13 @@ export function WidgetForm({
                         row_limit: rowLimit,
                       }
               }
-              sortState={
-                selectedChartType === "PIVOT_TABLE"
-                  ? previewSortState
-                  : undefined
-              }
+              sortState={selectedChartType === "PIVOT_TABLE" ? previewSortState : undefined}
               onSortChange={undefined}
             />
           ) : (
             <CardContent>
               <div className="flex h-[300px] items-center justify-center">
-                <p className="text-muted-foreground">
-                  Waiting for Input / Loading...
-                </p>
+                <p className="text-muted-foreground">Waiting for Input / Loading...</p>
               </div>
             </CardContent>
           )}

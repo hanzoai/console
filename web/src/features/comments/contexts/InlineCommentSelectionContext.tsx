@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 
 export interface SelectionData {
   dataField: "input" | "output" | "metadata";
@@ -23,14 +17,9 @@ interface InlineCommentSelectionContextType {
   isSelecting: boolean;
 }
 
-const InlineCommentSelectionContext =
-  createContext<InlineCommentSelectionContextType | null>(null);
+const InlineCommentSelectionContext = createContext<InlineCommentSelectionContextType | null>(null);
 
-export function InlineCommentSelectionProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function InlineCommentSelectionProvider({ children }: { children: ReactNode }) {
   const [selection, setSelection] = useState<SelectionData | null>(null);
 
   const clearSelection = useCallback(() => {
@@ -55,9 +44,7 @@ export function InlineCommentSelectionProvider({
 export function useInlineCommentSelection() {
   const context = useContext(InlineCommentSelectionContext);
   if (!context) {
-    throw new Error(
-      "useInlineCommentSelection must be used within InlineCommentSelectionProvider",
-    );
+    throw new Error("useInlineCommentSelection must be used within InlineCommentSelectionProvider");
   }
   return context;
 }

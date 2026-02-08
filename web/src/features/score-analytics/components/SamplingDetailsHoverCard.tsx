@@ -1,8 +1,4 @@
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { Info } from "lucide-react";
 
 interface SamplingMetadata {
@@ -41,9 +37,7 @@ export function SamplingDetailsHoverCard({
           aria-label="View sampling details"
         >
           {showLabel && <span>Sampled Data</span>}
-          <Info
-            className={showLabel ? "h-3 w-3" : "h-3 w-3 text-muted-foreground"}
-          />
+          <Info className={showLabel ? "h-3 w-3" : "h-3 w-3 text-muted-foreground"} />
         </button>
       </HoverCardTrigger>
       <HoverCardContent className="w-80" align="start">
@@ -56,34 +50,26 @@ export function SamplingDetailsHoverCard({
               {mode === "single" ? (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Total Scores:</dt>
-                  <dd className="font-medium">
-                    ~
-                    {samplingMetadata.preflightEstimates?.score1Count.toLocaleString()}
-                  </dd>
+                  <dd className="font-medium">~{samplingMetadata.preflightEstimates?.score1Count.toLocaleString()}</dd>
                 </div>
               ) : (
                 <>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Score 1:</dt>
                     <dd className="font-medium">
-                      ~
-                      {samplingMetadata.preflightEstimates?.score1Count.toLocaleString()}
+                      ~{samplingMetadata.preflightEstimates?.score1Count.toLocaleString()}
                     </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Score 2:</dt>
                     <dd className="font-medium">
-                      ~
-                      {samplingMetadata.preflightEstimates?.score2Count.toLocaleString()}
+                      ~{samplingMetadata.preflightEstimates?.score2Count.toLocaleString()}
                     </dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">
-                      Estimated Matches:
-                    </dt>
+                    <dt className="text-muted-foreground">Estimated Matches:</dt>
                     <dd className="font-medium">
-                      ~
-                      {samplingMetadata.preflightEstimates?.estimatedMatchedCount.toLocaleString()}
+                      ~{samplingMetadata.preflightEstimates?.estimatedMatchedCount.toLocaleString()}
                     </dd>
                   </div>
                 </>
@@ -96,18 +82,13 @@ export function SamplingDetailsHoverCard({
             <dl className="space-y-1 text-sm">
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Sampling:</dt>
-                <dd className="font-medium">
-                  {(samplingMetadata.samplingRate * 100).toFixed(1)}%
-                  (hash-based)
-                </dd>
+                <dd className="font-medium">{(samplingMetadata.samplingRate * 100).toFixed(1)}% (hash-based)</dd>
               </div>
               {samplingMetadata.adaptiveFinal && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Deduplication:</dt>
                   <dd className="font-medium">
-                    {samplingMetadata.adaptiveFinal.usedFinal
-                      ? "Enabled"
-                      : "Skipped for performance"}
+                    {samplingMetadata.adaptiveFinal.usedFinal ? "Enabled" : "Skipped for performance"}
                   </dd>
                 </div>
               )}
@@ -115,8 +96,7 @@ export function SamplingDetailsHoverCard({
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Hash-based sampling ensures consistent, repeatable results while
-            maintaining statistical accuracy.
+            Hash-based sampling ensures consistent, repeatable results while maintaining statistical accuracy.
           </p>
         </div>
       </HoverCardContent>

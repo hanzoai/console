@@ -19,11 +19,7 @@ import {
  * Prompt name parameter
  * Must match existing Hanzo prompt name validation
  */
-export const ParamPromptName = z
-  .string()
-  .min(1)
-  .max(PROMPT_NAME_MAX_LENGTH)
-  .describe("The name of the prompt");
+export const ParamPromptName = z.string().min(1).max(PROMPT_NAME_MAX_LENGTH).describe("The name of the prompt");
 
 /**
  * Prompt label parameter (optional)
@@ -35,9 +31,7 @@ export const ParamPromptLabel = z
   .max(PROMPT_LABEL_MAX_LENGTH)
   .regex(PROMPT_LABEL_REGEX, PROMPT_LABEL_REGEX_ERROR)
   .optional()
-  .describe(
-    'Label to retrieve (e.g., "production", "staging"). Defaults to "production".',
-  );
+  .describe('Label to retrieve (e.g., "production", "staging"). Defaults to "production".');
 
 /**
  * Prompt version parameter (optional)
@@ -54,10 +48,7 @@ export const ParamPromptVersion = z.coerce
  * Prompt tag parameter (optional)
  * Used for filtering prompts by tag
  */
-export const ParamPromptTag = z
-  .string()
-  .optional()
-  .describe("Tag to filter prompts (e.g., 'v1', 'experimental')");
+export const ParamPromptTag = z.string().optional().describe("Tag to filter prompts (e.g., 'v1', 'experimental')");
 
 /**
  * Commit message parameter (optional)
@@ -73,13 +64,7 @@ export const ParamCommitMessage = z
  * New labels array for updating prompt labels
  */
 export const ParamNewLabels = z
-  .array(
-    z
-      .string()
-      .min(1)
-      .max(PROMPT_LABEL_MAX_LENGTH)
-      .regex(PROMPT_LABEL_REGEX, PROMPT_LABEL_REGEX_ERROR),
-  )
+  .array(z.string().min(1).max(PROMPT_LABEL_MAX_LENGTH).regex(PROMPT_LABEL_REGEX, PROMPT_LABEL_REGEX_ERROR))
   .refine((labels) => !labels.includes(LATEST_PROMPT_LABEL), {
     message: "Label 'latest' is always assigned to the latest prompt version",
   })

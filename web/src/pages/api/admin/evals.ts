@@ -1,12 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
 import { v4 as uuidv4 } from "uuid";
-import {
-  logger,
-  QueueName,
-  getQueue,
-  QueueJobs,
-} from "@hanzo/shared/src/server";
+import { logger, QueueName, getQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
 import { prisma } from "@hanzo/shared/src/db";
 
@@ -18,10 +13,7 @@ const ManageEvalBody = z.discriminatedUnion("action", [
   }),
 ]);
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // allow only POST and GET requests
     if (req.method !== "POST" && req.method !== "GET") {
@@ -45,9 +37,7 @@ export default async function handler(
     }
 
     if (req.method === "POST" && body.data.action === "retry") {
-      logger.info(
-        `Retrying eval jobs for createdAtCutoff ${body.data.createdAtCutoff}`,
-      );
+      logger.info(`Retrying eval jobs for createdAtCutoff ${body.data.createdAtCutoff}`);
 
       const queue = getQueue(QueueName.EvaluationExecution);
       if (!queue) {
@@ -91,8 +81,6 @@ export default async function handler(
     res.status(404).json({ error: "Action does not exist" });
   } catch (e) {
     logger.error("failed to manage bullmq jobs", e);
-    res
-      .status(500)
-      .json({ error: e instanceof Error ? e.message : "Unknown error" });
+    res.status(500).json({ error: e instanceof Error ? e.message : "Unknown error" });
   }
 }

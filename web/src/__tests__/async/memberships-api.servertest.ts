@@ -1,17 +1,11 @@
 /** @jest-environment node */
 
-import {
-  makeZodVerifiedAPICall,
-  makeAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
 import { prisma } from "@hanzo/shared/src/db";
 import { z } from "zod/v4";
 import { randomUUID } from "crypto";
 import { Role } from "@hanzo/shared";
-import {
-  createAndAddApiKeysToDb,
-  createBasicAuthHeader,
-} from "@hanzo/shared/src/server";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
 
 // Schema for membership response
 const MembershipResponseSchema = z.object({
@@ -125,15 +119,9 @@ describe("Memberships APIs", () => {
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body.memberships)).toBe(true);
         expect(response.body.memberships.length).toBeGreaterThan(0);
-        expect(
-          response.body.memberships.some(
-            (membership) => membership.userId === testUserId,
-          ),
-        ).toBe(true);
+        expect(response.body.memberships.some((membership) => membership.userId === testUserId)).toBe(true);
 
-        const membership = response.body.memberships.find(
-          (m) => m.userId === testUserId,
-        );
+        const membership = response.body.memberships.find((m) => m.userId === testUserId);
         expect(membership?.role).toBe(Role.VIEWER);
       });
 
@@ -154,10 +142,7 @@ describe("Memberships APIs", () => {
           "GET",
           `/api/public/projects/${testProjectId}/memberships`,
           undefined,
-          createBasicAuthHeader(
-            projectApiKey.publicKey,
-            projectApiKey.secretKey,
-          ),
+          createBasicAuthHeader(projectApiKey.publicKey, projectApiKey.secretKey),
         );
         expect(result.status).toBe(403);
 
@@ -339,9 +324,7 @@ describe("Memberships APIs", () => {
         );
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe(
-          "Project membership deleted successfully",
-        );
+        expect(response.body.message).toBe("Project membership deleted successfully");
         expect(response.body.userId).toBe(testUserId);
 
         // Verify the membership was deleted from the database
@@ -389,11 +372,7 @@ describe("Memberships APIs", () => {
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body.memberships)).toBe(true);
         expect(response.body.memberships.length).toBeGreaterThan(0);
-        expect(
-          response.body.memberships.some(
-            (membership) => membership.userId === testUserId,
-          ),
-        ).toBe(true);
+        expect(response.body.memberships.some((membership) => membership.userId === testUserId)).toBe(true);
       });
     });
 
@@ -499,16 +478,14 @@ describe("Memberships APIs", () => {
         });
 
         // Verify membership exists before deletion
-        const membershipBefore = await prisma.organizationMembership.findUnique(
-          {
-            where: {
-              orgId_userId: {
-                userId: testUserId,
-                orgId: testOrgId,
-              },
+        const membershipBefore = await prisma.organizationMembership.findUnique({
+          where: {
+            orgId_userId: {
+              userId: testUserId,
+              orgId: testOrgId,
             },
           },
-        );
+        });
         expect(membershipBefore).not.toBeNull();
 
         // Delete the membership

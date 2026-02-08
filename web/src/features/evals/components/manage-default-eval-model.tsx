@@ -41,47 +41,19 @@ export function ManageDefaultEvalModel({
           <TriangleAlert className="mr-2 h-4 w-4 text-dark-yellow" />
         ))}
       {defaultModel ? (
-        <span
-          className={cn(
-            "text-sm font-medium",
-            variant === "color-coded" && "text-dark-green",
-            className,
-          )}
-        >
+        <span className={cn("text-sm font-medium", variant === "color-coded" && "text-dark-green", className)}>
           {"Current default model: "}
           {defaultModel.provider} / {defaultModel.model}
         </span>
       ) : (
-        <span
-          className={cn(
-            "text-sm font-medium",
-            variant === "color-coded" && "text-dark-yellow",
-            className,
-          )}
-        >
+        <span className={cn("text-sm font-medium", variant === "color-coded" && "text-dark-yellow", className)}>
           {setUpMessage ?? "No default model set"}
         </span>
       )}
       {showEditButton && (
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          type="button"
-          asChild
-          disabled={!hasDefaultModelWriteAccess}
-        >
-          <Link
-            href={`/project/${projectId}/evals/default-model`}
-            target="_blank"
-          >
-            <Pencil
-              className={cn(
-                "h-3 w-3",
-                variant === "color-coded" &&
-                  !defaultModel &&
-                  "text-dark-yellow",
-              )}
-            />
+        <Button variant="ghost" size="icon-sm" type="button" asChild disabled={!hasDefaultModelWriteAccess}>
+          <Link href={`/project/${projectId}/evals/default-model`} target="_blank">
+            <Pencil className={cn("h-3 w-3", variant === "color-coded" && !defaultModel && "text-dark-yellow")} />
           </Link>
         </Button>
       )}

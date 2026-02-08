@@ -210,8 +210,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return grouped trace scores by trace filters", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId1 = v4();
       const traceId2 = v4();
       const sessionId = v4();
@@ -276,8 +275,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return grouped session scores by session filters", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
       const sessionId = v4();
 
@@ -335,8 +333,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return grouped observation scores by observation filters", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
       const observationId1 = v4();
       const observationId2 = v4();
@@ -403,8 +400,7 @@ describe("Clickhouse Scores Repository Test", () => {
 
   describe("getScoresUiTable", () => {
     it("should return empty array when no scores match filter", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const result = await getScoresUiTable({
         projectId: isolatedProjectId,
@@ -418,8 +414,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return scores with trace metadata", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
       const userId = "test-user";
       const traceName = "test-trace";
@@ -463,8 +458,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should filter scores by name", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const score1 = createTraceScore({
         project_id: isolatedProjectId,
@@ -500,8 +494,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should exclude metadata when flag is set", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const score = createTraceScore({
         project_id: isolatedProjectId,
@@ -527,8 +520,7 @@ describe("Clickhouse Scores Repository Test", () => {
 
   describe("getScoresForTraces", () => {
     it("should return empty array when no scores exist for traces", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const result = await getScoresForTraces({
         projectId: isolatedProjectId,
@@ -539,8 +531,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return scores for given trace ids", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId1 = v4();
       const traceId2 = v4();
 
@@ -583,8 +574,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should exclude metadata when excludeMetadata is true", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
 
       const trace = createTrace({ id: traceId, project_id: isolatedProjectId });
@@ -608,8 +598,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should include hasMetadata flag when includeHasMetadata is true", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
 
       const trace = createTrace({ id: traceId, project_id: isolatedProjectId });
@@ -635,8 +624,7 @@ describe("Clickhouse Scores Repository Test", () => {
 
   describe("getScoresForObservations", () => {
     it("should return empty array when no scores exist for observations", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const result = await getScoresForObservations({
         projectId: isolatedProjectId,
@@ -647,8 +635,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return scores for given observation ids", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
       const obsId1 = v4();
       const obsId2 = v4();
@@ -692,8 +679,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should exclude metadata when excludeMetadata is true", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const traceId = v4();
       const obsId = v4();
 
@@ -728,8 +714,7 @@ describe("Clickhouse Scores Repository Test", () => {
 
   describe("getScoresForSessions", () => {
     it("should return empty array when no scores exist for sessions", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
 
       const result = await getScoresForSessions({
         projectId: isolatedProjectId,
@@ -740,8 +725,7 @@ describe("Clickhouse Scores Repository Test", () => {
     });
 
     it("should return scores for given session ids", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const sessionId1 = v4();
       const sessionId2 = v4();
 
@@ -770,15 +754,11 @@ describe("Clickhouse Scores Repository Test", () => {
       });
 
       expect(result).toHaveLength(2);
-      expect(result.map((s) => s.name).sort()).toEqual([
-        "session_score1",
-        "session_score2",
-      ]);
+      expect(result.map((s) => s.name).sort()).toEqual(["session_score1", "session_score2"]);
     });
 
     it("should exclude metadata when excludeMetadata is true", async () => {
-      const { projectId: isolatedProjectId } =
-        await createOrgProjectAndApiKey();
+      const { projectId: isolatedProjectId } = await createOrgProjectAndApiKey();
       const sessionId = v4();
 
       const score = createSessionScore({

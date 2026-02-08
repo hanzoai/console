@@ -1,12 +1,4 @@
-import {
-  ArrowUp10,
-  BadgeCheck,
-  Github,
-  HardDriveDownload,
-  Info,
-  Map,
-  Newspaper,
-} from "lucide-react";
+import { ArrowUp10, BadgeCheck, Github, HardDriveDownload, Info, Map, Newspaper } from "lucide-react";
 import { VERSION } from "@/src/constants";
 import Link from "next/link";
 import {
@@ -29,16 +21,13 @@ import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 export const VersionLabel = ({ className }: { className?: string }) => {
   const { isHanzoCloud } = useHanzoCloudRegion();
 
-  const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(
-    undefined,
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      enabled: !isHanzoCloud, // do not check for updates on Hanzo Cloud
-      throwOnError: false, // do not render default error message
-    },
-  );
+  const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: !isHanzoCloud, // do not check for updates on Hanzo Cloud
+    throwOnError: false, // do not render default error message
+  });
 
   const checkUpdate = api.public.checkUpdate.useQuery(undefined, {
     refetchOnMount: false,
@@ -67,12 +56,9 @@ export const VersionLabel = ({ className }: { className?: string }) => {
       null;
 
   const showBackgroundMigrationStatus =
-    !isHanzoCloud &&
-    backgroundMigrationStatus.data &&
-    backgroundMigrationStatus.data.status !== "FINISHED";
+    !isHanzoCloud && backgroundMigrationStatus.data && backgroundMigrationStatus.data.status !== "FINISHED";
 
-  const hasUpdate =
-    !isHanzoCloud && checkUpdate.data && checkUpdate.data.updateType;
+  const hasUpdate = !isHanzoCloud && checkUpdate.data && checkUpdate.data.updateType;
 
   const color =
     checkUpdate.data?.updateType === "major"
@@ -84,11 +70,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="xs"
-          className={cn("mt-[0.2px] text-[0.625rem]", className)}
-        >
+        <Button variant="ghost" size="xs" className={cn("mt-[0.2px] text-[0.625rem]", className)}>
           {VERSION}
           {selfHostedPlanLabel ? <> {selfHostedPlanLabel.short}</> : null}
           {showBackgroundMigrationStatus && (
@@ -98,17 +80,14 @@ export const VersionLabel = ({ className }: { className?: string }) => {
               className="bg-transparent"
             />
           )}
-          {hasUpdate && !showBackgroundMigrationStatus && (
-            <ArrowUp className={`h-3 w-3 ${color}`} />
-          )}
+          {hasUpdate && !showBackgroundMigrationStatus && <ArrowUp className={`h-3 w-3 ${color}`} />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
         {hasUpdate ? (
           <>
             <DropdownMenuLabel>
-              New {checkUpdate.data?.updateType} version:{" "}
-              {checkUpdate.data?.latestRelease}
+              New {checkUpdate.data?.updateType} version: {checkUpdate.data?.latestRelease}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
@@ -128,10 +107,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
           </>
         )}
         <DropdownMenuItem asChild>
-          <Link
-            href="https://github.com/hanzoai/cloud/releases"
-            target="_blank"
-          >
+          <Link href="https://github.com/hanzoai/cloud/releases" target="_blank">
             <Github size={16} className="mr-2" />
             Releases
           </Link>
@@ -175,10 +151,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link
-                href="https://hanzo.ai/docs/deployment/self-host#update"
-                target="_blank"
-              >
+              <Link href="https://hanzo.ai/docs/deployment/self-host#update" target="_blank">
                 <HardDriveDownload size={16} className="mr-2" />
                 Update
               </Link>

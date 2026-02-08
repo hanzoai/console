@@ -1,10 +1,4 @@
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 
 /**
  * Cached correction - stored in client-side cache for optimistic updates
@@ -34,10 +28,7 @@ type CorrectionCacheContextValue = {
   get: (id: string) => CachedCorrectionMeta | undefined;
 
   /** Get correction for a specific observation within a trace */
-  getForObservation: (
-    traceId: string,
-    observationId: string,
-  ) => CachedCorrectionMeta | undefined;
+  getForObservation: (traceId: string, observationId: string) => CachedCorrectionMeta | undefined;
 
   /** Get correction for a trace (where observationId is null/undefined) */
   getForTrace: (traceId: string) => CachedCorrectionMeta | undefined;
@@ -58,14 +49,10 @@ type CorrectionCacheContextValue = {
   clear: () => void;
 };
 
-const CorrectionCacheContext = createContext<
-  CorrectionCacheContextValue | undefined
->(undefined);
+const CorrectionCacheContext = createContext<CorrectionCacheContextValue | undefined>(undefined);
 
 export function CorrectionCacheProvider({ children }: { children: ReactNode }) {
-  const [cache, setCache] = useState<Map<string, CachedCorrectionMeta>>(
-    new Map(),
-  );
+  const [cache, setCache] = useState<Map<string, CachedCorrectionMeta>>(new Map());
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const set = useCallback((id: string, meta: CachedCorrectionMeta) => {
@@ -86,10 +73,7 @@ export function CorrectionCacheProvider({ children }: { children: ReactNode }) {
   const getForObservation = useCallback(
     (traceId: string, observationId: string) => {
       return Array.from(cache.values()).find(
-        (meta) =>
-          meta.traceId === traceId &&
-          meta.observationId === observationId &&
-          !deletedIds.has(meta.id),
+        (meta) => meta.traceId === traceId && meta.observationId === observationId && !deletedIds.has(meta.id),
       );
     },
     [cache, deletedIds],
@@ -132,25 +116,22 @@ export function CorrectionCacheProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const rollbackDelete = useCallback(
-    (id: string, meta?: CachedCorrectionMeta) => {
-      setDeletedIds((prev) => {
-        if (!prev.has(id)) return prev;
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
+  const rollbackDelete = useCallback((id: string, meta?: CachedCorrectionMeta) => {
+    setDeletedIds((prev) => {
+      if (!prev.has(id)) return prev;
+      const newSet = new Set(prev);
+      newSet.delete(id);
+      return newSet;
+    });
 
-      if (meta) {
-        setCache((prev) => {
-          const newCache = new Map(prev);
-          newCache.set(id, meta);
-          return newCache;
-        });
-      }
-    },
-    [],
-  );
+    if (meta) {
+      setCache((prev) => {
+        const newCache = new Map(prev);
+        newCache.set(id, meta);
+        return newCache;
+      });
+    }
+  }, []);
 
   const isDeleted = useCallback(
     (id: string) => {
@@ -186,9 +167,7 @@ export function CorrectionCacheProvider({ children }: { children: ReactNode }) {
 export function useCorrectionCache() {
   const context = useContext(CorrectionCacheContext);
   if (!context) {
-    throw new Error(
-      "useCorrectionCache must be used within CorrectionCacheProvider",
-    );
+    throw new Error("useCorrectionCache must be used within CorrectionCacheProvider");
   }
   return context;
 }

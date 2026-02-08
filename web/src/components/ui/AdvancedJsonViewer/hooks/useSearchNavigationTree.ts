@@ -66,8 +66,7 @@ export function useSearchNavigationTree({
   const handlePreviousMatch = useCallback(() => {
     if (searchMatches.length === 0 || !tree) return;
 
-    const prevIndex =
-      (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+    const prevIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
 
     if (isMatchIndexControlled) {
       onCurrentMatchIndexChange?.(prevIndex);
@@ -109,11 +108,7 @@ export function useSearchNavigationTree({
         setInternalCurrentMatchIndex(0);
       }
     },
-    [
-      isMatchIndexControlled,
-      onCurrentMatchIndexChange,
-      setInternalCurrentMatchIndex,
-    ],
+    [isMatchIndexControlled, onCurrentMatchIndexChange, setInternalCurrentMatchIndex],
   );
 
   // Compute scroll-to index for current match

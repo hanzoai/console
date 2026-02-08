@@ -55,9 +55,7 @@ export type Route = {
   newTab?: boolean; // open in new tab
   entitlements?: Entitlement[]; // entitlements required, array treated as OR
   productModule?: ProductModule; // Product module this route belongs to. Used to show/hide modules via ui customization.
-  show?: (p: {
-    organization: User["organizations"][number] | undefined;
-  }) => boolean;
+  show?: (p: { organization: User["organizations"][number] | undefined }) => boolean;
   group?: RouteGroup; // group this route belongs to (within a section)
 };
 
@@ -230,11 +228,7 @@ function CommandMenuTrigger() {
       <Search className="h-4 w-4" />
       Go to...
       <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded-md border px-1.5 font-mono text-[10px]">
-        {navigator.userAgent.includes("Mac") ? (
-          <span className="text-[12px]">⌘</span>
-        ) : (
-          <span>Ctrl</span>
-        )}
+        {navigator.userAgent.includes("Mac") ? <span className="text-[12px]">⌘</span> : <span>Ctrl</span>}
         <span>K</span>
       </kbd>
     </SidebarMenuButton>

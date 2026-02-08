@@ -104,8 +104,7 @@ export const automationsRouter = createTRPCRouter({
       }
 
       // Generate new webhook secret
-      const { secretKey: newSecretKey, displaySecretKey: newDisplaySecretKey } =
-        generateWebhookSecret();
+      const { secretKey: newSecretKey, displaySecretKey: newDisplaySecretKey } = generateWebhookSecret();
 
       await auditLog({
         session: ctx.session,
@@ -138,20 +137,18 @@ export const automationsRouter = createTRPCRouter({
       };
     }),
 
-  getAutomations: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      // Check if user has at least read access to automations
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "automations:read",
-      });
+  getAutomations: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ ctx, input }) => {
+    // Check if user has at least read access to automations
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "automations:read",
+    });
 
-      return await getAutomations({
-        projectId: input.projectId,
-      });
-    }),
+    return await getAutomations({
+      projectId: input.projectId,
+    });
+  }),
 
   // Get a single automation by automation ID
   getAutomation: protectedProjectProcedure
@@ -243,252 +240,242 @@ export const automationsRouter = createTRPCRouter({
     }),
 
   // Combined route that creates both an action and a trigger
-  createAutomation: protectedProjectProcedure
-    .input(CreateAutomationInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      // Check if user has create/update/delete access to automations
-      throwIfNoProjectAccess({
-        session: ctx.session,
+  createAutomation: protectedProjectProcedure.input(CreateAutomationInputSchema).mutation(async ({ ctx, input }) => {
+    // Check if user has create/update/delete access to automations
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "automations:CUD",
+    });
+
+    const triggerId = v4();
+    const actionId = v4();
+
+    // Build action config depending on action type
+    let finalActionConfig = input.actionConfig;
+    let newUnencryptedWebhookSecret: string | undefined = undefined;
+
+    if (input.actionType === "WEBHOOK") {
+      const webhookResult = await processWebhookActionConfig({
+        actionConfig: input.actionConfig,
         projectId: input.projectId,
-        scope: "automations:CUD",
+      });
+      finalActionConfig = webhookResult.finalActionConfig;
+      newUnencryptedWebhookSecret = webhookResult.newUnencryptedWebhookSecret;
+    } else if (input.actionType === "SLACK") {
+      // Validate that Slack integration exists for this project
+      const slackIntegration = await ctx.prisma.slackIntegration.findUnique({
+        where: { projectId: input.projectId },
       });
 
-      const triggerId = v4();
-      const actionId = v4();
-
-      // Build action config depending on action type
-      let finalActionConfig = input.actionConfig;
-      let newUnencryptedWebhookSecret: string | undefined = undefined;
-
-      if (input.actionType === "WEBHOOK") {
-        const webhookResult = await processWebhookActionConfig({
-          actionConfig: input.actionConfig,
-          projectId: input.projectId,
-        });
-        finalActionConfig = webhookResult.finalActionConfig;
-        newUnencryptedWebhookSecret = webhookResult.newUnencryptedWebhookSecret;
-      } else if (input.actionType === "SLACK") {
-        // Validate that Slack integration exists for this project
-        const slackIntegration = await ctx.prisma.slackIntegration.findUnique({
-          where: { projectId: input.projectId },
-        });
-
-        if (!slackIntegration) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message:
-              "Slack integration not found. Please connect your Slack workspace first.",
-          });
-        }
-      } else if (input.actionType === "GITHUB_DISPATCH") {
-        const githubResult = await processGitHubDispatchActionConfig({
-          actionConfig: input.actionConfig,
-          projectId: input.projectId,
-        });
-        finalActionConfig = githubResult.finalActionConfig;
-        newUnencryptedWebhookSecret = githubResult.githubToken;
-      }
-
-      const [trigger, action, automation] = await ctx.prisma.$transaction(
-        async (tx) => {
-          const trigger = await tx.trigger.create({
-            data: {
-              id: triggerId,
-              projectId: ctx.session.projectId,
-              eventSource: input.eventSource,
-              eventActions: input.eventAction,
-              filter: input.filter || [],
-              status: input.status,
-            },
-          });
-
-          // First create the action
-          const action = await tx.action.create({
-            data: {
-              id: actionId,
-              projectId: ctx.session.projectId,
-              type: input.actionType,
-              config: finalActionConfig,
-            },
-          });
-
-          // Create the automation
-          const automation = await tx.automation.create({
-            data: {
-              projectId: ctx.session.projectId,
-              triggerId: triggerId,
-              actionId: actionId,
-              name: input.name,
-            },
-          });
-
-          return [trigger, action, automation];
-        },
-      );
-
-      await auditLog({
-        session: ctx.session,
-        resourceType: "automation",
-        resourceId: trigger.id,
-        action: "create",
-        before: undefined,
-        after: {
-          automation,
-          action: action,
-          trigger: trigger,
-        },
-      });
-
-      logger.info(`Created automation ${trigger.id} for action ${action.id}`);
-
-      return {
-        action: {
-          ...action,
-          config: isWebhookAction(action)
-            ? convertToSafeWebhookConfig(action.config)
-            : isGitHubDispatchAction(action)
-              ? convertToSafeGitHubDispatchConfig(action.config)
-              : action.config,
-        },
-        trigger,
-        automation,
-        webhookSecret: newUnencryptedWebhookSecret, // Return webhook secret at top level for one-time display
-      };
-    }),
-
-  updateAutomation: protectedProjectProcedure
-    .input(UpdateAutomationInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      // Check if user has create/update/delete access to automations
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "automations:CUD",
-      });
-
-      const existingAutomation = await getAutomationById({
-        projectId: input.projectId,
-        automationId: input.automationId,
-      });
-
-      if (!existingAutomation) {
+      if (!slackIntegration) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: `Automation with id ${input.automationId} not found.`,
+          message: "Slack integration not found. Please connect your Slack workspace first.",
         });
       }
+    } else if (input.actionType === "GITHUB_DISPATCH") {
+      const githubResult = await processGitHubDispatchActionConfig({
+        actionConfig: input.actionConfig,
+        projectId: input.projectId,
+      });
+      finalActionConfig = githubResult.finalActionConfig;
+      newUnencryptedWebhookSecret = githubResult.githubToken;
+    }
 
-      let finalActionConfig = input.actionConfig;
-
-      if (input.actionType === "WEBHOOK") {
-        const webhookResult = await processWebhookActionConfig({
-          actionConfig: input.actionConfig,
-          actionId: existingAutomation.action.id,
-          projectId: input.projectId,
-        });
-        finalActionConfig = webhookResult.finalActionConfig;
-      } else if (input.actionType === "SLACK") {
-        // Validate that Slack integration exists for this project
-        const slackIntegration = await ctx.prisma.slackIntegration.findUnique({
-          where: { projectId: input.projectId },
-        });
-
-        if (!slackIntegration) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message:
-              "Slack integration not found. Please connect your Slack workspace first.",
-          });
-        }
-      } else if (input.actionType === "GITHUB_DISPATCH") {
-        const githubResult = await processGitHubDispatchActionConfig({
-          actionConfig: input.actionConfig,
-          actionId: existingAutomation.action.id,
-          projectId: input.projectId,
-        });
-        finalActionConfig = githubResult.finalActionConfig;
-      }
-
-      const [action, trigger, automation] = await ctx.prisma.$transaction(
-        async (tx) => {
-          // Update the action
-          const action = await tx.action.update({
-            where: {
-              id: existingAutomation.action.id,
-              projectId: ctx.session.projectId,
-            },
-            data: {
-              type: input.actionType,
-              config: finalActionConfig,
-            },
-          });
-
-          // Update the trigger
-          const trigger = await tx.trigger.update({
-            where: {
-              id: existingAutomation.trigger.id,
-              projectId: ctx.session.projectId,
-            },
-            data: {
-              eventSource: input.eventSource,
-              eventActions: input.eventAction,
-              filter: input.filter || [],
-              status: input.status,
-            },
-          });
-
-          // Update the automation name in Automation
-          await tx.automation.update({
-            where: {
-              id: input.automationId,
-              projectId: ctx.session.projectId,
-            },
-            data: {
-              name: input.name,
-            },
-          });
-
-          const automation = await tx.automation.findFirst({
-            where: {
-              id: input.automationId,
-              projectId: ctx.session.projectId,
-            },
-          });
-
-          return [action, trigger, automation];
-        },
-      );
-
-      await auditLog({
-        session: ctx.session,
-        resourceType: "automation",
-        resourceId: trigger.id,
-        action: "update",
-        before: {
-          automation: existingAutomation,
-          action: existingAutomation.action,
-          trigger: existingAutomation.trigger,
-        },
-        after: {
-          automation: automation,
-          action: action,
-          trigger: trigger,
+    const [trigger, action, automation] = await ctx.prisma.$transaction(async (tx) => {
+      const trigger = await tx.trigger.create({
+        data: {
+          id: triggerId,
+          projectId: ctx.session.projectId,
+          eventSource: input.eventSource,
+          eventActions: input.eventAction,
+          filter: input.filter || [],
+          status: input.status,
         },
       });
 
-      return {
-        action: {
-          ...action,
-          config: isWebhookAction(action)
-            ? convertToSafeWebhookConfig(action.config)
-            : isGitHubDispatchAction(action)
-              ? convertToSafeGitHubDispatchConfig(action.config)
-              : action.config,
+      // First create the action
+      const action = await tx.action.create({
+        data: {
+          id: actionId,
+          projectId: ctx.session.projectId,
+          type: input.actionType,
+          config: finalActionConfig,
         },
-        trigger,
+      });
+
+      // Create the automation
+      const automation = await tx.automation.create({
+        data: {
+          projectId: ctx.session.projectId,
+          triggerId: triggerId,
+          actionId: actionId,
+          name: input.name,
+        },
+      });
+
+      return [trigger, action, automation];
+    });
+
+    await auditLog({
+      session: ctx.session,
+      resourceType: "automation",
+      resourceId: trigger.id,
+      action: "create",
+      before: undefined,
+      after: {
         automation,
-      };
-    }),
+        action: action,
+        trigger: trigger,
+      },
+    });
+
+    logger.info(`Created automation ${trigger.id} for action ${action.id}`);
+
+    return {
+      action: {
+        ...action,
+        config: isWebhookAction(action)
+          ? convertToSafeWebhookConfig(action.config)
+          : isGitHubDispatchAction(action)
+            ? convertToSafeGitHubDispatchConfig(action.config)
+            : action.config,
+      },
+      trigger,
+      automation,
+      webhookSecret: newUnencryptedWebhookSecret, // Return webhook secret at top level for one-time display
+    };
+  }),
+
+  updateAutomation: protectedProjectProcedure.input(UpdateAutomationInputSchema).mutation(async ({ ctx, input }) => {
+    // Check if user has create/update/delete access to automations
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "automations:CUD",
+    });
+
+    const existingAutomation = await getAutomationById({
+      projectId: input.projectId,
+      automationId: input.automationId,
+    });
+
+    if (!existingAutomation) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: `Automation with id ${input.automationId} not found.`,
+      });
+    }
+
+    let finalActionConfig = input.actionConfig;
+
+    if (input.actionType === "WEBHOOK") {
+      const webhookResult = await processWebhookActionConfig({
+        actionConfig: input.actionConfig,
+        actionId: existingAutomation.action.id,
+        projectId: input.projectId,
+      });
+      finalActionConfig = webhookResult.finalActionConfig;
+    } else if (input.actionType === "SLACK") {
+      // Validate that Slack integration exists for this project
+      const slackIntegration = await ctx.prisma.slackIntegration.findUnique({
+        where: { projectId: input.projectId },
+      });
+
+      if (!slackIntegration) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Slack integration not found. Please connect your Slack workspace first.",
+        });
+      }
+    } else if (input.actionType === "GITHUB_DISPATCH") {
+      const githubResult = await processGitHubDispatchActionConfig({
+        actionConfig: input.actionConfig,
+        actionId: existingAutomation.action.id,
+        projectId: input.projectId,
+      });
+      finalActionConfig = githubResult.finalActionConfig;
+    }
+
+    const [action, trigger, automation] = await ctx.prisma.$transaction(async (tx) => {
+      // Update the action
+      const action = await tx.action.update({
+        where: {
+          id: existingAutomation.action.id,
+          projectId: ctx.session.projectId,
+        },
+        data: {
+          type: input.actionType,
+          config: finalActionConfig,
+        },
+      });
+
+      // Update the trigger
+      const trigger = await tx.trigger.update({
+        where: {
+          id: existingAutomation.trigger.id,
+          projectId: ctx.session.projectId,
+        },
+        data: {
+          eventSource: input.eventSource,
+          eventActions: input.eventAction,
+          filter: input.filter || [],
+          status: input.status,
+        },
+      });
+
+      // Update the automation name in Automation
+      await tx.automation.update({
+        where: {
+          id: input.automationId,
+          projectId: ctx.session.projectId,
+        },
+        data: {
+          name: input.name,
+        },
+      });
+
+      const automation = await tx.automation.findFirst({
+        where: {
+          id: input.automationId,
+          projectId: ctx.session.projectId,
+        },
+      });
+
+      return [action, trigger, automation];
+    });
+
+    await auditLog({
+      session: ctx.session,
+      resourceType: "automation",
+      resourceId: trigger.id,
+      action: "update",
+      before: {
+        automation: existingAutomation,
+        action: existingAutomation.action,
+        trigger: existingAutomation.trigger,
+      },
+      after: {
+        automation: automation,
+        action: action,
+        trigger: trigger,
+      },
+    });
+
+    return {
+      action: {
+        ...action,
+        config: isWebhookAction(action)
+          ? convertToSafeWebhookConfig(action.config)
+          : isGitHubDispatchAction(action)
+            ? convertToSafeGitHubDispatchConfig(action.config)
+            : action.config,
+      },
+      trigger,
+      automation,
+    };
+  }),
 
   // Delete an automation (both trigger and action)
   deleteAutomation: protectedProjectProcedure
@@ -557,21 +544,19 @@ export const automationsRouter = createTRPCRouter({
       });
     }),
 
-  count: protectedProjectProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
+  count: protectedProjectProcedure.input(z.object({ projectId: z.string() })).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "automations:read",
+    });
+
+    const count = await ctx.prisma.action.count({
+      where: {
         projectId: input.projectId,
-        scope: "automations:read",
-      });
+      },
+    });
 
-      const count = await ctx.prisma.action.count({
-        where: {
-          projectId: input.projectId,
-        },
-      });
-
-      return count;
-    }),
+    return count;
+  }),
 });

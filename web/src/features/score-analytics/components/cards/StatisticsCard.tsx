@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useScoreAnalytics } from "../ScoreAnalyticsProvider";
 import { MetricCard } from "../charts/MetricCard";
@@ -111,17 +105,11 @@ export function StatisticsCard() {
         <CardTitle className="flex items-center gap-2">
           Statistics
           {data.samplingMetadata.isSampled && (
-            <SamplingDetailsHoverCard
-              samplingMetadata={data.samplingMetadata}
-              mode={data.metadata.mode}
-              showLabel
-            />
+            <SamplingDetailsHoverCard samplingMetadata={data.samplingMetadata} mode={data.metadata.mode} showLabel />
           )}
         </CardTitle>
         <CardDescription>
-          {score2
-            ? `${score1.name} vs ${score2.name}`
-            : `${score1.name} - Select a second score for comparison`}
+          {score2 ? `${score1.name} vs ${score2.name}` : `${score1.name} - Select a second score for comparison`}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -134,11 +122,7 @@ export function StatisticsCard() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <MetricCard
                 label="Total"
-                value={
-                  showScore1Data
-                    ? statistics.score1.total.toLocaleString()
-                    : "--"
-                }
+                value={showScore1Data ? statistics.score1.total.toLocaleString() : "--"}
                 helpText={`Total number of ${score1.name} scores`}
                 isPlaceholder={!showScore1Data}
                 isContext
@@ -174,11 +158,7 @@ export function StatisticsCard() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <MetricCard
                 label="Total"
-                value={
-                  showScore1Data
-                    ? statistics.score1.total.toLocaleString()
-                    : "--"
-                }
+                value={showScore1Data ? statistics.score1.total.toLocaleString() : "--"}
                 helpText={`Total number of ${score1.name} scores`}
                 isPlaceholder={!showScore1Data}
                 isContext
@@ -224,11 +204,7 @@ export function StatisticsCard() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <MetricCard
                   label="Total"
-                  value={
-                    showScore2Data && statistics.score2
-                      ? statistics.score2.total.toLocaleString()
-                      : "--"
-                  }
+                  value={showScore2Data && statistics.score2 ? statistics.score2.total.toLocaleString() : "--"}
                   helpText={`Total number of ${score2?.name ?? "Score 2"} scores`}
                   isPlaceholder={!showScore2Data}
                   isContext
@@ -236,9 +212,7 @@ export function StatisticsCard() {
                 <MetricCard
                   label="Mean"
                   value={
-                    showScore2Data &&
-                    statistics.score2 &&
-                    statistics.score2.mean !== null
+                    showScore2Data && statistics.score2 && statistics.score2.mean !== null
                       ? statistics.score2.mean.toFixed(2)
                       : !showScore2Data
                         ? "--"
@@ -251,9 +225,7 @@ export function StatisticsCard() {
                 <MetricCard
                   label="Std Dev"
                   value={
-                    showScore2Data &&
-                    statistics.score2 &&
-                    statistics.score2.std !== null
+                    showScore2Data && statistics.score2 && statistics.score2.std !== null
                       ? statistics.score2.std.toFixed(2)
                       : !showScore2Data
                         ? "--"
@@ -268,11 +240,7 @@ export function StatisticsCard() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <MetricCard
                   label="Total"
-                  value={
-                    showScore2Data && statistics.score2
-                      ? statistics.score2.total.toLocaleString()
-                      : "--"
-                  }
+                  value={showScore2Data && statistics.score2 ? statistics.score2.total.toLocaleString() : "--"}
                   helpText={`Total number of ${score2?.name ?? "Score 2"} scores`}
                   isPlaceholder={!showScore2Data}
                   isContext
@@ -293,9 +261,7 @@ export function StatisticsCard() {
                 <MetricCard
                   label="Mode %"
                   value={
-                    showScore2Data &&
-                    statistics.score2 &&
-                    statistics.score2.modePercentage !== null
+                    showScore2Data && statistics.score2 && statistics.score2.modePercentage !== null
                       ? `${statistics.score2.modePercentage.toFixed(1)}%`
                       : !showScore2Data
                         ? "--"
@@ -333,20 +299,15 @@ export function StatisticsCard() {
                             content: (
                               <div className="space-y-2 text-xs">
                                 <p className="font-semibold">
-                                  Matched count exceeds individual score counts
-                                  due to Cartesian product
+                                  Matched count exceeds individual score counts due to Cartesian product
                                 </p>
                                 <p>
-                                  This occurs when multiple scores of the same
-                                  name/source exist on a single attachment point
-                                  (trace/observation/session/run). Each
-                                  combination creates a match.
+                                  This occurs when multiple scores of the same name/source exist on a single attachment
+                                  point (trace/observation/session/run). Each combination creates a match.
                                 </p>
                                 <p className="text-muted-foreground">
-                                  <strong>Example:</strong> If one trace has 2
-                                  &quot;gpt4&quot; scores and 3
-                                  &quot;gemini&quot; scores, this creates 6
-                                  matched pairs (2 × 3 = 6).
+                                  <strong>Example:</strong> If one trace has 2 &quot;gpt4&quot; scores and 3
+                                  &quot;gemini&quot; scores, this creates 6 matched pairs (2 × 3 = 6).
                                 </p>
                               </div>
                             ),
@@ -371,9 +332,7 @@ export function StatisticsCard() {
                       showComparisonMetrics &&
                       statistics.comparison &&
                       statistics.comparison.pearsonCorrelation !== null
-                        ? interpretPearsonCorrelation(
-                            statistics.comparison.pearsonCorrelation,
-                          )
+                        ? interpretPearsonCorrelation(statistics.comparison.pearsonCorrelation)
                         : undefined
                     }
                     helpText="Linear correlation (-1 to 1)"
@@ -394,9 +353,7 @@ export function StatisticsCard() {
                       showComparisonMetrics &&
                       statistics.comparison &&
                       statistics.comparison.spearmanCorrelation !== null
-                        ? interpretSpearmanCorrelation(
-                            statistics.comparison.spearmanCorrelation,
-                          )
+                        ? interpretSpearmanCorrelation(statistics.comparison.spearmanCorrelation)
                         : undefined
                     }
                     helpText="Rank correlation (-1 to 1)"
@@ -409,18 +366,14 @@ export function StatisticsCard() {
                   <MetricCard
                     label="MAE"
                     value={
-                      showComparisonMetrics &&
-                      statistics.comparison &&
-                      statistics.comparison.mae !== null
+                      showComparisonMetrics && statistics.comparison && statistics.comparison.mae !== null
                         ? statistics.comparison.mae.toFixed(3)
                         : showComparisonMetrics
                           ? "N/A"
                           : "--"
                     }
                     interpretation={
-                      showComparisonMetrics &&
-                      statistics.comparison &&
-                      statistics.comparison.mae !== null
+                      showComparisonMetrics && statistics.comparison && statistics.comparison.mae !== null
                         ? interpretMAE(statistics.comparison.mae)
                         : undefined
                     }
@@ -430,18 +383,14 @@ export function StatisticsCard() {
                   <MetricCard
                     label="RMSE"
                     value={
-                      showComparisonMetrics &&
-                      statistics.comparison &&
-                      statistics.comparison.rmse !== null
+                      showComparisonMetrics && statistics.comparison && statistics.comparison.rmse !== null
                         ? statistics.comparison.rmse.toFixed(3)
                         : showComparisonMetrics
                           ? "N/A"
                           : "--"
                     }
                     interpretation={
-                      showComparisonMetrics &&
-                      statistics.comparison &&
-                      statistics.comparison.rmse !== null
+                      showComparisonMetrics && statistics.comparison && statistics.comparison.rmse !== null
                         ? interpretRMSE(statistics.comparison.rmse)
                         : undefined
                     }
@@ -469,20 +418,15 @@ export function StatisticsCard() {
                             content: (
                               <div className="space-y-2 text-xs">
                                 <p className="font-semibold">
-                                  Matched count exceeds individual score counts
-                                  due to Cartesian product
+                                  Matched count exceeds individual score counts due to Cartesian product
                                 </p>
                                 <p>
-                                  This occurs when multiple scores of the same
-                                  name/source exist on a single attachment point
-                                  (trace/observation/session/run). Each
-                                  combination creates a match.
+                                  This occurs when multiple scores of the same name/source exist on a single attachment
+                                  point (trace/observation/session/run). Each combination creates a match.
                                 </p>
                                 <p className="text-muted-foreground">
-                                  <strong>Example:</strong> If one trace has 2
-                                  &quot;gpt4&quot; scores and 3
-                                  &quot;gemini&quot; scores, this creates 6
-                                  matched pairs (2 × 3 = 6).
+                                  <strong>Example:</strong> If one trace has 2 &quot;gpt4&quot; scores and 3
+                                  &quot;gemini&quot; scores, this creates 6 matched pairs (2 × 3 = 6).
                                 </p>
                               </div>
                             ),
@@ -523,9 +467,7 @@ export function StatisticsCard() {
                           : "--"
                     }
                     interpretation={
-                      showComparisonMetrics && cohensKappa !== null
-                        ? interpretCohensKappa(cohensKappa)
-                        : undefined
+                      showComparisonMetrics && cohensKappa !== null ? interpretCohensKappa(cohensKappa) : undefined
                     }
                     helpText="Inter-rater reliability (-1 to 1)"
                     isPlaceholder={!showComparisonMetrics}
@@ -539,11 +481,7 @@ export function StatisticsCard() {
                           ? "N/A"
                           : "--"
                     }
-                    interpretation={
-                      showComparisonMetrics && f1Score !== null
-                        ? interpretF1Score(f1Score)
-                        : undefined
-                    }
+                    interpretation={showComparisonMetrics && f1Score !== null ? interpretF1Score(f1Score) : undefined}
                     helpText="Weighted F1 score (0 to 1)"
                     isPlaceholder={!showComparisonMetrics}
                   />

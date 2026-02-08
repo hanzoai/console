@@ -34,9 +34,12 @@ import { type IntervalConfig } from "./date-range-utils";
  * @param interval - The REQUESTED interval (may be multi-unit like {count: 2, unit: "day"})
  * @returns Array with data aggregated into requested intervals
  */
-export function fillTimeSeriesGaps<
-  T extends { timestamp: Date; [key: string]: unknown },
->(data: T[], fromDate: Date, toDate: Date, interval: IntervalConfig): T[] {
+export function fillTimeSeriesGaps<T extends { timestamp: Date; [key: string]: unknown }>(
+  data: T[],
+  fromDate: Date,
+  toDate: Date,
+  interval: IntervalConfig,
+): T[] {
   const { count, unit } = interval;
 
   // If single-unit interval (or 7-day weeks), ClickHouse already returned the correct buckets
@@ -52,9 +55,12 @@ export function fillTimeSeriesGaps<
 /**
  * Fill gaps in single-unit data (ClickHouse already returned correct bucket timestamps)
  */
-function fillGapsInSingleUnitData<
-  T extends { timestamp: Date; [key: string]: unknown },
->(data: T[], fromDate: Date, toDate: Date, interval: IntervalConfig): T[] {
+function fillGapsInSingleUnitData<T extends { timestamp: Date; [key: string]: unknown }>(
+  data: T[],
+  fromDate: Date,
+  toDate: Date,
+  interval: IntervalConfig,
+): T[] {
   const { count, unit } = interval;
 
   // Helper: Align timestamp to calendar boundary for single-unit intervals
@@ -77,9 +83,7 @@ function fillGapsInSingleUnitData<
 
   // Special case for 7-day weeks: use Monday alignment
   const toStartOfInterval =
-    count === 7 && unit === "day"
-      ? (date: Date) => startOfWeek(date, { weekStartsOn: 1 })
-      : toStartOfSingleUnit;
+    count === 7 && unit === "day" ? (date: Date) => startOfWeek(date, { weekStartsOn: 1 }) : toStartOfSingleUnit;
 
   // Helper: Increment by single unit
   const addSingleUnit = (date: Date): Date => {
@@ -100,10 +104,7 @@ function fillGapsInSingleUnitData<
   };
 
   // Special case for 7-day weeks
-  const addInterval =
-    count === 7 && unit === "day"
-      ? (date: Date) => addWeeks(date, 1)
-      : addSingleUnit;
+  const addInterval = count === 7 && unit === "day" ? (date: Date) => addWeeks(date, 1) : addSingleUnit;
 
   // Normalize the from date to interval boundary
   const normalizedFrom = toStartOfInterval(fromDate);
@@ -124,9 +125,7 @@ function fillGapsInSingleUnitData<
   }
 
   // Find the last timestamp in the actual data
-  const lastDataTimestamp = Math.max(
-    ...data.map((d) => toStartOfInterval(d.timestamp).getTime()),
-  );
+  const lastDataTimestamp = Math.max(...data.map((d) => toStartOfInterval(d.timestamp).getTime()));
 
   let currentTime = normalizedFrom;
 
@@ -167,9 +166,12 @@ function fillGapsInSingleUnitData<
  * Aggregate single-unit data from ClickHouse into multi-unit buckets.
  * Works backwards from toTimestamp to ensure "today's" data appears in the rightmost bucket.
  */
-function aggregateIntoMultiUnitBuckets<
-  T extends { timestamp: Date; [key: string]: unknown },
->(data: T[], fromDate: Date, toDate: Date, interval: IntervalConfig): T[] {
+function aggregateIntoMultiUnitBuckets<T extends { timestamp: Date; [key: string]: unknown }>(
+  data: T[],
+  fromDate: Date,
+  toDate: Date,
+  interval: IntervalConfig,
+): T[] {
   const { count, unit } = interval;
 
   if (data.length === 0) {
@@ -292,9 +294,7 @@ function aggregateIntoMultiUnitBuckets<
 
         if (typeof sampleItem[key] === "number") {
           // Average numeric values (excluding nulls)
-          const values = bucket.dataPoints
-            .map((dp) => dp[key] as number | null)
-            .filter((v): v is number => v !== null);
+          const values = bucket.dataPoints.map((dp) => dp[key] as number | null).filter((v): v is number => v !== null);
 
           if (values.length > 0) {
             const sum = values.reduce((acc, val) => acc + val, 0);
@@ -334,9 +334,12 @@ function aggregateIntoMultiUnitBuckets<
  * @param interval - The requested interval (may be multi-unit)
  * @returns Array with all timestamps filled and counts aggregated
  */
-export function fillCategoricalTimeSeriesGaps<
-  T extends { timestamp: Date; category: string; count: number },
->(data: T[], fromDate: Date, toDate: Date, interval: IntervalConfig): T[] {
+export function fillCategoricalTimeSeriesGaps<T extends { timestamp: Date; category: string; count: number }>(
+  data: T[],
+  fromDate: Date,
+  toDate: Date,
+  interval: IntervalConfig,
+): T[] {
   const { count, unit } = interval;
 
   // Extract unique categories
@@ -348,31 +351,17 @@ export function fillCategoricalTimeSeriesGaps<
 
   // If single-unit interval (or 7-day weeks), just fill gaps
   if (count === 1 || (count === 7 && unit === "day")) {
-    return fillGapsInCategoricalData(
-      data,
-      fromDate,
-      toDate,
-      interval,
-      categories,
-    );
+    return fillGapsInCategoricalData(data, fromDate, toDate, interval, categories);
   }
 
   // For multi-unit intervals, aggregate by summing counts
-  return aggregateCategoricalIntoMultiUnitBuckets(
-    data,
-    fromDate,
-    toDate,
-    interval,
-    categories,
-  );
+  return aggregateCategoricalIntoMultiUnitBuckets(data, fromDate, toDate, interval, categories);
 }
 
 /**
  * Fill gaps in single-unit categorical data
  */
-function fillGapsInCategoricalData<
-  T extends { timestamp: Date; category: string; count: number },
->(
+function fillGapsInCategoricalData<T extends { timestamp: Date; category: string; count: number }>(
   data: T[],
   fromDate: Date,
   toDate: Date,
@@ -401,9 +390,7 @@ function fillGapsInCategoricalData<
 
   // Special case for 7-day weeks
   const toStartOfInterval =
-    count === 7 && unit === "day"
-      ? (date: Date) => startOfWeek(date, { weekStartsOn: 1 })
-      : toStartOfSingleUnit;
+    count === 7 && unit === "day" ? (date: Date) => startOfWeek(date, { weekStartsOn: 1 }) : toStartOfSingleUnit;
 
   // Helper: Increment by single unit
   const addSingleUnit = (date: Date): Date => {
@@ -423,10 +410,7 @@ function fillGapsInCategoricalData<
     }
   };
 
-  const addInterval =
-    count === 7 && unit === "day"
-      ? (date: Date) => addWeeks(date, 1)
-      : addSingleUnit;
+  const addInterval = count === 7 && unit === "day" ? (date: Date) => addWeeks(date, 1) : addSingleUnit;
 
   const normalizedFrom = toStartOfInterval(fromDate);
   const normalizedTo = toStartOfInterval(toDate);
@@ -468,9 +452,7 @@ function fillGapsInCategoricalData<
 /**
  * Aggregate categorical single-unit data into multi-unit buckets by SUMMING counts
  */
-function aggregateCategoricalIntoMultiUnitBuckets<
-  T extends { timestamp: Date; category: string; count: number },
->(
+function aggregateCategoricalIntoMultiUnitBuckets<T extends { timestamp: Date; category: string; count: number }>(
   data: T[],
   fromDate: Date,
   toDate: Date,

@@ -3,14 +3,7 @@ import { EvalTemplateForm } from "@/src/features/evals/components/template-form"
 import { api } from "@/src/utils/api";
 import { type EvalTemplate } from "@hanzo/shared";
 import { useRouter } from "next/router";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useState } from "react";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -19,12 +12,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { Command } from "@/src/components/ui/command";
 import { Badge } from "@/src/components/ui/badge";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
-import {
-  SidePanel,
-  SidePanelContent,
-  SidePanelHeader,
-  SidePanelTitle,
-} from "@/src/components/ui/side-panel";
+import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
 import { HanzoIcon } from "@/src/components/HanzoLogo";
 
 export const EvalTemplateDetail = () => {
@@ -48,20 +36,13 @@ export const EvalTemplateDetail = () => {
       isUserManaged: template.data?.projectId !== null,
     },
     {
-      enabled:
-        !template.isPending &&
-        !template.isError &&
-        template.data?.name !== undefined,
+      enabled: !template.isPending && !template.isError && template.data?.name !== undefined,
     },
   );
 
   const handleTemplateSelect = (newTemplate: EvalTemplate) => {
     // Update URL without full page reload
-    router.push(
-      `/project/${projectId}/evals/templates/${newTemplate.id}`,
-      undefined,
-      { shallow: true },
-    );
+    router.push(`/project/${projectId}/evals/templates/${newTemplate.id}`, undefined, { shallow: true });
   };
 
   return (
@@ -125,9 +106,7 @@ export const EvalTemplateDetail = () => {
           </div>
           <SidePanel mobileTitle="Change history" id="change-history">
             <SidePanelHeader>
-              <SidePanelTitle className="text-base font-semibold">
-                Change history
-              </SidePanelTitle>
+              <SidePanelTitle className="text-base font-semibold">Change history</SidePanelTitle>
             </SidePanelHeader>
             <SidePanelContent>
               <Command className="flex flex-col gap-2 overflow-y-auto rounded-none font-medium focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[focus]:ring-0">
@@ -153,16 +132,10 @@ export const EvalTemplateDetail = () => {
                             # {template.version}
                           </Badge>
                           {index === 0 && (
-                            <StatusBadge
-                              type="active"
-                              key="active"
-                              className="break-all sm:break-normal"
-                            />
+                            <StatusBadge type="active" key="active" className="break-all sm:break-normal" />
                           )}
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {template.createdAt.toLocaleDateString()}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{template.createdAt.toLocaleDateString()}</span>
                       </div>
                     </div>
                   ))}
@@ -184,9 +157,7 @@ export function EvalVersionDropdown(props: {
 }) {
   const capture = usePostHogClientCapture();
   const handleSelect = (value: string) => {
-    const selectedTemplate = props.options?.find(
-      (template) => template.id === value,
-    );
+    const selectedTemplate = props.options?.find((template) => template.id === value);
     if (selectedTemplate && props.onSelect) {
       props.onSelect(selectedTemplate);
       capture("eval_templates:view_version");
@@ -241,9 +212,7 @@ export function UpdateTemplate({
     return (
       <div className="flex items-center gap-2">
         <HanzoIcon size={16} />
-        <span className="text-sm font-medium text-muted-foreground">
-          View only
-        </span>
+        <span className="text-sm font-medium text-muted-foreground">View only</span>
       </div>
     );
   }
@@ -251,11 +220,7 @@ export function UpdateTemplate({
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm font-medium">Edit mode</span>
-      <Switch
-        checked={isEditing}
-        onCheckedChange={handlePromptEdit}
-        disabled={!hasAccess}
-      />
+      <Switch checked={isEditing} onCheckedChange={handlePromptEdit} disabled={!hasAccess} />
     </div>
   );
 }

@@ -31,15 +31,9 @@ type MultiSelectGroup = {
   options: MultiSelectOptions[];
 };
 
-type MultiSelectKeyValuesProps<
-  T extends { key: string; value: string } | string,
-> = {
+type MultiSelectKeyValuesProps<T extends { key: string; value: string } | string> = {
   values: T[];
-  onValueChange: (
-    values: T[],
-    changedValue?: string,
-    selectedKeys?: Set<string>,
-  ) => void;
+  onValueChange: (values: T[], changedValue?: string, selectedKeys?: Set<string>) => void;
   options: MultiSelectOptions[] | readonly MultiSelectOptions[];
   title?: string;
   placeholder?: string;
@@ -56,9 +50,7 @@ type MultiSelectKeyValuesProps<
   showSelectedValueStrings?: boolean;
 };
 
-export function MultiSelectKeyValues<
-  T extends { key: string; value: string } | string,
->({
+export function MultiSelectKeyValues<T extends { key: string; value: string } | string>({
   title = "Select",
   placeholder,
   values,
@@ -79,9 +71,7 @@ export function MultiSelectKeyValues<
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const selectedValueKeys = new Set(
-    values.map((value) => (typeof value === "string" ? value : value.key)),
-  );
+  const selectedValueKeys = new Set(values.map((value) => (typeof value === "string" ? value : value.key)));
   const showClearItems = selectedValueKeys.size > 0 && !hideClearButton;
 
   function formatFilterValues(): T[] {
@@ -89,9 +79,7 @@ export function MultiSelectKeyValues<
       return Array.from(selectedValueKeys) as T[];
     }
 
-    const allOptions = groupedOptions
-      ? groupedOptions.flatMap((group) => group.options)
-      : options || [];
+    const allOptions = groupedOptions ? groupedOptions.flatMap((group) => group.options) : options || [];
 
     return allOptions
       .filter((option) => !!option.key && selectedValueKeys.has(option.key))
@@ -127,29 +115,14 @@ export function MultiSelectKeyValues<
             selectedValueKeys.add(value);
           }
           const filterValues = formatFilterValues();
-          onValueChange(
-            filterValues.length ? filterValues : [],
-            value,
-            selectedValueKeys,
-          );
+          onValueChange(filterValues.length ? filterValues : [], value, selectedValueKeys);
         }}
         disabled={option.disabled}
         className="group"
       >
-        <span
-          className={cn(
-            "capitalize",
-            option.isArchived ? "text-foreground/50" : "",
-          )}
-        >
-          {option.value}
-        </span>
-        {option.isArchived && (
-          <Archive className="ml-2 h-4 w-4 text-foreground/50" />
-        )}
-        {option.count !== undefined && (
-          <span className="ml-auto font-mono text-xs">{option.count}</span>
-        )}
+        <span className={cn("capitalize", option.isArchived ? "text-foreground/50" : "")}>{option.value}</span>
+        {option.isArchived && <Archive className="ml-2 h-4 w-4 text-foreground/50" />}
+        {option.count !== undefined && <span className="ml-auto font-mono text-xs">{option.count}</span>}
       </DropdownMenuCheckboxItem>
     );
   };
@@ -187,31 +160,19 @@ export function MultiSelectKeyValues<
           {selectedValueKeys.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge
-                variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
-              >
+              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
                 {selectedValueKeys.size}
               </Badge>
               <div className="hidden space-x-1 overflow-x-auto lg:flex">
                 {selectedValueKeys.size > 2 || !showSelectedValueStrings ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
+                  <Badge variant="secondary" className="rounded-sm px-1 font-normal">
                     {selectedValueKeys.size}
                   </Badge>
                 ) : (
                   options
-                    .filter((option) =>
-                      selectedValueKeys.has(option.key ?? option.value),
-                    )
+                    .filter((option) => selectedValueKeys.has(option.key ?? option.value))
                     .map((option) => (
-                      <Badge
-                        variant="secondary"
-                        key={option.key}
-                        className="rounded-sm px-1 font-normal capitalize"
-                      >
+                      <Badge variant="secondary" key={option.key} className="rounded-sm px-1 font-normal capitalize">
                         {option.value}
                       </Badge>
                     ))
@@ -221,15 +182,8 @@ export function MultiSelectKeyValues<
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align={align}
-        className="w-[200px]"
-        onPointerDownOutside={() => setIsOpen(false)}
-      >
-        <div
-          className="flex items-center border-b px-2 py-1"
-          onClick={handleInputClick}
-        >
+      <DropdownMenuContent align={align} className="w-[200px]" onPointerDownOutside={() => setIsOpen(false)}>
+        <div className="flex items-center border-b px-2 py-1" onClick={handleInputClick}>
           <Search className="mr-1 h-3 w-3 opacity-50" />
           <Input
             ref={inputRef}
@@ -245,9 +199,7 @@ export function MultiSelectKeyValues<
           />
         </div>
         <div className="max-h-[300px] overflow-y-auto">
-          {options &&
-            options.length > 0 &&
-            filterOptions(Array.from(options)).map(renderOption)}
+          {options && options.length > 0 && filterOptions(Array.from(options)).map(renderOption)}
 
           {groupedOptions?.map((group) => {
             const filteredGroupOptions = filterOptions(group.options);
@@ -268,13 +220,8 @@ export function MultiSelectKeyValues<
 
           {searchQuery &&
             (!options || filterOptions(Array.from(options)).length === 0) &&
-            (!groupedOptions ||
-              !groupedOptions.some(
-                (group) => filterOptions(group.options).length > 0,
-              )) && (
-              <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                No results found.
-              </div>
+            (!groupedOptions || !groupedOptions.some((group) => filterOptions(group.options).length > 0)) && (
+              <div className="px-2 py-1.5 text-sm text-muted-foreground">No results found.</div>
             )}
 
           {showClearItems && !searchQuery && (

@@ -1,12 +1,6 @@
-import {
-  throwIfNoOrganizationAccess,
-  hasOrganizationAccess,
-} from "@/src/features/rbac/utils/checkOrganizationAccess";
+import { throwIfNoOrganizationAccess, hasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  protectedOrganizationProcedure,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { protectedOrganizationProcedure, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { paginationZod, type PrismaClient, Role } from "@hanzo/shared";
 import { formatAuthProviderName } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
@@ -26,9 +20,7 @@ const projectLevelMemberQuery = z.object({
 
 async function getMembers(
   prisma: PrismaClient,
-  query:
-    | z.infer<typeof orgLevelMemberQuery>
-    | (z.infer<typeof projectLevelMemberQuery> & { orgId: string }),
+  query: z.infer<typeof orgLevelMemberQuery> | (z.infer<typeof projectLevelMemberQuery> & { orgId: string }),
   showAllOrgMembers: boolean = true,
 ) {
   // Build common where clause to ensure consistency between findMany and count queries
@@ -132,54 +124,49 @@ async function getMembers(
           provider: formatAuthProviderName(account.provider),
         })),
       },
-      projectRole: projectMemberships.find((pm) => pm.userId === om.userId)
-        ?.role,
+      projectRole: projectMemberships.find((pm) => pm.userId === om.userId)?.role,
     })),
     totalCount,
   };
 }
 
 export const allMembersRoutes = {
-  allFromOrg: protectedOrganizationProcedure
-    .input(orgLevelMemberQuery)
-    .query(async ({ input, ctx }) => {
-      throwIfNoOrganizationAccess({
-        session: ctx.session,
-        organizationId: input.orgId,
-        scope: "organizationMembers:read",
-      });
-      return getMembers(ctx.prisma, input);
-    }),
-  allFromProject: protectedProjectProcedure
-    .input(projectLevelMemberQuery)
-    .query(async ({ input, ctx }) => {
-      const orgId = ctx.session.orgId;
-      const orgAccess = hasOrganizationAccess({
-        session: ctx.session,
-        organizationId: orgId,
-        scope: "organizationMembers:read",
-      });
+  allFromOrg: protectedOrganizationProcedure.input(orgLevelMemberQuery).query(async ({ input, ctx }) => {
+    throwIfNoOrganizationAccess({
+      session: ctx.session,
+      organizationId: input.orgId,
+      scope: "organizationMembers:read",
+    });
+    return getMembers(ctx.prisma, input);
+  }),
+  allFromProject: protectedProjectProcedure.input(projectLevelMemberQuery).query(async ({ input, ctx }) => {
+    const orgId = ctx.session.orgId;
+    const orgAccess = hasOrganizationAccess({
+      session: ctx.session,
+      organizationId: orgId,
+      scope: "organizationMembers:read",
+    });
 
-      const projectAccess = hasProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "projectMembers:read",
+    const projectAccess = hasProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "projectMembers:read",
+    });
+
+    if (!orgAccess && !projectAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "You do not have the required access rights",
       });
+    }
 
-      if (!orgAccess && !projectAccess) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have the required access rights",
-        });
-      }
-
-      return getMembers(
-        ctx.prisma,
-        {
-          ...input,
-          orgId,
-        },
-        orgAccess,
-      );
-    }),
+    return getMembers(
+      ctx.prisma,
+      {
+        ...input,
+        orgId,
+      },
+      orgAccess,
+    );
+  }),
 };

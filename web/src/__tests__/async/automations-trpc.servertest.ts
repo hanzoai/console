@@ -231,8 +231,7 @@ describe("automations trpc", () => {
       });
 
       expect(response).toHaveLength(1);
-      const automationConfig = response[0].action
-        .config as SafeWebhookActionConfig;
+      const automationConfig = response[0].action.config as SafeWebhookActionConfig;
 
       // Should have display values, not encrypted values
       expect(automationConfig.displayHeaders).toEqual({
@@ -513,9 +512,7 @@ describe("automations trpc", () => {
           projectId: project.id,
           automationId: "non-existent-automation",
         }),
-      ).rejects.toThrow(
-        `Automation with id non-existent-automation not found.`,
-      );
+      ).rejects.toThrow(`Automation with id non-existent-automation not found.`);
     });
   });
 
@@ -636,18 +633,12 @@ describe("automations trpc", () => {
 
       // Headers should be encrypted for secret ones, plain for others
       const config = createdAction?.config as WebhookActionConfigWithSecrets;
-      expect(config.requestHeaders["content-type"].value).toBe(
-        "application/json",
-      );
+      expect(config.requestHeaders["content-type"].value).toBe("application/json");
       expect(config.requestHeaders["x-public"].value).toBe("public-value");
       expect(config.requestHeaders["x-api-key"].secret).toBe(true);
-      expect(config.requestHeaders["x-api-key"].value).not.toBe(
-        "secret-key-123",
-      ); // Should be encrypted
+      expect(config.requestHeaders["x-api-key"].value).not.toBe("secret-key-123"); // Should be encrypted
       expect(config.requestHeaders["authorization"].secret).toBe(true);
-      expect(config.requestHeaders["authorization"].value).not.toBe(
-        "Bearer secret-token-456",
-      ); // Should be encrypted
+      expect(config.requestHeaders["authorization"].value).not.toBe("Bearer secret-token-456"); // Should be encrypted
 
       // Display values should be present
       expect(config.displayHeaders).toMatchObject({
@@ -713,12 +704,8 @@ describe("automations trpc", () => {
         "content-type": { secret: false, value: "application/json" },
         "x-public": { secret: false, value: "public-value" },
       });
-      expect(config.requestHeaders["x-api-key"].value).not.toBe(
-        "secret-value-123",
-      );
-      expect(config.requestHeaders["authorization"].value).not.toBe(
-        "Bearer token-456",
-      );
+      expect(config.requestHeaders["x-api-key"].value).not.toBe("secret-value-123");
+      expect(config.requestHeaders["authorization"].value).not.toBe("Bearer token-456");
 
       // Display values should be present with masked secrets
       expect(config.displayHeaders).toMatchObject({
@@ -874,9 +861,7 @@ describe("automations trpc", () => {
             channelName: "general",
           },
         }),
-      ).rejects.toThrow(
-        "Slack integration not found. Please connect your Slack workspace first.",
-      );
+      ).rejects.toThrow("Slack integration not found. Please connect your Slack workspace first.");
     });
   });
 
@@ -1074,15 +1059,11 @@ describe("automations trpc", () => {
       const config = updatedAction?.config as any;
 
       // Public headers should remain plain
-      expect(config.requestHeaders["content-type"].value).toBe(
-        "application/json",
-      );
+      expect(config.requestHeaders["content-type"].value).toBe("application/json");
       expect(config.requestHeaders["x-public"].value).toBe("new-public-value");
 
       // Secret headers should be encrypted
-      expect(config.requestHeaders["x-secret-key"].value).not.toBe(
-        "new-secret-123",
-      );
+      expect(config.requestHeaders["x-secret-key"].value).not.toBe("new-secret-123");
       expect(config.requestHeaders["x-Case-KEY"].value).toBe("new-value");
       expect(config.requestHeaders["x-case-key"]).toBeUndefined();
 
@@ -1185,14 +1166,10 @@ describe("automations trpc", () => {
       const config = updatedAction?.config as WebhookActionConfigWithSecrets;
 
       // x-currently-public should now be encrypted (was plain, now secret)
-      expect(config.requestHeaders["x-currently-public"].value).not.toBe(
-        "now-secret-value",
-      );
+      expect(config.requestHeaders["x-currently-public"].value).not.toBe("now-secret-value");
 
       // x-currently-secret should now be plain (was secret, now public)
-      expect(config.requestHeaders["x-currently-secret"].value).toBe(
-        "now-public-value",
-      );
+      expect(config.requestHeaders["x-currently-secret"].value).toBe("now-public-value");
 
       // Display values should reflect the changes
       expect(config.displayHeaders).toMatchObject({
@@ -1288,9 +1265,7 @@ describe("automations trpc", () => {
       const config = updatedAction?.config as WebhookActionConfigWithSecrets;
 
       // x-currently-secret should still be encrypted
-      expect(config.requestHeaders["x-currently-secret"].value).not.toBe(
-        "secret-value",
-      );
+      expect(config.requestHeaders["x-currently-secret"].value).not.toBe("secret-value");
 
       // Display values should reflect the changes
       expect(config.displayHeaders).toMatchObject({
@@ -1391,12 +1366,8 @@ describe("automations trpc", () => {
       expect(config.url).toBe("https://example.com/new-webhook-url");
 
       // Secret headers should still be encrypted and preserved
-      expect(config.requestHeaders["x-api-key"].value).not.toBe(
-        "secret-key-123",
-      );
-      expect(config.requestHeaders["authorization"].value).not.toBe(
-        "Bearer token-456",
-      );
+      expect(config.requestHeaders["x-api-key"].value).not.toBe("secret-key-123");
+      expect(config.requestHeaders["authorization"].value).not.toBe("Bearer token-456");
 
       // Display values should be preserved
       expect(config.displayHeaders).toMatchObject({
@@ -1492,15 +1463,11 @@ describe("automations trpc", () => {
 
       // Secret header should be encrypted in requestHeaders
       expect(config.requestHeaders["x-api-key"].secret).toBe(true);
-      expect(config.requestHeaders["x-api-key"].value).not.toBe(
-        "new-secret-key",
-      );
+      expect(config.requestHeaders["x-api-key"].value).not.toBe("new-secret-key");
 
       // Public header should remain plain
       expect(config.requestHeaders["content-type"].secret).toBe(false);
-      expect(config.requestHeaders["content-type"].value).toBe(
-        "application/json",
-      );
+      expect(config.requestHeaders["content-type"].value).toBe("application/json");
 
       // Both headers should be in displayHeaders
       expect(config.displayHeaders).toMatchObject({
@@ -1682,10 +1649,7 @@ describe("automations trpc", () => {
             projectId: project.id,
             triggerId: trigger.id,
             actionId: action.id,
-            status:
-              i % 2 === 0
-                ? ActionExecutionStatus.COMPLETED
-                : ActionExecutionStatus.ERROR,
+            status: i % 2 === 0 ? ActionExecutionStatus.COMPLETED : ActionExecutionStatus.ERROR,
             sourceId: v4(),
             input: { iteration: i },
             output: i % 2 === 0 ? { result: "success" } : undefined,
@@ -2066,10 +2030,7 @@ describe("automations trpc", () => {
       const { project, caller } = await prepare();
 
       // Create webhook action
-      const {
-        secretKey: originalSecretKey,
-        displaySecretKey: originalDisplaySecretKey,
-      } = generateWebhookSecret();
+      const { secretKey: originalSecretKey, displaySecretKey: originalDisplaySecretKey } = generateWebhookSecret();
       const action = await prisma.action.create({
         data: {
           id: v4(),
@@ -2390,9 +2351,7 @@ describe("automations trpc", () => {
       expect(response.action.type).toBe("GITHUB_DISPATCH");
 
       const config = response.action.config as any;
-      expect(config.url).toBe(
-        "https://api.github.com/repos/owner/new-repo/dispatches",
-      );
+      expect(config.url).toBe("https://api.github.com/repos/owner/new-repo/dispatches");
       expect(config.eventType).toBe("new-event");
       expect(config.displayGitHubToken).toBe("ghp_...ken"); // Preserved
 
@@ -2553,9 +2512,7 @@ describe("automations trpc", () => {
       expect(decrypt(dbConfig.githubToken)).toBe(originalToken);
 
       // Verify URL and eventType were updated
-      expect(dbConfig.url).toBe(
-        "https://api.github.com/repos/new-owner/new-repo/dispatches",
-      );
+      expect(dbConfig.url).toBe("https://api.github.com/repos/new-owner/new-repo/dispatches");
       expect(dbConfig.eventType).toBe("new-event-type");
     });
   });

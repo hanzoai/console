@@ -126,29 +126,20 @@ export const GetMediaUploadUrlQuerySchema = z.object({
     message: `Invalid content type. Only supporting ${Object.values(MediaContentType).join(", ")}`,
   }),
   contentLength: z.number().positive().int(),
-  sha256Hash: z
-    .string()
-    .regex(
-      /^[A-Za-z0-9+/=]{44}$/,
-      "Must be a 44 character base64 encoded SHA-256 hash",
-    ),
+  sha256Hash: z.string().regex(/^[A-Za-z0-9+/=]{44}$/, "Must be a 44 character base64 encoded SHA-256 hash"),
   field: z.enum(MediaEnabledFields, {
     message: `Invalid field. Only supporting ${Object.values(MediaEnabledFields).join(", ")}`,
   }),
 });
 
-export type GetMediaUploadUrlQuery = z.infer<
-  typeof GetMediaUploadUrlQuerySchema
->;
+export type GetMediaUploadUrlQuery = z.infer<typeof GetMediaUploadUrlQuerySchema>;
 
 export const GetMediaUploadUrlResponseSchema = z.object({
   uploadUrl: z.string().nullish(),
   mediaId: z.string(),
 });
 
-export type GetMediaUploadUrlResponse = z.infer<
-  typeof GetMediaUploadUrlResponseSchema
->;
+export type GetMediaUploadUrlResponse = z.infer<typeof GetMediaUploadUrlResponseSchema>;
 
 export const PatchMediaBodySchema = z.object({
   uploadedAt: z.coerce.date(),

@@ -91,9 +91,7 @@ describe("orderByTimeSeries", () => {
   });
 
   it("should handle empty filter by using default time range", () => {
-    expect(() => orderByTimeSeries([], "timestamp")).toThrow(
-      "Time Filter is required for time series queries",
-    );
+    expect(() => orderByTimeSeries([], "timestamp")).toThrow("Time Filter is required for time series queries");
   });
 
   describe("getObservationUsageByTypeByTime", () => {
@@ -152,10 +150,7 @@ describe("orderByTimeSeries", () => {
 
       await createObservationsCh([obs1, obs2, obs3]);
 
-      const result = await getObservationUsageByTypeByTime(
-        projectId,
-        mockFilter,
-      );
+      const result = await getObservationUsageByTypeByTime(projectId, mockFilter);
 
       // Verify the structure of the returned data
       expect(result).toEqual(

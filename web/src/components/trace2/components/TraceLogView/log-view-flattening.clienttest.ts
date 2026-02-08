@@ -4,17 +4,11 @@
  * @jest-environment jsdom
  */
 
-import {
-  flattenChronological,
-  flattenTreeOrder,
-  filterBySearch,
-} from "./log-view-flattening";
+import { flattenChronological, flattenTreeOrder, filterBySearch } from "./log-view-flattening";
 import { type TreeNode } from "@/src/components/trace2/lib/types";
 
 // Helper to create a minimal TreeNode for testing
-function createNode(
-  overrides: Partial<TreeNode> & { id: string; type: TreeNode["type"] },
-): TreeNode {
+function createNode(overrides: Partial<TreeNode> & { id: string; type: TreeNode["type"] }): TreeNode {
   return {
     name: overrides.name ?? overrides.id,
     startTime: overrides.startTime ?? new Date("2024-01-01T00:00:00Z"),
@@ -289,12 +283,7 @@ describe("log-view-flattening", () => {
       const result = flattenTreeOrder([root]);
 
       expect(result).toHaveLength(4);
-      expect(result.map((r) => r.node.id)).toEqual([
-        "level-0",
-        "level-1",
-        "level-2",
-        "level-3",
-      ]);
+      expect(result.map((r) => r.node.id)).toEqual(["level-0", "level-1", "level-2", "level-3"]);
 
       // All are only children, so all are last siblings
       result.forEach((item) => {

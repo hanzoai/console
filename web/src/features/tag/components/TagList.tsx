@@ -10,21 +10,10 @@ type TagListProps = {
   className?: string;
 };
 
-const TagList = ({
-  selectedTags,
-  isLoading,
-  viewOnly = false,
-  isTableCell = false,
-}: TagListProps) => {
+const TagList = ({ selectedTags, isLoading, viewOnly = false, isTableCell = false }: TagListProps) => {
   return selectedTags.length > 0 || viewOnly ? (
     selectedTags.map((tag) => (
-      <TagButton
-        key={tag}
-        tag={tag}
-        loading={isLoading}
-        viewOnly={viewOnly}
-        isTableCell={isTableCell}
-      />
+      <TagButton key={tag} tag={tag} loading={isLoading} viewOnly={viewOnly} isTableCell={isTableCell} />
     ))
   ) : (
     <Badge variant="tertiary">

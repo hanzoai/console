@@ -44,21 +44,17 @@ async function getSsoConfigs(): Promise<SsoProviderSchema[]> {
   const DB_TIMEOUT = 3 * 1000; // 3 seconds
 
   const isCacheExpired =
-    Date.now() - cachedSsoConfigs.timestamp >
-    (cachedSsoConfigs.failedToFetch ? FAILEDTOFETCH_RETRY_AFTER : CACHE_TTL);
+    Date.now() - cachedSsoConfigs.timestamp > (cachedSsoConfigs.failedToFetch ? FAILEDTOFETCH_RETRY_AFTER : CACHE_TTL);
 
   if (isCacheExpired) {
     // findMany with custom timeout via $transaction
     let dbConfigs: SsoConfig[] = [];
     let failedToFetch = false;
     try {
-      dbConfigs = await prisma.$transaction(
-        async (prisma) => prisma.ssoConfig.findMany(),
-        {
-          maxWait: DB_MAX_WAIT,
-          timeout: DB_TIMEOUT,
-        },
-      );
+      dbConfigs = await prisma.$transaction(async (prisma) => prisma.ssoConfig.findMany(), {
+        maxWait: DB_MAX_WAIT,
+        timeout: DB_TIMEOUT,
+      });
     } catch (e) {
       logger.error("Failed to load SSO configs from the database", e);
       traceException(e);
@@ -73,10 +69,7 @@ async function getSsoConfigs(): Promise<SsoProviderSchema[]> {
           const parsedValue = SsoProviderSchema.parse(v);
           return parsedValue;
         } catch (e) {
-          logger.error(
-            `Failed to parse SSO provider config for domain ${v.domain}`,
-            e,
-          );
+          logger.error(`Failed to parse SSO provider config for domain ${v.domain}`, e);
 
           traceException(e);
           return null;
@@ -129,13 +122,9 @@ export async function isAnySsoConfigured(): Promise<boolean> {
  * @param domain - The domain to check for a custom SSO provider, e.g. "example.com".
  * @returns `providerId` or null if none is configured or EE is not available.
  */
-export async function getSsoAuthProviderIdForDomain(
-  domain: string,
-): Promise<string | null> {
+export async function getSsoAuthProviderIdForDomain(domain: string): Promise<string | null> {
   if (!multiTenantSsoAvailable) return null;
-  const ssoConfig = (await getSsoConfigs()).find(
-    (ssoConfig) => ssoConfig.domain === domain.toLowerCase(),
-  );
+  const ssoConfig = (await getSsoConfigs()).find((ssoConfig) => ssoConfig.domain === domain.toLowerCase());
 
   if (!ssoConfig) return null;
   return getAuthProviderIdForSsoConfig(ssoConfig);
@@ -242,14 +231,8 @@ const dbToNextAuthProvider = (provider: SsoProviderSchema): Provider | null => {
     // Type check to ensure we handle all providers
 
     const _: never = provider;
-    logger.error(
-      `Unrecognized SSO provider for domain ${(provider as any).domain}`,
-    );
-    traceException(
-      new Error(
-        `Unrecognized SSO provider for domain ${(provider as any).domain}`,
-      ),
-    );
+    logger.error(`Unrecognized SSO provider for domain ${(provider as any).domain}`);
+    traceException(new Error(`Unrecognized SSO provider for domain ${(provider as any).domain}`));
     return null;
   }
 };
@@ -260,9 +243,7 @@ const dbToNextAuthProvider = (provider: SsoProviderSchema): Provider | null => {
  * @param {DbSsoConfig} dbSsoConfig - The SSO configuration from the database.
  * @returns {string} - The providerId used in NextAuth.
  */
-const getAuthProviderIdForSsoConfig = (
-  dbSsoConfig: SsoProviderSchema,
-): string => {
+const getAuthProviderIdForSsoConfig = (dbSsoConfig: SsoProviderSchema): string => {
   if (!dbSsoConfig.authConfig) return dbSsoConfig.authProvider;
   return `${dbSsoConfig.domain}.${dbSsoConfig.authProvider}`;
 };

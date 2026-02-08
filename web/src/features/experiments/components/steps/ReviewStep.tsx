@@ -1,25 +1,12 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { type ReviewStepProps } from "@/src/features/experiments/types/stepProps";
 import { StepHeader } from "@/src/features/experiments/components/shared/StepHeader";
 
-export const ReviewStep: React.FC<ReviewStepProps> = ({
-  formState,
-  navigationState,
-  summary,
-}) => {
+export const ReviewStep: React.FC<ReviewStepProps> = ({ formState, navigationState, summary }) => {
   const { form } = formState;
   const { setActiveStep } = navigationState;
   const {
@@ -44,10 +31,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
       {/* Two-column grid layout */}
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
         {/* Prompt Card - Top Left */}
-        <Card
-          className="cursor-pointer transition-colors hover:bg-accent"
-          onClick={() => setActiveStep("prompt")}
-        >
+        <Card className="cursor-pointer transition-colors hover:bg-accent" onClick={() => setActiveStep("prompt")}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Prompt</CardTitle>
           </CardHeader>
@@ -64,10 +48,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </Card>
 
         {/* Model Card - Top Right */}
-        <Card
-          className="cursor-pointer transition-colors hover:bg-accent"
-          onClick={() => setActiveStep("prompt")}
-        >
+        <Card className="cursor-pointer transition-colors hover:bg-accent" onClick={() => setActiveStep("prompt")}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Model</CardTitle>
           </CardHeader>
@@ -94,9 +75,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             )}
             {structuredOutputEnabled && selectedSchemaName && (
               <div className="flex gap-2">
-                <span className="text-muted-foreground">
-                  Structured Output:
-                </span>
+                <span className="text-muted-foreground">Structured Output:</span>
                 <span>{selectedSchemaName}</span>
               </div>
             )}
@@ -104,10 +83,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         </Card>
 
         {/* Dataset Card - Middle Left */}
-        <Card
-          className="cursor-pointer transition-colors hover:bg-accent"
-          onClick={() => setActiveStep("dataset")}
-        >
+        <Card className="cursor-pointer transition-colors hover:bg-accent" onClick={() => setActiveStep("dataset")}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Dataset</CardTitle>
           </CardHeader>
@@ -132,9 +108,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             onClick={() => setActiveStep("evaluators")}
           >
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                Evaluators ({activeEvaluatorNames.length})
-              </CardTitle>
+              <CardTitle className="text-base">Evaluators ({activeEvaluatorNames.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
@@ -169,9 +143,8 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
                   <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[300px]">
-                  This run name is auto-generated from the experiment name and
-                  can be used to fetch the resulting experiment run via the
-                  public API.
+                  This run name is auto-generated from the experiment name and can be used to fetch the resulting
+                  experiment run via the public API.
                 </TooltipContent>
               </Tooltip>
             </div>

@@ -6,11 +6,7 @@
 import { type TimelineScaleProps } from "./types";
 import { STEP_SIZE } from "./timeline-calculations";
 
-export function TimelineScale({
-  traceDuration,
-  scaleWidth,
-  stepSize,
-}: TimelineScaleProps) {
+export function TimelineScale({ traceDuration, scaleWidth, stepSize }: TimelineScaleProps) {
   // Calculate how many markers to show
   const numMarkers = Math.ceil(scaleWidth / STEP_SIZE) + 1;
 
@@ -26,15 +22,8 @@ export function TimelineScale({
           }
 
           return (
-            <div
-              key={index}
-              className="absolute h-full border-l text-xs"
-              style={{ left: `${index * STEP_SIZE}px` }}
-            >
-              <span
-                className="absolute left-2 text-xs text-muted-foreground"
-                title={`${timeValue.toFixed(2)}s`}
-              >
+            <div key={index} className="absolute h-full border-l text-xs" style={{ left: `${index * STEP_SIZE}px` }}>
+              <span className="absolute left-2 text-xs text-muted-foreground" title={`${timeValue.toFixed(2)}s`}>
                 {timeValue.toFixed(2)}s
               </span>
             </div>

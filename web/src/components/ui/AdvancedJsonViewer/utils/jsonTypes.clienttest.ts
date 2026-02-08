@@ -4,13 +4,7 @@
  * Critical functionality: accurate type detection for JSON values
  */
 
-import {
-  getJSONType,
-  isExpandable,
-  getChildren,
-  countAllDescendants,
-  safeStringify,
-} from "./jsonTypes";
+import { getJSONType, isExpandable, getChildren, countAllDescendants, safeStringify } from "./jsonTypes";
 
 describe("jsonTypes", () => {
   describe("getJSONType", () => {

@@ -9,10 +9,7 @@ export const Variables = () => {
   const renderNoVariables = () => (
     <div className="text-xs">
       <p className="mb-2">No variables defined.</p>
-      <p>
-        Use double curly braces in your prompts to add a variable:
-        &#123;&#123;exampleVariable&#125;&#125;
-      </p>
+      <p>Use double curly braces in your prompts to add a variable: &#123;&#123;exampleVariable&#125;&#125;</p>
     </div>
   );
 
@@ -28,17 +25,13 @@ export const Variables = () => {
         .map((promptVariable, index) => (
           <div key={promptVariable.name}>
             <PromptVariableComponent promptVariable={promptVariable} />
-            {index !== promptVariables.length - 1 && (
-              <Divider className="my-2 text-muted-foreground" />
-            )}
+            {index !== promptVariables.length - 1 && <Divider className="my-2 text-muted-foreground" />}
           </div>
         ))}
     </div>
   );
 
   return (
-    <div className="flex h-full flex-col">
-      {promptVariables.length === 0 ? renderNoVariables() : renderVariables()}
-    </div>
+    <div className="flex h-full flex-col">{promptVariables.length === 0 ? renderNoVariables() : renderVariables()}</div>
   );
 };

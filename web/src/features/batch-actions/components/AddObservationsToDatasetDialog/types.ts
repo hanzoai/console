@@ -2,13 +2,7 @@ import type { RefObject } from "react";
 import type { DatasetFormRef } from "@/src/features/datasets/components/DatasetForm";
 
 // Re-export base types from shared
-export type {
-  SourceField,
-  MappingMode,
-  MappingTarget,
-  RootMappingConfig,
-  AddToDatasetMapping,
-} from "@hanzo/shared";
+export type { SourceField, MappingMode, MappingTarget, RootMappingConfig, AddToDatasetMapping } from "@hanzo/shared";
 
 import type {
   SourceField,
@@ -88,12 +82,7 @@ export type DatasetSelectStepProps = {
 export type DatasetCreateStepProps = {
   projectId: string;
   formRef: RefObject<DatasetFormRef | null>;
-  onDatasetCreated: (params: {
-    id: string;
-    name: string;
-    inputSchema: unknown;
-    expectedOutputSchema: unknown;
-  }) => void;
+  onDatasetCreated: (params: { id: string; name: string; inputSchema: unknown; expectedOutputSchema: unknown }) => void;
   onValidationChange?: (isValid: boolean, isSubmitting: boolean) => void;
 };
 
@@ -115,10 +104,7 @@ export type MappingStepProps = {
   /** JSON Schema for this field (inputSchema for input, expectedOutputSchema for expectedOutput) */
   schema?: unknown;
   /** Callback when validation state changes */
-  onValidationChange?: (
-    isValid: boolean,
-    errors: SchemaValidationError[],
-  ) => void;
+  onValidationChange?: (isValid: boolean, errors: SchemaValidationError[]) => void;
 };
 
 // Final preview step props

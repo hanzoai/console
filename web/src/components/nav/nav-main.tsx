@@ -67,15 +67,8 @@ export function NavMain({
             {items.ungrouped.map((item) => (
               <SidebarMenuItem key={item.title}>
                 {item.menuNode || (
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={item.isActive}
-                  >
-                    <Link
-                      href={item.url}
-                      target={item.newTab ? "_blank" : undefined}
-                    >
+                  <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
+                    <Link href={item.url} target={item.newTab ? "_blank" : undefined}>
                       <NavItemContent item={item} />
                     </Link>
                   </SidebarMenuButton>
@@ -94,15 +87,8 @@ export function NavMain({
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     {item.menuNode || (
-                      <SidebarMenuButton
-                        asChild
-                        tooltip={item.title}
-                        isActive={item.isActive}
-                      >
-                        <Link
-                          href={item.url}
-                          target={item.newTab ? "_blank" : undefined}
-                        >
+                      <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
+                        <Link href={item.url} target={item.newTab ? "_blank" : undefined}>
                           <NavItemContent item={item} />
                         </Link>
                       </SidebarMenuButton>

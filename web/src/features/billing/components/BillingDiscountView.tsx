@@ -6,9 +6,7 @@ import { BillingDiscountCodeButton } from "@/src/ee/features/billing/components/
 export const BillingDiscountView = () => {
   const { organization } = useBillingInformation();
 
-  const shouldRenderComponent = Boolean(
-    organization?.cloudConfig?.stripe?.customerId,
-  );
+  const shouldRenderComponent = Boolean(organization?.cloudConfig?.stripe?.customerId);
 
   const { data } = api.cloudBilling.getSubscriptionInfo.useQuery(
     { orgId: organization?.id ?? "" },

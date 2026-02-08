@@ -1,7 +1,4 @@
-import {
-  type IntervalConfig,
-  type TimeRange,
-} from "@/src/utils/date-range-utils";
+import { type IntervalConfig, type TimeRange } from "@/src/utils/date-range-utils";
 import { ScoreTimeSeriesNumericChart } from "./ScoreTimeSeriesNumericChart";
 import { ScoreTimeSeriesBooleanChart } from "./ScoreTimeSeriesBooleanChart";
 import { ScoreTimeSeriesCategoricalChart } from "./ScoreTimeSeriesCategoricalChart";

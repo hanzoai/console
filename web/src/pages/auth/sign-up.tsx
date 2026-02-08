@@ -1,12 +1,5 @@
 import { Button } from "@/src/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { signupSchema } from "@/src/features/auth/lib/signupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,11 +13,7 @@ import { useState } from "react";
 import { HanzoCloudIcon } from "@/src/components/HanzoLogo";
 import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPrivacyNotice";
 import { CloudRegionSwitch } from "@/src/features/auth/components/AuthCloudRegionSwitch";
-import {
-  SSOButtons,
-  useHuggingFaceRedirect,
-  type PageProps,
-} from "@/src/pages/auth/sign-in";
+import { SSOButtons, useHuggingFaceRedirect, type PageProps } from "@/src/pages/auth/sign-in";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
@@ -37,10 +26,7 @@ export { getServerSideProps } from "@/src/pages/auth/sign-in";
 
 type NextAuthProvider = NonNullable<Parameters<typeof signIn>[0]>;
 
-export default function SignIn({
-  authProviders,
-  runningOnHuggingFaceSpaces,
-}: PageProps) {
+export default function SignIn({ authProviders, runningOnHuggingFaceSpaces }: PageProps) {
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
   const { isHanzoCloud, region } = useHanzoCloudRegion();
   const router = useRouter();
@@ -51,23 +37,18 @@ export default function SignIn({
   const emailParam = router.query.email as string | undefined;
 
   // Validate targetPath to prevent open redirect attacks
-  const targetPath = queryTargetPath
-    ? getSafeRedirectPath(queryTargetPath)
-    : undefined;
+  const targetPath = queryTargetPath ? getSafeRedirectPath(queryTargetPath) : undefined;
 
   const [formError, setFormError] = useState<string | null>(null);
 
   // Two-step login flow: ask for email first, detect SSO, then either redirect to SSO or reveal password field.
   // Skip this flow when no SSO is configured - show password field immediately
-  const [showPasswordStep, setShowPasswordStep] = useState<boolean>(
-    !authProviders.sso,
-  );
+  const [showPasswordStep, setShowPasswordStep] = useState<boolean>(!authProviders.sso);
   const [continueLoading, setContinueLoading] = useState<boolean>(false);
-  const [lastUsedAuthMethod, setLastUsedAuthMethod] =
-    useLocalStorage<NextAuthProvider | null>(
-      "hanzo_last_used_auth_method",
-      null,
-    );
+  const [lastUsedAuthMethod, setLastUsedAuthMethod] = useLocalStorage<NextAuthProvider | null>(
+    "hanzo_last_used_auth_method",
+    null,
+  );
 
   const form = useForm({
     resolver: showPasswordStep ? zodResolver(signupSchema) : undefined,
@@ -110,14 +91,11 @@ export default function SignIn({
     const domain = emailResult.data.split("@")[1]?.toLowerCase();
 
     try {
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ domain }),
-        },
-      );
+      const res = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/check-sso`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain }),
+      });
 
       if (res.ok) {
         // Enterprise SSO found – redirect straight away
@@ -139,9 +117,7 @@ export default function SignIn({
         // Find and focus the name input (since it's the first new field) or password?
         // Plan says "name + password fields". Usually Name is first in Sign Up.
         // Let's focus Name.
-        const nameInput = document.querySelector(
-          'input[name="name"]',
-        ) as HTMLInputElement;
+        const nameInput = document.querySelector('input[name="name"]') as HTMLInputElement;
         if (nameInput) {
           nameInput.focus();
         }
@@ -157,14 +133,11 @@ export default function SignIn({
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
       setFormError(null);
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/signup`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
-        },
-      );
+      const res = await fetch(`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
       if (!res.ok) {
         const payload = (await res.json()) as { message: string };
@@ -190,11 +163,7 @@ export default function SignIn({
     <>
       <Head>
         <title>Sign up | Hanzo Cloud</title>
-        <meta
-          name="description"
-          content="Create an account, no credit card required."
-          key="desc"
-        />
+        <meta name="description" content="Create an account, no credit card required." key="desc" />
       </Head>
       <div className="flex flex-1 flex-col py-6 sm:min-h-full sm:justify-center sm:px-6 sm:py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -204,9 +173,7 @@ export default function SignIn({
           </h2>
         </div>
         {isHanzoCloud ? (
-          <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">
-            No credit card required.
-          </div>
+          <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">No credit card required.</div>
         ) : null}
 
         <CloudRegionSwitch isSignUpPage />
@@ -246,12 +213,7 @@ export default function SignIn({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="jsdoe@example.com"
-                        allowPasswordManager
-                        autoComplete="email"
-                        {...field}
-                      />
+                      <Input placeholder="jsdoe@example.com" allowPasswordManager autoComplete="email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,11 +237,7 @@ export default function SignIn({
               <Button
                 type="submit"
                 className="w-full"
-                loading={
-                  showPasswordStep
-                    ? form.formState.isSubmitting
-                    : continueLoading
-                }
+                loading={showPasswordStep ? form.formState.isSubmitting : continueLoading}
                 disabled={
                   showPasswordStep
                     ? false // Form validation handles this via handleSubmit
@@ -289,11 +247,7 @@ export default function SignIn({
               >
                 {showPasswordStep ? "Sign up" : "Continue"}
               </Button>
-              {formError ? (
-                <div className="text-center text-sm font-medium text-destructive">
-                  {formError}
-                </div>
-              ) : null}
+              {formError ? <div className="text-center text-sm font-medium text-destructive">{formError}</div> : null}
             </form>
           </Form>
           <SSOButtons

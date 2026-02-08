@@ -62,19 +62,12 @@ export default function NewDashboard() {
         },
         actionButtonsRight: (
           <>
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/project/${projectId}/dashboards`)}
-            >
+            <Button variant="outline" onClick={() => router.push(`/project/${projectId}/dashboards`)}>
               Cancel
             </Button>
             <Button
               onClick={handleCreateDashboard}
-              disabled={
-                !dashboardName.trim() ||
-                createDashboard.isPending ||
-                !hasCUDAccess
-              }
+              disabled={!dashboardName.trim() || createDashboard.isPending || !hasCUDAccess}
               loading={createDashboard.isPending}
             >
               Create
@@ -111,10 +104,7 @@ export default function NewDashboard() {
         </div>
 
         <div className="text-sm text-muted-foreground">
-          <p>
-            After creating the dashboard, you can add widgets to visualize your
-            data.
-          </p>
+          <p>After creating the dashboard, you can add widgets to visualize your data.</p>
         </div>
       </div>
     </Page>

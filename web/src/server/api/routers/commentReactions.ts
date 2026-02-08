@@ -1,12 +1,6 @@
 import { z } from "zod/v4";
-import {
-  throwIfNoProjectAccess,
-  hasProjectAccess,
-} from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { throwIfNoProjectAccess, hasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { logger } from "@hanzo/shared/src/server";
 
@@ -220,12 +214,7 @@ export const commentReactionsRouter = createTRPCRouter({
             acc[reaction.emoji].count++;
 
             // Only include user details if user has permission
-            if (
-              canSeeUserDetails &&
-              "user" in reaction &&
-              reaction.user &&
-              typeof reaction.user === "object"
-            ) {
+            if (canSeeUserDetails && "user" in reaction && reaction.user && typeof reaction.user === "object") {
               const user = reaction.user as {
                 id: string;
                 name: string | null;

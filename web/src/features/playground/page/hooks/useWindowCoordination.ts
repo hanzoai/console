@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  type PlaygroundHandle,
-  type WindowCoordinationReturn,
-  PLAYGROUND_EVENTS,
-} from "../types";
+import { type PlaygroundHandle, type WindowCoordinationReturn, PLAYGROUND_EVENTS } from "../types";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 
 /**
@@ -43,9 +39,7 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
    */
   const checkModelConfiguration = useCallback(() => {
     const registeredWindows = Array.from(playgroundWindowRegistry.values());
-    const hasModel = registeredWindows.some((handle) =>
-      handle.hasModelConfigured(),
-    );
+    const hasModel = registeredWindows.some((handle) => handle.hasModelConfigured());
     setHasAnyModelConfigured(hasModel);
   }, []);
 
@@ -111,39 +105,28 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
     }
 
     // Check if any windows are already executing
-    const alreadyExecuting = registeredWindows.some((handle) =>
-      handle.getIsStreaming(),
-    );
+    const alreadyExecuting = registeredWindows.some((handle) => handle.getIsStreaming());
     if (alreadyExecuting) {
       return;
     }
 
     // Check if any window has a model configured
-    const hasModel = registeredWindows.some((handle) =>
-      handle.hasModelConfigured(),
-    );
+    const hasModel = registeredWindows.some((handle) => handle.hasModelConfigured());
     if (!hasModel) {
       // Don't show error toast - the UI already shows a clear alert banner
       return;
     }
 
     // Dispatch execute-all event first
-    playgroundEventBus.dispatchEvent(
-      new CustomEvent(PLAYGROUND_EVENTS.EXECUTE_ALL),
-    );
+    playgroundEventBus.dispatchEvent(new CustomEvent(PLAYGROUND_EVENTS.EXECUTE_ALL));
 
     // Check after a short delay if any windows started executing
     setTimeout(() => {
-      const anyExecuting = Array.from(playgroundWindowRegistry.values()).some(
-        (handle) => handle.getIsStreaming(),
-      );
+      const anyExecuting = Array.from(playgroundWindowRegistry.values()).some((handle) => handle.getIsStreaming());
 
       if (!anyExecuting) {
         // No windows are executing - they must all be empty
-        showErrorToast(
-          "No content to execute",
-          "Please add at least one message with content to any window.",
-        );
+        showErrorToast("No content to execute", "Please add at least one message with content to any window.");
         setIsExecutingAll(false);
       } else {
         // At least one window is executing, set global state
@@ -162,9 +145,9 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
 
         // Monitor execution completion
         const checkExecutionCompletion = () => {
-          const stillExecuting = Array.from(
-            playgroundWindowRegistry.values(),
-          ).some((handle) => handle.getIsStreaming());
+          const stillExecuting = Array.from(playgroundWindowRegistry.values()).some((handle) =>
+            handle.getIsStreaming(),
+          );
 
           if (!stillExecuting) {
             setIsExecutingAll(false);
@@ -198,9 +181,7 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
     }
 
     // Dispatch stop-all event
-    playgroundEventBus.dispatchEvent(
-      new CustomEvent(PLAYGROUND_EVENTS.STOP_ALL),
-    );
+    playgroundEventBus.dispatchEvent(new CustomEvent(PLAYGROUND_EVENTS.STOP_ALL));
   }, []);
 
   /**
@@ -216,9 +197,7 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
       return null;
     }
 
-    const executingCount = registeredWindows.filter((handle) =>
-      handle.getIsStreaming(),
-    ).length;
+    const executingCount = registeredWindows.filter((handle) => handle.getIsStreaming()).length;
     const totalCount = registeredWindows.length;
 
     if (executingCount === 0) {
@@ -238,16 +217,10 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
       checkModelConfiguration();
     };
 
-    playgroundEventBus.addEventListener(
-      PLAYGROUND_EVENTS.WINDOW_MODEL_CONFIG_CHANGE,
-      handleModelConfigChange,
-    );
+    playgroundEventBus.addEventListener(PLAYGROUND_EVENTS.WINDOW_MODEL_CONFIG_CHANGE, handleModelConfigChange);
 
     return () => {
-      playgroundEventBus.removeEventListener(
-        PLAYGROUND_EVENTS.WINDOW_MODEL_CONFIG_CHANGE,
-        handleModelConfigChange,
-      );
+      playgroundEventBus.removeEventListener(PLAYGROUND_EVENTS.WINDOW_MODEL_CONFIG_CHANGE, handleModelConfigChange);
     };
   }, [checkModelConfiguration]);
 
@@ -268,10 +241,7 @@ export const useWindowCoordination = (): WindowCoordinationReturn => {
  *
  * @returns Map of windowId to PlaygroundHandle
  */
-export const getPlaygroundWindowRegistry = (): Map<
-  string,
-  PlaygroundHandle
-> => {
+export const getPlaygroundWindowRegistry = (): Map<string, PlaygroundHandle> => {
   return playgroundWindowRegistry;
 };
 

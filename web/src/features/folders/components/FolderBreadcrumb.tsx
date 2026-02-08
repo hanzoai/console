@@ -27,34 +27,29 @@ export const FolderBreadcrumb = ({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink
-              className="cursor-pointer hover:underline"
-              onClick={() => navigateToFolder(undefined)}
-            >
+            <BreadcrumbLink className="cursor-pointer hover:underline" onClick={() => navigateToFolder(undefined)}>
               <Home className="h-4 w-4" />
             </BreadcrumbLink>
           </BreadcrumbItem>
-          {createBreadcrumbItems(currentFolderPath).flatMap(
-            (item, index, array) => [
-              index > 0 && (
-                <BreadcrumbSeparator key={`sep-${item.folderPath}`}>
-                  <Slash />
-                </BreadcrumbSeparator>
-              ),
-              <BreadcrumbItem key={item.folderPath}>
-                {index === array.length - 1 ? (
-                  <BreadcrumbPage>{item.name}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink
-                    className="cursor-pointer hover:underline"
-                    onClick={() => navigateToFolder(item.folderPath)}
-                  >
-                    {item.name}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>,
-            ],
-          )}
+          {createBreadcrumbItems(currentFolderPath).flatMap((item, index, array) => [
+            index > 0 && (
+              <BreadcrumbSeparator key={`sep-${item.folderPath}`}>
+                <Slash />
+              </BreadcrumbSeparator>
+            ),
+            <BreadcrumbItem key={item.folderPath}>
+              {index === array.length - 1 ? (
+                <BreadcrumbPage>{item.name}</BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink
+                  className="cursor-pointer hover:underline"
+                  onClick={() => navigateToFolder(item.folderPath)}
+                >
+                  {item.name}
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>,
+          ])}
         </BreadcrumbList>
       </Breadcrumb>
     </div>

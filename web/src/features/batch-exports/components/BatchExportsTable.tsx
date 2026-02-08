@@ -9,12 +9,7 @@ import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { ActionButton } from "@/src/components/ActionButton";
 import { DownloadIcon, InfoIcon } from "lucide-react";
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -76,10 +71,7 @@ export function BatchExportsTable(props: { projectId: string }) {
                 <TooltipContent>
                   <div className="space-y-1">
                     <div>Created: {new Date(createdAt).toLocaleString()}</div>
-                    <div>
-                      Finished:{" "}
-                      {finishedAt ? new Date(finishedAt).toLocaleString() : "-"}
-                    </div>
+                    <div>Finished: {finishedAt ? new Date(finishedAt).toLocaleString() : "-"}</div>
                   </div>
                 </TooltipContent>
               </Tooltip>
@@ -95,9 +87,7 @@ export function BatchExportsTable(props: { projectId: string }) {
       size: 90,
       cell: (row: CellContext<BatchExport, string>) => {
         const status = row.getValue() as string;
-        return (
-          <StatusBadge type={status.toLowerCase()} className="capitalize" />
-        );
+        return <StatusBadge type={status.toLowerCase()} className="capitalize" />;
       },
     },
     {
@@ -139,10 +129,7 @@ export function BatchExportsTable(props: { projectId: string }) {
         return (
           <div className="flex items-center space-x-2">
             <Avatar className="h-7 w-7">
-              <AvatarImage
-                src={user?.image ?? undefined}
-                alt={user?.name ?? "User Avatar"}
-              />
+              <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? "User Avatar"} />
             </Avatar>
             <span>{user?.name ?? "Unknown"}</span>
           </div>
@@ -199,8 +186,7 @@ export function BatchExportsTable(props: { projectId: string }) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Cancel batch export?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to cancel this batch export? This action
-                  cannot be undone.
+                  Are you sure you want to cancel this batch export? This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

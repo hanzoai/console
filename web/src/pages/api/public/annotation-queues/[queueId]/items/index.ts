@@ -103,8 +103,7 @@ export default withMiddlewares({
       const status = body.status || AnnotationQueueStatus.PENDING;
 
       // Set completedAt if status is COMPLETED
-      const completedAt =
-        status === AnnotationQueueStatus.COMPLETED ? new Date() : null;
+      const completedAt = status === AnnotationQueueStatus.COMPLETED ? new Date() : null;
 
       const item = await prisma.annotationQueueItem.create({
         data: {

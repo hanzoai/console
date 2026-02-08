@@ -27,22 +27,13 @@ const defaultHeights: Record<RowHeight, string> = {
 export type RowHeight = (typeof heightOptions)[number]["id"];
 export type CustomHeights = Record<RowHeight, string>;
 
-export const getRowHeightTailwindClass = (
-  rowHeight?: RowHeight,
-  customHeights?: CustomHeights,
-) => {
+export const getRowHeightTailwindClass = (rowHeight?: RowHeight, customHeights?: CustomHeights) => {
   if (!rowHeight) return undefined;
   return customHeights?.[rowHeight] || defaultHeights[rowHeight];
 };
 
-export function useRowHeightLocalStorage(
-  tableName: string,
-  defaultValue: RowHeight,
-) {
-  const [rowHeight, setRowHeight, clearRowHeight] = useLocalStorage<RowHeight>(
-    `${tableName}Height`,
-    defaultValue,
-  );
+export function useRowHeightLocalStorage(tableName: string, defaultValue: RowHeight) {
+  const [rowHeight, setRowHeight, clearRowHeight] = useLocalStorage<RowHeight>(`${tableName}Height`, defaultValue);
 
   return [rowHeight, setRowHeight, clearRowHeight] as const;
 }

@@ -9,10 +9,7 @@ const getTotalCost = (runItem: EnrichedDatasetRunItem) => {
   return runItem.observation?.calculatedTotalCost ?? runItem.trace.totalCost;
 };
 
-export function useResourceMetricsDiff(
-  current: EnrichedDatasetRunItem,
-  baseline?: EnrichedDatasetRunItem | null,
-) {
+export function useResourceMetricsDiff(current: EnrichedDatasetRunItem, baseline?: EnrichedDatasetRunItem | null) {
   const baseProps = {
     latency: getLatency(current),
     totalCost: getTotalCost(current),
@@ -25,9 +22,6 @@ export function useResourceMetricsDiff(
   return {
     ...baseProps,
     latencyDiff: calculateNumericDiff(baseProps.latency, getLatency(baseline)),
-    totalCostDiff: calculateNumericDiff(
-      baseProps.totalCost,
-      getTotalCost(baseline),
-    ),
+    totalCostDiff: calculateNumericDiff(baseProps.totalCost, getTotalCost(baseline)),
   };
 }

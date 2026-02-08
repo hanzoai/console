@@ -110,13 +110,7 @@ export function useLogViewDownload({
         }
       }
     }
-  }, [
-    isDownloadCacheOnly,
-    allObservationsData,
-    loadAllData,
-    buildDataFromCache,
-    failedObservationIds,
-  ]);
+  }, [isDownloadCacheOnly, allObservationsData, loadAllData, buildDataFromCache, failedObservationIds]);
 
   // Download JSON handler - uses cache only or loads all based on threshold
   const handleDownloadJson = useCallback(async () => {

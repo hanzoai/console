@@ -6,23 +6,15 @@ import { Input } from "./input";
 
 import { cn } from "@/src/utils/tailwind";
 
-export interface SliderProps extends React.ComponentPropsWithoutRef<
-  typeof SliderPrimitive.Root
-> {
+export interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
   showInput?: boolean;
   displayAsPercentage?: boolean;
   decimalPlaces?: number;
   onValueChange?: (value: number[]) => void;
 }
 
-const Slider = React.forwardRef<
-  React.ElementRef<typeof SliderPrimitive.Root>,
-  SliderProps
->(
-  (
-    { className, showInput, displayAsPercentage, decimalPlaces = 2, ...props },
-    ref,
-  ) => {
+const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
+  ({ className, showInput, displayAsPercentage, decimalPlaces = 2, ...props }, ref) => {
     const [inputValue, setInputValue] = React.useState<string>("");
 
     // Calculate display value based on the first slider value
@@ -83,24 +75,13 @@ const Slider = React.forwardRef<
       }
     };
 
-    const initialValue = Array.isArray(props.value)
-      ? props.value
-      : [props.min ?? 0, props.max ?? 100];
+    const initialValue = Array.isArray(props.value) ? props.value : [props.min ?? 0, props.max ?? 100];
 
     return (
       <div className={cn("flex items-center gap-4", className)}>
-        <SliderPrimitive.Root
-          ref={ref}
-          className="relative flex w-full touch-none select-none items-center"
-          {...props}
-        >
+        <SliderPrimitive.Root ref={ref} className="relative flex w-full touch-none select-none items-center" {...props}>
           <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
-            <SliderPrimitive.Range
-              className={cn(
-                "absolute h-full",
-                props.disabled ? "bg-input" : "bg-primary",
-              )}
-            />
+            <SliderPrimitive.Range className={cn("absolute h-full", props.disabled ? "bg-input" : "bg-primary")} />
           </SliderPrimitive.Track>
           {initialValue.map((_, index) => (
             <SliderPrimitive.Thumb
@@ -123,25 +104,11 @@ const Slider = React.forwardRef<
               onKeyDown={handleKeyDown}
               className="w-20 text-right"
               disabled={props.disabled}
-              min={
-                displayAsPercentage
-                  ? props.min
-                    ? props.min * 100
-                    : 0
-                  : props.min
-              }
-              max={
-                displayAsPercentage
-                  ? props.max
-                    ? props.max * 100
-                    : 100
-                  : props.max
-              }
+              min={displayAsPercentage ? (props.min ? props.min * 100 : 0) : props.min}
+              max={displayAsPercentage ? (props.max ? props.max * 100 : 100) : props.max}
               aria-label="Slider value"
             />
-            {displayAsPercentage && (
-              <span className="text-sm text-muted-foreground">%</span>
-            )}
+            {displayAsPercentage && <span className="text-sm text-muted-foreground">%</span>}
           </div>
         )}
       </div>

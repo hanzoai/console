@@ -13,10 +13,7 @@ declare global {
   }
 }
 
-export const trackBillingEvent = (
-  eventName: string,
-  eventData?: Record<string, any>,
-) => {
+export const trackBillingEvent = (eventName: string, eventData?: Record<string, any>) => {
   // Track with Hanzo Analytics
   if (typeof window !== "undefined" && window.hanzo?.track) {
     window.hanzo.track(eventName, eventData);
@@ -31,20 +28,11 @@ export const trackBillingEvent = (
 // Billing-specific event trackers
 export const billingAnalytics = {
   // Subscription events
-  subscriptionCreated: (data: {
-    planName: string;
-    stripeProductId: string;
-    amount?: number;
-    interval?: string;
-  }) => {
+  subscriptionCreated: (data: { planName: string; stripeProductId: string; amount?: number; interval?: string }) => {
     trackBillingEvent("subscription_created", data);
   },
 
-  subscriptionUpdated: (data: {
-    oldPlan: string;
-    newPlan: string;
-    stripeProductId: string;
-  }) => {
+  subscriptionUpdated: (data: { oldPlan: string; newPlan: string; stripeProductId: string }) => {
     trackBillingEvent("subscription_updated", data);
   },
 
@@ -53,19 +41,11 @@ export const billingAnalytics = {
   },
 
   // Payment events
-  paymentSucceeded: (data: {
-    amount: number;
-    currency: string;
-    type: "subscription" | "credit";
-  }) => {
+  paymentSucceeded: (data: { amount: number; currency: string; type: "subscription" | "credit" }) => {
     trackBillingEvent("payment_succeeded", data);
   },
 
-  paymentFailed: (data: {
-    amount: number;
-    currency: string;
-    error?: string;
-  }) => {
+  paymentFailed: (data: { amount: number; currency: string; error?: string }) => {
     trackBillingEvent("payment_failed", data);
   },
 
@@ -83,11 +63,7 @@ export const billingAnalytics = {
     trackBillingEvent("checkout_started", data);
   },
 
-  checkoutCompleted: (data: {
-    planName: string;
-    stripeProductId: string;
-    sessionId: string;
-  }) => {
+  checkoutCompleted: (data: { planName: string; stripeProductId: string; sessionId: string }) => {
     trackBillingEvent("checkout_completed", data);
   },
 
@@ -118,11 +94,7 @@ export const billingAnalytics = {
   },
 
   // Usage events
-  usageLimitReached: (data: {
-    feature: string;
-    limit: number;
-    current: number;
-  }) => {
+  usageLimitReached: (data: { feature: string; limit: number; current: number }) => {
     trackBillingEvent("usage_limit_reached", data);
   },
 

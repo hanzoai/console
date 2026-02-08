@@ -158,8 +158,7 @@ describe("scores trpc", () => {
       // Then
       await expect(promise).rejects.toMatchObject({
         code: "BAD_REQUEST",
-        message:
-          "Either batchAction or scoreIds must be provided to delete scores.",
+        message: "Either batchAction or scoreIds must be provided to delete scores.",
       });
     });
   });

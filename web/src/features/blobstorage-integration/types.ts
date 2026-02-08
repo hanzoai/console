@@ -1,9 +1,5 @@
 import { z } from "zod/v4";
-import {
-  BlobStorageIntegrationType,
-  BlobStorageIntegrationFileType,
-  BlobStorageExportMode,
-} from "@hanzo/shared";
+import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/shared";
 
 export const blobStorageIntegrationFormSchema = z.object({
   type: z.enum(BlobStorageIntegrationType),
@@ -22,15 +18,9 @@ export const blobStorageIntegrationFormSchema = z.object({
   exportFrequency: z.enum(["hourly", "daily", "weekly"]),
   enabled: z.boolean(),
   forcePathStyle: z.boolean(),
-  fileType: z
-    .enum(BlobStorageIntegrationFileType)
-    .default(BlobStorageIntegrationFileType.JSONL),
-  exportMode: z
-    .enum(BlobStorageExportMode)
-    .default(BlobStorageExportMode.FULL_HISTORY),
+  fileType: z.enum(BlobStorageIntegrationFileType).default(BlobStorageIntegrationFileType.JSONL),
+  exportMode: z.enum(BlobStorageExportMode).default(BlobStorageExportMode.FULL_HISTORY),
   exportStartDate: z.coerce.date().optional().nullable(),
 });
 
-export type BlobStorageIntegrationFormSchema = z.infer<
-  typeof blobStorageIntegrationFormSchema
->;
+export type BlobStorageIntegrationFormSchema = z.infer<typeof blobStorageIntegrationFormSchema>;

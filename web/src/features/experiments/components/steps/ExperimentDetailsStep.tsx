@@ -1,19 +1,11 @@
 import React from "react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { type ExperimentDetailsStepProps } from "@/src/features/experiments/types/stepProps";
 import { StepHeader } from "@/src/features/experiments/components/shared/StepHeader";
 
-export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({
-  formState,
-}) => {
+export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({ formState }) => {
   const { form } = formState;
   return (
     <div className="space-y-6">
@@ -29,11 +21,7 @@ export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({
           <FormItem>
             <FormLabel>Experiment name</FormLabel>
             <FormControl>
-              <Input
-                {...field}
-                placeholder="Enter experiment name"
-                className="w-full"
-              />
+              <Input {...field} placeholder="Enter experiment name" className="w-full" />
             </FormControl>
             <FormMessage />
           </FormItem>

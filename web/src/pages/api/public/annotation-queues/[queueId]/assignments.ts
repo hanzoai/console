@@ -51,9 +51,7 @@ export default withMiddlewares({
       });
 
       if (!user || user.length === 0) {
-        throw new HanzoNotFoundError(
-          "User not found or not authorized for this project",
-        );
+        throw new HanzoNotFoundError("User not found or not authorized for this project");
       }
 
       // Create the assignment (upsert to handle duplicates gracefully)
@@ -115,12 +113,7 @@ export default withMiddlewares({
       } catch (error) {
         // If the record doesn't exist, that's fine - we still return success
         // Only catch NotFound errors, re-throw other errors
-        if (
-          error &&
-          typeof error === "object" &&
-          "code" in error &&
-          error.code !== "P2025"
-        ) {
+        if (error && typeof error === "object" && "code" in error && error.code !== "P2025") {
           throw error;
         }
       }

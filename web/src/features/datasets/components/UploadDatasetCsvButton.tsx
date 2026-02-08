@@ -6,11 +6,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import { ActionButton } from "@/src/components/ActionButton";
 import { CsvUploadDialog } from "@/src/features/datasets/components/CsvUploadDialog";
 
-export const UploadDatasetCsvButton = (props: {
-  projectId: string;
-  datasetId: string;
-  className?: string;
-}) => {
+export const UploadDatasetCsvButton = (props: { projectId: string; datasetId: string; className?: string }) => {
   const [open, setOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,

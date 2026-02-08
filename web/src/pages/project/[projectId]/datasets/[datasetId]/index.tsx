@@ -4,23 +4,13 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { DatasetActionButton } from "@/src/features/datasets/components/DatasetActionButton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu";
 import { DeleteDatasetButton } from "@/src/components/deleteButton";
 import { DuplicateDatasetButton } from "@/src/features/datasets/components/DuplicateDatasetButton";
 import { useState, useCallback } from "react";
 import { Bot, FlaskConical, MoreVertical } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
@@ -29,10 +19,7 @@ import { DatasetAnalytics } from "@/src/features/datasets/components/DatasetAnal
 import { RESOURCE_METRICS } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import Page from "@/src/components/layouts/page";
-import {
-  getDatasetTabs,
-  DATASET_TABS,
-} from "@/src/features/navigation/utils/dataset-tabs";
+import { getDatasetTabs, DATASET_TABS } from "@/src/features/navigation/utils/dataset-tabs";
 import { TemplateSelector } from "@/src/features/evals/components/template-selector";
 import { useEvaluatorDefaults } from "@/src/features/experiments/hooks/useEvaluatorDefaults";
 import { useExperimentEvaluatorData } from "@/src/features/experiments/hooks/useExperimentEvaluatorData";
@@ -46,8 +33,7 @@ export default function Dataset() {
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
   const utils = api.useUtils();
-  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] =
-    useState(false);
+  const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] = useState(false);
   const [selectedMetrics, setSelectedMetrics] = useLocalStorage<string[]>(
     `${projectId}-dataset-chart-metrics`,
     RESOURCE_METRICS.map((metric) => metric.key),
@@ -178,15 +164,9 @@ export default function Dataset() {
         },
         actionButtonsRight: (
           <>
-            <Dialog
-              open={isCreateExperimentDialogOpen}
-              onOpenChange={setIsCreateExperimentDialogOpen}
-            >
+            <Dialog open={isCreateExperimentDialogOpen} onOpenChange={setIsCreateExperimentDialogOpen}>
               <DialogTrigger asChild disabled={!hasExperimentWriteAccess}>
-                <Button
-                  disabled={!hasExperimentWriteAccess}
-                  onClick={() => capture("dataset_run:new_form_open")}
-                >
+                <Button disabled={!hasExperimentWriteAccess} onClick={() => capture("dataset_run:new_form_open")}>
                   <FlaskConical className="h-4 w-4" />
                   <span className="ml-2 hidden md:block">Run experiment</span>
                 </Button>
@@ -249,16 +229,11 @@ export default function Dataset() {
                     datasetDescription={dataset.data?.description ?? undefined}
                     datasetMetadata={dataset.data?.metadata}
                     datasetInputSchema={dataset.data?.inputSchema ?? undefined}
-                    datasetExpectedOutputSchema={
-                      dataset.data?.expectedOutputSchema ?? undefined
-                    }
+                    datasetExpectedOutputSchema={dataset.data?.expectedOutputSchema ?? undefined}
                   />
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <DuplicateDatasetButton
-                    datasetId={datasetId}
-                    projectId={projectId}
-                  />
+                  <DuplicateDatasetButton datasetId={datasetId} projectId={projectId} />
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
@@ -306,10 +281,7 @@ export default function Dataset() {
         >
           <DialogContent className="max-h-[90vh] max-w-screen-md overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                {selectedEvaluatorData.evaluator.id ? "Edit" : "Configure"}{" "}
-                Evaluator
-              </DialogTitle>
+              <DialogTitle>{selectedEvaluatorData.evaluator.id ? "Edit" : "Configure"} Evaluator</DialogTitle>
             </DialogHeader>
             <EvaluatorForm
               useDialog={true}

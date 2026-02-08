@@ -24,12 +24,8 @@ function DatasetItemContent() {
   const { selectedVersion, resetToLatest } = useDatasetVersion();
   const isViewingOldVersion = selectedVersion !== null;
 
-  const [showDiffMode, setShowDiffMode] = useSessionStorage(
-    "datasetItem-showDiff",
-    false,
-  );
-  const [isVersionPanelOpen, setIsVersionPanelOpen] =
-    useState(!!selectedVersion);
+  const [showDiffMode, setShowDiffMode] = useSessionStorage("datasetItem-showDiff", false);
+  const [isVersionPanelOpen, setIsVersionPanelOpen] = useState(!!selectedVersion);
 
   // Fetch current item
   const item = api.datasets.itemByIdAtVersion.useQuery(
@@ -72,26 +68,17 @@ function DatasetItemContent() {
   // Check if item was changed at selected version (enables diff toggle)
   // Use 1 second tolerance to account for potential timestamp precision issues
   const itemChangedAtVersion =
-    selectedVersion &&
-    itemVersionHistory.data?.some(
-      (v) => Math.abs(v.getTime() - selectedVersion.getTime()) < 1000,
-    );
+    selectedVersion && itemVersionHistory.data?.some((v) => Math.abs(v.getTime() - selectedVersion.getTime()) < 1000);
 
   return (
-    <DatasetItemDetailPage
-      activeTab={DATASET_ITEM_TABS.ITEM}
-      withPadding={false}
-    >
+    <DatasetItemDetailPage activeTab={DATASET_ITEM_TABS.ITEM} withPadding={false}>
       <div className="flex h-full">
         {/* Main content area */}
         <div className="relative flex flex-1 flex-col overflow-auto">
           {/* Sticky banner without padding */}
           {isViewingOldVersion && selectedVersion && (
             <div className="sticky top-0 z-10">
-              <DatasetVersionWarningBanner
-                selectedVersion={selectedVersion}
-                resetToLatest={resetToLatest}
-              />
+              <DatasetVersionWarningBanner selectedVersion={selectedVersion} resetToLatest={resetToLatest} />
             </div>
           )}
 
@@ -101,11 +88,7 @@ function DatasetItemContent() {
               variant="ghost"
               size="sm"
               onClick={() => setIsVersionPanelOpen(!isVersionPanelOpen)}
-              title={
-                isVersionPanelOpen
-                  ? "Hide version history"
-                  : "Show version history"
-              }
+              title={isVersionPanelOpen ? "Hide version history" : "Show version history"}
             >
               {isVersionPanelOpen ? (
                 <>
@@ -127,11 +110,7 @@ function DatasetItemContent() {
             {isViewingOldVersion && selectedVersion && itemChangedAtVersion && (
               <div className="mb-4 flex flex-col gap-2">
                 <div className="flex items-center space-x-2">
-                  <Switch
-                    id="diff-mode"
-                    checked={showDiffMode}
-                    onCheckedChange={setShowDiffMode}
-                  />
+                  <Switch id="diff-mode" checked={showDiffMode} onCheckedChange={setShowDiffMode} />
                   <Label htmlFor="diff-mode" className="cursor-pointer text-sm">
                     Show diff with latest version
                   </Label>
@@ -140,13 +119,9 @@ function DatasetItemContent() {
             )}
 
             {/* Item unchanged message */}
-            {isViewingOldVersion &&
-              selectedVersion &&
-              !itemChangedAtVersion && (
-                <div className="mb-4 text-sm text-muted-foreground">
-                  Item unchanged in this version
-                </div>
-              )}
+            {isViewingOldVersion && selectedVersion && !itemChangedAtVersion && (
+              <div className="mb-4 text-sm text-muted-foreground">Item unchanged in this version</div>
+            )}
 
             {/* Main content area */}
             {isViewingOldVersion ? (

@@ -1,8 +1,5 @@
 import { Badge } from "@/src/components/ui/badge";
-import {
-  type CategoricalDiff,
-  type NumericDiff,
-} from "@/src/features/datasets/lib/calculateBaselineDiff";
+import { type CategoricalDiff, type NumericDiff } from "@/src/features/datasets/lib/calculateBaselineDiff";
 import { cn } from "@/src/utils/tailwind";
 
 const getVariant = (direction: "+" | "-", preferNegativeDirection: boolean) => {

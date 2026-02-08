@@ -16,14 +16,7 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { useState } from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,9 +57,7 @@ const DuplicatePromptForm: React.FC<{
   const duplicatePrompt = api.prompts.duplicatePrompt.useMutation({
     onSuccess: ({ name }) => {
       utils.prompts.invalidate();
-      void router.push(
-        `/project/${projectId}/prompts/${encodeURIComponent(name)}`,
-      );
+      void router.push(`/project/${projectId}/prompts/${encodeURIComponent(name)}`);
     },
   });
 
@@ -77,8 +68,7 @@ const DuplicatePromptForm: React.FC<{
         ...values,
         projectId: projectId,
         promptId: promptId,
-        isSingleVersion:
-          values.isCopySingleVersion === CopySettings.SINGLE_VERSION,
+        isSingleVersion: values.isCopySingleVersion === CopySettings.SINGLE_VERSION,
       })
       .then(() => {
         onFormSuccess();
@@ -109,10 +99,7 @@ const DuplicatePromptForm: React.FC<{
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full flex-1 flex-col gap-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-full flex-1 flex-col gap-4">
         <DialogBody>
           <FormField
             control={form.control}
@@ -144,17 +131,13 @@ const DuplicatePromptForm: React.FC<{
                       <FormControl>
                         <RadioGroupItem value={CopySettings.SINGLE_VERSION} />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        Copy only version {promptVersion}
-                      </FormLabel>
+                      <FormLabel className="font-normal">Copy only version {promptVersion}</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem value={CopySettings.ALL_VERSIONS} />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        Copy all prompt versions and labels
-                      </FormLabel>
+                      <FormLabel className="font-normal">Copy all prompt versions and labels</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -164,11 +147,7 @@ const DuplicatePromptForm: React.FC<{
           />
         </DialogBody>
         <DialogFooter>
-          <Button
-            type="submit"
-            loading={duplicatePrompt.isPending}
-            className="mt-auto w-full"
-          >
+          <Button type="submit" loading={duplicatePrompt.isPending} className="mt-auto w-full">
             Submit
           </Button>
         </DialogFooter>

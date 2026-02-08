@@ -35,9 +35,7 @@ export interface InterpretationResult {
  * @param confusionMatrix - Array of confusion matrix cells
  * @returns Cohen's Kappa coefficient or null if calculation not possible
  */
-export function calculateCohensKappa(
-  confusionMatrix: ConfusionMatrixRow[],
-): number | null {
+export function calculateCohensKappa(confusionMatrix: ConfusionMatrixRow[]): number | null {
   if (!confusionMatrix || confusionMatrix.length === 0) {
     return null;
   }
@@ -50,17 +48,12 @@ export function calculateCohensKappa(
 
   // Build set of all categories
   const categories = Array.from(
-    new Set([
-      ...confusionMatrix.map((r) => r.rowCategory),
-      ...confusionMatrix.map((r) => r.colCategory),
-    ]),
+    new Set([...confusionMatrix.map((r) => r.rowCategory), ...confusionMatrix.map((r) => r.colCategory)]),
   ).sort();
 
   // Calculate observed agreement (Po)
   const observedAgreement =
-    confusionMatrix
-      .filter((r) => r.rowCategory === r.colCategory)
-      .reduce((sum, r) => sum + r.count, 0) / total;
+    confusionMatrix.filter((r) => r.rowCategory === r.colCategory).reduce((sum, r) => sum + r.count, 0) / total;
 
   // Calculate marginal totals for expected agreement
   const score1Totals: Record<string, number> = {};
@@ -99,9 +92,7 @@ export function calculateCohensKappa(
  * @param confusionMatrix - Array of confusion matrix cells
  * @returns Weighted F1 score or null if calculation not possible
  */
-export function calculateWeightedF1Score(
-  confusionMatrix: ConfusionMatrixRow[],
-): number | null {
+export function calculateWeightedF1Score(confusionMatrix: ConfusionMatrixRow[]): number | null {
   if (!confusionMatrix || confusionMatrix.length === 0) {
     return null;
   }
@@ -112,17 +103,12 @@ export function calculateWeightedF1Score(
   }
 
   // Get all unique categories
-  const categories = Array.from(
-    new Set(confusionMatrix.flatMap((r) => [r.rowCategory, r.colCategory])),
-  ).sort();
+  const categories = Array.from(new Set(confusionMatrix.flatMap((r) => [r.rowCategory, r.colCategory]))).sort();
 
   // Calculate F1 score for each category
   const f1Scores = categories.map((cat) => {
     // True Positives: both scores match this category
-    const tp =
-      confusionMatrix.find(
-        (r) => r.rowCategory === cat && r.colCategory === cat,
-      )?.count || 0;
+    const tp = confusionMatrix.find((r) => r.rowCategory === cat && r.colCategory === cat)?.count || 0;
 
     // False Positives: score2 is this category but score1 is not
     const fp = confusionMatrix
@@ -139,10 +125,7 @@ export function calculateWeightedF1Score(
     const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
 
     // Calculate F1 score
-    const f1 =
-      precision + recall > 0
-        ? (2 * precision * recall) / (precision + recall)
-        : 0;
+    const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
 
     // Support is the number of actual instances of this category
     const support = tp + fn;
@@ -151,8 +134,7 @@ export function calculateWeightedF1Score(
   });
 
   // Calculate weighted average F1 score
-  const weightedF1 =
-    f1Scores.reduce((sum, { f1, support }) => sum + f1 * support, 0) / total;
+  const weightedF1 = f1Scores.reduce((sum, { f1, support }) => sum + f1 * support, 0) / total;
 
   // Round to 3 decimal places
   return Math.round(weightedF1 * 1000) / 1000;
@@ -166,9 +148,7 @@ export function calculateWeightedF1Score(
  * @param confusionMatrix - Array of confusion matrix cells
  * @returns Overall agreement percentage or null if calculation not possible
  */
-export function calculateOverallAgreement(
-  confusionMatrix: ConfusionMatrixRow[],
-): number | null {
+export function calculateOverallAgreement(confusionMatrix: ConfusionMatrixRow[]): number | null {
   if (!confusionMatrix || confusionMatrix.length === 0) {
     return null;
   }
@@ -179,9 +159,7 @@ export function calculateOverallAgreement(
   }
 
   // Sum diagonal (matching categories)
-  const matching = confusionMatrix
-    .filter((r) => r.rowCategory === r.colCategory)
-    .reduce((sum, r) => sum + r.count, 0);
+  const matching = confusionMatrix.filter((r) => r.rowCategory === r.colCategory).reduce((sum, r) => sum + r.count, 0);
 
   const agreement = matching / total;
 
@@ -200,9 +178,7 @@ export function calculateOverallAgreement(
  * @param r - Pearson correlation coefficient
  * @returns Interpretation with strength, color, and description
  */
-export function interpretPearsonCorrelation(
-  r: number | null,
-): InterpretationResult {
+export function interpretPearsonCorrelation(r: number | null): InterpretationResult {
   if (r === null) {
     return {
       strength: "N/A",
@@ -256,9 +232,7 @@ export function interpretPearsonCorrelation(
  * @param rho - Spearman's rho coefficient
  * @returns Interpretation with strength, color, and description
  */
-export function interpretSpearmanCorrelation(
-  rho: number | null,
-): InterpretationResult {
+export function interpretSpearmanCorrelation(rho: number | null): InterpretationResult {
   if (rho === null) {
     return {
       strength: "N/A",
@@ -313,9 +287,7 @@ export function interpretSpearmanCorrelation(
  * @param kappa - Cohen's Kappa coefficient
  * @returns Interpretation with strength, color, and description
  */
-export function interpretCohensKappa(
-  kappa: number | null,
-): InterpretationResult {
+export function interpretCohensKappa(kappa: number | null): InterpretationResult {
   if (kappa === null) {
     return {
       strength: "N/A",
@@ -430,9 +402,7 @@ export function interpretF1Score(f1: number | null): InterpretationResult {
  * @param agreement - Overall agreement (0-1)
  * @returns Interpretation with strength, color, and description
  */
-export function interpretOverallAgreement(
-  agreement: number | null,
-): InterpretationResult {
+export function interpretOverallAgreement(agreement: number | null): InterpretationResult {
   if (agreement === null) {
     return {
       strength: "N/A",
@@ -486,10 +456,7 @@ export function interpretOverallAgreement(
  * @param scale - Optional scale information {min, max} for contextual interpretation
  * @returns Interpretation with strength, color, and description
  */
-export function interpretMAE(
-  mae: number | null,
-  scale?: { min: number; max: number },
-): InterpretationResult {
+export function interpretMAE(mae: number | null, scale?: { min: number; max: number }): InterpretationResult {
   if (mae === null) {
     return {
       strength: "N/A",
@@ -554,10 +521,7 @@ export function interpretMAE(
  * @param scale - Optional scale information {min, max} for contextual interpretation
  * @returns Interpretation with strength, color, and description
  */
-export function interpretRMSE(
-  rmse: number | null,
-  scale?: { min: number; max: number },
-): InterpretationResult {
+export function interpretRMSE(rmse: number | null, scale?: { min: number; max: number }): InterpretationResult {
   if (rmse === null) {
     return {
       strength: "N/A",

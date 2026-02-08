@@ -1,10 +1,6 @@
 type Accuracy = "day" | "hour" | "minute" | "second" | "millisecond";
 
-export const formatLocalIsoDate = (
-  date: Date,
-  useUTC = false,
-  pAccuracy: Accuracy,
-) => {
+export const formatLocalIsoDate = (date: Date, useUTC = false, pAccuracy: Accuracy) => {
   const pad = (num: number) => String(num).padStart(2, "0");
 
   const year = useUTC ? date.getUTCFullYear() : date.getFullYear();

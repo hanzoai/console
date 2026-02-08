@@ -1,9 +1,5 @@
 import { type HanzoColumnDef } from "@/src/components/table/types";
-import {
-  type FilterState,
-  type ColumnDefinition,
-  type OrderByState,
-} from "@hanzo/shared";
+import { type FilterState, type ColumnDefinition, type OrderByState } from "@hanzo/shared";
 import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-transform";
 
 /**
@@ -16,9 +12,7 @@ export function validateOrderBy(
   if (!orderBy || !columns || columns.length === 0) return null;
 
   // Check if the column exists and supports sorting
-  const isValid = columns.some(
-    (col) => col.id === orderBy.column && col.enableSorting !== false,
-  );
+  const isValid = columns.some((col) => col.id === orderBy.column && col.enableSorting !== false);
   return isValid ? orderBy : null;
 }
 
@@ -38,23 +32,14 @@ export function validateOrderBy(
  * - normalize old display names to new IDs
  * - filter out invalid/deleted columns
  */
-export function validateFilters(
-  filters: FilterState,
-  filterColumnDefinition?: ColumnDefinition[],
-): FilterState {
-  if (!filterColumnDefinition || filterColumnDefinition.length === 0)
-    return filters;
+export function validateFilters(filters: FilterState, filterColumnDefinition?: ColumnDefinition[]): FilterState {
+  if (!filterColumnDefinition || filterColumnDefinition.length === 0) return filters;
 
   // Normalize display names to column IDs for backward compatibility
-  const normalized = normalizeFilterColumnNames(
-    filters,
-    filterColumnDefinition,
-  );
+  const normalized = normalizeFilterColumnNames(filters, filterColumnDefinition);
 
   // Validate that columns exist (remove invalid ones)
   return normalized.filter((filter) => {
-    return filterColumnDefinition.some(
-      (def) => def.id === filter.column || def.name === filter.column,
-    );
+    return filterColumnDefinition.some((def) => def.id === filter.column || def.name === filter.column);
   });
 }

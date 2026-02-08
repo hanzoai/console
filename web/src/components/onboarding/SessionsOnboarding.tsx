@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  SplashScreen,
-  type ValueProposition,
-} from "@/src/components/ui/splash-screen";
+import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
 import { BarChart4, GitMerge, MessageSquare, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -26,8 +23,7 @@ export function SessionsOnboarding() {
     },
     {
       title: "Session-level metrics",
-      description:
-        "Get aggregated metrics for entire sessions, including costs and token usage",
+      description: "Get aggregated metrics for entire sessions, including costs and token usage",
       icon: <BarChart4 className="h-4 w-4" />,
     },
   ];
@@ -39,12 +35,8 @@ export function SessionsOnboarding() {
       valuePropositions={valuePropositions}
       gettingStarted={
         <span>
-          To start using sessions, you need to add a `sessionId` to your traces.
-          See{" "}
-          <Link
-            href="https://hanzo.com/docs/observability/features/sessions"
-            className="underline"
-          >
+          To start using sessions, you need to add a `sessionId` to your traces. See{" "}
+          <Link href="https://hanzo.com/docs/observability/features/sessions" className="underline">
             documentation
           </Link>{" "}
           for more details.

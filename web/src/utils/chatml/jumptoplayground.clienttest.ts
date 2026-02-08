@@ -136,8 +136,7 @@ describe("Playground Jump Full Pipeline", () => {
       messages: [
         {
           role: "system",
-          content:
-            "You are a helpful assistant. Use tools to gather information before responding.",
+          content: "You are a helpful assistant. Use tools to gather information before responding.",
         },
         {
           role: "assistant",
@@ -207,9 +206,7 @@ describe("Playground Jump Full Pipeline", () => {
     if (!inResult.data) throw new Error("Expected data to be defined");
 
     // convert all messages to playground format
-    const playgroundMessages = inResult.data
-      .map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Verify we got messages (if length is 0, button would be disabled!)
     expect(playgroundMessages.length).toBeGreaterThan(0);
@@ -289,8 +286,7 @@ describe("Playground Jump Full Pipeline", () => {
           type: "function",
           function: {
             name: "transition_to_next_stage",
-            description:
-              "Use this function to transition to the next stage when conditions are met",
+            description: "Use this function to transition to the next stage when conditions are met",
             parameters: {
               properties: {
                 reason: {
@@ -332,18 +328,14 @@ describe("Playground Jump Full Pipeline", () => {
     if (!inResult.data) throw new Error("Expected data to be defined");
 
     // Convert all messages to playground format
-    const playgroundMessages = inResult.data
-      .map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Should have 3 real messages (system, model, user)
     // Tool definition messages should be filtered out by the converter
     expect(playgroundMessages.length).toBe(3);
 
     // Filter out placeholder messages for role testing
-    const regularMessages = playgroundMessages.filter(
-      (msg) => msg.type !== "placeholder",
-    );
+    const regularMessages = playgroundMessages.filter((msg) => msg.type !== "placeholder");
 
     // Verify message roles
     expect(regularMessages[0]?.role).toBe("system");
@@ -371,12 +363,8 @@ describe("Playground Jump Full Pipeline", () => {
 
     // Verify the structure that parseTools should handle
     expect(toolMessages.length).toBe(2);
-    expect((toolMessages[0].content as any).function.name).toBe(
-      "transition_to_next_stage",
-    );
-    expect((toolMessages[1].content as any).function.name).toBe(
-      "get_user_info",
-    );
+    expect((toolMessages[0].content as any).function.name).toBe("transition_to_next_stage");
+    expect((toolMessages[1].content as any).function.name).toBe("get_user_info");
   });
 
   it("should extract tools from Gemini format using extractTools utility", () => {
@@ -467,9 +455,7 @@ describe("Playground Jump Full Pipeline", () => {
     // Array must be stringified, not left as object
     if (playgroundMsg && "content" in playgroundMsg) {
       expect(typeof playgroundMsg.content).toBe("string");
-      expect(playgroundMsg.content).toBe(
-        '[{"url":"https://example.com","title":"Example"}]',
-      );
+      expect(playgroundMsg.content).toBe('[{"url":"https://example.com","title":"Example"}]');
     }
   });
 
@@ -526,14 +512,10 @@ describe("Playground Jump Full Pipeline", () => {
     expect(inResult.success).toBe(true);
 
     // Convert all messages to playground format
-    const playgroundMessages = inResult
-      .data!.map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data!.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Find the tool result message
-    const toolResult = playgroundMessages.find(
-      (msg) => msg?.type === "tool-result",
-    );
+    const toolResult = playgroundMessages.find((msg) => msg?.type === "tool-result");
 
     expect(toolResult).toBeDefined();
     if (toolResult && "content" in toolResult) {
@@ -566,12 +548,8 @@ describe("Playground Jump Full Pipeline", () => {
     const playgroundMsg = convertChatMlToPlayground(inResult.data![0]);
 
     // Should extract text, not stringify array
-    expect(
-      playgroundMsg && "content" in playgroundMsg && playgroundMsg.content,
-    ).toBe("Hello world");
-    expect(
-      playgroundMsg && "content" in playgroundMsg && playgroundMsg.content,
-    ).not.toContain("[{");
+    expect(playgroundMsg && "content" in playgroundMsg && playgroundMsg.content).toBe("Hello world");
+    expect(playgroundMsg && "content" in playgroundMsg && playgroundMsg.content).not.toContain("[{");
   });
 
   it("should extract tools from Microsoft Agent Framework metadata", () => {
@@ -700,12 +678,8 @@ describe("Playground Jump Full Pipeline", () => {
 
     const secondMsg = playgroundMessages?.[1];
     expect(secondMsg).toBeDefined();
-    expect(secondMsg && "role" in secondMsg ? secondMsg.role : null).toBe(
-      "tool",
-    );
-    expect(
-      secondMsg && "content" in secondMsg ? secondMsg.content : "",
-    ).toContain("PatientNo");
+    expect(secondMsg && "role" in secondMsg ? secondMsg.role : null).toBe("tool");
+    expect(secondMsg && "content" in secondMsg ? secondMsg.content : "").toContain("PatientNo");
   });
 
   it("should handle OpenAI Agents function_call and function_call_output", () => {
@@ -730,9 +704,7 @@ describe("Playground Jump Full Pipeline", () => {
     const inResult = normalizeInput(input, { framework: "openai" });
     expect(inResult.success).toBe(true);
 
-    const playgroundMessages = inResult
-      .data!.map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data!.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Should have 3 messages
     expect(playgroundMessages).toHaveLength(3);
@@ -741,9 +713,7 @@ describe("Playground Jump Full Pipeline", () => {
     expect(playgroundMessages[0]?.type).toBe("public-api-created");
     if (playgroundMessages[0]?.type === "public-api-created") {
       expect(playgroundMessages[0].role).toBe("user");
-      expect(playgroundMessages[0].content).toBe(
-        "What's the weather in Tokyo?",
-      );
+      expect(playgroundMessages[0].content).toBe("What's the weather in Tokyo?");
     }
 
     // Message 2: assistant with tool call
@@ -757,9 +727,7 @@ describe("Playground Jump Full Pipeline", () => {
     expect(playgroundMessages[2]?.type).toBe("tool-result");
     if (playgroundMessages[2]?.type === "tool-result") {
       expect(playgroundMessages[2].toolCallId).toBe("call_abc123");
-      expect(playgroundMessages[2].content).toBe(
-        "The weather in Tokyo is sunny.",
-      );
+      expect(playgroundMessages[2].content).toBe("The weather in Tokyo is sunny.");
     }
   });
 
@@ -802,9 +770,7 @@ describe("Playground Jump Full Pipeline", () => {
     });
     expect(inResult.success).toBe(true);
 
-    const playgroundMessages = inResult
-      .data!.map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data!.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Critical assertions: IDs must match
     const toolCallMsg = playgroundMessages[0];
@@ -901,9 +867,7 @@ describe("Playground Jump Full Pipeline", () => {
     expect(inResult.success).toBe(true);
     if (!inResult.data) throw new Error("Expected data to be defined");
 
-    const playgroundMessages = inResult.data
-      .map(convertChatMlToPlayground)
-      .filter((msg) => msg !== null);
+    const playgroundMessages = inResult.data.map(convertChatMlToPlayground).filter((msg) => msg !== null);
 
     // Must have all 4 messages for playground button to be enabled
     expect(playgroundMessages).toHaveLength(4);
@@ -925,16 +889,13 @@ describe("Playground Jump Full Pipeline", () => {
     const input = [
       {
         role: "user",
-        "gen_ai.event.content":
-          '{"role":"user","content":"What is the weather?","tool_calls":[]}',
+        "gen_ai.event.content": '{"role":"user","content":"What is the weather?","tool_calls":[]}',
       },
     ];
     const inputResult = normalizeInput(input, { metadata });
     expect(inputResult.success).toBe(true);
 
-    const inputMsg = inputResult
-      .data!.map(convertChatMlToPlayground)
-      .filter((m) => m)[0]!;
+    const inputMsg = inputResult.data!.map(convertChatMlToPlayground).filter((m) => m)[0]!;
     expect(inputMsg).toBeDefined();
     if ("role" in inputMsg) {
       expect(inputMsg.role).toBe("user");
@@ -947,15 +908,12 @@ describe("Playground Jump Full Pipeline", () => {
 
     // Output: single object with nested message structure
     const output = {
-      "gen_ai.event.content":
-        '{"message":{"role":"Assistant","content":"The answer is positive."}}',
+      "gen_ai.event.content": '{"message":{"role":"Assistant","content":"The answer is positive."}}',
     };
     const outputResult = normalizeOutput(output, { metadata });
     expect(outputResult.success).toBe(true);
 
-    const outputMsg = outputResult
-      .data!.map(convertChatMlToPlayground)
-      .filter((m) => m)[0];
+    const outputMsg = outputResult.data!.map(convertChatMlToPlayground).filter((m) => m)[0];
     expect(outputMsg).toBeDefined();
     if (outputMsg && "role" in outputMsg) {
       expect(outputMsg.role).toBe("assistant");

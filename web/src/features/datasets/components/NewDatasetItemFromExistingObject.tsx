@@ -1,10 +1,5 @@
 import { ChevronDown, CopyIcon, LockIcon, PlusIcon } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import { useState } from "react";
@@ -47,30 +42,23 @@ export const NewDatasetItemFromExistingObject = (props: {
   size?: "default" | "sm" | "xs" | "lg" | "icon" | "icon-xs" | "icon-sm";
 }) => {
   const parsedInput =
-    props.input && typeof props.input === "string"
-      ? (parseJsonPrioritised(props.input) ?? null)
-      : null;
+    props.input && typeof props.input === "string" ? (parseJsonPrioritised(props.input) ?? null) : null;
 
   const parsedOutput =
-    props.output && typeof props.output === "string"
-      ? (parseJsonPrioritised(props.output) ?? null)
-      : null;
+    props.output && typeof props.output === "string" ? (parseJsonPrioritised(props.output) ?? null) : null;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(
-    props.projectId,
+  const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(props.projectId);
+  const observationInDatasets = api.datasets.datasetItemsBasedOnTraceOrObservation.useQuery(
+    {
+      projectId: props.projectId,
+      traceId: props.traceId as string,
+      observationId: props.observationId,
+    },
+    {
+      enabled: isAuthenticatedAndProjectMember && !!props.traceId,
+    },
   );
-  const observationInDatasets =
-    api.datasets.datasetItemsBasedOnTraceOrObservation.useQuery(
-      {
-        projectId: props.projectId,
-        traceId: props.traceId as string,
-        observationId: props.observationId,
-      },
-      {
-        enabled: isAuthenticatedAndProjectMember && !!props.traceId,
-      },
-    );
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
     scope: "datasets:CUD",
@@ -94,36 +82,23 @@ export const NewDatasetItemFromExistingObject = (props: {
         >
           <CopyIcon className="size-3" />
         </ActionButton>
-      ) : observationInDatasets.data &&
-        observationInDatasets.data.length > 0 ? (
+      ) : observationInDatasets.data && observationInDatasets.data.length > 0 ? (
         <div>
           <DropdownMenu open={hasAccess ? undefined : false}>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="secondary"
-                size={buttonSize}
-                disabled={!hasAccess}
-              >
+              <Button variant="secondary" size={buttonSize} disabled={!hasAccess}>
                 <span>{`In ${observationInDatasets.data.length} dataset(s)`}</span>
                 <ChevronDown className="ml-2 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {observationInDatasets.data.map(
-                ({ id: datasetItemId, datasetName, datasetId }) => (
-                  <DropdownMenuItem
-                    key={datasetItemId}
-                    className="capitalize"
-                    asChild
-                  >
-                    <Link
-                      href={`/project/${props.projectId}/datasets/${datasetId}/items/${datasetItemId}`}
-                    >
-                      {datasetName}
-                    </Link>
-                  </DropdownMenuItem>
-                ),
-              )}
+              {observationInDatasets.data.map(({ id: datasetItemId, datasetName, datasetId }) => (
+                <DropdownMenuItem key={datasetItemId} className="capitalize" asChild>
+                  <Link href={`/project/${props.projectId}/datasets/${datasetId}/items/${datasetItemId}`}>
+                    {datasetName}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="capitalize"
@@ -151,17 +126,12 @@ export const NewDatasetItemFromExistingObject = (props: {
         >
           {hasAccess ? (
             <PlusIcon
-              className={cn(
-                "-ml-0.5 mr-1.5",
-                buttonSize === "sm" ? "h-3.5 w-3.5" : "h-4 w-4",
-              )}
+              className={cn("-ml-0.5 mr-1.5", buttonSize === "sm" ? "h-3.5 w-3.5" : "h-4 w-4")}
               aria-hidden="true"
             />
           ) : null}
           Add to datasets
-          {!hasAccess ? (
-            <LockIcon className={cn("ml-1.5 h-3 w-3")} aria-hidden="true" />
-          ) : null}
+          {!hasAccess ? <LockIcon className={cn("ml-1.5 h-3 w-3")} aria-hidden="true" /> : null}
         </Button>
       )}
       <Dialog open={hasAccess && isFormOpen} onOpenChange={setIsFormOpen}>

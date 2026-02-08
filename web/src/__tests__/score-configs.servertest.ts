@@ -1,10 +1,6 @@
 /** @jest-environment node */
 
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-  pruneDatabase,
-} from "@/src/__tests__/test-utils";
+import { makeAPICall, makeZodVerifiedAPICall, pruneDatabase } from "@/src/__tests__/test-utils";
 import {
   GetScoreConfigResponse,
   GetScoreConfigsResponse,
@@ -66,8 +62,7 @@ describe("/api/public/score-configs API Endpoint", () => {
       await pruneDatabase();
 
       // Create authentication pairs
-      const { auth: newAuth, projectId: newProjectId } =
-        await createOrgProjectAndApiKey();
+      const { auth: newAuth, projectId: newProjectId } = await createOrgProjectAndApiKey();
       auth = newAuth;
       projectId = newProjectId;
 
@@ -139,12 +134,7 @@ describe("/api/public/score-configs API Endpoint", () => {
   it("test invalid config id input", async () => {
     const configId = "invalid-config-id";
 
-    const getScoreConfig = await makeAPICall(
-      "GET",
-      `/api/public/score-configs/${configId}`,
-      undefined,
-      auth,
-    );
+    const getScoreConfig = await makeAPICall("GET", `/api/public/score-configs/${configId}`, undefined, auth);
 
     expect(getScoreConfig.status).toBe(404);
     expect(getScoreConfig.body).toMatchObject({
@@ -163,12 +153,7 @@ describe("/api/public/score-configs API Endpoint", () => {
       },
     });
 
-    const getScoreConfig = await makeAPICall(
-      "GET",
-      `/api/public/score-configs/${configId}`,
-      undefined,
-      auth,
-    );
+    const getScoreConfig = await makeAPICall("GET", `/api/public/score-configs/${configId}`, undefined, auth);
 
     expect(getScoreConfig.status).toBe(500);
     expect(getScoreConfig.body).toMatchObject({
@@ -345,8 +330,7 @@ describe("/api/public/score-configs API Endpoint", () => {
       error: [
         {
           code: "custom",
-          message:
-            "Category must be an array of objects with label value pairs, where labels and values are unique.",
+          message: "Category must be an array of objects with label value pairs, where labels and values are unique.",
           path: ["categories"],
         },
       ],
@@ -374,8 +358,7 @@ describe("/api/public/score-configs API Endpoint", () => {
       error: [
         {
           code: "custom",
-          message:
-            "Duplicate category label: first, category labels must be unique",
+          message: "Duplicate category label: first, category labels must be unique",
           path: ["categories"],
         },
       ],
@@ -403,8 +386,7 @@ describe("/api/public/score-configs API Endpoint", () => {
       error: [
         {
           code: "custom",
-          message:
-            "Duplicate category value: 1, category values must be unique",
+          message: "Duplicate category value: 1, category values must be unique",
           path: ["categories"],
         },
       ],
@@ -507,9 +489,7 @@ describe("/api/public/score-configs API Endpoint", () => {
 
       expect(patchResponse.status).toBe(400);
       expect(patchResponse.body).toMatchObject({
-        message: expect.stringContaining(
-          "Maximum value must be greater than Minimum value",
-        ),
+        message: expect.stringContaining("Maximum value must be greater than Minimum value"),
       });
     });
 
@@ -621,12 +601,7 @@ describe("/api/public/score-configs API Endpoint", () => {
         },
       })) as ScoreConfig;
 
-      const patchResponse = await makeAPICall(
-        "PATCH",
-        `/api/public/score-configs/${configId}`,
-        {},
-        auth,
-      );
+      const patchResponse = await makeAPICall("PATCH", `/api/public/score-configs/${configId}`, {}, auth);
 
       expect(patchResponse.status).toBe(400);
       expect(patchResponse.body).toMatchObject({

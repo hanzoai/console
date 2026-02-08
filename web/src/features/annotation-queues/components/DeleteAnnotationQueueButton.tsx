@@ -18,10 +18,7 @@ type DeleteAnnotationQueueButtonProps = {
   queueId: string;
 };
 
-export const DeleteAnnotationQueueButton = ({
-  projectId,
-  queueId,
-}: DeleteAnnotationQueueButtonProps) => {
+export const DeleteAnnotationQueueButton = ({ projectId, queueId }: DeleteAnnotationQueueButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -61,9 +58,8 @@ export const DeleteAnnotationQueueButton = ({
         <DialogHeader>
           <DialogTitle className="mb-4">Please confirm</DialogTitle>
           <DialogDescription className="text-md p-0">
-            This action cannot be undone and removes queue items attached to
-            this queue. Scores added while annotating in this queue will not be
-            deleted.
+            This action cannot be undone and removes queue items attached to this queue. Scores added while annotating
+            in this queue will not be deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -1,9 +1,5 @@
 import { HanzoIcon } from "@/src/components/HanzoLogo";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
 import { RagasLogoIcon } from "@/src/features/evals/components/ragas-logo";
 import { UserCircle2Icon } from "lucide-react";
 

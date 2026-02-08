@@ -1,11 +1,6 @@
 import React from "react";
 import { FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { TemplateSelector } from "@/src/features/evals/components/template-selector";
 import { EvaluatorForm } from "@/src/features/evals/components/evaluator-form";
 import { type EvaluatorsStepProps } from "@/src/features/experiments/types/stepProps";
@@ -74,10 +69,7 @@ export const EvaluatorsStep: React.FC<EvaluatorsStepProps> = ({
         >
           <DialogContent className="max-h-[90vh] max-w-screen-md overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                {selectedEvaluatorData.evaluator.id ? "Edit" : "Configure"}{" "}
-                Evaluator
-              </DialogTitle>
+              <DialogTitle>{selectedEvaluatorData.evaluator.id ? "Edit" : "Configure"} Evaluator</DialogTitle>
             </DialogHeader>
             <EvaluatorForm
               useDialog={true}

@@ -1,19 +1,10 @@
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
 
 import { TraceGraphCanvas } from "./TraceGraphCanvas";
 import { type AgentGraphDataResponse } from "../types";
 import { buildStepData } from "../buildStepData";
-import {
-  buildGraphFromStepData,
-  transformLanggraphToGeneralized,
-} from "../buildGraphCanvasData";
+import { buildGraphFromStepData, transformLanggraphToGeneralized } from "../buildGraphCanvasData";
 import {
   HANZO_START_NODE_NAME,
   HANZO_END_NODE_NAME,
@@ -27,33 +18,22 @@ type TraceGraphViewProps = {
   agentGraphData: AgentGraphDataResponse[];
 };
 
-export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
-  agentGraphData,
-}) => {
+export const TraceGraphView: React.FC<TraceGraphViewProps> = ({ agentGraphData }) => {
   const [selectedNodeName, setSelectedNodeName] = useState<string | null>(null);
-  const [currentObservationId, setCurrentObservationId] = useQueryParam(
-    "observation",
-    StringParam,
-  );
+  const [currentObservationId, setCurrentObservationId] = useQueryParam("observation", StringParam);
   const [currentObservationIndices, setCurrentObservationIndices] = useState<{
     [nodeName: string]: number;
   }>({});
-  const [previousSelectedNode, setPreviousSelectedNode] = useState<
-    string | null
-  >(null);
+  const [previousSelectedNode, setPreviousSelectedNode] = useState<string | null>(null);
   const isClickNavigationRef = useRef(false);
 
   const normalizedData = useMemo(() => {
-    const hasStepData = agentGraphData.some(
-      (o) => o.step != null && o.step !== 0 && o.node != null,
-    );
+    const hasStepData = agentGraphData.some((o) => o.step != null && o.step !== 0 && o.node != null);
     if (!hasStepData) {
       // has no steps → add timing-based steps
       return buildStepData(agentGraphData);
     } else {
-      const isLangGraph = agentGraphData.some(
-        (o) => o.node && o.node.trim().length > 0,
-      );
+      const isLangGraph = agentGraphData.some((o) => o.node && o.node.trim().length > 0);
       if (isLangGraph) {
         // TODO: make detection more robust based on metadata
         return transformLanggraphToGeneralized(agentGraphData);
@@ -67,8 +47,7 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
     return buildGraphFromStepData(normalizedData);
   }, [normalizedData]);
 
-  const shouldDisablePhysics =
-    agentGraphData.length >= MAX_NODE_NUMBER_FOR_PHYSICS;
+  const shouldDisablePhysics = agentGraphData.length >= MAX_NODE_NUMBER_FOR_PHYSICS;
 
   // Reset indices when graph data changes (new trace loaded)
   useEffect(() => {
@@ -86,12 +65,8 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
     let foundNodeName = null;
     let foundIndex = 0;
 
-    for (const [nodeName, observations] of Object.entries(
-      nodeToObservationsMap,
-    )) {
-      const index = observations.findIndex(
-        (obsId) => obsId === currentObservationId,
-      );
+    for (const [nodeName, observations] of Object.entries(nodeToObservationsMap)) {
+      const index = observations.findIndex((obsId) => obsId === currentObservationId);
       if (index !== -1) {
         foundNodeName = nodeName;
         foundIndex = index;
@@ -99,10 +74,7 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
       }
     }
 
-    if (
-      foundNodeName &&
-      graph.nodes.some((node) => node.id === foundNodeName)
-    ) {
+    if (foundNodeName && graph.nodes.some((node) => node.id === foundNodeName)) {
       setSelectedNodeName(foundNodeName);
       setCurrentObservationIndices((prev) => ({
         ...prev,
@@ -113,12 +85,7 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
       setSelectedNodeName(null);
       setPreviousSelectedNode(null);
     }
-  }, [
-    currentObservationId,
-    agentGraphData,
-    graph.nodes,
-    nodeToObservationsMap,
-  ]);
+  }, [currentObservationId, agentGraphData, graph.nodes, nodeToObservationsMap]);
 
   const onCanvasNodeNameChange = useCallback(
     (nodeName: string | null) => {
@@ -167,12 +134,7 @@ export const TraceGraphView: React.FC<TraceGraphViewProps> = ({
 
       setSelectedNodeName(nodeName);
     },
-    [
-      nodeToObservationsMap,
-      currentObservationIndices,
-      previousSelectedNode,
-      setCurrentObservationId,
-    ],
+    [nodeToObservationsMap, currentObservationIndices, previousSelectedNode, setCurrentObservationId],
   );
 
   return (

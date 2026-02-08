@@ -3,23 +3,11 @@ import { z } from "zod/v4";
 
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { isValidPostgresRegex } from "@/src/features/models/server/isValidPostgresRegex";
-import {
-  GetModelResultSchema,
-  ModelLastUsedQueryResult,
-  UpsertModelSchema,
-} from "@/src/features/models/validation";
+import { GetModelResultSchema, ModelLastUsedQueryResult, UpsertModelSchema } from "@/src/features/models/validation";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { ModelUsageUnit, paginationZod, Prisma } from "@hanzo/shared";
-import {
-  clearModelCacheForProject,
-  queryClickhouse,
-  findModel,
-  matchPricingTier,
-} from "@hanzo/shared/src/server";
+import { clearModelCacheForProject, queryClickhouse, findModel, matchPricingTier } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 const ModelAllOptions = z.object({
@@ -28,11 +16,7 @@ const ModelAllOptions = z.object({
   ...paginationZod,
 });
 
-const paginateArray = <T>(params: {
-  limit: number;
-  page: number;
-  data: Array<T>;
-}): Array<T> => {
+const paginateArray = <T>(params: { limit: number; page: number; data: Array<T> }): Array<T> => {
   const { data, limit, page } = params;
   const startIndex = limit * page;
   const endIndex = startIndex + limit;
@@ -105,19 +89,17 @@ export const modelRouter = createTRPCRouter({
       return model;
     }),
 
-  getAll: protectedProjectProcedure
-    .input(ModelAllOptions)
-    .query(async ({ input, ctx }) => {
-      const { projectId, page, limit, searchString } = input;
+  getAll: protectedProjectProcedure.input(ModelAllOptions).query(async ({ input, ctx }) => {
+    const { projectId, page, limit, searchString } = input;
 
-      const searchStringTemplate = `%${searchString}%`;
-      const searchStringCondition = searchString
-        ? Prisma.sql`AND model_name ILIKE ${searchStringTemplate}`
-        : Prisma.sql`AND 1=1`;
+    const searchStringTemplate = `%${searchString}%`;
+    const searchStringCondition = searchString
+      ? Prisma.sql`AND model_name ILIKE ${searchStringTemplate}`
+      : Prisma.sql`AND 1=1`;
 
-      const [allModelsQueryResult, totalCountQuery] = await Promise.all([
-        // All models
-        ctx.prisma.$queryRaw`
+    const [allModelsQueryResult, totalCountQuery] = await Promise.all([
+      // All models
+      ctx.prisma.$queryRaw`
           SELECT DISTINCT ON (project_id, model_name)
             m.id,
             m.project_id as "projectId",
@@ -167,29 +149,27 @@ export const modelRouter = createTRPCRouter({
             m.created_at DESC NULLS LAST
           `,
 
-        // Total count
-        ctx.prisma.$queryRaw<
-          {
-            count: number;
-          }[]
-        >`
+      // Total count
+      ctx.prisma.$queryRaw<
+        {
+          count: number;
+        }[]
+      >`
           SELECT COUNT(DISTINCT (project_id, model_name))
           FROM models
           WHERE (project_id IS NULL OR project_id = ${projectId})
           ${searchStringCondition};
         `,
-      ]);
+    ]);
 
-      const allModels = z
-        .array(GetModelResultSchema)
-        .parse(allModelsQueryResult);
-      const totalCount = z.coerce.number().parse(totalCountQuery[0].count);
+    const allModels = z.array(GetModelResultSchema).parse(allModelsQueryResult);
+    const totalCount = z.coerce.number().parse(totalCountQuery[0].count);
 
-      return {
-        models: paginateArray({ data: allModels, page, limit }),
-        totalCount,
-      };
-    }),
+    return {
+      models: paginateArray({ data: allModels, page, limit }),
+      totalCount,
+    };
+  }),
 
   lastUsedByModelIds: protectedProjectProcedure
     .input(
@@ -233,148 +213,143 @@ export const modelRouter = createTRPCRouter({
       );
     }),
 
-  upsert: protectedProjectProcedure
-    .input(UpsertModelSchema)
-    .mutation(async ({ input, ctx }) => {
-      const {
-        modelId: providedModelId,
-        projectId,
-        modelName,
-        matchPattern,
-        tokenizerConfig,
-        tokenizerId,
-        pricingTiers,
-      } = input;
+  upsert: protectedProjectProcedure.input(UpsertModelSchema).mutation(async ({ input, ctx }) => {
+    const {
+      modelId: providedModelId,
+      projectId,
+      modelName,
+      matchPattern,
+      tokenizerConfig,
+      tokenizerId,
+      pricingTiers,
+    } = input;
 
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId,
-        scope: "models:CUD",
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId,
+      scope: "models:CUD",
+    });
+
+    // Check if regex is valid POSIX regex
+    // Use DB to check, because JS regex is not POSIX compliant
+    const isValidRegex = await isValidPostgresRegex(input.matchPattern, ctx.prisma);
+    if (!isValidRegex) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Invalid regex, needs to be Postgres syntax",
+      });
+    }
+
+    const modelId = providedModelId ?? uuidv4();
+
+    const result = await ctx.prisma.$transaction(async (tx) => {
+      // Check whether model belongs to project
+      // This check is important to prevent users from updating prices for models that they do not have access to
+      const existingModel = await tx.model.findUnique({
+        where: {
+          id: modelId,
+        },
       });
 
-      // Check if regex is valid POSIX regex
-      // Use DB to check, because JS regex is not POSIX compliant
-      const isValidRegex = await isValidPostgresRegex(
-        input.matchPattern,
-        ctx.prisma,
-      );
-      if (!isValidRegex) {
+      if (existingModel && existingModel.projectId !== projectId) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Invalid regex, needs to be Postgres syntax",
+          code: "NOT_FOUND",
+          message: "Model not found",
         });
       }
 
-      const modelId = providedModelId ?? uuidv4();
-
-      const result = await ctx.prisma.$transaction(async (tx) => {
-        // Check whether model belongs to project
-        // This check is important to prevent users from updating prices for models that they do not have access to
-        const existingModel = await tx.model.findUnique({
-          where: {
-            id: modelId,
-          },
-        });
-
-        if (existingModel && existingModel.projectId !== projectId) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Model not found",
-          });
-        }
-
-        // Check if model name is unique within the project
-        // Note: The database has a uniqueness constraint on (projectId, modelName, startDate, unit),
-        // but this constraint is not enforced when startDate or unit are NULL.
-        // We do an explicit check here to ensure uniqueness on just (projectId, modelName).
-        // TODO(LFE-3229): After models table cleanup, enforce uniqueness constraint directly on (projectId, modelName)
-        const existingModelName = await tx.model.findFirst({
-          where: {
-            projectId,
-            modelName,
-          },
-        });
-
-        if (existingModelName && modelId !== existingModelName.id) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Model name '${modelName}' already exists in project`,
-          });
-        }
-
-        const upsertedModel = await tx.model.upsert({
-          where: {
-            id: modelId,
-            projectId: projectId,
-          },
-          create: {
-            id: modelId,
-            projectId,
-            modelName,
-            matchPattern,
-            tokenizerConfig,
-            tokenizerId,
-            startDate: new Date("2010-01-01"), // Set fix start date for uniqueness constraint to work. TODO: drop after cleanup of models table in LFE-3229
-            unit: ModelUsageUnit.Tokens, // Set fix unit for uniqueness constraint to work. TODO: drop after cleanup of models table in LFE-3229
-          },
-          update: {
-            matchPattern,
-            tokenizerConfig,
-            tokenizerId,
-          },
-        });
-
-        // Delete all existing pricing tiers
-        await tx.pricingTier.deleteMany({
-          where: {
-            modelId: upsertedModel.id,
-          },
-        });
-
-        // Create new pricing tiers
-        for (const tier of pricingTiers) {
-          const createdTier = await tx.pricingTier.create({
-            data: {
-              modelId: upsertedModel.id,
-              name: tier.name,
-              isDefault: tier.isDefault,
-              priority: tier.priority,
-              conditions: tier.conditions,
-            },
-          });
-
-          // Create prices for this tier
-          await Promise.all(
-            Object.entries(tier.prices).map(([usageType, price]) =>
-              tx.price.create({
-                data: {
-                  modelId: upsertedModel.id,
-                  projectId: upsertedModel.projectId,
-                  pricingTierId: createdTier.id,
-                  usageType,
-                  price,
-                },
-              }),
-            ),
-          );
-        }
-
-        await auditLog({
-          session: ctx.session,
-          resourceType: "model",
-          resourceId: upsertedModel.id,
-          action: providedModelId ? "update" : "create",
-          after: { model: upsertedModel, pricingTiers },
-        });
-
-        return upsertedModel;
+      // Check if model name is unique within the project
+      // Note: The database has a uniqueness constraint on (projectId, modelName, startDate, unit),
+      // but this constraint is not enforced when startDate or unit are NULL.
+      // We do an explicit check here to ensure uniqueness on just (projectId, modelName).
+      // TODO(LFE-3229): After models table cleanup, enforce uniqueness constraint directly on (projectId, modelName)
+      const existingModelName = await tx.model.findFirst({
+        where: {
+          projectId,
+          modelName,
+        },
       });
 
-      // Clear model cache for the project after successful upsert
-      await clearModelCacheForProject(projectId);
+      if (existingModelName && modelId !== existingModelName.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Model name '${modelName}' already exists in project`,
+        });
+      }
 
-      return result;
-    }),
+      const upsertedModel = await tx.model.upsert({
+        where: {
+          id: modelId,
+          projectId: projectId,
+        },
+        create: {
+          id: modelId,
+          projectId,
+          modelName,
+          matchPattern,
+          tokenizerConfig,
+          tokenizerId,
+          startDate: new Date("2010-01-01"), // Set fix start date for uniqueness constraint to work. TODO: drop after cleanup of models table in LFE-3229
+          unit: ModelUsageUnit.Tokens, // Set fix unit for uniqueness constraint to work. TODO: drop after cleanup of models table in LFE-3229
+        },
+        update: {
+          matchPattern,
+          tokenizerConfig,
+          tokenizerId,
+        },
+      });
+
+      // Delete all existing pricing tiers
+      await tx.pricingTier.deleteMany({
+        where: {
+          modelId: upsertedModel.id,
+        },
+      });
+
+      // Create new pricing tiers
+      for (const tier of pricingTiers) {
+        const createdTier = await tx.pricingTier.create({
+          data: {
+            modelId: upsertedModel.id,
+            name: tier.name,
+            isDefault: tier.isDefault,
+            priority: tier.priority,
+            conditions: tier.conditions,
+          },
+        });
+
+        // Create prices for this tier
+        await Promise.all(
+          Object.entries(tier.prices).map(([usageType, price]) =>
+            tx.price.create({
+              data: {
+                modelId: upsertedModel.id,
+                projectId: upsertedModel.projectId,
+                pricingTierId: createdTier.id,
+                usageType,
+                price,
+              },
+            }),
+          ),
+        );
+      }
+
+      await auditLog({
+        session: ctx.session,
+        resourceType: "model",
+        resourceId: upsertedModel.id,
+        action: providedModelId ? "update" : "create",
+        after: { model: upsertedModel, pricingTiers },
+      });
+
+      return upsertedModel;
+    });
+
+    // Clear model cache for the project after successful upsert
+    await clearModelCacheForProject(projectId);
+
+    return result;
+  }),
   delete: protectedProjectProcedure
     .input(
       z.object({
@@ -456,9 +431,7 @@ export const modelRouter = createTRPCRouter({
             name: defaultTier.name,
             priority: defaultTier.priority,
             isDefault: true,
-            prices: Object.fromEntries(
-              defaultTier.prices.map((p) => [p.usageType, p.price.toNumber()]),
-            ),
+            prices: Object.fromEntries(defaultTier.prices.map((p) => [p.usageType, p.price.toNumber()])),
           },
         };
       }
@@ -471,9 +444,7 @@ export const modelRouter = createTRPCRouter({
       }
 
       // Step 4: Find the full tier details
-      const matchedTier = pricingTiers.find(
-        (t) => t.id === matchResult.pricingTierId,
-      );
+      const matchedTier = pricingTiers.find((t) => t.id === matchResult.pricingTierId);
       if (!matchedTier) {
         return { matched: false as const };
       }
@@ -491,9 +462,7 @@ export const modelRouter = createTRPCRouter({
           name: matchedTier.name,
           priority: matchedTier.priority,
           isDefault: matchedTier.isDefault,
-          prices: Object.fromEntries(
-            matchedTier.prices.map((p) => [p.usageType, p.price.toNumber()]),
-          ),
+          prices: Object.fromEntries(matchedTier.prices.map((p) => [p.usageType, p.price.toNumber()])),
         },
       };
     }),

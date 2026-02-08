@@ -87,10 +87,7 @@ export default withMiddlewares({
 
       const updateData = {
         ...body,
-        completedAt:
-          body.status === AnnotationQueueStatus.COMPLETED
-            ? new Date()
-            : undefined,
+        completedAt: body.status === AnnotationQueueStatus.COMPLETED ? new Date() : undefined,
       };
 
       const item = await prisma.annotationQueueItem.update({

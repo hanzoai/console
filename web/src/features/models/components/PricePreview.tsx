@@ -3,17 +3,10 @@ import Decimal from "decimal.js";
 import { PriceMapSchema } from "@/src/features/models/validation";
 import { getMaxDecimals } from "@/src/features/models/utils";
 
-export function PricePreview({
-  prices,
-}: {
-  prices: Record<string, number | undefined>;
-}) {
+export function PricePreview({ prices }: { prices: Record<string, number | undefined> }) {
   const parsedPrices = PriceMapSchema.safeParse(prices);
 
-  const getMaxDecimalsForPriceGroup = (
-    price: number | undefined,
-    multiplier: number,
-  ) => {
+  const getMaxDecimalsForPriceGroup = (price: number | undefined, multiplier: number) => {
     return price != null
       ? Math.max(
           ...Object.values(prices).map((price) => {
@@ -27,9 +20,7 @@ export function PricePreview({
     <div className="rounded-lg border border-border bg-muted/30 p-4">
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Price Preview
-          </h4>
+          <h4 className="text-sm font-medium text-muted-foreground">Price Preview</h4>
         </div>
 
         {parsedPrices.success ? (
@@ -50,22 +41,13 @@ export function PricePreview({
                 >
                   <span className="break-all font-medium">{usageType}</span>
                   <span className="text-right font-mono">
-                    $
-                    {new Decimal(price).toFixed(
-                      getMaxDecimalsForPriceGroup(price, 1),
-                    )}
+                    ${new Decimal(price).toFixed(getMaxDecimalsForPriceGroup(price, 1))}
                   </span>
                   <span className="text-right font-mono">
-                    $
-                    {new Decimal(price)
-                      .mul(1000)
-                      .toFixed(getMaxDecimalsForPriceGroup(price, 1000))}
+                    ${new Decimal(price).mul(1000).toFixed(getMaxDecimalsForPriceGroup(price, 1000))}
                   </span>
                   <span className="text-right font-mono">
-                    $
-                    {new Decimal(price)
-                      .mul(1000000)
-                      .toFixed(getMaxDecimalsForPriceGroup(price, 1000000))}
+                    ${new Decimal(price).mul(1000000).toFixed(getMaxDecimalsForPriceGroup(price, 1000000))}
                   </span>
                 </div>
               ))}

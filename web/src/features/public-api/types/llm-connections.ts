@@ -52,53 +52,50 @@ const PutLlmConnectionV1BodyBase = z.object({
 });
 
 // PUT /api/public/llm-connections request body (upsert) with adapter-specific validation
-export const PutLlmConnectionV1Body = PutLlmConnectionV1BodyBase.superRefine(
-  (data, ctx) => {
-    const { adapter, config } = data;
+export const PutLlmConnectionV1Body = PutLlmConnectionV1BodyBase.superRefine((data, ctx) => {
+  const { adapter, config } = data;
 
-    if (adapter === LLMAdapter.Bedrock) {
-      // Bedrock requires config with region
-      if (!config) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "Config is required for Bedrock adapter. Expected: { region: string }",
-          path: ["config"],
-        });
-        return;
-      }
-      const result = BedrockConfigSchema.safeParse(config);
+  if (adapter === LLMAdapter.Bedrock) {
+    // Bedrock requires config with region
+    if (!config) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Config is required for Bedrock adapter. Expected: { region: string }",
+        path: ["config"],
+      });
+      return;
+    }
+    const result = BedrockConfigSchema.safeParse(config);
+    if (!result.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Invalid Bedrock config: ${result.error.issues.map((e) => e.message).join(", ")}. Expected: { region: string }`,
+        path: ["config"],
+      });
+    }
+  } else if (adapter === LLMAdapter.VertexAI) {
+    // VertexAI config is optional, but if provided must be valid
+    if (config) {
+      const result = VertexAIConfigSchema.safeParse(config);
       if (!result.success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: `Invalid Bedrock config: ${result.error.issues.map((e) => e.message).join(", ")}. Expected: { region: string }`,
-          path: ["config"],
-        });
-      }
-    } else if (adapter === LLMAdapter.VertexAI) {
-      // VertexAI config is optional, but if provided must be valid
-      if (config) {
-        const result = VertexAIConfigSchema.safeParse(config);
-        if (!result.success) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Invalid VertexAI config: ${result.error.issues.map((e) => e.message).join(", ")}. Expected: { location: string }`,
-            path: ["config"],
-          });
-        }
-      }
-    } else {
-      // Other adapters should not have config
-      if (config && Object.keys(config).length > 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Config is not supported for ${adapter} adapter. Remove the config field.`,
+          message: `Invalid VertexAI config: ${result.error.issues.map((e) => e.message).join(", ")}. Expected: { location: string }`,
           path: ["config"],
         });
       }
     }
-  },
-);
+  } else {
+    // Other adapters should not have config
+    if (config && Object.keys(config).length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Config is not supported for ${adapter} adapter. Remove the config field.`,
+        path: ["config"],
+      });
+    }
+  }
+});
 
 // PUT /api/public/llm-connections response
 export const PutLlmConnectionV1Response = LlmConnectionResponse.strict();

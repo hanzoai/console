@@ -1,10 +1,6 @@
 import { Archive } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import React from "react";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -23,8 +19,7 @@ export const ArchiveScoreConfigButton = ({
   name: string;
 }) => {
   const capture = usePostHogClientCapture();
-  const { emptySelectedConfigIds, setEmptySelectedConfigIds } =
-    useEmptyScoreConfigs();
+  const { emptySelectedConfigIds, setEmptySelectedConfigIds } = useEmptyScoreConfigs();
 
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -52,13 +47,8 @@ export const ArchiveScoreConfigButton = ({
           Archive
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        onClick={(e) => e.stopPropagation()}
-        className="max-w-[500px]"
-      >
-        <h2 className="text-md mb-3 font-semibold">
-          {isArchived ? "Restore config" : "Archive config"}
-        </h2>
+      <PopoverContent onClick={(e) => e.stopPropagation()} className="max-w-[500px]">
+        <h2 className="text-md mb-3 font-semibold">{isArchived ? "Restore config" : "Archive config"}</h2>
         <p className="mb-3 text-sm">
           Your config is currently{" "}
           {isArchived
@@ -76,9 +66,7 @@ export const ArchiveScoreConfigButton = ({
                 id: configId,
                 isArchived: !isArchived,
               });
-              setEmptySelectedConfigIds(
-                emptySelectedConfigIds.filter((id) => id !== configId),
-              );
+              setEmptySelectedConfigIds(emptySelectedConfigIds.filter((id) => id !== configId));
               capture("score_configs:archive_form_submit");
             }}
           >

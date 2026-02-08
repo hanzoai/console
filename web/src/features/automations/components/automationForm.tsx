@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Separator } from "@/src/components/ui/separator";
 import { Switch } from "@/src/components/ui/switch";
 import { useRouter } from "next/router";
@@ -70,9 +58,7 @@ enum TriggerEventSource {
 const baseFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   eventSource: z.string().min(1, "Event source is required"),
-  eventAction: z
-    .array(z.string())
-    .min(1, "At least one event action is required"),
+  eventAction: z.array(z.string()).min(1, "At least one event action is required"),
   status: z.enum(["ACTIVE", "INACTIVE"]),
   filter: z.array(z.any()).optional(),
 });
@@ -96,11 +82,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AutomationFormProps {
   projectId: string;
-  onSuccess?: (
-    automationId?: string,
-    webhookSecret?: string,
-    actionType?: "WEBHOOK" | "GITHUB_DISPATCH",
-  ) => void;
+  onSuccess?: (automationId?: string, webhookSecret?: string, actionType?: "WEBHOOK" | "GITHUB_DISPATCH") => void;
   onCancel?: () => void;
   automation?: AutomationDomain;
   isEditing?: boolean;
@@ -123,22 +105,18 @@ export const AutomationForm = ({
   const utils = api.useUtils();
 
   // Set up mutations
-  const createAutomationMutation = api.automations.createAutomation.useMutation(
-    {
-      onSuccess: async () => {
-        // Invalidate automations queries
-        await utils.automations.invalidate();
-      },
+  const createAutomationMutation = api.automations.createAutomation.useMutation({
+    onSuccess: async () => {
+      // Invalidate automations queries
+      await utils.automations.invalidate();
     },
-  );
-  const updateAutomationMutation = api.automations.updateAutomation.useMutation(
-    {
-      onSuccess: async () => {
-        // Invalidate automations queries
-        await utils.automations.invalidate();
-      },
+  });
+  const updateAutomationMutation = api.automations.updateAutomation.useMutation({
+    onSuccess: async () => {
+      // Invalidate automations queries
+      await utils.automations.invalidate();
     },
-  );
+  });
 
   // Get the action type for the form when editing
   const getActionType = () => {
@@ -154,17 +132,10 @@ export const AutomationForm = ({
     const today = new Date().toLocaleString("sv").split("T")[0]; // YYYY-MM-DD
 
     const baseValues = {
-      name:
-        isEditing && automation ? automation.name : `${actionType} ${today}`,
-      eventSource: automation
-        ? automation.trigger.eventSource
-        : TriggerEventSource.Prompt,
-      eventAction: automation
-        ? automation.trigger.eventActions
-        : ["created", "updated", "deleted"],
-      status: (isEditing && automation
-        ? automation.trigger.status
-        : "ACTIVE") as "ACTIVE" | "INACTIVE",
+      name: isEditing && automation ? automation.name : `${actionType} ${today}`,
+      eventSource: automation ? automation.trigger.eventSource : TriggerEventSource.Prompt,
+      eventAction: automation ? automation.trigger.eventActions : ["created", "updated", "deleted"],
+      status: (isEditing && automation ? automation.trigger.status : "ACTIVE") as "ACTIVE" | "INACTIVE",
       filter: automation ? automation.trigger.filter || [] : [],
     };
 
@@ -210,8 +181,7 @@ export const AutomationForm = ({
           url: githubDefaults.githubDispatch.url || "",
           eventType: githubDefaults.githubDispatch.eventType || "",
           githubToken: githubDefaults.githubDispatch.githubToken || "",
-          displayGitHubToken:
-            githubDefaults.githubDispatch.displayGitHubToken || undefined,
+          displayGitHubToken: githubDefaults.githubDispatch.displayGitHubToken || undefined,
         },
       };
     } else {
@@ -235,10 +205,7 @@ export const AutomationForm = ({
   // Handle form submission
   const onSubmit = async (data: FormValues) => {
     if (!hasAccess) {
-      showErrorToast(
-        "Permission Denied",
-        "You don't have permission to modify automations.",
-      );
+      showErrorToast("Permission Denied", "You don't have permission to modify automations.");
       return;
     }
 
@@ -247,10 +214,7 @@ export const AutomationForm = ({
     const validation = handler.validateFormData(data);
 
     if (!validation.isValid) {
-      showErrorToast(
-        "Validation Error",
-        validation.errors?.join(", ") || "Please fill in all required fields",
-      );
+      showErrorToast("Validation Error", validation.errors?.join(", ") || "Please fill in all required fields");
       return;
     }
 
@@ -294,17 +258,12 @@ export const AutomationForm = ({
         description: `Successfully created automation "${data.name}".`,
       });
 
-      onSuccess?.(
-        result.automation.id,
-        result.webhookSecret,
-        data.actionType as "WEBHOOK" | "GITHUB_DISPATCH",
-      );
+      onSuccess?.(result.automation.id, result.webhookSecret, data.actionType as "WEBHOOK" | "GITHUB_DISPATCH");
     }
   };
 
   // Update button text based on if we're editing an existing automation
-  const submitButtonText =
-    isEditing && automation ? "Update Automation" : "Save Automation";
+  const submitButtonText = isEditing && automation ? "Update Automation" : "Save Automation";
 
   // Update required fields based on action type
   const handleActionTypeChange = (value: ActionTypes) => {
@@ -388,9 +347,7 @@ export const AutomationForm = ({
                   <FormControl>
                     <Switch
                       checked={field.value === "ACTIVE"}
-                      onCheckedChange={(checked) =>
-                        field.onChange(checked ? "ACTIVE" : "INACTIVE")
-                      }
+                      onCheckedChange={(checked) => field.onChange(checked ? "ACTIVE" : "INACTIVE")}
                       disabled={!hasAccess || !isEditing}
                     />
                   </FormControl>
@@ -404,9 +361,7 @@ export const AutomationForm = ({
         <Card>
           <CardHeader>
             <CardTitle>Trigger</CardTitle>
-            <CardDescription>
-              Configure when this automation should run.
-            </CardDescription>
+            <CardDescription>Configure when this automation should run.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -415,28 +370,20 @@ export const AutomationForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Event Source</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={!hasAccess || !isEditing}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value} disabled={!hasAccess || !isEditing}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select an event source" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={TriggerEventSource.Prompt}>
-                        Prompt
-                      </SelectItem>
+                      <SelectItem value={TriggerEventSource.Prompt}>Prompt</SelectItem>
                       <SelectItem disabled={true} value="planned">
                         More coming soon...
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    The event that triggers this automation.
-                  </FormDescription>
+                  <FormDescription>The event that triggers this automation.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -456,13 +403,11 @@ export const AutomationForm = ({
                       options={[
                         {
                           value: "created",
-                          description:
-                            "Whenever a new prompt version is created",
+                          description: "Whenever a new prompt version is created",
                         },
                         {
                           value: "updated",
-                          description:
-                            "Whenever tags or labels on a prompt version are updated",
+                          description: "Whenever tags or labels on a prompt version are updated",
                         },
                         {
                           value: "deleted",
@@ -474,10 +419,7 @@ export const AutomationForm = ({
                       labelTruncateCutOff={4}
                     />
                   </FormControl>
-                  <FormDescription>
-                    The actions on the event source that trigger this
-                    automation.
-                  </FormDescription>
+                  <FormDescription>The actions on the event source that trigger this automation.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -493,16 +435,10 @@ export const AutomationForm = ({
                       columns={webhookActionFilterOptions()}
                       filterState={field.value || []}
                       onChange={field.onChange}
-                      disabled={
-                        activeTab === "annotation_queue" ||
-                        !hasAccess ||
-                        !isEditing
-                      }
+                      disabled={activeTab === "annotation_queue" || !hasAccess || !isEditing}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Add conditions to narrow down when this trigger fires.
-                  </FormDescription>
+                  <FormDescription>Add conditions to narrow down when this trigger fires.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -513,9 +449,7 @@ export const AutomationForm = ({
         <Card>
           <CardHeader>
             <CardTitle>Action</CardTitle>
-            <CardDescription>
-              Configure what happens when the trigger fires.
-            </CardDescription>
+            <CardDescription>Configure what happens when the trigger fires.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -535,27 +469,23 @@ export const AutomationForm = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {ActionHandlerRegistry.getAllActionTypes().map(
-                        (actionType) => (
-                          <SelectItem key={actionType} value={actionType}>
-                            {actionType === "WEBHOOK"
-                              ? "Webhook"
-                              : actionType === "SLACK"
-                                ? "Slack"
-                                : actionType === "GITHUB_DISPATCH"
-                                  ? "GitHub Dispatch"
-                                  : "Annotation Queue"}
-                          </SelectItem>
-                        ),
-                      )}
+                      {ActionHandlerRegistry.getAllActionTypes().map((actionType) => (
+                        <SelectItem key={actionType} value={actionType}>
+                          {actionType === "WEBHOOK"
+                            ? "Webhook"
+                            : actionType === "SLACK"
+                              ? "Slack"
+                              : actionType === "GITHUB_DISPATCH"
+                                ? "GitHub Dispatch"
+                                : "Annotation Queue"}
+                        </SelectItem>
+                      ))}
                       <SelectItem disabled={true} value="planned">
                         More coming soon...
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
-                    The type of action to perform when the trigger fires.
-                  </FormDescription>
+                  <FormDescription>The type of action to perform when the trigger fires.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -593,10 +523,7 @@ export const AutomationForm = ({
               <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={!hasAccess || form.formState.isSubmitting}
-              >
+              <Button type="submit" disabled={!hasAccess || form.formState.isSubmitting}>
                 {submitButtonText}
               </Button>
             </div>

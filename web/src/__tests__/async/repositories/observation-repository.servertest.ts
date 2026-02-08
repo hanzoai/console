@@ -1,11 +1,5 @@
-import {
-  createObservation,
-  createObservationsCh,
-} from "@hanzo/shared/src/server";
-import {
-  getObservationById,
-  getObservationsForTrace,
-} from "@hanzo/shared/src/server";
+import { createObservation, createObservationsCh } from "@hanzo/shared/src/server";
+import { getObservationById, getObservationsForTrace } from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
@@ -87,9 +81,7 @@ describe("Clickhouse Observations Repository Test", () => {
     expect(result.modelParameters).toEqual({ something: "sample_param" });
     expect(result.promptId).toEqual(observation.prompt_id);
     expect(result.endTime).toEqual(new Date(observation.end_time!));
-    expect(result.completionStartTime).toEqual(
-      new Date(observation.completion_start_time!),
-    );
+    expect(result.completionStartTime).toEqual(new Date(observation.completion_start_time!));
     expect(result.totalCost).toEqual(observation.total_cost!);
     expect(result.inputUsage).toEqual(1234);
     expect(result.outputUsage).toEqual(5678);
@@ -200,15 +192,9 @@ describe("Clickhouse Observations Repository Test", () => {
     expect(firstObservation.projectId).toEqual(observation.project_id);
     expect(firstObservation.type).toEqual(observation.type);
     expect(firstObservation.metadata).toEqual(observation.metadata);
-    expect(firstObservation.createdAt).toEqual(
-      new Date(observation.created_at),
-    );
-    expect(firstObservation.updatedAt).toEqual(
-      new Date(observation.updated_at),
-    );
-    expect(firstObservation.startTime).toEqual(
-      new Date(observation.start_time),
-    );
+    expect(firstObservation.createdAt).toEqual(new Date(observation.created_at));
+    expect(firstObservation.updatedAt).toEqual(new Date(observation.updated_at));
+    expect(firstObservation.startTime).toEqual(new Date(observation.start_time));
     expect(firstObservation.name).toEqual(observation.name);
     expect(firstObservation.level).toEqual(observation.level);
     expect(firstObservation.statusMessage).toEqual(observation.status_message);
@@ -220,17 +206,11 @@ describe("Clickhouse Observations Repository Test", () => {
     expect(firstObservation.promptId).toEqual(observation.prompt_id);
     expect(firstObservation.endTime).toEqual(new Date(observation.end_time!));
     expect(firstObservation.timeToFirstToken).toEqual(
-      (new Date(observation.completion_start_time!).getTime() -
-        new Date(observation.start_time).getTime()) /
-        1000,
+      (new Date(observation.completion_start_time!).getTime() - new Date(observation.start_time).getTime()) / 1000,
     );
     expect(firstObservation.timeToFirstToken).toBeGreaterThan(0);
-    expect(firstObservation.inputCost).toEqual(
-      observation.cost_details!.input!,
-    );
-    expect(firstObservation.outputCost).toEqual(
-      observation.cost_details!.output!,
-    );
+    expect(firstObservation.inputCost).toEqual(observation.cost_details!.input!);
+    expect(firstObservation.outputCost).toEqual(observation.cost_details!.output!);
     expect(firstObservation.totalCost).toEqual(observation.total_cost!);
     expect(firstObservation.inputUsage).toEqual(1234);
     expect(firstObservation.outputUsage).toEqual(5678);

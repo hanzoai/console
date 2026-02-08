@@ -128,10 +128,7 @@ export class WebhookActionHandler implements BaseActionHandler<WebhookActionForm
           }
 
           // Check if header name conflicts with default headers
-          if (
-            header.name.trim() &&
-            defaultHeaderKeys.includes(header.name.trim().toLowerCase())
-          ) {
+          if (header.name.trim() && defaultHeaderKeys.includes(header.name.trim().toLowerCase())) {
             errors.push(
               `Header ${index + 1}: "${header.name}" is automatically added by Hanzo and cannot be customized`,
             );
@@ -147,9 +144,7 @@ export class WebhookActionHandler implements BaseActionHandler<WebhookActionForm
 
       const uniqueHeaderNames = new Set(headerNames);
       if (uniqueHeaderNames.size < headerNames.length) {
-        errors.push(
-          "Duplicate header names are not allowed (case-insensitive)",
-        );
+        errors.push("Duplicate header names are not allowed (case-insensitive)");
       }
     }
 

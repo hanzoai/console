@@ -5,9 +5,7 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { z } from "zod/v4";
 
-export const validateQueryParams = (
-  query: unknown,
-): { projectId: string; apiKeyId: string } | null => {
+export const validateQueryParams = (query: unknown): { projectId: string; apiKeyId: string } | null => {
   const inputQuerySchema = z.object({
     projectId: z.string(),
     apiKeyId: z.string(),
@@ -40,11 +38,7 @@ export async function handleDeleteApiKey(
   }
 
   // Delete the API key
-  const deleted = await new ApiAuthService(prisma, redis).deleteApiKey(
-    apiKeyId,
-    projectId,
-    "PROJECT",
-  );
+  const deleted = await new ApiAuthService(prisma, redis).deleteApiKey(apiKeyId, projectId, "PROJECT");
 
   if (!deleted) {
     return res.status(500).json({ message: "Failed to delete API key" });
@@ -61,9 +55,7 @@ export async function handleDeleteApiKey(
     apiKeyId: "ORG_KEY",
   });
 
-  logger.info(
-    `Deleted API key ${apiKeyId} for project ${projectId} via public API`,
-  );
+  logger.info(`Deleted API key ${apiKeyId} for project ${projectId} via public API`);
 
   return res.status(200).json({ success: true });
 }

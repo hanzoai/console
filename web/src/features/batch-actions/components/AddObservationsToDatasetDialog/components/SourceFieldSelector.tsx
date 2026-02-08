@@ -1,10 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import type { SourceField } from "../types";
 
 type SourceFieldSelectorProps = {
@@ -13,17 +7,9 @@ type SourceFieldSelectorProps = {
   disabled?: boolean;
 };
 
-export function SourceFieldSelector({
-  value,
-  onChange,
-  disabled = false,
-}: SourceFieldSelectorProps) {
+export function SourceFieldSelector({ value, onChange, disabled = false }: SourceFieldSelectorProps) {
   return (
-    <Select
-      value={value}
-      onValueChange={(v) => onChange(v as SourceField)}
-      disabled={disabled}
-    >
+    <Select value={value} onValueChange={(v) => onChange(v as SourceField)} disabled={disabled}>
       <SelectTrigger className="w-full">
         <SelectValue />
       </SelectTrigger>

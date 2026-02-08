@@ -13,13 +13,7 @@ import {
   FormDescription,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { organizationFormSchema } from "@/src/features/organizations/utils/organizationNameSchema";
@@ -27,11 +21,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import { SurveyName } from "@prisma/client";
 import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
 
-export const NewOrganizationForm = ({
-  onSuccess,
-}: {
-  onSuccess: (orgId: string) => void;
-}) => {
+export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) => void }) => {
   const { update: updateSession } = useSession();
 
   const form = useForm({
@@ -114,11 +104,7 @@ export const NewOrganizationForm = ({
             <FormItem>
               <FormLabel>Organization name</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="my-org"
-                  {...field}
-                  data-testid="new-org-name-input"
-                />
+                <Input placeholder="my-org" {...field} data-testid="new-org-name-input" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -132,9 +118,7 @@ export const NewOrganizationForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Type</FormLabel>
-                  <FormDescription>
-                    What would best describe your organization?
-                  </FormDescription>
+                  <FormDescription>What would best describe your organization?</FormDescription>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger ref={field.ref}>
@@ -161,9 +145,7 @@ export const NewOrganizationForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{watchedType} size</FormLabel>
-                    <FormDescription>
-                      How many people are in your {watchedType}?
-                    </FormDescription>
+                    <FormDescription>How many people are in your {watchedType}?</FormDescription>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger ref={field.ref}>
@@ -175,9 +157,7 @@ export const NewOrganizationForm = ({
                         <SelectItem value="10-49">10-49</SelectItem>
                         <SelectItem value="50-99">50-99</SelectItem>
                         <SelectItem value="100-299">100-299</SelectItem>
-                        <SelectItem value="More than 300">
-                          More than 300
-                        </SelectItem>
+                        <SelectItem value="More than 300">More than 300</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

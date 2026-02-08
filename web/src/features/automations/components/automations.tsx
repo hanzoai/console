@@ -37,10 +37,7 @@ export default function AutomationsPage() {
 
   const { view, automationId } = urlParams;
 
-  const selectedAutomation = useMemo(
-    () => (automationId ? { automationId } : undefined),
-    [automationId],
-  );
+  const selectedAutomation = useMemo(() => (automationId ? { automationId } : undefined), [automationId]);
 
   // Fetch automations to check if any exist
   const { data: automations } = api.automations.getAutomations.useQuery({
@@ -48,28 +45,26 @@ export default function AutomationsPage() {
   });
 
   // Fetch editing automation when in edit mode
-  const { data: editingAutomation, error: editingAutomationError } =
-    api.automations.getAutomation.useQuery(
-      {
-        projectId,
-        automationId: automationId!,
-      },
-      {
-        enabled: view === "edit" && !!automationId,
-      },
-    );
+  const { data: editingAutomation, error: editingAutomationError } = api.automations.getAutomation.useQuery(
+    {
+      projectId,
+      automationId: automationId!,
+    },
+    {
+      enabled: view === "edit" && !!automationId,
+    },
+  );
 
   // Fetch automation for detail view to check if it exists
-  const { error: automationDetailError } =
-    api.automations.getAutomation.useQuery(
-      {
-        projectId,
-        automationId: automationId!,
-      },
-      {
-        enabled: view === "list" && !!selectedAutomation,
-      },
-    );
+  const { error: automationDetailError } = api.automations.getAutomation.useQuery(
+    {
+      projectId,
+      automationId: automationId!,
+    },
+    {
+      enabled: view === "list" && !!selectedAutomation,
+    },
+  );
 
   // Helper function to navigate without creating history entry
   const navigateWithoutHistory = useCallback(
@@ -114,11 +109,7 @@ export default function AutomationsPage() {
           automationId: undefined,
           tab: urlParams.tab,
         });
-      } else if (
-        automations.length > 0 &&
-        !selectedAutomation &&
-        view === "list"
-      ) {
+      } else if (automations.length > 0 && !selectedAutomation && view === "list") {
         // Auto-select the topmost automation if none is currently selected
         // Use router.replace to avoid creating new history entry
         navigateWithoutHistory({
@@ -126,14 +117,7 @@ export default function AutomationsPage() {
         });
       }
     }
-  }, [
-    automations,
-    selectedAutomation,
-    view,
-    setUrlParams,
-    urlParams.tab,
-    navigateWithoutHistory,
-  ]);
+  }, [automations, selectedAutomation, view, setUrlParams, urlParams.tab, navigateWithoutHistory]);
 
   const handleCreateAutomation = () => {
     setUrlParams({
@@ -202,9 +186,7 @@ export default function AutomationsPage() {
     // Find the current automation index
     if (!automations || !selectedAutomation) return;
 
-    const currentIndex = automations.findIndex(
-      (automation) => automation.id === selectedAutomation.automationId,
-    );
+    const currentIndex = automations.findIndex((automation) => automation.id === selectedAutomation.automationId);
 
     if (currentIndex === -1) return;
 
@@ -256,20 +238,12 @@ export default function AutomationsPage() {
   const renderMainContent = () => {
     // Handle 404 errors for edit view
     if (view === "edit" && editingAutomationError?.data?.code === "NOT_FOUND") {
-      return renderAutomationNotFoundError(
-        "The webhook you're trying to edit doesn't exist or has been deleted.",
-      );
+      return renderAutomationNotFoundError("The webhook you're trying to edit doesn't exist or has been deleted.");
     }
 
     // Handle 404 errors for detail view
-    if (
-      view === "list" &&
-      selectedAutomation &&
-      automationDetailError?.data?.code === "NOT_FOUND"
-    ) {
-      return renderAutomationNotFoundError(
-        "The webhook you're looking for doesn't exist or has been deleted.",
-      );
+    if (view === "list" && selectedAutomation && automationDetailError?.data?.code === "NOT_FOUND") {
+      return renderAutomationNotFoundError("The webhook you're looking for doesn't exist or has been deleted.");
     }
 
     if (view === "create") {
@@ -320,8 +294,7 @@ export default function AutomationsPage() {
           <div className="text-center">
             <h3 className="text-lg font-medium">Select an automation</h3>
             <p className="mt-2 text-sm">
-              Choose an automation from the sidebar to view its details and
-              execution history.
+              Choose an automation from the sidebar to view its details and execution history.
             </p>
           </div>
         </div>
@@ -363,15 +336,11 @@ export default function AutomationsPage() {
           <DialogHeader>
             <DialogTitle>Webhook Secret Created</DialogTitle>
             <DialogDescription>
-              Your automation has been created successfully. Please copy the
-              webhook secret below - it will only be shown once.
+              Your automation has been created successfully. Please copy the webhook secret below - it will only be
+              shown once.
             </DialogDescription>
           </DialogHeader>
-          <DialogBody>
-            {webhookSecret && (
-              <WebhookSecretRender webhookSecret={webhookSecret} />
-            )}
-          </DialogBody>
+          <DialogBody>{webhookSecret && <WebhookSecretRender webhookSecret={webhookSecret} />}</DialogBody>
           <DialogFooter>
             <Button
               onClick={() => {

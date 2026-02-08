@@ -3,16 +3,8 @@ import { MappingModeSelector } from "./components/MappingModeSelector";
 import { CustomMappingEditor } from "./components/CustomMappingEditor";
 import { MappingPreviewPanel } from "./components/MappingPreviewPanel";
 import { DatasetSchemaHoverCard } from "@/src/features/datasets/components/DatasetSchemaHoverCard";
-import {
-  extractSchemaFields,
-  isObjectSchema,
-  generateEntriesFromSchema,
-} from "./utils/extractSchemaFields";
-import type {
-  MappingStepProps,
-  MappingMode,
-  CustomMappingConfig,
-} from "./types";
+import { extractSchemaFields, isObjectSchema, generateEntriesFromSchema } from "./utils/extractSchemaFields";
+import type { MappingStepProps, MappingMode, CustomMappingConfig } from "./types";
 
 export function MappingStep({
   field,
@@ -44,10 +36,7 @@ export function MappingStep({
 
       const schemaFields = extractSchemaFields(schema);
       if (schemaFields.length > 0) {
-        const entries = generateEntriesFromSchema(
-          schemaFields,
-          defaultSourceField,
-        );
+        const entries = generateEntriesFromSchema(schemaFields, defaultSourceField);
 
         onConfigChange({
           mode: "custom",
@@ -60,14 +49,7 @@ export function MappingStep({
         });
       }
     }
-  }, [
-    isObjectType,
-    schema,
-    config.mode,
-    config.custom,
-    defaultSourceField,
-    onConfigChange,
-  ]);
+  }, [isObjectType, schema, config.mode, config.custom, defaultSourceField, onConfigChange]);
 
   // Get the full label for the "Full" option
   const getFullLabel = () => {
@@ -117,22 +99,17 @@ export function MappingStep({
       <div className="min-w-0 space-y-6">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="flex-grow text-lg font-semibold">
-              Dataset Item {fieldLabel}
-            </h3>
+            <h3 className="flex-grow text-lg font-semibold">Dataset Item {fieldLabel}</h3>
             {hasSchema && (
               <DatasetSchemaHoverCard
-                schemaType={
-                  field === "expectedOutput" ? "expectedOutput" : "input"
-                }
+                schemaType={field === "expectedOutput" ? "expectedOutput" : "input"}
                 schema={schema}
                 showLabel
               />
             )}
           </div>
           <p className="text-sm text-muted-foreground">
-            Configure how observation data maps to the Dataset Item {fieldLabel}
-            .
+            Configure how observation data maps to the Dataset Item {fieldLabel}.
           </p>
         </div>
 

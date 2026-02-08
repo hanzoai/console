@@ -1,9 +1,6 @@
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";
 import { type QueryType } from "@/src/features/query/types";
-import {
-  executeQuery,
-  validateQuery,
-} from "@/src/features/query/server/queryExecutor";
+import { executeQuery, validateQuery } from "@/src/features/query/server/queryExecutor";
 import {
   createTrace,
   createObservation,
@@ -236,15 +233,12 @@ describe("queryBuilder", () => {
           orderBy: null,
         } as QueryType,
       ],
-    ])(
-      "should compile query to valid SQL: (%s)",
-      async (_name, query: QueryType) => {
-        const projectId = randomUUID();
+    ])("should compile query to valid SQL: (%s)", async (_name, query: QueryType) => {
+      const projectId = randomUUID();
 
-        const result = await executeQuery(projectId, query);
-        expect(result).toBeDefined();
-      },
-    );
+      const result = await executeQuery(projectId, query);
+      expect(result).toBeDefined();
+    });
   });
 
   describe("query result correctness", () => {
@@ -320,9 +314,7 @@ describe("queryBuilder", () => {
             observation_id: data.observationId,
             name: data.name,
             value: data.dataType === "NUMERIC" ? data.value || 0 : null,
-            string_value: ["CATEGORICAL", "BOOLEAN"].includes(data.dataType)
-              ? data.stringValue || ""
-              : null,
+            string_value: ["CATEGORICAL", "BOOLEAN"].includes(data.dataType) ? data.stringValue || "" : null,
             environment: data.environment || "default",
             source: data.source || "API",
             data_type: data.dataType,
@@ -338,11 +330,7 @@ describe("queryBuilder", () => {
       it("should count traces correctly", async () => {
         // Setup
         const projectId = randomUUID();
-        const tracesData = [
-          { name: "trace-1" },
-          { name: "trace-2" },
-          { name: "trace-3" },
-        ];
+        const tracesData = [{ name: "trace-1" }, { name: "trace-2" }, { name: "trace-3" }];
 
         await setupTracesWithObservations(projectId, tracesData);
 
@@ -353,12 +341,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(), // yesterday
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(), // tomorrow
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), // yesterday
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(), // tomorrow
           orderBy: null,
         };
 
@@ -391,12 +375,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -408,26 +388,17 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Find and verify each name group
-        const chatCompletionRow = result.data.find(
-          (row: any) => row.name === "chat-completion",
-        );
+        const chatCompletionRow = result.data.find((row: any) => row.name === "chat-completion");
         expect(Number(chatCompletionRow.count_count)).toBe(2);
 
-        const embeddingsRow = result.data.find(
-          (row: any) => row.name === "embeddings",
-        );
+        const embeddingsRow = result.data.find((row: any) => row.name === "embeddings");
         expect(Number(embeddingsRow.count_count)).toBe(3);
       });
 
       it("should filter traces by name correctly", async () => {
         // Setup
         const projectId = randomUUID();
-        const tracesData = [
-          { name: "qa-bot" },
-          { name: "assistant" },
-          { name: "qa-bot" },
-          { name: "summarizer" },
-        ];
+        const tracesData = [{ name: "qa-bot" }, { name: "assistant" }, { name: "qa-bot" }, { name: "summarizer" }];
 
         await setupTracesWithObservations(projectId, tracesData);
 
@@ -445,12 +416,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -482,12 +449,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "observationsCount", aggregation: "sum" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -499,14 +462,10 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Find each trace by name and verify observation count
-        const manyObsTrace = result.data.find(
-          (row: any) => row.name === "trace-with-many-obs",
-        );
+        const manyObsTrace = result.data.find((row: any) => row.name === "trace-with-many-obs");
         expect(Number(manyObsTrace.sum_observationsCount)).toBe(5);
 
-        const fewObsTrace = result.data.find(
-          (row: any) => row.name === "trace-with-few-obs",
-        );
+        const fewObsTrace = result.data.find((row: any) => row.name === "trace-with-few-obs");
         expect(Number(fewObsTrace.sum_observationsCount)).toBe(2);
       });
 
@@ -541,12 +500,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -597,12 +552,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -614,15 +565,11 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Find and verify each trace
-        const traceWithTagA = result.data.find(
-          (row: any) => row.name === "trace-with-tag-a",
-        );
+        const traceWithTagA = result.data.find((row: any) => row.name === "trace-with-tag-a");
         expect(traceWithTagA).toBeDefined();
         expect(Number(traceWithTagA.count_count)).toBe(1);
 
-        const traceWithTagB = result.data.find(
-          (row: any) => row.name === "trace-with-tag-b",
-        );
+        const traceWithTagB = result.data.find((row: any) => row.name === "trace-with-tag-b");
         expect(traceWithTagB).toBeDefined();
         expect(Number(traceWithTagB.count_count)).toBe(1);
       });
@@ -668,12 +615,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -730,12 +673,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -747,15 +686,11 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Find and verify each trace
-        const traceWithOtherTags = result.data.find(
-          (row: any) => row.name === "trace-with-other-tags",
-        );
+        const traceWithOtherTags = result.data.find((row: any) => row.name === "trace-with-other-tags");
         expect(traceWithOtherTags).toBeDefined();
         expect(Number(traceWithOtherTags.count_count)).toBe(1);
 
-        const traceWithNoTags = result.data.find(
-          (row: any) => row.name === "trace-with-no-tags",
-        );
+        const traceWithNoTags = result.data.find((row: any) => row.name === "trace-with-no-tags");
         expect(traceWithNoTags).toBeDefined();
         expect(Number(traceWithNoTags.count_count)).toBe(1);
       });
@@ -798,12 +733,8 @@ describe("queryBuilder", () => {
           ],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -815,16 +746,12 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Verify production environment data
-        const prodEnv = result.data.find(
-          (row: any) => row.environment === "production",
-        );
+        const prodEnv = result.data.find((row: any) => row.environment === "production");
         expect(Number(prodEnv.count_count)).toBe(2); // 2 traces
         expect(Number(prodEnv.sum_observationsCount)).toBe(7); // 3+4 observations
 
         // Verify development environment data
-        const devEnv = result.data.find(
-          (row: any) => row.environment === "development",
-        );
+        const devEnv = result.data.find((row: any) => row.environment === "development");
         expect(Number(devEnv.count_count)).toBe(2); // 2 traces
         expect(Number(devEnv.sum_observationsCount)).toBe(3); // 2+1 observations
       });
@@ -856,12 +783,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -873,26 +796,19 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(4); // 2 names × 2 environments = 4 combinations
 
         // Verify each combination
-        const chatProd = result.data.find(
-          (row: any) => row.name === "chat" && row.environment === "production",
-        );
+        const chatProd = result.data.find((row: any) => row.name === "chat" && row.environment === "production");
         expect(Number(chatProd.count_count)).toBe(1);
 
-        const chatDev = result.data.find(
-          (row: any) =>
-            row.name === "chat" && row.environment === "development",
-        );
+        const chatDev = result.data.find((row: any) => row.name === "chat" && row.environment === "development");
         expect(Number(chatDev.count_count)).toBe(1);
 
         const embeddingsProd = result.data.find(
-          (row: any) =>
-            row.name === "embeddings" && row.environment === "production",
+          (row: any) => row.name === "embeddings" && row.environment === "production",
         );
         expect(Number(embeddingsProd.count_count)).toBe(1);
 
         const embeddingsDev = result.data.find(
-          (row: any) =>
-            row.name === "embeddings" && row.environment === "development",
+          (row: any) => row.name === "embeddings" && row.environment === "development",
         );
         expect(Number(embeddingsDev.count_count)).toBe(1);
       });
@@ -920,12 +836,8 @@ describe("queryBuilder", () => {
           ],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -963,21 +875,14 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: [{ field: "name", direction: "asc" }],
         };
 
         // Execute query
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause is present in the query
         expect(compiledQuery).toContain("ORDER BY name asc");
@@ -1011,21 +916,14 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "observationsCount", aggregation: "sum" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: [{ field: "sum_observationsCount", direction: "desc" }],
         };
 
         // Execute query
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause is present in the query
         expect(compiledQuery).toContain("ORDER BY sum_observationsCount desc");
@@ -1060,12 +958,8 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "observationsCount", aggregation: "sum" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: [
             { field: "environment", direction: "asc" },
             { field: "sum_observationsCount", direction: "desc" },
@@ -1073,15 +967,10 @@ describe("queryBuilder", () => {
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause is present in the query with both fields
-        expect(compiledQuery).toContain(
-          "ORDER BY environment asc, sum_observationsCount desc",
-        );
+        expect(compiledQuery).toContain("ORDER BY environment asc, sum_observationsCount desc");
 
         // Execute query
         const result: { data: Array<any> } = { data: [] };
@@ -1144,10 +1033,7 @@ describe("queryBuilder", () => {
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause includes default time dimension ordering
         expect(compiledQuery).toContain("ORDER BY time_dimension asc");
@@ -1160,15 +1046,11 @@ describe("queryBuilder", () => {
         expect(result.data.length).toBeGreaterThan(0);
 
         // Convert time_dimension strings to Date objects for easier testing
-        const dates = result.data.map(
-          (row: any) => new Date(row.time_dimension),
-        );
+        const dates = result.data.map((row: any) => new Date(row.time_dimension));
 
         // Check that dates are in ascending order
         for (let i = 1; i < dates.length; i++) {
-          expect(dates[i].getTime()).toBeGreaterThanOrEqual(
-            dates[i - 1].getTime(),
-          );
+          expect(dates[i].getTime()).toBeGreaterThanOrEqual(dates[i - 1].getTime());
         }
       });
 
@@ -1190,20 +1072,13 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "observationsCount", aggregation: "sum" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause includes default metric ordering (descending)
         expect(compiledQuery).toContain("ORDER BY sum_observationsCount desc");
@@ -1237,20 +1112,13 @@ describe("queryBuilder", () => {
           metrics: [],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify ORDER BY clause includes default dimension ordering (ascending)
         expect(compiledQuery).toContain("ORDER BY name asc");
@@ -1269,11 +1137,7 @@ describe("queryBuilder", () => {
       it("should filter with the LIKE operator correctly", async () => {
         // Setup
         const projectId = randomUUID();
-        const tracesData = [
-          { name: "prefix-value-1" },
-          { name: "prefix-value-2" },
-          { name: "different-name" },
-        ];
+        const tracesData = [{ name: "prefix-value-1" }, { name: "prefix-value-2" }, { name: "different-name" }];
 
         await setupTracesWithObservations(projectId, tracesData);
 
@@ -1291,12 +1155,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -1306,13 +1166,8 @@ describe("queryBuilder", () => {
 
         // Assert
         expect(result.data).toHaveLength(2);
-        expect(
-          result.data.every((row: any) => row.name.startsWith("prefix-")),
-        ).toBe(true);
-        expect(result.data.map((row: any) => row.name).sort()).toEqual([
-          "prefix-value-1",
-          "prefix-value-2",
-        ]);
+        expect(result.data.every((row: any) => row.name.startsWith("prefix-"))).toBe(true);
+        expect(result.data.map((row: any) => row.name).sort()).toEqual(["prefix-value-1", "prefix-value-2"]);
       });
 
       it("should handle queries with zero dimensions and zero metrics", async () => {
@@ -1329,12 +1184,8 @@ describe("queryBuilder", () => {
           metrics: [],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -1411,10 +1262,7 @@ describe("queryBuilder", () => {
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify WITH FILL clause is present in the query
         expect(compiledQuery).toContain("WITH FILL");
@@ -1437,15 +1285,11 @@ describe("queryBuilder", () => {
 
         // Find day1 and day3 (where we have actual traces)
         const day1Row = resultDates.find(
-          (row: any) =>
-            row.date.getDate() === day1.getDate() &&
-            row.date.getMonth() === day1.getMonth(),
+          (row: any) => row.date.getDate() === day1.getDate() && row.date.getMonth() === day1.getMonth(),
         );
 
         const day3Row = resultDates.find(
-          (row: any) =>
-            row.date.getDate() === day3.getDate() &&
-            row.date.getMonth() === day3.getMonth(),
+          (row: any) => row.date.getDate() === day3.getDate() && row.date.getMonth() === day3.getMonth(),
         );
 
         // Find day2 (gap day that should be filled with zeros)
@@ -1453,9 +1297,7 @@ describe("queryBuilder", () => {
         day2.setDate(day2.getDate() + 1);
 
         const day2Row = resultDates.find(
-          (row: any) =>
-            row.date.getDate() === day2.getDate() &&
-            row.date.getMonth() === day2.getMonth(),
+          (row: any) => row.date.getDate() === day2.getDate() && row.date.getMonth() === day2.getMonth(),
         );
 
         // Assert actual data and filled gaps
@@ -1680,8 +1522,7 @@ describe("queryBuilder", () => {
 
           // ISO8601 regex pattern
           // This pattern matches ISO8601 dates in format: YYYY-MM-DD or YYYY-MM-DDThh:mm:ss.sssZ
-          const iso8601Pattern =
-            /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
+          const iso8601Pattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
           expect(row.time_dimension).toMatch(iso8601Pattern);
 
@@ -1739,12 +1580,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -1879,20 +1716,13 @@ describe("queryBuilder", () => {
           ],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery, parameters } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery, parameters } = await queryBuilder.build(query, projectId);
 
         // Verify SQL includes segment filter for NUMERIC types
         // Verify SQL includes segment filter for non-NUMERIC types
@@ -1908,25 +1738,19 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(3); // accuracy, relevance, coherence
 
         // Check each score type
-        const accuracyRow = result.data.find(
-          (row: any) => row.name === "accuracy",
-        );
+        const accuracyRow = result.data.find((row: any) => row.name === "accuracy");
         expect(Number(accuracyRow.count_count)).toBe(2);
         expect(parseFloat(accuracyRow.avg_value)).toBeCloseTo(0.885, 2); // (0.85 + 0.92) / 2
         expect(parseFloat(accuracyRow.min_value)).toBeCloseTo(0.85, 2);
         expect(parseFloat(accuracyRow.max_value)).toBeCloseTo(0.92, 2);
 
-        const relevanceRow = result.data.find(
-          (row: any) => row.name === "relevance",
-        );
+        const relevanceRow = result.data.find((row: any) => row.name === "relevance");
         expect(Number(relevanceRow.count_count)).toBe(2);
         expect(parseFloat(relevanceRow.avg_value)).toBeCloseTo(0.775, 2); // (0.75 + 0.80) / 2
         expect(parseFloat(relevanceRow.min_value)).toBeCloseTo(0.75, 2);
         expect(parseFloat(relevanceRow.max_value)).toBeCloseTo(0.8, 2);
 
-        const coherenceRow = result.data.find(
-          (row: any) => row.name === "coherence",
-        );
+        const coherenceRow = result.data.find((row: any) => row.name === "coherence");
         expect(Number(coherenceRow.count_count)).toBe(1);
         expect(parseFloat(coherenceRow.avg_value)).toBeCloseTo(0.95, 2);
       });
@@ -1999,12 +1823,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2089,30 +1909,20 @@ describe("queryBuilder", () => {
         // Define query to group by trace name and observation model
         const query: QueryType = {
           view: "scores-numeric",
-          dimensions: [
-            { field: "traceName" },
-            { field: "observationModelName" },
-          ],
+          dimensions: [{ field: "traceName" }, { field: "observationModelName" }],
           metrics: [
             { measure: "count", aggregation: "count" },
             { measure: "value", aggregation: "avg" },
           ],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify joins included
         expect(compiledQuery).toContain("LEFT JOIN traces");
@@ -2127,18 +1937,14 @@ describe("queryBuilder", () => {
 
         // Check qa trace with gpt-4
         const qaTraceRow = result.data.find(
-          (row: any) =>
-            row.traceName === "qa-trace" &&
-            row.observationModelName === "gpt-4",
+          (row: any) => row.traceName === "qa-trace" && row.observationModelName === "gpt-4",
         );
         expect(Number(qaTraceRow.count_count)).toBe(2); // 2 scores (accuracy + relevance)
         expect(parseFloat(qaTraceRow.avg_value)).toBeCloseTo(0.875, 2); // (0.90 + 0.85) / 2
 
         // Check summarization trace with claude-3
         const summaryTraceRow = result.data.find(
-          (row: any) =>
-            row.traceName === "summarization-trace" &&
-            row.observationModelName === "claude-3",
+          (row: any) => row.traceName === "summarization-trace" && row.observationModelName === "claude-3",
         );
         expect(Number(summaryTraceRow.count_count)).toBe(1); // 1 score (accuracy)
         expect(parseFloat(summaryTraceRow.avg_value)).toBeCloseTo(0.95, 2);
@@ -2228,12 +2034,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2245,12 +2047,8 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(2);
 
         // Check which scores were true
-        const isHallucination = result.data.find(
-          (row: any) => row.name === "is_hallucination",
-        );
-        const isHelpful = result.data.find(
-          (row: any) => row.name === "is_helpful",
-        );
+        const isHallucination = result.data.find((row: any) => row.name === "is_hallucination");
+        const isHelpful = result.data.find((row: any) => row.name === "is_helpful");
 
         expect(Number(isHallucination.count_count)).toBe(2);
         expect(Number(isHelpful.count_count)).toBe(2);
@@ -2314,12 +2112,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2377,20 +2171,13 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
 
         // Verify the compiled query contains filtering on name
         expect(compiledQuery).toContain("scores_numeric.name");
@@ -2510,20 +2297,13 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
         const queryBuilder = new QueryBuilder();
-        const { query: compiledQuery, parameters } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery, parameters } = await queryBuilder.build(query, projectId);
 
         // Verify SQL includes segment filter for CATEGORICAL type
         expect(compiledQuery).toContain("data_type = {");
@@ -2538,25 +2318,20 @@ describe("queryBuilder", () => {
 
         // Check each combination
         const evaluationExcellent = result.data.find(
-          (row: any) =>
-            row.name === "evaluation" && row.stringValue === "excellent",
+          (row: any) => row.name === "evaluation" && row.stringValue === "excellent",
         );
         expect(Number(evaluationExcellent.count_count)).toBe(1);
 
-        const evaluationGood = result.data.find(
-          (row: any) => row.name === "evaluation" && row.stringValue === "good",
-        );
+        const evaluationGood = result.data.find((row: any) => row.name === "evaluation" && row.stringValue === "good");
         expect(Number(evaluationGood.count_count)).toBe(2);
 
         const categoryQuestion = result.data.find(
-          (row: any) =>
-            row.name === "category" && row.stringValue === "question",
+          (row: any) => row.name === "category" && row.stringValue === "question",
         );
         expect(Number(categoryQuestion.count_count)).toBe(1);
 
         const categoryFactual = result.data.find(
-          (row: any) =>
-            row.name === "category" && row.stringValue === "factual",
+          (row: any) => row.name === "category" && row.stringValue === "factual",
         );
         expect(Number(categoryFactual.count_count)).toBe(1);
       });
@@ -2626,12 +2401,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2641,14 +2412,10 @@ describe("queryBuilder", () => {
 
         // Assert - should only return auto-source scores
         expect(result.data).toHaveLength(2);
-        expect(
-          result.data.every((row: any) => Number(row.count_count) === 1),
-        ).toBe(true);
+        expect(result.data.every((row: any) => Number(row.count_count) === 1)).toBe(true);
 
         // Check specific values
-        const stringValues = result.data
-          .map((row: any) => row.stringValue)
-          .sort();
+        const stringValues = result.data.map((row: any) => row.stringValue).sort();
         expect(stringValues).toEqual(["command", "statement"]);
       });
     });
@@ -2778,12 +2545,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2795,40 +2558,22 @@ describe("queryBuilder", () => {
         expect(result.data).toHaveLength(3);
 
         // Get results for each trace
-        const gpt4Result = result.data.find(
-          (row: any) => row.traceName === "gpt-4-completion",
-        );
-        const gpt35Result = result.data.find(
-          (row: any) => row.traceName === "gpt-3.5-completion",
-        );
-        const claudeResult = result.data.find(
-          (row: any) => row.traceName === "claude-completion",
-        );
+        const gpt4Result = result.data.find((row: any) => row.traceName === "gpt-4-completion");
+        const gpt35Result = result.data.find((row: any) => row.traceName === "gpt-3.5-completion");
+        const claudeResult = result.data.find((row: any) => row.traceName === "claude-completion");
 
         // The p95 should be close to the 95th percentile value we generated
         // For GPT-4: the 95th percentile of values from 500-1400 would be around 1350ms
-        expect(
-          parseInt(gpt4Result.p95_timeToFirstToken),
-        ).toBeGreaterThanOrEqual(1300);
-        expect(parseInt(gpt4Result.p95_timeToFirstToken)).toBeLessThanOrEqual(
-          1400,
-        );
+        expect(parseInt(gpt4Result.p95_timeToFirstToken)).toBeGreaterThanOrEqual(1300);
+        expect(parseInt(gpt4Result.p95_timeToFirstToken)).toBeLessThanOrEqual(1400);
 
         // For GPT-3.5: the 95th percentile of values from 200-650 would be around 625ms
-        expect(
-          parseInt(gpt35Result.p95_timeToFirstToken),
-        ).toBeGreaterThanOrEqual(600);
-        expect(parseInt(gpt35Result.p95_timeToFirstToken)).toBeLessThanOrEqual(
-          650,
-        );
+        expect(parseInt(gpt35Result.p95_timeToFirstToken)).toBeGreaterThanOrEqual(600);
+        expect(parseInt(gpt35Result.p95_timeToFirstToken)).toBeLessThanOrEqual(650);
 
         // For Claude: the 95th percentile of values from 300-1200 would be around 1150ms
-        expect(
-          parseInt(claudeResult.p95_timeToFirstToken),
-        ).toBeGreaterThanOrEqual(1100);
-        expect(parseInt(claudeResult.p95_timeToFirstToken)).toBeLessThanOrEqual(
-          1200,
-        );
+        expect(parseInt(claudeResult.p95_timeToFirstToken)).toBeGreaterThanOrEqual(1100);
+        expect(parseInt(claudeResult.p95_timeToFirstToken)).toBeLessThanOrEqual(1200);
       });
 
       it("should return null streamingLatency and timeToFirstToken when completion_start_time is null", async () => {
@@ -2876,12 +2621,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -2940,12 +2681,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -3006,12 +2743,8 @@ describe("queryBuilder", () => {
           ],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -3081,12 +2814,8 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
         };
 
@@ -3165,24 +2894,15 @@ describe("queryBuilder", () => {
             },
           ],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: null,
           chartConfig: { type: "HISTOGRAM", bins: 20 }, // Custom bin count
         };
 
         // Execute histogram query with custom bins
-        const queryBuilder = new QueryBuilder(
-          customBinHistogramQuery.chartConfig,
-        );
-        const { query: compiledQuery } = await queryBuilder.build(
-          customBinHistogramQuery,
-          projectId,
-        );
+        const queryBuilder = new QueryBuilder(customBinHistogramQuery.chartConfig);
+        const { query: compiledQuery } = await queryBuilder.build(customBinHistogramQuery, projectId);
 
         // Verify the generated SQL contains histogram function with custom bins
         expect(compiledQuery).toContain("histogram(20)");
@@ -3217,10 +2937,7 @@ describe("queryBuilder", () => {
         });
 
         // Verify total count matches our data
-        const totalCount = histogramData.reduce(
-          (sum: number, bin: [number, number, number]) => sum + bin[2],
-          0,
-        );
+        const totalCount = histogramData.reduce((sum: number, bin: [number, number, number]) => sum + bin[2], 0);
         expect(totalCount).toBe(30); // Should match our 30 observations
       });
 
@@ -3258,22 +2975,15 @@ describe("queryBuilder", () => {
           metrics: [{ measure: "count", aggregation: "count" }],
           filters: [],
           timeDimension: null,
-          fromTimestamp: new Date(
-            new Date().setDate(new Date().getDate() - 1),
-          ).toISOString(),
-          toTimestamp: new Date(
-            new Date().setDate(new Date().getDate() + 1),
-          ).toISOString(),
+          fromTimestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+          toTimestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
           orderBy: [{ field: "name", direction: "asc" }],
           chartConfig: { type: "TABLE", row_limit: 5 },
         };
 
         // Verify the generated SQL contains LIMIT clause
         const queryBuilder = new QueryBuilder(query.chartConfig);
-        const { query: compiledQuery } = await queryBuilder.build(
-          query,
-          projectId,
-        );
+        const { query: compiledQuery } = await queryBuilder.build(query, projectId);
         expect(compiledQuery).toContain("LIMIT 5");
 
         // Execute query and verify row limit is applied
@@ -3382,12 +3092,7 @@ describe("queryBuilder", () => {
       };
 
       // Execute without optimization
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
 
       // Execute with optimization
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
@@ -3416,11 +3121,7 @@ describe("queryBuilder", () => {
 
       // Build query with optimization enabled
       const builder = new QueryBuilder(undefined, "v1");
-      const { query: compiledQuery } = await builder.build(
-        query,
-        projectId,
-        true,
-      );
+      const { query: compiledQuery } = await builder.build(query, projectId, true);
 
       // Should use two-level query (because countScores doesn't have aggs)
       expect(compiledQuery).toContain("FROM (");
@@ -3460,23 +3161,14 @@ describe("queryBuilder", () => {
       };
 
       const builder = new QueryBuilder(undefined, "v1");
-      const { query: compiledQuery } = await builder.build(
-        query,
-        projectId,
-        true,
-      );
+      const { query: compiledQuery } = await builder.build(query, projectId, true);
 
       // Verify template substitution for multiple aggs was stripped
       expect(compiledQuery).not.toContain("${agg"); // No templates left
 
       // Verify results match
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
       expect(resultWithOpt).toEqual(resultWithoutOpt);
     });
 
@@ -3495,11 +3187,7 @@ describe("queryBuilder", () => {
       };
 
       const builder = new QueryBuilder(undefined, "v1");
-      const { query: compiledQuery } = await builder.build(
-        query,
-        projectId,
-        true,
-      );
+      const { query: compiledQuery } = await builder.build(query, projectId, true);
 
       // Verify single-level structure
       expect(compiledQuery).not.toContain("FROM ("); // No subquery
@@ -3550,12 +3238,7 @@ describe("queryBuilder", () => {
 
       // Verify results match between optimized and non-optimized
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
 
       expect(resultWithOpt).toEqual(resultWithoutOpt);
       expect(resultWithOpt).toHaveLength(1);
@@ -3614,12 +3297,7 @@ describe("queryBuilder", () => {
 
       // Execute with optimization
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
 
       // Results should match
       expect(resultWithOpt).toEqual(resultWithoutOpt);
@@ -3658,12 +3336,7 @@ describe("queryBuilder", () => {
 
       // Execute with optimization
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
 
       // Results should match
       expect(resultWithOpt).toEqual(resultWithoutOpt);
@@ -3711,12 +3384,7 @@ describe("queryBuilder", () => {
       };
 
       // Execute without optimization (two-level query)
-      const resultWithoutOpt = await executeQuery(
-        projectId,
-        query,
-        "v1",
-        false,
-      );
+      const resultWithoutOpt = await executeQuery(projectId, query, "v1", false);
 
       // Execute with optimization (single-level query)
       const resultWithOpt = await executeQuery(projectId, query, "v1", true);
@@ -3765,9 +3433,7 @@ describe("validateQuery", () => {
     const result = validateQuery(query, "v2");
 
     expect(result.valid).toBe(false);
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "High cardinality dimension(s) 'traceId'",
-    );
+    expect((result as { valid: false; reason: string }).reason).toContain("High cardinality dimension(s) 'traceId'");
     expect((result as { valid: false; reason: string }).reason).toContain(
       "require both 'config.row_limit' and 'orderBy' with direction 'desc'",
     );
@@ -3784,9 +3450,7 @@ describe("validateQuery", () => {
     const result = validateQuery(query, "v2");
 
     expect(result.valid).toBe(false);
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "High cardinality dimension(s) 'userId'",
-    );
+    expect((result as { valid: false; reason: string }).reason).toContain("High cardinality dimension(s) 'userId'");
     expect((result as { valid: false; reason: string }).reason).toContain(
       "require both 'config.row_limit' and 'orderBy' with direction 'desc'",
     );
@@ -3803,15 +3467,9 @@ describe("validateQuery", () => {
     const result = validateQuery(query, "v2");
 
     expect(result.valid).toBe(false);
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "High cardinality dimension(s) 'traceId'",
-    );
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "'sum_latency'",
-    );
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "not a measure in this query",
-    );
+    expect((result as { valid: false; reason: string }).reason).toContain("High cardinality dimension(s) 'traceId'");
+    expect((result as { valid: false; reason: string }).reason).toContain("'sum_latency'");
+    expect((result as { valid: false; reason: string }).reason).toContain("not a measure in this query");
   });
 
   it("should return invalid when ORDER BY desc field is a dimension (not a measure)", () => {
@@ -3825,15 +3483,9 @@ describe("validateQuery", () => {
     const result = validateQuery(query, "v2");
 
     expect(result.valid).toBe(false);
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "High cardinality dimension(s) 'traceId'",
-    );
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "'name'",
-    );
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "not a measure in this query",
-    );
+    expect((result as { valid: false; reason: string }).reason).toContain("High cardinality dimension(s) 'traceId'");
+    expect((result as { valid: false; reason: string }).reason).toContain("'name'");
+    expect((result as { valid: false; reason: string }).reason).toContain("not a measure in this query");
   });
 
   it("should return invalid for multiple high cardinality dimensions without required config", () => {
@@ -3846,12 +3498,8 @@ describe("validateQuery", () => {
     const result = validateQuery(query, "v2");
 
     expect(result.valid).toBe(false);
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "traceId",
-    );
-    expect((result as { valid: false; reason: string }).reason).toContain(
-      "sessionId",
-    );
+    expect((result as { valid: false; reason: string }).reason).toContain("traceId");
+    expect((result as { valid: false; reason: string }).reason).toContain("sessionId");
   });
 
   it("should support public API 'config' field name for row_limit", () => {

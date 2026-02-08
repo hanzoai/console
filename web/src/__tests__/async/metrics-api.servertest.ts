@@ -1,18 +1,9 @@
 import { randomUUID } from "crypto";
-import {
-  makeZodVerifiedAPICall,
-  makeZodVerifiedAPICallSilent,
-  makeAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeZodVerifiedAPICall, makeZodVerifiedAPICallSilent, makeAPICall } from "@/src/__tests__/test-utils";
 import { GetMetricsV1Response } from "@/src/features/public-api/types/metrics";
 import { createBasicAuthHeader } from "@hanzo/shared/src/server";
 import { type QueryType } from "@/src/features/query/types";
-import {
-  createTrace,
-  createObservation,
-  createTracesCh,
-  createObservationsCh,
-} from "@hanzo/shared/src/server";
+import { createTrace, createObservation, createTracesCh, createObservationsCh } from "@hanzo/shared/src/server";
 
 describe("/api/public/metrics API Endpoint", () => {
   // Test setup variables
@@ -224,14 +215,8 @@ describe("/api/public/metrics API Endpoint", () => {
       // Validate response matches expected structure
       expect(response.body.data).toHaveLength(expectedResult.dataLength);
       response.body.data.forEach((item) => {
-        expect(
-          expectedResult.expectedMetrics.every((metric) => metric in item),
-        ).toBe(true);
-        expect(
-          expectedResult.expectedDimensions.every(
-            (dimension) => dimension in item,
-          ),
-        ).toBe(true);
+        expect(expectedResult.expectedMetrics.every((metric) => metric in item)).toBe(true);
+        expect(expectedResult.expectedDimensions.every((dimension) => dimension in item)).toBe(true);
       });
     },
   );
@@ -256,10 +241,7 @@ describe("/api/public/metrics API Endpoint", () => {
       limit: 10,
     };
 
-    const invalidAuth = createBasicAuthHeader(
-      "invalid-project-key",
-      "invalid-secret-key",
-    );
+    const invalidAuth = createBasicAuthHeader("invalid-project-key", "invalid-secret-key");
 
     const { status } = await makeAPICall(
       "GET",
@@ -306,9 +288,7 @@ describe("/api/public/metrics API Endpoint", () => {
       view: "traces",
       dimensions: [{ field: "name" }],
       metrics: [{ measure: "invalidMetric", aggregation: "count" }],
-      fromTimestamp: new Date(
-        new Date().getTime() - 3600 * 24 * 1000,
-      ).toISOString(),
+      fromTimestamp: new Date(new Date().getTime() - 3600 * 24 * 1000).toISOString(),
       toTimestamp: new Date().toISOString(),
     };
 
@@ -329,9 +309,7 @@ describe("/api/public/metrics API Endpoint", () => {
       view: "traces",
       dimensions: [{ field: "name" }],
       metrics: [{ measure: "count", aggregation: "invalidAggregation" }],
-      fromTimestamp: new Date(
-        new Date().getTime() - 3600 * 24 * 1000,
-      ).toISOString(),
+      fromTimestamp: new Date(new Date().getTime() - 3600 * 24 * 1000).toISOString(),
       toTimestamp: new Date().toISOString(),
     };
 
@@ -352,9 +330,7 @@ describe("/api/public/metrics API Endpoint", () => {
       view: "traces",
       dimensions: [{ field: "nonExistentDimension" }],
       metrics: [{ measure: "count", aggregation: "count" }],
-      fromTimestamp: new Date(
-        new Date().getTime() - 3600 * 24 * 1000,
-      ).toISOString(),
+      fromTimestamp: new Date(new Date().getTime() - 3600 * 24 * 1000).toISOString(),
       toTimestamp: new Date().toISOString(),
     };
 
@@ -383,9 +359,7 @@ describe("/api/public/metrics API Endpoint", () => {
           type: "string",
         },
       ],
-      fromTimestamp: new Date(
-        new Date().getTime() - 3600 * 24 * 1000,
-      ).toISOString(),
+      fromTimestamp: new Date(new Date().getTime() - 3600 * 24 * 1000).toISOString(),
       toTimestamp: new Date().toISOString(),
     };
 
@@ -476,11 +450,7 @@ describe("/api/public/metrics API Endpoint", () => {
     expect(response.body.data).toHaveLength(1);
 
     // Validate histogram data structure
-    const histogramData = response.body.data[0].histogram_totalCost as [
-      number,
-      number,
-      number,
-    ][];
+    const histogramData = response.body.data[0].histogram_totalCost as [number, number, number][];
     expect(Array.isArray(histogramData)).toBe(true);
     expect(histogramData.length).toBeGreaterThan(0);
     expect(histogramData.length).toBeLessThanOrEqual(15); // Should not exceed requested bins
@@ -530,9 +500,7 @@ describe("/api/public/metrics API Endpoint", () => {
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
         error: "InvalidRequestError",
-        message: expect.stringContaining(
-          "Array fields require type 'arrayOptions', not 'string'",
-        ),
+        message: expect.stringContaining("Array fields require type 'arrayOptions', not 'string'"),
       });
     });
 
@@ -564,9 +532,7 @@ describe("/api/public/metrics API Endpoint", () => {
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({
         error: "InvalidRequestError",
-        message: expect.stringContaining(
-          "Metadata filters require type 'stringObject'",
-        ),
+        message: expect.stringContaining("Metadata filters require type 'stringObject'"),
       });
     });
 
@@ -623,9 +589,7 @@ describe("/api/public/metrics API Endpoint", () => {
       expect(response.body.data.length).toBeGreaterThan(0);
 
       // Verify we got the tagged trace
-      const taggedTraceResult = response.body.data.find(
-        (row: any) => row.name === "tagged-trace",
-      );
+      const taggedTraceResult = response.body.data.find((row: any) => row.name === "tagged-trace");
       expect(taggedTraceResult).toBeDefined();
       expect(Number(taggedTraceResult.count_count)).toBe(1);
     });

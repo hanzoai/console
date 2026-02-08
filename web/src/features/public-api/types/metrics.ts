@@ -1,18 +1,7 @@
-import {
-  InvalidRequestError,
-  paginationMetaResponseZod,
-  publicApiPaginationZod,
-  singleFilter,
-} from "@hanzo/shared";
+import { InvalidRequestError, paginationMetaResponseZod, publicApiPaginationZod, singleFilter } from "@hanzo/shared";
 import { stringDateTime } from "@hanzo/shared/src/server";
 import { z } from "zod/v4";
-import {
-  dimension,
-  granularities,
-  metric,
-  views,
-  viewsV2,
-} from "@/src/features/query";
+import { dimension, granularities, metric, views, viewsV2 } from "@/src/features/query";
 
 /**
  * Query Object Structure
@@ -57,8 +46,7 @@ export const MetricsQueryObject = z
   .refine(
     (query) =>
       // Ensure fromTimestamp is before toTimestamp
-      new Date(query.fromTimestamp).getTime() <
-      new Date(query.toTimestamp).getTime(),
+      new Date(query.fromTimestamp).getTime() < new Date(query.toTimestamp).getTime(),
     {
       message: "fromTimestamp must be before toTimestamp",
     },
@@ -122,14 +110,9 @@ export const MetricsQueryObjectV2 = z
       })
       .optional(),
   })
-  .refine(
-    (query) =>
-      new Date(query.fromTimestamp).getTime() <
-      new Date(query.toTimestamp).getTime(),
-    {
-      message: "fromTimestamp must be before toTimestamp",
-    },
-  );
+  .refine((query) => new Date(query.fromTimestamp).getTime() < new Date(query.toTimestamp).getTime(), {
+    message: "fromTimestamp must be before toTimestamp",
+  });
 
 // GET /api/public/v2/metrics
 export const GetMetricsV2Query = z.object({

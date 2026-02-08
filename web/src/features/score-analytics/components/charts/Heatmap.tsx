@@ -2,11 +2,7 @@ import { useMemo, useLayoutEffect, useState, useRef } from "react";
 import { type HeatmapCell } from "@/src/features/score-analytics/lib/heatmap-utils";
 import { HeatmapCellComponent } from "./HeatmapCell";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { cn } from "@/src/utils/tailwind";
 
 export interface HeatmapProps {
@@ -77,11 +73,7 @@ export function Heatmap({
   }, [data]);
 
   // Detect division point mode (numeric heatmaps with nBins+1 labels)
-  const isDivisionPointMode =
-    rowLabels &&
-    rowLabels.length === rows + 1 &&
-    colLabels &&
-    colLabels.length === cols + 1;
+  const isDivisionPointMode = rowLabels && rowLabels.length === rows + 1 && colLabels && colLabels.length === cols + 1;
 
   // Calculate adaptive thinning for division point labels
   // Show every nth label based on number of bins
@@ -97,9 +89,7 @@ export function Heatmap({
 
   // Calculate responsive cell size - width-biased for minimal vertical space
   const cellWidth = "minmax(32px, 1fr)"; // Can grow wide
-  const cellHeight = cellHeightProp
-    ? `${cellHeightProp}px`
-    : "minmax(24px, 40px)";
+  const cellHeight = cellHeightProp ? `${cellHeightProp}px` : "minmax(24px, 40px)";
 
   // Determine max label lengths based on grid dimensions
   const maxYLabelLength = 8; // Y-axis allows up to 8 characters
@@ -164,52 +154,35 @@ export function Heatmap({
               ref={rowLabelsRef}
               className={cn(
                 "pr-1 text-right text-[10px] text-muted-foreground sm:pr-2 sm:text-xs",
-                isDivisionPointMode
-                  ? "flex flex-col justify-between self-stretch"
-                  : "grid gap-1",
+                isDivisionPointMode ? "flex flex-col justify-between self-stretch" : "grid gap-1",
               )}
               style={{
                 width: `${rowLabelsWidth}px`,
-                ...(isDivisionPointMode
-                  ? {}
-                  : { gridTemplateRows: `repeat(${rows}, ${cellHeight})` }),
+                ...(isDivisionPointMode ? {} : { gridTemplateRows: `repeat(${rows}, ${cellHeight})` }),
               }}
             >
               {rowLabels.map((label, idx) => {
                 // Apply adaptive thinning for division points
-                const shouldShow =
-                  !isDivisionPointMode || idx % labelStep === 0;
+                const shouldShow = !isDivisionPointMode || idx % labelStep === 0;
                 if (!shouldShow) {
                   return <div key={idx} className="h-0" />;
                 }
 
                 // Y-axis: truncate if > 8 chars, show first 5 + "..."
-                const shouldTruncate =
-                  !isDivisionPointMode && label.length > maxYLabelLength;
-                const truncated = shouldTruncate
-                  ? label.slice(0, 5) + "..."
-                  : label;
+                const shouldTruncate = !isDivisionPointMode && label.length > maxYLabelLength;
+                const truncated = shouldTruncate ? label.slice(0, 5) + "..." : label;
 
                 return (
                   <div
                     key={idx}
-                    className={cn(
-                      "flex justify-end",
-                      isDivisionPointMode ? "items-start" : "items-center",
-                    )}
+                    className={cn("flex justify-end", isDivisionPointMode ? "items-start" : "items-center")}
                   >
                     {shouldTruncate ? (
                       <HoverCard>
                         <HoverCardTrigger asChild>
-                          <span className="cursor-help text-right">
-                            {truncated}
-                          </span>
+                          <span className="cursor-help text-right">{truncated}</span>
                         </HoverCardTrigger>
-                        <HoverCardContent
-                          side="left"
-                          align="center"
-                          className="w-auto"
-                        >
+                        <HoverCardContent side="left" align="center" className="w-auto">
                           <div className="space-y-1">
                             <p className="font-semibold">{label}</p>
                           </div>
@@ -262,54 +235,37 @@ export function Heatmap({
         {colLabels && colLabels.length > 0 && (
           <div className="flex items-start gap-2 sm:gap-4">
             {/* Spacer for row labels */}
-            {rowLabels && rowLabels.length > 0 && (
-              <div style={{ width: `${rowLabelsWidth}px` }} />
-            )}
+            {rowLabels && rowLabels.length > 0 && <div style={{ width: `${rowLabelsWidth}px` }} />}
 
             <div
               className={cn(
                 "w-full flex-1 text-center text-[10px] text-muted-foreground sm:text-xs",
                 isDivisionPointMode ? "flex justify-between" : "grid gap-1",
               )}
-              style={
-                isDivisionPointMode
-                  ? undefined
-                  : { gridTemplateColumns: `repeat(${cols}, ${cellWidth})` }
-              }
+              style={isDivisionPointMode ? undefined : { gridTemplateColumns: `repeat(${cols}, ${cellWidth})` }}
             >
               {colLabels.map((label, idx) => {
                 // Apply adaptive thinning for division points
-                const shouldShow =
-                  !isDivisionPointMode || idx % labelStep === 0;
+                const shouldShow = !isDivisionPointMode || idx % labelStep === 0;
                 if (!shouldShow) {
                   return <div key={idx} className="w-0" />;
                 }
 
                 // X-axis: dynamic truncation based on number of columns
-                const shouldTruncate =
-                  !isDivisionPointMode && label.length > maxXLabelLength;
-                const truncated = shouldTruncate
-                  ? label.slice(0, maxXLabelLength - 3) + "..."
-                  : label;
+                const shouldTruncate = !isDivisionPointMode && label.length > maxXLabelLength;
+                const truncated = shouldTruncate ? label.slice(0, maxXLabelLength - 3) + "..." : label;
 
                 return (
                   <div
                     key={idx}
-                    className={cn(
-                      "flex justify-center",
-                      isDivisionPointMode ? "items-start" : "items-center",
-                    )}
+                    className={cn("flex justify-center", isDivisionPointMode ? "items-start" : "items-center")}
                   >
                     {shouldTruncate ? (
                       <HoverCard>
                         <HoverCardTrigger asChild>
                           <span className="cursor-help">{truncated}</span>
                         </HoverCardTrigger>
-                        <HoverCardContent
-                          side="bottom"
-                          align="center"
-                          className="w-auto"
-                        >
+                        <HoverCardContent side="bottom" align="center" className="w-auto">
                           <div className="space-y-1">
                             <p className="text-xs">{label}</p>
                           </div>
@@ -324,18 +280,12 @@ export function Heatmap({
             </div>
 
             {/* Spacer for alignment */}
-            {rowLabels && rowLabels.length > 0 && (
-              <div className="w-0 sm:w-2" />
-            )}
+            {rowLabels && rowLabels.length > 0 && <div className="w-0 sm:w-2" />}
           </div>
         )}
 
         {/* X-axis label */}
-        {xAxisLabel && (
-          <div className="text-center text-xs font-normal text-muted-foreground">
-            {xAxisLabel}
-          </div>
-        )}
+        {xAxisLabel && <div className="text-center text-xs font-normal text-muted-foreground">{xAxisLabel}</div>}
       </div>
     </TooltipProvider>
   );

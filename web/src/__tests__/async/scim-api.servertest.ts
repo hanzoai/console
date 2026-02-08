@@ -1,14 +1,8 @@
 /** @jest-environment node */
 
-import {
-  makeZodVerifiedAPICall,
-  makeAPICall,
-} from "@/src/__tests__/test-utils";
+import { makeZodVerifiedAPICall, makeAPICall } from "@/src/__tests__/test-utils";
 import { z } from "zod/v4";
-import {
-  createAndAddApiKeysToDb,
-  createBasicAuthHeader,
-} from "@hanzo/shared/src/server";
+import { createAndAddApiKeysToDb, createBasicAuthHeader } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
@@ -167,9 +161,7 @@ describe("SCIM API", () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body.schemas).toContain(
-        "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",
-      );
+      expect(response.body.schemas).toContain("urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig");
       expect(response.body.patch.supported).toBe(false);
       expect(response.body.filter.supported).toBe(true);
     });
@@ -193,9 +185,7 @@ describe("SCIM API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.detail).toContain(
-        "Organization-scoped API key required",
-      );
+      expect(result.body.detail).toContain("Organization-scoped API key required");
     });
 
     it("should return 405 for non-GET methods", async () => {
@@ -222,13 +212,9 @@ describe("SCIM API", () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body.schemas).toContain(
-        "urn:ietf:params:scim:api:messages:2.0:ListResponse",
-      );
+      expect(response.body.schemas).toContain("urn:ietf:params:scim:api:messages:2.0:ListResponse");
       expect(response.body.Resources.length).toBeGreaterThan(0);
-      expect(response.body.Resources[0].id).toContain(
-        "urn:ietf:params:scim:schemas:core:2.0:User",
-      );
+      expect(response.body.Resources[0].id).toContain("urn:ietf:params:scim:schemas:core:2.0:User");
     });
 
     it("should return 401 when invalid API keys are provided", async () => {
@@ -250,9 +236,7 @@ describe("SCIM API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.detail).toContain(
-        "Organization-scoped API key required",
-      );
+      expect(result.body.detail).toContain("Organization-scoped API key required");
     });
 
     it("should return 405 for non-GET methods", async () => {
@@ -279,14 +263,10 @@ describe("SCIM API", () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body.schemas).toContain(
-        "urn:ietf:params:scim:api:messages:2.0:ListResponse",
-      );
+      expect(response.body.schemas).toContain("urn:ietf:params:scim:api:messages:2.0:ListResponse");
       expect(response.body.Resources.length).toBeGreaterThan(0);
       expect(response.body.Resources[0].id).toBe("User");
-      expect(response.body.Resources[0].endpoint).toBe(
-        "/api/public/scim/Users",
-      );
+      expect(response.body.Resources[0].endpoint).toBe("/api/public/scim/Users");
     });
 
     it("should return 401 when invalid API keys are provided", async () => {
@@ -308,9 +288,7 @@ describe("SCIM API", () => {
         createBasicAuthHeader(projectApiKey, projectSecretKey),
       );
       expect(result.status).toBe(403);
-      expect(result.body.detail).toContain(
-        "Organization-scoped API key required",
-      );
+      expect(result.body.detail).toContain("Organization-scoped API key required");
     });
 
     it("should return 405 for non-GET methods", async () => {
@@ -350,9 +328,7 @@ describe("SCIM API", () => {
         );
 
         expect(response.status).toBe(200);
-        expect(response.body.schemas).toContain(
-          "urn:ietf:params:scim:api:messages:2.0:ListResponse",
-        );
+        expect(response.body.schemas).toContain("urn:ietf:params:scim:api:messages:2.0:ListResponse");
         expect(response.body.totalResults).toBeGreaterThanOrEqual(0);
         expect(response.body.startIndex).toBe(1);
       });
@@ -417,9 +393,7 @@ describe("SCIM API", () => {
           createBasicAuthHeader(projectApiKey, projectSecretKey),
         );
         expect(result.status).toBe(403);
-        expect(result.body.detail).toContain(
-          "Organization-scoped API key required",
-        );
+        expect(result.body.detail).toContain("Organization-scoped API key required");
       });
 
       it("should return 405 for non-GET/POST methods", async () => {

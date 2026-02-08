@@ -2,15 +2,8 @@
 
 import { randomUUID } from "crypto";
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  makeAPICall,
-  makeZodVerifiedAPICall,
-} from "@/src/__tests__/test-utils";
-import {
-  GetModelV1Response,
-  GetModelsV1Response,
-  PostModelsV1Response,
-} from "@/src/features/public-api/types/models";
+import { makeAPICall, makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
+import { GetModelV1Response, GetModelsV1Response, PostModelsV1Response } from "@/src/features/public-api/types/models";
 
 import {
   validateRegexPattern,
@@ -35,31 +28,19 @@ describe("validation methods", () => {
 
     it("should reject patterns exceeding 200 characters", () => {
       const longPattern = "a".repeat(201);
-      expect(() => validateRegexPattern(longPattern)).toThrow(
-        "Pattern exceeds maximum length of 200 characters",
-      );
+      expect(() => validateRegexPattern(longPattern)).toThrow("Pattern exceeds maximum length of 200 characters");
     });
 
     it("should reject invalid regex syntax", () => {
-      expect(() => validateRegexPattern("(unclosed")).toThrow(
-        "Invalid regex syntax",
-      );
-      expect(() => validateRegexPattern("[unclosed")).toThrow(
-        "Invalid regex syntax",
-      );
-      expect(() => validateRegexPattern("(?invalid)")).toThrow(
-        "Invalid regex syntax",
-      );
+      expect(() => validateRegexPattern("(unclosed")).toThrow("Invalid regex syntax");
+      expect(() => validateRegexPattern("[unclosed")).toThrow("Invalid regex syntax");
+      expect(() => validateRegexPattern("(?invalid)")).toThrow("Invalid regex syntax");
     });
 
     it("should reject patterns that may cause catastrophic backtracking", () => {
       // Known unsafe pattern (exponential backtracking)
-      expect(() => validateRegexPattern("(a+)+b")).toThrow(
-        "catastrophic backtracking",
-      );
-      expect(() => validateRegexPattern("(x+x+)+y")).toThrow(
-        "catastrophic backtracking",
-      );
+      expect(() => validateRegexPattern("(a+)+b")).toThrow("catastrophic backtracking");
+      expect(() => validateRegexPattern("(x+x+)+y")).toThrow("catastrophic backtracking");
     });
   });
 
@@ -112,9 +93,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        "Exactly one pricing tier must have isDefault: true",
-      );
+      expect(result.error).toContain("Exactly one pricing tier must have isDefault: true");
     });
 
     it("should reject tiers with multiple defaults", () => {
@@ -137,9 +116,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        "Only one pricing tier can have isDefault: true",
-      );
+      expect(result.error).toContain("Only one pricing tier can have isDefault: true");
     });
 
     it("should reject default tier with non-zero priority", () => {
@@ -155,9 +132,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        "Default pricing tier must have priority: 0",
-      );
+      expect(result.error).toContain("Default pricing tier must have priority: 0");
     });
 
     it("should reject default tier with conditions", () => {
@@ -180,9 +155,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        "Default pricing tier must have empty conditions array",
-      );
+      expect(result.error).toContain("Default pricing tier must have empty conditions array");
     });
 
     it("should reject duplicate priorities", () => {
@@ -325,9 +298,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        'Non-default pricing tier "Custom Tier" must have at least one condition',
-      );
+      expect(result.error).toContain('Non-default pricing tier "Custom Tier" must have at least one condition');
     });
 
     it("should reject tiers with mismatched usage keys", () => {
@@ -357,9 +328,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain(
-        'Pricing tier "High Volume" must have the same usage keys as the default tier',
-      );
+      expect(result.error).toContain('Pricing tier "High Volume" must have the same usage keys as the default tier');
       expect(result.error).toContain("Expected: [input, output]");
     });
 
@@ -531,13 +500,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
       });
 
       // Test GET /models
-      const response = await makeZodVerifiedAPICall(
-        GetModelsV1Response,
-        "GET",
-        "/api/public/models",
-        undefined,
-        auth,
-      );
+      const response = await makeZodVerifiedAPICall(GetModelsV1Response, "GET", "/api/public/models", undefined, auth);
 
       expect(response.status).toBe(200);
       const returnedModel = response.body.data.find((m) => m.id === modelId);
@@ -554,9 +517,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
       // Check new pricingTiers array
       expect(returnedModel?.pricingTiers).toHaveLength(2);
 
-      const defaultTierResponse = returnedModel?.pricingTiers.find(
-        (t) => t.isDefault,
-      );
+      const defaultTierResponse = returnedModel?.pricingTiers.find((t) => t.isDefault);
       expect(defaultTierResponse).toMatchObject({
         name: "Standard",
         isDefault: true,
@@ -565,9 +526,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
         prices: { input: 3.0, output: 15.0 },
       });
 
-      const largeTierResponse = returnedModel?.pricingTiers.find(
-        (t) => !t.isDefault,
-      );
+      const largeTierResponse = returnedModel?.pricingTiers.find((t) => !t.isDefault);
       expect(largeTierResponse).toMatchObject({
         name: "Large Context",
         isDefault: false,
@@ -828,9 +787,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
       );
 
       expect(response.status).toBe(400);
-      expect(JSON.stringify(response.body)).toContain(
-        "Must provide either flat prices",
-      );
+      expect(JSON.stringify(response.body)).toContain("Must provide either flat prices");
     });
 
     it("should reject model with no pricing information", async () => {
@@ -850,9 +807,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
       );
 
       expect(response.status).toBe(400);
-      expect(JSON.stringify(response.body)).toContain(
-        "Must provide either flat prices",
-      );
+      expect(JSON.stringify(response.body)).toContain("Must provide either flat prices");
     });
 
     it("should reject pricing tiers with no default", async () => {
@@ -971,9 +926,7 @@ describe("/models API Endpoints - Pricing Tiers", () => {
       );
 
       expect(response.status).toBe(400);
-      expect(JSON.stringify(response.body)).toContain(
-        "priorities must be unique",
-      );
+      expect(JSON.stringify(response.body)).toContain("priorities must be unique");
     });
 
     it("should reject pricing tiers with duplicate names", async () => {

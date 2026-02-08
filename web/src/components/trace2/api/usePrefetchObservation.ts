@@ -9,17 +9,11 @@ export type UsePrefetchObservationParams = {
  * Hook to prefetch observation data on hover.
  * Matches the old trace component's prefetch behavior with 5-minute staleTime.
  */
-export function usePrefetchObservation({
-  projectId,
-}: UsePrefetchObservationParams) {
+export function usePrefetchObservation({ projectId }: UsePrefetchObservationParams) {
   const utils = api.useUtils();
   const { isBetaEnabled } = useObservationListBeta();
 
-  const prefetch = (
-    observationId: string,
-    traceId: string,
-    startTime?: Date,
-  ) => {
+  const prefetch = (observationId: string, traceId: string, startTime?: Date) => {
     if (isBetaEnabled) {
       // Beta ON: prefetch from events table via batchIO
       if (!startTime) return;

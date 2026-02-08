@@ -13,10 +13,9 @@ export const SSOSettings = () => {
     <>
       <Header title="SSO Configuration" />
       <p className="mb-4 text-sm text-muted-foreground">
-        Configure Single Sign-On (SSO) for your organization. SSO allows your
-        team to use your existing identity provider for authentication, e.g.
-        Okta, AzureAD/EntraID. Alternatively, you can enforce the use of a
-        public provider such as Google, GitHub and Microsoft.
+        Configure Single Sign-On (SSO) for your organization. SSO allows your team to use your existing identity
+        provider for authentication, e.g. Okta, AzureAD/EntraID. Alternatively, you can enforce the use of a public
+        provider such as Google, GitHub and Microsoft.
       </p>
     </>
   );
@@ -29,8 +28,7 @@ export const SSOSettings = () => {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Not available</AlertTitle>
           <AlertDescription>
-            Enterprise SSO and SSO Enforcement are not available on your plan.
-            Please upgrade to access this feature.
+            Enterprise SSO and SSO Enforcement are not available on your plan. Please upgrade to access this feature.
           </AlertDescription>
         </Alert>
       </div>
@@ -44,14 +42,8 @@ export const SSOSettings = () => {
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Contact Hanzo Support</AlertTitle>
         <AlertDescription className="flex flex-col gap-3">
-          <p>
-            To set up or change your SSO configuration, please reach out to our
-            support engineering team.
-          </p>
-          <Button
-            onClick={() => setSupportDrawerOpen(true)}
-            className="self-start"
-          >
+          <p>To set up or change your SSO configuration, please reach out to our support engineering team.</p>
+          <Button onClick={() => setSupportDrawerOpen(true)} className="self-start">
             Contact Support
           </Button>
         </AlertDescription>

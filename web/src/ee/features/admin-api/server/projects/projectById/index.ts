@@ -1,12 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  logger,
-  redis,
-  QueueJobs,
-  ProjectDeleteQueue,
-  type ApiAccessScope,
-} from "@hanzo/shared/src/server";
+import { logger, redis, QueueJobs, ProjectDeleteQueue, type ApiAccessScope } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import { projectRetentionSchema } from "@/src/features/auth/lib/projectRetentionSchema";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
@@ -61,8 +55,7 @@ export async function handleUpdateProject(
 
         if (!hasDataRetentionEntitlement) {
           return res.status(403).json({
-            message:
-              "The data-retention entitlement is required to set a non-zero retention period.",
+            message: "The data-retention entitlement is required to set a non-zero retention period.",
           });
         }
       }
@@ -109,9 +102,7 @@ export async function handleDeleteProject(
 ) {
   try {
     // API keys need to be deleted from cache. Otherwise, they will still be valid.
-    await new ApiAuthService(prisma, redis).invalidateCachedProjectApiKeys(
-      projectId,
-    );
+    await new ApiAuthService(prisma, redis).invalidateCachedProjectApiKeys(projectId);
 
     // Delete API keys from DB
     await prisma.apiKey.deleteMany({
@@ -164,8 +155,7 @@ export async function handleDeleteProject(
 
     return res.status(202).json({
       success: true,
-      message:
-        "Project deletion has been initiated and is being processed asynchronously",
+      message: "Project deletion has been initiated and is being processed asynchronously",
     });
   } catch (error) {
     logger.error("Failed to delete project", error);

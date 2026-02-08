@@ -13,10 +13,7 @@ export interface AdminAuthOptions {
 }
 
 export class AdminApiAuthService {
-  static verifyAdminAuthFromAuthString = (
-    authString: string,
-    options: AdminAuthOptions = {},
-  ): AdminAuthResult => {
+  static verifyAdminAuthFromAuthString = (authString: string, options: AdminAuthOptions = {}): AdminAuthResult => {
     const { isAllowedOnHanzoCloud = false } = options;
 
     // Block access on Hanzo Cloud unless explicitly allowed
@@ -71,10 +68,7 @@ export class AdminApiAuthService {
         error: "Unauthorized: No authorization header provided",
       };
     }
-    return AdminApiAuthService.verifyAdminAuthFromAuthString(
-      authorization,
-      options,
-    );
+    return AdminApiAuthService.verifyAdminAuthFromAuthString(authorization, options);
   }
 
   /**
@@ -84,15 +78,8 @@ export class AdminApiAuthService {
    * @param options Admin auth options. By default, blocks access on Hanzo Cloud (isAllowedOnHanzoCloud: false)
    * @returns true if authorized, false otherwise (and sets appropriate response)
    */
-  public static handleAdminAuth(
-    req: NextApiRequest,
-    res: NextApiResponse,
-    options: AdminAuthOptions = {},
-  ): boolean {
-    const authResult = AdminApiAuthService.verifyAdminAuthFromHeader(
-      req.headers,
-      options,
-    );
+  public static handleAdminAuth(req: NextApiRequest, res: NextApiResponse, options: AdminAuthOptions = {}): boolean {
+    const authResult = AdminApiAuthService.verifyAdminAuthFromHeader(req.headers, options);
 
     if (!authResult.isAuthorized) {
       if (authResult.error?.startsWith("Unauthorized")) {

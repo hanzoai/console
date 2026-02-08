@@ -6,11 +6,7 @@ interface MentionBadgeProps {
   className?: string;
 }
 
-export function MentionBadge({
-  userId,
-  displayName,
-  className,
-}: MentionBadgeProps) {
+export function MentionBadge({ userId, displayName, className }: MentionBadgeProps) {
   return (
     <span
       className={cn(

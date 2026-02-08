@@ -20,13 +20,7 @@ interface DeleteSpendAlertDialogProps {
   onSuccess: () => void;
 }
 
-export function DeleteSpendAlertDialog({
-  orgId,
-  alertId,
-  open,
-  onOpenChange,
-  onSuccess,
-}: DeleteSpendAlertDialogProps) {
+export function DeleteSpendAlertDialog({ orgId, alertId, open, onOpenChange, onSuccess }: DeleteSpendAlertDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const capture = usePostHogClientCapture();
 
@@ -59,24 +53,15 @@ export function DeleteSpendAlertDialog({
         <DialogHeader>
           <DialogTitle>Delete Spend Alert</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this spend alert? This action cannot
-            be undone and you will no longer receive notifications for this
-            threshold.
+            Are you sure you want to delete this spend alert? This action cannot be undone and you will no longer
+            receive notifications for this threshold.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
-            variant="outline"
-            disabled={isDeleting}
-            onClick={() => onOpenChange(false)}
-          >
+          <Button variant="outline" disabled={isDeleting} onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? "Deleting..." : "Delete Alert"}
           </Button>
         </DialogFooter>

@@ -1,28 +1,22 @@
 import React from "react";
-import {
-  SplashScreen,
-  type ValueProposition,
-} from "@/src/components/ui/splash-screen";
+import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
 import { ThumbsUp, Star, LineChart, Code } from "lucide-react";
 
 export function ScoresOnboarding() {
   const valuePropositions: ValueProposition[] = [
     {
       title: "Collect user feedback",
-      description:
-        "Gather thumbs up/down feedback from users to identify high and low quality outputs",
+      description: "Gather thumbs up/down feedback from users to identify high and low quality outputs",
       icon: <ThumbsUp className="h-4 w-4" />,
     },
     {
       title: "Run model-based evaluations",
-      description:
-        "Use LLMs to automatically evaluate your application's outputs",
+      description: "Use LLMs to automatically evaluate your application's outputs",
       icon: <Star className="h-4 w-4" />,
     },
     {
       title: "Track quality metrics",
-      description:
-        "Monitor quality metrics over time to identify trends and issues",
+      description: "Monitor quality metrics over time to identify trends and issues",
       icon: <LineChart className="h-4 w-4" />,
     },
     {

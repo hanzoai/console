@@ -1,13 +1,6 @@
 import { parse } from "csv-parse";
 import { type Prisma } from "@hanzo/shared";
-import type {
-  ParseOptions,
-  CsvPreviewResult,
-  ColumnType,
-  FieldMapping,
-  FreeformField,
-  SchemaField,
-} from "./types";
+import type { ParseOptions, CsvPreviewResult, ColumnType, FieldMapping, FreeformField, SchemaField } from "./types";
 
 const MAX_PREVIEW_ROWS = 10;
 const PREVIEW_FILE_SIZE_BYTES = 1024 * 1024 * 2; // 2MB
@@ -47,10 +40,7 @@ const createParser = async (
       if (options.processor?.onHeader) {
         await options.processor.onHeader(headerRow);
       }
-    } else if (
-      !options.isPreview ||
-      (options.isPreview && currentRowIndex <= MAX_PREVIEW_ROWS)
-    ) {
+    } else if (!options.isPreview || (options.isPreview && currentRowIndex <= MAX_PREVIEW_ROWS)) {
       // Data rows
       const sanitizedRow = row.map((value) => value.trim());
       previewRows.push(sanitizedRow);
@@ -79,12 +69,8 @@ const createParser = async (
       fileName,
       columns: headerRow.map((header) => ({
         name: header,
-        samples: options.collectSamples
-          ? (columnSamples.get(header) ?? [])
-          : [],
-        inferredType: options.collectSamples
-          ? inferColumnType(columnSamples.get(header) ?? [])
-          : "string",
+        samples: options.collectSamples ? (columnSamples.get(header) ?? []) : [],
+        inferredType: options.collectSamples ? inferColumnType(columnSamples.get(header) ?? []) : "string",
       })),
       previewRows,
       totalColumns: headerRow.length,
@@ -99,14 +85,9 @@ const createParser = async (
 };
 
 // Browser implementation
-export async function parseCsvClient(
-  file: File,
-  options: ParseOptions,
-): Promise<CsvPreviewResult> {
+export async function parseCsvClient(file: File, options: ParseOptions): Promise<CsvPreviewResult> {
   return new Promise((resolve, reject) => {
-    const fileToRead = options.isPreview
-      ? file.slice(0, PREVIEW_FILE_SIZE_BYTES)
-      : file;
+    const fileToRead = options.isPreview ? file.slice(0, PREVIEW_FILE_SIZE_BYTES) : file;
 
     const reader = new FileReader();
 
@@ -198,9 +179,7 @@ export function parseColumns(
   }
 
   // Multiple columns: nest columns into json objects
-  return Object.fromEntries(
-    columnNames.map((col) => [col, parseValue(row[headerMap.get(col)!])]),
-  );
+  return Object.fromEntries(columnNames.map((col) => [col, parseValue(row[headerMap.get(col)!])]));
 }
 
 // Helper to build object from schema key mapping
@@ -221,12 +200,7 @@ export function buildSchemaObject(
         // Multiple columns: create an object
         return [
           schemaKey,
-          Object.fromEntries(
-            csvColumns.map((csvColumn) => [
-              csvColumn,
-              parseValue(row[headerMap.get(csvColumn)!]),
-            ]),
-          ),
+          Object.fromEntries(csvColumns.map((csvColumn) => [csvColumn, parseValue(row[headerMap.get(csvColumn)!])])),
         ];
       }
     }),

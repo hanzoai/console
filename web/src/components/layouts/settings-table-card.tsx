@@ -1,13 +1,7 @@
 import { Card } from "@/src/components/ui/card";
 import { cn } from "@/src/utils/tailwind";
 
-export const SettingsTableCard = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+export const SettingsTableCard = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (
     <Card
       className={cn(

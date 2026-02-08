@@ -9,13 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogBody,
-  DialogFooter,
-} from "@/src/components/ui/dialog";
+import { DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,10 +25,7 @@ import { useExperimentPromptData } from "@/src/features/experiments/hooks/useExp
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import {
-  CreateExperimentData,
-  type CreateExperiment,
-} from "@/src/features/experiments/types";
+import { CreateExperimentData, type CreateExperiment } from "@/src/features/experiments/types";
 import {
   generateDefaultExperimentName,
   generateDefaultExperimentDescription,
@@ -81,12 +72,8 @@ export const MultiStepExperimentForm = ({
 }) => {
   const capture = usePostHogClientCapture();
   const [activeStep, setActiveStep] = useState("prompt");
-  const [selectedPromptName, setSelectedPromptName] = useState<string>(
-    promptDefault?.name ?? "",
-  );
-  const [selectedPromptVersion, setSelectedPromptVersion] = useState<
-    number | null
-  >(promptDefault?.version ?? null);
+  const [selectedPromptName, setSelectedPromptName] = useState<string>(promptDefault?.name ?? "");
+  const [selectedPromptVersion, setSelectedPromptVersion] = useState<number | null>(promptDefault?.version ?? null);
   // View State Pattern:
   // - Form state (react-hook-form): All values submitted to API (promptId, datasetId, name, runName, etc.)
   // - Local useState: Display-only values not submitted but used for UI display
@@ -94,9 +81,7 @@ export const MultiStepExperimentForm = ({
   //   - structuredOutputEnabled: UI toggle (actual schema object is in form.structuredOutputSchema)
   //   - selectedSchemaName: Schema name for display (actual schema object is in form)
   const [structuredOutputEnabled, setStructuredOutputEnabled] = useState(false);
-  const [selectedSchemaName, setSelectedSchemaName] = useState<string | null>(
-    null,
-  );
+  const [selectedSchemaName, setSelectedSchemaName] = useState<string | null>(null);
 
   const steps = [
     { id: "prompt", label: "Prompt & Model" },
@@ -205,10 +190,7 @@ export const MultiStepExperimentForm = ({
   const experimentMutation = api.experiments.createExperiment.useMutation({
     onSuccess: handleExperimentSuccess ?? (() => {}),
     onError: (error) => {
-      showErrorToast(
-        error.message || "Failed to trigger dataset run",
-        "Please try again.",
-      );
+      showErrorToast(error.message || "Failed to trigger dataset run", "Please try again.");
     },
     onSettled: handleExperimentSettled ?? (() => {}),
   });
@@ -273,11 +255,7 @@ export const MultiStepExperimentForm = ({
     const selectedDataset = datasets.data?.find((d) => d.id === datasetId);
     if (!selectedDataset) return;
 
-    const defaultName = generateDefaultExperimentName(
-      selectedPromptName,
-      selectedPromptVersion,
-      selectedDataset.name,
-    );
+    const defaultName = generateDefaultExperimentName(selectedPromptName, selectedPromptVersion, selectedDataset.name);
     form.setValue("name", defaultName);
 
     const defaultDescription = generateDefaultExperimentDescription(
@@ -286,13 +264,7 @@ export const MultiStepExperimentForm = ({
       selectedDataset.name,
     );
     form.setValue("description", defaultDescription);
-  }, [
-    selectedPromptName,
-    selectedPromptVersion,
-    datasetId,
-    datasets.data,
-    form,
-  ]);
+  }, [selectedPromptName, selectedPromptVersion, datasetId, datasets.data, form]);
 
   // Auto-generate run name when experiment name changes
   const experimentName = form.watch("name");
@@ -307,9 +279,7 @@ export const MultiStepExperimentForm = ({
 
   // Get evaluator names for review step
   const activeEvaluatorNames =
-    evalTemplates.data?.templates
-      .filter((t) => activeEvaluators.includes(t.id))
-      .map((t) => t.name) ?? [];
+    evalTemplates.data?.templates.filter((t) => activeEvaluators.includes(t.id)).map((t) => t.name) ?? [];
 
   // Get dataset info for review step
   const selectedDataset = datasets.data?.find((d) => d.id === datasetId);
@@ -326,31 +296,19 @@ export const MultiStepExperimentForm = ({
           !form.formState.errors.modelConfig
         );
       case "dataset":
-        return !!(
-          form.getValues("datasetId") &&
-          validationResult.data?.isValid &&
-          !form.formState.errors.datasetId
-        );
+        return !!(form.getValues("datasetId") && validationResult.data?.isValid && !form.formState.errors.datasetId);
       case "evaluators":
         return true; // Optional step
       case "details":
         return !!(form.getValues("name") && !form.formState.errors.name);
       case "review":
-        return (
-          isStepValid("prompt") &&
-          isStepValid("dataset") &&
-          isStepValid("details")
-        );
+        return isStepValid("prompt") && isStepValid("dataset") && isStepValid("details");
       default:
         return false;
     }
   };
 
-  if (
-    !promptsByName ||
-    !datasets.data ||
-    (hasEvalReadAccess && !!datasetId && !evaluators.data)
-  ) {
+  if (!promptsByName || !datasets.data || (hasEvalReadAccess && !!datasetId && !evaluators.data)) {
     return <Skeleton className="min-h-[70dvh] w-full" />;
   }
 
@@ -420,13 +378,8 @@ export const MultiStepExperimentForm = ({
       <DialogHeader>
         <DialogTitle>Run Experiment</DialogTitle>
         <DialogDescription>
-          Run an experiment to evaluate prompts and model configurations against
-          a dataset. See{" "}
-          <Link
-            href="https://hanzo.com/docs/evaluation/dataset-runs/native-run"
-            target="_blank"
-            className="underline"
-          >
+          Run an experiment to evaluate prompts and model configurations against a dataset. See{" "}
+          <Link href="https://hanzo.com/docs/evaluation/dataset-runs/native-run" target="_blank" className="underline">
             documentation
           </Link>{" "}
           to learn more.
@@ -442,9 +395,7 @@ export const MultiStepExperimentForm = ({
                     <BreadcrumbItem>
                       {step.id === activeStep ? (
                         <BreadcrumbPage className="flex items-center">
-                          {isStepValid(step.id) && (
-                            <Check className="mr-1.5 h-3.5 w-3.5 text-green-600" />
-                          )}
+                          {isStepValid(step.id) && <Check className="mr-1.5 h-3.5 w-3.5 text-green-600" />}
                           {step.label}
                         </BreadcrumbPage>
                       ) : (
@@ -452,9 +403,7 @@ export const MultiStepExperimentForm = ({
                           onClick={() => setActiveStep(step.id)}
                           className="flex cursor-pointer items-center"
                         >
-                          {isStepValid(step.id) && (
-                            <Check className="mr-1.5 h-3.5 w-3.5 text-green-600" />
-                          )}
+                          {isStepValid(step.id) && <Check className="mr-1.5 h-3.5 w-3.5 text-green-600" />}
                           {step.label}
                         </BreadcrumbLink>
                       )}
@@ -496,16 +445,10 @@ export const MultiStepExperimentForm = ({
                 />
               )}
 
-              {activeStep === "details" && (
-                <ExperimentDetailsStep formState={formState} />
-              )}
+              {activeStep === "details" && <ExperimentDetailsStep formState={formState} />}
 
               {activeStep === "review" && (
-                <ReviewStep
-                  formState={formState}
-                  navigationState={navigationState}
-                  summary={reviewSummary}
-                />
+                <ReviewStep formState={formState} navigationState={navigationState} summary={reviewSummary} />
               )}
             </div>
           </DialogBody>
@@ -549,8 +492,7 @@ export const MultiStepExperimentForm = ({
                   <Button
                     type="submit"
                     disabled={
-                      (Boolean(promptIdFromHook && datasetId) &&
-                        !validationResult.data?.isValid) ||
+                      (Boolean(promptIdFromHook && datasetId) && !validationResult.data?.isValid) ||
                       !!form.formState.errors.name
                     }
                     loading={form.formState.isSubmitting}

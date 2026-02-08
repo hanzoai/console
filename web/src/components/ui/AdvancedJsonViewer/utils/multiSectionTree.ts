@@ -167,9 +167,7 @@ export function buildMultiSectionTree(
 
       // 2c. Re-parent JSON tree under header node and update properties
       let sectionLineNumber = 1;
-      const stack: { node: TreeNode; newDepth: number }[] = [
-        { node: jsonTree.rootNode, newDepth: 0 },
-      ];
+      const stack: { node: TreeNode; newDepth: number }[] = [{ node: jsonTree.rootNode, newDepth: 0 }];
 
       while (stack.length > 0) {
         const { node, newDepth } = stack.pop()!;
@@ -309,10 +307,7 @@ export function buildMultiSectionTree(
 /**
  * Get section context data for a section key
  */
-export function getSectionContext(
-  tree: TreeState,
-  sectionKey: string,
-): { rowCount: number; isExpanded: boolean } {
+export function getSectionContext(tree: TreeState, sectionKey: string): { rowCount: number; isExpanded: boolean } {
   const headerNode = tree.nodeMap.get(`${sectionKey}__header`);
 
   if (!headerNode) {
@@ -348,9 +343,7 @@ export function updateSpacerHeights(tree: TreeState, lineHeight: number): void {
     }
 
     // Find spacer node (if it exists)
-    const spacerNode = headerNode.children.find(
-      (n) => n.nodeType === "section-spacer",
-    );
+    const spacerNode = headerNode.children.find((n) => n.nodeType === "section-spacer");
 
     if (!spacerNode) return;
 

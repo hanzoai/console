@@ -3,10 +3,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
 import { type RouterOutput } from "@/src/utils/types";
-import {
-  AnnotationQueueStatus,
-  AnnotationQueueObjectType,
-} from "@hanzo/shared";
+import { AnnotationQueueStatus, AnnotationQueueObjectType } from "@hanzo/shared";
 import { ArrowLeft, ArrowRight, SearchXIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -25,9 +22,7 @@ export const AnnotationQueueItemPage: React.FC<{
 }> = ({ annotationQueueId, projectId, view, queryItemId }) => {
   const router = useRouter();
   const isSingleItem = router.query.singleItem === "true";
-  const [nextItemData, setNextItemData] = useState<
-    RouterOutput["annotationQueues"]["fetchAndLockNext"] | null
-  >(null);
+  const [nextItemData, setNextItemData] = useState<RouterOutput["annotationQueues"]["fetchAndLockNext"] | null>(null);
   const [seenItemIds, setSeenItemIds] = useState<string[]>([]);
   const [progressIndex, setProgressIndex] = useState(0);
 
@@ -43,8 +38,7 @@ export const AnnotationQueueItemPage: React.FC<{
     { enabled: !!itemId, refetchOnMount: false },
   );
 
-  const fetchAndLockNextMutation =
-    api.annotationQueues.fetchAndLockNext.useMutation();
+  const fetchAndLockNextMutation = api.annotationQueues.fetchAndLockNext.useMutation();
 
   // Effects
   useEffect(() => {
@@ -63,15 +57,14 @@ export const AnnotationQueueItemPage: React.FC<{
   }, []);
   const { configs } = useAnnotationQueueData({ annotationQueueId, projectId });
 
-  const unseenPendingItemCount =
-    api.annotationQueueItems.unseenPendingItemCountByQueueId.useQuery(
-      {
-        queueId: annotationQueueId,
-        projectId,
-        seenItemIds,
-      },
-      { refetchOnWindowFocus: false },
-    );
+  const unseenPendingItemCount = api.annotationQueueItems.unseenPendingItemCountByQueueId.useQuery(
+    {
+      queueId: annotationQueueId,
+      projectId,
+      seenItemIds,
+    },
+    { refetchOnWindowFocus: false },
+  );
 
   const utils = api.useUtils();
   const completeMutation = api.annotationQueueItems.complete.useMutation({
@@ -102,17 +95,8 @@ export const AnnotationQueueItemPage: React.FC<{
 
   const relevantItem = useMemo(() => {
     if (isSingleItem) return seenItemData.data;
-    else
-      return progressIndex < seenItemIds.length
-        ? seenItemData.data
-        : nextItemData;
-  }, [
-    progressIndex,
-    seenItemIds.length,
-    seenItemData.data,
-    nextItemData,
-    isSingleItem,
-  ]);
+    else return progressIndex < seenItemIds.length ? seenItemData.data : nextItemData;
+  }, [progressIndex, seenItemIds.length, seenItemData.data, nextItemData, isSingleItem]);
 
   const objectData = useAnnotationObjectData(relevantItem ?? null, projectId);
 
@@ -128,11 +112,7 @@ export const AnnotationQueueItemPage: React.FC<{
   }, [relevantItem, router, projectId, annotationQueueId]);
 
   useEffect(() => {
-    if (
-      relevantItem &&
-      !seenItemIds.includes(relevantItem.id) &&
-      !isSingleItem
-    ) {
+    if (relevantItem && !seenItemIds.includes(relevantItem.id) && !isSingleItem) {
       setSeenItemIds((prev) => [...prev, relevantItem.id]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,11 +160,7 @@ export const AnnotationQueueItemPage: React.FC<{
   const renderContent = () => {
     // Handle deleted object (trace/observation/session not found)
     if (objectData.isError && objectData.errorCode === "NOT_FOUND") {
-      return (
-        <ObjectNotFoundCard
-          type={relevantItem?.objectType ?? AnnotationQueueObjectType.TRACE}
-        />
-      );
+      return <ObjectNotFoundCard type={relevantItem?.objectType ?? AnnotationQueueObjectType.TRACE} />;
     }
 
     // Handle deleted queue item
@@ -193,9 +169,8 @@ export const AnnotationQueueItemPage: React.FC<{
         <Card className="flex h-full w-full flex-col items-center justify-center overflow-hidden">
           <SearchXIcon className="mb-2 h-8 w-8 text-muted-foreground" />
           <span className="max-w-96 text-wrap text-sm text-muted-foreground">
-            Item has been <strong>deleted from annotation queue</strong>.
-            Previously added scores and underlying reference trace are
-            unaffected by this action.
+            Item has been <strong>deleted from annotation queue</strong>. Previously added scores and underlying
+            reference trace are unaffected by this action.
           </span>
         </Card>
       );
@@ -265,9 +240,7 @@ export const AnnotationQueueItemPage: React.FC<{
                 onClick={handleComplete}
                 size="lg"
                 className="w-full"
-                disabled={
-                  completeMutation.isPending || !hasAccess || objectData.isError
-                }
+                disabled={completeMutation.isPending || !hasAccess || objectData.isError}
               >
                 Mark Completed
               </Button>

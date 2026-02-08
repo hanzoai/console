@@ -1,14 +1,6 @@
-import React, {
-  useCallback,
-  useMemo,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import React, { useCallback, useMemo, type Dispatch, type SetStateAction } from "react";
 import { Button } from "@/src/components/ui/button";
-import {
-  type ColumnOrderState,
-  type VisibilityState,
-} from "@tanstack/react-table";
+import { type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Component, Menu, X } from "lucide-react";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -23,12 +15,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { cn } from "@/src/utils/tailwind";
 import { isString } from "@/src/utils/types";
@@ -40,11 +27,7 @@ import {
   Drawer,
   DrawerClose,
 } from "@/src/components/ui/drawer";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/src/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/src/components/ui/collapsible";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Separator } from "@/src/components/ui/separator";
 
@@ -63,19 +46,12 @@ const calculateColumnCounts = <TData, TValue>(
   return columns.reduce(
     (acc, column) => {
       if (column.columns) {
-        const groupCounts = calculateColumnCounts(
-          column.columns,
-          columnVisibility,
-        );
+        const groupCounts = calculateColumnCounts(column.columns, columnVisibility);
         acc.count += groupCounts.count;
         acc.total += groupCounts.total;
       } else {
         acc.total++;
-        if (
-          (column.accessorKey in columnVisibility &&
-            columnVisibility[column.accessorKey]) ||
-          !column.enableHiding
-        ) {
+        if ((column.accessorKey in columnVisibility && columnVisibility[column.accessorKey]) || !column.enableHiding) {
           acc.count++;
         }
       }
@@ -97,11 +73,10 @@ function ColumnVisibilityListItem<TData, TValue>({
   isOrderable?: boolean;
 }) {
   const isFixedPosition = column.isFixedPosition ?? false;
-  const { attributes, isDragging, listeners, setNodeRef, transform } =
-    useSortable({
-      id: column.accessorKey,
-      disabled: !isOrderable || isFixedPosition,
-    });
+  const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({
+    id: column.accessorKey,
+    disabled: !isOrderable || isFixedPosition,
+  });
 
   const isChecked = columnVisibility[column.accessorKey] && column.enableHiding;
 
@@ -114,9 +89,7 @@ function ColumnVisibilityListItem<TData, TValue>({
         "group transition-colors hover:bg-muted/50",
       )}
       style={{
-        transform: transform
-          ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-          : undefined,
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
         transition: isDragging ? "none" : "transform 0.15s ease-in-out",
         zIndex: isDragging ? 1 : undefined,
       }}
@@ -126,17 +99,13 @@ function ColumnVisibilityListItem<TData, TValue>({
           id={`col-${column.accessorKey}`}
           checked={isChecked || !column.enableHiding || isFixedPosition}
           onCheckedChange={() => {
-            if (column.enableHiding && !isFixedPosition)
-              toggleColumn(column.accessorKey);
+            if (column.enableHiding && !isFixedPosition) toggleColumn(column.accessorKey);
           }}
           disabled={!column.enableHiding || isFixedPosition}
           className="h-4 w-4"
         />
         <span
-          className={cn(
-            "text-sm capitalize",
-            (!column.enableHiding || isFixedPosition) && "opacity-50",
-          )}
+          className={cn("text-sm capitalize", (!column.enableHiding || isFixedPosition) && "opacity-50")}
           title={
             !column.enableHiding
               ? "This column may not be hidden"
@@ -145,15 +114,10 @@ function ColumnVisibilityListItem<TData, TValue>({
                 : undefined
           }
         >
-          {column.header && typeof column.header === "string"
-            ? column.header
-            : column.accessorKey}
+          {column.header && typeof column.header === "string" ? column.header : column.accessorKey}
         </span>
         {column.headerTooltip && (
-          <DocPopup
-            description={column.headerTooltip.description}
-            href={column.headerTooltip.href}
-          />
+          <DocPopup description={column.headerTooltip.description} href={column.headerTooltip.href} />
         )}
       </div>
 
@@ -190,10 +154,9 @@ function GroupVisibilityHeader<TData, TValue>({
   children: React.ReactNode;
   toggleAll: () => void;
 }) {
-  const { attributes, isDragging, listeners, setNodeRef, transform } =
-    useSortable({
-      id: column.accessorKey,
-    });
+  const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({
+    id: column.accessorKey,
+  });
 
   return (
     <Collapsible open={isOpen} onOpenChange={onToggle}>
@@ -206,9 +169,7 @@ function GroupVisibilityHeader<TData, TValue>({
             "group cursor-pointer hover:bg-muted",
           )}
           style={{
-            transform: transform
-              ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-              : undefined,
+            transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
             transition: isDragging ? "none" : "transform 0.15s ease-in-out",
             zIndex: isDragging ? 1 : undefined,
           }}
@@ -216,9 +177,7 @@ function GroupVisibilityHeader<TData, TValue>({
           <div className="flex items-center gap-2">
             <Component className="h-4 w-4 opacity-50" />
             <span className="text-sm font-medium">
-              {column.header && typeof column.header === "string"
-                ? column.header
-                : column.accessorKey}
+              {column.header && typeof column.header === "string" ? column.header : column.accessorKey}
             </span>
             <span className="text-xs text-muted-foreground">
               ({groupVisibleCount}/{groupTotalCount})
@@ -247,15 +206,9 @@ function GroupVisibilityHeader<TData, TValue>({
                 toggleAll();
               }}
             >
-              {groupVisibleCount === groupTotalCount
-                ? "Deselect All"
-                : "Select All"}
+              {groupVisibleCount === groupTotalCount ? "Deselect All" : "Select All"}
             </Button>
-            {isOpen ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
+            {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </div>
         </div>
       </CollapsibleTrigger>
@@ -264,18 +217,13 @@ function GroupVisibilityHeader<TData, TValue>({
   );
 }
 
-function setAllColumns<TData, TValue>(
-  columns: HanzoColumnDef<TData, TValue>[],
-  visible: boolean,
-  groupName?: string,
-) {
+function setAllColumns<TData, TValue>(columns: HanzoColumnDef<TData, TValue>[], visible: boolean, groupName?: string) {
   return (oldVisibility: VisibilityState) => {
     const newColumnVisibility: VisibilityState = { ...oldVisibility };
     columns.forEach((col) => {
       if (groupName && col.header === groupName && col.columns) {
         col.columns.forEach((subCol) => {
-          if (subCol.enableHiding)
-            newColumnVisibility[subCol.accessorKey] = visible;
+          if (subCol.enableHiding) newColumnVisibility[subCol.accessorKey] = visible;
         });
       } else if (!groupName && col.enableHiding) {
         newColumnVisibility[col.accessorKey] = visible;
@@ -298,9 +246,7 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
   setColumnOrder,
 }: DataTableColumnVisibilityFilterProps<TData, TValue>) {
   const capture = usePostHogClientCapture();
-  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
-    {},
-  );
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
 
   const { defaultColumnOrder, defaultColumnVisibility } = useMemo(() => {
     return {
@@ -322,9 +268,7 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
           ...old,
           [columnId]: targetValue,
         };
-        const selectedColumns = Object.keys(newColumnVisibility).filter(
-          (key) => newColumnVisibility[key],
-        );
+        const selectedColumns = Object.keys(newColumnVisibility).filter((key) => newColumnVisibility[key]);
         capture("table:column_visibility_changed", {
           selectedColumns: selectedColumns,
         });
@@ -354,11 +298,7 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
     }));
   };
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {}),
-  );
+  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
 
   const { count, total } = calculateColumnCounts(columns, columnVisibility);
   const columnIdsOrder = columnOrder ?? columns.map((col) => col.accessorKey);
@@ -440,9 +380,7 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
                     onClick={() => toggleAllColumns(count, total)}
                   >
                     <span className="text-sm font-medium">
-                      {count === total
-                        ? "Deselect All Columns"
-                        : "Select All Columns"}
+                      {count === total ? "Deselect All Columns" : "Select All Columns"}
                     </span>
                     <div className="ml-1 rounded-sm bg-input px-1 text-xs">{`${count}/${total}`}</div>
                   </Button>
@@ -451,15 +389,10 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
             </div>
             <Separator />
             <div data-vaul-no-drag className="px-3 py-2">
-              <SortableContext
-                items={columnIdsOrder}
-                strategy={verticalListSortingStrategy}
-              >
+              <SortableContext items={columnIdsOrder} strategy={verticalListSortingStrategy}>
                 <div className="space-y-2">
                   {columnIdsOrder.map((columnId) => {
-                    const column = columns.find(
-                      (col) => col.accessorKey === columnId,
-                    );
+                    const column = columns.find((col) => col.accessorKey === columnId);
                     if (!column) return null;
 
                     if (!!column.columns && column.columns.length > 0) {
@@ -478,15 +411,8 @@ export function DataTableColumnVisibilityFilter<TData, TValue>({
                           isOpen={!!openGroups[column.accessorKey]}
                           onToggle={() => toggleGroup(column.accessorKey)}
                           toggleAll={() => {
-                            if (
-                              column.header &&
-                              typeof column.header === "string"
-                            ) {
-                              toggleAllColumns(
-                                groupVisibleCount,
-                                groupTotalCount,
-                                column.header,
-                              );
+                            if (column.header && typeof column.header === "string") {
+                              toggleAllColumns(groupVisibleCount, groupTotalCount, column.header);
                             }
                           }}
                         >

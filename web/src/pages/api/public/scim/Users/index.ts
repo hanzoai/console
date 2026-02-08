@@ -8,16 +8,11 @@ import { hashPassword } from "@/src/features/auth-credentials/lib/credentialsSer
 import { z } from "zod";
 import { type Role } from "@hanzo/shared";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
 
   if (req.method !== "GET" && req.method !== "POST") {
-    logger.error(
-      `Method not allowed for ${req.method} on /api/public/scim/Users`,
-    );
+    logger.error(`Method not allowed for ${req.method} on /api/public/scim/Users`);
     return res.status(405).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
       detail: "Method not allowed",
@@ -26,10 +21,7 @@ export default async function handler(
   }
 
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(
-    prisma,
-    redis,
-  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     return res.status(401).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
@@ -40,14 +32,10 @@ export default async function handler(
   // END CHECK AUTH
 
   // Check if using an organization API key
-  if (
-    authCheck.scope.accessLevel !== "organization" ||
-    !authCheck.scope.orgId
-  ) {
+  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
     return res.status(403).json({
       schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
-      detail:
-        "Invalid API key. Organization-scoped API key required for this operation.",
+      detail: "Invalid API key. Organization-scoped API key required for this operation.",
       status: 403,
     });
   }
@@ -166,9 +154,7 @@ export default async function handler(
 
       let role: Role = "NONE";
       if (roles && Array.isArray(roles) && roles.length > 0) {
-        const roleSchema = z.array(
-          z.enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"]),
-        );
+        const roleSchema = z.array(z.enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"]));
         const parsedRoles = roleSchema.safeParse(roles);
         if (!parsedRoles.success) {
           logger.warn("Invalid roles provided for SCIM user creation");
@@ -193,9 +179,7 @@ export default async function handler(
       });
 
       if (existingUser.length > 0) {
-        logger.warn(
-          `User with userName ${userName} already exists in organization ${authCheck.scope.orgId}`,
-        );
+        logger.warn(`User with userName ${userName} already exists in organization ${authCheck.scope.orgId}`);
         return res.status(409).json({
           schemas: ["urn:ietf:params:scim:api:messages:2.0:Error"],
           detail: "User with this userName already exists",

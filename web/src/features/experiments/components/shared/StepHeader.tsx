@@ -5,10 +5,7 @@ export interface StepHeaderProps {
   description: string;
 }
 
-export const StepHeader: React.FC<StepHeaderProps> = ({
-  title,
-  description,
-}) => {
+export const StepHeader: React.FC<StepHeaderProps> = ({ title, description }) => {
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-medium">{title}</h3>

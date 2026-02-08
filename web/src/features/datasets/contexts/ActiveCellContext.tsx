@@ -1,12 +1,5 @@
 import { type ScoreAggregate } from "@hanzo/shared";
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 
 type ActiveCell = {
   traceId: string;
@@ -27,9 +20,7 @@ type ActiveCellContextValue = {
  * Single cell can be active at a time. Used for cell highlighting
  * and side panel state management.
  */
-const ActiveCellContext = createContext<ActiveCellContextValue | undefined>(
-  undefined,
-);
+const ActiveCellContext = createContext<ActiveCellContextValue | undefined>(undefined);
 
 export function ActiveCellProvider({ children }: { children: ReactNode }) {
   const [activeCell, setActiveCellState] = useState<ActiveCell | null>(null);
@@ -47,11 +38,7 @@ export function ActiveCellProvider({ children }: { children: ReactNode }) {
     [activeCell, setActiveCell, clearActiveCell],
   );
 
-  return (
-    <ActiveCellContext.Provider value={value}>
-      {children}
-    </ActiveCellContext.Provider>
-  );
+  return <ActiveCellContext.Provider value={value}>{children}</ActiveCellContext.Provider>;
 }
 
 export function useActiveCell() {

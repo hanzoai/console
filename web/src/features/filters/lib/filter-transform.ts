@@ -16,14 +16,9 @@ export type ColumnToBackendKeyMap = Record<string, string>;
  * @param columnDefinitions - Column definitions for lookup
  * @returns FilterState with all column names normalized to IDs
  */
-export function normalizeFilterColumnNames(
-  filters: FilterState,
-  columnDefinitions: ColumnDefinition[],
-): FilterState {
+export function normalizeFilterColumnNames(filters: FilterState, columnDefinitions: ColumnDefinition[]): FilterState {
   return filters.map((filter) => {
-    const colDef = columnDefinitions.find(
-      (c) => c.id === filter.column || c.name === filter.column,
-    );
+    const colDef = columnDefinitions.find((c) => c.id === filter.column || c.name === filter.column);
     if (colDef && colDef.id !== filter.column) {
       return { ...filter, column: colDef.id };
     }

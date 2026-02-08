@@ -7,12 +7,7 @@ import {
   queryClickhouse,
   measureAndReturn,
 } from "@hanzo/shared/src/server";
-import {
-  removeObjectKeys,
-  ScoreDataTypeEnum,
-  type ScoreDataTypeType,
-  type ScoreDomain,
-} from "@hanzo/shared";
+import { removeObjectKeys, ScoreDataTypeEnum, type ScoreDataTypeType, type ScoreDomain } from "@hanzo/shared";
 
 /**
  * Converts a ScoreDomain object to API format.
@@ -71,18 +66,12 @@ export const _handleGenerateScoresForPublicApi = async ({
   scoreScope: "traces_only" | "all";
   scoreDataTypes?: readonly ScoreDataTypeType[];
 }) => {
-  const { scoresFilter, tracesFilter } = generateScoreFilter(
-    props,
-    scoreDataTypes,
-  );
+  const { scoresFilter, tracesFilter } = generateScoreFilter(props, scoreDataTypes);
   const appliedScoresFilter = scoresFilter.apply();
   const appliedTracesFilter = tracesFilter.apply();
 
   // Determine if trace should be included based on fields parameter
-  const { includeTrace, needsTraceJoin } = determineTraceJoinRequirement(
-    props.fields,
-    tracesFilter.length(),
-  );
+  const { includeTrace, needsTraceJoin } = determineTraceJoinRequirement(props.fields, tracesFilter.length());
 
   const query = `
       SELECT
@@ -149,9 +138,7 @@ export const _handleGenerateScoresForPublicApi = async ({
         ...appliedTracesFilter.params,
         projectId: props.projectId,
         ...(props.limit !== undefined ? { limit: props.limit } : {}),
-        ...(props.page !== undefined
-          ? { offset: (props.page - 1) * props.limit }
-          : {}),
+        ...(props.page !== undefined ? { offset: (props.page - 1) * props.limit } : {}),
       },
       tags: {
         feature: "scoring",
@@ -209,18 +196,12 @@ export const _handleGetScoresCountForPublicApi = async ({
   scoreScope: "traces_only" | "all";
   scoreDataTypes?: readonly ScoreDataTypeType[];
 }) => {
-  const { scoresFilter, tracesFilter } = generateScoreFilter(
-    props,
-    scoreDataTypes,
-  );
+  const { scoresFilter, tracesFilter } = generateScoreFilter(props, scoreDataTypes);
   const appliedScoresFilter = scoresFilter.apply();
   const appliedTracesFilter = tracesFilter.apply();
 
   // Determine if trace should be included based on fields parameter
-  const { includeTrace, needsTraceJoin } = determineTraceJoinRequirement(
-    props.fields,
-    tracesFilter.length(),
-  );
+  const { includeTrace, needsTraceJoin } = determineTraceJoinRequirement(props.fields, tracesFilter.length());
 
   const query = `
       SELECT
@@ -397,10 +378,7 @@ const secureTraceFilterOptions = [
 /**
  * Determines if trace join is needed based on fields parameter and trace filters
  */
-const determineTraceJoinRequirement = (
-  fields: string[] | null | undefined,
-  tracesFilterLength: number,
-) => {
+const determineTraceJoinRequirement = (fields: string[] | null | undefined, tracesFilterLength: number) => {
   const requestedFields = fields ?? ["score", "trace"]; // Default includes both
   const includeTrace = requestedFields.includes("trace");
   const needsTraceJoin = includeTrace || tracesFilterLength > 0;
@@ -408,14 +386,8 @@ const determineTraceJoinRequirement = (
   return { includeTrace, needsTraceJoin };
 };
 
-const generateScoreFilter = (
-  filter: ScoreQueryType,
-  scoreDataTypes?: readonly ScoreDataTypeType[],
-) => {
-  const scoresFilter = convertApiProvidedFilterToClickhouseFilter(
-    filter,
-    secureScoreFilterOptions,
-  );
+const generateScoreFilter = (filter: ScoreQueryType, scoreDataTypes?: readonly ScoreDataTypeType[]) => {
+  const scoresFilter = convertApiProvidedFilterToClickhouseFilter(filter, secureScoreFilterOptions);
   scoresFilter.push(
     new StringFilter({
       clickhouseTable: "scores",
@@ -439,10 +411,7 @@ const generateScoreFilter = (
     );
   }
 
-  const tracesFilter = convertApiProvidedFilterToClickhouseFilter(
-    filter,
-    secureTraceFilterOptions,
-  );
+  const tracesFilter = convertApiProvidedFilterToClickhouseFilter(filter, secureTraceFilterOptions);
 
   // If environment is specified AND there are other trace filters (userId, traceTags),
   // also apply the environment filter to traces. This ensures that when filtering by
@@ -450,9 +419,7 @@ const generateScoreFilter = (
   // Without other trace filters, we only filter by the score's own environment,
   // which allows session scores (that have no trace) to be returned correctly.
   if (filter.environment && tracesFilter.length() > 0) {
-    const envValues = Array.isArray(filter.environment)
-      ? filter.environment
-      : [filter.environment];
+    const envValues = Array.isArray(filter.environment) ? filter.environment : [filter.environment];
     tracesFilter.push(
       new StringOptionsFilter({
         clickhouseTable: "traces",

@@ -38,12 +38,7 @@ export default function HfSpaces({ deploymentDomain }: PageProps) {
             <HanzoCloudIcon />
             <PlusIcon size={12} className="ml-1" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/huggingface-logo.svg"
-              alt="Hugging Face Logo"
-              width={36}
-              height={36}
-            />
+            <img src="/assets/huggingface-logo.svg" alt="Hugging Face Logo" width={36} height={36} />
           </div>
           <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
             Hanzo Cloud on Hugging Face
@@ -55,11 +50,7 @@ export default function HfSpaces({ deploymentDomain }: PageProps) {
             <CodeView content={deploymentDomain} title="HF Space Host" />
 
             <Button className="w-full" asChild>
-              <Link
-                href={deploymentDomain}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={deploymentDomain} target="_blank" rel="noopener noreferrer">
                 Open in new tab
               </Link>
             </Button>

@@ -56,12 +56,7 @@ describe("Observations Comment Filtering", () => {
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   // Helper to create observation data in the appropriate format
-  const createObservationData = (data: {
-    id: string;
-    project_id: string;
-    trace_id: string;
-    type: string;
-  }) => {
+  const createObservationData = (data: { id: string; project_id: string; trace_id: string; type: string }) => {
     if (useEventsTable) {
       return createEvent({
         ...data,

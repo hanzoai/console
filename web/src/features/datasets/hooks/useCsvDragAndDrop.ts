@@ -7,10 +7,7 @@ type DragHandlers = {
   onAddToExpectedColumn: (columnName: string) => void;
   onAddToMetadataColumn: (columnName: string) => void;
   onAddToInputSchemaKey: (schemaKey: string, column: CsvColumnPreview) => void;
-  onAddToExpectedSchemaKey: (
-    schemaKey: string,
-    column: CsvColumnPreview,
-  ) => void;
+  onAddToExpectedSchemaKey: (schemaKey: string, column: CsvColumnPreview) => void;
   onRemoveFromAllMappings: (columnName: string) => void;
 };
 

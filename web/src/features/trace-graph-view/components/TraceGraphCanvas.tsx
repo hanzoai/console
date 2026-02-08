@@ -122,10 +122,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
         };
 
         // Special positioning and colors for system nodes
-        if (
-          node.id === HANZO_START_NODE_NAME ||
-          node.id === LANGGRAPH_START_NODE_NAME
-        ) {
+        if (node.id === HANZO_START_NODE_NAME || node.id === LANGGRAPH_START_NODE_NAME) {
           return {
             ...nodeData,
             x: -200,
@@ -140,10 +137,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
             },
           };
         }
-        if (
-          node.id === HANZO_END_NODE_NAME ||
-          node.id === LANGGRAPH_END_NODE_NAME
-        ) {
+        if (node.id === HANZO_END_NODE_NAME || node.id === LANGGRAPH_END_NODE_NAME) {
           return {
             ...nodeData,
             x: 200,
@@ -267,11 +261,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
     nodesDataSetRef.current = nodesDataSet;
 
     // Create the network
-    const network = new Network(
-      containerRef.current,
-      { ...graphData, nodes: nodesDataSet },
-      options,
-    );
+    const network = new Network(containerRef.current, { ...graphData, nodes: nodesDataSet }, options);
     networkRef.current = network;
 
     // Use click event instead of selectNode/deselectNode to handle cycling properly
@@ -388,9 +378,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
         const observations = nodeToObservationsMap[node.id] || [];
         const currentIndex = currentObservationIndices[node.id] || 0;
         const counter =
-          observations.length > 1
-            ? ` (${observations.length - currentIndex}/${observations.length})`
-            : "";
+          observations.length > 1 ? ` (${observations.length - currentIndex}/${observations.length})` : "";
 
         const newLabel = `${node.label}${counter}`;
         updates.push({ id: node.id, label: newLabel });
@@ -410,9 +398,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
 
     if (selectedNodeName) {
       // Validate that the node exists before trying to select it
-      const nodeExists = graphData.nodes.some(
-        (node) => node.id === selectedNodeName,
-      );
+      const nodeExists = graphData.nodes.some((node) => node.id === selectedNodeName);
 
       if (nodeExists) {
         try {
@@ -423,10 +409,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
           network.unselectAll();
         }
       } else {
-        console.warn(
-          "Cannot select node that doesn't exist:",
-          selectedNodeName,
-        );
+        console.warn("Cannot select node that doesn't exist:", selectedNodeName);
         network.unselectAll();
       }
     } else {
@@ -435,11 +418,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
   }, [selectedNodeName, graphData.nodes]);
 
   if (!graphData.nodes.length) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        No graph data available
-      </div>
-    );
+    return <div className="flex h-full items-center justify-center">No graph data available</div>;
   }
 
   return (

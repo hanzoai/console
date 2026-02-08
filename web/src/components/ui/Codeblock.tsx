@@ -53,12 +53,7 @@ const CodeBlock: FC<Props> = memo(({ language, value, theme, className }) => {
 
   return (
     <div className="codeblock relative w-full overflow-hidden rounded border font-sans dark:bg-zinc-950">
-      <div
-        className={cn(
-          "flex w-full items-center justify-between bg-secondary px-2",
-          className,
-        )}
-      >
+      <div className={cn("flex w-full items-center justify-between bg-secondary px-2", className)}>
         <span className="text-xs lowercase">{language}</span>
         <div className="flex items-center py-1">
           <Button
@@ -67,20 +62,12 @@ const CodeBlock: FC<Props> = memo(({ language, value, theme, className }) => {
             className="text-xs hover:bg-border focus-visible:ring-1 focus-visible:ring-offset-0"
             onClick={handleCopy}
           >
-            {isCopied ? (
-              <Check className="h-3 w-3" />
-            ) : (
-              <Copy className="h-3 w-3" />
-            )}
+            {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             <span className="sr-only">Copy code</span>
           </Button>
         </div>
       </div>
-      <Highlight
-        theme={theme === "dark" ? themes.vsDark : themes.github}
-        code={value}
-        language={language}
-      >
+      <Highlight theme={theme === "dark" ? themes.vsDark : themes.github} code={value} language={language}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
             className={className}

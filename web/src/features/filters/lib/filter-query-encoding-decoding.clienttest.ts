@@ -1,7 +1,4 @@
-import {
-  encodeFiltersGeneric,
-  decodeFiltersGeneric,
-} from "@/src/features/filters/lib/filter-query-encoding";
+import { encodeFiltersGeneric, decodeFiltersGeneric } from "@/src/features/filters/lib/filter-query-encoding";
 import type { FilterState } from "@hanzo/shared";
 
 // Wrapper functions for tests
@@ -25,9 +22,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: ["jurassic"],
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "period;stringOptions;;any of;jurassic",
-      );
+      expect(encodeFilters(filters)).toBe("period;stringOptions;;any of;jurassic");
     });
 
     it("should encode multiple values in categorical filter", () => {
@@ -39,9 +34,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: ["jurassic", "cretaceous"],
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "period;stringOptions;;any of;jurassic%7Ccretaceous",
-      );
+      expect(encodeFilters(filters)).toBe("period;stringOptions;;any of;jurassic%7Ccretaceous");
     });
 
     it("should encode multiple filters", () => {
@@ -73,9 +66,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: ["triassic"],
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "period;stringOptions;;none of;triassic",
-      );
+      expect(encodeFilters(filters)).toBe("period;stringOptions;;none of;triassic");
     });
 
     it("should encode numeric >= filter", () => {
@@ -117,9 +108,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: 10,
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "length;number;;>=;5,length;number;;<=;10",
-      );
+      expect(encodeFilters(filters)).toBe("length;number;;>=;5,length;number;;<=;10");
     });
 
     it("should encode string filter with contains operator", () => {
@@ -144,9 +133,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: ["high", "medium"],
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "ratings;categoryOptions;danger;any of;high%7Cmedium",
-      );
+      expect(encodeFilters(filters)).toBe("ratings;categoryOptions;danger;any of;high%7Cmedium");
     });
 
     it("should encode numberObject filter", () => {
@@ -159,9 +146,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: 0.8,
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "scoresNumeric;numberObject;accuracy;>=;0.8",
-      );
+      expect(encodeFilters(filters)).toBe("scoresNumeric;numberObject;accuracy;>=;0.8");
     });
 
     it("should encode stringObject filter", () => {
@@ -174,9 +159,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
           value: "production",
         },
       ];
-      expect(encodeFilters(filters)).toBe(
-        "metadata;stringObject;environment;contains;production",
-      );
+      expect(encodeFilters(filters)).toBe("metadata;stringObject;environment;contains;production");
     });
 
     it("should encode boolean filter", () => {
@@ -210,9 +193,7 @@ describe("Filter Query Encoding & Decoding (Legacy Format)", () => {
     });
 
     it("should decode multiple values in categorical filter", () => {
-      const result = decodeFilters(
-        "period;stringOptions;;any of;triassic%7Cjurassic",
-      );
+      const result = decodeFilters("period;stringOptions;;any of;triassic%7Cjurassic");
       expect(result).toEqual([
         {
           column: "period",

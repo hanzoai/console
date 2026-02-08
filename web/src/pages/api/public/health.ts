@@ -11,16 +11,12 @@ import {
 } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     await runMiddleware(req, res, cors);
     await telemetry();
     const failIfNoRecentEvents = req.query.failIfNoRecentEvents === "true";
-    const failIfDatabaseUnavailable =
-      req.query.failIfDatabaseUnavailable === "true";
+    const failIfDatabaseUnavailable = req.query.failIfDatabaseUnavailable === "true";
 
     try {
       if (failIfDatabaseUnavailable) {
@@ -80,11 +76,7 @@ export default async function handler(
         if (traces.length === 0 || observations.length === 0) {
           return res.status(503).json({
             status: `No ${
-              traces.length === 0
-                ? "traces"
-                : observations.length === 0
-                  ? "observations"
-                  : "<should not happen>"
+              traces.length === 0 ? "traces" : observations.length === 0 ? "observations" : "<should not happen>"
             } within the last 3 minutes`,
             version: VERSION.replace("v", ""),
           });

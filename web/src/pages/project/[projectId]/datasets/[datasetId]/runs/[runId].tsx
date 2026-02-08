@@ -14,12 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import {
-  SidePanel,
-  SidePanelContent,
-  SidePanelHeader,
-  SidePanelTitle,
-} from "@/src/components/ui/side-panel";
+import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
 import { Skeleton } from "@/src/components/ui/skeleton";
 
 export default function Dataset() {
@@ -66,9 +61,7 @@ export default function Dataset() {
             </Link>
             <DetailPageNav
               currentId={runId}
-              path={(entry) =>
-                `/project/${projectId}/datasets/${datasetId}/runs/${entry.id}`
-              }
+              path={(entry) => `/project/${projectId}/datasets/${datasetId}/runs/${entry.id}`}
               listKey="datasetRuns"
             />
             <DropdownMenu>
@@ -94,16 +87,9 @@ export default function Dataset() {
     >
       <div className="grid flex-1 grid-cols-[1fr,auto] overflow-hidden">
         <div className="flex h-full flex-col overflow-hidden">
-          <DatasetRunItemsByRunTable
-            projectId={projectId}
-            datasetId={datasetId}
-            datasetRunId={runId}
-          />
+          <DatasetRunItemsByRunTable projectId={projectId} datasetId={datasetId} datasetRunId={runId} />
         </div>
-        <SidePanel
-          mobileTitle="Experiment run details"
-          id="experiment-run-details"
-        >
+        <SidePanel mobileTitle="Experiment run details" id="experiment-run-details">
           <SidePanelHeader>
             <SidePanelTitle>Experiment run details</SidePanelTitle>
           </SidePanelHeader>
@@ -113,23 +99,13 @@ export default function Dataset() {
             ) : (
               <>
                 {!!run.data?.description && (
-                  <JSONView
-                    json={run.data.description}
-                    title="Description"
-                    className="w-full overflow-y-auto"
-                  />
+                  <JSONView json={run.data.description} title="Description" className="w-full overflow-y-auto" />
                 )}
                 {!!run.data?.metadata && (
-                  <JSONView
-                    json={run.data.metadata}
-                    title="Metadata"
-                    className="w-full overflow-y-auto"
-                  />
+                  <JSONView json={run.data.metadata} title="Metadata" className="w-full overflow-y-auto" />
                 )}
                 {!run.data?.description && !run.data?.metadata && (
-                  <div className="mt-1 px-1 text-sm text-muted-foreground">
-                    No description or metadata for this run
-                  </div>
+                  <div className="mt-1 px-1 text-sm text-muted-foreground">No description or metadata for this run</div>
                 )}
               </>
             )}

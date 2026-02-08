@@ -1,7 +1,4 @@
-import {
-  CTEQueryBuilder,
-  EventsAggregationQueryBuilder,
-} from "@hanzo/shared/src/server";
+import { CTEQueryBuilder, EventsAggregationQueryBuilder } from "@hanzo/shared/src/server";
 
 describe("CTEQueryBuilder", () => {
   it("should compose multiple CTEs with type-safe references", () => {
@@ -14,8 +11,7 @@ describe("CTEQueryBuilder", () => {
     const builder = new CTEQueryBuilder()
       .withCTEFromBuilder("traces", tracesBuilder)
       .withCTE("scores", {
-        query:
-          "SELECT trace_id, score FROM scores WHERE project_id = {projectId: String}",
+        query: "SELECT trace_id, score FROM scores WHERE project_id = {projectId: String}",
         params: { projectId: "test-project" },
         schema: ["trace_id", "score"],
       })
@@ -68,18 +64,14 @@ describe("CTEQueryBuilder", () => {
 
   it("should throw error for unregistered CTE in from()", () => {
     const builder = new CTEQueryBuilder() as any;
-    expect(() => builder.from("nonexistent", "t")).toThrow(
-      "CTE 'nonexistent' not registered",
-    );
+    expect(() => builder.from("nonexistent", "t")).toThrow("CTE 'nonexistent' not registered");
   });
 
   it("should throw error for unregistered CTE in leftJoin()", () => {
     const builder = new CTEQueryBuilder()
       .withCTE("traces", { query: "SELECT 1", params: {}, schema: ["col1"] })
       .from("traces", "t") as any;
-    expect(() => builder.leftJoin("nonexistent", "x", "ON true")).toThrow(
-      "CTE 'nonexistent' not registered",
-    );
+    expect(() => builder.leftJoin("nonexistent", "x", "ON true")).toThrow("CTE 'nonexistent' not registered");
   });
 
   it("should throw error when building without FROM clause", () => {

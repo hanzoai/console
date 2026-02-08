@@ -3,10 +3,7 @@ import { LLMJSONSchema } from "@hanzo/shared";
 
 export const LLMToolNameSchema = z
   .string()
-  .regex(
-    /^[a-zA-Z0-9\._-]+$/,
-    "Name must contain only alphanumeric letters, hyphens, periods and underscores",
-  )
+  .regex(/^[a-zA-Z0-9\._-]+$/, "Name must contain only alphanumeric letters, hyphens, periods and underscores")
   .min(1, "Name is required");
 
 export const LLMToolInput = z.object({

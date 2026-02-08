@@ -23,13 +23,9 @@ export function useExperimentEvaluatorSelection({
   onEvaluatorToggled,
 }: TemplateSelectionHookProps) {
   // Track confirmed selections
-  const [activeTemplates, setActiveTemplates] = useState<string[]>(
-    initialActiveTemplateIds,
-  );
+  const [activeTemplates, setActiveTemplates] = useState<string[]>(initialActiveTemplateIds);
 
-  const [inactiveTemplates, setInactiveTemplates] = useState<string[]>(
-    initialInactiveTemplateIds,
-  );
+  const [inactiveTemplates, setInactiveTemplates] = useState<string[]>(initialInactiveTemplateIds);
   // Keep the active templates in sync with the initialActiveTemplateIds prop
   useEffect(() => {
     setActiveTemplates(initialActiveTemplateIds);
@@ -40,25 +36,20 @@ export function useExperimentEvaluatorSelection({
     setInactiveTemplates(initialInactiveTemplateIds);
   }, [initialInactiveTemplateIds]);
 
-  const updateStatus =
-    api.evals.updateAllDatasetEvalJobStatusByTemplateId.useMutation({
-      onSuccess: (_, variables) => {
-        if (variables.newStatus === "INACTIVE") {
-          setActiveTemplates((prev) =>
-            prev.filter((id) => id !== variables.evalTemplateId),
-          );
-          setInactiveTemplates((prev) => [...prev, variables.evalTemplateId]);
-        } else {
-          setActiveTemplates((prev) => [...prev, variables.evalTemplateId]);
-          setInactiveTemplates((prev) =>
-            prev.filter((id) => id !== variables.evalTemplateId),
-          );
-        }
+  const updateStatus = api.evals.updateAllDatasetEvalJobStatusByTemplateId.useMutation({
+    onSuccess: (_, variables) => {
+      if (variables.newStatus === "INACTIVE") {
+        setActiveTemplates((prev) => prev.filter((id) => id !== variables.evalTemplateId));
+        setInactiveTemplates((prev) => [...prev, variables.evalTemplateId]);
+      } else {
+        setActiveTemplates((prev) => [...prev, variables.evalTemplateId]);
+        setInactiveTemplates((prev) => prev.filter((id) => id !== variables.evalTemplateId));
+      }
 
-        // Notify parent to refetch evaluators
-        onEvaluatorToggled?.();
-      },
-    });
+      // Notify parent to refetch evaluators
+      onEvaluatorToggled?.();
+    },
+  });
 
   const setTemplateSelected = useCallback(
     (templateId: string) => {

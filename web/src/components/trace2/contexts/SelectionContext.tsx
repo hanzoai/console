@@ -18,20 +18,10 @@
  * - Display preferences (other than view pref) - see ViewPreferencesContext
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 import { StringParam, useQueryParam } from "use-query-params";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import {
-  useViewPreferences,
-  type JsonViewPreference,
-} from "./ViewPreferencesContext";
+import { useViewPreferences, type JsonViewPreference } from "./ViewPreferencesContext";
 
 // Valid tab values for detail view
 export type DetailTab = "preview" | "log" | "scores";
@@ -75,10 +65,7 @@ interface SelectionProviderProps {
 }
 
 export function SelectionProvider({ children }: SelectionProviderProps) {
-  const [currentObservationId, setCurrentObservationId] = useQueryParam(
-    "observation",
-    StringParam,
-  );
+  const [currentObservationId, setCurrentObservationId] = useQueryParam("observation", StringParam);
   const [tabParam, setTabParam] = useQueryParam("traceTab", StringParam);
   const [prefParam, setPrefParam] = useQueryParam("pref", StringParam);
 
@@ -90,16 +77,12 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Validate and provide defaults for tab
-  const selectedTab: DetailTab = VALID_TABS.includes(tabParam as DetailTab)
-    ? (tabParam as DetailTab)
-    : DEFAULT_TAB;
+  const selectedTab: DetailTab = VALID_TABS.includes(tabParam as DetailTab) ? (tabParam as DetailTab) : DEFAULT_TAB;
 
   // Map localStorage JsonViewPreference to ViewPref format
   // Both "json" and "json-beta" map to "json" ViewPref
   const localStorageViewPref: ViewPref =
-    jsonViewPreference === "json" || jsonViewPreference === "json-beta"
-      ? "json"
-      : "formatted";
+    jsonViewPreference === "json" || jsonViewPreference === "json-beta" ? "json" : "formatted";
 
   // View preference: URL param overrides localStorage default
   const viewPref: ViewPref = VALID_PREFS.includes(prefParam as ViewPref)
@@ -122,8 +105,7 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
       setJsonViewPreference(jsonPref);
 
       // Update URL param (clear if it matches the new localStorage default)
-      const newLocalStorageViewPref: ViewPref =
-        jsonPref === "json" ? "json" : "formatted";
+      const newLocalStorageViewPref: ViewPref = jsonPref === "json" ? "json" : "formatted";
       setPrefParam(pref === newLocalStorageViewPref ? null : pref);
     },
     [setJsonViewPreference, setPrefParam],
@@ -145,17 +127,10 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
     setSearchQuery(value);
   }, []);
 
-  const collapsedNodes = useMemo(
-    () => new Set(collapsedNodesArray),
-    [collapsedNodesArray],
-  );
+  const collapsedNodes = useMemo(() => new Set(collapsedNodesArray), [collapsedNodesArray]);
 
   const toggleCollapsed = useCallback((id: string) => {
-    setCollapsedNodesArray((prev) =>
-      prev.includes(id)
-        ? prev.filter((nodeId) => nodeId !== id)
-        : [...prev, id],
-    );
+    setCollapsedNodesArray((prev) => (prev.includes(id) ? prev.filter((nodeId) => nodeId !== id) : [...prev, id]));
   }, []);
 
   const expandAll = useCallback(() => {
@@ -208,9 +183,5 @@ export function SelectionProvider({ children }: SelectionProviderProps) {
     ],
   );
 
-  return (
-    <SelectionContext.Provider value={value}>
-      {children}
-    </SelectionContext.Provider>
-  );
+  return <SelectionContext.Provider value={value}>{children}</SelectionContext.Provider>;
 }

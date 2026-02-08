@@ -10,17 +10,11 @@ export interface ViewModeToggleProps {
   compensateScrollRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function ViewModeToggle({
-  selectedView,
-  onViewChange,
-  compensateScrollRef,
-}: ViewModeToggleProps) {
-  const {
-    jsonBetaEnabled,
-    selectedViewTab,
-    handleViewTabChange,
-    handleBetaToggle,
-  } = useJsonBetaToggle(selectedView, onViewChange);
+export function ViewModeToggle({ selectedView, onViewChange, compensateScrollRef }: ViewModeToggleProps) {
+  const { jsonBetaEnabled, selectedViewTab, handleViewTabChange, handleBetaToggle } = useJsonBetaToggle(
+    selectedView,
+    onViewChange,
+  );
 
   return (
     <div className="flex w-full flex-row items-center justify-start gap-1.5">
@@ -41,11 +35,7 @@ export function ViewModeToggle({
       </Tabs>
       {selectedViewTab === "json" && (
         <div className="flex items-center gap-1.5">
-          <Switch
-            size="sm"
-            checked={jsonBetaEnabled}
-            onCheckedChange={handleBetaToggle}
-          />
+          <Switch size="sm" checked={jsonBetaEnabled} onCheckedChange={handleBetaToggle} />
           <span className="text-xs text-muted-foreground">Beta</span>
         </div>
       )}

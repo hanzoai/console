@@ -14,15 +14,9 @@ export const BillingSettings = () => {
       <Header title="Usage & Billing" />
       <Card className="p-6">
         <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Billing and usage are managed through Hanzo IAM.
-          </p>
+          <p className="text-muted-foreground">Billing and usage are managed through Hanzo IAM.</p>
           <Button asChild>
-            <a
-              href="https://hanzo.id/billing"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://hanzo.id/billing" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
               Manage Billing
             </a>

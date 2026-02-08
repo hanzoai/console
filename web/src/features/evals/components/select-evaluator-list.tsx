@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { EvaluatorSelector } from "./evaluator-selector";
@@ -30,11 +25,10 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
     router.push(`/project/${projectId}/evals/new?evaluator=${template.id}`);
   };
 
-  const { isSelectionValid, selectedTemplate, setSelectedTemplate } =
-    useTemplateValidation({
-      projectId,
-      onValidSelection: handleSelectEvaluator,
-    });
+  const { isSelectionValid, selectedTemplate, setSelectedTemplate } = useTemplateValidation({
+    projectId,
+    onValidSelection: handleSelectEvaluator,
+  });
 
   // Fetch templates
   const templates = api.evals.allTemplates.useQuery(
@@ -66,9 +60,7 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
           {templates.isLoading ? (
             <Skeleton className="h-full w-full" />
           ) : templates.isError ? (
-            <div className="py-8 text-center text-destructive">
-              Error: {templates.error.message}
-            </div>
+            <div className="py-8 text-center text-destructive">Error: {templates.error.message}</div>
           ) : templates.data?.templates.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No evaluators found. Create a new evaluator to get started.
@@ -79,9 +71,7 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
                 projectId={projectId}
                 evalTemplates={templates.data?.templates || []}
                 selectedTemplateId={selectedTemplate?.id || undefined}
-                onTemplateSelect={(templateId) =>
-                  handleTemplateSelect(templateId)
-                }
+                onTemplateSelect={(templateId) => handleTemplateSelect(templateId)}
               />
             </div>
           )}
@@ -103,10 +93,7 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
         </div>
       </div>
 
-      <Dialog
-        open={isCreateTemplateOpen}
-        onOpenChange={setIsCreateTemplateOpen}
-      >
+      <Dialog open={isCreateTemplateOpen} onOpenChange={setIsCreateTemplateOpen}>
         <DialogContent className="max-h-[90vh] max-w-screen-md overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create new evaluator</DialogTitle>

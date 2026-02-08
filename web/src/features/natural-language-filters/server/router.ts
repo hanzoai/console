@@ -1,21 +1,9 @@
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import {
-  ChatMessageType,
-  fetchLLMCompletion,
-  logger,
-  type TraceSinkParams,
-} from "@hanzo/shared/src/server";
+import { ChatMessageType, fetchLLMCompletion, logger, type TraceSinkParams } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { CreateNaturalLanguageFilterCompletion } from "./validation";
-import {
-  getDefaultModelParams,
-  parseFiltersFromCompletion,
-  getHanzoClient,
-} from "./utils";
+import { getDefaultModelParams, parseFiltersFromCompletion, getHanzoClient } from "./utils";
 import { randomBytes } from "crypto";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { BEDROCK_USE_DEFAULT_CREDENTIALS } from "@hanzo/shared";
@@ -35,23 +23,18 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
         if (!env.NEXT_PUBLIC_HANZO_CLOUD_REGION) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
-            message:
-              "Natural language filtering is not available in self-hosted deployments.",
+            message: "Natural language filtering is not available in self-hosted deployments.",
           });
         }
 
         if (!env.HANZO_AWS_BEDROCK_MODEL) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
-            message:
-              "Bedrock environment variables not configured. Please set HANZO_AWS_BEDROCK_* variables.",
+            message: "Bedrock environment variables not configured. Please set HANZO_AWS_BEDROCK_* variables.",
           });
         }
 
-        if (
-          !env.HANZO_AI_FEATURES_PUBLIC_KEY ||
-          !env.HANZO_AI_FEATURES_SECRET_KEY
-        ) {
+        if (!env.HANZO_AI_FEATURES_PUBLIC_KEY || !env.HANZO_AI_FEATURES_SECRET_KEY) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message:
@@ -78,11 +61,7 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           env.HANZO_AI_FEATURES_HOST,
         );
 
-        const promptResponse = await client.getPrompt(
-          "get-filter-conditions-from-query",
-          undefined,
-          { type: "chat" },
-        );
+        const promptResponse = await client.getPrompt("get-filter-conditions-from-query", undefined, { type: "chat" });
 
         if (!env.HANZO_AI_FEATURES_PROJECT_ID) {
           throw new TRPCError({
@@ -130,22 +109,15 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           shouldUseHanzoAPIKey: true,
         });
 
-        logger.info(
-          `LLM completion received: ${JSON.stringify(llmCompletion, null, 2)}`,
-        );
+        logger.info(`LLM completion received: ${JSON.stringify(llmCompletion, null, 2)}`);
 
-        const parsedFilters = parseFiltersFromCompletion(
-          llmCompletion as string,
-        );
+        const parsedFilters = parseFiltersFromCompletion(llmCompletion as string);
 
         return {
           filters: parsedFilters,
         };
       } catch (error) {
-        logger.error(
-          "Failed to create natural language filter completion: ",
-          error,
-        );
+        logger.error("Failed to create natural language filter completion: ", error);
 
         if (error instanceof TRPCError) {
           throw error;
@@ -153,8 +125,7 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message:
-            "The AI backend currently appears to be unavailable. Please try again later.",
+          message: "The AI backend currently appears to be unavailable. Please try again later.",
         });
       }
     }),

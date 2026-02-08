@@ -16,10 +16,7 @@ export const validateQueryAndExtractId = (query: unknown): string | null => {
   return validation.data.organizationId;
 };
 
-export async function handleGetOrganizationById(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function handleGetOrganizationById(req: NextApiRequest, res: NextApiResponse) {
   const organizationId = validateQueryAndExtractId(req.query);
   if (!organizationId) {
     return res.status(400).json({ error: "Invalid organization ID" });
@@ -58,10 +55,7 @@ export async function handleGetOrganizationById(
   });
 }
 
-export async function handleUpdateOrganization(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function handleUpdateOrganization(req: NextApiRequest, res: NextApiResponse) {
   const organizationId = validateQueryAndExtractId(req.query);
   if (!organizationId) {
     return res.status(400).json({ error: "Invalid organization ID" });
@@ -145,10 +139,7 @@ export async function handleUpdateOrganization(
   });
 }
 
-export async function handleDeleteOrganization(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export async function handleDeleteOrganization(req: NextApiRequest, res: NextApiResponse) {
   const organizationId = validateQueryAndExtractId(req.query);
   if (!organizationId) {
     return res.status(400).json({ error: "Invalid organization ID" });
@@ -181,16 +172,14 @@ export async function handleDeleteOrganization(
   if (countNonDeletedProjects > 0) {
     return res.status(400).json({
       error: "Cannot delete organization with existing projects",
-      message:
-        "Please delete or transfer all projects before deleting the organization.",
+      message: "Please delete or transfer all projects before deleting the organization.",
     });
   }
 
   if (countAllProjects > 0) {
     return res.status(400).json({
       error: "Cannot delete organization with existing projects",
-      message:
-        "Deletion of your projects is still being processed, please try deleting the organization later",
+      message: "Deletion of your projects is still being processed, please try deleting the organization later",
     });
   }
 

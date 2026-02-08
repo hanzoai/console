@@ -7,11 +7,7 @@ import { type Period } from "./time-picker-utils";
 import { getTimezoneDetails, getShortLocalTimezone } from "@/src/utils/dates";
 import { TimeIcon } from "@/src/components/ui/time-icon";
 import { cn } from "@/src/utils/tailwind";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 
 interface TimePickerProps {
   date: Date | undefined;

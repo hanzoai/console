@@ -21,8 +21,7 @@ export type Expanded<T, K extends keyof T> = T & {
  * to the fully expanded object `T`. Returns true when the value is non-nullish and
  * not a string (i.e., Stripe returned the expanded object).
  */
-export const isExpanded = <T>(v: string | T | null | undefined): v is T =>
-  v != null && typeof v !== "string";
+export const isExpanded = <T>(v: string | T | null | undefined): v is T => v != null && typeof v !== "string";
 
 /**
  * Utility mapped type: take a type `T` and mark keys `K` as expanded and nullable.
@@ -35,6 +34,5 @@ export type ExpandedNullable<T, K extends keyof T> = {
  * to the fully expanded object `T` or `null | undefined`. Returns true when the value
  * is non-nullish and not a string (i.e., Stripe returned the expanded object).
  */
-export const isExpandedOrNullable = <T>(
-  v: string | T | null | undefined,
-): v is T | null | undefined => typeof v !== "string";
+export const isExpandedOrNullable = <T>(v: string | T | null | undefined): v is T | null | undefined =>
+  typeof v !== "string";

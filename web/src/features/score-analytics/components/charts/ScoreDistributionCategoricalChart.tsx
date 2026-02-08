@@ -1,10 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { Bar, BarChart, XAxis, YAxis, Legend } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/src/components/ui/chart";
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/src/components/ui/chart";
 import { ScoreChartLegendContent } from "./ScoreChartLegendContent";
 import { ScoreChartTooltip } from "../../lib/ScoreChartTooltip";
 
@@ -39,16 +35,12 @@ export function ScoreDistributionCategoricalChart({
   score2Source,
   colors,
 }: CategoricalChartProps) {
-  const hasStackedData = Boolean(
-    stackedDistribution && stackedDistribution.length > 0,
-  );
+  const hasStackedData = Boolean(stackedDistribution && stackedDistribution.length > 0);
 
   // Helper: Check if a key represents an unmatched category
   // Backend can send: "__unmatched__", "0", "", or null
   const isUnmatchedKey = (key: string): boolean => {
-    return (
-      key === "__unmatched__" || key === "0" || key === "" || key === "null"
-    );
+    return key === "__unmatched__" || key === "0" || key === "" || key === "null";
   };
 
   // Calculate all possible stack keys from actual data
@@ -66,15 +58,11 @@ export function ScoreDistributionCategoricalChart({
     });
 
     // Normalize all unmatched variations to "__unmatched__" for consistent handling
-    const normalizedStacks = Array.from(stacksFromData).map((key) =>
-      isUnmatchedKey(key) ? "__unmatched__" : key,
-    );
+    const normalizedStacks = Array.from(stacksFromData).map((key) => (isUnmatchedKey(key) ? "__unmatched__" : key));
 
     // Separate regular categories from __unmatched__
     // This ensures __unmatched__ is always last for consistent color assignment
-    const regularStacks = Array.from(
-      new Set([...normalizedStacks, ...score2Categories]),
-    )
+    const regularStacks = Array.from(new Set([...normalizedStacks, ...score2Categories]))
       .filter((key) => key !== "__unmatched__")
       .sort(); // Sort alphabetically for stable color assignment
 
@@ -95,9 +83,7 @@ export function ScoreDistributionCategoricalChart({
           grouped.set(item.score1Category, {});
         }
         // Normalize unmatched keys to "__unmatched__"
-        const normalizedKey = isUnmatchedKey(item.score2Stack)
-          ? "__unmatched__"
-          : item.score2Stack;
+        const normalizedKey = isUnmatchedKey(item.score2Stack) ? "__unmatched__" : item.score2Stack;
         grouped.get(item.score1Category)![normalizedKey] = item.count;
       });
 
@@ -131,14 +117,7 @@ export function ScoreDistributionCategoricalChart({
           pv: item.count,
         };
       });
-  }, [
-    distribution1,
-    categories,
-    hasStackedData,
-    stackedDistribution,
-    score2Categories,
-    allStackKeys,
-  ]);
+  }, [distribution1, categories, hasStackedData, stackedDistribution, score2Categories, allStackKeys]);
 
   // Visibility state for interactive legend (stacked mode only)
   const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(new Set());
@@ -154,20 +133,17 @@ export function ScoreDistributionCategoricalChart({
   }, [hiddenKeys, hasStackedData, allStackKeys]);
 
   // Toggle handler
-  const handleVisibilityToggle = useCallback(
-    (key: string, visible: boolean) => {
-      setHiddenKeys((prev) => {
-        const next = new Set(prev);
-        if (visible) {
-          next.delete(key);
-        } else {
-          next.add(key);
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const handleVisibilityToggle = useCallback((key: string, visible: boolean) => {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (visible) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   // Configure chart colors and config using provided colors
   const config: ChartConfig = useMemo(() => {
@@ -212,30 +188,17 @@ export function ScoreDistributionCategoricalChart({
     }
 
     // Single score mode: use score name as label (category shown via custom tooltip)
-    const firstColor = categories[0]
-      ? colors[categories[0]]
-      : Object.values(colors)[0];
+    const firstColor = categories[0] ? colors[categories[0]] : Object.values(colors)[0];
     return {
       pv: {
         label: score1Name,
         color: firstColor,
       },
     };
-  }, [
-    hasStackedData,
-    allStackKeys,
-    score1Name,
-    score2Name,
-    score2Source,
-    colors,
-    categories,
-  ]);
+  }, [hasStackedData, allStackKeys, score1Name, score2Name, score2Source, colors, categories]);
 
   return (
-    <ChartContainer
-      config={config}
-      className="[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-transparent"
-    >
+    <ChartContainer config={config} className="[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-transparent">
       <BarChart accessibilityLayer data={chartData} margin={{ bottom: 20 }}>
         <XAxis
           dataKey="name"
@@ -275,14 +238,7 @@ export function ScoreDistributionCategoricalChart({
               />
             );
           })}
-        {!hasStackedData && (
-          <Bar
-            key="pv"
-            dataKey="pv"
-            fill={config.pv.color}
-            radius={[4, 4, 0, 0]}
-          />
-        )}
+        {!hasStackedData && <Bar key="pv" dataKey="pv" fill={config.pv.color} radius={[4, 4, 0, 0]} />}
 
         <Legend
           content={

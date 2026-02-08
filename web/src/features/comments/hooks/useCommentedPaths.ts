@@ -16,9 +16,7 @@ interface CommentWithPosition {
  * Builds Maps of JSON paths to comment ranges, keyed by field (input/output/metadata).
  * Used to highlight commented text in the JSON viewer.
  */
-export function useCommentedPaths(
-  comments: CommentWithPosition[] | undefined,
-): CommentedPathsByField | undefined {
+export function useCommentedPaths(comments: CommentWithPosition[] | undefined): CommentedPathsByField | undefined {
   return useMemo(() => {
     if (!comments) return undefined;
 
@@ -42,10 +40,7 @@ export function useCommentedPaths(
           const range: CommentRange = {
             start: comment.rangeStart[i]!,
             end: comment.rangeEnd[i]!,
-            preview:
-              comment.content.length > 150
-                ? comment.content.slice(0, 150) + "..."
-                : comment.content,
+            preview: comment.content.length > 150 ? comment.content.slice(0, 150) + "..." : comment.content,
           };
 
           let targetMap;

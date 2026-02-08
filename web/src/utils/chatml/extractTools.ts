@@ -6,9 +6,7 @@ import type { PlaygroundTool } from "@/src/features/playground/page/types";
  * Helper to map parsed OpenAI tool schemas to PlaygroundTool format.
  * Ensures description is always a string (never null/undefined).
  */
-function mapToolsToPlayground(
-  tools: z.infer<typeof OpenAIToolSchema>[],
-): PlaygroundTool[] {
+function mapToolsToPlayground(tools: z.infer<typeof OpenAIToolSchema>[]): PlaygroundTool[] {
   return tools.map((tool) => ({
     id: Math.random().toString(36).substring(2),
     name: tool.function.name,
@@ -26,10 +24,7 @@ function mapToolsToPlayground(
  * @param metadata - Optional metadata object that may contain tool definitions
  * @returns Array of PlaygroundTool objects with id, name, description, and parameters
  */
-export function extractTools(
-  input: unknown,
-  metadata?: unknown,
-): PlaygroundTool[] {
+export function extractTools(input: unknown, metadata?: unknown): PlaygroundTool[] {
   // Check metadata for tool definitions
   if (metadata && typeof metadata === "object" && metadata !== null) {
     const meta = metadata as Record<string, unknown>;
@@ -47,9 +42,7 @@ export function extractTools(
 
       // OpenTelemetry semantic convention: tools indexed as "llm.tools.{N}.tool.json_schema"
       // Example: "llm.tools.0.tool.json_schema", "llm.tools.1.tool.json_schema", ...
-      const toolKeys = Object.keys(attributes).filter((key) =>
-        /^llm\.tools\.\d+\.tool\.json_schema$/.test(key),
-      );
+      const toolKeys = Object.keys(attributes).filter((key) => /^llm\.tools\.\d+\.tool\.json_schema$/.test(key));
       if (toolKeys.length > 0) {
         const toolDefs = toolKeys.map((key) => attributes[key]);
         const parsedTools = z.array(OpenAIToolSchema).safeParse(toolDefs);
@@ -66,12 +59,7 @@ export function extractTools(
   // After preprocessing, tools are attached to each message
   if (Array.isArray(input)) {
     const firstMessageWithTools = input.find(
-      (msg: any) =>
-        msg &&
-        typeof msg === "object" &&
-        msg.tools &&
-        Array.isArray(msg.tools) &&
-        msg.tools.length > 0,
+      (msg: any) => msg && typeof msg === "object" && msg.tools && Array.isArray(msg.tools) && msg.tools.length > 0,
     );
     if (firstMessageWithTools && Array.isArray(firstMessageWithTools.tools)) {
       return firstMessageWithTools.tools.map((tool: any) => ({
@@ -96,9 +84,7 @@ export function extractTools(
 
   // OpenAI format: tools in input.tools field
   if (typeof input === "object" && input !== null && "tools" in input) {
-    const parsedTools = z
-      .array(OpenAIToolSchema)
-      .safeParse((input as Record<string, unknown>)["tools"]);
+    const parsedTools = z.array(OpenAIToolSchema).safeParse((input as Record<string, unknown>)["tools"]);
 
     if (parsedTools.success) {
       return mapToolsToPlayground(parsedTools.data);

@@ -4,13 +4,7 @@ import { api } from "@/src/utils/api";
 import type * as z from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
 import Header from "@/src/components/layouts/header";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -29,8 +23,7 @@ export default function RenameOrganization() {
     scope: "organization:update",
   });
 
-  const orgName =
-    organization && "name" in organization ? organization.name : "";
+  const orgName = organization && "name" in organization ? organization.name : "";
 
   const form = useForm({
     resolver: zodResolver(projectNameSchema),
@@ -79,11 +72,7 @@ export default function RenameOrganization() {
           </p>
         )}
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex-1"
-            id="rename-organization-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1" id="rename-organization-form">
             <FormField
               control={form.control}
               name="name"
@@ -91,12 +80,7 @@ export default function RenameOrganization() {
                 <FormItem>
                   <FormControl>
                     <div className="relative">
-                      <Input
-                        placeholder={orgName}
-                        {...field}
-                        className="flex-1"
-                        disabled={!hasAccess}
-                      />
+                      <Input placeholder={orgName} {...field} className="flex-1" disabled={!hasAccess} />
                       {!hasAccess && (
                         <span title="No access">
                           <LockIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted" />

@@ -21,8 +21,7 @@ import { type PlaygroundSchema } from "@/src/features/playground/page/types";
 
 // Popover content component for use in CollapsibleSection action buttons
 export const StructuredOutputSchemaPopover = () => {
-  const { structuredOutputSchema, setStructuredOutputSchema } =
-    usePlaygroundContext();
+  const { structuredOutputSchema, setStructuredOutputSchema } = usePlaygroundContext();
   const projectId = useProjectIdFromURL();
 
   const { data: savedSchemas = [] } = api.llmSchemas.getAll.useQuery(
@@ -48,10 +47,7 @@ export const StructuredOutputSchemaPopover = () => {
   );
 
   const handleSelectSchema = (selectedLLMSchema: LlmSchema) => {
-    if (
-      structuredOutputSchema &&
-      structuredOutputSchema.id === selectedLLMSchema.id
-    ) {
+    if (structuredOutputSchema && structuredOutputSchema.id === selectedLLMSchema.id) {
       // Schema already selected, just update it
       setStructuredOutputSchema({
         ...structuredOutputSchema,
@@ -110,9 +106,7 @@ export const StructuredOutputSchemaPopover = () => {
                 <BoxIcon className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 overflow-hidden">
                   <div className="truncate font-medium">{schema.name}</div>
-                  <div className="line-clamp-1 text-xs text-muted-foreground">
-                    {schema.description}
-                  </div>
+                  <div className="line-clamp-1 text-xs text-muted-foreground">{schema.description}</div>
                 </div>
               </div>
               <CreateOrEditLLMSchemaDialog
@@ -136,10 +130,7 @@ export const StructuredOutputSchemaPopover = () => {
         <CommandSeparator />
       </CommandList>
       <div className="mt-auto p-1">
-        <CreateOrEditLLMSchemaDialog
-          projectId={projectId as string}
-          onSave={handleSelectSchema}
-        >
+        <CreateOrEditLLMSchemaDialog projectId={projectId as string} onSave={handleSelectSchema}>
           <Button variant="outline" size="default" className="w-full">
             <PlusIcon className="mr-2 h-4 w-4" />
             Create new schema
@@ -152,8 +143,7 @@ export const StructuredOutputSchemaPopover = () => {
 
 // Main component for embedding in CollapsibleSection content
 export const StructuredOutputSchemaSection = () => {
-  const { structuredOutputSchema, setStructuredOutputSchema } =
-    usePlaygroundContext();
+  const { structuredOutputSchema, setStructuredOutputSchema } = usePlaygroundContext();
   const projectId = useProjectIdFromURL();
 
   const { data: savedSchemas = [] } = api.llmSchemas.getAll.useQuery(
@@ -180,9 +170,7 @@ export const StructuredOutputSchemaSection = () => {
 
   useEffect(() => {
     if (structuredOutputSchema && !structuredOutputSchema.existingLlmSchema) {
-      const matchingSavedSchema = savedSchemas.find(
-        (savedSchema) => savedSchema.name === structuredOutputSchema.name,
-      );
+      const matchingSavedSchema = savedSchemas.find((savedSchema) => savedSchema.name === structuredOutputSchema.name);
 
       if (matchingSavedSchema) {
         setStructuredOutputSchema({
@@ -195,10 +183,7 @@ export const StructuredOutputSchemaSection = () => {
   }, [savedSchemas, structuredOutputSchema, setStructuredOutputSchema]);
 
   const handleSelectSchema = (selectedLLMSchema: LlmSchema) => {
-    if (
-      structuredOutputSchema &&
-      structuredOutputSchema.id === selectedLLMSchema.id
-    ) {
+    if (structuredOutputSchema && structuredOutputSchema.id === selectedLLMSchema.id) {
       // Schema already selected, just update it
       setStructuredOutputSchema({
         ...structuredOutputSchema,
@@ -255,11 +240,7 @@ export const StructuredOutputSchemaSection = () => {
                 ? {
                     name: structuredOutputSchema.name,
                     description: structuredOutputSchema.description,
-                    schema: JSON.stringify(
-                      structuredOutputSchema.schema,
-                      null,
-                      2,
-                    ),
+                    schema: JSON.stringify(structuredOutputSchema.schema, null, 2),
                   }
                 : undefined
             }
@@ -275,9 +256,7 @@ export const StructuredOutputSchemaSection = () => {
                     {structuredOutputSchema.name}
                   </h3>
                   {!isSchemaSaved(structuredOutputSchema) ? (
-                    <span className="rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">
-                      Unsaved
-                    </span>
+                    <span className="rounded bg-muted px-1 py-0.5 text-xs text-muted-foreground">Unsaved</span>
                   ) : null}
                 </div>
                 <div className="flex items-center gap-1">

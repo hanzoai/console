@@ -1,9 +1,5 @@
 import { z } from "zod/v4";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-  protectedOrganizationProcedure,
-} from "../trpc";
+import { createTRPCRouter, protectedProjectProcedure, protectedOrganizationProcedure } from "../trpc";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { throwIfNoEntitlement } from "@/src/features/entitlements/server/hasEntitlement";
@@ -117,16 +113,8 @@ export const auditLogsRouter = createTRPCRouter({
       ]);
 
       // Fetch user information for each audit log
-      const userIds = [
-        ...new Set(
-          auditLogs.flatMap((log) => (log?.userId ? [log.userId] : [])),
-        ),
-      ];
-      const apiKeyIds = [
-        ...new Set(
-          auditLogs.flatMap((log) => (log?.apiKeyId ? [log.apiKeyId] : [])),
-        ),
-      ];
+      const userIds = [...new Set(auditLogs.flatMap((log) => (log?.userId ? [log.userId] : [])))];
+      const apiKeyIds = [...new Set(auditLogs.flatMap((log) => (log?.apiKeyId ? [log.apiKeyId] : [])))];
 
       const [users, apiKeys] = await Promise.all([
         ctx.prisma.user.findMany({
@@ -221,16 +209,8 @@ export const auditLogsRouter = createTRPCRouter({
       ]);
 
       // Fetch user information for each audit log
-      const userIds = [
-        ...new Set(
-          auditLogs.flatMap((log) => (log?.userId ? [log.userId] : [])),
-        ),
-      ];
-      const apiKeyIds = [
-        ...new Set(
-          auditLogs.flatMap((log) => (log?.apiKeyId ? [log.apiKeyId] : [])),
-        ),
-      ];
+      const userIds = [...new Set(auditLogs.flatMap((log) => (log?.userId ? [log.userId] : [])))];
+      const apiKeyIds = [...new Set(auditLogs.flatMap((log) => (log?.apiKeyId ? [log.apiKeyId] : [])))];
 
       const [users, apiKeys] = await Promise.all([
         ctx.prisma.user.findMany({

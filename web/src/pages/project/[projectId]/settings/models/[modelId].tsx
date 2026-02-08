@@ -1,12 +1,7 @@
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { DeleteModelButton } from "@/src/features/models/components/DeleteModelButton";
 import { EditModelButton } from "@/src/features/models/components/EditModelButton";
 import { CloneModelButton } from "@/src/features/models/components/CloneModelButton";
@@ -22,18 +17,8 @@ import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnit
 import Generations from "@/src/components/table/use-cases/observations";
 import Page from "@/src/components/layouts/page";
 import { SquareArrowOutUpRight, Info as InfoIcon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { useEffect } from "react";
 
@@ -60,16 +45,12 @@ export default function ModelDetailPage() {
   }, [model?.pricingTiers]);
 
   // State for selected pricing tier - initialize from URL param
-  const [selectedTierId, setSelectedTierId] = useState<string | null>(
-    pricingTierParam ?? null,
-  );
+  const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTierParam ?? null);
 
   // Sync with URL parameter when it changes
   useEffect(() => {
     if (pricingTierParam && model?.pricingTiers) {
-      const tierExists = model.pricingTiers.some(
-        (t) => t.id === pricingTierParam,
-      );
+      const tierExists = model.pricingTiers.some((t) => t.id === pricingTierParam);
       if (tierExists) {
         setSelectedTierId(pricingTierParam);
       }
@@ -87,11 +68,7 @@ export default function ModelDetailPage() {
 
   const maxDecimals = useMemo(
     () =>
-      Math.max(
-        ...Object.values(activeTier?.prices ?? {}).map((price) =>
-          getMaxDecimals(price, priceUnitMultiplier),
-        ),
-      ),
+      Math.max(...Object.values(activeTier?.prices ?? {}).map((price) => getMaxDecimals(price, priceUnitMultiplier))),
     [activeTier?.prices, priceUnitMultiplier],
   );
 
@@ -101,9 +78,7 @@ export default function ModelDetailPage() {
       <div className="flex min-h-screen flex-col items-center justify-center">
         <div className="mb-4 text-xl font-medium">Model not found</div>
         <Button variant="outline" asChild>
-          <Link href={`/project/${projectId}/settings/models`}>
-            Return to Models page
-          </Link>
+          <Link href={`/project/${projectId}/settings/models`}>Return to Models page</Link>
         </Button>
       </div>
     );
@@ -147,9 +122,7 @@ export default function ModelDetailPage() {
                       projectId={projectId}
                       modelData={model}
                       onSuccess={() => {
-                        void router.push(
-                          `/project/${projectId}/settings/models`,
-                        );
+                        void router.push(`/project/${projectId}/settings/models`);
                       }}
                     />
                   </>
@@ -169,33 +142,23 @@ export default function ModelDetailPage() {
           </CardHeader>
           <CardContent className="grid gap-4">
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Match Pattern
-              </div>
+              <div className="text-sm font-medium text-muted-foreground">Match Pattern</div>
               <div className="mt-1 font-mono text-sm">{model.matchPattern}</div>
             </div>
 
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Maintained by
-              </div>
-              <div className="mt-1 text-sm">
-                {isHanzoModel ? "HanzoCloud" : "User"}
-              </div>
+              <div className="text-sm font-medium text-muted-foreground">Maintained by</div>
+              <div className="mt-1 text-sm">{isHanzoModel ? "HanzoCloud" : "User"}</div>
             </div>
 
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Tokenizer
-              </div>
+              <div className="text-sm font-medium text-muted-foreground">Tokenizer</div>
               <div className="mt-1 text-sm">{model.tokenizerId || "None"}</div>
             </div>
 
             {model.tokenizerId && (
               <div>
-                <div className="text-sm font-medium text-muted-foreground">
-                  Tokenizer Config
-                </div>
+                <div className="text-sm font-medium text-muted-foreground">Tokenizer Config</div>
                 <pre className="mt-1 rounded bg-muted p-2 text-sm">
                   <JSONView json={model.tokenizerConfig} />
                 </pre>
@@ -210,13 +173,8 @@ export default function ModelDetailPage() {
               <CardTitle>Pricing</CardTitle>
               {model.pricingTiers.length > 1 && (
                 <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Pricing Tier
-                  </label>
-                  <Select
-                    value={activeTier?.id ?? ""}
-                    onValueChange={setSelectedTierId}
-                  >
+                  <label className="text-sm font-medium text-muted-foreground">Pricing Tier</label>
+                  <Select value={activeTier?.id ?? ""} onValueChange={setSelectedTierId}>
                     <SelectTrigger className="w-[200px]">
                       <SelectValue placeholder="Select tier" />
                     </SelectTrigger>
@@ -240,25 +198,15 @@ export default function ModelDetailPage() {
                           <span>Conditions</span>
                         </Button>
                       </HoverCardTrigger>
-                      <HoverCardContent
-                        className="max-h-[80vh] w-[400px] overflow-auto"
-                        collisionPadding={20}
-                      >
-                        <p className="text-sm font-medium">
-                          Pricing Tier Conditions
-                        </p>
+                      <HoverCardContent className="max-h-[80vh] w-[400px] overflow-auto" collisionPadding={20}>
+                        <p className="text-sm font-medium">Pricing Tier Conditions</p>
                         <p className="pt-2 text-sm text-muted-foreground">
-                          This tier is applied when the following conditions are
-                          met:
+                          This tier is applied when the following conditions are met:
                         </p>
                         <div className="mt-2">
                           <CodeMirrorEditor
                             mode="json"
-                            value={JSON.stringify(
-                              activeTier.conditions,
-                              null,
-                              2,
-                            )}
+                            value={JSON.stringify(activeTier.conditions, null, 2)}
                             onChange={() => {}} // Read-only
                             minHeight="none"
                             className="max-h-[250px] overflow-y-auto"
@@ -286,16 +234,10 @@ export default function ModelDetailPage() {
                   // Sort by price ascending
                   .sort((a, b) => a[1] - b[1])
                   .map(([usageType, price]) => (
-                    <div
-                      key={usageType}
-                      className="grid grid-cols-2 gap-2 rounded px-1 py-0.5 text-sm"
-                    >
+                    <div key={usageType} className="grid grid-cols-2 gap-2 rounded px-1 py-0.5 text-sm">
                       <span className="break-all">{usageType}</span>
                       <span className="text-left font-mono">
-                        $
-                        {new Decimal(price)
-                          .mul(priceUnitMultiplier)
-                          .toFixed(maxDecimals)}
+                        ${new Decimal(price).mul(priceUnitMultiplier).toFixed(maxDecimals)}
                       </span>
                     </div>
                   ))}
@@ -308,10 +250,7 @@ export default function ModelDetailPage() {
             <CardTitle className="flex items-center justify-between">
               <span>Model observations</span>
               <Button variant="ghost" asChild>
-                <Link
-                  href={`/project/${projectId}/observations`}
-                  className="flex items-center gap-1"
-                >
+                <Link href={`/project/${projectId}/observations`} className="flex items-center gap-1">
                   <span className="text-sm">View all</span>
                   <SquareArrowOutUpRight className="h-4 w-4" />
                 </Link>
@@ -320,11 +259,7 @@ export default function ModelDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="flex max-h-[calc(100vh-20rem)] flex-col">
-              <Generations
-                projectId={projectId}
-                omittedFilter={["Model"]}
-                modelId={model.id}
-              />
+              <Generations projectId={projectId} omittedFilter={["Model"]} modelId={model.id} />
             </div>
           </CardContent>
         </Card>

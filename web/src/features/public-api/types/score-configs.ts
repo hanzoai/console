@@ -19,8 +19,7 @@ const CategoriesWithCustomError = jsonSchema.superRefine((categories, ctx) => {
   if (!parseResult.success) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message:
-        "Category must be an array of objects with label value pairs, where labels and values are unique.",
+      message: "Category must be an array of objects with label value pairs, where labels and values are unique.",
     } as z.core.$ZodIssueCustom);
     return;
   }
@@ -114,8 +113,7 @@ export const PutScoreConfigBody = z
     description: z.string().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message:
-      "Request body cannot be empty. At least one field must be provided for update.",
+    message: "Request body cannot be empty. At least one field must be provided for update.",
   });
 
 export const PutScoreConfigResponse = APIScoreConfig;

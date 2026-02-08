@@ -14,13 +14,7 @@ import {
 } from "@/src/components/ui/form";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { Switch } from "@/src/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {
   mixpanelIntegrationFormSchema,
@@ -53,26 +47,17 @@ export default function MixpanelIntegrationSettings() {
     },
   );
 
-  const status =
-    state.isInitialLoading || !hasAccess
-      ? undefined
-      : state.data?.enabled
-        ? "active"
-        : "inactive";
+  const status = state.isInitialLoading || !hasAccess ? undefined : state.data?.enabled ? "active" : "inactive";
 
   return (
     <ContainerPage
       headerProps={{
         title: "Mixpanel Integration",
-        breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
-        ],
+        breadcrumb: [{ name: "Settings", href: `/project/${projectId}/settings` }],
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/integrations/analytics/mixpanel">
-              Integration Docs ↗
-            </Link>
+            <Link href="https://hanzo.com/integrations/analytics/mixpanel">Integration Docs ↗</Link>
           </Button>
         ),
       }}
@@ -82,15 +67,14 @@ export default function MixpanelIntegrationSettings() {
         <Link href="https://mixpanel.com" className="underline">
           Mixpanel
         </Link>{" "}
-        to sync your Hanzo traces, generations, and scores for advanced product
-        analytics. Upon activation, all historical data from your project will
-        be synced. After the initial sync, new data is automatically synced
-        every hour to keep your Mixpanel dashboards up to date.
+        to sync your Hanzo traces, generations, and scores for advanced product analytics. Upon activation, all
+        historical data from your project will be synced. After the initial sync, new data is automatically synced every
+        hour to keep your Mixpanel dashboards up to date.
       </p>
       {!hasAccess && (
         <p className="text-sm">
-          Your current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
+          Your current role does not grant you access to these settings, please reach out to your project admin or
+          owner.
         </p>
       )}
       {hasAccess && (
@@ -98,11 +82,7 @@ export default function MixpanelIntegrationSettings() {
           <Header title="Configuration" />
           <Card className="p-3">
             <MixpanelLogo className="mb-4 w-20 text-foreground" />
-            <MixpanelIntegrationSettingsForm
-              state={state.data}
-              projectId={projectId}
-              isLoading={state.isLoading}
-            />
+            <MixpanelIntegrationSettingsForm state={state.data} projectId={projectId} isLoading={state.isLoading} />
           </Card>
         </>
       )}
@@ -111,9 +91,7 @@ export default function MixpanelIntegrationSettings() {
           <Header title="Status" className="mt-8" />
           <p className="text-sm text-primary">
             Data synced until:{" "}
-            {state.data?.lastSyncAt
-              ? new Date(state.data.lastSyncAt).toLocaleString()
-              : "Never (pending)"}
+            {state.data?.lastSyncAt ? new Date(state.data.lastSyncAt).toLocaleString() : "Never (pending)"}
           </p>
         </>
       )}
@@ -134,9 +112,7 @@ const MixpanelIntegrationSettingsForm = ({
   const mixpanelForm = useForm({
     resolver: zodResolver(mixpanelIntegrationFormSchema),
     defaultValues: {
-      mixpanelRegion:
-        (state?.mixpanelRegion as MixpanelRegion) ??
-        MIXPANEL_REGIONS[0].subdomain,
+      mixpanelRegion: (state?.mixpanelRegion as MixpanelRegion) ?? MIXPANEL_REGIONS[0].subdomain,
       mixpanelProjectToken: state?.mixpanelProjectToken ?? "",
       enabled: state?.enabled ?? false,
     },
@@ -145,9 +121,7 @@ const MixpanelIntegrationSettingsForm = ({
 
   useEffect(() => {
     mixpanelForm.reset({
-      mixpanelRegion:
-        (state?.mixpanelRegion as MixpanelRegion) ??
-        MIXPANEL_REGIONS[0].subdomain,
+      mixpanelRegion: (state?.mixpanelRegion as MixpanelRegion) ?? MIXPANEL_REGIONS[0].subdomain,
       mixpanelProjectToken: state?.mixpanelProjectToken ?? "",
       enabled: state?.enabled ?? false,
     });
@@ -166,9 +140,7 @@ const MixpanelIntegrationSettingsForm = ({
     },
   });
 
-  async function onSubmit(
-    values: z.infer<typeof mixpanelIntegrationFormSchema>,
-  ) {
+  async function onSubmit(values: z.infer<typeof mixpanelIntegrationFormSchema>) {
     capture("integrations:mixpanel_form_submitted");
     mut.mutate({
       projectId,
@@ -178,10 +150,7 @@ const MixpanelIntegrationSettingsForm = ({
 
   return (
     <Form {...mixpanelForm}>
-      <form
-        className="space-y-3"
-        onSubmit={mixpanelForm.handleSubmit(onSubmit)}
-      >
+      <form className="space-y-3" onSubmit={mixpanelForm.handleSubmit(onSubmit)}>
         <FormField
           control={mixpanelForm.control}
           name="mixpanelRegion"
@@ -202,9 +171,7 @@ const MixpanelIntegrationSettingsForm = ({
                   ))}
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Select the Mixpanel region where your project is hosted
-              </FormDescription>
+              <FormDescription>Select the Mixpanel region where your project is hosted</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -218,10 +185,7 @@ const MixpanelIntegrationSettingsForm = ({
               <FormControl>
                 <PasswordInput {...field} />
               </FormControl>
-              <FormDescription>
-                You can find your Project Token in your Mixpanel project
-                settings
-              </FormDescription>
+              <FormDescription>You can find your Project Token in your Mixpanel project settings</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -248,11 +212,7 @@ const MixpanelIntegrationSettingsForm = ({
         />
       </form>
       <div className="mt-8 flex gap-2">
-        <Button
-          loading={mut.isPending}
-          onClick={mixpanelForm.handleSubmit(onSubmit)}
-          disabled={isLoading}
-        >
+        <Button loading={mut.isPending} onClick={mixpanelForm.handleSubmit(onSubmit)} disabled={isLoading}>
           Save
         </Button>
         <Button
@@ -260,11 +220,7 @@ const MixpanelIntegrationSettingsForm = ({
           loading={mutDelete.isPending}
           disabled={isLoading || !!!state}
           onClick={() => {
-            if (
-              confirm(
-                "Are you sure you want to reset the Mixpanel integration for this project?",
-              )
-            )
+            if (confirm("Are you sure you want to reset the Mixpanel integration for this project?"))
               mutDelete.mutate({ projectId });
           }}
         >

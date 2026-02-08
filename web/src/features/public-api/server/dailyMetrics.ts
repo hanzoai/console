@@ -19,10 +19,7 @@ type QueryType = {
 };
 
 export const generateDailyMetrics = async (props: QueryType) => {
-  const filter = convertApiProvidedFilterToClickhouseFilter(
-    props,
-    filterParams,
-  );
+  const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
   const hasTracesFilter = filter.some((f) => f.clickhouseTable === "traces");
   const tracesFilter = filter.filter((f) => f.clickhouseTable === "traces");
   const appliedFilter = filter.apply();
@@ -30,14 +27,11 @@ export const generateDailyMetrics = async (props: QueryType) => {
 
   const timeFilter = filter.find(
     (f) =>
-      f.clickhouseTable === "traces" &&
-      f.field.includes("timestamp") &&
-      (f.operator === ">=" || f.operator === ">"),
+      f.clickhouseTable === "traces" && f.field.includes("timestamp") && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
 
   // If there is any other filter than fromTimestamp, we join the traces table to be on the safe side.
-  const hasNonTimestampsFilter =
-    (timeFilter && filter.length() > 1) || (!timeFilter && filter.length() > 0);
+  const hasNonTimestampsFilter = (timeFilter && filter.length() > 1) || (!timeFilter && filter.length() > 0);
 
   const query = `
     WITH model_usage AS (
@@ -93,9 +87,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
     ${props.limit !== undefined && props.page !== undefined ? `LIMIT {limit: Int32} OFFSET {offset: Int32}` : ""}
   `;
 
-  const timestamp = props.fromTimestamp
-    ? new Date(props.fromTimestamp)
-    : timeFilter?.value;
+  const timestamp = props.fromTimestamp ? new Date(props.fromTimestamp) : timeFilter?.value;
 
   return measureAndReturn({
     operationName: "generateDailyMetrics",
@@ -106,9 +98,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
         ...appliedFilter.params,
         projectId: props.projectId,
         ...(props.limit !== undefined ? { limit: props.limit } : {}),
-        ...(props.page !== undefined
-          ? { offset: (props.page - 1) * props.limit }
-          : {}),
+        ...(props.page !== undefined ? { offset: (props.page - 1) * props.limit } : {}),
         ...(timeFilter
           ? {
               cteTimeFilter: convertDateToClickhouseDateTime(timeFilter.value),
@@ -160,13 +150,8 @@ export const generateDailyMetrics = async (props: QueryType) => {
 };
 
 export const getDailyMetricsCount = async (props: QueryType) => {
-  const filter = convertApiProvidedFilterToClickhouseFilter(
-    props,
-    filterParams,
-  );
-  const appliedFilter = filter
-    .filter((f) => f.clickhouseTable === "traces")
-    .apply();
+  const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
+  const appliedFilter = filter.filter((f) => f.clickhouseTable === "traces").apply();
 
   const query = `
     SELECT count(distinct toDate(timestamp)) as count
@@ -175,9 +160,7 @@ export const getDailyMetricsCount = async (props: QueryType) => {
     ${filter.length() > 0 ? `AND ${appliedFilter.query}` : ""}
   `;
 
-  const timestamp = props.fromTimestamp
-    ? new Date(props.fromTimestamp)
-    : undefined;
+  const timestamp = props.fromTimestamp ? new Date(props.fromTimestamp) : undefined;
 
   return measureAndReturn({
     operationName: "getDailyMetricsCount",

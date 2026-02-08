@@ -3,10 +3,7 @@ import { CloudConfigSchema } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -45,9 +42,7 @@ export default async function handler(
     }
 
     const organizations = user.organizationMemberships.map((membership) => {
-      const parsedCloudConfig = CloudConfigSchema.safeParse(
-        membership.organization.cloudConfig,
-      );
+      const parsedCloudConfig = CloudConfigSchema.safeParse(membership.organization.cloudConfig);
 
       return {
         id: membership.organization.id,

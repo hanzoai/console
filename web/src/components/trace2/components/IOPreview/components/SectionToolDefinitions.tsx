@@ -1,7 +1,4 @@
-import {
-  ToolCallDefinitionCard,
-  type ToolDefinition,
-} from "./ToolCallDefinitionCard";
+import { ToolCallDefinitionCard, type ToolDefinition } from "./ToolCallDefinitionCard";
 
 // SectionToolDefinitions props
 export interface SectionToolDefinitionsProps {
@@ -27,9 +24,7 @@ export function SectionToolDefinitions({
   return (
     <div className="[&_.io-message-content]:px-2 [&_.io-message-header]:px-2">
       <div className="mb-4 border-b border-border pb-4">
-        <div className="io-message-header px-1 py-1 text-sm font-medium capitalize">
-          Tools
-        </div>
+        <div className="io-message-header px-1 py-1 text-sm font-medium capitalize">Tools</div>
         <ToolCallDefinitionCard
           tools={tools}
           toolCallCounts={toolCallCounts}

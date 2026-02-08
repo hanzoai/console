@@ -1,9 +1,5 @@
 import { Badge } from "@/src/components/ui/badge";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/src/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { api } from "@/src/utils/api";
 import { ListFilter } from "lucide-react";
 import React, { useMemo } from "react";
@@ -55,12 +51,7 @@ function formatFilterForPill(filter: FilterCondition) {
   return `${filter.column} ${operatorToText(operator)} ${valueStr}`;
 }
 
-export function FilteredRunPills({
-  projectId,
-  datasetId,
-  filteredRuns,
-  className,
-}: FilteredRunPillsProps) {
+export function FilteredRunPills({ projectId, datasetId, filteredRuns, className }: FilteredRunPillsProps) {
   // Get run names from the API
   const { data: runs } = api.datasets.baseRunDataByDatasetId.useQuery({
     projectId,
@@ -93,25 +84,16 @@ export function FilteredRunPills({
         return (
           <HoverCard key={item.key}>
             <HoverCardTrigger asChild>
-              <Badge
-                variant="secondary"
-                className="cursor-pointer text-xs transition-colors hover:bg-secondary/80"
-              >
+              <Badge variant="secondary" className="cursor-pointer text-xs transition-colors hover:bg-secondary/80">
                 <ListFilter className="mr-1 h-3 w-3" />
-                <div className="font-normal">
-                  {formatFilterForPill(item.filter)}
-                </div>
+                <div className="font-normal">{formatFilterForPill(item.filter)}</div>
               </Badge>
             </HoverCardTrigger>
             <HoverCardContent className="w-64">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  {item.runName}
-                </div>
+                <div className="flex items-center gap-2 text-sm">{item.runName}</div>
                 <div className="space-y-1">
-                  <div className="rounded-md bg-muted px-2 py-1 text-sm">
-                    {formatFilterForPill(item.filter)}
-                  </div>
+                  <div className="rounded-md bg-muted px-2 py-1 text-sm">{formatFilterForPill(item.filter)}</div>
                 </div>
               </div>
             </HoverCardContent>

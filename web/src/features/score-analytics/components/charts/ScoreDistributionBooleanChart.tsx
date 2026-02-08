@@ -1,10 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { Bar, BarChart, XAxis, YAxis, Legend } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/src/components/ui/chart";
+import { ChartContainer, ChartTooltip, type ChartConfig } from "@/src/components/ui/chart";
 import { ScoreChartLegendContent } from "./ScoreChartLegendContent";
 import { ScoreChartTooltip } from "../../lib/ScoreChartTooltip";
 
@@ -55,9 +51,7 @@ export function ScoreDistributionBooleanChart({
 
   // Transform data for Recharts - grouped bars
   const chartData = useMemo(() => {
-    const dist2Map = distribution2
-      ? new Map(distribution2.map((d) => [d.binIndex, d.count]))
-      : null;
+    const dist2Map = distribution2 ? new Map(distribution2.map((d) => [d.binIndex, d.count])) : null;
 
     return [...distribution1]
       .sort((a, b) => a.binIndex - b.binIndex)
@@ -90,13 +84,7 @@ export function ScoreDistributionBooleanChart({
           };
         }
       });
-  }, [
-    distribution1,
-    distribution2,
-    categories,
-    isComparisonMode,
-    namespacedKeys,
-  ]);
+  }, [distribution1, distribution2, categories, isComparisonMode, namespacedKeys]);
 
   // Extract actual dataKeys being used in the chart
   const dataKeys = useMemo(() => {
@@ -132,20 +120,17 @@ export function ScoreDistributionBooleanChart({
   }, [hiddenKeys, isComparisonMode, dataKeys]);
 
   // Toggle handler
-  const handleVisibilityToggle = useCallback(
-    (key: string, visible: boolean) => {
-      setHiddenKeys((prev) => {
-        const next = new Set(prev);
-        if (visible) {
-          next.delete(key);
-        } else {
-          next.add(key);
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const handleVisibilityToggle = useCallback((key: string, visible: boolean) => {
+    setHiddenKeys((prev) => {
+      const next = new Set(prev);
+      if (visible) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   // Build chart config
   const config: ChartConfig = useMemo(() => {
@@ -171,8 +156,7 @@ export function ScoreDistributionBooleanChart({
     }
 
     // Fall back to original logic without namespacing
-    const firstColor =
-      colors["True"] || colors["False"] || Object.values(colors)[0];
+    const firstColor = colors["True"] || colors["False"] || Object.values(colors)[0];
 
     const cfg: ChartConfig = {
       pv: {
@@ -184,29 +168,15 @@ export function ScoreDistributionBooleanChart({
     if (isComparisonMode && score2Name) {
       cfg.uv = {
         label: score2Name,
-        color:
-          colors["__score2_True"] ||
-          colors["__score2_False"] ||
-          Object.values(colors)[1] ||
-          firstColor,
+        color: colors["__score2_True"] || colors["__score2_False"] || Object.values(colors)[1] || firstColor,
       };
     }
 
     return cfg;
-  }, [
-    isComparisonMode,
-    score1Name,
-    score2Name,
-    colors,
-    namespacedKeys,
-    dataKeys,
-  ]);
+  }, [isComparisonMode, score1Name, score2Name, colors, namespacedKeys, dataKeys]);
 
   return (
-    <ChartContainer
-      config={config}
-      className="[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-transparent"
-    >
+    <ChartContainer config={config} className="[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-transparent">
       <BarChart accessibilityLayer data={chartData} margin={{ bottom: 20 }}>
         <XAxis
           dataKey="name"

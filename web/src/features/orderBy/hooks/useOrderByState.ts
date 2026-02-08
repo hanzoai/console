@@ -1,9 +1,7 @@
 import { type OrderByState } from "@hanzo/shared";
 import { ObjectParam, useQueryParam, withDefault } from "use-query-params";
 
-type OrderByQueryParamState =
-  | OrderByState
-  | { [key: string]: string | undefined };
+type OrderByQueryParamState = OrderByState | { [key: string]: string | undefined };
 
 /**
  * useOrderByState is a custom hook to manage the ordering settings (for a table).
@@ -17,8 +15,5 @@ export const useOrderByState = (initialState: OrderByState = null) => {
     withDefault(ObjectParam, initialState),
   );
 
-  return [orderByState, setOrderByState] as [
-    OrderByState,
-    (orderByState: OrderByState) => void,
-  ];
+  return [orderByState, setOrderByState] as [OrderByState, (orderByState: OrderByState) => void];
 };

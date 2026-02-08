@@ -1,10 +1,6 @@
 import { makeAPICall } from "@/src/__tests__/test-utils";
 import waitForExpect from "wait-for-expect";
-import {
-  getObservationById,
-  getObservationByIdFromEventsTable,
-  getTraceById,
-} from "@hanzo/shared/src/server";
+import { getObservationById, getObservationByIdFromEventsTable, getTraceById } from "@hanzo/shared/src/server";
 import { randomBytes } from "crypto";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
@@ -58,11 +54,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       ],
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload);
 
     expect(response.status).toBe(200);
 
@@ -173,11 +165,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       ],
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload);
 
     expect(response.status).toBe(200);
 
@@ -208,11 +196,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       // resourceSpans: []
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload);
 
     expect(response.status).toBe(200);
   });
@@ -296,11 +280,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       ],
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload);
 
     expect(response.status).toBe(200);
 
@@ -383,11 +363,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       ],
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload);
 
     expect(response.status).toBe(200);
 

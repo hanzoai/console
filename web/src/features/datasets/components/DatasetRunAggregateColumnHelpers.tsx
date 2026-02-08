@@ -90,8 +90,7 @@ function BaselineToggle({ runId }: { runId: string }) {
   if (!hasBaseline) {
     text = "Set as baseline";
   } else if (isBaseline) {
-    text =
-      isHovered && !justSetBaselineRef.current ? "Clear baseline" : "Baseline";
+    text = isHovered && !justSetBaselineRef.current ? "Clear baseline" : "Baseline";
   } else {
     text = isHovered ? "Set as baseline" : "Comparison";
   }
@@ -141,9 +140,7 @@ function RunAggregateHeader({
           buttonType="icon"
           columns={columns}
           filterState={getFiltersForRun(runId)}
-          onChange={(filters: FilterState) =>
-            debouncedUpdateRunFilters(runId, filters)
-          }
+          onChange={(filters: FilterState) => debouncedUpdateRunFilters(runId, filters)}
         />
         <BaselineToggle runId={runId} />
       </div>
@@ -158,9 +155,7 @@ type RunAggregateColumnProps = {
   createdAt?: Date;
 };
 
-const isScoreColumnsAvailable = (
-  scoreColumns?: ScoreColumn[],
-): scoreColumns is ScoreColumn[] => {
+const isScoreColumnsAvailable = (scoreColumns?: ScoreColumn[]): scoreColumns is ScoreColumn[] => {
   return scoreColumns !== undefined;
 };
 
@@ -198,14 +193,10 @@ export const constructDatasetRunAggregateColumns = ({
       ),
       size: 250,
       cell: ({ row }: { row: Row<DatasetCompareRunRowData> }) => {
-        const runData: Record<string, EnrichedDatasetRunItem> =
-          row.getValue("runs") ?? {};
+        const runData: Record<string, EnrichedDatasetRunItem> = row.getValue("runs") ?? {};
 
         // if cell is loading or if run created at timestamp is less than 20 seconds ago, show skeleton
-        if (
-          isDataLoading ||
-          (createdAt && createdAt.getTime() + 20000 > Date.now())
-        )
+        if (isDataLoading || (createdAt && createdAt.getTime() + 20000 > Date.now()))
           return <Skeleton className="h-full min-h-0 w-full" />;
 
         if (!Boolean(Object.keys(runData).length)) return null;

@@ -4,11 +4,7 @@ import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
 import { IOTableCell } from "@/src/components/ui/IOTableCell";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { cn } from "@/src/utils/tailwind";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
@@ -20,9 +16,7 @@ import { BatchExportTableName } from "@hanzo/shared";
 // Both endpoints return the same shape
 type AuditLogRow = RouterOutputs["auditLogs"]["all"]["data"][number];
 
-type AuditLogsTableProps =
-  | { scope: "project"; projectId: string }
-  | { scope: "organization"; orgId: string };
+type AuditLogsTableProps = { scope: "project"; projectId: string } | { scope: "organization"; orgId: string };
 
 export function AuditLogsTable(props: AuditLogsTableProps) {
   const [paginationState, setPaginationState] = useQueryParams({
@@ -76,19 +70,10 @@ export function AuditLogsTable(props: AuditLogsTableProps) {
           return (
             <div className="flex items-center gap-2">
               <Avatar className="h-6 w-6">
-                {user?.image && (
-                  <AvatarImage src={user.image} alt={user?.name ?? "User"} />
-                )}
-                <AvatarFallback>
-                  {user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? "U"}
-                </AvatarFallback>
+                {user?.image && <AvatarImage src={user.image} alt={user?.name ?? "User"} />}
+                <AvatarFallback>{user?.name?.charAt(0) ?? user?.email?.charAt(0) ?? "U"}</AvatarFallback>
               </Avatar>
-              <span
-                className={cn(
-                  "text-sm",
-                  !user?.name && "text-muted-foreground",
-                )}
-              >
+              <span className={cn("text-sm", !user?.name && "text-muted-foreground")}>
                 {user?.name ?? user?.email ?? user.id}
               </span>
             </div>

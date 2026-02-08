@@ -1,26 +1,18 @@
-import {
-  type ScoreTarget,
-  type ScoreTargetTrace,
-  type ScoreTargetSession,
-  ScoreSourceEnum,
-} from "@hanzo/shared";
+import { type ScoreTarget, type ScoreTargetTrace, type ScoreTargetSession, ScoreSourceEnum } from "@hanzo/shared";
 import { type ScoreConfigDomain } from "@hanzo/shared";
 import { isTraceScore } from "@/src/features/scores/lib/helpers";
 import { type AnnotationScoreDataSchema } from "@/src/features/scores/schema";
 import { type z } from "zod/v4";
 import { type AnnotationScore } from "@/src/features/scores/types";
 
-const isAnnotationScore = (score: AnnotationScore) =>
-  score.source === ScoreSourceEnum.ANNOTATION;
+const isAnnotationScore = (score: AnnotationScore) => score.source === ScoreSourceEnum.ANNOTATION;
 
 const filterTraceAnnotationScores =
   ({ traceId, observationId }: ScoreTargetTrace) =>
   (s: AnnotationScore) =>
     isAnnotationScore(s) &&
     s.traceId === traceId &&
-    (observationId !== undefined
-      ? s.observationId === observationId
-      : s.observationId === null);
+    (observationId !== undefined ? s.observationId === observationId : s.observationId === null);
 
 const filterSessionAnnotationScores =
   ({ sessionId }: ScoreTargetSession) =>
@@ -54,16 +46,10 @@ export const getDefaultAnnotationScoreData = ({
       comment: comment ?? undefined,
     }));
 
-  const populatedScoresConfigIds = new Set(
-    populatedScores.map((s) => s.configId),
-  );
+  const populatedScoresConfigIds = new Set(populatedScores.map((s) => s.configId));
 
   const emptyScores = configs
-    .filter(
-      (c) =>
-        !populatedScoresConfigIds.has(c.id) &&
-        emptySelectedConfigIds.includes(c.id),
-    )
+    .filter((c) => !populatedScoresConfigIds.has(c.id) && emptySelectedConfigIds.includes(c.id))
     .map(({ name, dataType, id }) => ({
       scoreId: undefined,
       name,

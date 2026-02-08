@@ -72,12 +72,7 @@ export default function BackgroundMigrationsTable() {
       cell: (row) => {
         const name = row.row.original.name;
         const isRetryable = row.row.original.failedAt !== null;
-        return (
-          <RetryBackgroundMigration
-            backgroundMigrationName={name}
-            isRetryable={isRetryable}
-          />
-        );
+        return <RetryBackgroundMigration backgroundMigrationName={name} isRetryable={isRetryable} />;
       },
     },
   ] as HanzoColumnDef<BackgroundMigration>[];
