@@ -147,6 +147,9 @@ const EnvSchema = z.object({
   HANZO_IAM_CLIENT_ID: z.string().optional(),
   HANZO_IAM_CLIENT_SECRET: z.string().optional(),
   HANZO_IAM_SERVER_URL: z.string().optional(),
+  HANZO_IAM_ORG_NAME: z.string().optional(),
+  HANZO_IAM_APP_NAME: z.string().optional(),
+  HANZO_IAM_ALLOW_ACCOUNT_LINKING: z.string().optional(),
 
   // Cookie prefix
   NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),

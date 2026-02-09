@@ -599,10 +599,13 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     }
   }
 
+  // Auto-redirect to Hanzo IAM only when it's the sole auth provider
   useEffect(() => {
-    capture("sign_in:button_click", { provider: "hanzo-iam" });
-    void signIn("hanzo-iam");
-  }, [capture]);
+    if (authProviders.hanzoIam && !authProviders.credentials && !authProviders.google && !authProviders.github) {
+      capture("sign_in:button_click", { provider: "hanzo-iam" });
+      void signIn("hanzo-iam");
+    }
+  }, [capture, authProviders]);
 
   return (
     <>

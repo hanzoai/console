@@ -46,6 +46,7 @@ import { CloudConfigSchema } from "@hanzo/shared";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,
+  HanzoIamProvider,
   JumpCloudProvider,
   traceException,
   sendResetPasswordVerificationRequest,
@@ -422,6 +423,21 @@ if (
       ...(env.AUTH_JUMPCLOUD_CHECKS
         ? { checks: env.AUTH_JUMPCLOUD_CHECKS }
         : {}),
+    }),
+  );
+
+if (
+  env.HANZO_IAM_CLIENT_ID &&
+  env.HANZO_IAM_CLIENT_SECRET &&
+  env.HANZO_IAM_SERVER_URL
+)
+  staticProviders.push(
+    HanzoIamProvider({
+      clientId: env.HANZO_IAM_CLIENT_ID,
+      clientSecret: env.HANZO_IAM_CLIENT_SECRET,
+      serverUrl: env.HANZO_IAM_SERVER_URL,
+      allowDangerousEmailAccountLinking:
+        env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
     }),
   );
 
