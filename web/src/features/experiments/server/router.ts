@@ -77,6 +77,7 @@ export const experimentsRouter = createTRPCRouter({
         projectId: z.string(),
         datasetId: z.string(),
         promptId: z.string(),
+        datasetVersion: z.coerce.date().optional(),
       }),
     )
     .output(ConfigResponse)
@@ -136,6 +137,7 @@ export const experimentsRouter = createTRPCRouter({
           datasetIds: [input.datasetId],
           status: "ACTIVE",
         }),
+        version: input.datasetVersion,
       });
 
       if (!Boolean(items.length)) {
@@ -169,6 +171,7 @@ export const experimentsRouter = createTRPCRouter({
         runName: z.string().min(1, "Run name is required"),
         promptId: z.string().min(1, "Please select a prompt"),
         datasetId: z.string().min(1, "Please select a dataset"),
+        datasetVersion: z.coerce.date().optional(),
         description: z.string().max(1000).optional(),
         modelConfig: z.object({
           provider: z.string().min(1, "Please select a provider"),
@@ -196,6 +199,9 @@ export const experimentsRouter = createTRPCRouter({
         model_params: input.modelConfig.modelParams,
         ...(input.structuredOutputSchema && {
           structured_output_schema: input.structuredOutputSchema,
+        }),
+        ...(input.datasetVersion && {
+          dataset_version: input.datasetVersion,
         }),
       };
 

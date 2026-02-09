@@ -1,6 +1,6 @@
 {
   "name": "hanzo",
-  "version": "3.148.0",
+  "version": "3.152.0",
   "author": "engineering@hanzo.com",
   "license": "MIT",
   "private": true,
@@ -9,9 +9,9 @@
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "infra:dev:up": "docker compose -f ./compose.dev.yaml up -d --wait",
-    "infra:dev:down": "docker compose -f ./compose.dev.yaml down",
-    "infra:dev:prune": "docker compose -f ./compose.dev.yaml down -v",
+    "infra:dev:up": "docker compose -f ./docker-compose.dev.yml up -d --wait",
+    "infra:dev:down": "docker compose -f ./docker-compose.dev.yml down",
+    "infra:dev:prune": "docker compose -f ./docker-compose.dev.yml down -v",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "db:seed": "turbo run db:seed",
@@ -41,10 +41,9 @@
     "braces": "3.0.3",
     "dotenv-cli": "^7.4.4",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
     "release-it": "^19.0.4",
-    "turbo": "^2.7.5"
+    "turbo": "^2.7.6"
   },
   "release-it": {
     "git": {
@@ -89,11 +88,6 @@
       }
     }
   },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,css}": [
-      "prettier --write"
-    ]
-  },
   "packageManager": "pnpm@9.5.0",
   "pnpm": {
     "overrides": {
@@ -104,6 +98,9 @@
       "@types/node-fetch": "^2.6.13",
       "glob": "^10.5.0",
       "qs": "6.14.1"
+    },
+    "patchedDependencies": {
+      "next-auth@4.24.13": "patches/next-auth@4.24.13.patch"
     }
   }
 }

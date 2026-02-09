@@ -10,8 +10,16 @@ import { ApiKeyRender } from "@/src/features/public-api/components/CreateApiKeyB
 import { type RouterOutput } from "@/src/utils/types";
 import { useState } from "react";
 
-const TracingSetup = ({ projectId, hasTracingConfigured }: { projectId: string; hasTracingConfigured?: boolean }) => {
-  const [apiKeys, setApiKeys] = useState<RouterOutput["projectApiKeys"]["create"] | null>(null);
+export const TracingSetup = ({
+  projectId,
+  hasTracingConfigured,
+}: {
+  projectId: string;
+  hasTracingConfigured?: boolean;
+}) => {
+  const [apiKeys, setApiKeys] = useState<
+    RouterOutput["projectApiKeys"]["create"] | null
+  >(null);
   const utils = api.useUtils();
   const mutCreateApiKey = api.projectApiKeys.create.useMutation({
     onSuccess: (data) => {
@@ -31,20 +39,31 @@ const TracingSetup = ({ projectId, hasTracingConfigured }: { projectId: string; 
   return (
     <div className="space-y-8">
       <div>
-        <SubHeader title="1. Get API Keys" />
+        <SubHeader title="1. Get API keys" />
         {apiKeys ? (
-          <ApiKeyRender generatedKeys={apiKeys} scope={"project"} className="mt-4" />
+          <ApiKeyRender
+            generatedKeys={apiKeys}
+            scope={"project"}
+            className="mt-4"
+          />
         ) : (
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              You need to create an API key to start tracing your application. You can create more keys later in the
-              project settings.
+              You need to create an API key to start tracing your application.
+              You can create more keys later in the project settings.
             </p>
             <div className="flex gap-2">
-              <Button onClick={createApiKey} loading={mutCreateApiKey.isPending} className="self-start">
+              <Button
+                onClick={createApiKey}
+                loading={mutCreateApiKey.isPending}
+                className="self-start"
+              >
                 Create new API key
               </Button>
-              <ActionButton href={`/project/${projectId}/settings/api-keys`} variant="secondary">
+              <ActionButton
+                href={`/project/${projectId}/settings/api-keys`}
+                variant="secondary"
+              >
                 Manage API keys
               </ActionButton>
             </div>
@@ -53,13 +72,19 @@ const TracingSetup = ({ projectId, hasTracingConfigured }: { projectId: string; 
       </div>
 
       <div>
-        <SubHeader title="2. Instrument Your Application" status={hasTracingConfigured ? "active" : "pending"} />
+        <SubHeader
+          title="2. Add tracing to your application"
+          status={hasTracingConfigured ? "active" : "pending"}
+        />
         <p className="mb-4 text-sm text-muted-foreground">
-          Hanzo Console relies on OpenTelemetry to instrument your application and export LLM application/agent traces
-          to Hanzo. You can use one of our SDKs or 50+ framework integrations. Please follow the quickstart in the
-          documentation to add Hanzo to your application.
+          Hanzo relies on OpenTelemetry to instrument your application and
+          export LLM application/agent traces to Hanzo. You can use one of
+          our SDKs or 50+ framework integrations. Please follow the quickstart
+          in the documentation to add Hanzo to your application.
         </p>
-        <ActionButton href="https://hanzo.com/docs/observability/get-started">Instrumentation Quickstart</ActionButton>
+        <ActionButton href="https://hanzo.com/docs/observability/get-started">
+          Quickstart guide
+        </ActionButton>
       </div>
     </div>
   );
@@ -70,18 +95,19 @@ export default function TracesSetupPage() {
   const projectId = router.query.projectId as string;
 
   // Check if the user has tracing configured
-  const { data: hasTracingConfigured } = api.traces.hasTracingConfigured.useQuery(
-    { projectId },
-    {
-      enabled: !!projectId,
-      refetchInterval: 5000,
-      trpc: {
-        context: {
-          skipBatch: true,
+  const { data: hasTracingConfigured } =
+    api.traces.hasTracingConfigured.useQuery(
+      { projectId },
+      {
+        enabled: !!projectId,
+        refetchInterval: 5000,
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
         },
       },
-    },
-  );
+    );
 
   const capture = usePostHogClientCapture();
   useEffect(() => {
@@ -104,7 +130,10 @@ export default function TracesSetupPage() {
       }}
     >
       <div className="flex flex-col gap-4">
-        <TracingSetup projectId={projectId} hasTracingConfigured={hasTracingConfigured ?? false} />
+        <TracingSetup
+          projectId={projectId}
+          hasTracingConfigured={hasTracingConfigured ?? false}
+        />
       </div>
     </ContainerPage>
   );

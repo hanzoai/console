@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { useObservationListBeta } from "@/src/features/events/hooks/useObservationListBeta";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useEventsTraceData } from "@/src/features/events/hooks/useEventsTraceData";
 
 type UsePeekDataProps = {
@@ -8,8 +8,12 @@ type UsePeekDataProps = {
   timestamp?: Date;
 };
 
-export const usePeekData = ({ projectId, traceId, timestamp }: UsePeekDataProps) => {
-  const { isBetaEnabled } = useObservationListBeta();
+export const usePeekData = ({
+  projectId,
+  traceId,
+  timestamp,
+}: UsePeekDataProps) => {
+  const { isBetaEnabled } = useV4Beta();
 
   // Old path: fetch from traces table (beta OFF)
   const tracesQuery = api.traces.byIdWithObservationsAndScores.useQuery(

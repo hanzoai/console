@@ -58,7 +58,10 @@ export interface DeepParseJsonOptions {
  * @param options Options to control parsing behavior
  * @returns Parsed JSON object
  */
-export function deepParseJson(json: unknown, options: DeepParseJsonOptions = {}): unknown {
+export function deepParseJson(
+  json: unknown,
+  options: DeepParseJsonOptions = {},
+): unknown {
   const { maxSize = 500_000, maxDepth = 3 } = options;
 
   // Size check: skip parsing for large objects to prevent UI freeze
@@ -78,7 +81,11 @@ export function deepParseJson(json: unknown, options: DeepParseJsonOptions = {})
 /**
  * Internal recursive implementation with depth tracking
  */
-function deepParseJsonRecursive(json: unknown, currentDepth: number, maxDepth: number): unknown {
+function deepParseJsonRecursive(
+  json: unknown,
+  currentDepth: number,
+  maxDepth: number,
+): unknown {
   // Stop recursing if we've hit max depth
   if (currentDepth >= maxDepth) {
     return json;
@@ -155,7 +162,10 @@ interface ParseStackEntry {
  * @param options Options to control parsing behavior
  * @returns Parsed JSON object
  */
-export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOptions = {}): unknown {
+export function deepParseJsonIterative(
+  json: unknown,
+  options: DeepParseJsonOptions = {},
+): unknown {
   const { maxSize = 500_000, maxDepth = 3 } = options;
 
   // Size check: skip parsing for large objects to prevent UI freeze
@@ -278,7 +288,8 @@ export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOpti
       if (!entry.childrenResults) {
         (entry as any).childrenResults = [];
       }
-      const childrenResults = (entry as any).childrenResults as ParseStackEntry[];
+      const childrenResults = (entry as any)
+        .childrenResults as ParseStackEntry[];
 
       // If we haven't added children yet, add them now
       if (childrenResults.length === 0) {
@@ -319,7 +330,9 @@ export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOpti
       }
 
       // Check if all children are processed
-      const allChildrenProcessed = childrenResults.every((child) => processed.has(child));
+      const allChildrenProcessed = childrenResults.every((child) =>
+        processed.has(child),
+      );
       if (!allChildrenProcessed) {
         // Not ready yet, will come back
         continue;
@@ -327,10 +340,14 @@ export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOpti
 
       // All children processed, reconstruct this level
       // Check if any children changed
-      const anyChildChanged = childrenResults.some((child) => child.output !== child.input);
+      const anyChildChanged = childrenResults.some(
+        (child) => child.output !== child.input,
+      );
 
       // Check if input object has dangerous keys that need filtering
-      const hasDangerousKeys = !isArray && Object.keys(input as object).some((key) => DANGEROUS_KEYS.has(key));
+      const hasDangerousKeys =
+        !isArray &&
+        Object.keys(input as object).some((key) => DANGEROUS_KEYS.has(key));
 
       if (!anyChildChanged && !hasDangerousKeys) {
         // No children changed and no dangerous keys, reuse input
@@ -364,8 +381,25 @@ export function deepParseJsonIterative(json: unknown, options: DeepParseJsonOpti
   return rootEntry.output;
 }
 
-export const parseJsonPrioritised = (json: string): JsonNested | string | undefined => {
+/**
+ * Pattern to detect JSON numbers that might lose precision with native JSON.parse.
+ *
+ * Catches:
+ * 1. [\d.]{13,} - 13+ characters of digits/dots (conservative threshold for ~12+ significant digits)
+ * 2. \d[eE] - scientific notation (always use lossless-json for safety)
+ */
+const UNSAFE_NUMBER_PATTERN = /[\d.]{13,}|\d[eE]/;
+
+export const parseJsonPrioritised = (
+  json: string,
+): JsonNested | string | undefined => {
   try {
+    // Fast path: use native JSON.parse if no potentially unsafe numbers detected
+    if (!UNSAFE_NUMBER_PATTERN.test(json)) {
+      return JSON.parse(json) as JsonNested;
+    }
+
+    // Slow path: use lossless-json to preserve precision
     return parse(json, null, (value) => {
       if (isNumber(value)) {
         if (isSafeNumber(value)) {

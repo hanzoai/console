@@ -59,6 +59,7 @@ export const filters = {
    * - Experimental features enabled
    * - User is cloud admin
    * - User has specific feature flag
+   * - For v4Beta: also show when user email ends with @hanzo.com
    */
   featureFlags: (route: Route, ctx: NavigationFilterContext): Route | null => {
     if (route.featureFlag === undefined) return route;
@@ -66,7 +67,12 @@ export const filters = {
     const hasFlag =
       ctx.enableExperimentalFeatures || ctx.cloudAdmin || ctx.session?.user?.featureFlags?.[route.featureFlag] === true;
 
-    return hasFlag ? route : null;
+    // For v4Beta: also show when user email ends with @hanzo.com
+    const isV4BetaHanzoEmail =
+      route.featureFlag === "v4BetaToggleVisible" &&
+      ctx.session?.user?.email?.endsWith("@hanzo.com") === true;
+
+    return hasFlag || isV4BetaHanzoEmail ? route : null;
   },
 
   /**

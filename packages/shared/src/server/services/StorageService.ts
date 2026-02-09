@@ -52,7 +52,10 @@ export interface StorageService {
 
   uploadWithSignedUrl(params: UploadWithSignedUrl): Promise<{ signedUrl: string }>;
 
-  uploadJson(path: string, body: Record<string, unknown>[]): Promise<void>;
+  uploadJson(
+    path: string,
+    body: Record<string, unknown>[] | Record<string, unknown>,
+  ): Promise<void>;
 
   download(path: string): Promise<string>;
 

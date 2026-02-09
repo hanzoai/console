@@ -156,6 +156,7 @@ export function TraceDetailView({ trace, observations, scores, corrections, proj
       {/* Header section (extracted component) */}
       <TraceDetailViewHeader
         trace={trace}
+        observations={observations}
         projectId={projectId}
         traceScores={traceScores}
         commentCount={comments.get(trace.id)}
@@ -325,6 +326,7 @@ export function TraceDetailView({ trace, observations, scores, corrections, proj
                 traceId={trace.id}
                 hiddenColumns={["traceName", "jobConfigurationId", "userId"]}
                 localStorageSuffix="TracePreview"
+                disableUrlPersistence
               />
             </div>
           </TabsBarContent>

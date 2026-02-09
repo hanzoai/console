@@ -69,6 +69,10 @@ export class InMemoryFilterService {
         return this.evaluateNumberObjectFilter(fieldValue, condition.key, condition.value, operator);
       case "null":
         return this.evaluateNullFilter(fieldValue, operator);
+      case "positionInTrace":
+        // Position filters are applied after all other filters in DB queries.
+        // Ignore them in in-memory filtering.
+        return true;
       default:
         logger.error("Unsupported filter type for in-memory evaluation", {
           type,

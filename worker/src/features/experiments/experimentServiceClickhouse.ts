@@ -24,7 +24,10 @@ import {
   validateAndSetupExperiment,
   type PromptExperimentConfig,
 } from "./utils";
-import { validateDatasetItem, normalizeDatasetItemInput } from "@hanzo/shared";
+import {
+  validateDatasetItem,
+  normalizeDatasetItemInput,
+} from "@hanzo/shared";
 import { randomUUID } from "crypto";
 import { createW3CTraceId } from "../utils";
 
@@ -82,6 +85,7 @@ async function processItem(
       datasetId: datasetItem.datasetId,
       runId: config.runId,
       datasetItemId: datasetItem.id,
+      datasetVersion: datasetItem.validFrom.toISOString(),
     },
   };
 
@@ -101,14 +105,22 @@ async function processItem(
 
   if (ingestionResult.errors.length > 0) {
     const error = ingestionResult.errors[0];
-    logger.error(`Failed to create run item for dataset item ${datasetItem.id}`, error);
+    logger.error(
+      `Failed to create run item for dataset item ${datasetItem.id}`,
+      error,
+    );
   }
 
   /********************
    * LLM MODEL CALL *
    ********************/
 
-  const llmResult = await processLLMCall(runItemId, newTraceId, datasetItem, config);
+  const llmResult = await processLLMCall(
+    runItemId,
+    newTraceId,
+    datasetItem,
+    config,
+  );
 
   if (!llmResult.success) return { success: false };
 
@@ -123,6 +135,7 @@ async function processItem(
         payload: {
           projectId,
           datasetItemId: datasetItem.id,
+          datasetItemValidFrom: datasetItem.validFrom,
           traceId: newTraceId,
         },
         id: randomUUID(),
@@ -151,7 +164,10 @@ async function processLLMCall(
       config.placeholderNames,
     );
   } catch (error) {
-    logger.error(`Failed to replace variables in prompt for dataset item ${datasetItem.id}`, error);
+    logger.error(
+      `Failed to replace variables in prompt for dataset item ${datasetItem.id}`,
+      error,
+    );
     return { success: false };
   }
 
@@ -188,14 +204,20 @@ async function processLLMCall(
   return { success: true };
 }
 
-async function getItemsToProcess(projectId: string, datasetId: string, runId: string, config: PromptExperimentConfig) {
-  // Fetch all dataset items
+async function getItemsToProcess(
+  projectId: string,
+  datasetId: string,
+  runId: string,
+  config: PromptExperimentConfig,
+) {
+  // Fetch all dataset items at the specified version (if provided)
   const datasetItems = await getDatasetItems({
     projectId,
     filterState: createDatasetItemFilterState({
       datasetIds: [datasetId],
       status: "ACTIVE",
     }),
+    version: config.datasetVersion,
     includeIO: true,
   });
 
@@ -204,7 +226,10 @@ async function getItemsToProcess(projectId: string, datasetId: string, runId: st
     .filter(({ input }) => validateDatasetItem(input, config.allVariables))
     .map((datasetItem) => {
       // Normalize string inputs to object format for single-variable prompts
-      const normalizedInput = normalizeDatasetItemInput(datasetItem.input, config.allVariables);
+      const normalizedInput = normalizeDatasetItemInput(
+        datasetItem.input,
+        config.allVariables,
+      );
 
       return {
         ...datasetItem,
@@ -214,15 +239,23 @@ async function getItemsToProcess(projectId: string, datasetId: string, runId: st
     });
 
   if (!validatedDatasetItems.length) {
-    logger.info(`No Dataset ${datasetId} item input matches expected prompt variable format`);
+    logger.info(
+      `No Dataset ${datasetId} item input matches expected prompt variable format`,
+    );
     return [];
   }
 
   // Batch deduplication - get existing run items' dataset item ids
-  const existingDatasetItemIds = await getExistingRunItemDatasetItemIds(projectId, runId, datasetId);
+  const existingDatasetItemIds = await getExistingRunItemDatasetItemIds(
+    projectId,
+    runId,
+    datasetId,
+  );
 
   // Filter out existing items
-  const itemsToProcess = validatedDatasetItems.filter((item) => !existingDatasetItemIds.has(item.id));
+  const itemsToProcess = validatedDatasetItems.filter(
+    (item) => !existingDatasetItemIds.has(item.id),
+  );
 
   logger.info(
     `Found ${validatedDatasetItems.length} valid items, ${existingDatasetItemIds.size} already exist, ${itemsToProcess.length} to process`,
@@ -237,7 +270,10 @@ export const createExperimentJobClickhouse = async ({
   event: z.infer<typeof ExperimentCreateEventSchema>;
 }) => {
   const startTime = Date.now();
-  logger.info("Processing experiment create job with ClickHouse batching", event);
+  logger.info(
+    "Processing experiment create job with ClickHouse batching",
+    event,
+  );
 
   const { datasetId, projectId, runId } = event;
 
@@ -250,9 +286,15 @@ export const createExperimentJobClickhouse = async ({
     experimentConfig = await validateAndSetupExperiment(event);
   } catch (error) {
     logger.error("Failed to validate and setup experiment", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     // Create all dataset run items with the configuration error
-    await createAllDatasetRunItemsWithConfigError(projectId, datasetId, runId, errorMessage);
+    await createAllDatasetRunItemsWithConfigError(
+      projectId,
+      datasetId,
+      runId,
+      errorMessage,
+    );
     return { success: true };
   }
 
@@ -260,7 +302,12 @@ export const createExperimentJobClickhouse = async ({
    * FETCH AND VALIDATE ALL DATASET ITEMS *
    ********************/
 
-  const itemsToProcess = await getItemsToProcess(projectId, datasetId, runId, experimentConfig);
+  const itemsToProcess = await getItemsToProcess(
+    projectId,
+    datasetId,
+    runId,
+    experimentConfig,
+  );
 
   if (itemsToProcess.length === 0) {
     logger.info(`No new items to process for experiment ${runId}`);
@@ -275,7 +322,9 @@ export const createExperimentJobClickhouse = async ({
 
   for (let i = 0; i < itemsToProcess.length; i++) {
     const item = itemsToProcess[i];
-    logger.info(`Processing item ${i + 1}/${itemsToProcess.length} (${item.id})`);
+    logger.info(
+      `Processing item ${i + 1}/${itemsToProcess.length} (${item.id})`,
+    );
 
     try {
       await processItem(projectId, item, experimentConfig);
@@ -285,7 +334,9 @@ export const createExperimentJobClickhouse = async ({
   }
 
   const duration = Date.now() - startTime;
-  logger.info(`Experiment ${runId} completed in ${duration}ms. Processed: ${itemsToProcess.length}`);
+  logger.info(
+    `Experiment ${runId} completed in ${duration}ms. Processed: ${itemsToProcess.length}`,
+  );
 
   return { success: true };
 };
@@ -310,10 +361,16 @@ async function createAllDatasetRunItemsWithConfigError(
   });
 
   // Check for existing run items' dataset item ids to avoid duplicates
-  const existingRunItemDatasetItemIds = await getExistingRunItemDatasetItemIds(projectId, runId, datasetId);
+  const existingRunItemDatasetItemIds = await getExistingRunItemDatasetItemIds(
+    projectId,
+    runId,
+    datasetId,
+  );
 
   // Create run items with config error for all non-existing items
-  const newItems = datasetItems.filter((item) => !existingRunItemDatasetItemIds.has(item.id));
+  const newItems = datasetItems.filter(
+    (item) => !existingRunItemDatasetItemIds.has(item.id),
+  );
 
   const events: IngestionEventType[] = newItems.flatMap((datasetItem) => {
     const traceId = v4();
@@ -325,7 +382,9 @@ async function createAllDatasetRunItemsWithConfigError(
     try {
       stringInput = JSON.stringify(datasetItem.input);
     } catch {
-      logger.info(`Failed to stringify input for dataset item ${datasetItem.id}`);
+      logger.info(
+        `Failed to stringify input for dataset item ${datasetItem.id}`,
+      );
     }
 
     return [
@@ -343,6 +402,7 @@ async function createAllDatasetRunItemsWithConfigError(
           datasetId: datasetItem.datasetId,
           runId: runId,
           datasetItemId: datasetItem.id,
+          datasetVersion: datasetItem.validFrom.toISOString(),
         },
       },
       // trace
@@ -375,7 +435,9 @@ async function createAllDatasetRunItemsWithConfigError(
   });
 
   if (events.length > 0) {
-    logger.info(`Creating ${events.length / 3} dataset run items with config error`);
+    logger.info(
+      `Creating ${events.length / 3} dataset run items with config error`,
+    );
 
     await processEventBatch(
       events,

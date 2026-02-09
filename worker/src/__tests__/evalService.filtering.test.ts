@@ -1,5 +1,13 @@
-import { ObservationLevel, singleFilter } from "@hanzo/shared";
-import { JobConfiguration, kyselyPrisma, prisma } from "@hanzo/shared/src/db";
+import {
+  ObservationLevel,
+  singleFilter,
+  EvalTargetObject,
+} from "@hanzo/shared";
+import {
+  JobConfiguration,
+  kyselyPrisma,
+  prisma,
+} from "@hanzo/shared/src/db";
 import {
   convertDateToClickhouseDateTime,
   createOrgProjectAndApiKey,
@@ -18,7 +26,9 @@ import { pruneDatabase } from "./utils";
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // Check for both OPENAI_API_KEY and HANZO_LLM_CONNECTION_OPENAI_KEY
 // to avoid interfering with llmConnections tests that use the latter
-const hasActiveKey = Boolean(OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY);
+const hasActiveKey = Boolean(
+  OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY,
+);
 if (!hasActiveKey) {
   OPENAI_API_KEY = "sk-test_not_used_as_network_mocks_are_activated";
 }
@@ -34,13 +44,22 @@ beforeAll(async () => {
 });
 afterAll(openAIServer.teardown);
 
-type EvalJobEventPartial = Omit<Parameters<typeof createEvalJobs>[0]["event"], "projectId" | "traceId">;
+type EvalJobEventPartial = Omit<
+  Parameters<typeof createEvalJobs>[0]["event"],
+  "projectId" | "traceId"
+>;
 
 type TraceRecordOmitProjectId = Partial<Omit<TraceRecordReadType, "projectId">>;
-type TraceRecordOmitProjectIdAndId = Partial<Omit<TraceRecordReadType, "projectId" | "id">>;
+type TraceRecordOmitProjectIdAndId = Partial<
+  Omit<TraceRecordReadType, "projectId" | "id">
+>;
 
 const __getJobs = (projectId: string) =>
-  kyselyPrisma.$kysely.selectFrom("job_executions").selectAll().where("project_id", "=", projectId).execute();
+  kyselyPrisma.$kysely
+    .selectFrom("job_executions")
+    .selectAll()
+    .where("project_id", "=", projectId)
+    .execute();
 
 type JobExecutions = Awaited<ReturnType<typeof __getJobs>>;
 
@@ -49,14 +68,22 @@ const test = baseTest.extend<{
   traceId2: string;
   projectId: string;
   upsertTrace: (trace: TraceRecordOmitProjectId) => Promise<void>;
-  upsertTwoTraces: (traces?: [TraceRecordOmitProjectIdAndId, TraceRecordOmitProjectIdAndId]) => Promise<void>;
+  upsertTwoTraces: (
+    traces?: [TraceRecordOmitProjectIdAndId, TraceRecordOmitProjectIdAndId],
+  ) => Promise<void>;
   configureJob: (
-    job: Partial<Omit<JobConfiguration, "projectId" | "evalTemplateId" | "id" | "filter">> & {
+    job: Partial<
+      Omit<JobConfiguration, "projectId" | "evalTemplateId" | "id" | "filter">
+    > & {
       filter: z.infer<typeof singleFilter>[];
     },
   ) => Promise<void>;
-  configureDefaultJobWithSingleFilter: (filter: z.infer<typeof singleFilter>) => Promise<void>;
-  createTwoEvalJobs: (events?: [EvalJobEventPartial, EvalJobEventPartial]) => Promise<void>;
+  configureDefaultJobWithSingleFilter: (
+    filter: z.infer<typeof singleFilter>,
+  ) => Promise<void>;
+  createTwoEvalJobs: (
+    events?: [EvalJobEventPartial, EvalJobEventPartial],
+  ) => Promise<void>;
   getJobs: () => Promise<JobExecutions>;
 }>({
   projectId: async ({}, use) => {
@@ -117,7 +144,7 @@ const test = baseTest.extend<{
           jobType: "EVAL",
           delay: 0,
           sampling: new Decimal("1"),
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           scoreName: "score",
           variableMapping: JSON.parse("[]"),
           ...job,

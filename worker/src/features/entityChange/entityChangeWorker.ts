@@ -1,14 +1,23 @@
-import { getCurrentSpan, logger, type EntityChangeEventType } from "@hanzo/shared/src/server";
+import {
+  getCurrentSpan,
+  logger,
+  type EntityChangeEventType,
+} from "@hanzo/shared/src/server";
 import { promptVersionProcessor } from "./promptVersionProcessor";
 
 /**
  * Generic entity change worker that delegates to specific entity handlers
  */
-export const entityChangeWorker = async (event: EntityChangeEventType): Promise<void> => {
+export const entityChangeWorker = async (
+  event: EntityChangeEventType,
+): Promise<void> => {
   try {
-    logger.debug(`Processing entity change event for entity ${event.entityType}`, {
-      event: JSON.stringify(event, null, 2),
-    });
+    if (logger.isLevelEnabled("debug")) {
+      logger.debug(
+        `Processing entity change event for entity ${event.entityType}`,
+        { event: JSON.stringify(event, null, 2) },
+      );
+    }
 
     const span = getCurrentSpan();
 
@@ -23,10 +32,14 @@ export const entityChangeWorker = async (event: EntityChangeEventType): Promise<
       case "prompt-version":
         return await promptVersionProcessor(event);
       default:
-        throw new Error(`Unsupported entity type: ${(event as any).entityType}`);
+        throw new Error(
+          `Unsupported entity type: ${(event as any).entityType}`,
+        );
     }
   } catch (error) {
-    logger.error(`Failed to process entity change event for entity ${event.entityType}: ${error}`);
+    logger.error(
+      `Failed to process entity change event for entity ${event.entityType}: ${error}`,
+    );
     throw error;
   }
 };

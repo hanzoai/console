@@ -14,8 +14,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
+import {
+  SidePanel,
+  SidePanelContent,
+  SidePanelHeader,
+  SidePanelTitle,
+} from "@/src/components/ui/side-panel";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 
 export default function Dataset() {
   const router = useRouter();
@@ -61,7 +67,9 @@ export default function Dataset() {
             </Link>
             <DetailPageNav
               currentId={runId}
-              path={(entry) => `/project/${projectId}/datasets/${datasetId}/runs/${entry.id}`}
+              path={(entry) =>
+                `/project/${projectId}/datasets/${datasetId}/runs/${entry.id}`
+              }
               listKey="datasetRuns"
             />
             <DropdownMenu>
@@ -87,9 +95,17 @@ export default function Dataset() {
     >
       <div className="grid flex-1 grid-cols-[1fr,auto] overflow-hidden">
         <div className="flex h-full flex-col overflow-hidden">
-          <DatasetRunItemsByRunTable projectId={projectId} datasetId={datasetId} datasetRunId={runId} />
+          <DatasetRunItemsByRunTable
+            projectId={projectId}
+            datasetId={datasetId}
+            datasetRunId={runId}
+            datasetVersion={run.data?.datasetVersion}
+          />
         </div>
-        <SidePanel mobileTitle="Experiment run details" id="experiment-run-details">
+        <SidePanel
+          mobileTitle="Experiment run details"
+          id="experiment-run-details"
+        >
           <SidePanelHeader>
             <SidePanelTitle>Experiment run details</SidePanelTitle>
           </SidePanelHeader>
@@ -98,14 +114,35 @@ export default function Dataset() {
               <Skeleton className="h-full w-full" />
             ) : (
               <>
+                {run.data?.datasetVersion && (
+                  <div className="flex flex-col gap-2 p-1">
+                    <span className="text-sm font-medium">Dataset Version</span>
+                    <Link
+                      href={`/project/${projectId}/datasets/${datasetId}/items?version=${run.data.datasetVersion.toISOString()}`}
+                      className="text-sm text-accent-dark-blue hover:text-primary-accent/60"
+                    >
+                      <LocalIsoDate date={run.data.datasetVersion} />
+                    </Link>
+                  </div>
+                )}
                 {!!run.data?.description && (
-                  <JSONView json={run.data.description} title="Description" className="w-full overflow-y-auto" />
+                  <JSONView
+                    json={run.data.description}
+                    title="Description"
+                    className="w-full overflow-y-auto"
+                  />
                 )}
                 {!!run.data?.metadata && (
-                  <JSONView json={run.data.metadata} title="Metadata" className="w-full overflow-y-auto" />
+                  <JSONView
+                    json={run.data.metadata}
+                    title="Metadata"
+                    className="w-full overflow-y-auto"
+                  />
                 )}
                 {!run.data?.description && !run.data?.metadata && (
-                  <div className="mt-1 px-1 text-sm text-muted-foreground">No description or metadata for this run</div>
+                  <div className="mt-1 px-1 text-sm text-muted-foreground">
+                    No description or metadata for this run
+                  </div>
                 )}
               </>
             )}

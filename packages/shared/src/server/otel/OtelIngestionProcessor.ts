@@ -14,6 +14,9 @@ import {
   instrumentSync,
   recordDistribution,
   UsageDetails,
+  extractToolsFromObservation,
+  convertDefinitionsToMap,
+  convertCallsToArrays,
 } from "../";
 
 import { HanzoOtelSpanAttributes } from "./attributes";
@@ -31,6 +34,8 @@ interface TraceState {
 export interface OtelIngestionProcessorConfig {
   projectId: string;
   publicKey?: string;
+  orgId?: string;
+  propagatedHeaders?: Record<string, string>;
 }
 
 interface CreateTraceEventParams {
@@ -107,10 +112,14 @@ export class OtelIngestionProcessor {
   };
   private readonly projectId: string;
   private readonly publicKey?: string;
+  private readonly orgId?: string;
+  private readonly propagatedHeaders?: Record<string, string>;
 
   constructor(config: OtelIngestionProcessorConfig) {
     this.projectId = config.projectId;
     this.publicKey = config.publicKey;
+    this.orgId = config.orgId;
+    this.propagatedHeaders = config.propagatedHeaders;
   }
 
   /**
@@ -151,8 +160,10 @@ export class OtelIngestionProcessor {
               scope: {
                 projectId: this.projectId,
                 accessLevel: "project" as const,
+                orgId: this.orgId,
               },
             },
+            propagatedHeaders: this.propagatedHeaders,
           },
         })
       : Promise.reject("Failed to instantiate otel ingestion queue");
@@ -248,6 +259,24 @@ export class OtelIngestionProcessor {
                   );
                 }
 
+                let toolDefinitions = undefined;
+                let toolCalls = undefined;
+                let toolCallNames = undefined;
+
+                const { toolDefinitions: rawToolDefinitions, toolArguments } =
+                  extractToolsFromObservation(input, output);
+
+                if (rawToolDefinitions.length > 0) {
+                  toolDefinitions = convertDefinitionsToMap(rawToolDefinitions);
+                }
+
+                if (toolArguments.length > 0) {
+                  const { tool_calls, tool_call_names } =
+                    convertCallsToArrays(toolArguments);
+                  toolCalls = tool_calls;
+                  toolCallNames = tool_call_names;
+                }
+
                 events.push({
                   projectId: this.projectId,
                   traceId,
@@ -300,6 +329,12 @@ export class OtelIngestionProcessor {
                   traceName: spanAttributes?.[HanzoOtelSpanAttributes.TRACE_NAME] ?? null,
                   userId: this.extractUserId(spanAttributes),
                   sessionId: this.extractSessionId(spanAttributes),
+                  release:
+                    (spanAttributes?.[
+                      HanzoOtelSpanAttributes.RELEASE
+                    ] as string) ??
+                    resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
+                    null,
 
                   input,
                   output,
@@ -323,6 +358,11 @@ export class OtelIngestionProcessor {
 
                   // Experiment fields
                   ...experimentFields,
+
+                  // Tool calling
+                  toolDefinitions,
+                  toolCalls,
+                  toolCallNames,
                 });
               }
             }

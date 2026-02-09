@@ -31,31 +31,51 @@ const cleanUpConsoleEventListeners = (page: Page) => {
 };
 
 test.describe("Create project", () => {
-  test("Sign in, create an organization, create a project", async ({ page }) => {
+  test("Sign in, create an organization, create a project", async ({
+    page,
+  }) => {
     test.setTimeout(60000);
     // const errors = await checkConsoleErrors(page);
 
     // Sign in
     await page.goto("/auth/sign-in");
-    await page.fill('input[name="email"]', "demo@hanzo.com");
+    await page.fill('input[name="email"]', "demo@hanzo.ai");
     await page.fill('input[type="password"]', "password");
-    await page.click('button[data-testid="submit-email-password-sign-in-form"]');
+
+    await expect(
+      page.locator('button[data-testid="submit-email-password-sign-in-form"]'),
+    ).toBeEnabled();
+
+    await page.click(
+      'button[data-testid="submit-email-password-sign-in-form"]',
+    );
+
     await page.waitForTimeout(2000);
+
+    const errorElement = page.locator(".text-destructive");
+    const hasError = await errorElement.isVisible().catch(() => false);
+    if (hasError) {
+      const errorText = await errorElement.textContent();
+      throw new Error(`Sign-in failed with error: ${errorText}`);
+    }
+
     await expect(page).toHaveURL("/");
 
     // Start create org flow
     await page.isVisible('[data-testid="create-organization-btn"]');
     await page.click('[data-testid="create-organization-btn"]');
-    await page.waitForTimeout(2000);
     await expect(page).toHaveURL("/setup");
 
     // Create an organization
     await expect(page.locator("data-testid=new-org-form")).toBeVisible();
     await page.fill('[data-testid="new-org-name-input"]', "e2e test org");
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(5000);
-    expect(page.url()).toContain("/organization/");
-    expect(page.url()).toContain("/setup?orgstep=invite-members");
+    await expect(page).toHaveURL(
+      /\/organization\/.*\/setup\?orgstep=invite-members/,
+      {
+        timeout: 15000,
+      },
+    );
 
     // Parse the organization ID from the URL using a simpler method
     const url = new URL(page.url());
@@ -65,23 +85,25 @@ test.describe("Create project", () => {
     // Skip add new members step
     await page.isVisible('[data-testid="btn-skip-add-members"]');
     await page.click('[data-testid="btn-skip-add-members"]');
-    expect(page.url()).toContain("/organization/" + organizationId + "/setup?orgstep=create-project");
+    expect(page.url()).toContain(
+      "/organization/" + organizationId + "/setup?orgstep=create-project",
+    );
 
     // Create project
     await expect(page.locator("data-testid=new-project-form")).toBeVisible();
-    await page.fill('[data-testid="new-project-name-input"]', "e2e test project");
+    await page.fill(
+      '[data-testid="new-project-name-input"]',
+      "e2e test project",
+    );
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(5000);
-    expect(page.url()).toContain("/project/");
-    expect(page.url()).toContain("/traces");
+    await expect(page).toHaveURL(/\/project\/.*\/traces/, { timeout: 15000 });
 
     const projectUrl = new URL(page.url());
     const projectId = projectUrl.pathname.split("/")[2];
 
     // check that the project exists by navigating to its home screen
     await page.goto("/project/" + projectId);
-    await page.waitForTimeout(2000);
-    expect(page.url()).toContain("/project/" + projectId);
+    await expect(page).toHaveURL(new RegExp(`/project/${projectId}`));
 
     const headings = await page.locator("h2").allTextContents();
     expect(headings).toContain("Home");
@@ -103,15 +125,14 @@ test.describe("Create project", () => {
     { title: "Tracing", url: "/observations", subTitle: "Observations" },
     { title: "Scores", url: "/scores" },
   ].forEach(({ title, url, subTitle }) => {
-    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({ page }) => {
+    test(`Check ${title} ${subTitle ? `- ${subTitle}` : ""} page`, async ({
+      page,
+    }) => {
       // const errors = await checkConsoleErrors(page);
       await signin(page);
 
-      await page.waitForTimeout(2000);
-
-      const projectUrl = await getProjectUrlForEmail("demo@hanzo.com");
+      const projectUrl = await getProjectUrlForEmail("demo@hanzo.ai");
       await page.goto(projectUrl + url, { waitUntil: "networkidle" });
-      await page.waitForTimeout(2000);
       await expect(page).toHaveURL(projectUrl + url);
       await checkPageHeaderTitle(page, title);
 
@@ -131,13 +152,29 @@ const signin = async (page: Page) => {
   await page.goto("/auth/sign-in");
   await page.fill('input[name="email"]', "demo@hanzo.ai");
   await page.fill('input[type="password"]', "password");
+
+  await expect(
+    page.locator('button[data-testid="submit-email-password-sign-in-form"]'),
+  ).toBeEnabled();
+
   await page.click('button[data-testid="submit-email-password-sign-in-form"]');
+
   await page.waitForTimeout(2000);
+
+  const errorElement = page.locator(".text-destructive");
+  const hasError = await errorElement.isVisible().catch(() => false);
+  if (hasError) {
+    const errorText = await errorElement.textContent();
+    throw new Error(`Sign-in failed with error: ${errorText}`);
+  }
+
   await expect(page).toHaveURL("/");
 };
 
 const checkPageHeaderTitle = async (page: Page, title: string) => {
-  const pageHeaderTitle = await page.locator('[data-testid="page-header-title"]').textContent();
+  const pageHeaderTitle = await page
+    .locator('[data-testid="page-header-title"]')
+    .textContent();
   expect(pageHeaderTitle).toContain(title);
 };
 

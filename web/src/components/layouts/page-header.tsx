@@ -31,7 +31,7 @@ export type PageHeaderProps = {
   breadcrumb?: { name: string; href?: string }[];
   actionButtonsLeft?: React.ReactNode; // Right-side actions (buttons, etc.)
   actionButtonsRight?: React.ReactNode; // Right-side actions (buttons, etc.)
-  help?: { description: string; href?: string; className?: string };
+  help?: { description: React.ReactNode; href?: string; className?: string };
   titleTooltip?: string;
   itemType?: HanzoItemType;
   container?: boolean;

@@ -8,14 +8,23 @@ import {
   TQueueJobTypes,
   traceDeletionProcessor,
 } from "@hanzo/shared/src/server";
-import { BatchActionType, BatchTableNames, FilterCondition } from "@hanzo/shared";
+import {
+  BatchActionType,
+  BatchTableNames,
+  FilterCondition,
+  EvalTargetObject,
+} from "@hanzo/shared";
 import {
   getDatabaseReadStreamPaginated,
   getTraceIdentifierStream,
 } from "../database-read-stream/getDatabaseReadStream";
 import { env } from "../../env";
 import { Job } from "bullmq";
-import { processAddObservationsToQueue, processAddSessionsToQueue, processAddTracesToQueue } from "./processAddToQueue";
+import {
+  processAddObservationsToQueue,
+  processAddSessionsToQueue,
+  processAddTracesToQueue,
+} from "./processAddToQueue";
 import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "node:crypto";
 import { processClickhouseScoreDelete } from "../scores/processClickhouseScoreDelete";
@@ -25,7 +34,9 @@ import { ObservationAddToDatasetConfigSchema } from "@hanzo/shared";
 
 const CHUNK_SIZE = 1000;
 const convertDatesInFiltersFromStrings = (filters: FilterCondition[]) => {
-  return filters.map((f: FilterCondition) => (f.type === "datetime" ? { ...f, value: new Date(f.value) } : f));
+  return filters.map((f: FilterCondition) =>
+    f.type === "datetime" ? { ...f, value: new Date(f.value) } : f,
+  );
 };
 
 /**
@@ -49,11 +60,19 @@ async function processActionChunk(
         break;
 
       case "session-add-to-annotation-queue":
-        await processAddSessionsToQueue(projectId, chunkIds, targetId as string);
+        await processAddSessionsToQueue(
+          projectId,
+          chunkIds,
+          targetId as string,
+        );
         break;
 
       case "observation-add-to-annotation-queue":
-        await processAddObservationsToQueue(projectId, chunkIds, targetId as string);
+        await processAddObservationsToQueue(
+          projectId,
+          chunkIds,
+          targetId as string,
+        );
         break;
 
       case "score-delete":
@@ -82,7 +101,9 @@ export type DatasetRunItemRowForEval = {
   traceId: string;
   observationId: string | null;
 };
-const assertIsTracesTableRecord = (element: unknown): element is TraceRowForEval => {
+const assertIsTracesTableRecord = (
+  element: unknown,
+): element is TraceRowForEval => {
   return (
     typeof element === "object" &&
     element !== null &&
@@ -92,7 +113,9 @@ const assertIsTracesTableRecord = (element: unknown): element is TraceRowForEval
   );
 };
 
-const assertIsDatasetRunItemTableRecord = (element: unknown): element is DatasetRunItemRowForEval => {
+const assertIsDatasetRunItemTableRecord = (
+  element: unknown,
+): element is DatasetRunItemRowForEval => {
   return (
     typeof element === "object" &&
     element !== null &&
@@ -104,15 +127,24 @@ const assertIsDatasetRunItemTableRecord = (element: unknown): element is Dataset
   );
 };
 
-export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[QueueName.BatchActionQueue]>["data"]) => {
-  const batchActionEvent: BatchActionProcessingEventType = batchActionJob.payload;
+export const handleBatchActionJob = async (
+  batchActionJob: Job<TQueueJobTypes[QueueName.BatchActionQueue]>["data"],
+) => {
+  const batchActionEvent: BatchActionProcessingEventType =
+    batchActionJob.payload;
 
   const { actionId } = batchActionEvent;
 
   const span = getCurrentSpan();
   if (span) {
-    span.setAttribute("messaging.bullmq.job.input.projectId", batchActionEvent.projectId);
-    span.setAttribute("messaging.bullmq.job.input.actionId", batchActionEvent.actionId);
+    span.setAttribute(
+      "messaging.bullmq.job.input.projectId",
+      batchActionEvent.projectId,
+    );
+    span.setAttribute(
+      "messaging.bullmq.job.input.actionId",
+      batchActionEvent.actionId,
+    );
   }
 
   if (
@@ -122,7 +154,8 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
     actionId === "observation-add-to-annotation-queue" ||
     actionId === "score-delete"
   ) {
-    const { projectId, tableName, query, cutoffCreatedAt, targetId, type } = batchActionEvent;
+    const { projectId, tableName, query, cutoffCreatedAt, targetId, type } =
+      batchActionEvent;
 
     if (type === BatchActionType.Create && !targetId) {
       throw new Error(`Target ID is required for create action`);
@@ -179,7 +212,8 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
   } else if (actionId === "eval-create") {
     // if a user wants to apply evals for historic traces or dataset runs, we do this here.
     // 1) we fetch data from the database, 2) we create eval executions in batches, 3) we create eval execution jobs for each batch
-    const { projectId, query, targetObject, configId, cutoffCreatedAt } = batchActionEvent;
+    const { projectId, query, targetObject, configId, cutoffCreatedAt } =
+      batchActionEvent;
 
     const config = await prisma.jobConfiguration.findUnique({
       where: {
@@ -189,12 +223,14 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
     });
 
     if (!config) {
-      logger.error(`Eval config ${configId} not found for project ${projectId}`);
+      logger.error(
+        `Eval config ${configId} not found for project ${projectId}`,
+      );
       return;
     }
 
     const dbReadStream =
-      targetObject === "trace"
+      targetObject === EvalTargetObject.TRACE
         ? await getTraceIdentifierStream({
             projectId: projectId,
             cutoffCreatedAt: new Date(cutoffCreatedAt),
@@ -221,7 +257,10 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
 
     let count = 0;
     for await (const record of dbReadStream) {
-      if (targetObject === "trace" && assertIsTracesTableRecord(record)) {
+      if (
+        targetObject === EvalTargetObject.TRACE &&
+        assertIsTracesTableRecord(record)
+      ) {
         const payload = {
           projectId: record.projectId,
           traceId: record.id,
@@ -237,7 +276,10 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
           name: QueueJobs.CreateEvalJob as const,
         });
         count++;
-      } else if (targetObject === "dataset" && assertIsDatasetRunItemTableRecord(record)) {
+      } else if (
+        targetObject === EvalTargetObject.DATASET &&
+        assertIsDatasetRunItemTableRecord(record)
+      ) {
         const payload = {
           projectId: record.projectId,
           datasetItemId: record.datasetItemId,
@@ -260,12 +302,18 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
         );
         count++;
       } else {
-        logger.error("Record is not a valid traces table or dataset record", record);
+        logger.error(
+          "Record is not a valid traces table or dataset record",
+          record,
+        );
       }
     }
-    logger.info(`Batch action job completed, projectId: ${batchActionJob.payload.projectId}, ${count} elements`);
+    logger.info(
+      `Batch action job completed, projectId: ${batchActionJob.payload.projectId}, ${count} elements`,
+    );
   } else if (actionId === "observation-add-to-dataset") {
-    const { projectId, query, cutoffCreatedAt, config, batchActionId } = batchActionEvent;
+    const { projectId, query, cutoffCreatedAt, config, batchActionId } =
+      batchActionEvent;
 
     // Parse and validate config
     const parsedConfig = ObservationAddToDatasetConfigSchema.parse(config);
@@ -309,5 +357,7 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
     });
   }
 
-  logger.info(`Batch action job completed, projectId: ${batchActionJob.payload.projectId}, actionId: ${actionId}`);
+  logger.info(
+    `Batch action job completed, projectId: ${batchActionJob.payload.projectId}, actionId: ${actionId}`,
+  );
 };

@@ -38,6 +38,7 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
     with clickhouse_keys as (
       SELECT DISTINCT
         id,
+        trace_id,
         project_id,
         type,
         toDate(start_time)
@@ -82,7 +83,7 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
       event_ts
     FROM observations o ${disableObservationsFinal ? "" : "FINAL"}
     WHERE o.project_id = {projectId: String}
-      AND (id, project_id, type, toDate(start_time)) in (select * from clickhouse_keys)
+      AND (id, trace_id, project_id, type, toDate(start_time)) in (select * from clickhouse_keys)
     ORDER BY start_time DESC
   `;
 

@@ -23,19 +23,26 @@ import {
   FormMessage,
 } from "@/src/components/ui/form";
 import { Input } from "@/src/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { Switch } from "@/src/components/ui/switch";
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import { type useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
+import { type useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
 import { DialogFooter } from "@/src/components/ui/dialog";
 import { DialogBody } from "@/src/components/ui/dialog";
 import { env } from "@/src/env.mjs";
 
 const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
-const isCustomModelsRequired = (adapter: LLMAdapter) => adapter === LLMAdapter.Azure || adapter === LLMAdapter.Bedrock;
+const isCustomModelsRequired = (adapter: LLMAdapter) =>
+  adapter === LLMAdapter.Azure || adapter === LLMAdapter.Bedrock;
 
 const createFormSchema = (mode: "create" | "update") =>
   z
@@ -44,7 +51,10 @@ const createFormSchema = (mode: "create" | "update") =>
       provider: z
         .string()
         .min(1, "Please add a provider name that identifies this connection.")
-        .regex(/^[^:]+$/, "Provider name cannot contain colons. Use a format like 'OpenRouter_Mistral' instead."),
+        .regex(
+          /^[^:]+$/,
+          "Provider name cannot contain colons. Use a format like 'OpenRouter_Mistral' instead.",
+        ),
       adapter: z.nativeEnum(LLMAdapter),
       baseURL: z.union([z.literal(""), z.url()]),
       withDefaultModels: z.boolean(),
@@ -74,7 +84,9 @@ const createFormSchema = (mode: "create" | "update") =>
         // In create mode, validate credentials
         // For cloud deployments, AWS credentials are required
         if (isHanzoCloud) {
-          return data.awsAccessKeyId && data.awsSecretAccessKey && data.awsRegion;
+          return (
+            data.awsAccessKeyId && data.awsSecretAccessKey && data.awsRegion
+          );
         }
 
         // For self-hosted deployments, only region is required
@@ -111,7 +123,8 @@ const createFormSchema = (mode: "create" | "update") =>
         return data.withDefaultModels || data.customModels.length > 0;
       },
       {
-        message: "At least one custom model name is required when default models are disabled.",
+        message:
+          "At least one custom model name is required when default models are disabled.",
         path: ["withDefaultModels"],
       },
     )
@@ -223,10 +236,14 @@ export function CreateLLMApiKeyForm({
               existingKey.displaySecretKey === "Default GCP credentials (ADC)"
                 ? VERTEXAI_USE_DEFAULT_CREDENTIALS
                 : "",
-            baseURL: existingKey.baseURL ?? getCustomizedBaseURL(existingKey.adapter as LLMAdapter),
+            baseURL:
+              existingKey.baseURL ??
+              getCustomizedBaseURL(existingKey.adapter as LLMAdapter),
             withDefaultModels: existingKey.withDefaultModels,
             customModels: existingKey.customModels.map((value) => ({ value })),
-            extraHeaders: existingKey.extraHeaderKeys?.map((key) => ({ key, value: "" })) ?? [],
+            extraHeaders:
+              existingKey.extraHeaderKeys?.map((key) => ({ key, value: "" })) ??
+              [],
             vertexAILocation:
               existingKey.adapter === LLMAdapter.VertexAI && existingKey.config
                 ? ((existingKey.config as VertexAIConfig).location ?? "")
@@ -246,7 +263,7 @@ export function CreateLLMApiKeyForm({
             withDefaultModels: true,
             customModels: [],
             extraHeaders: [],
-            vertexAILocation: "",
+            vertexAILocation: "global",
             awsRegion: "",
             awsAccessKeyId: "",
             awsSecretAccessKey: "",
@@ -282,7 +299,9 @@ export function CreateLLMApiKeyForm({
       render={() => (
         <FormItem>
           <FormLabel>Custom models</FormLabel>
-          <FormDescription>Custom model names accepted by given endpoint.</FormDescription>
+          <FormDescription>
+            Custom model names accepted by given endpoint.
+          </FormDescription>
           {currentAdapter === LLMAdapter.Azure && (
             <FormDescription className="text-dark-yellow">
               {
@@ -301,13 +320,25 @@ export function CreateLLMApiKeyForm({
 
           {fields.map((customModel, index) => (
             <span key={customModel.id} className="flex flex-row space-x-2">
-              <Input {...form.register(`customModels.${index}.value`)} placeholder={`Custom model name ${index + 1}`} />
-              <Button type="button" variant="ghost" onClick={() => remove(index)}>
+              <Input
+                {...form.register(`customModels.${index}.value`)}
+                placeholder={`Custom model name ${index + 1}`}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => remove(index)}
+              >
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </span>
           ))}
-          <Button type="button" variant="ghost" onClick={() => append({ value: "" })} className="w-full">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => append({ value: "" })}
+            className="w-full"
+          >
             <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
             Add custom model name
           </Button>
@@ -324,28 +355,43 @@ export function CreateLLMApiKeyForm({
         <FormItem>
           <FormLabel>Extra Headers</FormLabel>
           <FormDescription>
-            Optional additional HTTP headers to include with requests towards LLM provider. All header values stored
-            encrypted {isHanzoCloud ? "on our servers" : "in your database"}.
+            Optional additional HTTP headers to include with requests towards
+            LLM provider. All header values stored encrypted{" "}
+            {isHanzoCloud ? "on our servers" : "in your database"}.
           </FormDescription>
 
           {headerFields.map((header, index) => (
             <div key={header.id} className="flex flex-row space-x-2">
-              <Input {...form.register(`extraHeaders.${index}.key`)} placeholder="Header name" />
+              <Input
+                {...form.register(`extraHeaders.${index}.key`)}
+                placeholder="Header name"
+              />
               <Input
                 {...form.register(`extraHeaders.${index}.value`)}
                 placeholder={
-                  mode === "update" && existingKey?.extraHeaderKeys && existingKey.extraHeaderKeys[index]
+                  mode === "update" &&
+                  existingKey?.extraHeaderKeys &&
+                  existingKey.extraHeaderKeys[index]
                     ? "***"
                     : "Header value"
                 }
               />
-              <Button type="button" variant="ghost" onClick={() => removeHeader(index)}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => removeHeader(index)}
+              >
                 <TrashIcon className="h-4 w-4" />
               </Button>
             </div>
           ))}
 
-          <Button type="button" variant="ghost" onClick={() => appendHeader({ key: "", value: "" })} className="w-full">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => appendHeader({ key: "", value: "" })}
+            className="w-full"
+          >
             <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
             Add Header
           </Button>
@@ -364,7 +410,11 @@ export function CreateLLMApiKeyForm({
     if (!projectId) return console.error("No project ID found.");
 
     if (mode === "create") {
-      if (existingKeys?.data?.data.map((k) => k.provider).includes(values.provider)) {
+      if (
+        existingKeys?.data?.data
+          .map((k) => k.provider)
+          .includes(values.provider)
+      ) {
         form.setError("provider", {
           type: "manual",
           message: "There already exists an API key for this provider.",
@@ -399,7 +449,10 @@ export function CreateLLMApiKeyForm({
         }
       } else {
         // In create mode, handle as before
-        if (!isHanzoCloud && (!values.awsAccessKeyId || !values.awsSecretAccessKey)) {
+        if (
+          !isHanzoCloud &&
+          (!values.awsAccessKeyId || !values.awsSecretAccessKey)
+        ) {
           secretKey = BEDROCK_USE_DEFAULT_CREDENTIALS;
         } else {
           const credentials: BedrockCredential = {
@@ -456,9 +509,13 @@ export function CreateLLMApiKeyForm({
       provider: values.provider,
       adapter: values.adapter,
       baseURL: values.baseURL || undefined,
-      withDefaultModels: isCustomModelsRequired(currentAdapter) ? false : values.withDefaultModels,
+      withDefaultModels: isCustomModelsRequired(currentAdapter)
+        ? false
+        : values.withDefaultModels,
       config,
-      customModels: values.customModels.map((m) => m.value.trim()).filter(Boolean),
+      customModels: values.customModels
+        .map((m) => m.value.trim())
+        .filter(Boolean),
       extraHeaders,
     };
 
@@ -472,7 +529,10 @@ export function CreateLLMApiKeyForm({
     } catch (error) {
       form.setError("root", {
         type: "manual",
-        message: error instanceof Error ? error.message : "Could not verify the API key.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not verify the API key.",
       });
 
       return;
@@ -506,12 +566,17 @@ export function CreateLLMApiKeyForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>LLM adapter</FormLabel>
-                <FormDescription>Schema that is accepted at that provider endpoint.</FormDescription>
+                <FormDescription>
+                  Schema that is accepted at that provider endpoint.
+                </FormDescription>
                 <Select
                   defaultValue={field.value}
                   onValueChange={(value) => {
                     field.onChange(value as LLMAdapter);
-                    form.setValue("baseURL", getCustomizedBaseURL(value as LLMAdapter));
+                    form.setValue(
+                      "baseURL",
+                      getCustomizedBaseURL(value as LLMAdapter),
+                    );
                   }}
                   disabled={isFieldDisabled("adapter")}
                 >
@@ -539,9 +604,16 @@ export function CreateLLMApiKeyForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Provider name</FormLabel>
-                <FormDescription>Key to identify the connection within Hanzo. Cannot contain colons.</FormDescription>
+                <FormDescription>
+                  Key to identify the connection within Hanzo. Cannot contain
+                  colons.
+                </FormDescription>
                 <FormControl>
-                  <Input {...field} placeholder={`e.g. ${currentAdapter}`} disabled={isFieldDisabled("provider")} />
+                  <Input
+                    {...field}
+                    placeholder={`e.g. ${currentAdapter}`}
+                    disabled={isFieldDisabled("provider")}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -558,21 +630,24 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>AWS Region</FormLabel>
                     <FormDescription>
-                      {mode === "update" && existingKey?.config && (existingKey.config as BedrockConfig).region && (
-                        <span className="text-sm">
-                          Current:{" "}
-                          <code className="rounded bg-muted px-1 py-0.5">
-                            {(existingKey.config as BedrockConfig).region}
-                          </code>
-                        </span>
-                      )}
+                      {mode === "update" &&
+                        existingKey?.config &&
+                        (existingKey.config as BedrockConfig).region && (
+                          <span className="text-sm">
+                            Current:{" "}
+                            <code className="rounded bg-muted px-1 py-0.5">
+                              {(existingKey.config as BedrockConfig).region}
+                            </code>
+                          </span>
+                        )}
                     </FormDescription>
                     <FormControl>
                       <Input
                         {...field}
                         placeholder={
                           mode === "update" && existingKey?.config
-                            ? ((existingKey.config as BedrockConfig).region ?? "")
+                            ? ((existingKey.config as BedrockConfig).region ??
+                              "")
                             : "e.g., us-east-1"
                         }
                         data-1p-ignore
@@ -589,7 +664,12 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>
                       AWS Access Key ID
-                      {!isHanzoCloud && <span className="font-normal text-muted-foreground"> (optional)</span>}
+                      {!isHanzoCloud && (
+                        <span className="font-normal text-muted-foreground">
+                          {" "}
+                          (optional)
+                        </span>
+                      )}
                     </FormLabel>
                     <FormDescription>
                       {mode === "update"
@@ -603,7 +683,8 @@ export function CreateLLMApiKeyForm({
                         {...field}
                         placeholder={
                           mode === "update"
-                            ? existingKey?.displaySecretKey === "Default AWS credentials"
+                            ? existingKey?.displaySecretKey ===
+                              "Default AWS credentials"
                               ? "Using default AWS credentials"
                               : "•••••••• (existing credentials preserved if empty)"
                             : undefined
@@ -623,7 +704,12 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>
                       AWS Secret Access Key
-                      {!isHanzoCloud && <span className="font-normal text-muted-foreground"> (optional)</span>}
+                      {!isHanzoCloud && (
+                        <span className="font-normal text-muted-foreground">
+                          {" "}
+                          (optional)
+                        </span>
+                      )}
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -631,7 +717,8 @@ export function CreateLLMApiKeyForm({
                         type="password"
                         placeholder={
                           mode === "update"
-                            ? existingKey?.displaySecretKey === "Default AWS credentials"
+                            ? existingKey?.displaySecretKey ===
+                              "Default AWS credentials"
                               ? "Using default AWS credentials"
                               : existingKey?.displaySecretKey
                                 ? `${existingKey.displaySecretKey} (preserved if empty)`
@@ -649,11 +736,15 @@ export function CreateLLMApiKeyForm({
               {!isHanzoCloud && (
                 <div className="space-y-2 border-l-2 border-blue-200 pl-4 text-sm text-muted-foreground">
                   <p>
-                    <strong>Default credential provider chain:</strong> When AWS credentials are omitted, the system
-                    will automatically check for credentials in this order:
+                    <strong>Default credential provider chain:</strong> When AWS
+                    credentials are omitted, the system will automatically check
+                    for credentials in this order:
                   </p>
                   <ul className="ml-2 list-inside list-disc space-y-1">
-                    <li>Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)</li>
+                    <li>
+                      Environment variables (AWS_ACCESS_KEY_ID,
+                      AWS_SECRET_ACCESS_KEY)
+                    </li>
                     <li>AWS credentials file (~/.aws/credentials)</li>
                     <li>IAM roles for EC2 instances</li>
                     <li>IAM roles for ECS tasks</li>
@@ -678,18 +769,27 @@ export function CreateLLMApiKeyForm({
                 <FormItem>
                   <span className="row flex">
                     <span className="flex-1">
-                      <FormLabel>Use Application Default Credentials (ADC)</FormLabel>
+                      <FormLabel>
+                        Use Application Default Credentials (ADC)
+                      </FormLabel>
                       <FormDescription>
-                        When enabled, authentication uses the GCP environment&apos;s default credentials instead of a
+                        When enabled, authentication uses the GCP
+                        environment&apos;s default credentials instead of a
                         service account key.
                       </FormDescription>
                     </span>
                     <FormControl>
                       <Switch
-                        checked={form.watch("secretKey") === VERTEXAI_USE_DEFAULT_CREDENTIALS}
+                        checked={
+                          form.watch("secretKey") ===
+                          VERTEXAI_USE_DEFAULT_CREDENTIALS
+                        }
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            form.setValue("secretKey", VERTEXAI_USE_DEFAULT_CREDENTIALS);
+                            form.setValue(
+                              "secretKey",
+                              VERTEXAI_USE_DEFAULT_CREDENTIALS,
+                            );
                           } else {
                             form.setValue("secretKey", "");
                           }
@@ -701,7 +801,9 @@ export function CreateLLMApiKeyForm({
               )}
 
               {/* Service Account Key - hidden when ADC is enabled */}
-              {(isHanzoCloud || form.watch("secretKey") !== VERTEXAI_USE_DEFAULT_CREDENTIALS) && (
+              {(isHanzoCloud ||
+                form.watch("secretKey") !==
+                  VERTEXAI_USE_DEFAULT_CREDENTIALS) && (
                 <FormField
                   control={form.control}
                   name="secretKey"
@@ -714,8 +816,9 @@ export function CreateLLMApiKeyForm({
                           : "Your API keys are stored encrypted in your database."}
                       </FormDescription>
                       <FormDescription className="text-dark-yellow">
-                        Paste your GCP service account JSON key here. The service account must have `Vertex AI User`
-                        role permissions. Example JSON:
+                        Paste your GCP service account JSON key here. The
+                        service account must have `Vertex AI User` role
+                        permissions. Example JSON:
                         <pre className="text-xs">
                           {`{
   "type": "service_account",
@@ -735,7 +838,9 @@ export function CreateLLMApiKeyForm({
                         <Input
                           {...field}
                           placeholder={
-                            mode === "update" ? existingKey?.displaySecretKey : '{"type": "service_account", ...}'
+                            mode === "update"
+                              ? existingKey?.displaySecretKey
+                              : '{"type": "service_account", ...}'
                           }
                           autoComplete="off"
                           spellCheck="false"
@@ -749,31 +854,39 @@ export function CreateLLMApiKeyForm({
               )}
 
               {/* ADC info box for self-hosted */}
-              {!isHanzoCloud && form.watch("secretKey") === VERTEXAI_USE_DEFAULT_CREDENTIALS && (
-                <div className="space-y-2 border-l-2 border-blue-200 pl-4 text-sm text-muted-foreground">
-                  <p>
-                    <strong>Application Default Credentials (ADC):</strong> When enabled, the system will automatically
-                    check for credentials in this order:
-                  </p>
-                  <ul className="ml-2 list-inside list-disc space-y-1">
-                    <li>Environment variable (GOOGLE_APPLICATION_CREDENTIALS)</li>
-                    <li>gcloud CLI credentials (gcloud auth application-default login)</li>
-                    <li>GKE Workload Identity</li>
-                    <li>Cloud Run service account</li>
-                    <li>GCE instance service account (metadata service)</li>
-                  </ul>
-                  <p>
-                    <a
-                      href="https://cloud.google.com/docs/authentication/application-default-credentials"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      Learn more about GCP Application Default Credentials →
-                    </a>
-                  </p>
-                </div>
-              )}
+              {!isHanzoCloud &&
+                form.watch("secretKey") ===
+                  VERTEXAI_USE_DEFAULT_CREDENTIALS && (
+                  <div className="space-y-2 border-l-2 border-blue-200 pl-4 text-sm text-muted-foreground">
+                    <p>
+                      <strong>Application Default Credentials (ADC):</strong>{" "}
+                      When enabled, the system will automatically check for
+                      credentials in this order:
+                    </p>
+                    <ul className="ml-2 list-inside list-disc space-y-1">
+                      <li>
+                        Environment variable (GOOGLE_APPLICATION_CREDENTIALS)
+                      </li>
+                      <li>
+                        gcloud CLI credentials (gcloud auth application-default
+                        login)
+                      </li>
+                      <li>GKE Workload Identity</li>
+                      <li>Cloud Run service account</li>
+                      <li>GCE instance service account (metadata service)</li>
+                    </ul>
+                    <p>
+                      <a
+                        href="https://cloud.google.com/docs/authentication/application-default-credentials"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800"
+                      >
+                        Learn more about GCP Application Default Credentials →
+                      </a>
+                    </p>
+                  </div>
+                )}
             </>
           ) : (
             <FormField
@@ -790,7 +903,11 @@ export function CreateLLMApiKeyForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder={mode === "update" ? existingKey?.displaySecretKey : undefined}
+                      placeholder={
+                        mode === "update"
+                          ? existingKey?.displaySecretKey
+                          : undefined
+                      }
                       autoComplete="off"
                       spellCheck="false"
                       autoCapitalize="off"
@@ -811,11 +928,15 @@ export function CreateLLMApiKeyForm({
                 <FormItem>
                   <FormLabel>API Base URL</FormLabel>
                   <FormDescription>
-                    Please add the base URL in the following format (or compatible API):
+                    Please add the base URL in the following format (or
+                    compatible API):
                     https://&#123;instanceName&#125;.openai.azure.com/openai/deployments
                   </FormDescription>
                   <FormControl>
-                    <Input {...field} placeholder="https://your-instance.openai.azure.com/openai/deployments" />
+                    <Input
+                      {...field}
+                      placeholder="https://your-instance.openai.azure.com/openai/deployments"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -838,7 +959,11 @@ export function CreateLLMApiKeyForm({
                 className="flex items-center pl-0"
                 onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
               >
-                <span>{showAdvancedSettings ? "Hide advanced settings" : "Show advanced settings"}</span>
+                <span>
+                  {showAdvancedSettings
+                    ? "Hide advanced settings"
+                    : "Show advanced settings"}
+                </span>
                 <ChevronDown
                   className={`ml-1 h-4 w-4 transition-transform ${showAdvancedSettings ? "rotate-180" : "rotate-0"}`}
                 />
@@ -856,10 +981,16 @@ export function CreateLLMApiKeyForm({
                   <FormItem>
                     <FormLabel>API Base URL</FormLabel>
                     <FormDescription>
-                      Leave blank to use the default base URL for the given LLM adapter.{" "}
-                      {currentAdapter === LLMAdapter.OpenAI && <span>OpenAI default: https://api.openai.com/v1</span>}
+                      Leave blank to use the default base URL for the given LLM
+                      adapter.{" "}
+                      {currentAdapter === LLMAdapter.OpenAI && (
+                        <span>OpenAI default: https://api.openai.com/v1</span>
+                      )}
                       {currentAdapter === LLMAdapter.Anthropic && (
-                        <span>Anthropic default: https://api.anthropic.com (excluding /v1/messages)</span>
+                        <span>
+                          Anthropic default: https://api.anthropic.com
+                          (excluding /v1/messages)
+                        </span>
                       )}
                     </FormDescription>
 
@@ -881,11 +1012,13 @@ export function CreateLLMApiKeyForm({
                     <FormItem>
                       <FormLabel>Location (Optional)</FormLabel>
                       <FormDescription>
-                        Specify the Google Cloud location for Vertex AI. If not specified, the default location will be
-                        used (us-central1). Examples: us-central1, europe-west4, asia-northeast1
+                        Google Cloud region (e.g., global, us-central1,
+                        europe-west4). Defaults to{" "}
+                        <span className="font-medium">global</span> as required
+                        for Gemini 3 models.
                       </FormDescription>
                       <FormControl>
-                        <Input {...field} placeholder="e.g., us-central1" />
+                        <Input {...field} placeholder="global" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -894,7 +1027,8 @@ export function CreateLLMApiKeyForm({
               )}
 
               {/* Extra Headers */}
-              {currentAdapter === LLMAdapter.OpenAI && renderExtraHeadersField()}
+              {currentAdapter === LLMAdapter.OpenAI &&
+                renderExtraHeadersField()}
 
               {/* With default models */}
               <FormField
@@ -906,12 +1040,16 @@ export function CreateLLMApiKeyForm({
                       <span className="flex-1">
                         <FormLabel>Enable default models</FormLabel>
                         <FormDescription>
-                          Default models for the selected adapter will be available in Hanzo features.
+                          Default models for the selected adapter will be
+                          available in Hanzo features.
                         </FormDescription>
                       </span>
 
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
                     </span>
 
@@ -921,17 +1059,24 @@ export function CreateLLMApiKeyForm({
               />
 
               {/* Custom model names */}
-              {!isCustomModelsRequired(currentAdapter) && renderCustomModelsField()}
+              {!isCustomModelsRequired(currentAdapter) &&
+                renderCustomModelsField()}
             </div>
           )}
         </DialogBody>
 
         <DialogFooter>
           <div className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" loading={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full"
+              loading={form.formState.isSubmitting}
+            >
               {mode === "create" ? "Create connection" : "Save changes"}
             </Button>
-            {form.formState.errors.root && <FormMessage>{form.formState.errors.root.message}</FormMessage>}
+            {form.formState.errors.root && (
+              <FormMessage>{form.formState.errors.root.message}</FormMessage>
+            )}
           </div>
         </DialogFooter>
       </form>

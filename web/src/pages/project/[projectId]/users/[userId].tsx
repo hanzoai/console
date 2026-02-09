@@ -11,6 +11,8 @@ import { Badge } from "@/src/components/ui/badge";
 import { ActionButton } from "@/src/components/ActionButton";
 import { LayoutDashboard } from "lucide-react";
 import Page from "@/src/components/layouts/page";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
+import { ObservationsEventsTable } from "@/src/features/events/components";
 
 const tabs = ["Traces", "Sessions", "Scores"] as const;
 
@@ -18,13 +20,30 @@ export default function UserPage() {
   const router = useRouter();
   const userId = router.query.userId as string;
   const projectId = router.query.projectId as string;
+  const { isBetaEnabled } = useV4Beta();
 
-  const user = api.users.byId.useQuery({
-    projectId: projectId,
-    userId,
-  });
+  const userV3 = api.users.byId.useQuery(
+    {
+      projectId: projectId,
+      userId,
+    },
+    { enabled: !isBetaEnabled },
+  );
 
-  const [currentTab, setCurrentTab] = useQueryParam("tab", withDefault(StringParam, tabs[0]));
+  const userV4 = api.users.byIdFromEvents.useQuery(
+    {
+      projectId: projectId,
+      userId,
+    },
+    { enabled: isBetaEnabled },
+  );
+
+  const user = isBetaEnabled ? userV4 : userV3;
+
+  const [currentTab, setCurrentTab] = useQueryParam(
+    "tab",
+    withDefault(StringParam, tabs[0]),
+  );
 
   const renderTabContent = () => {
     switch (currentTab as (typeof tabs)[number]) {
@@ -55,7 +74,6 @@ export default function UserPage() {
         title: userId,
         breadcrumb: [{ name: "Users", href: `/project/${projectId}/users` }],
         itemType: "USER",
-
         actionButtonsRight: (
           <>
             <ActionButton
@@ -67,7 +85,9 @@ export default function UserPage() {
             </ActionButton>
             <DetailPageNav
               currentId={encodeURIComponent(userId)}
-              path={(entry) => `/project/${projectId}/users/${encodeURIComponent(entry.id)}`}
+              path={(entry) =>
+                `/project/${projectId}/users/${encodeURIComponent(entry.id)}`
+              }
               listKey="users"
             />
           </>
@@ -77,9 +97,16 @@ export default function UserPage() {
       <>
         {user.data && (
           <div className="flex flex-wrap gap-2 px-4 py-4">
-            <Badge variant="outline">Observations: {compactNumberFormatter(user.data.totalObservations)}</Badge>
-            <Badge variant="outline">Traces: {compactNumberFormatter(user.data.totalTraces)}</Badge>
-            <Badge variant="outline">Total Tokens: {compactNumberFormatter(user.data.totalTokens)}</Badge>
+            <Badge variant="outline">
+              Observations:{" "}
+              {compactNumberFormatter(user.data.totalObservations)}
+            </Badge>
+            <Badge variant="outline">
+              Traces: {compactNumberFormatter(user.data.totalTraces)}
+            </Badge>
+            <Badge variant="outline">
+              Total Tokens: {compactNumberFormatter(user.data.totalTokens)}
+            </Badge>
             <Badge variant="outline">
               <span className="flex items-center gap-1">
                 Total Cost: {usdFormatter(user.data.sumCalculatedTotalCost)}
@@ -89,7 +116,9 @@ export default function UserPage() {
               Active:{" "}
               {user.data.firstTrace
                 ? `${user.data.firstTrace.toLocaleString()} - ${user.data.lastTrace?.toLocaleString()}`
-                : "No traces yet"}
+                : isBetaEnabled
+                  ? "No activity yet"
+                  : "No traces yet"}
             </Badge>
           </div>
         )}
@@ -147,13 +176,40 @@ type TabProps = {
 };
 
 function ScoresTab({ userId, projectId }: TabProps) {
-  return <ScoresTable projectId={projectId} userId={userId} omittedFilter={["User ID"]} />;
+  return (
+    <ScoresTable
+      projectId={projectId}
+      userId={userId}
+      omittedFilter={["User ID"]}
+    />
+  );
 }
 
 function TracesTab({ userId, projectId }: TabProps) {
-  return <TracesTable projectId={projectId} userId={userId} omittedFilter={["User ID"]} />;
+  const { isBetaEnabled } = useV4Beta();
+
+  if (isBetaEnabled) {
+    return <ObservationsEventsTable projectId={projectId} userId={userId} />;
+  }
+
+  return (
+    <TracesTable
+      projectId={projectId}
+      userId={userId}
+      omittedFilter={["User ID"]}
+    />
+  );
 }
 
 function SessionsTab({ userId, projectId }: TabProps) {
-  return <SessionsTable projectId={projectId} userId={userId} omittedFilter={["User IDs"]} />;
+  const { isBetaEnabled } = useV4Beta();
+
+  return (
+    <SessionsTable
+      projectId={projectId}
+      userId={userId}
+      omittedFilter={["User IDs"]}
+      isBetaEnabled={isBetaEnabled}
+    />
+  );
 }

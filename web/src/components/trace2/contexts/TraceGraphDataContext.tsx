@@ -10,7 +10,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { api } from "@/src/utils/api";
 import { type AgentGraphDataResponse } from "@/src/features/trace-graph-view/types";
-import { useObservationListBeta } from "@/src/features/events/hooks/useObservationListBeta";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 
 const MAX_NODES_FOR_GRAPH_UI = 5000;
 
@@ -23,12 +23,16 @@ interface TraceGraphDataContextValue {
   isLoading: boolean;
 }
 
-const TraceGraphDataContext = createContext<TraceGraphDataContextValue | null>(null);
+const TraceGraphDataContext = createContext<TraceGraphDataContextValue | null>(
+  null,
+);
 
 export function useTraceGraphData(): TraceGraphDataContextValue {
   const context = useContext(TraceGraphDataContext);
   if (!context) {
-    throw new Error("useTraceGraphData must be used within a TraceGraphDataProvider");
+    throw new Error(
+      "useTraceGraphData must be used within a TraceGraphDataProvider",
+    );
   }
   return context;
 }
@@ -40,8 +44,13 @@ interface TraceGraphDataProviderProps {
   observations: Array<{ startTime: Date }>;
 }
 
-export function TraceGraphDataProvider({ children, projectId, traceId, observations }: TraceGraphDataProviderProps) {
-  const { isBetaEnabled } = useObservationListBeta();
+export function TraceGraphDataProvider({
+  children,
+  projectId,
+  traceId,
+  observations,
+}: TraceGraphDataProviderProps) {
+  const { isBetaEnabled } = useV4Beta();
 
   // Skip graph data entirely for large traces to avoid performance issues
   const exceedsThreshold = observations.length >= MAX_NODES_FOR_GRAPH_UI;
@@ -67,7 +76,11 @@ export function TraceGraphDataProvider({ children, projectId, traceId, observati
     };
   }, [observations, exceedsThreshold]);
 
-  const queryEnabled = !exceedsThreshold && observations.length > 0 && minStartTime !== null && maxStartTime !== null;
+  const queryEnabled =
+    !exceedsThreshold &&
+    observations.length > 0 &&
+    minStartTime !== null &&
+    maxStartTime !== null;
 
   const queryInput = {
     projectId,
@@ -114,11 +127,15 @@ export function TraceGraphDataProvider({ children, projectId, traceId, observati
     // (not SPAN, EVENT, or GENERATION)
     const hasGraphableObservations = agentGraphData.some(
       (obs) =>
-        obs.observationType !== "SPAN" && obs.observationType !== "EVENT" && obs.observationType !== "GENERATION",
+        obs.observationType !== "SPAN" &&
+        obs.observationType !== "EVENT" &&
+        obs.observationType !== "GENERATION",
     );
 
     // Check for LangGraph data (has step != 0)
-    const hasLangGraphData = agentGraphData.some((obs) => obs.step != null && obs.step !== 0);
+    const hasLangGraphData = agentGraphData.some(
+      (obs) => obs.step != null && obs.step !== 0,
+    );
 
     return hasGraphableObservations || hasLangGraphData;
   }, [agentGraphData]);
@@ -132,5 +149,9 @@ export function TraceGraphDataProvider({ children, projectId, traceId, observati
     [agentGraphData, isGraphViewAvailable, query.isLoading],
   );
 
-  return <TraceGraphDataContext.Provider value={value}>{children}</TraceGraphDataContext.Provider>;
+  return (
+    <TraceGraphDataContext.Provider value={value}>
+      {children}
+    </TraceGraphDataContext.Provider>
+  );
 }

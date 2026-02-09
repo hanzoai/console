@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import { createEnv } from "@t3-oss/env-nextjs";
 
 const zAuthMethod = z
   .enum([
@@ -53,12 +53,33 @@ export const env = createEnv({
       required_error:
         "A strong Salt is required to encrypt API keys securely. See: https://hanzo.com/self-hosting#deploy-the-container",
     }),
-    // Add newly signed up users to default org and/or project with role
-    HANZO_DEFAULT_ORG_ID: z.string().optional(),
+    // Add newly signed up users to default org(s) and/or project(s) with role
+    // Supports comma-separated IDs for multiple orgs/projects (e.g., "org1,org2,org3")
+    HANZO_DEFAULT_ORG_ID: z
+      .string()
+      .optional()
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((id) => id.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     HANZO_DEFAULT_ORG_ROLE: z
       .enum(["OWNER", "ADMIN", "MEMBER", "VIEWER", "NONE"])
       .optional(),
-    HANZO_DEFAULT_PROJECT_ID: z.string().optional(),
+    HANZO_DEFAULT_PROJECT_ID: z
+      .string()
+      .optional()
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((id) => id.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     HANZO_DEFAULT_PROJECT_ROLE: z
       .enum(["OWNER", "ADMIN", "MEMBER", "VIEWER"])
       .optional(),
@@ -177,11 +198,6 @@ export const env = createEnv({
     AUTH_WORDPRESS_CHECKS: zAuthChecks,
     AUTH_DOMAINS_WITH_SSO_ENFORCEMENT: z.string().optional(),
     AUTH_IGNORE_ACCOUNT_FIELDS: z.string().optional(),
-    // Hanzo IAM
-    HANZO_IAM_CLIENT_ID: z.string().optional(),
-    HANZO_IAM_CLIENT_SECRET: z.string().optional(),
-    HANZO_IAM_SERVER_URL: z.string().optional(),
-    HANZO_IAM_ALLOW_ACCOUNT_LINKING: z.enum(["true", "false"]).optional(),
     AUTH_DISABLE_USERNAME_PASSWORD: z.enum(["true", "false"]).optional(),
     AUTH_DISABLE_SIGNUP: z.enum(["true", "false"]).optional(),
     AUTH_SESSION_MAX_AGE: z.coerce
@@ -197,21 +213,21 @@ export const env = createEnv({
     AUTH_HTTPS_PROXY: z.string().url().optional(),
     AUTH_SSO_TIMEOUT: z.number().optional(),
     // EMAIL
-    EMAIL_FROM_ADDRESS: z.string().default("nonreply@hanzo.ai"),
-    SMTP_CONNECTION_URL: z
-      .string()
-      .default(
-        "smtp://cattr@hitek.com.vn:JCT%25%28tDjg%7B%7D%29@mail.hitek.com.vn:587",
-      ),
-
-    // plan
-    HANZO_S3_FREE_PLAN_EXPIRE: z.string().default("90"),
-    HANZO_TRIAL_EXPIRE: z.string().default("15"),
+    EMAIL_FROM_ADDRESS: z.string().optional(),
+    SMTP_CONNECTION_URL: z.string().optional(),
 
     // Otel
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().default("http://localhost:4318"),
     OTEL_SERVICE_NAME: z.string().default("web"),
     OTEL_TRACE_SAMPLING_RATIO: z.coerce.number().gt(0).lte(1).default(1),
+
+    // OTel Masking
+    HANZO_INGESTION_MASKING_PROPAGATED_HEADERS: z
+      .string()
+      .optional()
+      .transform((s) =>
+        s ? s.split(",").map((h) => h.toLowerCase().trim()) : [],
+      ),
 
     // clickhouse
     CLICKHOUSE_URL: z.string().url(),
@@ -352,7 +368,9 @@ export const env = createEnv({
       .enum(["true", "false"])
       .default("false"),
 
-    HANZO_ENABLE_EVENTS_TABLE_FLAGS: z.enum(["true", "false"]).default("false"),
+    HANZO_ENABLE_EVENTS_TABLE_FLAGS: z
+      .enum(["true", "false"])
+      .default("false"),
 
     // v2 APIs (events table based) - disabled by default for self-hosters
     HANZO_ENABLE_EVENTS_TABLE_V2_APIS: z
@@ -402,7 +420,6 @@ export const env = createEnv({
     NEXT_PUBLIC_PLAIN_APP_ID: z.string().optional(),
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
-    NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
     NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT: z
       .enum(["true", "false"])
       .optional()
@@ -414,24 +431,24 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    HANZO_TRIAL_EXPIRE: process.env.HANZO_TRIAL_EXPIRE,
     SEED_SECRET_KEY: process.env.SEED_SECRET_KEY,
     NEXT_PUBLIC_DEMO_PROJECT_ID: process.env.NEXT_PUBLIC_DEMO_PROJECT_ID,
     NEXT_PUBLIC_DEMO_ORG_ID: process.env.NEXT_PUBLIC_DEMO_ORG_ID,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    HANZO_S3_FREE_PLAN_EXPIRE: process.env.HANZO_S3_FREE_PLAN_EXPIRE,
     BUILD_ID: process.env.BUILD_ID,
     NEXT_PUBLIC_BUILD_ID: process.env.NEXT_PUBLIC_BUILD_ID,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_COOKIE_DOMAIN: process.env.NEXTAUTH_COOKIE_DOMAIN,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXT_PUBLIC_HANZO_CLOUD_REGION: process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
+    NEXT_PUBLIC_HANZO_CLOUD_REGION:
+      process.env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
     NEXT_PUBLIC_SIGN_UP_DISABLED: process.env.NEXT_PUBLIC_SIGN_UP_DISABLED,
     HANZO_ENABLE_EXPERIMENTAL_FEATURES:
       process.env.HANZO_ENABLE_EXPERIMENTAL_FEATURES,
     HANZO_TEAM_SLACK_WEBHOOK: process.env.HANZO_TEAM_SLACK_WEBHOOK,
-    HANZO_NEW_USER_SIGNUP_WEBHOOK: process.env.HANZO_NEW_USER_SIGNUP_WEBHOOK,
+    HANZO_NEW_USER_SIGNUP_WEBHOOK:
+      process.env.HANZO_NEW_USER_SIGNUP_WEBHOOK,
     SALT: process.env.SALT,
     HANZO_CSP_ENFORCE_HTTPS: process.env.HANZO_CSP_ENFORCE_HTTPS,
     TELEMETRY_ENABLED: process.env.TELEMETRY_ENABLED,
@@ -568,12 +585,6 @@ export const env = createEnv({
     AUTH_IGNORE_ACCOUNT_FIELDS: process.env.AUTH_IGNORE_ACCOUNT_FIELDS,
     AUTH_DOMAINS_WITH_SSO_ENFORCEMENT:
       process.env.AUTH_DOMAINS_WITH_SSO_ENFORCEMENT,
-    // Hanzo IAM
-    HANZO_IAM_CLIENT_ID: process.env.HANZO_IAM_CLIENT_ID,
-    HANZO_IAM_CLIENT_SECRET: process.env.HANZO_IAM_CLIENT_SECRET,
-    HANZO_IAM_SERVER_URL: process.env.HANZO_IAM_SERVER_URL,
-    HANZO_IAM_ALLOW_ACCOUNT_LINKING:
-      process.env.HANZO_IAM_ALLOW_ACCOUNT_LINKING,
     AUTH_DISABLE_USERNAME_PASSWORD: process.env.AUTH_DISABLE_USERNAME_PASSWORD,
     AUTH_DISABLE_SIGNUP: process.env.AUTH_DISABLE_SIGNUP,
     AUTH_SESSION_MAX_AGE: process.env.AUTH_SESSION_MAX_AGE,
@@ -588,13 +599,20 @@ export const env = createEnv({
     OTEL_SERVICE_NAME: process.env.OTEL_SERVICE_NAME,
     OTEL_TRACE_SAMPLING_RATIO: process.env.OTEL_TRACE_SAMPLING_RATIO,
 
+    HANZO_INGESTION_MASKING_PROPAGATED_HEADERS:
+      process.env.HANZO_INGESTION_MASKING_PROPAGATED_HEADERS,
+
     // S3 media upload
     HANZO_S3_MEDIA_MAX_CONTENT_LENGTH:
       process.env.HANZO_S3_MEDIA_MAX_CONTENT_LENGTH,
-    HANZO_S3_MEDIA_UPLOAD_BUCKET: process.env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-    HANZO_S3_MEDIA_UPLOAD_PREFIX: process.env.HANZO_S3_MEDIA_UPLOAD_PREFIX,
-    HANZO_S3_MEDIA_UPLOAD_REGION: process.env.HANZO_S3_MEDIA_UPLOAD_REGION,
-    HANZO_S3_MEDIA_UPLOAD_ENDPOINT: process.env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
+    HANZO_S3_MEDIA_UPLOAD_BUCKET:
+      process.env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
+    HANZO_S3_MEDIA_UPLOAD_PREFIX:
+      process.env.HANZO_S3_MEDIA_UPLOAD_PREFIX,
+    HANZO_S3_MEDIA_UPLOAD_REGION:
+      process.env.HANZO_S3_MEDIA_UPLOAD_REGION,
+    HANZO_S3_MEDIA_UPLOAD_ENDPOINT:
+      process.env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
     HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:
       process.env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
     HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:
@@ -628,9 +646,12 @@ export const env = createEnv({
     HANZO_UI_DOCUMENTATION_HREF: process.env.HANZO_UI_DOCUMENTATION_HREF,
     HANZO_UI_SUPPORT_HREF: process.env.HANZO_UI_SUPPORT_HREF,
     HANZO_UI_FEEDBACK_HREF: process.env.HANZO_UI_FEEDBACK_HREF,
-    HANZO_UI_LOGO_LIGHT_MODE_HREF: process.env.HANZO_UI_LOGO_LIGHT_MODE_HREF,
-    HANZO_UI_LOGO_DARK_MODE_HREF: process.env.HANZO_UI_LOGO_DARK_MODE_HREF,
-    HANZO_UI_DEFAULT_MODEL_ADAPTER: process.env.HANZO_UI_DEFAULT_MODEL_ADAPTER,
+    HANZO_UI_LOGO_LIGHT_MODE_HREF:
+      process.env.HANZO_UI_LOGO_LIGHT_MODE_HREF,
+    HANZO_UI_LOGO_DARK_MODE_HREF:
+      process.env.HANZO_UI_LOGO_DARK_MODE_HREF,
+    HANZO_UI_DEFAULT_MODEL_ADAPTER:
+      process.env.HANZO_UI_DEFAULT_MODEL_ADAPTER,
     HANZO_UI_DEFAULT_BASE_URL_OPENAI:
       process.env.HANZO_UI_DEFAULT_BASE_URL_OPENAI,
     HANZO_UI_DEFAULT_BASE_URL_ANTHROPIC:
@@ -665,14 +686,16 @@ export const env = createEnv({
     HANZO_INIT_ORG_CLOUD_PLAN: process.env.HANZO_INIT_ORG_CLOUD_PLAN,
     HANZO_INIT_PROJECT_ID: process.env.HANZO_INIT_PROJECT_ID,
     HANZO_INIT_PROJECT_NAME: process.env.HANZO_INIT_PROJECT_NAME,
-    HANZO_INIT_PROJECT_RETENTION: process.env.HANZO_INIT_PROJECT_RETENTION,
-    HANZO_INIT_PROJECT_PUBLIC_KEY: process.env.HANZO_INIT_PROJECT_PUBLIC_KEY,
-    HANZO_INIT_PROJECT_SECRET_KEY: process.env.HANZO_INIT_PROJECT_SECRET_KEY,
+    HANZO_INIT_PROJECT_RETENTION:
+      process.env.HANZO_INIT_PROJECT_RETENTION,
+    HANZO_INIT_PROJECT_PUBLIC_KEY:
+      process.env.HANZO_INIT_PROJECT_PUBLIC_KEY,
+    HANZO_INIT_PROJECT_SECRET_KEY:
+      process.env.HANZO_INIT_PROJECT_SECRET_KEY,
     HANZO_INIT_USER_EMAIL: process.env.HANZO_INIT_USER_EMAIL,
     HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
     HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
-    NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
       process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID,
@@ -692,9 +715,12 @@ export const env = createEnv({
       process.env.HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS,
 
     // Natural Language Filters
-    HANZO_AI_FEATURES_PUBLIC_KEY: process.env.HANZO_AI_FEATURES_PUBLIC_KEY,
-    HANZO_AI_FEATURES_SECRET_KEY: process.env.HANZO_AI_FEATURES_SECRET_KEY,
-    HANZO_AI_FEATURES_PROJECT_ID: process.env.HANZO_AI_FEATURES_PROJECT_ID,
+    HANZO_AI_FEATURES_PUBLIC_KEY:
+      process.env.HANZO_AI_FEATURES_PUBLIC_KEY,
+    HANZO_AI_FEATURES_SECRET_KEY:
+      process.env.HANZO_AI_FEATURES_SECRET_KEY,
+    HANZO_AI_FEATURES_PROJECT_ID:
+      process.env.HANZO_AI_FEATURES_PROJECT_ID,
     // Events table migration
     HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS:
       process.env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS,

@@ -3,7 +3,9 @@ import { removeEmptyEnvVariables } from "./utils/environment";
 
 const EnvSchema = z.object({
   NEXT_PUBLIC_HANZO_CLOUD_REGION: z.string().optional(),
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
   NEXTAUTH_URL: z.string().url().optional(),
   REDIS_HOST: z.string().nullish(),
   REDIS_PORT: z.coerce
@@ -49,6 +51,7 @@ const EnvSchema = z.object({
   HANZO_CACHE_PROMPT_TTL_SECONDS: z.coerce.number().default(300), // 5 minutes
   CLICKHOUSE_URL: z.string().url(),
   CLICKHOUSE_READ_ONLY_URL: z.string().url().optional(),
+  CLICKHOUSE_EVENTS_READ_ONLY_URL: z.string().url().optional(),
   CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
   CLICKHOUSE_DB: z.string().default("default"),
   CLICKHOUSE_USER: z.string(),
@@ -58,30 +61,54 @@ const EnvSchema = z.object({
   // Optional to allow for server-setting fallbacks
   CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE: z.string().optional(),
   CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS: z.coerce.number().int().optional(),
-  CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS: z.coerce.number().int().min(50).optional(),
+  CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS: z.coerce
+    .number()
+    .int()
+    .min(50)
+    .optional(),
   CLICKHOUSE_LIGHTWEIGHT_DELETE_MODE: z
     .enum(["alter_update", "lightweight_update", "lightweight_update_force"])
     .default("alter_update"),
-  CLICKHOUSE_UPDATE_PARALLEL_MODE: z.enum(["sync", "async", "auto"]).default("auto"),
+  CLICKHOUSE_UPDATE_PARALLEL_MODE: z
+    .enum(["sync", "async", "auto"])
+    .default("auto"),
 
-  HANZO_INGESTION_QUEUE_DELAY_MS: z.coerce.number().nonnegative().default(15_000),
+  HANZO_INGESTION_QUEUE_DELAY_MS: z.coerce
+    .number()
+    .nonnegative()
+    .default(15_000),
   HANZO_INGESTION_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
-  HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
-  HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
+  HANZO_OTEL_INGESTION_QUEUE_SHARD_COUNT: z.coerce
+    .number()
+    .positive()
+    .default(1),
+  HANZO_TRACE_UPSERT_QUEUE_SHARD_COUNT: z.coerce
+    .number()
+    .positive()
+    .default(1),
   HANZO_TRACE_UPSERT_QUEUE_ATTEMPTS: z.coerce.number().positive().default(2),
-  HANZO_TRACE_DELETE_DELAY_MS: z.coerce.number().nonnegative().default(5_000),
+  HANZO_TRACE_DELETE_DELAY_MS: z.coerce
+    .number()
+    .nonnegative()
+    .default(5_000),
   HANZO_TRACE_DELETE_SKIP_PROJECT_IDS: z
     .string()
     .optional()
     .transform((s) => (s ? s.split(",").map((id) => id.trim()) : [])),
   SALT: z.string().optional(), // used by components imported by web package
-  HANZO_LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).optional(),
+  HANZO_LOG_LEVEL: z
+    .enum(["trace", "debug", "info", "warn", "error", "fatal"])
+    .optional(),
   HANZO_LOG_FORMAT: z.enum(["text", "json"]).default("text"),
   HANZO_LOG_PROPAGATED_HEADERS: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((s) => s.toLowerCase().trim()) : [])),
-  ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING: z.enum(["true", "false"]).default("false"),
+    .transform((s) =>
+      s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
+    ),
+  ENABLE_AWS_CLOUDWATCH_METRIC_PUBLISHING: z
+    .enum(["true", "false"])
+    .default("false"),
   HANZO_S3_CONCURRENT_WRITES: z.coerce.number().positive().default(50),
   HANZO_S3_EVENT_UPLOAD_BUCKET: z.string(), // Hanzo requires a bucket name for S3 Event Uploads.
   HANZO_S3_EVENT_UPLOAD_PREFIX: z.string().default(""),
@@ -89,7 +116,9 @@ const EnvSchema = z.object({
   HANZO_S3_EVENT_UPLOAD_ENDPOINT: z.string().optional(),
   HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
   HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z.enum(["true", "false"]).default("false"),
+  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: z
+    .enum(["true", "false"])
+    .default("false"),
   HANZO_S3_EVENT_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
   HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
   HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
@@ -98,29 +127,46 @@ const EnvSchema = z.object({
   HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
   HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
   HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z.enum(["true", "false"]).default("false"),
+  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+    .enum(["true", "false"])
+    .default("false"),
   HANZO_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
   HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
   HANZO_USE_AZURE_BLOB: z.enum(["true", "false"]).default("false"),
-  HANZO_AZURE_SKIP_CONTAINER_CHECK: z.enum(["true", "false"]).default("true"),
+  HANZO_AZURE_SKIP_CONTAINER_CHECK: z
+    .enum(["true", "false"])
+    .default("true"),
   HANZO_USE_GOOGLE_CLOUD_STORAGE: z.enum(["true", "false"]).default("false"),
   HANZO_GOOGLE_CLOUD_STORAGE_CREDENTIALS: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
 
-  HANZO_ENABLE_BLOB_STORAGE_FILE_LOG: z.enum(["true", "false"]).default("true"),
+  HANZO_ENABLE_BLOB_STORAGE_FILE_LOG: z
+    .enum(["true", "false"])
+    .default("true"),
 
   HANZO_S3_LIST_MAX_KEYS: z.coerce.number().positive().default(200),
-  HANZO_S3_RATE_ERROR_SLOWDOWN_ENABLED: z.enum(["true", "false"]).default("false"),
-  HANZO_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS: z.coerce.number().positive().default(3600), // 1 hour
-  HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED: z.enum(["true", "false"]).default("false"),
+  HANZO_S3_RATE_ERROR_SLOWDOWN_ENABLED: z
+    .enum(["true", "false"])
+    .default("false"),
+  HANZO_S3_RATE_ERROR_SLOWDOWN_TTL_SECONDS: z.coerce
+    .number()
+    .positive()
+    .default(3600), // 1 hour
+  HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED: z
+    .enum(["true", "false"])
+    .default("false"),
   HANZO_S3_CORE_DATA_EXPORT_SSE: z.enum(["AES256", "aws:kms"]).optional(),
   HANZO_S3_CORE_DATA_EXPORT_SSE_KMS_KEY_ID: z.string().optional(),
-  HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z.enum(["true", "false"]).default("false"),
+  HANZO_POSTGRES_METERING_DATA_EXPORT_IS_ENABLED: z
+    .enum(["true", "false"])
+    .default("false"),
 
   HANZO_CUSTOM_SSO_EMAIL_CLAIM: z.string().default("email"),
   HANZO_CUSTOM_SSO_NAME_CLAIM: z.string().default("name"),
   HANZO_CUSTOM_SSO_SUB_CLAIM: z.string().default("sub"),
-  HANZO_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES: z.coerce.number().default(80e6), // 80MB
+  HANZO_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES: z.coerce
+    .number()
+    .default(80e6), // 80MB
   HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS: z.coerce.number().default(600_000), // 10 minutes
   HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().default(3), // Maximum attempts for socket hang up errors
   HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS: z.string().optional(),
@@ -142,7 +188,11 @@ const EnvSchema = z.object({
           }
 
           // Validate sample rate is between 0 and 1
-          const sampleRate = z.coerce.number().min(0).max(1).parse(sampleRateStr);
+          const sampleRate = z.coerce
+            .number()
+            .min(0)
+            .max(1)
+            .parse(sampleRateStr);
 
           map.set(projectId, sampleRate);
         }
@@ -155,15 +205,21 @@ const EnvSchema = z.object({
   HANZO_WEBHOOK_WHITELISTED_IPS: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((s) => s.toLowerCase().trim()) : [])),
+    .transform((s) =>
+      s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
+    ),
   HANZO_WEBHOOK_WHITELISTED_IP_SEGMENTS: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((s) => s.toLowerCase().trim()) : [])),
+    .transform((s) =>
+      s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
+    ),
   HANZO_WEBHOOK_WHITELISTED_HOST: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((s) => s.toLowerCase().trim()) : [])),
+    .transform((s) =>
+      s ? s.split(",").map((s) => s.toLowerCase().trim()) : [],
+    ),
   SLACK_CLIENT_ID: z.string().optional(),
   SLACK_CLIENT_SECRET: z.string().optional(),
   SLACK_STATE_SECRET: z.string().optional(),
@@ -172,26 +228,47 @@ const EnvSchema = z.object({
     .positive()
     .optional()
     .default(5_000)
-    .describe("How many records should be fetched from Slack, before we give up"),
+    .describe(
+      "How many records should be fetched from Slack, before we give up",
+    ),
   HTTPS_PROXY: z.string().optional(),
 
-  HANZO_SERVER_SIDE_IO_CHAR_LIMIT: z.coerce.number().int().positive().default(1_000),
+  HANZO_SERVER_SIDE_IO_CHAR_LIMIT: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(1_000),
 
-  HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000), // 10 minutes
+  HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(600_000), // 10 minutes
 
-  HANZO_EVENT_PROPAGATION_WORKER_GLOBAL_CONCURRENCY: z.coerce.number().positive().default(10),
+  HANZO_EVENT_PROPAGATION_WORKER_GLOBAL_CONCURRENCY: z.coerce
+    .number()
+    .positive()
+    .default(10),
 
-  HANZO_FETCH_LLM_COMPLETION_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000), // 2 minutes
+  HANZO_FETCH_LLM_COMPLETION_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(120_000), // 2 minutes
 
   HANZO_AWS_BEDROCK_REGION: z.string().optional(),
 
   // API Performance Flags
   // Whether to add a `FINAL` modifier to the observations CTE in GET /api/public/traces.
   // Can be used to improve performance for self-hosters that are fully on the new OTel SDKs.
-  HANZO_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL: z.enum(["true", "false"]).default("false"),
+  HANZO_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL: z
+    .enum(["true", "false"])
+    .default("false"),
   // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
   // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
-  HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z.enum(["true", "false"]).default("false"),
+  HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z
+    .enum(["true", "false"])
+    .default("false"),
 
   // Hanzo AI Features
   HANZO_AI_FEATURES_PUBLIC_KEY: z.string().optional(),
@@ -200,11 +277,40 @@ const EnvSchema = z.object({
   HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
   // Dataset Service
-  HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION: z.enum(["true", "false"]).default("true"),
-  HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION: z.enum(["true", "false"]).default("true"),
+  HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION: z
+    .enum(["true", "false"])
+    .default("true"),
+  HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION: z
+    .enum(["true", "false"])
+    .default("true"),
+
+  // EE License
+  HANZO_EE_LICENSE_KEY: z.string().optional(),
+
+  // Ingestion Masking (EE feature)
+  HANZO_INGESTION_MASKING_CALLBACK_URL: z.string().url().optional(),
+  HANZO_INGESTION_MASKING_CALLBACK_TIMEOUT_MS: z.coerce
+    .number()
+    .positive()
+    .default(500),
+  HANZO_INGESTION_MASKING_CALLBACK_FAIL_CLOSED: z
+    .enum(["true", "false"])
+    .default("false"),
+  HANZO_INGESTION_MASKING_MAX_RETRIES: z.coerce
+    .number()
+    .nonnegative()
+    .default(1),
+  HANZO_INGESTION_MASKING_PROPAGATED_HEADERS: z
+    .string()
+    .optional()
+    .transform((s) =>
+      s ? s.split(",").map((h) => h.toLowerCase().trim()) : [],
+    ),
 });
 
-export const env: z.infer<typeof EnvSchema> =
+export type SharedEnv = z.infer<typeof EnvSchema>;
+
+export const env: SharedEnv =
   process.env.DOCKER_BUILD === "1" // eslint-disable-line turbo/no-undeclared-env-vars
     ? (process.env as any)
     : EnvSchema.parse(removeEmptyEnvVariables(process.env));

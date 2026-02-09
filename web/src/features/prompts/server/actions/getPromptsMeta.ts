@@ -8,28 +8,7 @@ export const getPromptsMeta = async (params: GetPromptsMetaParams): Promise<Prom
   const { projectId, page, limit } = params;
 
   const promptsMeta = (await prisma.$queryRaw`
-    WITH latest_version_details AS (
-      SELECT
-          p.name,
-          p.config,
-          p.type
-      FROM
-          prompts p
-      WHERE
-          (p.name, p.version) IN (
-              SELECT
-                  p.name,
-                  MAX(p.version)
-              FROM
-                  prompts p -- needs to be p for filter conditions
-              WHERE
-                  p."project_id" = ${projectId}
-                  ${getPromptsFilterCondition(params)}
-              GROUP BY
-                  p.name
-        )
-      AND p."project_id" = ${projectId}
-    ), versions AS (
+    WITH versions AS (
       SELECT
         p.name AS name,
         MAX(p.tags) AS tags,  -- use max to get tags, they are the same for all versions of a prompt
@@ -39,8 +18,8 @@ export const getPromptsMeta = async (params: GetPromptsMetaParams): Promise<Prom
       FROM
           prompts p -- needs to be p for filter conditions
       LEFT JOIN LATERAL unnest(p.labels) AS label ON true
-      WHERE 
-          p."project_id" = ${projectId} 
+      WHERE
+          p."project_id" = ${projectId}
           ${getPromptsFilterCondition(params)}
       GROUP BY
           p.name
@@ -54,11 +33,20 @@ export const getPromptsMeta = async (params: GetPromptsMetaParams): Promise<Prom
 
     SELECT
       v.*,
-      l.type AS type,
-      l.config AS "lastConfig"
+      latest.type AS type,
+      latest.config AS "lastConfig"
     FROM
       versions v
-    LEFT JOIN latest_version_details l ON v.name = l.name
+    LEFT JOIN LATERAL (
+      SELECT p.config, p.type
+      FROM prompts p
+      WHERE p."project_id" = ${projectId}
+        AND p.name = v.name
+        ${getPromptsFilterCondition(params)}
+      ORDER BY p.version DESC
+      LIMIT 1
+    ) latest ON true
+    ORDER BY v.name
   `) as PromptsMeta[];
 
   const [{ count: totalItemsCount }] = (await prisma.$queryRaw`

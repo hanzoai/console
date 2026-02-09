@@ -4,15 +4,20 @@
  * Contains:
  * - Title row with ItemBadge, trace name, CopyIdsPopover
  * - Action buttons (Dataset, Annotate, Queue, Comments)
- * - Metadata badges (timestamp, session, user, environment, release, version)
+ * - Metadata badges (timestamp, latency, session, user, environment, release, version, cost, usage)
  *
  * Memoized to prevent unnecessary re-renders when tab state changes.
  */
 
-import { memo } from "react";
-import { type TraceDomain, type ScoreDomain, AnnotationQueueObjectType } from "@hanzo/shared";
+import { memo, useMemo } from "react";
+import {
+  type TraceDomain,
+  type ScoreDomain,
+  AnnotationQueueObjectType,
+} from "@hanzo/shared";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
+import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { CopyIdsPopover } from "@/src/components/trace2/components/_shared/CopyIdsPopover";
@@ -20,7 +25,19 @@ import { NewDatasetItemFromExistingObject } from "@/src/features/datasets/compon
 import { AnnotateDrawer } from "@/src/features/scores/components/AnnotateDrawer";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
-import { SessionBadge, UserIdBadge, EnvironmentBadge, ReleaseBadge, VersionBadge } from "./TraceMetadataBadges";
+import {
+  SessionBadge,
+  UserIdBadge,
+  EnvironmentBadge,
+  ReleaseBadge,
+  VersionBadge,
+} from "./TraceMetadataBadges";
+import { LatencyBadge } from "../ObservationDetailView/ObservationMetadataBadgesSimple";
+import {
+  CostBadge,
+  UsageBadge,
+} from "../ObservationDetailView/ObservationMetadataBadgesTooltip";
+import { aggregateTraceMetrics } from "@/src/components/trace2/lib/trace-aggregation";
 
 export interface TraceDetailViewHeaderProps {
   trace: Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
@@ -28,6 +45,7 @@ export interface TraceDetailViewHeaderProps {
     input: string | null;
     output: string | null;
   };
+  observations: ObservationReturnTypeWithMetadata[];
   projectId: string;
   traceScores: WithStringifiedMetadata<ScoreDomain>[];
   commentCount: number | undefined;
@@ -40,6 +58,7 @@ export interface TraceDetailViewHeaderProps {
 
 export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
   trace,
+  observations,
   projectId,
   traceScores,
   commentCount,
@@ -48,6 +67,11 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
   isCommentDrawerOpen,
   onCommentDrawerOpenChange,
 }: TraceDetailViewHeaderProps) {
+  const aggregatedMetrics = useMemo(
+    () => aggregateTraceMetrics(observations),
+    [observations],
+  );
+
   return (
     <div className="flex-shrink-0 space-y-2 border-b p-2 @container">
       {/* Title row with actions */}
@@ -112,16 +136,35 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
       <div className="flex flex-col gap-2">
         {/* Timestamp */}
         <div className="flex flex-wrap items-center gap-1">
-          <LocalIsoDate date={trace.timestamp} accuracy="millisecond" className="text-sm" />
+          <LocalIsoDate
+            date={trace.timestamp}
+            accuracy="millisecond"
+            className="text-sm"
+          />
         </div>
 
         {/* Other badges */}
         <div className="flex flex-wrap items-center gap-1">
+          <LatencyBadge latencySeconds={trace.latency ?? null} />
           <SessionBadge sessionId={trace.sessionId} projectId={projectId} />
           <UserIdBadge userId={trace.userId} projectId={projectId} />
           <EnvironmentBadge environment={trace.environment} />
           <ReleaseBadge release={trace.release} />
           <VersionBadge version={trace.version} />
+          <CostBadge
+            totalCost={aggregatedMetrics.totalCost}
+            costDetails={aggregatedMetrics.costDetails}
+          />
+          {aggregatedMetrics.hasGenerationLike &&
+            aggregatedMetrics.usageDetails && (
+              <UsageBadge
+                type="GENERATION"
+                inputUsage={aggregatedMetrics.inputUsage}
+                outputUsage={aggregatedMetrics.outputUsage}
+                totalUsage={aggregatedMetrics.totalUsage}
+                usageDetails={aggregatedMetrics.usageDetails}
+              />
+            )}
         </div>
       </div>
     </div>

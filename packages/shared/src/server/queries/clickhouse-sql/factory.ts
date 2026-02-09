@@ -28,8 +28,15 @@ export class QueryBuilderError extends Error {
 // This function ensures that the user only selects valid columns from the clickhouse schema.
 // The filter property in this column needs to be zod verified.
 // User input for values (e.g. project_id = <value>) are sent to Clickhouse as parameters to prevent SQL injection
-export const createFilterFromFilterState = (filter: FilterCondition[], columnMapping: UiColumnMappings) => {
-  return filter.map((frontEndFilter) => {
+export const createFilterFromFilterState = (
+  filter: FilterCondition[],
+  columnMapping: UiColumnMappings,
+) => {
+  const applicableFilters = filter.filter(
+    (frontEndFilter) => frontEndFilter.type !== "positionInTrace",
+  );
+
+  return applicableFilters.map((frontEndFilter) => {
     // checks if the column exists in the clickhouse schema
     const column = matchAndVerifyTracesUiColumn(frontEndFilter, columnMapping);
 
@@ -111,6 +118,29 @@ export const createFilterFromFilterState = (filter: FilterCondition[], columnMap
           tablePrefix: column.queryPrefix,
         });
       case "null":
+        // Events table uses empty string instead of NULL for parent_span_id
+        if (
+          frontEndFilter.column === "parentObservationId" &&
+          column.clickhouseTableName === "events"
+        ) {
+          const isNull = frontEndFilter.operator === "is null";
+          const fieldWithPrefix = column.queryPrefix
+            ? `${column.queryPrefix}.${column.clickhouseSelect}`
+            : column.clickhouseSelect;
+
+          // Create an inline filter for empty string comparison
+          return {
+            clickhouseTable: column.clickhouseTableName,
+            field: column.clickhouseSelect,
+            operator: isNull ? ("=" as const) : ("!=" as const),
+            tablePrefix: column.queryPrefix,
+            apply: () => ({
+              query: `${fieldWithPrefix} ${isNull ? "=" : "!="} ''`,
+              params: {},
+            }),
+          };
+        }
+
         return new NullFilter({
           clickhouseTable: column.clickhouseTableName,
           field: column.clickhouseSelect,
@@ -126,18 +156,32 @@ export const createFilterFromFilterState = (filter: FilterCondition[], columnMap
   });
 };
 
-const matchAndVerifyTracesUiColumn = (filter: z.infer<typeof singleFilter>, uiTableDefinitions: UiColumnMappings) => {
+const matchAndVerifyTracesUiColumn = (
+  filter: z.infer<typeof singleFilter>,
+  uiTableDefinitions: UiColumnMappings,
+) => {
   // tries to match the column name to the clickhouse table name
   const uiTable = uiTableDefinitions.find(
-    (col) => col.uiTableName === filter.column || col.uiTableId === filter.column, // matches on the NAME of the column in the UI.
+    (col) =>
+      col.uiTableName === filter.column || col.uiTableId === filter.column, // matches on the NAME of the column in the UI.
   );
 
   if (!uiTable) {
-    throw new QueryBuilderError(`Column ${filter.column} does not match a UI / CH table mapping.`);
+    const errorMessage = `Column ${filter.column} does not match a UI / CH table mapping.`;
+    logger.error(errorMessage, {
+      filterColumn: filter.column,
+      filterType: filter.type,
+      availableColumns: uiTableDefinitions.map(
+        (col) => col.uiTableId ?? col.uiTableName,
+      ),
+    });
+    throw new QueryBuilderError(errorMessage);
   }
 
   if (!isValidTableName(uiTable.clickhouseTableName)) {
-    throw new QueryBuilderError(`Invalid clickhouse table name: ${uiTable.clickhouseTableName}`);
+    throw new QueryBuilderError(
+      `Invalid clickhouse table name: ${uiTable.clickhouseTableName}`,
+    );
   }
 
   return uiTable;

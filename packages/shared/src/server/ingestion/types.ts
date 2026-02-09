@@ -109,14 +109,24 @@ const OpenAICompletionUsageSchema = z
     prompt_tokens: z.number().int().nonnegative(),
     completion_tokens: z.number().int().nonnegative(),
     total_tokens: z.number().int().nonnegative(),
-    prompt_tokens_details: z.record(z.string(), z.number().int().nonnegative().nullish()).nullish(),
-    completion_tokens_details: z.record(z.string(), z.number().int().nonnegative().nullish()).nullish(),
+    prompt_tokens_details: z
+      .record(z.string(), z.number().int().nonnegative().nullish())
+      .nullish(),
+    completion_tokens_details: z
+      .record(z.string(), z.number().int().nonnegative().nullish())
+      .nullish(),
   })
   .strict()
   .transform((v) => {
     if (!v) return;
 
-    const { prompt_tokens, completion_tokens, total_tokens, prompt_tokens_details, completion_tokens_details } = v;
+    const {
+      prompt_tokens,
+      completion_tokens,
+      total_tokens,
+      prompt_tokens_details,
+      completion_tokens_details,
+    } = v;
     const result: z.infer<typeof RawUsageDetails> & {
       input: number;
       output: number;
@@ -154,14 +164,24 @@ const OpenAIResponseUsageSchema = z
     input_tokens: z.number().int().nonnegative(),
     output_tokens: z.number().int().nonnegative(),
     total_tokens: z.number().int().nonnegative(),
-    input_tokens_details: z.record(z.string(), z.number().int().nonnegative().nullish()).nullish(),
-    output_tokens_details: z.record(z.string(), z.number().int().nonnegative().nullish()).nullish(),
+    input_tokens_details: z
+      .record(z.string(), z.number().int().nonnegative().nullish())
+      .nullish(),
+    output_tokens_details: z
+      .record(z.string(), z.number().int().nonnegative().nullish())
+      .nullish(),
   })
   .strict()
   .transform((v) => {
     if (!v) return;
 
-    const { input_tokens, output_tokens, total_tokens, input_tokens_details, output_tokens_details } = v;
+    const {
+      input_tokens,
+      output_tokens,
+      total_tokens,
+      input_tokens_details,
+      output_tokens_details,
+    } = v;
     const result: z.infer<typeof RawUsageDetails> & {
       input: number;
       output: number;
@@ -194,27 +214,35 @@ const OpenAIResponseUsageSchema = z
   });
 
 export const UsageDetails = z
-  .union([OpenAICompletionUsageSchema, OpenAIResponseUsageSchema, RawUsageDetails])
+  .union([
+    OpenAICompletionUsageSchema,
+    OpenAIResponseUsageSchema,
+    RawUsageDetails,
+  ])
   .nullish();
 
 const INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE =
   "Only alphanumeric lower case characters, hyphens, and underscores are allowed";
 
 const ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE =
-  INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE + " and it must not start with 'hanzo'";
+  INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE +
+  " and it must not start with 'hanzo'";
+
+/** Default environment name used when no environment is specified. */
+export const DEFAULT_TRACE_ENVIRONMENT = "default" as const;
 
 const PublicEnvironmentName = z
   .string()
   .toLowerCase()
   .max(40, "Maximum length is 40 characters")
-  .regex(/^((?!hanzo))[a-z0-9-_]+$/, ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE)
-  .default("default");
+  .regex(/^(?!hanzo)[a-z0-9-_]+$/, ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE)
+  .default(DEFAULT_TRACE_ENVIRONMENT);
 
 const InternalEnvironmentName = z
   .string()
   .max(40, "Maximum length is 40 characters")
   .regex(/^[a-z0-9-_]+$/, INTERNAL_ENVIRONMENT_NAME_REGEX_ERROR_MESSAGE)
-  .default("default");
+  .default(DEFAULT_TRACE_ENVIRONMENT);
 
 /** @deprecated Use PublicEnvironmentName or InternalEnvironmentName instead */
 export const EnvironmentName = PublicEnvironmentName;
@@ -279,7 +307,12 @@ export const LegacyGenerationsCreateSchema = z.object({
   endTime: stringDateTime,
   completionStartTime: stringDateTime,
   model: z.string().nullish(),
-  modelParameters: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).nullish()).nullish(),
+  modelParameters: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean()]).nullish(),
+    )
+    .nullish(),
   prompt: jsonSchema.nullish(),
   completion: jsonSchema.nullish(),
   usage: usage,
@@ -298,7 +331,12 @@ export const LegacyGenerationPatchSchema = z.object({
   endTime: stringDateTime,
   completionStartTime: stringDateTime,
   model: z.string().nullish(),
-  modelParameters: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).nullish()).nullish(),
+  modelParameters: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean()]).nullish(),
+    )
+    .nullish(),
   prompt: jsonSchema.nullish(),
   completion: jsonSchema.nullish(),
   usage: usage,
@@ -317,7 +355,12 @@ export const LegacyObservationBody = z.object({
   endTime: stringDateTime,
   completionStartTime: stringDateTime,
   model: z.string().nullish(),
-  modelParameters: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).nullish()).nullish(),
+  modelParameters: z
+    .record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean()]).nullish(),
+    )
+    .nullish(),
   input: jsonSchema.nullish(),
   output: jsonSchema.nullish(),
   usage: usage,
@@ -340,8 +383,14 @@ export const SdkLogEvent = z.object({
 // As we allow plain values, arrays, and objects the JSON parse via bodyParser should suffice.
 
 // Complete schema factory - single source of truth for ALL schemas
-const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) => {
-  const environmentSchema = isPublic ? PublicEnvironmentName : InternalEnvironmentName;
+const createAllIngestionSchemas = ({
+  isPublic = true,
+}: {
+  isPublic: boolean;
+}) => {
+  const environmentSchema = isPublic
+    ? PublicEnvironmentName
+    : InternalEnvironmentName;
 
   // Base schemas with environment
   const TraceBody = z.object({
@@ -398,7 +447,15 @@ const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) =
     modelParameters: z
       .record(
         z.string(),
-        z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.record(z.string(), z.string())]).nullish(),
+        z
+          .union([
+            z.string(),
+            z.number(),
+            z.boolean(),
+            z.array(z.string()),
+            z.record(z.string(), z.string()),
+          ])
+          .nullish(),
       )
       .nullish(),
     usage: usage,
@@ -419,7 +476,15 @@ const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) =
     modelParameters: z
       .record(
         z.string(),
-        z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.record(z.string(), z.string())]).nullish(),
+        z
+          .union([
+            z.string(),
+            z.number(),
+            z.boolean(),
+            z.array(z.string()),
+            z.record(z.string(), z.string()),
+          ])
+          .nullish(),
       )
       .nullish(),
     usage: usage,
@@ -444,7 +509,9 @@ const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) =
     observationId: z.string().nullish(),
     comment: z.string().nullish(),
     metadata: jsonSchema.nullish(),
-    source: z.enum(["API", "EVAL", "ANNOTATION"]).default("API" as ScoreSourceType),
+    source: z
+      .enum(["API", "EVAL", "ANNOTATION"])
+      .default("API" as ScoreSourceType),
     executionTraceId: z.string().nullish(),
     queueId: z.string().nullish(),
   });
@@ -468,7 +535,8 @@ const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) =
       BaseScoreBody.merge(
         z.object({
           value: z.number().refine((value) => value === 0 || value === 1, {
-            message: "Value must be a number equal to either 0 or 1 for data type BOOLEAN",
+            message:
+              "Value must be a number equal to either 0 or 1 for data type BOOLEAN",
           }),
           dataType: z.literal("BOOLEAN"),
           configId: z.string().nullish(),
@@ -505,6 +573,8 @@ const createAllIngestionSchemas = ({ isPublic = true }: { isPublic: boolean }) =
     runId: z.string(),
     // Dataset item identification
     datasetItemId: z.string(),
+    // Dataset version: User-provided timestamp for temporal queries (can be any version)
+    datasetVersion: stringDateTime.optional(),
   });
 
   // Event schemas
@@ -704,9 +774,12 @@ export const embeddingCreateEvent = publicSchemas.embeddingCreateEvent;
 export const guardrailCreateEvent = publicSchemas.guardrailCreateEvent;
 export const scoreEvent = publicSchemas.scoreEvent;
 export const sdkLogEvent = publicSchemas.sdkLogEvent;
-export const datasetRunItemCreateEvent = publicSchemas.datasetRunItemCreateEvent;
-export const legacyObservationCreateEvent = publicSchemas.legacyObservationCreateEvent;
-export const legacyObservationUpdateEvent = publicSchemas.legacyObservationUpdateEvent;
+export const datasetRunItemCreateEvent =
+  publicSchemas.datasetRunItemCreateEvent;
+export const legacyObservationCreateEvent =
+  publicSchemas.legacyObservationCreateEvent;
+export const legacyObservationUpdateEvent =
+  publicSchemas.legacyObservationUpdateEvent;
 
 /** @deprecated Use createIngestionEventSchema() instead */
 export const ingestionEvent = publicSchemas.ingestionEvent;
@@ -728,7 +801,9 @@ export type DatasetRunItemEventType = z.infer<typeof datasetRunItemCreateEvent>;
  * @returns The ingestion event schema.
  */
 export const createIngestionEventSchema = (isHanzoInternal = false) => {
-  return isHanzoInternal ? internalSchemas.ingestionEvent : publicSchemas.ingestionEvent;
+  return isHanzoInternal
+    ? internalSchemas.ingestionEvent
+    : publicSchemas.ingestionEvent;
 };
 
 export type ObservationEvent =

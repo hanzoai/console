@@ -14,7 +14,10 @@ import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
-import { DatasetItemIOCell, TraceObservationIOCell } from "@/src/features/datasets/components/DatasetIOCells";
+import {
+  DatasetItemIOCell,
+  TraceObservationIOCell,
+} from "@/src/features/datasets/components/DatasetIOCells";
 import { datasetRunItemsTableColsWithOptions } from "@hanzo/shared";
 import { convertRunItemToItemsByRunUiTableRow } from "@/src/features/datasets/lib/convertRunItemDataToUiTableRow";
 import { type DatasetRunItemByRunRowData } from "@/src/features/datasets/lib/types";
@@ -22,7 +25,12 @@ import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useDebounce } from "@/src/hooks/useDebounce";
 
-export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId: string; datasetRunId: string }) {
+export function DatasetRunItemsByRunTable(props: {
+  projectId: string;
+  datasetId: string;
+  datasetRunId: string;
+  datasetVersion?: Date | null;
+}) {
   const { setDetailPageList } = useDetailPageLists();
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -31,13 +39,18 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
 
   const [rowHeight, setRowHeight] = useRowHeightLocalStorage("traces", "m");
 
-  const [userFilterState, setUserFilterState] = useQueryFilterState([], "dataset_run_items_by_run", props.projectId);
+  const [userFilterState, setUserFilterState] = useQueryFilterState(
+    [],
+    "dataset_run_items_by_run",
+    props.projectId,
+  );
 
-  const datasetRunItemsFilterOptionsResponse = api.datasets.runItemFilterOptions.useQuery({
-    projectId: props.projectId,
-    datasetId: props.datasetId,
-    datasetRunIds: [props.datasetRunId],
-  });
+  const datasetRunItemsFilterOptionsResponse =
+    api.datasets.runItemFilterOptions.useQuery({
+      projectId: props.projectId,
+      datasetId: props.datasetId,
+      datasetRunIds: [props.datasetRunId],
+    });
 
   const runItems = api.datasets.runItemsByRunId.useQuery({
     ...props,
@@ -46,13 +59,16 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
     filter: userFilterState,
   });
 
-  const datasetRunItemsFilterOptions = datasetRunItemsFilterOptionsResponse.data;
+  const datasetRunItemsFilterOptions =
+    datasetRunItemsFilterOptionsResponse.data;
 
   useEffect(() => {
     if (runItems.isSuccess) {
       setDetailPageList(
         "traces",
-        runItems.data.runItems.filter((i) => !!i.trace).map((i) => ({ id: i.trace!.id })),
+        runItems.data.runItems
+          .filter((i) => !!i.trace)
+          .map((i) => ({ id: i.trace!.id })),
       );
       setDetailPageList(
         "datasetItems",
@@ -68,14 +84,15 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
 
   const setFilterState = useDebounce(setUserFilterState);
 
-  const { scoreColumns, isLoading: isColumnLoading } = useScoreColumns<DatasetRunItemByRunRowData>({
-    projectId: props.projectId,
-    scoreColumnKey: "scores",
-    filter: scoreFilters.forDatasetRunItems({
-      datasetRunIds: [props.datasetRunId],
-      datasetId: props.datasetId,
-    }),
-  });
+  const { scoreColumns, isLoading: isColumnLoading } =
+    useScoreColumns<DatasetRunItemByRunRowData>({
+      projectId: props.projectId,
+      scoreColumnKey: "scores",
+      filter: scoreFilters.forDatasetRunItems({
+        datasetRunIds: [props.datasetRunId],
+        datasetId: props.datasetId,
+      }),
+    });
 
   const columns: HanzoColumnDef<DatasetRunItemByRunRowData>[] = [
     {
@@ -86,9 +103,12 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       isPinnedLeft: true,
       cell: ({ row }) => {
         const datasetItemId: string = row.getValue("datasetItemId");
+        const versionParam = props.datasetVersion
+          ? `?version=${props.datasetVersion.toISOString()}`
+          : "";
         return (
           <TableLink
-            path={`/project/${props.projectId}/datasets/${props.datasetId}/items/${datasetItemId}`}
+            path={`/project/${props.projectId}/datasets/${props.datasetId}/items/${datasetItemId}${versionParam}`}
             value={datasetItemId}
           />
         );
@@ -100,7 +120,8 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       id: "runAt",
       size: 150,
       cell: ({ row }) => {
-        const value: DatasetRunItemByRunRowData["runAt"] = row.getValue("runAt");
+        const value: DatasetRunItemByRunRowData["runAt"] =
+          row.getValue("runAt");
         return <LocalIsoDate date={value} />;
       },
     },
@@ -110,7 +131,8 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       id: "trace",
       size: 60,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByRunRowData["trace"] = row.getValue("trace");
+        const trace: DatasetRunItemByRunRowData["trace"] =
+          row.getValue("trace");
         if (!trace) return null;
         return trace.observationId ? (
           <TableLink
@@ -134,7 +156,8 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       size: 70,
       enableHiding: true,
       cell: ({ row }) => {
-        const latency: DatasetRunItemByRunRowData["latency"] = row.getValue("latency");
+        const latency: DatasetRunItemByRunRowData["latency"] =
+          row.getValue("latency");
         return <>{!!latency ? formatIntervalSeconds(latency) : null}</>;
       },
     },
@@ -145,7 +168,8 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       size: 60,
       enableHiding: true,
       cell: ({ row }) => {
-        const totalCost: DatasetRunItemByRunRowData["totalCost"] = row.getValue("totalCost");
+        const totalCost: DatasetRunItemByRunRowData["totalCost"] =
+          row.getValue("totalCost");
         return totalCost ?? undefined;
       },
     },
@@ -167,8 +191,10 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       size: 200,
       enableHiding: true,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByRunRowData["trace"] = row.getValue("trace");
-        const runAt: DatasetRunItemByRunRowData["runAt"] = row.getValue("runAt");
+        const trace: DatasetRunItemByRunRowData["trace"] =
+          row.getValue("trace");
+        const runAt: DatasetRunItemByRunRowData["runAt"] =
+          row.getValue("runAt");
         return trace ? (
           <TraceObservationIOCell
             traceId={trace.traceId}
@@ -188,8 +214,10 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
       size: 200,
       enableHiding: true,
       cell: ({ row }) => {
-        const trace: DatasetRunItemByRunRowData["trace"] = row.getValue("trace");
-        const runAt: DatasetRunItemByRunRowData["runAt"] = row.getValue("runAt");
+        const trace: DatasetRunItemByRunRowData["trace"] =
+          row.getValue("trace");
+        const runAt: DatasetRunItemByRunRowData["runAt"] =
+          row.getValue("runAt");
         return trace ? (
           <TraceObservationIOCell
             traceId={trace.traceId}
@@ -215,6 +243,7 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
             projectId={props.projectId}
             datasetId={props.datasetId}
             datasetItemId={datasetItemId}
+            datasetItemVersion={row.original.datasetItemVersion}
             io="expectedOutput"
             singleLine={rowHeight === "s"}
           />
@@ -223,18 +252,24 @@ export function DatasetRunItemsByRunTable(props: { projectId: string; datasetId:
     },
   ];
 
-  const [columnVisibility, setColumnVisibility] = useColumnVisibility<DatasetRunItemByRunRowData>(
-    `datasetRunsItemsColumnVisibility-${props.projectId}`,
-    columns,
-  );
+  const [columnVisibility, setColumnVisibility] =
+    useColumnVisibility<DatasetRunItemByRunRowData>(
+      `datasetRunsItemsColumnVisibility-${props.projectId}`,
+      columns,
+    );
 
-  const [columnOrder, setColumnOrder] = useColumnOrder<DatasetRunItemByRunRowData>(
-    "datasetRunsItemsColumnOrder",
-    columns,
-  );
+  const [columnOrder, setColumnOrder] =
+    useColumnOrder<DatasetRunItemByRunRowData>(
+      "datasetRunsItemsColumnOrder",
+      columns,
+    );
 
   const rows = useMemo(() => {
-    return runItems.isSuccess ? runItems.data.runItems.map((item) => convertRunItemToItemsByRunUiTableRow(item)) : [];
+    return runItems.isSuccess
+      ? runItems.data.runItems.map((item) =>
+          convertRunItemToItemsByRunUiTableRow(item),
+        )
+      : [];
   }, [runItems.isSuccess, runItems.data?.runItems]);
 
   return (

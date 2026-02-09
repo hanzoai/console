@@ -1,14 +1,43 @@
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { DatePicker } from "@/src/components/date-picker";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
-import { Check, ChevronDown, ExternalLink, FilterIcon, Info, Plus, WandSparkles, X } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
+import {
+  Check,
+  ChevronDown,
+  ExternalLink,
+  FilterIcon,
+  Info,
+  Plus,
+  WandSparkles,
+  X,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
 import { MultiSelect } from "@/src/features/filters/components/multi-select";
 import {
   type WipFilterState,
@@ -44,13 +73,36 @@ export function PopoverFilterBuilder({
 }: {
   columns: ColumnDefinition[];
   filterState: FilterState;
-  onChange: Dispatch<SetStateAction<FilterState>> | ((newState: FilterState) => void);
+  onChange:
+    | Dispatch<SetStateAction<FilterState>>
+    | ((newState: FilterState) => void);
   columnsWithCustomSelect?: string[];
   filterWithAI?: boolean;
   buttonType?: "default" | "icon";
 }) {
   const capture = usePostHogClientCapture();
-  const [wipFilterState, _setWipFilterState] = useState<WipFilterState>(filterState);
+  const [wipFilterState, _setWipFilterState] =
+    useState<WipFilterState>(filterState);
+
+  // Sync wipFilterState when filterState prop changes externally
+  // (e.g., when a saved view preset is applied)
+  // We use a ref to track previous filterState to avoid re-running when wipFilterState changes
+  const prevFilterStateRef = useRef(filterState);
+  useEffect(() => {
+    // Only sync if filterState actually changed (reference comparison is fine here
+    // since filterState comes from URL parsing which creates new arrays)
+    if (prevFilterStateRef.current === filterState) return;
+    prevFilterStateRef.current = filterState;
+
+    _setWipFilterState((currentWip) => {
+      const hasWipFilters = currentWip.some(
+        (f) => !singleFilter.safeParse(f).success,
+      );
+      // Don't sync if user is actively editing (has invalid WIP filters)
+      return hasWipFilters ? currentWip : filterState;
+    });
+  }, [filterState]);
+
   const addNewFilter = () => {
     setWipFilterState((prev) => [
       ...prev,
@@ -65,11 +117,15 @@ export function PopoverFilterBuilder({
   };
 
   const getValidFilters = (state: WipFilterState): FilterCondition[] => {
-    const valid = state.filter((f) => singleFilter.safeParse(f).success) as FilterCondition[];
+    const valid = state.filter(
+      (f) => singleFilter.safeParse(f).success,
+    ) as FilterCondition[];
     return valid;
   };
 
-  const setWipFilterState = (state: ((prev: WipFilterState) => WipFilterState) | WipFilterState) => {
+  const setWipFilterState = (
+    state: ((prev: WipFilterState) => WipFilterState) | WipFilterState,
+  ) => {
     _setWipFilterState((prev) => {
       const newState = state instanceof Function ? state(prev) : state;
       const validFilters = getValidFilters(newState);
@@ -101,7 +157,10 @@ export function PopoverFilterBuilder({
             <Button variant="outline" type="button">
               <span>Filters</span>
               {filterState.length > 0 && filterState.length < 3 ? (
-                <InlineFilterState filterState={filterState} className="hidden @6xl:block" />
+                <InlineFilterState
+                  filterState={filterState}
+                  className="hidden @6xl:block"
+                />
               ) : null}
               {filterState.length > 0 ? (
                 <span
@@ -117,7 +176,12 @@ export function PopoverFilterBuilder({
               )}
             </Button>
           ) : (
-            <Button size="icon" type="button" variant="ghost" className="relative">
+            <Button
+              size="icon"
+              type="button"
+              variant="ghost"
+              className="relative"
+            >
               <FilterIcon className="h-4 w-4" />
               {filterState.length > 0 && (
                 <span
@@ -131,7 +195,10 @@ export function PopoverFilterBuilder({
             </Button>
           )}
         </PopoverTrigger>
-        <PopoverContent className="w-fit max-w-[90vw] overflow-x-auto" align="start">
+        <PopoverContent
+          className="w-fit max-w-[90vw] overflow-x-auto"
+          align="start"
+        >
           <FilterBuilderForm
             columns={columns}
             filterState={wipFilterState}
@@ -178,23 +245,51 @@ export function PopoverFilterBuilder({
   );
 }
 
-export function InlineFilterState({ filterState, className }: { filterState: FilterState; className?: string }) {
+export function InlineFilterState({
+  filterState,
+  className,
+}: {
+  filterState: FilterState;
+  className?: string;
+}) {
   return filterState.map((filter, i) => {
     return (
-      <span key={i} className={cn("ml-2 whitespace-nowrap rounded-md bg-input px-2 py-1 text-xs", className)}>
+      <span
+        key={i}
+        className={cn(
+          "ml-2 whitespace-nowrap rounded-md bg-input px-2 py-1 text-xs",
+          className,
+        )}
+      >
         {filter.column}
-        {filter.type === "stringObject" || filter.type === "numberObject" ? `.${filter.key}` : ""} {filter.operator}{" "}
-        {filter.type === "datetime"
-          ? new Date(filter.value).toLocaleString()
-          : filter.type === "stringOptions" || filter.type === "arrayOptions"
-            ? filter.value.length > 2
-              ? `${filter.value.length} selected`
-              : filter.value.join(", ")
-            : filter.type === "number" || filter.type === "numberObject"
-              ? filter.value
-              : filter.type === "boolean"
-                ? `${filter.value}`
-                : `"${filter.value}"`}
+        {filter.type === "stringObject" || filter.type === "numberObject"
+          ? `.${filter.key}`
+          : ""}{" "}
+        {filter.operator}{" "}
+        {filter.type === "positionInTrace"
+          ? (() => {
+              const mode = filter.key ?? "last";
+              const label =
+                mode === "root"
+                  ? "root"
+                  : mode === "last"
+                    ? "last"
+                    : mode === "nthFromStart"
+                      ? `nth from start ${filter.value ?? ""}`.trim()
+                      : `nth from end ${filter.value ?? ""}`.trim();
+              return label;
+            })()
+          : filter.type === "datetime"
+            ? new Date(filter.value).toLocaleString()
+            : filter.type === "stringOptions" || filter.type === "arrayOptions"
+              ? filter.value.length > 2
+                ? `${filter.value.length} selected`
+                : filter.value.join(", ")
+              : filter.type === "number" || filter.type === "numberObject"
+                ? filter.value
+                : filter.type === "boolean"
+                  ? `${filter.value}`
+                  : `"${filter.value}"`}
       </span>
     );
   });
@@ -210,17 +305,37 @@ export function InlineFilterBuilder({
 }: {
   columns: ColumnDefinition[];
   filterState: FilterState;
-  onChange: Dispatch<SetStateAction<FilterState>> | ((newState: FilterState) => void);
+  onChange:
+    | Dispatch<SetStateAction<FilterState>>
+    | ((newState: FilterState) => void);
   disabled?: boolean;
   columnsWithCustomSelect?: string[];
   filterWithAI?: boolean;
 }) {
-  const [wipFilterState, _setWipFilterState] = useState<WipFilterState>(filterState);
+  const [wipFilterState, _setWipFilterState] =
+    useState<WipFilterState>(filterState);
 
-  const setWipFilterState = (state: ((prev: WipFilterState) => WipFilterState) | WipFilterState) => {
+  // sync filter state, e.g. when we exclude default LF filters on score creation to reflect in UI
+  // Only sync if we don't have any WIP (invalid) filters, to avoid overwriting user's work-in-progress
+  useEffect(() => {
+    const hasWipFilters = wipFilterState.some(
+      (f) => !singleFilter.safeParse(f).success,
+    );
+
+    // Don't sync if we have WIP filters - user is actively editing
+    if (!hasWipFilters) {
+      _setWipFilterState(filterState);
+    }
+  }, [filterState, wipFilterState]);
+
+  const setWipFilterState = (
+    state: ((prev: WipFilterState) => WipFilterState) | WipFilterState,
+  ) => {
     _setWipFilterState((prev) => {
       const newState = state instanceof Function ? state(prev) : state;
-      const validFilters = newState.filter((f) => singleFilter.safeParse(f).success) as FilterState;
+      const validFilters = newState.filter(
+        (f) => singleFilter.safeParse(f).success,
+      ) as FilterState;
       onChange(validFilters);
       return newState;
     });
@@ -240,8 +355,12 @@ export function InlineFilterBuilder({
   );
 }
 
-const getOperator = (type: NonNullable<WipFilterCondition["type"]>): WipFilterCondition["operator"] => {
-  return filterOperators[type]?.length > 0 ? filterOperators[type][0] : undefined;
+const getOperator = (
+  type: NonNullable<WipFilterCondition["type"]>,
+): WipFilterCondition["operator"] => {
+  return filterOperators[type]?.length > 0
+    ? filterOperators[type][0]
+    : undefined;
 };
 
 function FilterBuilderForm({
@@ -266,7 +385,8 @@ function FilterBuilderForm({
   const projectId = useProjectIdFromURL();
   const { organization } = useQueryProject();
 
-  const createFilterMutation = api.naturalLanguageFilters.createCompletion.useMutation();
+  const createFilterMutation =
+    api.naturalLanguageFilters.createCompletion.useMutation();
   const handleFilterChange = (filter: WipFilterCondition, i: number) => {
     onChange((prev) => {
       const newState = [...prev];
@@ -321,7 +441,9 @@ function FilterBuilderForm({
         }
       } catch (error) {
         console.error("Error calling tRPC API:", error);
-        setAiError(error instanceof Error ? error.message : "Failed to generate filters");
+        setAiError(
+          error instanceof Error ? error.message : "Failed to generate filters",
+        );
       }
     }
   };
@@ -334,7 +456,10 @@ function FilterBuilderForm({
           <Button
             onClick={() => {
               if (!organization?.aiFeaturesEnabled && organization?.id) {
-                window.open(`/organization/${organization.id}/settings`, "_blank");
+                window.open(
+                  `/organization/${organization.id}/settings`,
+                  "_blank",
+                );
               } else {
                 setShowAiFilter(!showAiFilter);
               }
@@ -374,7 +499,11 @@ function FilterBuilderForm({
                 className="min-h-[80px] min-w-[28rem] resize-none"
                 disabled={createFilterMutation.isPending}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && e.ctrlKey && !createFilterMutation.isPending) {
+                  if (
+                    e.key === "Enter" &&
+                    e.ctrlKey &&
+                    !createFilterMutation.isPending
+                  ) {
                     handleAiFilterSubmit();
                   }
                 }}
@@ -387,7 +516,9 @@ function FilterBuilderForm({
                   size="sm"
                   disabled={createFilterMutation.isPending || !aiPrompt.trim()}
                 >
-                  {createFilterMutation.isPending ? "Loading..." : "Generate filters"}
+                  {createFilterMutation.isPending
+                    ? "Loading..."
+                    : "Generate filters"}
                 </Button>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -395,7 +526,8 @@ function FilterBuilderForm({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-xs">
-                      We convert natural language into deterministic filters which you can adjust afterwards
+                      We convert natural language into deterministic filters
+                      which you can adjust afterwards
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -416,7 +548,9 @@ function FilterBuilderForm({
           <table className="table-auto">
             <tbody>
               {filterState.map((filter, i) => {
-                const column = columns.find((c) => c.id === filter.column || c.name === filter.column);
+                const column = columns.find(
+                  (c) => c.id === filter.column || c.name === filter.column,
+                );
                 return (
                   <tr key={i}>
                     <td className="p-1 text-sm">{i === 0 ? "Where" : "And"}</td>
@@ -431,7 +565,9 @@ function FilterBuilderForm({
                             disabled={disabled}
                             className="flex w-full min-w-32 items-center justify-between gap-2"
                           >
-                            <span className="truncate">{column ? column.name : "Column"}</span>
+                            <span className="truncate">
+                              {column ? column.name : "Column"}
+                            </span>
                             <ChevronDown className="h-4 w-4 flex-shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
@@ -445,17 +581,26 @@ function FilterBuilderForm({
                           }}
                         >
                           <InputCommand>
-                            <InputCommandInput placeholder="Search for column" variant="bottom" />
+                            <InputCommandInput
+                              placeholder="Search for column"
+                              variant="bottom"
+                            />
                             <InputCommandList>
-                              <InputCommandEmpty>No options found.</InputCommandEmpty>
+                              <InputCommandEmpty>
+                                No options found.
+                              </InputCommandEmpty>
                               <InputCommandGroup>
                                 {columns.map((option) => (
                                   <InputCommandItem
                                     key={option.id}
                                     value={option.id}
                                     onSelect={(value) => {
-                                      const col = columns.find((c) => c.id === value);
-                                      const defaultOperator = col?.type ? getOperator(col.type) : undefined;
+                                      const col = columns.find(
+                                        (c) => c.id === value,
+                                      );
+                                      const defaultOperator = col?.type
+                                        ? getOperator(col.type)
+                                        : undefined;
 
                                       handleFilterChange(
                                         {
@@ -463,14 +608,22 @@ function FilterBuilderForm({
                                           type: col?.type,
                                           operator: defaultOperator,
                                           value: undefined,
-                                          key: undefined,
+                                          key:
+                                            col?.type === "positionInTrace"
+                                              ? "last"
+                                              : undefined,
                                         } as WipFilterCondition,
                                         i,
                                       );
                                     }}
                                   >
                                     <Check
-                                      className={cn("mr-2 h-4 w-4", option.id === column?.id ? "visible" : "invisible")}
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        option.id === column?.id
+                                          ? "visible"
+                                          : "invisible",
+                                      )}
                                     />
                                     {option.name}
                                   </InputCommandItem>
@@ -481,8 +634,10 @@ function FilterBuilderForm({
                         </PopoverContent>
                       </Popover>
                       {filter.type &&
-                      (filter.type === "numberObject" || filter.type === "stringObject") &&
-                      (column?.type === "numberObject" || column?.type === "stringObject") ? (
+                      (filter.type === "numberObject" ||
+                        filter.type === "stringObject") &&
+                      (column?.type === "numberObject" ||
+                        column?.type === "stringObject") ? (
                         column.keyOptions ? (
                           // Case 1: object with keyOptions - selector of the key of the object
                           <Select
@@ -497,7 +652,9 @@ function FilterBuilderForm({
                             </SelectTrigger>
                             <SelectContent>
                               {column.keyOptions
-                                .filter((o) => NonEmptyString.safeParse(o).success)
+                                .filter(
+                                  (o) => NonEmptyString.safeParse(o).success,
+                                )
                                 .map((option) => (
                                   <SelectItem key={option} value={option}>
                                     {option}
@@ -511,10 +668,16 @@ function FilterBuilderForm({
                             value={filter.key ?? ""}
                             placeholder="key"
                             disabled={disabled}
-                            onChange={(e) => handleFilterChange({ ...filter, key: e.target.value }, i)}
+                            onChange={(e) =>
+                              handleFilterChange(
+                                { ...filter, key: e.target.value },
+                                i,
+                              )
+                            }
                           />
                         )
-                      ) : filter.type === "categoryOptions" && column?.type === "categoryOptions" ? (
+                      ) : filter.type === "categoryOptions" &&
+                        column?.type === "categoryOptions" ? (
                         // Case 3: categoryOptions
                         <Select
                           onValueChange={(value) => {
@@ -527,10 +690,49 @@ function FilterBuilderForm({
                           </SelectTrigger>
                           <SelectContent>
                             {column?.options.map((option) => (
-                              <SelectItem key={option.label} value={option.label}>
+                              <SelectItem
+                                key={option.label}
+                                value={option.label}
+                              >
                                 {option.label}
                               </SelectItem>
                             ))}
+                          </SelectContent>
+                        </Select>
+                      ) : filter.type === "positionInTrace" ? (
+                        <Select
+                          onValueChange={(value) => {
+                            const needsValue =
+                              value === "nthFromEnd" ||
+                              value === "nthFromStart";
+                            handleFilterChange(
+                              {
+                                ...filter,
+                                key: value,
+                                value: needsValue
+                                  ? typeof filter.value === "number" &&
+                                    filter.value >= 1
+                                    ? filter.value
+                                    : 1
+                                  : undefined,
+                              } as WipFilterCondition,
+                              i,
+                            );
+                          }}
+                          value={filter.key ?? "last"}
+                        >
+                          <SelectTrigger className="min-w-[140px]">
+                            <SelectValue placeholder="" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="root">root</SelectItem>
+                            <SelectItem value="last">last</SelectItem>
+                            <SelectItem value="nthFromStart">
+                              nth from start
+                            </SelectItem>
+                            <SelectItem value="nthFromEnd">
+                              nth from end
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       ) : null}
@@ -567,14 +769,21 @@ function FilterBuilderForm({
                       </Select>
                     </td>
                     <td className="p-1">
-                      {filter.type === "string" || filter.type === "stringObject" ? (
+                      {filter.type === "string" ||
+                      filter.type === "stringObject" ? (
                         <Input
                           disabled={disabled}
                           value={filter.value ?? ""}
                           placeholder="string"
-                          onChange={(e) => handleFilterChange({ ...filter, value: e.target.value }, i)}
+                          onChange={(e) =>
+                            handleFilterChange(
+                              { ...filter, value: e.target.value },
+                              i,
+                            )
+                          }
                         />
-                      ) : filter.type === "number" || filter.type === "numberObject" ? (
+                      ) : filter.type === "number" ||
+                        filter.type === "numberObject" ? (
                         <Input
                           value={filter.value ?? undefined}
                           disabled={disabled}
@@ -585,7 +794,9 @@ function FilterBuilderForm({
                             handleFilterChange(
                               {
                                 ...filter,
-                                value: isNaN(Number(e.target.value)) ? e.target.value : Number(e.target.value),
+                                value: isNaN(Number(e.target.value))
+                                  ? e.target.value
+                                  : Number(e.target.value),
                               },
                               i,
                             )
@@ -595,7 +806,9 @@ function FilterBuilderForm({
                         <DatePicker
                           className="w-full"
                           disabled={disabled}
-                          date={filter.value ? new Date(filter.value) : undefined}
+                          date={
+                            filter.value ? new Date(filter.value) : undefined
+                          }
                           onChange={(date) => {
                             handleFilterChange(
                               {
@@ -607,31 +820,46 @@ function FilterBuilderForm({
                           }}
                           includeTimePicker
                         />
-                      ) : filter.type === "stringOptions" || filter.type === "arrayOptions" ? (
-                        <MultiSelect
-                          title="Value"
-                          className="min-w-[100px]"
-                          options={column?.type === filter.type ? column.options : []}
-                          onValueChange={(value) => handleFilterChange({ ...filter, value }, i)}
-                          values={Array.isArray(filter.value) ? filter.value : []}
-                          disabled={disabled}
-                          isCustomSelectEnabled={
-                            column?.type === filter.type && columnsWithCustomSelect.includes(column.id)
-                          }
-                        />
-                      ) : filter.type === "categoryOptions" && column?.type === "categoryOptions" ? (
+                      ) : filter.type === "stringOptions" ||
+                        filter.type === "arrayOptions" ? (
                         <MultiSelect
                           title="Value"
                           className="min-w-[100px]"
                           options={
-                            column?.options.find((o) => o.label === filter.key)?.values?.map((v) => ({ value: v })) ??
-                            []
+                            column?.type === filter.type ? column.options : []
                           }
-                          onValueChange={(value) => handleFilterChange({ ...filter, value }, i)}
-                          values={Array.isArray(filter.value) ? filter.value : []}
+                          onValueChange={(value) =>
+                            handleFilterChange({ ...filter, value }, i)
+                          }
+                          values={
+                            Array.isArray(filter.value) ? filter.value : []
+                          }
                           disabled={disabled}
                           isCustomSelectEnabled={
-                            column?.type === filter.type && columnsWithCustomSelect.includes(column.id)
+                            column?.type === filter.type &&
+                            columnsWithCustomSelect.includes(column.id)
+                          }
+                        />
+                      ) : filter.type === "categoryOptions" &&
+                        column?.type === "categoryOptions" ? (
+                        <MultiSelect
+                          title="Value"
+                          className="min-w-[100px]"
+                          options={
+                            column?.options
+                              .find((o) => o.label === filter.key)
+                              ?.values?.map((v) => ({ value: v })) ?? []
+                          }
+                          onValueChange={(value) =>
+                            handleFilterChange({ ...filter, value }, i)
+                          }
+                          values={
+                            Array.isArray(filter.value) ? filter.value : []
+                          }
+                          disabled={disabled}
+                          isCustomSelectEnabled={
+                            column?.type === filter.type &&
+                            columnsWithCustomSelect.includes(column.id)
                           }
                         />
                       ) : filter.type === "boolean" ? (
@@ -641,7 +869,8 @@ function FilterBuilderForm({
                             handleFilterChange(
                               {
                                 ...filter,
-                                value: value !== "" ? value === "true" : undefined,
+                                value:
+                                  value !== "" ? value === "true" : undefined,
                               },
                               i,
                             );
@@ -659,6 +888,30 @@ function FilterBuilderForm({
                             ))}
                           </SelectContent>
                         </Select>
+                      ) : filter.type === "positionInTrace" ? (
+                        filter.key === "nthFromStart" ||
+                        filter.key === "nthFromEnd" ? (
+                          <Input
+                            value={filter.value ?? ""}
+                            disabled={disabled}
+                            type="number"
+                            min={1}
+                            step={1}
+                            onChange={(e) =>
+                              handleFilterChange(
+                                {
+                                  ...filter,
+                                  value: isNaN(Number(e.target.value))
+                                    ? undefined
+                                    : Math.max(1, Number(e.target.value)),
+                                } as WipFilterCondition,
+                                i,
+                              )
+                            }
+                          />
+                        ) : (
+                          <Input disabled placeholder="-" />
+                        )
                       ) : (
                         <Input disabled />
                       )}

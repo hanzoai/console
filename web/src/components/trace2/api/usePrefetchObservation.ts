@@ -1,5 +1,5 @@
 import { api } from "@/src/utils/api";
-import { useObservationListBeta } from "@/src/features/events/hooks/useObservationListBeta";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 
 export type UsePrefetchObservationParams = {
   projectId: string;
@@ -11,7 +11,7 @@ export type UsePrefetchObservationParams = {
  */
 export function usePrefetchObservation({ projectId }: UsePrefetchObservationParams) {
   const utils = api.useUtils();
-  const { isBetaEnabled } = useObservationListBeta();
+  const { isBetaEnabled } = useV4Beta();
 
   const prefetch = (observationId: string, traceId: string, startTime?: Date) => {
     if (isBetaEnabled) {

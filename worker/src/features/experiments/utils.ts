@@ -202,6 +202,7 @@ export async function validateAndSetupExperiment(event: z.infer<typeof Experimen
     structuredOutputSchema: validatedRunMetadata.data.structured_output_schema,
     experimentName: validatedRunMetadata.data.experiment_name,
     experimentRunName: validatedRunMetadata.data.experiment_run_name,
+    datasetVersion: validatedRunMetadata.data.dataset_version,
     allVariables,
     placeholderNames,
     projectId,

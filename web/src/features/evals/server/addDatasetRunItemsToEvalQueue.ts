@@ -4,11 +4,13 @@ import { QueueJobs, DatasetRunItemUpsertQueue, redis } from "@hanzo/shared/src/s
 export const addDatasetRunItemsToEvalQueue = async ({
   projectId,
   datasetItemId,
+  datasetItemValidFrom,
   traceId,
   observationId,
 }: {
   projectId: string;
   datasetItemId: string;
+  datasetItemValidFrom: Date;
   traceId: string;
   observationId?: string;
 }) => {
@@ -20,6 +22,7 @@ export const addDatasetRunItemsToEvalQueue = async ({
         payload: {
           projectId,
           datasetItemId: datasetItemId,
+          datasetItemValidFrom,
           traceId,
           observationId: observationId ?? undefined,
         },

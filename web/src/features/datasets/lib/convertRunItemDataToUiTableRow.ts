@@ -29,6 +29,7 @@ export const convertRunItemToItemsByRunUiTableRow = (item: EnrichedDatasetRunIte
     id: item.id,
     runAt: item.createdAt,
     datasetItemId: item.datasetItemId,
+    datasetItemVersion: item.datasetItemVersion ?? undefined,
     trace: !!item.trace?.id
       ? {
           traceId: item.trace.id,

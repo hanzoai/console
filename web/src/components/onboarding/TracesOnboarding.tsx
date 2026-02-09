@@ -1,51 +1,22 @@
 import React from "react";
-import { SplashScreen, type ValueProposition } from "@/src/components/ui/splash-screen";
-import { setupTracingRoute } from "@/src/features/setup/setupRoutes";
-import { BarChart4, GitMerge, Search, Zap } from "lucide-react";
+import { SplashScreen } from "@/src/components/ui/splash-screen";
+import { TracingSetup } from "@/src/pages/project/[projectId]/traces/setup";
 
 interface TracesOnboardingProps {
   projectId: string;
 }
 
 export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
-  const valuePropositions: ValueProposition[] = [
-    {
-      title: "Full context capture",
-      description: "Track the complete execution flow including API calls, context, prompts, parallelism and more",
-      icon: <GitMerge className="h-4 w-4" />,
-    },
-    {
-      title: "Cost monitoring",
-      description: "Track model usage and costs across your application",
-      icon: <BarChart4 className="h-4 w-4" />,
-    },
-    {
-      title: "Basis for evaluation",
-      description: "Add evaluation scores to identify issues and track metrics over time",
-      icon: <Search className="h-4 w-4" />,
-    },
-    {
-      title: "Open and Multi-modal",
-      description:
-        "Hanzo Cloud traces can include images, audio, and other modalities. You can fully customize them to fit your needs",
-      icon: <Zap className="h-4 w-4" />,
-    },
-  ];
-
   return (
     <SplashScreen
-      title="Get Started with LLM Tracing"
-      description="Traces allow you to track every LLM call and other relevant logic in your app/agent. Nested traces in Hanzo Cloud help to understand what is happening and identify the root cause of problems."
-      valuePropositions={valuePropositions}
-      primaryAction={{
-        label: "Configure Tracing",
-        href: setupTracingRoute(projectId),
-      }}
-      secondaryAction={{
-        label: "View Documentation",
-        href: "https://hanzo.com/docs/observability/overview",
-      }}
-      videoSrc="https://static.hanzo.ai/prod-assets/onboarding/tracing-overview-v1.mp4"
-    />
+      title="You don't have any traces yet"
+      description="Traces show you how your LLM calls behave in your application: what they cost, how they perform, and where things go wrong. It's the first step towards improving the behavior of your app."
+      videoSrc="https://static.hanzo.com/prod-assets/onboarding/tracing-overview-v1.mp4"
+    >
+      <div className="mt-8">
+        <h3 className="mb-8 text-2xl font-semibold">Get started</h3>
+        <TracingSetup projectId={projectId} hasTracingConfigured={false} />
+      </div>
+    </SplashScreen>
   );
 }

@@ -4,6 +4,7 @@ import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import { prisma } from "@hanzo/shared/src/db";
 import { createOrgProjectAndApiKey } from "@hanzo/shared/src/server";
+import { EvalTargetObject } from "@hanzo/shared";
 import type { Session } from "next-auth";
 
 const __orgIds: string[] = [];
@@ -22,7 +23,7 @@ async function prepare() {
           id: org.id,
           name: org.name,
           role: "OWNER",
-          plan: "cloud:free",
+          plan: "cloud:hobby",
           cloudConfig: undefined,
           metadata: {},
           projects: [
@@ -76,7 +77,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -114,7 +115,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -175,7 +176,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -217,7 +218,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -234,7 +235,9 @@ describe("evals trpc", () => {
             timeScope: ["NEW"],
           },
         }),
-      ).rejects.toThrow("The evaluator ran on existing traces already. This cannot be changed anymore.");
+      ).rejects.toThrow(
+        "The evaluator ran on existing traces already. This cannot be changed anymore.",
+      );
     });
 
     it("when the evaluator ran on existing traces, it cannot be deactivated", async () => {
@@ -246,7 +249,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -263,7 +266,9 @@ describe("evals trpc", () => {
             status: "INACTIVE",
           },
         }),
-      ).rejects.toThrow("The evaluator is running on existing traces only and cannot be deactivated.");
+      ).rejects.toThrow(
+        "The evaluator is running on existing traces only and cannot be deactivated.",
+      );
     });
 
     it("when the evaluator ran on existing traces, it can be deactivated if it should also run on new traces", async () => {
@@ -275,7 +280,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -320,7 +325,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -435,7 +440,7 @@ describe("evals trpc", () => {
           jobType: "EVAL",
           scoreName: "test-score",
           filter: [],
-          targetObject: "trace",
+          targetObject: EvalTargetObject.TRACE,
           variableMapping: [],
           sampling: 1,
           delay: 0,
@@ -520,7 +525,7 @@ describe("evals trpc", () => {
   //         jobType: "EVAL",
   //         scoreName: "test-score",
   //         filter: [],
-  //         targetObject: "trace",
+  //         targetObject: EvalTargetObject.TRACE,
   //         variableMapping: [],
   //         sampling: 1,
   //         delay: 0,

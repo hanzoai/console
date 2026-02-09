@@ -488,6 +488,7 @@ export const ObservationPreview = ({
                   observationId={preloadedObservation.id}
                   hiddenColumns={["traceId", "observationId", "traceName", "jobConfigurationId", "userId"]}
                   localStorageSuffix="ObservationPreview"
+                  disableUrlPersistence
                 />
               </div>
             </TabsBarContent>

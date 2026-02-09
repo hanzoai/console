@@ -1,6 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
-import { NumberParam, StringParam, useQueryParam, useQueryParams, withDefault } from "use-query-params";
+import {
+  NumberParam,
+  StringParam,
+  useQueryParam,
+  useQueryParams,
+  withDefault,
+} from "use-query-params";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
@@ -8,6 +14,7 @@ import { type HanzoColumnDef } from "@/src/components/table/types";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { type RouterOutput } from "@/src/utils/types";
@@ -18,7 +25,10 @@ import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import Page from "@/src/components/layouts/page";
 import { UsersOnboarding } from "@/src/components/onboarding/UsersOnboarding";
-import { useEnvironmentFilter, convertSelectedEnvironmentsToFilter } from "@/src/hooks/use-environment-filter";
+import {
+  useEnvironmentFilter,
+  convertSelectedEnvironmentsToFilter,
+} from "@/src/hooks/use-environment-filter";
 import { Badge } from "@/src/components/ui/badge";
 
 type RowData = {
@@ -34,12 +44,13 @@ type RowData = {
 export default function UsersPage() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
+  const { isBetaEnabled } = useV4Beta();
 
   // Check if the user has any users
   const { data: hasAnyUser, isLoading } = api.users.hasAny.useQuery(
     { projectId },
     {
-      enabled: !!projectId,
+      enabled: !!projectId && !isBetaEnabled,
       trpc: {
         context: {
           skipBatch: true,
@@ -49,31 +60,69 @@ export default function UsersPage() {
     },
   );
 
-  const showOnboarding = !isLoading && !hasAnyUser;
+  const { data: hasAnyUserFromEvents, isLoading: isLoadingFromEvents } =
+    api.users.hasAnyFromEvents.useQuery(
+      { projectId },
+      {
+        enabled: !!projectId && isBetaEnabled,
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+        refetchInterval: 10_000,
+      },
+    );
+
+  const hasUsers = isBetaEnabled ? hasAnyUserFromEvents : hasAnyUser;
+  const isLoadingUsers = isBetaEnabled ? isLoadingFromEvents : isLoading;
+  const showOnboarding = !isLoadingUsers && !hasUsers;
 
   return (
     <Page
       headerProps={{
         title: "Users",
         help: {
-          description:
-            "Attribute data in Hanzo Cloud to a user by adding a userId to your traces. See docs to learn more.",
-          href: "https://hanzo.ai/docs/user-explorer",
+          description: (
+            <>
+              Attribute data in Hanzo to a user by adding a userId to your
+              traces. See{" "}
+              <a
+                href="https://hanzo.com/docs/observability/features/users"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-primary/30 hover:decoration-primary"
+                onClick={(e) => e.stopPropagation()}
+              >
+                docs
+              </a>{" "}
+              to learn more.
+            </>
+          ),
+          href: "https://hanzo.com/docs/observability/features/users",
         },
       }}
       scrollable={showOnboarding}
     >
       {/* Show onboarding screen if user has no users */}
-      {showOnboarding ? <UsersOnboarding /> : <UsersTable />}
+      {showOnboarding ? (
+        <UsersOnboarding />
+      ) : (
+        <UsersTable isBetaEnabled={isBetaEnabled} />
+      )}
     </Page>
   );
 }
 
-const UsersTable = () => {
+const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
-  const [userFilterState, setUserFilterState] = useQueryFilterState([], "users", projectId);
+  const [userFilterState, setUserFilterState] = useQueryFilterState(
+    [],
+    "users",
+    projectId,
+  );
 
   const { setDetailPageList } = useDetailPageLists();
 
@@ -106,48 +155,61 @@ const UsersTable = () => {
       ]
     : [];
 
-  const environmentFilterOptions = api.projects.environmentFilterOptions.useQuery(
-    {
-      projectId,
-      fromTimestamp: dateRange?.from,
-    },
-    {
-      trpc: { context: { skipBatch: true } },
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      staleTime: Infinity,
-    },
+  const environmentFilterOptions =
+    api.projects.environmentFilterOptions.useQuery(
+      {
+        projectId,
+        fromTimestamp: dateRange?.from,
+      },
+      {
+        trpc: { context: { skipBatch: true } },
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity,
+      },
+    );
+
+  const environmentOptions =
+    environmentFilterOptions.data?.map((value) => value.environment) || [];
+
+  const { selectedEnvironments, setSelectedEnvironments } =
+    useEnvironmentFilter(environmentOptions, projectId);
+
+  const environmentFilter = convertSelectedEnvironmentsToFilter(
+    ["environment"],
+    selectedEnvironments,
   );
 
-  const environmentOptions = environmentFilterOptions.data?.map((value) => value.environment) || [];
+  const filterState = userFilterState.concat(
+    dateRangeFilter,
+    environmentFilter,
+  );
 
-  const { selectedEnvironments, setSelectedEnvironments } = useEnvironmentFilter(environmentOptions, projectId);
+  const [searchQuery, setSearchQuery] = useQueryParam(
+    "search",
+    withDefault(StringParam, null),
+  );
 
-  const environmentFilter = convertSelectedEnvironmentsToFilter(["environment"], selectedEnvironments);
+  const usersV3 = api.users.all.useQuery(
+    {
+      filter: filterState,
+      page: paginationState.pageIndex,
+      limit: paginationState.pageSize,
+      projectId,
+      searchQuery: searchQuery ?? undefined,
+    },
+    { enabled: !isBetaEnabled },
+  );
 
-  const filterState = userFilterState.concat(dateRangeFilter, environmentFilter);
-
-  const [searchQuery, setSearchQuery] = useQueryParam("search", withDefault(StringParam, null));
-
-  const users = api.users.all.useQuery({
-    filter: filterState,
-    page: paginationState.pageIndex,
-    limit: paginationState.pageSize,
-    projectId,
-    searchQuery: searchQuery ?? undefined,
-  });
-
-  // this API call will return an empty array if there are no users.
-  // Hence, this adds one fast unnecessary API call if there are no users.
-  const userMetrics = api.users.metrics.useQuery(
+  const userMetricsV3 = api.users.metrics.useQuery(
     {
       projectId,
-      userIds: users.data?.users.map((u) => u.userId) ?? [],
+      userIds: usersV3.data?.users.map((u) => u.userId) ?? [],
       filter: filterState,
     },
     {
-      enabled: users.isSuccess,
+      enabled: usersV3.isSuccess && !isBetaEnabled,
       trpc: {
         context: {
           skipBatch: true,
@@ -155,6 +217,37 @@ const UsersTable = () => {
       },
     },
   );
+
+  const usersV4 = api.users.allFromEvents.useQuery(
+    {
+      filter: filterState,
+      page: paginationState.pageIndex,
+      limit: paginationState.pageSize,
+      projectId,
+      searchQuery: searchQuery ?? undefined,
+    },
+    { enabled: isBetaEnabled },
+  );
+
+  const userMetricsV4 = api.users.metricsFromEvents.useQuery(
+    {
+      projectId,
+      userIds: usersV4.data?.users.map((u) => u.userId) ?? [],
+      filter: filterState,
+    },
+    {
+      enabled: usersV4.isSuccess && isBetaEnabled,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
+  );
+
+  // Select the active query based on beta state
+  const users = isBetaEnabled ? usersV4 : usersV3;
+  const userMetrics = isBetaEnabled ? userMetricsV4 : userMetricsV3;
 
   type UserCoreOutput = RouterOutput["users"]["all"]["users"][number];
   type UserMetricsOutput = RouterOutput["users"]["metrics"][number];
@@ -173,7 +266,9 @@ const UsersTable = () => {
     })),
   );
 
-  const totalCount = users.data?.totalUsers ? Number(users.data.totalUsers) : null;
+  const totalCount = users.data?.totalUsers
+    ? Number(users.data.totalUsers)
+    : null;
 
   useEffect(() => {
     if (users.isSuccess) {
@@ -192,7 +287,7 @@ const UsersTable = () => {
       header: "User ID",
       headerTooltip: {
         description:
-          "The unique identifier for the user that was logged in Hanzo Console. See docs for more details on how to set this up.",
+          "The unique identifier for the user that was logged in Hanzo. See docs for more details on how to set this up.",
         href: "https://hanzo.com/docs/observability/features/users",
       },
       size: 150,
@@ -200,7 +295,10 @@ const UsersTable = () => {
         const value: RowData["userId"] = row.getValue("userId");
         return typeof value === "string" ? (
           <>
-            <TableLink path={`/project/${projectId}/users/${encodeURIComponent(value)}`} value={value} />
+            <TableLink
+              path={`/project/${projectId}/users/${encodeURIComponent(value)}`}
+              value={value}
+            />
           </>
         ) : undefined;
       },
@@ -214,7 +312,10 @@ const UsersTable = () => {
       cell: ({ row }) => {
         const value: RowData["environment"] = row.getValue("environment");
         return value ? (
-          <Badge variant="secondary" className="max-w-fit truncate rounded-sm px-1 font-normal">
+          <Badge
+            variant="secondary"
+            className="max-w-fit truncate rounded-sm px-1 font-normal"
+          >
             {value}
           </Badge>
         ) : null;
@@ -271,8 +372,9 @@ const UsersTable = () => {
       accessorKey: "totalTokens",
       header: "Total Tokens",
       headerTooltip: {
-        description: "Total number of tokens used for the user across all generations.",
-        href: "https://hanzo.ai/docs/model-usage-and-cost",
+        description:
+          "Total number of tokens used for the user across all generations.",
+        href: "https://hanzo.com/docs/model-usage-and-cost",
       },
       size: 120,
       cell: ({ row }) => {
@@ -288,7 +390,7 @@ const UsersTable = () => {
       header: "Total Cost",
       headerTooltip: {
         description: "Total cost for the user across all generations.",
-        href: "https://hanzo.ai/docs/model-usage-and-cost",
+        href: "https://hanzo.com/docs/model-usage-and-cost",
       },
       size: 120,
       cell: ({ row }) => {
@@ -343,13 +445,22 @@ const UsersTable = () => {
                     return {
                       userId: t.id,
                       environment: t.environment ?? undefined,
-                      firstEvent: t.firstTrace?.toLocaleString() ?? "No event yet",
-                      lastEvent: t.lastTrace?.toLocaleString() ?? "No event yet",
+                      firstEvent:
+                        t.firstTrace?.toLocaleString() ?? "No event yet",
+                      lastEvent:
+                        t.lastTrace?.toLocaleString() ?? "No event yet",
                       totalEvents: compactNumberFormatter(
-                        Number(t.totalTraces ?? 0) + Number(t.totalObservations ?? 0),
+                        isBetaEnabled
+                          ? Number(t.totalObservations ?? 0)
+                          : Number(t.totalTraces ?? 0) +
+                              Number(t.totalObservations ?? 0),
                       ),
                       totalTokens: compactNumberFormatter(t.totalTokens ?? 0),
-                      totalCost: usdFormatter(t.sumCalculatedTotalCost ?? 0, 2, 2),
+                      totalCost: usdFormatter(
+                        t.sumCalculatedTotalCost ?? 0,
+                        2,
+                        2,
+                      ),
                     };
                   }),
                 }

@@ -12,6 +12,7 @@ export const filterOperators = {
   numberObject: ["=", ">", "<", ">=", "<="],
   boolean: ["=", "<>"],
   null: ["is null", "is not null"],
+  positionInTrace: ["="],
 } as const;
 
 export const timeFilter = z.object({
@@ -75,6 +76,24 @@ export const nullFilter = z.object({
   operator: z.enum(filterOperators.null),
   value: z.literal(""),
 });
+export const positionInTraceFilter = z
+  .object({
+    type: z.literal("positionInTrace"),
+    column: z.string(),
+    operator: z.literal("="),
+    key: z.enum(["root", "last", "nthFromEnd", "nthFromStart"]),
+    value: z.number().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const needsValue = data.key === "nthFromEnd" || data.key === "nthFromStart";
+    if (needsValue && (!data.value || data.value < 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Position must be >= 1 for nth selection",
+        path: ["value"],
+      });
+    }
+  });
 export const categoryOptionsFilter = z.object({
   type: z.literal("categoryOptions"),
   column: z.string(),
@@ -93,4 +112,5 @@ export const singleFilter = z.discriminatedUnion("type", [
   numberObjectFilter,
   booleanFilter,
   nullFilter,
+  positionInTraceFilter,
 ]);

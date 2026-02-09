@@ -10,7 +10,7 @@ export type TableRowOptions = {
 type ExtendedColumnDef<TData extends RowData, TValue = unknown> = ColumnDef<TData, TValue> & {
   defaultHidden?: boolean;
   headerTooltip?: {
-    description: string;
+    description: React.ReactNode;
     href?: string;
   };
   isFixedPosition?: boolean; // if true, column cannot be reordered
