@@ -34,7 +34,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
-import { type useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
+import { type useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { DialogFooter } from "@/src/components/ui/dialog";
 import { DialogBody } from "@/src/components/ui/dialog";
 import { env } from "@/src/env.mjs";
@@ -206,7 +206,7 @@ export function CreateLLMApiKeyForm({
   const mutTestUpdateLLMApiKey = api.llmApiKey.testUpdate.useMutation();
 
   const defaultAdapter: LLMAdapter = customization?.defaultModelAdapter
-    ? LLMAdapter[customization.defaultModelAdapter]
+    ? LLMAdapter[customization.defaultModelAdapter as keyof typeof LLMAdapter]
     : LLMAdapter.OpenAI;
 
   const getCustomizedBaseURL = (adapter: LLMAdapter) => {

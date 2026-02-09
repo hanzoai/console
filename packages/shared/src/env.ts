@@ -140,6 +140,17 @@ const EnvSchema = z.object({
   HANZO_GOOGLE_CLOUD_STORAGE_CREDENTIALS: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
 
+  // Hanzo trial expiry (days)
+  HANZO_TRIAL_EXPIRE: z.string().optional(),
+
+  // Hanzo IAM auth provider
+  HANZO_IAM_CLIENT_ID: z.string().optional(),
+  HANZO_IAM_CLIENT_SECRET: z.string().optional(),
+  HANZO_IAM_SERVER_URL: z.string().optional(),
+
+  // Cookie prefix
+  NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
+
   HANZO_ENABLE_BLOB_STORAGE_FILE_LOG: z
     .enum(["true", "false"])
     .default("true"),

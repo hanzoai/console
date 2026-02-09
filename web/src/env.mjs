@@ -303,6 +303,14 @@ export const env = createEnv({
         );
       }, "HANZO_ALLOWED_ORGANIZATION_CREATORS must be a comma separated list of valid email addresses"),
 
+    // Hanzo trial expiry (days)
+    HANZO_TRIAL_EXPIRE: z.string().optional(),
+
+    // Hanzo IAM auth provider
+    HANZO_IAM_CLIENT_ID: z.string().optional(),
+    HANZO_IAM_CLIENT_SECRET: z.string().optional(),
+    HANZO_IAM_SERVER_URL: z.string().optional(),
+
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SIGNING_SECRET: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
@@ -420,6 +428,7 @@ export const env = createEnv({
     NEXT_PUBLIC_PLAIN_APP_ID: z.string().optional(),
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
+    NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
     NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT: z
       .enum(["true", "false"])
       .optional()
@@ -675,6 +684,10 @@ export const env = createEnv({
       process.env.HANZO_CACHE_API_KEY_TTL_SECONDS,
     HANZO_ALLOWED_ORGANIZATION_CREATORS:
       process.env.HANZO_ALLOWED_ORGANIZATION_CREATORS,
+    HANZO_TRIAL_EXPIRE: process.env.HANZO_TRIAL_EXPIRE,
+    HANZO_IAM_CLIENT_ID: process.env.HANZO_IAM_CLIENT_ID,
+    HANZO_IAM_CLIENT_SECRET: process.env.HANZO_IAM_CLIENT_SECRET,
+    HANZO_IAM_SERVER_URL: process.env.HANZO_IAM_SERVER_URL,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SIGNING_SECRET: process.env.STRIPE_WEBHOOK_SIGNING_SECRET,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
@@ -696,6 +709,7 @@ export const env = createEnv({
     HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
     HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+    NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
       process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID,
