@@ -427,17 +427,17 @@ if (
   );
 
 if (
-  env.HANZO_IAM_CLIENT_ID &&
-  env.HANZO_IAM_CLIENT_SECRET &&
-  env.HANZO_IAM_SERVER_URL
+  env.IAM_CLIENT_ID &&
+  env.IAM_CLIENT_SECRET &&
+  env.IAM_SERVER_URL
 )
   staticProviders.push(
     HanzoIamProvider({
-      clientId: env.HANZO_IAM_CLIENT_ID,
-      clientSecret: env.HANZO_IAM_CLIENT_SECRET,
-      serverUrl: env.HANZO_IAM_SERVER_URL,
+      clientId: env.IAM_CLIENT_ID,
+      clientSecret: env.IAM_CLIENT_SECRET,
+      serverUrl: env.IAM_SERVER_URL,
       allowDangerousEmailAccountLinking:
-        env.HANZO_IAM_ALLOW_ACCOUNT_LINKING === "true",
+        env.IAM_ALLOW_ACCOUNT_LINKING === "true",
     }),
   );
 

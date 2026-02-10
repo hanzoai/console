@@ -147,9 +147,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
         : false,
     sso,
     hanzoIam:
-      env.HANZO_IAM_CLIENT_ID !== undefined &&
-      env.HANZO_IAM_CLIENT_SECRET !== undefined &&
-      env.HANZO_IAM_SERVER_URL !== undefined,
+      env.IAM_CLIENT_ID !== undefined &&
+      env.IAM_CLIENT_SECRET !== undefined &&
+      env.IAM_SERVER_URL !== undefined,
   } satisfies PageProps["authProviders"];
 
   // Server-side redirect: when Hanzo IAM is the only enabled provider,
