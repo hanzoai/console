@@ -51,6 +51,7 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
     style: {
       bg: "#050508",
       text: "#fff",
+      logo: "",
     },
     options,
   };

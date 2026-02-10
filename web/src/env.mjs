@@ -361,6 +361,11 @@ export const env = createEnv({
     HANZO_AI_FEATURES_SECRET_KEY: z.string().optional(),
     HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
+    // AgentField control plane
+    AGENTFIELD_API_URL: z.string().url().optional(),
+    // Casvisor compute management
+    CASVISOR_API_URL: z.string().url().optional(),
+
     // API Performance Flags
     // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
     // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
@@ -728,6 +733,10 @@ export const env = createEnv({
     // Hanzo Tracing AI Features
     HANZO_AI_FEATURES_HOST: process.env.HANZO_AI_FEATURES_HOST,
 
+    // AgentField
+    AGENTFIELD_API_URL: process.env.AGENTFIELD_API_URL,
+    // Casvisor
+    CASVISOR_API_URL: process.env.CASVISOR_API_URL,
     // Api Performance Flags
     HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
       process.env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
