@@ -29,6 +29,7 @@ FROM base AS deps
 COPY --chown=nextjs:nodejs package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
 COPY --chown=nextjs:nodejs .npmrc* ./
 COPY --chown=nextjs:nodejs turbo.json* ./
+COPY --chown=nextjs:nodejs patches/ ./patches/
 
 # Copy workspace package files
 COPY --chown=nextjs:nodejs web/package.json ./web/
