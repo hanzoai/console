@@ -87,71 +87,107 @@ export type PageProps = {
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   const sso: boolean = await isAnySsoConfigured();
+
+  const authProviders = {
+    google: env.AUTH_GOOGLE_CLIENT_ID !== undefined && env.AUTH_GOOGLE_CLIENT_SECRET !== undefined,
+    github: env.AUTH_GITHUB_CLIENT_ID !== undefined && env.AUTH_GITHUB_CLIENT_SECRET !== undefined,
+    githubEnterprise:
+      env.AUTH_GITHUB_ENTERPRISE_CLIENT_ID !== undefined &&
+      env.AUTH_GITHUB_ENTERPRISE_CLIENT_SECRET !== undefined &&
+      env.AUTH_GITHUB_ENTERPRISE_BASE_URL !== undefined,
+    gitlab: env.AUTH_GITLAB_CLIENT_ID !== undefined && env.AUTH_GITLAB_CLIENT_SECRET !== undefined,
+    okta:
+      env.AUTH_OKTA_CLIENT_ID !== undefined &&
+      env.AUTH_OKTA_CLIENT_SECRET !== undefined &&
+      env.AUTH_OKTA_ISSUER !== undefined,
+    authentik:
+      env.AUTH_AUTHENTIK_CLIENT_ID !== undefined &&
+      env.AUTH_AUTHENTIK_CLIENT_SECRET !== undefined &&
+      env.AUTH_AUTHENTIK_ISSUER !== undefined,
+    onelogin:
+      env.AUTH_ONELOGIN_CLIENT_ID !== undefined &&
+      env.AUTH_ONELOGIN_CLIENT_SECRET !== undefined &&
+      env.AUTH_ONELOGIN_ISSUER !== undefined,
+    credentials: env.AUTH_DISABLE_USERNAME_PASSWORD !== "true",
+    azureAd:
+      env.AUTH_AZURE_AD_CLIENT_ID !== undefined &&
+      env.AUTH_AZURE_AD_CLIENT_SECRET !== undefined &&
+      env.AUTH_AZURE_AD_TENANT_ID !== undefined,
+    auth0:
+      env.AUTH_AUTH0_CLIENT_ID !== undefined &&
+      env.AUTH_AUTH0_CLIENT_SECRET !== undefined &&
+      env.AUTH_AUTH0_ISSUER !== undefined,
+    cognito:
+      env.AUTH_COGNITO_CLIENT_ID !== undefined &&
+      env.AUTH_COGNITO_CLIENT_SECRET !== undefined &&
+      env.AUTH_COGNITO_ISSUER !== undefined,
+    keycloak:
+      env.AUTH_KEYCLOAK_CLIENT_ID !== undefined &&
+      env.AUTH_KEYCLOAK_CLIENT_SECRET !== undefined &&
+      env.AUTH_KEYCLOAK_ISSUER !== undefined
+        ? env.AUTH_KEYCLOAK_NAME !== undefined
+          ? { name: env.AUTH_KEYCLOAK_NAME }
+          : true
+        : false,
+    workos:
+      env.AUTH_WORKOS_CLIENT_ID !== undefined && env.AUTH_WORKOS_CLIENT_SECRET !== undefined
+        ? env.AUTH_WORKOS_ORGANIZATION_ID !== undefined
+          ? { organizationId: env.AUTH_WORKOS_ORGANIZATION_ID }
+          : env.AUTH_WORKOS_CONNECTION_ID !== undefined
+            ? { connectionId: env.AUTH_WORKOS_CONNECTION_ID }
+            : true
+        : false,
+    wordpress: env.AUTH_WORDPRESS_CLIENT_ID !== undefined && env.AUTH_WORDPRESS_CLIENT_SECRET !== undefined,
+    custom:
+      env.AUTH_CUSTOM_CLIENT_ID !== undefined &&
+      env.AUTH_CUSTOM_CLIENT_SECRET !== undefined &&
+      env.AUTH_CUSTOM_ISSUER !== undefined &&
+      env.AUTH_CUSTOM_NAME !== undefined
+        ? { name: env.AUTH_CUSTOM_NAME }
+        : false,
+    sso,
+    hanzoIam:
+      env.HANZO_IAM_CLIENT_ID !== undefined &&
+      env.HANZO_IAM_CLIENT_SECRET !== undefined &&
+      env.HANZO_IAM_SERVER_URL !== undefined,
+  } satisfies PageProps["authProviders"];
+
+  // Server-side redirect: when Hanzo IAM is the only enabled provider,
+  // skip the sign-in page entirely and redirect to the OAuth flow.
+  if (authProviders.hanzoIam) {
+    const otherProviders = [
+      authProviders.credentials,
+      authProviders.google,
+      authProviders.github,
+      authProviders.githubEnterprise,
+      authProviders.gitlab,
+      authProviders.okta,
+      authProviders.authentik,
+      authProviders.onelogin,
+      authProviders.azureAd,
+      authProviders.auth0,
+      authProviders.cognito,
+      !!authProviders.keycloak,
+      !!authProviders.workos,
+      authProviders.wordpress,
+      !!authProviders.custom,
+    ];
+    const hasOtherProvider = otherProviders.some(Boolean);
+    if (!hasOtherProvider) {
+      // Hanzo IAM is the sole provider — flag for immediate client-side redirect
+      return {
+        props: {
+          authProviders,
+          signUpDisabled: true,
+          runningOnHuggingFaceSpaces: false,
+        },
+      };
+    }
+  }
+
   return {
     props: {
-      authProviders: {
-        google: env.AUTH_GOOGLE_CLIENT_ID !== undefined && env.AUTH_GOOGLE_CLIENT_SECRET !== undefined,
-        github: env.AUTH_GITHUB_CLIENT_ID !== undefined && env.AUTH_GITHUB_CLIENT_SECRET !== undefined,
-        githubEnterprise:
-          env.AUTH_GITHUB_ENTERPRISE_CLIENT_ID !== undefined &&
-          env.AUTH_GITHUB_ENTERPRISE_CLIENT_SECRET !== undefined &&
-          env.AUTH_GITHUB_ENTERPRISE_BASE_URL !== undefined,
-        gitlab: env.AUTH_GITLAB_CLIENT_ID !== undefined && env.AUTH_GITLAB_CLIENT_SECRET !== undefined,
-        okta:
-          env.AUTH_OKTA_CLIENT_ID !== undefined &&
-          env.AUTH_OKTA_CLIENT_SECRET !== undefined &&
-          env.AUTH_OKTA_ISSUER !== undefined,
-        authentik:
-          env.AUTH_AUTHENTIK_CLIENT_ID !== undefined &&
-          env.AUTH_AUTHENTIK_CLIENT_SECRET !== undefined &&
-          env.AUTH_AUTHENTIK_ISSUER !== undefined,
-        onelogin:
-          env.AUTH_ONELOGIN_CLIENT_ID !== undefined &&
-          env.AUTH_ONELOGIN_CLIENT_SECRET !== undefined &&
-          env.AUTH_ONELOGIN_ISSUER !== undefined,
-        credentials: env.AUTH_DISABLE_USERNAME_PASSWORD !== "true",
-        azureAd:
-          env.AUTH_AZURE_AD_CLIENT_ID !== undefined &&
-          env.AUTH_AZURE_AD_CLIENT_SECRET !== undefined &&
-          env.AUTH_AZURE_AD_TENANT_ID !== undefined,
-        auth0:
-          env.AUTH_AUTH0_CLIENT_ID !== undefined &&
-          env.AUTH_AUTH0_CLIENT_SECRET !== undefined &&
-          env.AUTH_AUTH0_ISSUER !== undefined,
-        cognito:
-          env.AUTH_COGNITO_CLIENT_ID !== undefined &&
-          env.AUTH_COGNITO_CLIENT_SECRET !== undefined &&
-          env.AUTH_COGNITO_ISSUER !== undefined,
-        keycloak:
-          env.AUTH_KEYCLOAK_CLIENT_ID !== undefined &&
-          env.AUTH_KEYCLOAK_CLIENT_SECRET !== undefined &&
-          env.AUTH_KEYCLOAK_ISSUER !== undefined
-            ? env.AUTH_KEYCLOAK_NAME !== undefined
-              ? { name: env.AUTH_KEYCLOAK_NAME }
-              : true
-            : false,
-        workos:
-          env.AUTH_WORKOS_CLIENT_ID !== undefined && env.AUTH_WORKOS_CLIENT_SECRET !== undefined
-            ? env.AUTH_WORKOS_ORGANIZATION_ID !== undefined
-              ? { organizationId: env.AUTH_WORKOS_ORGANIZATION_ID }
-              : env.AUTH_WORKOS_CONNECTION_ID !== undefined
-                ? { connectionId: env.AUTH_WORKOS_CONNECTION_ID }
-                : true
-            : false,
-        wordpress: env.AUTH_WORDPRESS_CLIENT_ID !== undefined && env.AUTH_WORDPRESS_CLIENT_SECRET !== undefined,
-        custom:
-          env.AUTH_CUSTOM_CLIENT_ID !== undefined &&
-          env.AUTH_CUSTOM_CLIENT_SECRET !== undefined &&
-          env.AUTH_CUSTOM_ISSUER !== undefined &&
-          env.AUTH_CUSTOM_NAME !== undefined
-            ? { name: env.AUTH_CUSTOM_NAME }
-            : false,
-        sso,
-        hanzoIam:
-          env.HANZO_IAM_CLIENT_ID !== undefined &&
-          env.HANZO_IAM_CLIENT_SECRET !== undefined &&
-          env.HANZO_IAM_SERVER_URL !== undefined,
-      },
+      authProviders,
       signUpDisabled: env.AUTH_DISABLE_SIGNUP === "true",
       runningOnHuggingFaceSpaces: env.NEXTAUTH_URL?.replace("/api/auth", "").endsWith(".hf.space"),
     },
@@ -599,13 +635,45 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     }
   }
 
-  // Auto-redirect to Hanzo IAM only when it's the sole auth provider
+  // Auto-redirect to Hanzo IAM when it's the sole auth provider
+  const hanzoIamOnly =
+    authProviders.hanzoIam &&
+    !authProviders.credentials &&
+    !authProviders.google &&
+    !authProviders.github &&
+    !authProviders.githubEnterprise &&
+    !authProviders.gitlab &&
+    !authProviders.okta &&
+    !authProviders.authentik &&
+    !authProviders.onelogin &&
+    !authProviders.azureAd &&
+    !authProviders.auth0 &&
+    !authProviders.cognito &&
+    !authProviders.keycloak &&
+    !authProviders.workos &&
+    !authProviders.wordpress &&
+    !authProviders.custom;
   useEffect(() => {
-    if (authProviders.hanzoIam && !authProviders.credentials && !authProviders.google && !authProviders.github) {
+    if (hanzoIamOnly) {
       capture("sign_in:button_click", { provider: "hanzo-iam" });
       void signIn("hanzo-iam");
     }
-  }, [capture, authProviders]);
+  }, [capture, hanzoIamOnly]);
+
+  // Show loading screen while redirecting to Hanzo IAM
+  if (hanzoIamOnly) {
+    return (
+      <>
+        <Head>
+          <title>Sign in | Hanzo Cloud</title>
+        </Head>
+        <div className="flex flex-1 flex-col items-center justify-center py-6 sm:min-h-full sm:py-12">
+          <HanzoCloudIcon className="mx-auto" />
+          <p className="mt-6 text-sm text-muted-foreground">Redirecting to Hanzo ID...</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
