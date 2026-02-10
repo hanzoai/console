@@ -40,7 +40,7 @@ const DEFAULT_RESPONSE = {
   system_fingerprint: null,
 };
 
-function CompletionHandler(response: HttpResponse<object>) {
+function CompletionHandler(response: HttpResponse) {
   return http.post("https://api.openai.com/v1/chat/completions", async () => {
     logger.info("openai handler");
     return response;
