@@ -112,9 +112,6 @@ scripts/
 # Tests
 tests/
 
-# Patches
-patches/
-
 # Misc
 *.tar.gz
 *.zip
