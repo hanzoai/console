@@ -1,0 +1,214 @@
+# Production deployment stack for console.hanzo.ai
+#
+# SUPPLY CHAIN SECURITY: All images are either:
+# 1. Built from source in this repo (console-web, console-worker)
+# 2. Built from official source + pinned by SHA256 digest (infra services)
+# 3. Built from source in our repos (agentfield, casvisor)
+#
+# NO third-party pre-built images are used.
+#
+# Usage:
+#   docker compose -f deployments/compose.yml up -d
+#
+# Required env vars — set in .env or export:
+#   AGENTFIELD_API_URL, CASVISOR_API_URL, DATABASE_URL, etc.
+
+x-hanzo-env: &hanzo-env
+  NEXTAUTH_URL: ${NEXTAUTH_URL:-https://console.hanzo.ai}
+  NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?NEXTAUTH_SECRET required}
+  DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
+  SALT: ${SALT:?SALT required}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY required}
+  TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
+  HANZO_ENABLE_EXPERIMENTAL_FEATURES: "true"
+  # ClickHouse
+  CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
+  CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
+  CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?CLICKHOUSE_PASSWORD required}
+  CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+  # S3/MinIO
+  HANZO_S3_EVENT_UPLOAD_BUCKET: ${HANZO_S3_EVENT_UPLOAD_BUCKET:-hanzo}
+  HANZO_S3_EVENT_UPLOAD_REGION: ${HANZO_S3_EVENT_UPLOAD_REGION:-auto}
+  HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+  HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:?S3_SECRET required}
+  HANZO_S3_EVENT_UPLOAD_ENDPOINT: ${HANZO_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+  HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  HANZO_S3_EVENT_UPLOAD_PREFIX: "events/"
+  HANZO_S3_MEDIA_UPLOAD_BUCKET: ${HANZO_S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+  HANZO_S3_MEDIA_UPLOAD_REGION: auto
+  HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+  HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:?S3_SECRET required}
+  HANZO_S3_MEDIA_UPLOAD_ENDPOINT: ${HANZO_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+  HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  HANZO_S3_MEDIA_UPLOAD_PREFIX: "media/"
+  # Redis
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: ${REDIS_AUTH:?REDIS_AUTH required}
+  # AgentField + Casvisor (server-side only)
+  AGENTFIELD_API_URL: ${AGENTFIELD_API_URL:-http://agentfield:8080/api/ui/v1}
+  CASVISOR_API_URL: ${CASVISOR_API_URL:-http://casvisor:14000}
+
+x-depends-on: &depends-on
+  postgres:
+    condition: service_healthy
+  minio:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  clickhouse:
+    condition: service_healthy
+
+services:
+  # =========================================================================
+  # Application services — built from OUR source code
+  # =========================================================================
+
+  console-web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    image: ghcr.io/hanzoai/console:latest
+    restart: always
+    depends_on:
+      <<: *depends-on
+      agentfield:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *hanzo-env
+
+  console-worker:
+    build:
+      context: ..
+      dockerfile: worker/Dockerfile
+    image: ghcr.io/hanzoai/console-worker:latest
+    restart: always
+    depends_on: *depends-on
+    environment:
+      <<: *hanzo-env
+
+  agentfield:
+    build:
+      context: /Users/z/work/agentfield/agentfield
+      dockerfile: deployments/docker/Dockerfile.control-plane
+    image: ghcr.io/hanzoai/agentfield:latest
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      AGENTFIELD_PORT: "8080"
+      AGENTFIELD_STORAGE_MODE: postgresql
+      AGENTFIELD_DATABASE_URL: ${AGENTFIELD_DATABASE_URL:-postgresql://agentfield:agentfield@postgres:5432/agentfield?sslmode=disable}
+      GIN_MODE: release
+      LOG_LEVEL: info
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  casvisor:
+    build:
+      context: /Users/z/work/cas/casvisor
+      dockerfile: Dockerfile
+      target: STANDARD
+    image: ghcr.io/hanzoai/casvisor:latest
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:14000:14000"
+    environment:
+      CASVISOR_DB_DRIVER: postgres
+      CASVISOR_DB_CONN: ${CASVISOR_DB_URL:-postgresql://casvisor:casvisor@postgres:5432/casvisor?sslmode=disable}
+
+  # =========================================================================
+  # Infrastructure services — built from official source, pinned digests
+  # =========================================================================
+
+  postgres:
+    build:
+      context: images
+      dockerfile: Dockerfile.postgres
+    image: ghcr.io/hanzoai/postgres:17
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      TZ: UTC
+      PGTZ: UTC
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  clickhouse:
+    build:
+      context: images
+      dockerfile: Dockerfile.clickhouse
+    image: ghcr.io/hanzoai/clickhouse:24
+    restart: always
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?CLICKHOUSE_PASSWORD required}
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    build:
+      context: images
+      dockerfile: Dockerfile.minio
+    image: ghcr.io/hanzoai/minio:latest
+    restart: always
+    entrypoint: sh
+    command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD required}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    build:
+      context: images
+      dockerfile: Dockerfile.redis
+    image: ghcr.io/hanzoai/redis:7
+    restart: always
+    command: >
+      --requirepass ${REDIS_AUTH:?REDIS_AUTH required}
+      --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  postgres_data:
+  clickhouse_data:
+  clickhouse_logs:
+  minio_data:

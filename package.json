@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@release-it/bumper": "^7.0.5",
+    "@types/dagre": "^0.7.53",
     "braces": "3.0.3",
     "dotenv-cli": "^7.4.4",
     "husky": "^9.1.7",
@@ -102,5 +103,17 @@
     "patchedDependencies": {
       "next-auth@4.24.13": "patches/next-auth@4.24.13.patch"
     }
+  },
+  "dependencies": {
+    "@autoform/react": "^4.0.0",
+    "@autoform/shadcn": "^1.0.1",
+    "@autoform/zod": "^5.0.0",
+    "@deck.gl/core": "^9.2.6",
+    "@deck.gl/layers": "^9.2.6",
+    "@deck.gl/react": "^9.2.6",
+    "@phosphor-icons/react": "^2.1.10",
+    "@xyflow/react": "^12.10.0",
+    "dagre": "^0.8.5",
+    "elkjs": "^0.11.0"
   }
 }

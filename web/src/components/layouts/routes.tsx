@@ -1,16 +1,23 @@
 import { type Flag } from "@/src/features/feature-flags/types";
 import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
 import {
+  Bot,
   Database,
+  Fingerprint,
   LayoutDashboard,
   LifeBuoy,
   ListTree,
   type LucideIcon,
+  Network,
+  Package,
+  Play,
+  Server,
   Settings,
   UsersIcon,
   TerminalIcon,
   Lightbulb,
   Grid2X2,
+  Cloud,
   Sparkle,
   FileJson,
   Search,
@@ -18,6 +25,7 @@ import {
   SquarePercent,
   ClipboardPen,
   Clock,
+  Workflow,
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
@@ -41,6 +49,7 @@ export enum RouteGroup {
   Observability = "Observability",
   PromptManagement = "Prompt Management",
   Evaluation = "Evaluation",
+  Agents = "Agents",
 }
 
 export type Route = {
@@ -166,6 +175,77 @@ export const ROUTES: Route[] = [
     icon: Database,
     productModule: "datasets",
     group: RouteGroup.Evaluation,
+    section: RouteSection.Main,
+  },
+  // Agent Hub
+  {
+    title: "Agent Dashboard",
+    pathname: `/project/[projectId]/agents`,
+    icon: Bot,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Nodes",
+    pathname: `/project/[projectId]/agents/nodes`,
+    icon: Server,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Workflows",
+    pathname: `/project/[projectId]/agents/workflows`,
+    icon: Workflow,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Executions",
+    pathname: `/project/[projectId]/agents/executions`,
+    icon: Play,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Reasoners",
+    pathname: `/project/[projectId]/agents/reasoners`,
+    icon: Network,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Identity",
+    pathname: `/project/[projectId]/agents/identity`,
+    icon: Fingerprint,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Credentials",
+    pathname: `/project/[projectId]/agents/credentials`,
+    icon: Database,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Packages",
+    pathname: `/project/[projectId]/agents/packages`,
+    icon: Package,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Compute",
+    pathname: `/project/[projectId]/agents/compute`,
+    icon: Cloud,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Providers",
+    pathname: `/project/[projectId]/agents/compute/providers`,
+    icon: Server,
+    group: RouteGroup.Agents,
     section: RouteSection.Main,
   },
   {

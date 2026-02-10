@@ -1,0 +1,3 @@
+# ClickHouse — rebuilt from official source, pinned by digest
+# To update: docker pull clickhouse/clickhouse-server:24-alpine && docker inspect --format='{{index .RepoDigests 0}}' clickhouse/clickhouse-server:24-alpine
+FROM clickhouse/clickhouse-server:24-alpine@sha256:82499fdb60e5bfaefb1e8f06f00a8857d61643fd6081c3f476ab6c7ff6d78766

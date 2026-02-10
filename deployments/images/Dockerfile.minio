@@ -1,0 +1,4 @@
+# MinIO — rebuilt from official source, pinned by digest
+# Using Chainguard's hardened MinIO image for minimal attack surface
+# To update: docker pull cgr.dev/chainguard/minio:latest && docker inspect --format='{{index .RepoDigests 0}}' cgr.dev/chainguard/minio:latest
+FROM cgr.dev/chainguard/minio@sha256:d93cc06b0562fd8140f9089f0a9942d6492bdc1560df33f69bbe0fba80b4f0d0

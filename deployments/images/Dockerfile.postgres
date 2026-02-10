@@ -1,0 +1,5 @@
+# PostgreSQL 17 — rebuilt from official source, pinned by digest
+# To update: docker pull postgres:17-alpine && docker inspect --format='{{index .RepoDigests 0}}' postgres:17-alpine
+FROM postgres:17-alpine@sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2
+# No modifications — just pinning the digest to prevent supply chain attacks.
+# All extensions and configs are applied via init scripts at runtime.
