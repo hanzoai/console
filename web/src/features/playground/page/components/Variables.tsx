@@ -1,4 +1,4 @@
-import { Divider } from "@tremor/react";
+import { Separator } from "@/src/components/ui/separator";
 
 import { usePlaygroundContext } from "../context";
 import { PromptVariableComponent } from "./PromptVariableComponent";
@@ -25,7 +25,7 @@ export const Variables = () => {
         .map((promptVariable, index) => (
           <div key={promptVariable.name}>
             <PromptVariableComponent promptVariable={promptVariable} />
-            {index !== promptVariables.length - 1 && <Divider className="my-2 text-muted-foreground" />}
+            {index !== promptVariables.length - 1 && <Separator className="my-2" />}
           </div>
         ))}
     </div>

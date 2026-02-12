@@ -1,8 +1,19 @@
 import { getColorsForCategories } from "@/src/features/dashboard/utils/getColorsForCategories";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { cn } from "@/src/utils/tailwind";
-import { AreaChart, type CustomTooltipProps, LineChart } from "@tremor/react";
-import { Tooltip } from "@/src/features/dashboard/components/Tooltip";
+import {
+  AreaChart as RechartsAreaChart,
+  LineChart as RechartsLineChart,
+  Line,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Tooltip, type CustomTooltipProps } from "@/src/features/dashboard/components/Tooltip";
 import {
   dashboardDateRangeAggregationSettings,
   type DashboardDateRangeAggregationOption,
@@ -23,7 +34,7 @@ export function BaseTimeSeriesChart(props: {
   valueFormatter?: (value: number) => string;
   chartType?: "line" | "area";
 }) {
-  const labels = new Set(props.data.flatMap((d) => d.values.map((v) => v.label)));
+  const labels = Array.from(new Set(props.data.flatMap((d) => d.values.map((v) => v.label))));
 
   type ChartInput = { timestamp: string } & {
     [key: string]: number | undefined;
@@ -62,13 +73,9 @@ export function BaseTimeSeriesChart(props: {
     });
   };
 
-  const ChartComponent = props.chartType === "area" ? AreaChart : LineChart;
-  const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
-    <Tooltip {...tooltipProps} formatter={props.valueFormatter ?? compactNumberFormatter} />
-  );
-  const colors = getColorsForCategories(Array.from(labels));
+  const colors = getColorsForCategories(labels);
+  const formatter = props.valueFormatter ?? compactNumberFormatter;
 
-  // Calculate dynamic maxValue based on the maximum value in the data plus 10%
   const dynamicMaxValue = useMemo(() => {
     if (props.data.length === 0) return undefined;
 
@@ -76,33 +83,68 @@ export function BaseTimeSeriesChart(props: {
 
     if (maxValue <= 0) return undefined;
 
-    // Add 10% buffer
     const bufferedValue = maxValue * 1.1;
-
-    // Get order of magnitude and rounding goal
     const magnitude = Math.floor(Math.log10(bufferedValue));
     const roundTo = Math.max(1, Math.pow(10, magnitude) / 5);
 
-    // Round up to the next multiple of roundTo
     return Math.ceil(bufferedValue / roundTo) * roundTo;
   }, [props.data]);
 
+  const chartData = transformArray(props.data);
+  const isArea = props.chartType === "area";
+
+  const renderTooltip = ({ active, payload, label }: any) => {
+    const tooltipProps: CustomTooltipProps = { active, payload, label };
+    return <Tooltip {...tooltipProps} formatter={formatter} />;
+  };
+
+  const ChartWrapper = isArea ? RechartsAreaChart : RechartsLineChart;
+
   return (
-    <ChartComponent
-      className={cn("mt-4", props.className)}
-      data={transformArray(props.data)}
-      index="timestamp"
-      categories={Array.from(labels)}
-      connectNulls={props.connectNulls}
-      colors={colors}
-      valueFormatter={props.valueFormatter ?? compactNumberFormatter}
-      noDataText="No data"
-      showLegend={props.showLegend}
-      showAnimation={true}
-      onValueChange={() => {}}
-      enableLegendSlider={true}
-      customTooltip={TooltipComponent}
-      maxValue={dynamicMaxValue}
-    />
+    <div className={cn("mt-4", props.className)}>
+      <ResponsiveContainer width="100%" height={300}>
+        <ChartWrapper data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+          <XAxis
+            dataKey="timestamp"
+            tick={{ fontSize: 12 }}
+            className="fill-muted-foreground"
+          />
+          <YAxis
+            width={48}
+            tickFormatter={(v) => formatter(v)}
+            tick={{ fontSize: 12 }}
+            className="fill-muted-foreground"
+            domain={dynamicMaxValue ? [0, dynamicMaxValue] : undefined}
+          />
+          <RechartsTooltip content={renderTooltip} />
+          {props.showLegend && <Legend />}
+          {labels.map((label, i) =>
+            isArea ? (
+              <Area
+                key={label}
+                type="monotone"
+                dataKey={label}
+                stroke={colors[i]}
+                fill={colors[i]}
+                fillOpacity={0.1}
+                connectNulls={props.connectNulls}
+                animationDuration={500}
+              />
+            ) : (
+              <Line
+                key={label}
+                type="monotone"
+                dataKey={label}
+                stroke={colors[i]}
+                connectNulls={props.connectNulls}
+                dot={false}
+                animationDuration={500}
+              />
+            ),
+          )}
+        </ChartWrapper>
+      </ResponsiveContainer>
+    </div>
   );
 }

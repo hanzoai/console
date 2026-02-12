@@ -1,6 +1,12 @@
 import { cn } from "@/src/utils/tailwind";
-import { type CustomTooltipProps } from "@tremor/react";
 import { getRandomColor } from "@/src/features/dashboard/utils/getColorsForCategories";
+
+/** Shared tooltip props type, replaces @tremor/react CustomTooltipProps */
+export type CustomTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ name?: string; value?: number | string; color?: string }>;
+  label?: string;
+};
 
 export const Tooltip = ({
   payload,

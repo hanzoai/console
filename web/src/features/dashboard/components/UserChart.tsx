@@ -3,7 +3,7 @@ import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { TabComponent } from "@/src/features/dashboard/components/TabsComponent";
-import { BarList } from "@tremor/react";
+import { BarList } from "@/src/features/dashboard/components/BarList";
 import { TotalMetric } from "@/src/features/dashboard/components/TotalMetric";
 import { ExpandListButton } from "@/src/features/dashboard/components/cards/ChevronButton";
 import { useState } from "react";
@@ -159,9 +159,7 @@ export const UserChart = ({
                     <BarList
                       data={item.data}
                       valueFormatter={item.formatter}
-                      className="mt-2 [&_*]:text-muted-foreground [&_p]:text-muted-foreground [&_span]:text-muted-foreground"
-                      showAnimation={true}
-                      color={"indigo"}
+                      className="mt-2"
                     />
                   </>
                 ) : (

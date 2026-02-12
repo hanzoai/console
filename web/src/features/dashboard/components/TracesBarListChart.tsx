@@ -4,7 +4,7 @@ import { ExpandListButton } from "@/src/features/dashboard/components/cards/Chev
 import { useState } from "react";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { TotalMetric } from "@/src/features/dashboard/components/TotalMetric";
-import { BarList } from "@tremor/react";
+import { BarList } from "@/src/features/dashboard/components/BarList";
 import { compactNumberFormatter } from "@/src/utils/numbers";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
@@ -110,15 +110,11 @@ export const TracesBarListChart = ({
           description={"Total traces tracked"}
         />
         {adjustedData.length > 0 ? (
-          <>
-            <BarList
-              data={adjustedData}
-              valueFormatter={(number: number) => Intl.NumberFormat("en-US").format(number).toString()}
-              className="mt-6 [&_*]:text-muted-foreground [&_p]:text-muted-foreground [&_span]:text-muted-foreground"
-              showAnimation={true}
-              color={"indigo"}
-            />
-          </>
+          <BarList
+            data={adjustedData}
+            valueFormatter={(number: number) => Intl.NumberFormat("en-US").format(number).toString()}
+            className="mt-6"
+          />
         ) : (
           <NoDataOrLoading
             isLoading={isLoading || traces.isPending || totalTraces.isPending}

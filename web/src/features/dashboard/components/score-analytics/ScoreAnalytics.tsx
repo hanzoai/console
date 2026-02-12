@@ -150,8 +150,8 @@ export function ScoreAnalytics(props: {
           })}
         </div>
       ) : Boolean(scoreKeysAndProps.data?.scoreColumns.length) ? (
-        <div className="flex min-h-[9rem] w-full flex-1 items-center justify-center rounded-tremor-default border">
-          <p className="text-tremor-content">Select a score to view analytics</p>
+        <div className="flex min-h-[9rem] w-full flex-1 items-center justify-center rounded-md border">
+          <p className="text-muted-foreground">Select a score to view analytics</p>
         </div>
       ) : (
         <NoDataOrLoading isLoading={scoreKeysAndProps.isPending} />
