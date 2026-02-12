@@ -60,8 +60,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Skip env.mjs validation during Docker build
 ENV DOCKER_BUILD=1
 
+# Ensure .next dir is owned by nextjs before cache mount creates subdirectory
+RUN mkdir -p /app/web/.next
+
 # Build the application (adaptive memory to avoid OOM)
-RUN --mount=type=cache,target=/app/web/.next/cache \
+RUN --mount=type=cache,target=/app/web/.next/cache,uid=1001,gid=1001 \
     NODE_OPTIONS='--max-old-space-size-percentage=75' pnpm build
 
 # ===== Development Stage =====
