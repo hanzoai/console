@@ -19,11 +19,11 @@ const NoData = ({ noDataText = "No data", children, className }: NoDataProps) =>
   return (
     <div
       className={cn(
-        "flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-tremor-default border border-dashed",
+        "flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-md border border-dashed",
         className,
       )}
     >
-      <p className="text-tremor-content">{noDataText}</p>
+      <p className="text-muted-foreground">{noDataText}</p>
       {children}
     </div>
   );
@@ -33,7 +33,7 @@ export function NoDataOrLoading({ isLoading, description, href, className }: NoD
   if (isLoading) {
     return (
       <div
-        className={cn("flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-tremor-default", className)}
+        className={cn("flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-md", className)}
       >
         <Skeleton className="h-full w-full" />
       </div>

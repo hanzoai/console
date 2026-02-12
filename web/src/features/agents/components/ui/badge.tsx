@@ -10,7 +10,7 @@ import {
   WarningDiamond,
   Question,
 } from "@/src/features/agents/components/ui/icon-bridge"
-import type { IconComponent, IconWeight } from "@/src/features/agents/components/ui/icon-bridge"
+import type { IconComponent } from "@/src/features/agents/components/ui/icon-bridge"
 
 const badgeVariants = cva(
   "inline-flex items-center gap-1.5 rounded-md border border-transparent px-2 py-0.5 text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -75,15 +75,14 @@ export interface BadgeProps
   showIcon?: boolean;
 }
 
-// Temporary icon mapping (to be replaced with phosphor icons)
-const statusIcons: Partial<Record<BadgeVariant, { icon: IconComponent; weight?: IconWeight }>> = {
-  success: { icon: CheckCircle, weight: "bold" },
-  failed: { icon: XCircle, weight: "bold" },
-  running: { icon: SpinnerGap, weight: "bold" },
-  pending: { icon: Clock, weight: "bold" },
-  degraded: { icon: WarningDiamond, weight: "bold" },
-  unknown: { icon: Question, weight: "bold" },
-  destructive: { icon: XCircle, weight: "bold" },
+const statusIcons: Partial<Record<BadgeVariant, { icon: IconComponent; strokeWidth?: number }>> = {
+  success: { icon: CheckCircle, strokeWidth: 2.5 },
+  failed: { icon: XCircle, strokeWidth: 2.5 },
+  running: { icon: SpinnerGap, strokeWidth: 2.5 },
+  pending: { icon: Clock, strokeWidth: 2.5 },
+  degraded: { icon: WarningDiamond, strokeWidth: 2.5 },
+  unknown: { icon: Question, strokeWidth: 2.5 },
+  destructive: { icon: XCircle, strokeWidth: 2.5 },
 };
 
 function Badge({ className, variant, size, icon, showIcon = true, children, ...props }: BadgeProps) {
@@ -107,7 +106,7 @@ function Badge({ className, variant, size, icon, showIcon = true, children, ...p
       {icon || (StatusIconComponent && (
         <StatusIconComponent
           size={12}
-          weight={statusIconEntry?.weight}
+          strokeWidth={statusIconEntry?.strokeWidth}
           className={cn(
             "flex-shrink-0",
             iconTone ? statusTone[iconTone].accent : undefined

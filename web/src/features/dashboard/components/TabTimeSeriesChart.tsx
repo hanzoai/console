@@ -4,7 +4,7 @@ import {
 } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
 import { TotalMetric } from "@/src/features/dashboard/components/TotalMetric";
 import { type DashboardDateRangeAggregationOption } from "@/src/utils/date-range-utils";
-import { Tab, TabList, TabGroup, TabPanel, TabPanels } from "@tremor/react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/src/components/ui/tabs";
 import { type ReactNode, useState } from "react";
 
 export type BaseTabTimeseriesChartProps = {
@@ -29,22 +29,25 @@ export const BaseTabTimeseriesChart = (props: BaseTabTimeseriesChartProps) => {
         metric={props.data[selectedIndex]?.totalMetric}
         description={props.data[selectedIndex]?.metricDescription}
       />
-      <TabGroup className="mt-4" index={selectedIndex} onIndexChange={(i) => setSelectedIndex(i)} defaultIndex={0}>
-        <TabList className="h-8">
+      <Tabs
+        className="mt-4"
+        value={String(selectedIndex)}
+        onValueChange={(v) => setSelectedIndex(Number(v))}
+        defaultValue="0"
+      >
+        <TabsList className="h-8">
           {props.data.map((data, index) => (
-            <Tab tabIndex={index} key={index}>
+            <TabsTrigger value={String(index)} key={index}>
               {data.tabTitle}
-            </Tab>
+            </TabsTrigger>
           ))}
-        </TabList>
-        <TabPanels>
-          {props.data.map((data, index) => (
-            <TabPanel key={index}>
-              <BaseTimeSeriesChart agg={props.agg} data={data.data} showLegend={true} valueFormatter={data.formatter} />
-            </TabPanel>
-          ))}
-        </TabPanels>
-      </TabGroup>
+        </TabsList>
+        {props.data.map((data, index) => (
+          <TabsContent value={String(index)} key={index}>
+            <BaseTimeSeriesChart agg={props.agg} data={data.data} showLegend={true} valueFormatter={data.formatter} />
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };

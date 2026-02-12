@@ -25,11 +25,13 @@ import { NodeDetailSidebar } from "./NodeDetailSidebar";
 import { VirtualizedDAG } from "./VirtualizedDAG";
 import { WorkflowNode } from "./WorkflowNode";
 import { LayoutManager, type AllLayoutType } from "./layouts/LayoutManager";
-import {
-  WorkflowDeckGLView,
-  buildDeckGraph,
-  type DeckGraphData,
-} from "./DeckGLView";
+import dynamic from "next/dynamic";
+import { buildDeckGraph, type DeckGraphData } from "./DeckGLView";
+
+const WorkflowDeckGLView = dynamic(
+  () => import("./DeckGLView").then((mod) => mod.WorkflowDeckGLView),
+  { ssr: false },
+);
 
 import { getWorkflowDAG } from "../../services/workflowsApi";
 import type {

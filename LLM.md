@@ -25,10 +25,13 @@ This is a monorepo managed with pnpm and Turbo, containing:
 ## Technology Stack
 
 ### Frontend
-- NextJS 14 (pages router)
-- React 18
-- Tailwind CSS with shadcn/ui components
+- Next.js 15.5 (pages router, standalone output)
+- React 19
+- Tailwind CSS with Radix UI primitives (shadcn-style local components)
 - tRPC for type-safe API interactions
+- Icons: lucide-react (primary, 347 imports) + @phosphor-icons (secondary, 113) + react-icons/si,tb (brand logos only, eslint-gated)
+- Charts: recharts (primary), @tremor/react (beta, being evaluated for removal)
+- Graph viz: @xyflow/react (workflow DAGs), vis-network (trace graphs), elkjs/dagre (layout)
 
 ### Backend
 - Node.js
@@ -123,10 +126,40 @@ Key integration points for connecting applications:
 - **LangChain** and **LlamaIndex** integrations
 - **API** endpoints for direct integration
 
-## Next Steps for Analysis
+## Build & Deploy Architecture
 
-1. Examine the web application structure to understand UI components and flow
-2. Investigate the API structure and integration points
-3. Look at the database schema to understand data relationships
-4. Review trace ingestion and processing logic
-5. Explore the evaluation and dataset management functionality
+### Docker Images
+| Dockerfile | Purpose | Registry | Entrypoint |
+|---|---|---|---|
+| `web/Dockerfile` | Production web (turbo prune, adaptive memory) | Docker Hub + GHCR | `entrypoint.sh` (auto-migrations) |
+| `worker/Dockerfile` | Worker service | GHCR | `entrypoint.sh` |
+| `Dockerfile` (root) | Local dev/fallback only | N/A | tini |
+
+### CI Workflows
+- `pipeline.yml` - Primary CI: lint, test (sharded), docker build test, e2e
+- `deploy.yml` - Docker Hub push → Hanzo Platform webhook deploy
+- `build-and-push.yml` - GHCR push (web + worker separately)
+- `test.yml` - REMOVED (was outdated Node 20/pnpm 8, superseded by pipeline.yml)
+
+### Key Build Optimizations
+- `web/Dockerfile` uses `turbo prune --scope=web` for minimal Docker context
+- `DOCKER_BUILD=1` env skips env.mjs validation AND Sentry webpack plugin
+- `--max-old-space-size-percentage=75` for adaptive memory (no hardcoded OOM)
+- BuildKit cache mounts for pnpm store and .next/cache
+- Frontend deploys independently from backend/datastore
+
+## Dependency Audit Notes
+
+### Removed (confirmed 0 imports)
+- @mui/material, @mui/x-tree-view, @heroicons/react, @remixicon/react
+- @radix-ui/react-icons, @headlessui/react, @headlessui/tailwindcss
+
+### Deduplicated via pnpm overrides (root package.json)
+- date-fns, vis-network, posthog-js
+
+### Known Bloat (future optimization)
+- `@tremor/react` (4.0.0-beta) - 15 imports, overlaps with recharts. Migrate to recharts + custom Radix components.
+- `@hanzo/ui` exists at ~/work/hanzo/ui but console doesn't use it. 64 local shadcn components duplicate @hanzo/ui's 90+ components.
+- `packages/shared/src/index.ts` barrel exports (96 re-exports) kill tree-shaking. Should split into `@hanzo/shared/utils`, `@hanzo/shared/types`, etc.
+- Only 5 dynamic imports across 67 feature directories. Heavy features (agents: 3MB, trace-graph-view) should be lazy-loaded.
+- `vis-network` (45MB, 1 file) and `@deck.gl` (45MB, 1 file) are candidates for dynamic import.

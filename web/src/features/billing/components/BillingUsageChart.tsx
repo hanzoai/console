@@ -1,7 +1,7 @@
 // Hanzo Cloud only
 
 import { api } from "@/src/utils/api";
-import { MarkerBar } from "@tremor/react";
+import { Progress } from "@/src/components/ui/progress";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
 import { numberFormatter, compactNumberFormatter } from "@/src/utils/numbers";
@@ -54,7 +54,7 @@ export const BillingUsageChart = () => {
                   <span className="text-sm">{`${numberFormatter((usage.data.usageCount / hobbyPlanLimit) * 100)}%`}</span>
                   <span className="text-sm">Plan limit: {compactNumberFormatter(hobbyPlanLimit)}</span>
                 </div>
-                <MarkerBar value={Math.min((usage.data.usageCount / hobbyPlanLimit) * 100, 100)} className="mt-3" />
+                <Progress value={Math.min((usage.data.usageCount / hobbyPlanLimit) * 100, 100)} className="mt-3" />
               </>
             )}
           </>

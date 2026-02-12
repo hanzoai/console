@@ -18,6 +18,8 @@ import {
   Lightbulb,
   Grid2X2,
   Cloud,
+  KeyRound,
+  Lock,
   Sparkle,
   FileJson,
   Search,
@@ -50,6 +52,7 @@ export enum RouteGroup {
   PromptManagement = "Prompt Management",
   Evaluation = "Evaluation",
   Agents = "Agents",
+  KMS = "KMS",
 }
 
 export type Route = {
@@ -247,6 +250,23 @@ export const ROUTES: Route[] = [
     icon: Server,
     group: RouteGroup.Agents,
     section: RouteSection.Main,
+  },
+  // KMS
+  {
+    title: "Secrets",
+    pathname: `/project/[projectId]/kms/secrets`,
+    icon: Lock,
+    group: RouteGroup.KMS,
+    section: RouteSection.Main,
+    projectRbacScopes: ["kmsSecrets:read"],
+  },
+  {
+    title: "Encryption Keys",
+    pathname: `/project/[projectId]/kms/keys`,
+    icon: KeyRound,
+    group: RouteGroup.KMS,
+    section: RouteSection.Main,
+    projectRbacScopes: ["kmsKeys:read"],
   },
   {
     title: "Upgrade",

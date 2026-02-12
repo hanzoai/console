@@ -245,8 +245,7 @@ export const ModelUsageChart = ({
     0,
   );
 
-  // had to add this function as tremor under the hodd adds more variables
-  // to the function call which would break usdFormatter.
+  // Wrapper to prevent extra args from recharts tooltip callback breaking usdFormatter.
   const oneValueUsdFormatter = (value: number) => {
     return totalCostDashboardFormatted(value);
   };

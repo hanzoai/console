@@ -7,7 +7,7 @@ import { env } from "@/src/env.mjs";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
 import { isCloudPlan } from "@hanzo/shared";
-import { Divider } from "@tremor/react";
+import { Separator } from "@/src/components/ui/separator";
 import { BookOpen, LockIcon, MessageSquareText, PlusIcon, Settings, Users } from "lucide-react";
 import { type User } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -261,7 +261,7 @@ export const OrganizationProjectOverview = () => {
         })
         .map((org) => (
           <Fragment key={org.id}>
-            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && <Divider />}
+            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && <Separator className="my-4" />}
             <SingleOrganizationProjectOverviewTile orgId={org.id} search={search ?? undefined} />
           </Fragment>
         ))}

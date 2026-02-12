@@ -19,7 +19,7 @@ import {
   GithubLogo,
   Question,
 } from "@/src/features/agents/components/ui/icon-bridge";
-import type { IconComponent, IconWeight } from "@/src/features/agents/components/ui/icon-bridge";
+import type { IconComponent } from "@/src/features/agents/components/ui/icon-bridge";
 
 const icons = {
   activity: Pulse,
@@ -46,22 +46,20 @@ export interface IconProps {
   name: keyof typeof icons;
   className?: string;
   size?: number;
-  weight?: IconWeight;
 }
 
-export function Icon({ name, className, size = 16, weight = "regular" }: IconProps) {
-  const IconComponent = icons[name] as IconComponent;
+export function Icon({ name, className, size = 16 }: IconProps) {
+  const Component = icons[name] as IconComponent;
 
-  if (!IconComponent) {
+  if (!Component) {
     console.warn(`Icon "${name}" not found`);
     return null;
   }
 
   return (
-    <IconComponent
+    <Component
       className={cn("shrink-0", className)}
       size={size}
-      weight={weight}
     />
   );
 }

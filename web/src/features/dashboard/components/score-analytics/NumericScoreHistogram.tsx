@@ -2,12 +2,20 @@ import { api } from "@/src/utils/api";
 import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/shared";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import React from "react";
-import { BarChart, type CustomTooltipProps } from "@tremor/react";
 import { Card } from "@/src/components/ui/card";
 import { getColorsForCategories } from "@/src/features/dashboard/utils/getColorsForCategories";
 import { padChartData } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { Tooltip } from "@/src/features/dashboard/components/Tooltip";
+import { Tooltip, type CustomTooltipProps } from "@/src/features/dashboard/components/Tooltip";
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export function NumericScoreHistogram(props: {
   projectId: string;
@@ -57,26 +65,42 @@ export function NumericScoreHistogram(props: {
 
   const colors = getColorsForCategories(chartLabels);
   const paddedChartData = padChartData(chartData);
+  const intlFormatter = (value: number) => Intl.NumberFormat("en-US").format(value).toString();
 
-  const TooltipComponent = (tooltipProps: CustomTooltipProps) => (
-    <Tooltip {...tooltipProps} formatter={(value) => Intl.NumberFormat("en-US").format(value).toString()} />
-  );
+  const renderTooltip = ({ active, payload, label }: any) => {
+    const tooltipProps: CustomTooltipProps = { active, payload, label };
+    return <Tooltip {...tooltipProps} formatter={intlFormatter} />;
+  };
 
   return histogram.isLoading || !Boolean(chartData.length) ? (
     <NoDataOrLoading isLoading={histogram.isLoading} />
   ) : (
-    <Card className="min-h-[9rem] w-full flex-1 rounded-tremor-default border">
-      <BarChart
-        className="mt-4 [&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground"
-        data={paddedChartData}
-        index="binLabel"
-        categories={chartLabels}
-        colors={colors}
-        valueFormatter={(number: number) => Intl.NumberFormat("en-US").format(number).toString()}
-        yAxisWidth={48}
-        barCategoryGap={"0%"}
-        customTooltip={TooltipComponent}
-      />
+    <Card className="min-h-[9rem] w-full flex-1 rounded-md border">
+      <ResponsiveContainer width="100%" height={300} className="mt-4">
+        <RechartsBarChart data={paddedChartData} barCategoryGap="0%">
+          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+          <XAxis
+            dataKey="binLabel"
+            tick={{ fontSize: 12 }}
+            className="fill-muted-foreground"
+          />
+          <YAxis
+            width={48}
+            tickFormatter={intlFormatter}
+            tick={{ fontSize: 12 }}
+            className="fill-muted-foreground"
+          />
+          <RechartsTooltip content={renderTooltip} />
+          {chartLabels.map((label, i) => (
+            <Bar
+              key={label}
+              dataKey={label}
+              fill={colors[i]}
+              animationDuration={500}
+            />
+          ))}
+        </RechartsBarChart>
+      </ResponsiveContainer>
     </Card>
   );
 }

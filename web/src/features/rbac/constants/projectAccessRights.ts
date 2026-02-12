@@ -77,6 +77,11 @@ export const projectScopes = [
 
   "automations:CUD",
   "automations:read",
+
+  "kmsSecrets:read",
+  "kmsSecrets:CUD",
+  "kmsKeys:read",
+  "kmsKeys:CUD",
 ] as const;
 
 // type string of all Resource:Action, e.g. "members:read"
@@ -136,6 +141,10 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "TableViewPresets:read",
     "automations:CUD",
     "automations:read",
+    "kmsSecrets:read",
+    "kmsSecrets:CUD",
+    "kmsKeys:read",
+    "kmsKeys:CUD",
   ],
   ADMIN: [
     "project:read",
@@ -189,6 +198,10 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "TableViewPresets:read",
     "automations:CUD",
     "automations:read",
+    "kmsSecrets:read",
+    "kmsSecrets:CUD",
+    "kmsKeys:read",
+    "kmsKeys:CUD",
   ],
   ADMIN_BILLING: [
     "project:read",
@@ -239,6 +252,8 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "TableViewPresets:CUD",
     "TableViewPresets:read",
     "automations:read",
+    "kmsSecrets:read",
+    "kmsKeys:read",
   ],
   VIEWER: [
     "project:read",
@@ -257,6 +272,8 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "dashboards:read",
     "TableViewPresets:read",
     "automations:read",
+    "kmsSecrets:read",
+    "kmsKeys:read",
   ],
   NONE: [],
 };
