@@ -251,22 +251,22 @@ export const ROUTES: Route[] = [
     group: RouteGroup.Agents,
     section: RouteSection.Main,
   },
-  // KMS
+  // KMS — embedded per-project pages (multi-tenant via org metadata)
   {
     title: "Secrets",
     pathname: `/project/[projectId]/kms/secrets`,
     icon: Lock,
+    projectRbacScopes: ["kmsSecrets:read"],
     group: RouteGroup.KMS,
     section: RouteSection.Main,
-    projectRbacScopes: ["kmsSecrets:read"],
   },
   {
     title: "Encryption Keys",
     pathname: `/project/[projectId]/kms/keys`,
     icon: KeyRound,
+    projectRbacScopes: ["kmsKeys:read"],
     group: RouteGroup.KMS,
     section: RouteSection.Main,
-    projectRbacScopes: ["kmsKeys:read"],
   },
   {
     title: "Upgrade",

@@ -10,6 +10,12 @@ export function KmsOrgSettings({ orgId }: { orgId: string }) {
   const org = session.data?.user?.organizations.find((o) => o.id === orgId);
   const firstProjectId = org?.projects[0]?.id;
 
+  // Show org-level KMS project mapping
+  const orgKmsProjectId =
+    org?.metadata && typeof org.metadata === "object"
+      ? (org.metadata as Record<string, unknown>).kmsProjectId
+      : undefined;
+
   const envQuery = api.kms.listEnvironments.useQuery(
     { projectId: firstProjectId ?? "" },
     { enabled: !!firstProjectId, retry: false },
@@ -47,6 +53,30 @@ export function KmsOrgSettings({ orgId }: { orgId: string }) {
             KMS_API_URL are configured correctly.
           </p>
         )}
+      </div>
+
+      <div>
+        <Header title="KMS Workspace" />
+        <div className="mt-2 text-sm">
+          {typeof orgKmsProjectId === "string" && orgKmsProjectId.length > 0 ? (
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Project ID:</span>
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                {orgKmsProjectId}
+              </code>
+              <span className="text-xs text-muted-foreground">(org-specific)</span>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">
+              Using global KMS workspace (KMS_PROJECT_ID env var). To give this
+              organization its own KMS workspace, set{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+                kmsProjectId
+              </code>{" "}
+              in the organization metadata.
+            </p>
+          )}
+        </div>
       </div>
 
       {isConnected && (

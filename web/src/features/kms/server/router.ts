@@ -1,8 +1,10 @@
 import { z } from "zod/v4";
+import { TRPCError } from "@trpc/server";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import {
   createTRPCRouter,
   protectedProjectProcedure,
+  type ProjectAuthedContext,
 } from "@/src/server/api/trpc";
 import { env } from "@/src/env.mjs";
 import { kmsGet, kmsPost, kmsPatch, kmsDelete } from "./kmsClient";
@@ -17,13 +19,38 @@ import {
   DecryptInput,
 } from "../types";
 
-/** Map a console projectId to the KMS project ID. */
-function kmsProjectId(): string {
-  const id = env.KMS_PROJECT_ID;
-  if (!id) {
-    throw new Error("KMS_PROJECT_ID is not configured");
+/**
+ * Resolve the KMS workspace/project ID for the current org.
+ *
+ * Multi-tenant: each org can store its own KMS project ID in
+ * Organization.metadata.kmsProjectId.  Falls back to the global
+ * KMS_PROJECT_ID env var (used in dev / single-tenant deploys).
+ */
+function resolveKmsProjectId(ctx: { session: ProjectAuthedContext["session"] }): string {
+  // 1. Try org-specific KMS project from session metadata
+  const org = ctx.session.user.organizations.find(
+    (o) => o.id === ctx.session.orgId,
+  );
+  const orgKmsId =
+    org?.metadata && typeof org.metadata === "object"
+      ? (org.metadata as Record<string, unknown>).kmsProjectId
+      : undefined;
+  if (typeof orgKmsId === "string" && orgKmsId.length > 0) {
+    return orgKmsId;
   }
-  return id;
+
+  // 2. Fall back to global env var (dev / single-tenant)
+  const globalId = env.KMS_PROJECT_ID;
+  if (globalId) {
+    return globalId;
+  }
+
+  throw new TRPCError({
+    code: "PRECONDITION_FAILED",
+    message:
+      "KMS is not configured for this organization. " +
+      "Set kmsProjectId in org metadata or KMS_PROJECT_ID env var.",
+  });
 }
 
 export const kmsRouter = createTRPCRouter({
@@ -45,7 +72,7 @@ export const kmsRouter = createTRPCRouter({
       });
 
       return kmsGet<{ secrets: unknown[] }>("/api/v3/secrets/raw", {
-        workspaceId: kmsProjectId(),
+        workspaceId: resolveKmsProjectId(ctx),
         environment: input.environment,
         secretPath: input.secretPath,
       });
@@ -61,7 +88,7 @@ export const kmsRouter = createTRPCRouter({
       });
 
       return kmsPost("/api/v3/secrets/raw", {
-        workspaceId: kmsProjectId(),
+        workspaceId: resolveKmsProjectId(ctx),
         environment: input.environment,
         secretPath: input.secretPath,
         secretName: input.secretName,
@@ -83,7 +110,7 @@ export const kmsRouter = createTRPCRouter({
       return kmsPatch(
         `/api/v3/secrets/raw/${encodeURIComponent(input.secretName)}`,
         {
-          workspaceId: kmsProjectId(),
+          workspaceId: resolveKmsProjectId(ctx),
           environment: input.environment,
           secretPath: input.secretPath,
           secretValue: input.secretValue,
@@ -104,7 +131,7 @@ export const kmsRouter = createTRPCRouter({
       return kmsDelete(
         `/api/v3/secrets/raw/${encodeURIComponent(input.secretName)}`,
         {
-          workspaceId: kmsProjectId(),
+          workspaceId: resolveKmsProjectId(ctx),
           environment: input.environment,
           secretPath: input.secretPath,
         },
@@ -123,7 +150,7 @@ export const kmsRouter = createTRPCRouter({
       });
 
       return kmsGet<{ environments: unknown[] }>(
-        `/api/v1/workspace/${kmsProjectId()}/environments`,
+        `/api/v1/workspace/${resolveKmsProjectId(ctx)}/environments`,
       );
     }),
 
@@ -139,7 +166,7 @@ export const kmsRouter = createTRPCRouter({
       });
 
       return kmsGet<{ keys: unknown[] }>("/api/v1/kms/keys", {
-        projectId: kmsProjectId(),
+        projectId: resolveKmsProjectId(ctx),
       });
     }),
 
@@ -153,7 +180,7 @@ export const kmsRouter = createTRPCRouter({
       });
 
       return kmsPost("/api/v1/kms/keys", {
-        projectId: kmsProjectId(),
+        projectId: resolveKmsProjectId(ctx),
         name: input.name,
         description: input.description,
         encryptionAlgorithm: input.encryptionAlgorithm,
