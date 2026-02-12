@@ -4,7 +4,7 @@ import type {
   AgentStatus,
   HealthStatus,
   LifecycleStatus,
-} from "@/src/features/agents/types/agentfield";
+} from "@/src/features/agents/types/agents";
 import { cn } from "@/src/features/agents/lib/utils";
 import { statusTone, type StatusTone } from "@/src/features/agents/lib/theme";
 import {

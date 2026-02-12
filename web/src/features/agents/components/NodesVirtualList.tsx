@@ -10,7 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/src/features/agents/components/ui/empty";
-import type { AgentNodeSummary } from '../types/agentfield';
+import type { AgentNodeSummary } from '../types/agents';
 import { NodeCard } from './NodeCard';
 import type { DensityMode } from './DensityToggle';
 import { getStatusPriority } from './ui/status-indicator';

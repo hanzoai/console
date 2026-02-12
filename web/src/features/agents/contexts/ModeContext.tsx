@@ -18,7 +18,7 @@ interface ModeProviderProps {
 export function ModeProvider({ children }: ModeProviderProps) {
   const [mode, setModeState] = useState<AppMode>(() => {
     // Load mode from localStorage on initialization
-    const savedMode = localStorage.getItem("agentfield-app-mode");
+    const savedMode = localStorage.getItem("agents-app-mode");
     return savedMode === "developer" || savedMode === "user"
       ? savedMode
       : "developer";
@@ -26,7 +26,7 @@ export function ModeProvider({ children }: ModeProviderProps) {
 
   const setMode = (newMode: AppMode) => {
     setModeState(newMode);
-    localStorage.setItem("agentfield-app-mode", newMode);
+    localStorage.setItem("agents-app-mode", newMode);
   };
 
   const toggleMode = () => {
@@ -36,7 +36,7 @@ export function ModeProvider({ children }: ModeProviderProps) {
 
   // Persist mode changes to localStorage
   useEffect(() => {
-    localStorage.setItem("agentfield-app-mode", mode);
+    localStorage.setItem("agents-app-mode", mode);
   }, [mode]);
 
   return (

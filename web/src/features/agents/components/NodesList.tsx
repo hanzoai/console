@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { AgentNodeSummary } from '../types/agentfield';
+import type { AgentNodeSummary } from '../types/agents';
 import { getNodesSummary, streamNodeEvents } from '../services/api';
 import AgentNodesTable from './AgentNodesTable';
 import { Badge } from '@/src/features/agents/components/ui/badge';
@@ -28,7 +28,7 @@ const NodesList: React.FC = () => {
       setTotalCount(data.count);
     } catch (err) {
       console.error('Failed to load nodes summary:', err);
-      setError('Failed to load agent nodes. Please ensure the AgentField server is running and accessible.');
+      setError('Failed to load agent nodes. Please ensure the Hanzo Agents server is running and accessible.');
     } finally {
       setIsLoading(false);
     }

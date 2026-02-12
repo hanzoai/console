@@ -66,7 +66,7 @@ import type {
   MCPHealthResponseModeAware,
   MCPServerHealthForUI,
   MCPSummaryForUI,
-} from "@/src/features/agents/types/agentfield";
+} from "@/src/features/agents/types/agents";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "../adapters";
 import { EnhancedNodeDetailHeader } from "@/src/features/agents/components/nodes";

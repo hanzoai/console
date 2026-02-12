@@ -385,7 +385,7 @@ export function ObservabilityWebhookSettingsPage() {
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
-                If set, requests will include an X-AgentField-Signature header with HMAC-SHA256
+                If set, requests will include an X-Hanzo Agents-Signature header with HMAC-SHA256
                 signature
               </p>
             </div>

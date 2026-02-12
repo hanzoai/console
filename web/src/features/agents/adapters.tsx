@@ -1,7 +1,7 @@
 /**
  * Drop-in shim for react-router-dom APIs → Next.js Pages Router.
  *
- * Every AgentField component that imported from "react-router-dom" now
+ * Every Hanzo Agents component that imported from "react-router-dom" now
  * imports from this module instead (bulk-replaced at copy time).
  */
 import NextLink from "next/link";

@@ -375,11 +375,11 @@ export function EnhancedExecutionHeader({
             <div className="flex items-center gap-2 group">
               <span>Request:</span>
               <code className="font-mono text-xs text-foreground bg-muted/30 px-1.5 py-0.5 rounded">
-                {execution.agentfield_request_id ? truncateId(execution.agentfield_request_id) : 'n/a'}
+                {execution.agents_request_id ? truncateId(execution.agents_request_id) : 'n/a'}
               </code>
-              {execution.agentfield_request_id && (
+              {execution.agents_request_id && (
                 <CopyButton
-                  value={execution.agentfield_request_id}
+                  value={execution.agents_request_id}
                   variant="ghost"
                   size="icon"
                   className="h-4 w-4 p-0 opacity-0 transition-opacity group-hover:opacity-100 [&_svg]:h-3 [&_svg]:w-3"

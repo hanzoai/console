@@ -1,6 +1,6 @@
 import { Button } from "@/src/features/agents/components/ui/button";
 import { bulkNodeStatus, refreshNodeStatus } from "@/src/features/agents/services/api";
-import type { AgentStatus } from "@/src/features/agents/types/agentfield";
+import type { AgentStatus } from "@/src/features/agents/types/agents";
 import { ArrowClockwise } from "@/src/features/agents/components/ui/icon-bridge";
 import { useState } from "react";
 import { cn } from "@/src/features/agents/lib/utils";

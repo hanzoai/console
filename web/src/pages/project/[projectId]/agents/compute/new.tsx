@@ -1,11 +1,11 @@
 import { AgentsProvider } from "@/src/features/agents/AgentsProvider";
-import { PackagesPage } from "@/src/features/agents/pages/PackagesPage";
+import { CreateMachinePage } from "@/src/features/agents/pages/compute/CreateMachinePage";
 
-export default function AgentPackagesRoute() {
+export default function AgentComputeNewRoute() {
   return (
     <AgentsProvider>
       <div className="p-4 md:p-6 lg:p-8 min-h-full">
-        <PackagesPage />
+        <CreateMachinePage />
       </div>
     </AgentsProvider>
   );

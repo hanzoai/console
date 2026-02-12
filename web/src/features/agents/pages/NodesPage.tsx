@@ -5,7 +5,7 @@ import type {
   AgentStatus,
   HealthStatus,
   LifecycleStatus,
-} from "../types/agentfield";
+} from "../types/agents";
 import { getNodesSummary } from "../services/api";
 import { useNodeEventsSSE, useUnifiedStatusSSE } from "../hooks/useSSE";
 import { StatusRefreshButton } from "../components/status";
@@ -128,7 +128,7 @@ export function NodesPage() {
     } catch (err) {
       console.error("Failed to load nodes summary:", err);
       setError(
-        "Failed to load agent nodes. Please ensure the AgentField server is running and accessible."
+        "Failed to load agent nodes. Please ensure the Hanzo Agents server is running and accessible."
       );
     } finally {
       setIsLoading(false);
@@ -538,7 +538,7 @@ export function NodesPage() {
     ? `Showing ${filteredNodes.length} result${
         filteredNodes.length === 1 ? "" : "s"
       } for "${searchQuery}"`
-    : "Monitor and manage your AI agent nodes in the AgentField orchestration platform.";
+    : "Monitor and manage your AI agent nodes in the Hanzo Agents orchestration platform.";
 
   const connectionBadgeVariant = connected
     ? "success"

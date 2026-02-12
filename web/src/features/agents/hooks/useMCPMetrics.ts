@@ -3,7 +3,7 @@ import type {
   MCPServerMetrics,
   MCPNodeMetrics,
   MCPServerMetricsResponse
-} from '../types/agentfield';
+} from '../types/agents';
 import { getMCPServerMetrics } from '../services/api';
 import { calculatePerformanceMetrics } from '../utils/mcpUtils';
 

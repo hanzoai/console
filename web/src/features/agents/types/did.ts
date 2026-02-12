@@ -3,7 +3,7 @@
 export interface AgentDIDInfo {
   did: string;
   agent_node_id: string;
-  agentfield_server_id: string;
+  agents_server_id: string;
   public_key_jwk: any;
   derivation_path: string;
   reasoners: Record<string, ReasonerDIDInfo>;
@@ -76,7 +76,7 @@ export interface DIDIdentityPackage {
   agent_did: DIDIdentity;
   reasoner_dids: Record<string, DIDIdentity>;
   skill_dids: Record<string, DIDIdentity>;
-  agentfield_server_id: string;
+  agents_server_id: string;
 }
 
 export interface DIDIdentity {
@@ -222,7 +222,7 @@ export interface SecurityAnalysis {
 
 export interface ComplianceChecks {
   w3c_compliance: boolean;
-  agentfield_standard_compliance: boolean;
+  agents_standard_compliance: boolean;
   audit_trail_integrity: boolean;
   data_integrity_checks: boolean;
   issues: VerificationIssue[];
@@ -265,7 +265,7 @@ export interface DIDResolutionEntry {
 }
 
 export interface DIDFilters {
-  agentfield_server_id?: string;
+  agents_server_id?: string;
   agent_node_id?: string;
   component_type?: string;
   status?: AgentDIDStatus;

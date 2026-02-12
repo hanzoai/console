@@ -11,7 +11,7 @@ import {
   getAgentPackages,
   getRunningAgents,
 } from "../../services/configurationApi";
-import type { AgentLifecycleInfo, AgentPackage } from "../../types/agentfield";
+import type { AgentLifecycleInfo, AgentPackage } from "../../types/agents";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";

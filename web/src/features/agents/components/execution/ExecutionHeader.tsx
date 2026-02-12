@@ -398,13 +398,13 @@ export function ExecutionHeader({
               <div className="text-label">Request ID</div>
               <div className="flex items-center gap-2 group">
                 <code className="font-mono text-xs text-muted-foreground">
-                  {execution.agentfield_request_id
-                    ? truncateId(execution.agentfield_request_id)
+                  {execution.agents_request_id
+                    ? truncateId(execution.agents_request_id)
                     : "n/a"}
                 </code>
-                {execution.agentfield_request_id && (
+                {execution.agents_request_id && (
                   <CopyButton
-                    value={execution.agentfield_request_id}
+                    value={execution.agents_request_id}
                     variant="ghost"
                     size="icon-sm"
                     className="opacity-0 group-hover:opacity-100 transition-opacity"

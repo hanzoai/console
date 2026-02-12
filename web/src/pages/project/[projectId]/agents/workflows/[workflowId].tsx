@@ -1,10 +1,10 @@
-import { AgentFieldProvider } from "@/src/features/agents/AgentFieldProvider";
+import { AgentsProvider } from "@/src/features/agents/AgentsProvider";
 import { EnhancedWorkflowDetailPage } from "@/src/features/agents/pages/EnhancedWorkflowDetailPage";
 
 export default function AgentWorkflowDetailRoute() {
   return (
-    <AgentFieldProvider>
+    <AgentsProvider>
       <EnhancedWorkflowDetailPage />
-    </AgentFieldProvider>
+    </AgentsProvider>
   );
 }

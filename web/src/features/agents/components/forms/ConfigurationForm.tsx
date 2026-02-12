@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Alert, AlertDescription } from '../ui/alert';
 import { Loader2, Save, AlertCircle } from '@/src/features/agents/components/ui/icon-bridge';
 import { ConfigField } from './ConfigField';
-import type { ConfigurationSchema, AgentConfiguration, ConfigField as ConfigFieldType } from '../../types/agentfield';
+import type { ConfigurationSchema, AgentConfiguration, ConfigField as ConfigFieldType } from '../../types/agents';
 
 interface ConfigurationFormProps {
   schema: ConfigurationSchema;

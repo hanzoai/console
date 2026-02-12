@@ -14,7 +14,7 @@ import { startAgent, stopAgent, reconcileAgent } from "../services/configuration
 import { AgentControlButton, type AgentState } from "@/src/features/agents/components/ui/AgentControlButton";
 import { useDIDStatus } from "../hooks/useDIDInfo";
 import { cn } from "../lib/utils";
-import type { AgentNodeSummary } from "../types/agentfield";
+import type { AgentNodeSummary } from "../types/agents";
 import type { DensityMode } from "./DensityToggle";
 import { CompositeDIDStatus } from "./did/DIDStatusBadge";
 import { DIDIdentityBadge } from "./did/DIDDisplay";

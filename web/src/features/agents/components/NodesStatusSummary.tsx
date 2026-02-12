@@ -3,7 +3,7 @@ import { summarizeNodeStatuses, getNodeStatusPresentation } from "@/src/features
 import { Checklist } from "@/src/features/agents/components/ui/icon-bridge";
 import { cn } from "@/src/features/agents/lib/utils";
 import { Card } from "@/src/features/agents/components/ui/card";
-import type { AgentNodeSummary } from "../types/agentfield";
+import type { AgentNodeSummary } from "../types/agents";
 
 interface NodesStatusSummaryProps {
   nodes: AgentNodeSummary[];

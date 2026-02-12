@@ -224,9 +224,9 @@ export function ExecutionDetailPage() {
               onClick={execution.session_id ? navigateToSession : undefined}
             />
             <MetadataRow
-              label="AgentField Request ID"
-              value={execution.agentfield_request_id || '—'}
-              copyValue={execution.agentfield_request_id || undefined}
+              label="Hanzo Agents Request ID"
+              value={execution.agents_request_id || '—'}
+              copyValue={execution.agents_request_id || undefined}
             />
             <MetadataRow
               label="Actor ID"

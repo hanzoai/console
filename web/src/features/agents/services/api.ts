@@ -19,17 +19,17 @@ import type {
   ConfigSchemaResponse,
   AgentStatus,
   AgentStatusUpdate
-} from '../types/agentfield';
+} from '../types/agents';
 
 // Runtime-configurable base URL for Next.js integration.
 // Default routes through the Console proxy at /api/agents/ui/v1 which
-// forwards to the AgentField backend via AGENTFIELD_API_URL (server-side).
+// forwards to the Hanzo Agents backend via AGENTS_API_URL (server-side).
 let API_BASE_URL =
-  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_AGENTFIELD_URL) ||
+  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_AGENTS_URL) ||
   (typeof window !== "undefined" && (window as any).__VITE_API_BASE_URL__) ||
   '/api/agents/ui/v1';
 
-/** Override the API base URL at runtime (called by AgentFieldProvider). */
+/** Override the API base URL at runtime (called by AgentsProvider). */
 export function setBaseUrl(url: string) {
   API_BASE_URL = url;
 }
@@ -38,7 +38,7 @@ export function getBaseUrl(): string {
   return API_BASE_URL;
 }
 
-const STORAGE_KEY = "af_api_key";
+const STORAGE_KEY = "agents_api_key";
 
 // Simple obfuscation for localStorage; not meant as real security.
 const decryptKey = (value: string): string => {
@@ -68,7 +68,7 @@ export function setGlobalApiKey(key: string | null) {
   globalApiKey = key;
 }
 
-/** Alias for AgentFieldProvider compatibility */
+/** Alias for AgentsProvider compatibility */
 export const setApiKey = setGlobalApiKey;
 
 export function getGlobalApiKey(): string | null {
@@ -547,7 +547,7 @@ export async function registerServerlessAgent(invocationUrl: string): Promise<{
   };
 }> {
   // Use /api/agents/v1 base for this endpoint (not /api/agents/ui/v1).
-  // Routes through the Console proxy which forwards to AGENTFIELD_API_URL.
+  // Routes through the Console proxy which forwards to AGENTS_API_URL.
   const API_V1_BASE = '/api/agents/v1';
   const timeout = 15000;
 

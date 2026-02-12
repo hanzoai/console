@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HealthStatus } from '../types/agentfield';
+import type { HealthStatus } from '../types/agents';
 import { cn } from '@/src/features/agents/lib/utils';
 
 interface HealthBadgeProps {

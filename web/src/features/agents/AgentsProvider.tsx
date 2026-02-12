@@ -1,31 +1,29 @@
 /**
- * AgentField configuration provider for Console integration.
+ * Hanzo Agents configuration provider for Console integration.
  *
  * Wraps agent pages to:
- * 1. Configure the @hanzo/agent-ui API client (or the local services)
+ * 1. Configure the Hanzo Agents API client
  * 2. Provide auth context (API key from Console session)
  * 3. Provide mode context (developer/user)
  */
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
 
-// The AgentField services use a module-level config.
-// We configure it on mount via the local services/api.ts setApiKey + setBaseUrl
 import { setApiKey, setBaseUrl } from "./services/api";
 
-interface AgentFieldConfig {
+interface AgentsConfig {
   baseUrl: string;
   apiKey?: string;
 }
 
-const AgentFieldContext = createContext<AgentFieldConfig>({
-  baseUrl: "http://localhost:8080/api/ui/v1",
+const AgentsContext = createContext<AgentsConfig>({
+  baseUrl: "/api/agents/ui/v1",
 });
 
-export function useAgentFieldConfig() {
-  return useContext(AgentFieldContext);
+export function useAgentsConfig() {
+  return useContext(AgentsContext);
 }
 
-export function AgentFieldProvider({
+export function AgentsProvider({
   baseUrl,
   apiKey,
   children,
@@ -39,14 +37,13 @@ export function AgentFieldProvider({
   const resolvedBaseUrl =
     baseUrl ??
     (typeof window !== "undefined"
-      ? (process.env.NEXT_PUBLIC_AGENTFIELD_URL ?? "http://localhost:8080/api/ui/v1")
-      : "http://localhost:8080/api/ui/v1");
+      ? (process.env.NEXT_PUBLIC_AGENTS_URL ?? "/api/agents/ui/v1")
+      : "/api/agents/ui/v1");
 
   useEffect(() => {
     if (configuredRef.current) return;
     configuredRef.current = true;
 
-    // Configure the AgentField API client
     if (typeof setBaseUrl === "function") {
       setBaseUrl(resolvedBaseUrl);
     }
@@ -56,8 +53,8 @@ export function AgentFieldProvider({
   }, [resolvedBaseUrl, apiKey]);
 
   return (
-    <AgentFieldContext.Provider value={{ baseUrl: resolvedBaseUrl, apiKey }}>
+    <AgentsContext.Provider value={{ baseUrl: resolvedBaseUrl, apiKey }}>
       {children}
-    </AgentFieldContext.Provider>
+    </AgentsContext.Provider>
   );
 }
