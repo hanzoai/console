@@ -19,6 +19,7 @@ import AIFeatureSwitch from "@/src/features/organizations/components/AIFeatureSw
 import { useIsCloudBillingAvailable } from "@/src/ee/features/billing/utils/isCloudBilling";
 import { env } from "@/src/env.mjs";
 import { OrgAuditLogsSettingsPage } from "@/src/ee/features/audit-log-viewer/OrgAuditLogsSettingsPage";
+import { KmsOrgSettings } from "@/src/features/kms/components/KmsOrgSettings";
 
 type OrganizationSettingsPage = {
   title: string;
@@ -140,6 +141,12 @@ export const getOrganizationSettingsPages = ({
     cmdKKeywords: ["sso", "login", "auth", "okta", "saml", "azure"],
     content: <SSOSettings />,
     show: isHanzoCloud,
+  },
+  {
+    title: "KMS",
+    slug: "kms",
+    cmdKKeywords: ["secrets", "encryption", "keys", "kms", "vault"],
+    content: <KmsOrgSettings orgId={organization.id} />,
   },
   {
     title: "Projects",

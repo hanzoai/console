@@ -361,10 +361,15 @@ export const env = createEnv({
     HANZO_AI_FEATURES_SECRET_KEY: z.string().optional(),
     HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
-    // AgentField control plane
-    AGENTFIELD_API_URL: z.string().url().optional(),
+    // Hanzo Agents control plane
+    AGENTS_API_URL: z.string().url().optional(),
     // Casvisor compute management
     CASVISOR_API_URL: z.string().url().optional(),
+
+    // KMS (Hanzo Key Management Service)
+    KMS_API_URL: z.string().url().optional().default("https://kms.hanzo.ai"),
+    KMS_SERVICE_TOKEN: z.string().optional(),
+    KMS_PROJECT_ID: z.string().optional(),
 
     // API Performance Flags
     // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
@@ -733,10 +738,14 @@ export const env = createEnv({
     // Hanzo Tracing AI Features
     HANZO_AI_FEATURES_HOST: process.env.HANZO_AI_FEATURES_HOST,
 
-    // AgentField
-    AGENTFIELD_API_URL: process.env.AGENTFIELD_API_URL,
+    // Hanzo Agents
+    AGENTS_API_URL: process.env.AGENTS_API_URL,
     // Casvisor
     CASVISOR_API_URL: process.env.CASVISOR_API_URL,
+    // KMS
+    KMS_API_URL: process.env.KMS_API_URL,
+    KMS_SERVICE_TOKEN: process.env.KMS_SERVICE_TOKEN,
+    KMS_PROJECT_ID: process.env.KMS_PROJECT_ID,
     // Api Performance Flags
     HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
       process.env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
