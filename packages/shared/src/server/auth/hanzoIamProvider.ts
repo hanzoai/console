@@ -14,7 +14,12 @@ interface HanzoIamProfile extends Record<string, unknown> {
 
 /**
  * Hanzo IAM OAuth provider (Casdoor-based)
- * Uses GitHub-style OAuth endpoints proxied through hanzo.id
+ * Uses Casdoor SDK-style OAuth endpoints proxied through hanzo.id
+ *
+ * Note: Do NOT set `issuer` — it triggers OIDC discovery which overrides
+ * the explicit endpoint URLs and causes iss-validation failures because
+ * Casdoor returns JWT tokens with iss claims that openid-client rejects
+ * when configured as a plain OAuth (non-OIDC) provider.
  */
 export function HanzoIamProvider<P extends HanzoIamProfile>(
   options: OAuthUserConfig<P> & {
@@ -29,7 +34,8 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
     id: "hanzo-iam",
     name: "Hanzo IAM",
     type: "oauth",
-    issuer: serverUrl,
+    // No issuer — prevents OIDC discovery from overriding explicit endpoints
+    // and avoids "unexpected iss value" errors from Casdoor JWT tokens
     authorization: {
       url: `${serverUrl}/login/oauth/authorize`,
       params: { scope: "openid profile email" },
@@ -40,6 +46,10 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
     userinfo: {
       url: `${serverUrl}/api/userinfo`,
     },
+    // Casdoor returns JWT tokens with iss claim; skip id_token validation
+    // since we use the userinfo endpoint for profile data
+    idToken: false,
+    checks: ["state"],
     profile(profile) {
       return {
         id: profile.sub,
