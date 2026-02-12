@@ -45,7 +45,7 @@ COPY --chown=nextjs:nodejs packages/hanzo-langchain/package.json ./packages/hanz
 USER nextjs
 
 # Install dependencies with frozen lockfile
-RUN pnpm install --no-frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/app/.pnpm-store pnpm install --frozen-lockfile
 
 # ===== Builder Stage =====
 FROM deps AS builder
@@ -57,18 +57,12 @@ COPY --chown=nextjs:nodejs . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build-time env vars required by env.mjs validation (overridden at runtime)
-ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
-ENV NEXTAUTH_SECRET=build-time-secret
-ENV NEXTAUTH_URL=http://localhost:3000
-ENV SALT=build-time-salt-value-that-is-long-enough
-ENV CLICKHOUSE_URL=http://localhost:8123
-ENV CLICKHOUSE_USER=default
-ENV CLICKHOUSE_PASSWORD=placeholder
-ENV HANZO_S3_EVENT_UPLOAD_BUCKET=placeholder-bucket
+# Skip env.mjs validation during Docker build
+ENV DOCKER_BUILD=1
 
-# Build the application (limit memory to avoid OOM in constrained environments)
-RUN NODE_OPTIONS='--max-old-space-size=4096' pnpm build
+# Build the application (adaptive memory to avoid OOM)
+RUN --mount=type=cache,target=/app/web/.next/cache \
+    NODE_OPTIONS='--max-old-space-size-percentage=75' pnpm build
 
 # ===== Development Stage =====
 FROM deps AS development
@@ -77,16 +71,16 @@ FROM deps AS development
 COPY --chown=nextjs:nodejs . .
 
 # Expose port
-EXPOSE 3001
+EXPOSE 3000
 
 # Set environment
 ENV NODE_ENV=development
-ENV PORT=3001
+ENV PORT=3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "const http = require('http'); \
-    const req = http.request({hostname: 'localhost', port: 3001, path: '/api/health', method: 'GET'}, \
+    const req = http.request({hostname: 'localhost', port: 3000, path: '/api/health', method: 'GET'}, \
     (res) => process.exit(res.statusCode === 200 ? 0 : 1)); \
     req.on('error', () => process.exit(1)); \
     req.end();" || exit 1
@@ -109,18 +103,18 @@ COPY --from=builder --chown=nextjs:nodejs /app/worker/dist ./worker/dist
 USER nextjs
 
 # Expose port
-EXPOSE 3001
+EXPOSE 3000
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "const http = require('http'); \
-    const req = http.request({hostname: 'localhost', port: 3001, path: '/api/health', method: 'GET'}, \
+    const req = http.request({hostname: 'localhost', port: 3000, path: '/api/health', method: 'GET'}, \
     (res) => process.exit(res.statusCode === 200 ? 0 : 1)); \
     req.on('error', () => process.exit(1)); \
     req.end();" || exit 1
