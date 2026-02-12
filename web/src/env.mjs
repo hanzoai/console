@@ -369,6 +369,8 @@ export const env = createEnv({
     // KMS (Hanzo Key Management Service)
     KMS_API_URL: z.string().url().optional().default("https://kms.hanzo.ai"),
     KMS_SERVICE_TOKEN: z.string().optional(),
+    KMS_CLIENT_ID: z.string().optional(),
+    KMS_CLIENT_SECRET: z.string().optional(),
     KMS_PROJECT_ID: z.string().optional(),
 
     // API Performance Flags
@@ -745,6 +747,8 @@ export const env = createEnv({
     // KMS
     KMS_API_URL: process.env.KMS_API_URL,
     KMS_SERVICE_TOKEN: process.env.KMS_SERVICE_TOKEN,
+    KMS_CLIENT_ID: process.env.KMS_CLIENT_ID,
+    KMS_CLIENT_SECRET: process.env.KMS_CLIENT_SECRET,
     KMS_PROJECT_ID: process.env.KMS_PROJECT_ID,
     // Api Performance Flags
     HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
