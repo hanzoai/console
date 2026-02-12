@@ -1,7 +1,7 @@
-import type { ConfigurationSchema, AgentConfiguration, AgentPackage, AgentLifecycleInfo } from '../types/agentfield';
+import type { ConfigurationSchema, AgentConfiguration, AgentPackage, AgentLifecycleInfo } from '../types/agents';
 import { getGlobalApiKey } from './api';
 
-const API_BASE = '/api/ui/v1';
+const API_BASE = '/api/agents/ui/v1';
 
 export class ConfigurationApiError extends Error {
   public status?: number;
@@ -153,7 +153,7 @@ export const setAgentConfiguration = async (
 
 // Package Management API
 export const getAgentPackages = async (search?: string): Promise<AgentPackage[]> => {
-  const url = new URL(`${API_BASE}/agents/packages`, window.location.origin);
+  const url = new URL(`${API_BASE}/agents/packages`, globalThis.location?.origin ?? "http://localhost:3000");
   if (search) {
     url.searchParams.set('search', search);
   }

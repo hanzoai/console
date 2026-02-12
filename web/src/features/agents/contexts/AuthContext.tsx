@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers["X-API-Key"] = storedKey;
         }
 
-        const response = await fetch("/api/ui/v1/dashboard/summary", { headers });
+        const response = await fetch("/api/agents/ui/v1/dashboard/summary", { headers });
 
         if (response.ok) {
           // Success - either no auth required, or stored key is valid

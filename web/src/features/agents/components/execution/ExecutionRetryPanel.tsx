@@ -26,9 +26,9 @@ interface ExecutionRetryPanelProps {
 
 function generateCurlCommand(execution: WorkflowExecution): string {
   // Use the correct API format: nodeid.reasonerid
-  const baseUrl = window.location.origin.replace('/ui', ''); // Remove /ui if present
+  const baseUrl = window.location.origin;
   const target = `${execution.agent_node_id}.${execution.reasoner_id}`;
-  const apiUrl = `${baseUrl}/api/v1/execute/${target}`;
+  const apiUrl = `${baseUrl}/api/agents/v1/execute/${target}`;
 
   const payload = {
     input: execution.input_data || {}
@@ -44,9 +44,9 @@ function generateCurlCommand(execution: WorkflowExecution): string {
 }
 
 function generatePythonCode(execution: WorkflowExecution): string {
-  const baseUrl = window.location.origin.replace('/ui', ''); // Remove /ui if present
+  const baseUrl = window.location.origin;
   const target = `${execution.agent_node_id}.${execution.reasoner_id}`;
-  const apiUrl = `${baseUrl}/api/v1/execute/${target}`;
+  const apiUrl = `${baseUrl}/api/agents/v1/execute/${target}`;
 
   const payload = {
     input: execution.input_data || {}
@@ -110,9 +110,9 @@ export function ExecutionRetryPanel({ execution }: ExecutionRetryPanelProps) {
 
     try {
       // Use the correct API format: nodeid.reasonerid
-      const baseUrl = window.location.origin.replace('/ui', '');
+      const baseUrl = window.location.origin;
       const target = `${execution.agent_node_id}.${execution.reasoner_id}`;
-      const apiUrl = `${baseUrl}/api/v1/execute/${target}`;
+      const apiUrl = `${baseUrl}/api/agents/v1/execute/${target}`;
 
       const payload = {
         input: execution.input_data || {}

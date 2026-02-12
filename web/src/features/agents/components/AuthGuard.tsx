@@ -19,7 +19,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     setValidating(true);
 
     try {
-      const response = await fetch("/api/ui/v1/dashboard/summary", {
+      const response = await fetch("/api/agents/ui/v1/dashboard/summary", {
         headers: { "X-API-Key": inputKey },
       });
 
@@ -43,7 +43,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <form onSubmit={handleSubmit} className="p-8 bg-card rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-2xl font-semibold mb-2">AgentField Control Plane</h2>
+        <h2 className="text-2xl font-semibold mb-2">Hanzo Agents Control Plane</h2>
         <p className="text-muted-foreground mb-6">Enter your API key to continue</p>
 
         <input

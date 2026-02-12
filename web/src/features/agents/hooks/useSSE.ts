@@ -330,7 +330,7 @@ export function useSSE<T = any>(
  * Specialized hook for MCP health events
  */
 export function useMCPHealthSSE(nodeId: string | null) {
-  const url = nodeId ? `/api/ui/v1/nodes/${nodeId}/mcp/events` : null;
+  const url = nodeId ? `/api/agents/ui/v1/nodes/${nodeId}/mcp/events` : null;
 
   return useSSE(url, {
     eventTypes: ['server_status_change', 'tool_execution', 'health_update', 'error'],
@@ -345,7 +345,7 @@ export function useMCPHealthSSE(nodeId: string | null) {
  * Specialized hook for agent node events including status changes
  */
 export function useNodeEventsSSE() {
-  const url = '/api/ui/v1/nodes/events';
+  const url = '/api/agents/ui/v1/nodes/events';
 
   return useSSE(url, {
     eventTypes: [
@@ -373,7 +373,7 @@ export function useNodeEventsSSE() {
  * Specialized hook for unified status events
  */
 export function useUnifiedStatusSSE() {
-  const url = '/api/ui/v1/nodes/events';
+  const url = '/api/agents/ui/v1/nodes/events';
 
   return useSSE(url, {
     eventTypes: [
@@ -396,7 +396,7 @@ export function useNodeUnifiedStatusSSE(_nodeId: string | null) {
   // Note: Currently uses the same endpoint as useUnifiedStatusSSE since the backend
   // streams all node events and filtering happens on the client side
   // The nodeId parameter is reserved for future client-side filtering implementation
-  const url = '/api/ui/v1/nodes/events';
+  const url = '/api/agents/ui/v1/nodes/events';
 
   return useSSE(url, {
     eventTypes: [

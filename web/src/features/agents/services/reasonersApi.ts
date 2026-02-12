@@ -10,7 +10,7 @@ import type {
 } from '../types/execution';
 import { getGlobalApiKey } from './api';
 
-const API_BASE_URL = '/api/ui/v1';
+const API_BASE_URL = '/api/agents/ui/v1';
 const withAuthHeaders = (headers?: HeadersInit) => {
   const merged = new Headers(headers || {});
   const apiKey = getGlobalApiKey();

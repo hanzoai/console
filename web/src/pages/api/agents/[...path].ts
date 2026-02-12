@@ -1,10 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerAuthSession } from "@/src/server/auth";
 
 /**
- * Catch-all proxy for AgentField control plane API.
+ * Catch-all proxy for Hanzo Agents control plane API.
  *
- * Forwards /api/agents/* to ${AGENTFIELD_API_URL}/* stripping the /api/agents prefix.
- * Server-side only -- AGENTFIELD_API_URL is never exposed to the client.
+ * Forwards /api/agents/* to ${AGENTS_API_URL}/* stripping the /api/agents prefix.
+ * Server-side only -- AGENTS_API_URL is never exposed to the client.
+ *
+ * Multi-tenant: extracts org/project context from the console session and
+ * injects X-Org-ID / X-Project-ID headers so the agents backend can scope
+ * its responses per-organization.
  */
 
 export const config = {
@@ -43,11 +48,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const agentfieldUrl = process.env.AGENTFIELD_API_URL;
-  if (!agentfieldUrl) {
+  const agentsUrl = process.env.AGENTS_API_URL;
+  if (!agentsUrl) {
     return res.status(503).json({
-      error: "AgentField API not configured",
-      message: "AGENTFIELD_API_URL environment variable is not set",
+      error: "Hanzo Agents API not configured",
+      message: "AGENTS_API_URL environment variable is not set",
     });
   }
 
@@ -65,7 +70,7 @@ export default async function handler(
     query as Record<string, string>,
   ).toString();
 
-  const targetUrl = `${agentfieldUrl.replace(/\/+$/, "")}/${upstreamPath}${qs ? `?${qs}` : ""}`;
+  const targetUrl = `${agentsUrl.replace(/\/+$/, "")}/${upstreamPath}${qs ? `?${qs}` : ""}`;
 
   // Build forwarded headers, dropping hop-by-hop.
   const headers: Record<string, string> = {};
@@ -73,6 +78,24 @@ export default async function handler(
     if (HOP_BY_HOP.has(key.toLowerCase())) continue;
     if (value === undefined) continue;
     headers[key] = Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  // Inject org/project context from console session (best-effort, non-blocking).
+  try {
+    const session = await getServerAuthSession({ req, res });
+    if (session?.user) {
+      const orgId =
+        (session as any).orgId ??
+        session.user.organizations?.[0]?.id;
+      const projectId =
+        (session as any).projectId ??
+        session.user.organizations?.[0]?.projects?.[0]?.id;
+      if (orgId) headers["x-org-id"] = orgId;
+      if (projectId) headers["x-project-id"] = projectId;
+    }
+  } catch {
+    // Session extraction failed — continue without context headers.
+    // The agents backend will still work, just without org scoping.
   }
 
   // Read body for methods that carry one.
@@ -125,7 +148,7 @@ export default async function handler(
     if (err instanceof Error && err.name === "AbortError") {
       return res.status(504).json({
         error: "Gateway Timeout",
-        message: `AgentField API did not respond within ${TIMEOUT_MS}ms`,
+        message: `Hanzo Agents API did not respond within ${TIMEOUT_MS}ms`,
       });
     }
 
@@ -134,7 +157,7 @@ export default async function handler(
     console.error("[agents-proxy]", message);
     return res.status(502).json({
       error: "Bad Gateway",
-      message: `Failed to reach AgentField API: ${message}`,
+      message: `Failed to reach Hanzo Agents API: ${message}`,
     });
   }
 }
