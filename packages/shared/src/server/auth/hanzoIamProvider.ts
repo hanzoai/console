@@ -29,6 +29,7 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
     id: "hanzo-iam",
     name: "Hanzo IAM",
     type: "oauth",
+    issuer: serverUrl,
     authorization: {
       url: `${serverUrl}/login/oauth/authorize`,
       params: { scope: "openid profile email" },
