@@ -2,6 +2,7 @@ import type {
   OAuthConfig,
   OAuthUserConfig,
 } from "next-auth/providers/oauth";
+import type { TokenSet } from "next-auth";
 
 interface HanzoIamProfile extends Record<string, unknown> {
   sub: string;
@@ -72,12 +73,7 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
 
         // Cast to satisfy NextAuth's TokenSet type — Casdoor returns
         // standard OAuth fields (access_token, id_token, refresh_token, etc.)
-        return {
-          tokens: data as unknown as Record<string, unknown> & {
-            access_token: string;
-            token_type: string;
-          },
-        };
+        return { tokens: data as TokenSet };
       },
     },
     userinfo: {
