@@ -80,7 +80,7 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-            <Bot className="h-4 w-4" weight="fill" />
+            <Bot className="h-4 w-4" fill="currentColor" strokeWidth={0} />
           </div>
           <div className="min-w-0 space-y-1">
             <h3
@@ -102,7 +102,7 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
           <StatusIndicator status={status} size="sm" />
           {didStatus && didStatus.has_did && (
             <div className="flex items-center gap-1 text-body-small">
-              <Identification className="h-3 w-3" weight="bold" />
+              <Identification className="h-3 w-3" strokeWidth={2.5} />
               <CompositeDIDStatus
                 status={didStatus.did_status}
                 reasonerCount={didStatus.reasoner_count}
@@ -123,7 +123,7 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
         <div className="flex items-center gap-1.5">
           <Layers
             className="h-3 w-3 flex-shrink-0"
-            weight={reasoner.memory_config?.cache_results ? "fill" : "regular"}
+            {...(reasoner.memory_config?.cache_results ? { fill: "currentColor", strokeWidth: 0 } : {})}
           />
           <span className="whitespace-nowrap">
             {reasoner.memory_config?.cache_results ? "Cached" : "No cache"}
@@ -131,14 +131,14 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
         </div>
         {reasoner.memory_config?.memory_retention && (
           <div className="flex items-center gap-1.5">
-            <Timer className="h-3 w-3 flex-shrink-0" weight="regular" />
+            <Timer className="h-3 w-3 flex-shrink-0" />
             <span className="whitespace-nowrap">
               {reasoner.memory_config.memory_retention}
             </span>
           </div>
         )}
         <div className="flex items-center gap-1.5">
-          <Tag className="h-3 w-3 flex-shrink-0" weight="regular" />
+          <Tag className="h-3 w-3 flex-shrink-0" />
           <span className="whitespace-nowrap">v{reasoner.node_version}</span>
         </div>
       </div>
@@ -149,7 +149,7 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-body-small">
           {reasoner.avg_response_time_ms && (
             <div className="flex items-center gap-1">
-              <Flash className="h-3 w-3 flex-shrink-0" weight="bold" />
+              <Flash className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
               <span className="whitespace-nowrap">
                 {reasoner.avg_response_time_ms}ms avg
               </span>
@@ -159,7 +159,8 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
             <div className="flex items-center gap-1">
               <CheckCircle
                 className="h-3 w-3 flex-shrink-0 text-status-success"
-                weight="fill"
+                fill="currentColor"
+                strokeWidth={0}
               />
               <span className="whitespace-nowrap">
                 {(reasoner.success_rate * 100).toFixed(1)}% success
@@ -168,7 +169,7 @@ export function ReasonerCard({ reasoner, onClick }: ReasonerCardProps) {
           )}
           {reasoner.total_runs && (
             <div className="flex items-center gap-1">
-              <BarChart3 className="h-3 w-3 flex-shrink-0" weight="bold" />
+              <BarChart3 className="h-3 w-3 flex-shrink-0" strokeWidth={2.5} />
               <span className="whitespace-nowrap">
                 {reasoner.total_runs.toLocaleString()} runs
               </span>

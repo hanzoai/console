@@ -484,9 +484,6 @@ importers:
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
-      '@phosphor-icons/react':
-        specifier: ^2.1.10
-        version: 2.1.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@prisma/instrumentation':
         specifier: ^6.17.1
         version: 6.17.1(@opentelemetry/api@1.9.0)
