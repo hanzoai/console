@@ -67,8 +67,8 @@ ENV CLICKHOUSE_USER=default
 ENV CLICKHOUSE_PASSWORD=placeholder
 ENV HANZO_S3_EVENT_UPLOAD_BUCKET=placeholder-bucket
 
-# Build the application
-RUN pnpm build
+# Build the application (limit memory to avoid OOM in constrained environments)
+RUN NODE_OPTIONS='--max-old-space-size=4096' pnpm build
 
 # ===== Development Stage =====
 FROM deps AS development
