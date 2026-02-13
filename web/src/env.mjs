@@ -373,6 +373,10 @@ export const env = createEnv({
     KMS_CLIENT_SECRET: z.string().optional(),
     KMS_PROJECT_ID: z.string().optional(),
 
+    // Commerce (Hanzo Commerce Service - billing, subscriptions, payments)
+    COMMERCE_API_URL: z.string().url().optional().default("http://commerce.hanzo.svc.cluster.local:8001"),
+    COMMERCE_SERVICE_TOKEN: z.string().optional(),
+
     // API Performance Flags
     // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
     // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
@@ -750,6 +754,9 @@ export const env = createEnv({
     KMS_CLIENT_ID: process.env.KMS_CLIENT_ID,
     KMS_CLIENT_SECRET: process.env.KMS_CLIENT_SECRET,
     KMS_PROJECT_ID: process.env.KMS_PROJECT_ID,
+    // Commerce
+    COMMERCE_API_URL: process.env.COMMERCE_API_URL,
+    COMMERCE_SERVICE_TOKEN: process.env.COMMERCE_SERVICE_TOKEN,
     // Api Performance Flags
     HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
       process.env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
