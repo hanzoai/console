@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { throwIfNoOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { logger } from "@hanzo/shared/src/server";
-import { createBillingServiceFromContext } from "./stripeBillingService";
+import { createBillingServiceFromContext } from "./billingService";
 import { isCloudBillingEnabled } from "../utils/isCloudBilling";
 
 export const cloudBillingRouter = createTRPCRouter({
@@ -46,11 +46,11 @@ export const cloudBillingRouter = createTRPCRouter({
       const res = await createBillingServiceFromContext(ctx).getSubscriptionInfo(input.orgId);
       return res;
     }),
-  createStripeCheckoutSession: protectedOrganizationProcedure
+  createCheckoutSession: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
-        stripeProductId: z.string(),
+        productId: z.string(),
         opId: z.string().optional(),
       }),
     )
@@ -74,24 +74,24 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
-      const url = await stripeBillingService.createCheckoutSession(input.orgId, input.stripeProductId);
+      const billingService = createBillingServiceFromContext(ctx);
+      const url = await billingService.createCheckoutSession(input.orgId, input.productId);
 
       void auditLog({
         session: ctx.session,
         orgId: input.orgId,
         resourceType: "organization",
         resourceId: input.orgId,
-        action: "BillingService.createStripeCheckoutSession",
+        action: "BillingService.createCheckoutSession",
       });
 
       return url;
     }),
-  changeStripeSubscriptionProduct: protectedOrganizationProcedure
+  changeSubscriptionProduct: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
-        stripeProductId: z.string(),
+        productId: z.string(),
         opId: z.string().optional(),
       }),
     )
@@ -115,11 +115,11 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      await stripeBillingService.changePlan(input.orgId, input.stripeProductId);
+      await billingService.changePlan(input.orgId, input.productId);
     }),
-  cancelStripeSubscription: protectedOrganizationProcedure
+  cancelSubscription: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
@@ -146,13 +146,13 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      await stripeBillingService.cancel(input.orgId, input.opId);
+      await billingService.cancel(input.orgId, input.opId);
 
       return { ok: true } as const;
     }),
-  reactivateStripeSubscription: protectedOrganizationProcedure
+  reactivateSubscription: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
@@ -179,9 +179,9 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      await stripeBillingService.reactivate(input.orgId, input.opId);
+      await billingService.reactivate(input.orgId, input.opId);
 
       return { ok: true } as const;
     }),
@@ -207,13 +207,13 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      await stripeBillingService.clearPlanSwitchSchedule(input.orgId, input.opId);
+      await billingService.clearPlanSwitchSchedule(input.orgId, input.opId);
 
       return { ok: true } as const;
     }),
-  getStripeCustomerPortalUrl: protectedOrganizationProcedure
+  getCustomerPortalUrl: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
@@ -233,7 +233,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
 
       if (!isCloudBillingEnabled()) {
-        logger.info("cloudBilling.getStripeCustomerPortalUrl called in non-cloud environment, returning null", {
+        logger.info("cloudBilling.getCustomerPortalUrl called in non-cloud environment, returning null", {
           orgId: input.orgId,
         });
         return null;
@@ -242,7 +242,7 @@ export const cloudBillingRouter = createTRPCRouter({
       try {
         return await createBillingServiceFromContext(ctx).getCustomerPortalUrl(input.orgId);
       } catch (error) {
-        logger.error("cloudBilling.getStripeCustomerPortalUrl:error", {
+        logger.error("cloudBilling.getCustomerPortalUrl:error", {
           orgId: input.orgId,
           error,
         });
@@ -251,7 +251,7 @@ export const cloudBillingRouter = createTRPCRouter({
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Stripe error: ${error instanceof Error ? error.message : "Unknown Stripe error"}`,
+          message: `Billing error: ${error instanceof Error ? error.message : "Unknown billing error"}`,
           cause: error as Error,
         });
       }
@@ -300,7 +300,7 @@ export const cloudBillingRouter = createTRPCRouter({
         }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Stripe error: ${error instanceof Error ? error.message : "Unknown Stripe error"}`,
+          message: `Billing error: ${error instanceof Error ? error.message : "Unknown billing error"}`,
           cause: error as Error,
         });
       }
@@ -330,9 +330,9 @@ export const cloudBillingRouter = createTRPCRouter({
         return null;
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      return await stripeBillingService.getUsage(input.orgId);
+      return await billingService.getUsage(input.orgId);
     }),
   applyPromotionCode: protectedOrganizationProcedure
     .input(
@@ -362,9 +362,9 @@ export const cloudBillingRouter = createTRPCRouter({
         });
       }
 
-      const stripeBillingService = createBillingServiceFromContext(ctx);
+      const billingService = createBillingServiceFromContext(ctx);
 
-      const result = await stripeBillingService.applyPromotionCode(input.orgId, input.code, input.opId);
+      const result = await billingService.applyPromotionCode(input.orgId, input.code, input.opId);
 
       return result;
     }),

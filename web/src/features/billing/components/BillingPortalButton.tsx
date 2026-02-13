@@ -4,7 +4,7 @@ import { api } from "@/src/utils/api";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const StripeCustomerPortalButton = ({
+export const BillingPortalButton = ({
   orgId,
   title,
   variant,
@@ -39,7 +39,7 @@ export const StripeCustomerPortalButton = ({
     };
   }, []);
 
-  const portalQuery = api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
+  const portalQuery = api.cloudBilling.getCustomerPortalUrl.useQuery(
     { orgId: orgId as string },
     {
       enabled: false,

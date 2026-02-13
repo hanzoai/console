@@ -1,21 +1,19 @@
 import { env } from "@/src/env.mjs";
-// import { type Plan } from "@hanzo/shared";
 
-export interface StripeProduct {
-  id: string; // Unique identifier
-  stripeProductId: string;
+export interface BillingProduct {
+  id: string;
+  productId: string;
   name: string;
   description?: string;
   checkout: boolean;
   active?: boolean;
-  title?: string; // Add optional title for backwards compatibility
+  title?: string;
 }
 
-// map of planid to plan name
-export const stripeProducts: StripeProduct[] = [
+export const billingProducts: BillingProduct[] = [
   {
     id: "credits-plan",
-    stripeProductId:
+    productId:
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" || env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_Ru16ryEtJtEmRh" // test
         : "prod_Ru0gok2x52s57Y", // live
@@ -27,7 +25,7 @@ export const stripeProducts: StripeProduct[] = [
   },
   {
     id: "premium-plan",
-    stripeProductId:
+    productId:
       env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" || env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
         ? "prod_SMzWLE1hJzYfTf" // test
         : "prod_SMzWLE1hJzYfTf", // live
@@ -40,5 +38,10 @@ export const stripeProducts: StripeProduct[] = [
   },
 ];
 
-export const mapStripeProductIdToPlan = (productId: string): string | null =>
-  stripeProducts.find((product) => product.stripeProductId === productId)?.name ?? null;
+export const mapProductIdToPlan = (productId: string): string | null =>
+  billingProducts.find((product) => product.productId === productId)?.name ?? null;
+
+/** @deprecated Use billingProducts instead */
+export const stripeProducts = billingProducts;
+/** @deprecated Use mapProductIdToPlan instead */
+export const mapStripeProductIdToPlan = mapProductIdToPlan;

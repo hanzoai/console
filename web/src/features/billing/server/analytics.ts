@@ -62,7 +62,7 @@ export const serverBillingAnalytics = {
   subscriptionCreated: async (data: {
     orgId: string;
     planName: string;
-    stripeProductId: string;
+    productId: string;
     amount?: number;
     interval?: string;
     status: string;
@@ -74,13 +74,13 @@ export const serverBillingAnalytics = {
     orgId: string;
     oldPlan?: string;
     newPlan: string;
-    stripeProductId: string;
+    productId: string;
     status: string;
   }) => {
     await trackServerEvent("subscription_updated", data);
   },
 
-  subscriptionDeleted: async (data: { orgId: string; planName?: string; stripeProductId?: string }) => {
+  subscriptionDeleted: async (data: { orgId: string; planName?: string; productId?: string }) => {
     await trackServerEvent("subscription_deleted", data);
   },
 

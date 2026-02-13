@@ -15,15 +15,14 @@ import {
 } from "@/src/components/ui/dialog";
 import { toast } from "sonner";
 
-// planLabels used inside StripeSwitchPlanButton
-import { stripeProducts, isUpgrade } from "@/src/ee/features/billing/utils/stripeCatalogue";
+import { billingProducts, isUpgrade } from "@/src/ee/features/billing/utils/productCatalogue";
 import { ActionButton } from "@/src/components/ActionButton";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useBillingInformation } from "@/src/ee/features/billing/components/useBillingInformation";
 import { api } from "@/src/utils/api";
-import { StripeCancellationButton } from "./StripeCancellationButton";
-import { StripeSwitchPlanButton } from "./StripeSwitchPlanButton";
-import { StripeKeepPlanButton } from "./StripeKeepPlanButton";
+import { SubscriptionCancellationButton } from "./SubscriptionCancellationButton";
+import { PlanChangeButton } from "./PlanChangeButton";
+import { KeepCurrentPlanButton } from "./KeepCurrentPlanButton";
 
 export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boolean }) => {
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
@@ -34,7 +33,7 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
     useBillingInformation();
   const capture = usePostHogClientCapture();
 
-  const mutCreateCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation({
+  const mutCreateCheckoutSession = api.cloudBilling.createCheckoutSession.useMutation({
     onSuccess: (url) => {
       router.push(url);
       setProcessingPlanId(null);
@@ -69,32 +68,32 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
         </DialogHeader>
         <DialogBody>
           <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {stripeProducts
+            {billingProducts
               .filter((product) => Boolean(product.checkout))
               .map((product) => {
                 const currentProductId = organization?.cloudConfig?.stripe?.activeProductId;
-                const isThisUpgrade = currentProductId ? isUpgrade(currentProductId, product.stripeProductId) : true;
-                const isCurrentPlan = currentProductId === product.stripeProductId;
+                const isThisUpgrade = currentProductId ? isUpgrade(currentProductId, product.productId) : true;
+                const isCurrentPlan = currentProductId === product.productId;
 
                 return (
                   <div
-                    key={product.stripeProductId}
+                    key={product.productId}
                     className="relative flex flex-col rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md"
                   >
                     <div className="mb-4">
                       {/* Labels above plan title */}
                       <div className="mb-1 h-5 text-xs font-medium text-blue-700">
                         {isCurrentPlan && <span>Current Plan</span>}
-                        {scheduledPlanSwitch && scheduledPlanSwitch.newPlanId === product.stripeProductId && (
+                        {scheduledPlanSwitch && scheduledPlanSwitch.newPlanId === product.productId && (
                           <span className="ml-1">Starts next period</span>
                         )}
                         {scheduledPlanSwitch &&
-                          organization?.cloudConfig?.stripe?.activeProductId === product.stripeProductId && (
+                          organization?.cloudConfig?.stripe?.activeProductId === product.productId && (
                             <span className="ml-1">(Until next period)</span>
                           )}
                         {!scheduledPlanSwitch &&
                           cancellation?.isCancelled &&
-                          organization?.cloudConfig?.stripe?.activeProductId === product.stripeProductId && (
+                          organization?.cloudConfig?.stripe?.activeProductId === product.productId && (
                             <span className="ml-1">(Until next period)</span>
                           )}
                       </div>
@@ -138,14 +137,14 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
                           <>
                             {/* Reactivate button when cancellation is scheduled on current plan */}
                             {cancellation?.isCancelled && (
-                              <StripeCancellationButton orgId={organization?.id} variant="default" className="w-full" />
+                              <SubscriptionCancellationButton orgId={organization?.id} variant="default" className="w-full" />
                             )}
                             {!cancellation?.isCancelled && scheduledPlanSwitch && (
-                              <StripeKeepPlanButton
+                              <KeepCurrentPlanButton
                                 orgId={organization?.id}
-                                stripeProductId={product.stripeProductId}
+                                productId={product.productId}
                                 onProcessing={setProcessingPlanId}
-                                processing={processingPlanId === product.stripeProductId}
+                                processing={processingPlanId === product.productId}
                               />
                             )}
                             {!cancellation?.isCancelled && !scheduledPlanSwitch && (
@@ -158,7 +157,7 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
                         {/* A downgrade is scheduled and this is the new plan */}
                         {!isCurrentPlan &&
                           scheduledPlanSwitch &&
-                          scheduledPlanSwitch.newPlanId === product.stripeProductId && (
+                          scheduledPlanSwitch.newPlanId === product.productId && (
                             <Button className="w-full" disabled>
                               Scheduled
                             </Button>
@@ -167,17 +166,17 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
                         {/* A downgrade is scheduled and this is not the new plan and not the current plan*/}
                         {!isCurrentPlan &&
                           scheduledPlanSwitch &&
-                          scheduledPlanSwitch.newPlanId !== product.stripeProductId &&
+                          scheduledPlanSwitch.newPlanId !== product.productId &&
                           (hasValidPaymentMethod ? (
-                            <StripeSwitchPlanButton
+                            <PlanChangeButton
                               orgId={organization?.id}
                               currentPlan={organization?.plan}
                               newPlanTitle={product.checkout?.title}
                               isLegacySubscription={isLegacySubscription}
                               isUpgrade={isThisUpgrade}
-                              stripeProductId={product.stripeProductId}
+                              productId={product.productId}
                               onProcessing={setProcessingPlanId}
-                              processing={processingPlanId === product.stripeProductId}
+                              processing={processingPlanId === product.productId}
                             />
                           ) : (
                             <Button className="w-full" disabled>
@@ -189,15 +188,15 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
                         {!isCurrentPlan &&
                           !scheduledPlanSwitch &&
                           (hasValidPaymentMethod ? (
-                            <StripeSwitchPlanButton
+                            <PlanChangeButton
                               orgId={organization?.id}
                               currentPlan={organization?.plan}
                               newPlanTitle={product.checkout?.title}
                               isLegacySubscription={isLegacySubscription}
                               isUpgrade={isThisUpgrade}
-                              stripeProductId={product.stripeProductId}
+                              productId={product.productId}
                               onProcessing={setProcessingPlanId}
-                              processing={processingPlanId === product.stripeProductId}
+                              processing={processingPlanId === product.productId}
                             />
                           ) : (
                             <Button className="w-full" disabled>
@@ -211,9 +210,9 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
                         <ActionButton
                           onClick={() => {
                             if (organization) {
-                              setProcessingPlanId(product.stripeProductId);
+                              setProcessingPlanId(product.productId);
 
-                              // idempotency key for mutation operations with the stripe api
+                              // idempotency key for mutation operations
                               let opId = _opId;
                               if (!opId) {
                                 opId = nanoid();
@@ -222,14 +221,14 @@ export const BillingSwitchPlanDialog = ({ disabled = false }: { disabled?: boole
 
                               mutCreateCheckoutSession.mutate({
                                 orgId: organization.id,
-                                stripeProductId: product.stripeProductId,
+                                productId: product.productId,
                                 opId: opId,
                               });
                             }
                           }}
-                          disabled={organization?.cloudConfig?.stripe?.activeProductId === product.stripeProductId}
+                          disabled={organization?.cloudConfig?.stripe?.activeProductId === product.productId}
                           className="w-full"
-                          loading={processingPlanId === product.stripeProductId}
+                          loading={processingPlanId === product.productId}
                         >
                           {product.checkout?.cta ? "Select" : "Select plan"}
                         </ActionButton>

@@ -10,7 +10,7 @@ import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { parseDbOrg } from "@hanzo/shared";
 import { redis } from "@hanzo/shared/src/server";
-import { createBillingServiceFromContext } from "@/src/ee/features/billing/server/stripeBillingService";
+import { createBillingServiceFromContext } from "@/src/ee/features/billing/server/billingService";
 import { isCloudBillingEnabled } from "@/src/ee/features/billing/utils/isCloudBilling";
 
 import { env } from "@/src/env.mjs";
@@ -151,16 +151,16 @@ export const organizationsRouter = createTRPCRouter({
         });
       }
 
-      // Attempt to cancel Stripe subscription immediately (Cloud only) before deleting org
+      // Attempt to cancel subscription immediately (Cloud only) before deleting org
       if (isCloudBillingEnabled()) {
         try {
-          const stripeBillingService = createBillingServiceFromContext(ctx);
-          await stripeBillingService.cancelImmediatelyAndInvoice(input.orgId);
+          const billingService = createBillingServiceFromContext(ctx);
+          await billingService.cancelImmediatelyAndInvoice(input.orgId);
         } catch (e) {
           // If billing cancellation fails for reasons other than no subscription, abort deletion
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to cancel Stripe subscription prior to organization deletion",
+            message: "Failed to cancel subscription prior to organization deletion",
             cause: e as Error,
           });
         }

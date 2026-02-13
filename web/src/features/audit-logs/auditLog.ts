@@ -32,7 +32,7 @@ export type AuditableResource =
   | "llmTool"
   | "llmSchema"
   | "batchExport"
-  | "stripeCheckoutSession"
+  | "checkoutSession"
   | "batchAction"
   | "automation"
   | "action"

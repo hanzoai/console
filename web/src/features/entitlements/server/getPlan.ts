@@ -1,4 +1,4 @@
-import { mapStripeProductIdToPlan } from "@/src/ee/features/billing/utils/stripeCatalogue";
+import { mapProductIdToPlan } from "@/src/ee/features/billing/utils/productCatalogue";
 import { env } from "@/src/env.mjs";
 import { type Plan } from "@hanzo/shared";
 import { type CloudConfigSchema } from "@hanzo/shared";
@@ -31,11 +31,11 @@ export function getOrganizationPlanServerSide(cloudConfig?: CloudConfigSchema): 
             throw new Error(`Unhandled plan case: ${exhaustiveCheck}`);
         }
       }
-      // stripe plan via product id
+      // plan via product id
       if (cloudConfig.stripe?.activeProductId) {
-        const stripePlan = mapStripeProductIdToPlan(cloudConfig.stripe.activeProductId);
-        if (stripePlan) {
-          return stripePlan.toString() as Plan;
+        const plan = mapProductIdToPlan(cloudConfig.stripe.activeProductId);
+        if (plan) {
+          return plan.toString() as Plan;
         }
       }
     }

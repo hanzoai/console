@@ -195,20 +195,6 @@ function UserTracking() {
     }
   }, [sessionUser, session.status, region]);
 
-  // add stripe link to chat
-  // const orgStripeLink = organization?.cloudConfig?.stripe?.customerId
-  //   ? `https://dashboard.stripe.com/customers/${organization.cloudConfig.stripe.customerId}`
-  //   : undefined;
-  // useEffect(() => {
-  //   if (orgStripeLink) {
-  //     chatSetUser({
-  //       data: {
-  //         stripe: orgStripeLink,
-  //       },
-  //     });
-  //   }
-  // }, [orgStripeLink]);
-
   return null;
 }
 

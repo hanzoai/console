@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { formatLocalIsoDate } from "@/src/components/LocalIsoDate";
 import { type Plan, planLabels } from "@hanzo/shared";
-import { stripeProducts } from "@/src/ee/features/billing/utils/stripeCatalogue";
+import { billingProducts } from "@/src/ee/features/billing/utils/productCatalogue";
 import { api } from "@/src/utils/api";
 
 export type BillingCancellationInfo = {
@@ -70,7 +70,7 @@ export const useBillingInformation = (): UseBillingInformationResult => {
       if (!date || date.getTime() <= Date.now()) return null;
       const formatted = formatLocalIsoDate(date, false, "day");
       const newPlanId = sc.newProductId;
-      const product = newPlanId ? stripeProducts.find((p) => p.stripeProductId === newPlanId) : undefined;
+      const product = newPlanId ? billingProducts.find((p) => p.productId === newPlanId) : undefined;
       const newPlanLabel = product ? planLabels[product.mappedPlan] : null;
       return {
         isScheduled: true,

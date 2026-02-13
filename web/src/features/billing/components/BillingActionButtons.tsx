@@ -4,10 +4,10 @@ import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 
 import { useSupportDrawer } from "@/src/features/support-chat/SupportDrawerProvider";
-import { StripeCustomerPortalButton } from "./StripeCustomerPortalButton";
+import { BillingPortalButton } from "./BillingPortalButton";
 import { BillingSwitchPlanDialog } from "./BillingSwitchPlanDialog";
 import { useBillingInformation } from "./useBillingInformation";
-import { StripeCancellationButton } from "./StripeCancellationButton";
+import { SubscriptionCancellationButton } from "./SubscriptionCancellationButton";
 
 export const BillingActionButtons = () => {
   const { organization, hasValidPaymentMethod, isLoading } = useBillingInformation();
@@ -45,8 +45,8 @@ export const BillingActionButtons = () => {
 
         {organization?.cloudConfig?.stripe?.activeSubscriptionId && (
           <>
-            <StripeCustomerPortalButton orgId={organization.id} title="Update Billing Details" variant="secondary" />
-            <StripeCancellationButton orgId={organization.id} variant="secondary" />
+            <BillingPortalButton orgId={organization.id} title="Update Billing Details" variant="secondary" />
+            <SubscriptionCancellationButton orgId={organization.id} variant="secondary" />
           </>
         )}
         <Button variant="secondary" asChild>

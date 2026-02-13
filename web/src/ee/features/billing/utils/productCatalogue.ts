@@ -4,8 +4,8 @@ import { type Plan } from "@hanzo/shared";
 const isTestEnvironment =
   env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "DEV" || env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING";
 
-type StripeProduct = {
-  stripeProductId: string;
+type BillingProduct = {
+  productId: string;
   orderKey?: number | undefined; // to check whether a plan is upgraded or downgraded
   mappedPlan: Plan;
   // include checkout if product can be subscribed to by new users
@@ -22,10 +22,9 @@ type StripeProduct = {
   } | null;
 };
 
-// Backward-compatible export: same name and shape as before
-export const stripeProducts: StripeProduct[] = [
+export const billingProducts: BillingProduct[] = [
   {
-    stripeProductId: isTestEnvironment
+    productId: isTestEnvironment
       ? "prod_RoYirvRQ4Kc6po" // sandbox
       : "prod_RoYirvRQ4Kc6po", // live
     mappedPlan: "cloud:core",
@@ -39,7 +38,7 @@ export const stripeProducts: StripeProduct[] = [
     },
   },
   {
-    stripeProductId: isTestEnvironment
+    productId: isTestEnvironment
       ? "prod_QhK7UMhrkVeF6R" // sandbox
       : "prod_QhK7UMhrkVeF6R", // live
     mappedPlan: "cloud:pro",
@@ -60,7 +59,7 @@ export const stripeProducts: StripeProduct[] = [
     },
   },
   {
-    stripeProductId: isTestEnvironment
+    productId: isTestEnvironment
       ? "prod_QhK9qKGH25BTcS" // sandbox
       : "prod_QhK9qKGH25BTcS", // live
     mappedPlan: "cloud:team",
@@ -80,7 +79,7 @@ export const stripeProducts: StripeProduct[] = [
     },
   },
   {
-    stripeProductId: isTestEnvironment
+    productId: isTestEnvironment
       ? "prod_STnXok7GSSDmyF" // sandbox
       : "prod_STnXok7GSSDmyF", // live
     mappedPlan: "cloud:enterprise",
@@ -107,29 +106,40 @@ export const stripeProducts: StripeProduct[] = [
   },
 ];
 
-export const stripeUsageProduct = {
+export const usageProduct = {
   id: isTestEnvironment
     ? "prod_T2DaIcLiiR78rs" // sandbox
     : "prod_T4nLLI2vn876J2",
 };
 
-export const mapStripeProductIdToPlan = (productId: string): Plan | null =>
-  stripeProducts.find((product) => product.stripeProductId === productId)?.mappedPlan ?? null;
+export const mapProductIdToPlan = (productId: string): Plan | null =>
+  billingProducts.find((product) => product.productId === productId)?.mappedPlan ?? null;
 
 export const isUpgrade = (oldProductId: string, newProductId: string): boolean => {
-  const oldProduct = stripeProducts.find((product) => product.stripeProductId === oldProductId);
-  const newProduct = stripeProducts.find((product) => product.stripeProductId === newProductId);
+  const oldProduct = billingProducts.find((product) => product.productId === oldProductId);
+  const newProduct = billingProducts.find((product) => product.productId === newProductId);
   return (oldProduct?.orderKey ?? 0) < (newProduct?.orderKey ?? 0);
 };
 
 export const isValidCheckoutProduct = (id: string) => {
-  return stripeProducts.some((p) => Boolean(p.checkout) && p.stripeProductId === id);
+  return billingProducts.some((p) => Boolean(p.checkout) && p.productId === id);
 };
 
-export const StripeCatalogue = {
-  products: stripeProducts,
-  usageProductId: () => stripeUsageProduct.id,
+export const BillingCatalogue = {
+  products: billingProducts,
+  usageProductId: () => usageProduct.id,
   isValidCheckoutProduct: isValidCheckoutProduct,
   isUpgrade,
-  mapStripeProductIdToPlan,
+  mapProductIdToPlan,
 } as const;
+
+/** @deprecated Use BillingProduct instead */
+export type StripeProduct = BillingProduct;
+/** @deprecated Use billingProducts instead */
+export const stripeProducts = billingProducts;
+/** @deprecated Use usageProduct instead */
+export const stripeUsageProduct = usageProduct;
+/** @deprecated Use mapProductIdToPlan instead */
+export const mapStripeProductIdToPlan = mapProductIdToPlan;
+/** @deprecated Use BillingCatalogue instead */
+export const StripeCatalogue = BillingCatalogue;

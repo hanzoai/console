@@ -18,11 +18,11 @@ function orgHeaders(orgId: string): Record<string, string> {
 }
 
 export const cloudBillingRouter = createTRPCRouter({
-  createStripeCheckoutSession: protectedOrganizationProcedure
+  createCheckoutSession: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
-        stripeProductId: z.string(),
+        productId: z.string(),
         customerEmail: z.string().email().optional(),
         customerName: z.string().optional(),
       }),
@@ -45,7 +45,7 @@ export const cloudBillingRouter = createTRPCRouter({
       }>(
         "/checkout/authorize",
         {
-          productId: input.stripeProductId,
+          productId: input.productId,
           customerEmail:
             input.customerEmail || ctx.session.user.email || "",
           customerName: input.customerName,
@@ -59,7 +59,7 @@ export const cloudBillingRouter = createTRPCRouter({
       auditLog({
         session: ctx.session,
         orgId: input.orgId,
-        resourceType: "stripeCheckoutSession",
+        resourceType: "organization",
         resourceId: result.sessionId,
         action: "create",
       });
@@ -67,11 +67,11 @@ export const cloudBillingRouter = createTRPCRouter({
       return result;
     }),
 
-  changeStripeSubscriptionProduct: protectedOrganizationProcedure
+  changeSubscriptionProduct: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
-        stripeProductId: z.string(),
+        productId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -88,13 +88,13 @@ export const cloudBillingRouter = createTRPCRouter({
 
       await commercePatch(
         "/subscribe/current",
-        { productId: input.stripeProductId },
+        { productId: input.productId },
         undefined,
         orgHeaders(input.orgId),
       );
     }),
 
-  getStripeCustomerPortalUrl: protectedOrganizationProcedure
+  getCustomerPortalUrl: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
@@ -113,7 +113,7 @@ export const cloudBillingRouter = createTRPCRouter({
       });
 
       const result = await commercePost<{ url: string | null }>(
-        "/stripe/portal",
+        "/billing/portal",
         {
           returnUrl: `${env.NEXTAUTH_URL}/organization/${input.orgId}/settings/billing`,
         },
@@ -231,7 +231,7 @@ export const cloudBillingRouter = createTRPCRouter({
     .input(
       z.object({
         orgId: z.string(),
-        stripeSubscriptionId: z.string(),
+        subscriptionId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -245,7 +245,7 @@ export const cloudBillingRouter = createTRPCRouter({
         success: boolean;
         subscriptionId: string;
       }>(
-        `/subscribe/${input.stripeSubscriptionId}/save`,
+        `/subscribe/${input.subscriptionId}/save`,
         {},
         undefined,
         orgHeaders(input.orgId),
@@ -254,8 +254,8 @@ export const cloudBillingRouter = createTRPCRouter({
       auditLog({
         session: ctx.session,
         orgId: input.orgId,
-        resourceType: "stripeCheckoutSession",
-        resourceId: input.stripeSubscriptionId,
+        resourceType: "organization",
+        resourceId: input.subscriptionId,
         action: "create",
       });
 
@@ -332,11 +332,11 @@ export const cloudBillingRouter = createTRPCRouter({
       );
     }),
 
-  cancelStripeSubscription: protectedOrganizationProcedure
+  cancelSubscription: protectedOrganizationProcedure
     .input(
       z.object({
         orgId: z.string(),
-        stripeProductId: z.string(),
+        productId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -357,7 +357,7 @@ export const cloudBillingRouter = createTRPCRouter({
         cancelAt: string | null;
       }>(
         "/subscribe/current",
-        { productId: input.stripeProductId },
+        { productId: input.productId },
         orgHeaders(input.orgId),
       );
 

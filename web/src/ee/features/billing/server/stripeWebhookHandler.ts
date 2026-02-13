@@ -1,9 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
- * Stripe webhook handler - stub for community edition.
- * Billing webhooks are handled via Hanzo IAM at hanzo.id.
+ * Billing webhook handler - stub for community edition.
+ * Billing webhooks are handled via Hanzo Commerce service.
  */
-export async function stripeWebhookHandler(_req: NextRequest) {
-  return NextResponse.json({ message: "Billing is handled via Hanzo IAM at hanzo.id" }, { status: 501 });
+export async function billingWebhookHandler(_req: NextRequest) {
+  return NextResponse.json({ message: "Billing is handled via Hanzo Commerce service" }, { status: 501 });
 }
+
+/** @deprecated Use billingWebhookHandler instead */
+export const stripeWebhookHandler = billingWebhookHandler;

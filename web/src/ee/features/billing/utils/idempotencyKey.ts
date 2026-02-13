@@ -2,10 +2,10 @@ import crypto from "crypto";
 import { z } from "zod/v4";
 
 /**
- * Utilities for generating idempotency keys for Stripe API operations.
+ * Utilities for generating idempotency keys for billing API operations.
  * Ensures that operations are not accidentally executed multiple times, even across different cloud regions.
  *
- * Used primarily in stripeBillingService.ts for subscription operations:
+ * Used primarily in billingService.ts for subscription operations:
  * - Plan changes
  * - Subscription schedule management
  * - Cancellations and reactivations
@@ -18,7 +18,7 @@ import { z } from "zod/v4";
 
 /**
  * Enumeration of all supported idempotent operations.
- * Each value represents a specific type of Stripe API operation that needs idempotency protection.
+ * Each value represents a specific type of billing API operation that needs idempotency protection.
  */
 export const IdempotencyKind = z.enum([
   "subscription.schedule.release",
@@ -52,7 +52,7 @@ export function stableHash(obj: unknown): string {
 }
 
 /**
- * Generates an idempotency key for Stripe API operations.
+ * Generates an idempotency key for billing API operations.
  * The key combines operation type, relevant fields, and an operation ID to ensure uniqueness.
  *
  * Format: `${kind}:${field1}=${value1}:${field2}=${value2}:op=${opId}`

@@ -1,7 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { PlanSelectionModal } from "@/src/features/billing/components/PlanSectionModal";
-import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { billingProducts } from "@/src/features/billing/utils/billingProducts";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { api } from "@/src/utils/api";
 import { useRouter } from "next/router";
@@ -36,10 +36,10 @@ export const BillingOverview = () => {
     { enabled: !!organization },
   );
 
-  const createCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation();
+  const createCheckoutSession = api.cloudBilling.createCheckoutSession.useMutation();
 
   const handlePurchaseCredits = async () => {
-    const creditsProduct = stripeProducts.find((p) => p.id === "credits-plan");
+    const creditsProduct = billingProducts.find((p) => p.id === "credits-plan");
     if (!creditsProduct) {
       console.error("Credits product not found");
       return;
@@ -47,7 +47,7 @@ export const BillingOverview = () => {
 
     const url = await createCheckoutSession.mutateAsync({
       orgId: organization?.id ?? "",
-      stripeProductId: creditsProduct.stripeProductId,
+      productId: creditsProduct.productId,
     });
     if (url) window.location.href = url;
   };

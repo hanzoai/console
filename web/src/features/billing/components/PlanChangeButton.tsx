@@ -16,14 +16,14 @@ import { api } from "@/src/utils/api";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
 
-export const StripeSwitchPlanButton = ({
+export const PlanChangeButton = ({
   className,
   orgId,
   currentPlan,
   newPlanTitle,
   isLegacySubscription,
   isUpgrade,
-  stripeProductId,
+  productId,
   onProcessing,
   processing,
 }: {
@@ -32,14 +32,14 @@ export const StripeSwitchPlanButton = ({
   newPlanTitle: string | undefined;
   isLegacySubscription: boolean;
   isUpgrade: boolean;
-  stripeProductId: string;
+  productId: string;
   onProcessing: (id: string | null) => void;
   processing: boolean;
   className?: string;
 }) => {
   const [_opId, setOpId] = useState<string | null>(null);
 
-  const mutChangePlan = api.cloudBilling.changeStripeSubscriptionProduct.useMutation({
+  const mutChangePlan = api.cloudBilling.changeSubscriptionProduct.useMutation({
     onSuccess: () => {
       toast.success("Plan changed successfully");
       onProcessing(null);
@@ -107,14 +107,14 @@ export const StripeSwitchPlanButton = ({
           </DialogClose>
           <ActionButton
             onClick={() => {
-              onProcessing(stripeProductId);
-              // idempotency key for mutation operations with the stripe api
+              onProcessing(productId);
+              // idempotency key for mutation operations
               let opId = _opId;
               if (!opId) {
                 opId = nanoid();
                 setOpId(opId);
               }
-              mutChangePlan.mutate({ orgId, stripeProductId, opId });
+              mutChangePlan.mutate({ orgId, productId, opId });
             }}
             loading={processing}
             className={className}

@@ -28,11 +28,11 @@ export const trackBillingEvent = (eventName: string, eventData?: Record<string, 
 // Billing-specific event trackers
 export const billingAnalytics = {
   // Subscription events
-  subscriptionCreated: (data: { planName: string; stripeProductId: string; amount?: number; interval?: string }) => {
+  subscriptionCreated: (data: { planName: string; productId: string; amount?: number; interval?: string }) => {
     trackBillingEvent("subscription_created", data);
   },
 
-  subscriptionUpdated: (data: { oldPlan: string; newPlan: string; stripeProductId: string }) => {
+  subscriptionUpdated: (data: { oldPlan: string; newPlan: string; productId: string }) => {
     trackBillingEvent("subscription_updated", data);
   },
 
@@ -59,15 +59,15 @@ export const billingAnalytics = {
   },
 
   // Checkout events
-  checkoutStarted: (data: { planName: string; stripeProductId: string }) => {
+  checkoutStarted: (data: { planName: string; productId: string }) => {
     trackBillingEvent("checkout_started", data);
   },
 
-  checkoutCompleted: (data: { planName: string; stripeProductId: string; sessionId: string }) => {
+  checkoutCompleted: (data: { planName: string; productId: string; sessionId: string }) => {
     trackBillingEvent("checkout_completed", data);
   },
 
-  checkoutAbandoned: (data: { planName: string; stripeProductId: string }) => {
+  checkoutAbandoned: (data: { planName: string; productId: string }) => {
     trackBillingEvent("checkout_abandoned", data);
   },
 

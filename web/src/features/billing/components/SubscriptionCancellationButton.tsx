@@ -15,7 +15,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
 
-export const StripeCancellationButton = ({
+export const SubscriptionCancellationButton = ({
   orgId,
   variant,
   className,
@@ -28,7 +28,7 @@ export const StripeCancellationButton = ({
   const [loading, setLoading] = useState(false);
   const [_opId, setOpId] = useState<string | null>(null);
 
-  const cancelMutation = api.cloudBilling.cancelStripeSubscription.useMutation({
+  const cancelMutation = api.cloudBilling.cancelSubscription.useMutation({
     onSuccess: () => {
       toast.success("Subscription will be cancelled at period end");
       setLoading(false);
@@ -42,7 +42,7 @@ export const StripeCancellationButton = ({
     },
   });
 
-  const reactivateMutation = api.cloudBilling.reactivateStripeSubscription.useMutation({
+  const reactivateMutation = api.cloudBilling.reactivateSubscription.useMutation({
     onSuccess: () => {
       toast.success("Subscription reactivated");
       setLoading(false);
@@ -61,7 +61,7 @@ export const StripeCancellationButton = ({
   const onReactivate = async () => {
     try {
       setLoading(true);
-      // idempotency key for mutation operations with the stripe api
+      // idempotency key for mutation operations
       let opId = _opId;
       if (!opId) {
         opId = nanoid();
@@ -76,7 +76,7 @@ export const StripeCancellationButton = ({
   const onCancel = async () => {
     try {
       setLoading(true);
-      // idempotency key for mutation operations with the stripe api
+      // idempotency key for mutation operations
       let opId = _opId;
       if (!opId) {
         opId = nanoid();

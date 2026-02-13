@@ -3,7 +3,7 @@ import { Card } from "@/src/components/ui/card";
 import { CreditCard, Plus } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { useQueryOrganization } from "@/src/features/organizations/hooks";
-import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { billingProducts } from "@/src/features/billing/utils/billingProducts";
 import { useRouter } from "next/router";
 import { planLabels, type Plan } from "@hanzo/shared";
 
@@ -39,19 +39,19 @@ export const PaymentManagement = () => {
   );
 
   // Mutation for creating checkout session
-  const createCheckoutSession = api.cloudBilling.createStripeCheckoutSession.useMutation();
+  const createCheckoutSession = api.cloudBilling.createCheckoutSession.useMutation();
 
   // Update this to use useQuery
-  const { data: customerPortalUrl } = api.cloudBilling.getStripeCustomerPortalUrl.useQuery(
+  const { data: customerPortalUrl } = api.cloudBilling.getCustomerPortalUrl.useQuery(
     { orgId: organization?.id ?? "" },
     { enabled: !!organization },
   );
 
   // Add this near your other hooks
-  const cancelSubscription = api.cloudBilling.cancelStripeSubscription.useMutation();
+  const cancelSubscription = api.cloudBilling.cancelSubscription.useMutation();
 
   const handleAddCredits = async () => {
-    const creditsProduct = stripeProducts.find((p) => p.id === "credits-plan");
+    const creditsProduct = billingProducts.find((p) => p.id === "credits-plan");
     if (!creditsProduct) {
       console.error("Credits product not found");
       return;
@@ -59,7 +59,7 @@ export const PaymentManagement = () => {
 
     const url = await createCheckoutSession.mutateAsync({
       orgId: organization?.id ?? "",
-      stripeProductId: creditsProduct.stripeProductId,
+      productId: creditsProduct.productId,
     });
 
     if (url) window.location.href = url;
@@ -152,7 +152,7 @@ export const PaymentManagement = () => {
             <p className="font-medium">
               {subscription?.hasValidPaymentMethod ? "Payment method on file" : "No payment method"}
             </p>
-            <p className="text-sm text-muted-foreground">Manage your payment method in Stripe Portal</p>
+            <p className="text-sm text-muted-foreground">Manage your payment method in billing portal</p>
           </div>
         </div>
       </Card>

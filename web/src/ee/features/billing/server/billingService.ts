@@ -1,8 +1,8 @@
 /**
  * Commerce-backed billing service.
  *
- * All Stripe operations are delegated to the Hanzo Commerce service which
- * manages per-org Stripe credentials and namespace-isolated billing.
+ * All payment operations are delegated to the Hanzo Commerce service which
+ * manages per-org payment credentials and namespace-isolated billing.
  * The public API is unchanged so cloudBillingRouter.ts works as before.
  */
 
@@ -30,7 +30,7 @@ import {
 } from "@/src/features/billing/server/commerceClient";
 
 // ---------------------------------------------------------------------------
-// Types (kept identical to the old Stripe-direct version)
+// Types
 // ---------------------------------------------------------------------------
 
 export type BillingSubscriptionInfo = {
@@ -181,7 +181,7 @@ class BillingService {
   }
 
   // ==========================================================================
-  // Public methods — same signatures as the old Stripe-direct service
+  // Public methods
   // ==========================================================================
 
   async getSubscriptionInfo(orgId: string): Promise<BillingSubscriptionInfo> {
@@ -304,7 +304,7 @@ class BillingService {
 
         try {
           const result = await commercePost<CommercePortalResponse>(
-            "/stripe/portal",
+            "/billing/portal",
             {
               return_url: returnUrl,
               customer_id: parsedOrg.cloudConfig?.stripe?.customerId,
@@ -331,7 +331,7 @@ class BillingService {
 
   async createCheckoutSession(
     orgId: string,
-    stripeProductId: string,
+    productId: string,
   ): Promise<string> {
     return await instrumentAsync(
       { name: "commerce.checkout.create", spanKind: SpanKind.CLIENT },
@@ -347,7 +347,7 @@ class BillingService {
         }
 
         span.setAttributes({
-          "commerce.product_id": stripeProductId,
+          "commerce.product_id": productId,
           "hanzo.org.id": parsedOrg.id,
           "hanzo.user.id": this.ctx.session.user.id,
         });
@@ -358,7 +358,7 @@ class BillingService {
           const result = await commercePost<CommerceCheckoutResponse>(
             "/checkout/authorize",
             {
-              product_id: stripeProductId,
+              product_id: productId,
               customer_id: parsedOrg.cloudConfig?.stripe?.customerId,
               org_id: orgId,
               success_url: returnUrl,
@@ -391,7 +391,7 @@ class BillingService {
         } catch (error) {
           logger.error(
             "commerceBillingService.checkout.create:failed",
-            { orgId, stripeProductId, error },
+            { orgId, productId, error },
           );
           traceException(error);
           if (error instanceof TRPCError) throw error;
@@ -730,7 +730,7 @@ class BillingService {
         if (!customerId) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "No stripe customer found",
+            message: "No billing customer found",
           });
         }
 

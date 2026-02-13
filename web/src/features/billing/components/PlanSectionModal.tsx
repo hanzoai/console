@@ -1,6 +1,6 @@
 import { Button } from "@/src/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
-import { stripeProducts } from "@/src/features/billing/utils/stripeProducts";
+import { billingProducts } from "@/src/features/billing/utils/billingProducts";
 import { api } from "@/src/utils/api";
 import React from "react";
 import { billingAnalytics } from "@/src/features/billing/analytics";
@@ -18,7 +18,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   orgId,
   currentSubscription,
 }) => {
-  const { mutate: createCheckoutSession } = api.cloudBilling.createStripeCheckoutSession.useMutation({
+  const { mutate: createCheckoutSession } = api.cloudBilling.createCheckoutSession.useMutation({
     onSuccess: (url) => {
       if (url) window.location.href = url;
     },
@@ -28,7 +28,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     },
   });
 
-  const { mutate: cancelSubscription } = api.cloudBilling.cancelStripeSubscription.useMutation({
+  const { mutate: cancelSubscription } = api.cloudBilling.cancelSubscription.useMutation({
     onSuccess: () => {
       // Optionally refresh subscription or show success message
       onClose();
@@ -40,7 +40,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
   });
 
   // Filter out credit-related products
-  const availablePlans = stripeProducts.filter(
+  const availablePlans = billingProducts.filter(
     (product) => product.checkout && product.title !== "Credits" && product.active && product.active === true,
   );
 
@@ -53,7 +53,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     availablePlans.map((p) => ({
       title: p.title,
       id: p.id,
-      stripeProductId: p.stripeProductId,
+      productId: p.productId,
     })),
   );
 
@@ -62,20 +62,20 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
     isActive: isActiveSubscription,
   });
 
-  const handlePlanAction = (stripeProductId: string) => {
+  const handlePlanAction = (productId: string) => {
     console.log("Handle Plan Action:", {
-      stripeProductId,
+      productId,
       currentPlanId: currentSubscription?.plan?.id,
-      isMatch: currentSubscription?.plan?.id === stripeProductId,
+      isMatch: currentSubscription?.plan?.id === productId,
     });
 
     // Find the plan details
-    const plan = availablePlans.find((p) => p.stripeProductId === stripeProductId);
+    const plan = availablePlans.find((p) => p.productId === productId);
     const planName = plan?.title || "Unknown";
 
     // Check if current subscription exists and is not in a terminal state
-    if (isActiveSubscription && currentSubscription.plan.id === stripeProductId) {
-      console.log("Cancelling subscription for product:", stripeProductId);
+    if (isActiveSubscription && currentSubscription.plan.id === productId) {
+      console.log("Cancelling subscription for product:", productId);
       // Track cancellation intent
       billingAnalytics.subscriptionCanceled({
         planName,
@@ -86,16 +86,16 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
         orgId,
       });
     } else {
-      console.log("Creating checkout session for product:", stripeProductId);
+      console.log("Creating checkout session for product:", productId);
       // Track checkout start
       billingAnalytics.checkoutStarted({
         planName,
-        stripeProductId,
+        productId,
       });
       // If no current subscription or different plan, create a new checkout session
       createCheckoutSession({
         orgId,
-        stripeProductId,
+        productId,
       });
     }
   };
@@ -110,10 +110,10 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
         <div className="grid gap-6 md:grid-cols-3">
           {availablePlans.map((product) => {
             // Calculate button state for each plan
-            const isPlanActive = isActiveSubscription && currentSubscription.plan.id === product.stripeProductId;
+            const isPlanActive = isActiveSubscription && currentSubscription.plan.id === product.productId;
 
             console.log(`Plan ${product.title} comparison:`, {
-              productId: product.stripeProductId,
+              productId: product.productId,
               currentPlanId: currentSubscription?.plan?.id,
               isPlanActive,
               isActiveSubscription,
@@ -128,7 +128,7 @@ export const PlanSelectionModal: React.FC<PlanSelectionModalProps> = ({
                   <Button
                     variant={isPlanActive ? "destructive" : "default"}
                     className="w-full"
-                    onClick={() => handlePlanAction(product.stripeProductId)}
+                    onClick={() => handlePlanAction(product.productId)}
                   >
                     {isPlanActive
                       ? "Cancel Plan"

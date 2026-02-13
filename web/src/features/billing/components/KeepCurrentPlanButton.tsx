@@ -14,14 +14,14 @@ import { api } from "@/src/utils/api";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
 
-export const StripeKeepPlanButton = ({
+export const KeepCurrentPlanButton = ({
   orgId,
-  stripeProductId,
+  productId,
   onProcessing,
   processing,
 }: {
   orgId: string | undefined;
-  stripeProductId: string;
+  productId: string;
   onProcessing: (id: string | null) => void;
   processing: boolean;
 }) => {
@@ -71,8 +71,8 @@ export const StripeKeepPlanButton = ({
           <Button
             variant="default"
             onClick={() => {
-              onProcessing(stripeProductId);
-              // idempotency key for mutation operations with the stripe api
+              onProcessing(productId);
+              // idempotency key for mutation operations
               let opId = _opId;
               if (!opId) {
                 opId = nanoid();

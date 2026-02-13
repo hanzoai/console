@@ -1,7 +1,7 @@
 /**
- * Helpers for working with Stripe's `expand` feature using correct TypeScript types.
+ * Helpers for working with expandable API fields using correct TypeScript types.
  *
- * Stripe often returns fields as `string | T` via `Expandable<T>`. When you
+ * APIs often return fields as `string | T` via `Expandable<T>`. When you
  * request expansions (e.g. `{ expand: ["default_price"] }`), the SDK still
  * types those fields as `string | T`. These utilities assert at runtime that
  * the expansion occurred and narrow the types accordingly, so downstream code
@@ -17,9 +17,9 @@ export type Expanded<T, K extends keyof T> = T & {
 };
 
 /**
- * Type guard that narrows a Stripe expandable field from `string | T | null | undefined`
+ * Type guard that narrows an expandable field from `string | T | null | undefined`
  * to the fully expanded object `T`. Returns true when the value is non-nullish and
- * not a string (i.e., Stripe returned the expanded object).
+ * not a string (i.e., the API returned the expanded object).
  */
 export const isExpanded = <T>(v: string | T | null | undefined): v is T => v != null && typeof v !== "string";
 
@@ -30,9 +30,9 @@ export type ExpandedNullable<T, K extends keyof T> = {
   [P in keyof T]: P extends K ? Exclude<T[P], string> : T[P];
 };
 /**
- * Type guard that narrows a Stripe expandable field from `string | T | null | undefined`
+ * Type guard that narrows an expandable field from `string | T | null | undefined`
  * to the fully expanded object `T` or `null | undefined`. Returns true when the value
- * is non-nullish and not a string (i.e., Stripe returned the expanded object).
+ * is non-nullish and not a string (i.e., the API returned the expanded object).
  */
 export const isExpandedOrNullable = <T>(v: string | T | null | undefined): v is T | null | undefined =>
   typeof v !== "string";
