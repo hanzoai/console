@@ -9,7 +9,7 @@ import { WinstonInstrumentation } from "@opentelemetry/instrumentation-winston";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
 import { BullMQInstrumentation } from "@appsignal/opentelemetry-instrumentation-bullmq";
 import { envDetector, processDetector, Resource } from "@opentelemetry/resources";
-import { awsEcsDetectorSync } from "@opentelemetry/resource-detector-aws";
+import { awsEcsDetector } from "@opentelemetry/resource-detector-aws";
 import { containerDetector } from "@opentelemetry/resource-detector-container";
 import { env } from "./env";
 
@@ -52,7 +52,7 @@ const sdk = new NodeSDK({
     new WinstonInstrumentation({ disableLogSending: true }),
     new BullMQInstrumentation({ useProducerSpanAsConsumerParent: true }),
   ],
-  resourceDetectors: [envDetector, processDetector, awsEcsDetectorSync, containerDetector],
+  resourceDetectors: [envDetector, processDetector, awsEcsDetector, containerDetector],
 });
 
 sdk.start();
