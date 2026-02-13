@@ -3,7 +3,7 @@ import type {
   OAuthUserConfig,
 } from "next-auth/providers/oauth";
 
-interface HanzoIamProfile extends Record<string, unknown> {
+interface IamProfile extends Record<string, unknown> {
   sub: string;
   name: string;
   email: string;
@@ -21,7 +21,7 @@ interface HanzoIamProfile extends Record<string, unknown> {
  * JWT id_token validation (issuer, audience, signature) is handled by
  * openid-client using the JWKS published at {serverUrl}/.well-known/jwks.
  */
-export function HanzoIamProvider<P extends HanzoIamProfile>(
+export function IamProvider<P extends IamProfile>(
   options: OAuthUserConfig<P> & {
     serverUrl: string;
     orgName?: string;

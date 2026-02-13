@@ -3,7 +3,7 @@
 # SUPPLY CHAIN SECURITY: All images are either:
 # 1. Built from source in this repo (console-web, console-worker)
 # 2. Built from official source + pinned by SHA256 digest (infra services)
-# 3. Built from source in our repos (agentfield, casvisor)
+# 3. Built from source in our repos (agents, casvisor)
 #
 # NO third-party pre-built images are used.
 #
@@ -11,7 +11,7 @@
 #   docker compose -f deployments/compose.yml up -d
 #
 # Required env vars — set in .env or export:
-#   AGENTFIELD_API_URL, CASVISOR_API_URL, DATABASE_URL, etc.
+#   AGENTS_API_URL, CASVISOR_API_URL, DATABASE_URL, etc.
 
 x-hanzo-env: &hanzo-env
   NEXTAUTH_URL: ${NEXTAUTH_URL:-https://console.hanzo.ai}
@@ -46,8 +46,8 @@ x-hanzo-env: &hanzo-env
   REDIS_HOST: redis
   REDIS_PORT: "6379"
   REDIS_AUTH: ${REDIS_AUTH:?REDIS_AUTH required}
-  # AgentField + Casvisor (server-side only)
-  AGENTFIELD_API_URL: ${AGENTFIELD_API_URL:-http://agentfield:8080/api/ui/v1}
+  # Hanzo Agents + Casvisor (server-side only)
+  AGENTS_API_URL: ${AGENTS_API_URL:-http://agents:8080/api/ui/v1}
   CASVISOR_API_URL: ${CASVISOR_API_URL:-http://casvisor:14000}
 
 x-depends-on: &depends-on
@@ -73,7 +73,7 @@ services:
     restart: always
     depends_on:
       <<: *depends-on
-      agentfield:
+      agents:
         condition: service_healthy
     ports:
       - "3000:3000"
@@ -90,11 +90,11 @@ services:
     environment:
       <<: *hanzo-env
 
-  agentfield:
+  agents:
     build:
-      context: /Users/z/work/agentfield/agentfield
+      context: /Users/z/work/hanzo/agent
       dockerfile: deployments/docker/Dockerfile.control-plane
-    image: ghcr.io/hanzoai/agentfield:latest
+    image: ghcr.io/hanzoai/agent:latest
     restart: always
     depends_on:
       postgres:
@@ -102,9 +102,9 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      AGENTFIELD_PORT: "8080"
-      AGENTFIELD_STORAGE_MODE: postgresql
-      AGENTFIELD_DATABASE_URL: ${AGENTFIELD_DATABASE_URL:-postgresql://agentfield:agentfield@postgres:5432/agentfield?sslmode=disable}
+      AGENTS_PORT: "8080"
+      AGENTS_STORAGE_MODE: postgresql
+      AGENTS_DATABASE_URL: ${AGENTS_DATABASE_URL:-postgresql://agents:agents@postgres:5432/agents?sslmode=disable}
       GIN_MODE: release
       LOG_LEVEL: info
     healthcheck:
