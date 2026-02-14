@@ -86,3 +86,4 @@ web/test-results/*
 
 # Refactoring planning files (local only)
 **/.refactor/
+console-standalone.tar.gz

@@ -322,8 +322,31 @@ export const env = createEnv({
 
     HANZO_INIT_ORG_ID: z.string().optional(),
     HANZO_INIT_ORG_NAME: z.string().optional(),
+    HANZO_INIT_ORG_IDS: z
+      .string()
+      .optional()
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((orgId) => orgId.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
+    HANZO_INIT_ORG_NAMES: z
+      .string()
+      .optional()
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((orgName) => orgName.trim())
+              .filter(Boolean)
+          : undefined,
+      ),
     HANZO_INIT_ORG_CLOUD_PLAN: z.string().optional(), // for use in CI
     HANZO_INIT_PROJECT_ID: z.string().optional(),
+    HANZO_INIT_PROJECT_ORG_ID: z.string().optional(),
     HANZO_INIT_PROJECT_NAME: z.string().optional(),
     HANZO_INIT_PROJECT_RETENTION: z.coerce.number().int().gte(3).optional(),
     HANZO_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
@@ -718,8 +741,11 @@ export const env = createEnv({
     // provisioning
     HANZO_INIT_ORG_ID: process.env.HANZO_INIT_ORG_ID,
     HANZO_INIT_ORG_NAME: process.env.HANZO_INIT_ORG_NAME,
+    HANZO_INIT_ORG_IDS: process.env.HANZO_INIT_ORG_IDS,
+    HANZO_INIT_ORG_NAMES: process.env.HANZO_INIT_ORG_NAMES,
     HANZO_INIT_ORG_CLOUD_PLAN: process.env.HANZO_INIT_ORG_CLOUD_PLAN,
     HANZO_INIT_PROJECT_ID: process.env.HANZO_INIT_PROJECT_ID,
+    HANZO_INIT_PROJECT_ORG_ID: process.env.HANZO_INIT_PROJECT_ORG_ID,
     HANZO_INIT_PROJECT_NAME: process.env.HANZO_INIT_PROJECT_NAME,
     HANZO_INIT_PROJECT_RETENTION:
       process.env.HANZO_INIT_PROJECT_RETENTION,
