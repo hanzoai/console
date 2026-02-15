@@ -2,6 +2,7 @@ import { type Flag } from "@/src/features/feature-flags/types";
 import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
 import {
   Bot,
+  BotMessageSquare,
   Database,
   Fingerprint,
   LayoutDashboard,
@@ -52,6 +53,7 @@ export enum RouteGroup {
   PromptManagement = "Prompt Management",
   Evaluation = "Evaluation",
   Agents = "Agents",
+  Bots = "Bots",
   KMS = "KMS",
 }
 
@@ -249,6 +251,14 @@ export const ROUTES: Route[] = [
     pathname: `/project/[projectId]/agents/compute/providers`,
     icon: Server,
     group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  // Bots
+  {
+    title: "Bot Dashboard",
+    pathname: `/project/[projectId]/bots`,
+    icon: BotMessageSquare,
+    group: RouteGroup.Bots,
     section: RouteSection.Main,
   },
   // KMS — embedded per-project pages (multi-tenant via org metadata)

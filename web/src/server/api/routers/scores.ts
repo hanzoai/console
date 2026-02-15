@@ -105,10 +105,23 @@ export const scoresRouter = createTRPCRouter({
           jobOutputScoreId: true,
         },
       }),
+      // Scope user lookup to the project's organization to prevent
+      // leaking user names/images across tenant boundaries.
       ctx.prisma.user.findMany({
         where: {
           id: {
             in: clickhouseScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
+          },
+          organizationMemberships: {
+            some: {
+              organization: {
+                projects: {
+                  some: {
+                    id: input.projectId,
+                  },
+                },
+              },
+            },
           },
         },
         select: {

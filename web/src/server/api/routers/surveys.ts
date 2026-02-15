@@ -13,13 +13,26 @@ const surveyResponseSchema = z.object({
 export const surveysRouter = createTRPCRouter({
   create: authenticatedProcedure.input(surveyResponseSchema).mutation(async ({ ctx, input }) => {
     try {
+      // Validate that the user is a member of the specified org to prevent
+      // cross-tenant data association. If no orgId is provided, skip the check.
+      let validatedOrgId = input.orgId;
+      if (validatedOrgId) {
+        const isMember = ctx.session.user.organizations.some(
+          (org) => org.id === validatedOrgId,
+        );
+        if (!isMember) {
+          // Silently drop the orgId rather than leaking membership info
+          validatedOrgId = undefined;
+        }
+      }
+
       const survey = await ctx.prisma.survey.create({
         data: {
           surveyName: input.surveyName,
           response: input.response,
           userId: ctx.session.user.id,
           userEmail: ctx.session.user.email ?? undefined,
-          orgId: input.orgId,
+          orgId: validatedOrgId,
         },
       });
 

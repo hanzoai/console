@@ -12,6 +12,21 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },
+  projects: [
+    {
+      name: "default",
+      testDir: "./src/__e2e__",
+      testIgnore: /bots\.spec\.ts/,
+    },
+    {
+      name: "bots",
+      testDir: "./src/__e2e__",
+      testMatch: /bots\.spec\.ts/,
+      use: {
+        screenshot: "on", // always capture screenshots for bot tests
+      },
+    },
+  ],
   webServer: {
     command: process.env.CI ? "npm run start" : "npm run dev",
     url: "http://127.0.0.1:3000",

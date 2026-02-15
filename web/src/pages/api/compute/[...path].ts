@@ -1,7 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import {
+  applyProxyTenantHeaders,
+  buildProxyTenantHeaders,
+} from "@/src/server/tenant-headers";
 
 /**
- * Catch-all proxy for Casvisor compute management API.
+ * Catch-all proxy for Hanzo Visor compute management API.
  *
  * Forwards /api/compute/* to ${CASVISOR_API_URL}/api/* stripping the /api/compute prefix.
  * Server-side only -- CASVISOR_API_URL is never exposed to the client.
@@ -63,12 +67,19 @@ export default async function handler(
 
   const targetUrl = `${casvisorUrl.replace(/\/+$/, "")}/api/${upstreamPath}${qs ? `?${qs}` : ""}`;
 
+  // Strip client-supplied tenant headers to prevent cross-tenant header
+  // injection. Session-derived values are applied below.
+  const TENANT_HEADERS = new Set(["x-org-id", "x-project-id", "x-tenant-id", "x-actor-id"]);
   const headers: Record<string, string> = {};
   for (const [key, value] of Object.entries(req.headers)) {
-    if (HOP_BY_HOP.has(key.toLowerCase())) continue;
+    const lowerKey = key.toLowerCase();
+    if (HOP_BY_HOP.has(lowerKey)) continue;
+    if (TENANT_HEADERS.has(lowerKey)) continue;
     if (value === undefined) continue;
     headers[key] = Array.isArray(value) ? value.join(", ") : value;
   }
+
+  applyProxyTenantHeaders(headers, await buildProxyTenantHeaders(req, res));
 
   let body: Buffer | undefined;
   if (req.method && !["GET", "HEAD", "OPTIONS"].includes(req.method)) {

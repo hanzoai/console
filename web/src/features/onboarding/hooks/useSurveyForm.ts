@@ -82,7 +82,13 @@ export function useSurveyForm() {
         await createSurveyMutation.mutateAsync({
           surveyName: SurveyName.USER_ONBOARDING,
           response: transformedResponse,
-          orgId: session?.user?.organizations?.[0]?.id,
+          // Use the first org only when the user has exactly one org
+          // (typical during onboarding). For multi-org users the orgId
+          // is omitted; the server validates membership regardless.
+          orgId:
+            session?.user?.organizations?.length === 1
+              ? session.user.organizations[0]?.id
+              : undefined,
         });
       } catch {
         // Error handling is done in the mutation callbacks

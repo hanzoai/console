@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getServerAuthSession } from "@/src/server/auth";
+import {
+  applyProxyTenantHeaders,
+  buildProxyTenantHeaders,
+} from "@/src/server/tenant-headers";
 
 /**
  * Catch-all proxy for Hanzo Agents control plane API.
@@ -7,9 +10,8 @@ import { getServerAuthSession } from "@/src/server/auth";
  * Forwards /api/agents/* to ${AGENTS_API_URL}/* stripping the /api/agents prefix.
  * Server-side only -- AGENTS_API_URL is never exposed to the client.
  *
- * Multi-tenant: extracts org/project context from the console session and
- * injects X-Org-ID / X-Project-ID headers so the agents backend can scope
- * its responses per-organization.
+ * Multi-tenant: extracts org/project/actor/env context from the console
+ * session and injects headers for downstream scoping.
  */
 
 export const config = {
@@ -72,31 +74,21 @@ export default async function handler(
 
   const targetUrl = `${agentsUrl.replace(/\/+$/, "")}/${upstreamPath}${qs ? `?${qs}` : ""}`;
 
-  // Build forwarded headers, dropping hop-by-hop.
+  // Build forwarded headers, dropping hop-by-hop and tenant headers.
+  // Tenant headers (x-org-id, x-project-id, x-tenant-id, x-actor-id) are
+  // stripped from the client request and replaced with session-derived values
+  // to prevent cross-tenant access via header injection.
+  const TENANT_HEADERS = new Set(["x-org-id", "x-project-id", "x-tenant-id", "x-actor-id"]);
   const headers: Record<string, string> = {};
   for (const [key, value] of Object.entries(req.headers)) {
-    if (HOP_BY_HOP.has(key.toLowerCase())) continue;
+    const lowerKey = key.toLowerCase();
+    if (HOP_BY_HOP.has(lowerKey)) continue;
+    if (TENANT_HEADERS.has(lowerKey)) continue;
     if (value === undefined) continue;
     headers[key] = Array.isArray(value) ? value.join(", ") : value;
   }
 
-  // Inject org/project context from console session (best-effort, non-blocking).
-  try {
-    const session = await getServerAuthSession({ req, res });
-    if (session?.user) {
-      const orgId =
-        (session as any).orgId ??
-        session.user.organizations?.[0]?.id;
-      const projectId =
-        (session as any).projectId ??
-        session.user.organizations?.[0]?.projects?.[0]?.id;
-      if (orgId) headers["x-org-id"] = orgId;
-      if (projectId) headers["x-project-id"] = projectId;
-    }
-  } catch {
-    // Session extraction failed — continue without context headers.
-    // The agents backend will still work, just without org scoping.
-  }
+  applyProxyTenantHeaders(headers, await buildProxyTenantHeaders(req, res));
 
   // Read body for methods that carry one.
   let body: Buffer | undefined;

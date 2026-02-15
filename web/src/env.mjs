@@ -396,6 +396,12 @@ export const env = createEnv({
     KMS_CLIENT_SECRET: z.string().optional(),
     KMS_PROJECT_ID: z.string().optional(),
 
+    // Bot Gateway (ZAP protocol over HTTP)
+    ZAP_BOT_GATEWAY_URL: z.string().url().optional().default("https://bot.hanzo.ai"),
+    ZAP_BOT_GATEWAY_TOKEN: z.string().optional(),
+    BOT_GATEWAY_URL: z.string().url().optional(),
+    BOT_GATEWAY_TOKEN: z.string().optional(),
+
     // Commerce (Hanzo Commerce Service - billing, subscriptions, payments)
     COMMERCE_API_URL: z.string().url().optional().default("http://commerce.hanzo.svc.cluster.local:8001"),
     COMMERCE_SERVICE_TOKEN: z.string().optional(),
@@ -780,6 +786,11 @@ export const env = createEnv({
     KMS_CLIENT_ID: process.env.KMS_CLIENT_ID,
     KMS_CLIENT_SECRET: process.env.KMS_CLIENT_SECRET,
     KMS_PROJECT_ID: process.env.KMS_PROJECT_ID,
+    // Bot Gateway (ZAP)
+    ZAP_BOT_GATEWAY_URL: process.env.ZAP_BOT_GATEWAY_URL,
+    ZAP_BOT_GATEWAY_TOKEN: process.env.ZAP_BOT_GATEWAY_TOKEN,
+    BOT_GATEWAY_URL: process.env.BOT_GATEWAY_URL,
+    BOT_GATEWAY_TOKEN: process.env.BOT_GATEWAY_TOKEN,
     // Commerce
     COMMERCE_API_URL: process.env.COMMERCE_API_URL,
     COMMERCE_SERVICE_TOKEN: process.env.COMMERCE_SERVICE_TOKEN,

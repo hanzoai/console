@@ -54,6 +54,7 @@ import { surveysRouter } from "@/src/server/api/routers/surveys";
 import { naturalLanguageFilterRouter } from "@/src/features/natural-language-filters/server/router";
 import { notificationPreferencesRouter } from "@/src/server/api/routers/notificationPreferences";
 import { kmsRouter } from "@/src/features/kms/server/router";
+import { botRouter } from "@/src/features/bots/server/botRouter";
 
 /**
  * This is the primary router for your server.
@@ -116,6 +117,7 @@ export const appRouter = createTRPCRouter({
   naturalLanguageFilters: naturalLanguageFilterRouter,
   notificationPreferences: notificationPreferencesRouter,
   kms: kmsRouter,
+  bots: botRouter,
 });
 
 // export type definition of API
