@@ -477,6 +477,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
     NEXT_PUBLIC_COOKIE_PREFIX: z.string().optional(),
+    NEXT_PUBLIC_BOT_GATEWAY_URL: z.string().optional(),
     NEXT_PUBLIC_HANZO_PLAYGROUND_STREAMING_ENABLED_DEFAULT: z
       .enum(["true", "false"])
       .optional()
@@ -764,6 +765,7 @@ export const env = createEnv({
     HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
+    NEXT_PUBLIC_BOT_GATEWAY_URL: process.env.NEXT_PUBLIC_BOT_GATEWAY_URL,
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT:
       process.env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID,
