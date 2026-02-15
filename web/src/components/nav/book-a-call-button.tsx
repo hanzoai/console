@@ -1,45 +1,53 @@
 import { CalendarDays } from "lucide-react";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
-import useLocalStorage from "@/src/components/useLocalStorage";
-import Link from "next/link";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useEffect } from "react";
 
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-const FIRST_SEEN_KEY = "book-a-call-first-seen";
+declare global {
+  interface Window {
+    Cal?: (...args: unknown[]) => void;
+  }
+}
 
 export const BookACallButton = () => {
   const capture = usePostHogClientCapture();
-  const [firstSeen, setFirstSeen] = useLocalStorage<number | null>(
-    FIRST_SEEN_KEY,
-    null,
-  );
 
-  // Set first seen timestamp if not already set
-  if (firstSeen === null) {
-    setFirstSeen(Date.now());
-  }
+  useEffect(() => {
+    // Load Cal.com embed script once
+    if (document.getElementById("cal-embed-script")) return;
 
-  // Hide button after 7 days from first seen
-  const isExpired =
-    firstSeen !== null && Date.now() > firstSeen + SEVEN_DAYS_MS;
-
-  if (isExpired) {
-    return null;
-  }
+    const script = document.createElement("script");
+    script.id = "cal-embed-script";
+    script.src = "https://app.cal.com/embed/embed.js";
+    script.async = true;
+    script.onload = () => {
+      if (window.Cal) {
+        window.Cal("init", { origin: "https://cal.com" });
+      }
+    };
+    document.head.appendChild(script);
+  }, []);
 
   return (
-    <SidebarMenuButton asChild>
-      <Link
-        href="https://cal.com/team/hanzo/welcome-to-hanzo"
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => {
-          capture("sidebar:book_a_call_clicked");
-        }}
-      >
-        <CalendarDays className="h-4 w-4" />
-        Book a call
-      </Link>
+    <SidebarMenuButton
+      onClick={() => {
+        capture("sidebar:book_a_call_clicked");
+        if (window.Cal) {
+          window.Cal("modal", {
+            calLink: "hanzo/welcome-to-hanzo",
+            config: { layout: "month_view", theme: "dark" },
+          });
+        } else {
+          window.open(
+            "https://cal.com/hanzo/welcome-to-hanzo",
+            "_blank",
+            "noopener,noreferrer",
+          );
+        }
+      }}
+    >
+      <CalendarDays className="h-4 w-4" />
+      Book a call
     </SidebarMenuButton>
   );
 };

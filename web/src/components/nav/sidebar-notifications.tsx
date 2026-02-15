@@ -28,18 +28,11 @@ type SidebarNotification = {
 
 const notifications: SidebarNotification[] = [
   {
-    id: "github-star",
-    title: "Star Hanzo",
-    description:
-      "See the latest releases and help grow the community on GitHub",
-    link: "https://github.com/hanzoai/console",
-    linkContent: (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        alt="Hanzo GitHub stars"
-        src="https://img.shields.io/github/stars/hanzo/hanzo?label=hanzo&amp;style=social"
-      />
-    ),
+    id: "join-discord",
+    title: "Join our Discord",
+    description: "Connect with the community, get help, and share feedback",
+    link: "https://discord.gg/hanzo",
+    linkTitle: "Join Discord",
   },
 ];
 
