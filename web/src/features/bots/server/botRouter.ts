@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { TRPCError } from "@trpc/server";
 import {
   createTRPCRouter,
   protectedProjectProcedure,
@@ -9,6 +10,7 @@ import {
   addPaymentMethod,
   getCredits,
   getBotBilling,
+  getBillingBalance,
   upgradeBotPlan,
 } from "./commerceClient";
 import { kmsGet } from "@/src/features/kms/server/kmsClient";
@@ -96,6 +98,15 @@ export const botRouter = createTRPCRouter({
   start: protectedProjectProcedure
     .input(z.object({ projectId: z.string(), botId: z.string() }))
     .mutation(async ({ input }) => {
+      // Billing gate — must have prepaid credit to start a bot
+      const balance = await getBillingBalance(input.projectId);
+      if ((balance.available ?? 0) <= 0) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Insufficient funds — add credits to continue.",
+        });
+      }
+
       return zapCallTool<Bot>("bots.start", {
         projectId: input.projectId,
         botId: input.botId,
@@ -114,6 +125,15 @@ export const botRouter = createTRPCRouter({
   restart: protectedProjectProcedure
     .input(z.object({ projectId: z.string(), botId: z.string() }))
     .mutation(async ({ input }) => {
+      // Billing gate — must have prepaid credit to restart a bot
+      const balance = await getBillingBalance(input.projectId);
+      if ((balance.available ?? 0) <= 0) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Insufficient funds — add credits to continue.",
+        });
+      }
+
       return zapCallTool<Bot>("bots.restart", {
         projectId: input.projectId,
         botId: input.botId,
@@ -216,6 +236,20 @@ export const botRouter = createTRPCRouter({
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input }) => {
       return getCredits(input.projectId);
+    }),
+
+  // ── Prepaid Balance (via Commerce billing API) ──────────────────────
+
+  getBalance: protectedProjectProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ input }) => {
+      const result = await getBillingBalance(input.projectId);
+      return {
+        balance: result.balance ?? 0,
+        holds: result.holds ?? 0,
+        available: result.available ?? 0,
+        currency: result.currency ?? "usd",
+      };
     }),
 
   // ── KMS Secrets (bot-scoped) ────────────────────────────────────────

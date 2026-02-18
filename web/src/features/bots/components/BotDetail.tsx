@@ -27,6 +27,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 
 import { BotBilling } from "./BotBilling";
 import { BotChatWidget } from "./BotChatWidget";
+import { BalanceBadge } from "./BalanceBadge";
 import type { BotStatus } from "../types";
 import { BOT_PLATFORM_PRICING } from "../types";
 
@@ -70,10 +71,19 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
     { enabled: !!projectId && !!botId },
   );
 
+  const { data: balance, isLoading: balanceLoading } =
+    api.bots.getBalance.useQuery(
+      { projectId },
+      { enabled: !!projectId },
+    );
+
+  const hasCredit = (balance?.available ?? 0) > 0;
+
   const startMut = api.bots.start.useMutation({
     onSuccess: () => {
       utils.bots.getById.invalidate();
       utils.bots.list.invalidate();
+      utils.bots.getBalance.invalidate();
     },
   });
   const stopMut = api.bots.stop.useMutation({
@@ -86,6 +96,7 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
     onSuccess: () => {
       utils.bots.getById.invalidate();
       utils.bots.list.invalidate();
+      utils.bots.getBalance.invalidate();
     },
   });
 
@@ -122,12 +133,19 @@ export function BotDetail({ projectId, botId, onBack }: Props) {
             {bot.platform} / {bot.region} / {bot.instanceType}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          {balance && (
+            <BalanceBadge
+              availableCents={balance?.available ?? 0}
+              loading={balanceLoading}
+            />
+          )}
           {bot.status === "stopped" && (
             <Button
               size="sm"
               onClick={() => startMut.mutate({ projectId, botId })}
-              disabled={startMut.isPending}
+              disabled={startMut.isPending || !hasCredit}
+              title={!hasCredit ? "Insufficient funds — add credits to continue" : undefined}
             >
               <Play className="mr-1 h-4 w-4" />
               Start

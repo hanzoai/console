@@ -205,6 +205,20 @@ export async function getBotBilling(projectId: string, botId: string) {
 }
 
 /**
+ * Get the prepaid balance for a user (via Commerce billing API).
+ * Returns available balance in cents.
+ */
+export function getBillingBalance(userId: string, currency = "usd") {
+  return commerceGet<{
+    user: string;
+    currency: string;
+    balance: number;
+    holds: number;
+    available: number;
+  }>("/api/v1/billing/balance", { user: userId, currency });
+}
+
+/**
  * Upgrade a bot's subscription tier.
  */
 export function upgradeBotPlan(

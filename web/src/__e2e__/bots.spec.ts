@@ -128,6 +128,13 @@ const MOCK_PAYMENT_METHODS = [
 
 const MOCK_CREDITS = { balance: 42.5, currency: "USD" };
 
+const MOCK_BALANCE = {
+  balance: 4250,
+  holds: 0,
+  available: 4250,
+  currency: "usd",
+};
+
 const PROJECT_ID = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
 const MOCK_SESSION = {
@@ -224,6 +231,7 @@ const BOT_HANDLERS: Record<string, (input: any) => unknown> = {
   "bots.getBilling": () => MOCK_BILLING,
   "bots.listPaymentMethods": () => MOCK_PAYMENT_METHODS,
   "bots.getCredits": () => MOCK_CREDITS,
+  "bots.getBalance": () => MOCK_BALANCE,
   "bots.getUsage": () => MOCK_BOTS[0]!.monthlyUsage,
   "bots.create": (input: any) => ({
     ...MOCK_BOTS[0],
@@ -433,8 +441,8 @@ test.describe("Bot Detail View", () => {
 
     await page.getByRole("tab", { name: /Channels/ }).click();
     await expect(page.getByText("Connected Channels")).toBeVisible();
-    await expect(page.getByText("discord")).toBeVisible();
-    await expect(page.getByText("telegram")).toBeVisible();
+    await expect(page.locator('[data-testid="bot-detail-view"]').getByText("discord")).toBeVisible();
+    await expect(page.locator('[data-testid="bot-detail-view"]').getByText("telegram")).toBeVisible();
 
     await page.screenshot({
       path: `${SCREENSHOTS_DIR}/07-bot-detail-channels.png`,
@@ -476,7 +484,7 @@ test.describe("Bot Detail View", () => {
     await expect(page.getByText("Invoice History")).toBeVisible();
     await expect(page.getByText("Cloud plan - February 2026")).toBeVisible();
     await expect(page.getByText("Credits & Balance")).toBeVisible();
-    await expect(page.getByText("$42.50")).toBeVisible();
+    await expect(page.getByText("$42.50", { exact: true })).toBeVisible();
 
     await page.screenshot({
       path: `${SCREENSHOTS_DIR}/09-bot-detail-billing.png`,
