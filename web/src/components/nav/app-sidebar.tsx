@@ -3,6 +3,7 @@
 import * as React from "react";
 import { NavMain, type NavMainItem } from "@/src/components/nav/nav-main";
 import { NavUser, type UserNavigationProps } from "@/src/components/nav/nav-user";
+import { OrgProjectSwitcher } from "@/src/components/nav/org-project-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -24,8 +25,10 @@ import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications
 import { type RouteGroup } from "@/src/components/layouts/routes";
 import { ExternalLink, Grid2X2 } from "lucide-react";
 import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import type { Session } from "next-auth";
 
 type AppSidebarProps = {
+  session?: Session;
   navItems: {
     grouped: Partial<Record<RouteGroup, NavMainItem[]>> | null;
     ungrouped: NavMainItem[];
@@ -37,7 +40,14 @@ type AppSidebarProps = {
   userNavProps: UserNavigationProps;
 } & React.ComponentProps<typeof Sidebar>;
 
-export function AppSidebar({ navItems, secondaryNavItems, userNavProps, ...props }: AppSidebarProps) {
+export function AppSidebar({ session, navItems, secondaryNavItems, userNavProps, ...props }: AppSidebarProps) {
+  const router = useRouter();
+  const routerProjectId = router.query.projectId as string | undefined;
+
+  // Derive current org from the project ID in the URL
+  const organizations = session?.user?.organizations ?? [];
+  const currentOrg = organizations.find((org) => org.projects.some((p) => p.id === routerProjectId));
+
   return (
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
@@ -45,6 +55,13 @@ export function AppSidebar({ navItems, secondaryNavItems, userNavProps, ...props
           <HanzoLogo version />
         </div>
         <div className="h-1 flex-1 border-b" />
+        {organizations.length > 0 && (
+          <OrgProjectSwitcher
+            organizations={organizations}
+            currentOrgId={currentOrg?.id}
+            currentProjectId={routerProjectId}
+          />
+        )}
         <DemoBadge />
       </SidebarHeader>
       <SidebarContent>

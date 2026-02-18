@@ -69,13 +69,7 @@ type AuthenticatedLayoutProps = PropsWithChildren<{
  * - Toast notifications
  * - Dynamic page metadata
  */
-export function AuthenticatedLayout({
-  children,
-  session,
-  navigation,
-  metadata,
-  onSignOut,
-}: AuthenticatedLayoutProps) {
+export function AuthenticatedLayout({ children, session, navigation, metadata, onSignOut }: AuthenticatedLayoutProps) {
   // Safe assertion: AuthenticatedLayout is only rendered after auth checks pass
   // in AppLayout, which guarantees session.user exists at this point
   const user = session.user;
@@ -103,12 +97,7 @@ export function AuthenticatedLayout({
       <Head>
         <title>{metadata.title}</title>
         <link rel="icon" type="image/svg+xml" href={metadata.faviconPath} />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="256x256"
-          href={metadata.favicon256Path}
-        />
+        <link rel="icon" type="image/png" sizes="256x256" href={metadata.favicon256Path} />
         <link rel="apple-touch-icon" href={metadata.appleTouchIconPath} />
       </Head>
 
@@ -118,6 +107,7 @@ export function AuthenticatedLayout({
             <PaymentBanner />
             <div className="flex min-h-0 flex-1 pt-banner-offset">
               <AppSidebar
+                session={session}
                 navItems={navigation.mainNavigation}
                 secondaryNavItems={navigation.secondaryNavigation}
                 userNavProps={userNavProps}
