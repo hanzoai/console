@@ -157,6 +157,31 @@ Key integration points for connecting applications:
 ### Deduplicated via pnpm overrides (root package.json)
 - date-fns, vis-network, posthog-js
 
+### Multi-Tenancy Audit (2026-02-14)
+
+Five cross-tenant data leakage risks identified and fixed:
+
+1. **tenant-headers.ts: Arbitrary org fallback** -- `resolveOrgProjectFromSession` fell back to `user.organizations[0]` when no explicit orgId was on the session. For multi-org users this silently picked the wrong org's ID for `x-org-id`/`x-tenant-id` headers forwarded to downstream services (agents, compute, KMS).
+   - Fix: Only use explicitly-set session context values (orgId/projectId from middleware).
+
+2. **tenant-headers.ts: Untrusted client headers forwarded** -- `buildProxyTenantHeaders` seeded from client-supplied `x-org-id`, `x-project-id`, `x-tenant-id` request headers as defaults. A malicious client could inject arbitrary tenant IDs.
+   - Fix: Start with empty tenant headers; only populate from server-side session.
+
+3. **Proxy routes (agents, compute, KMS): Header injection** -- All three proxy routes forwarded ALL client request headers to upstream, including `x-org-id`, `x-project-id`, `x-tenant-id`, `x-actor-id`. Even after tenant-headers fix, these could survive if session didn't override.
+   - Fix: Strip tenant headers from client request before applying session-derived values.
+
+4. **surveys.ts: Unvalidated orgId** -- `surveysRouter.create` accepted arbitrary `orgId` from client input without checking the user's org membership. Survey data could be associated with any org.
+   - Fix: Validate orgId against `ctx.session.user.organizations`; silently drop if not a member.
+
+5. **scores.ts: Unscoped user lookup** -- User findMany in scores.all fetched user names/images by ID without scoping to the project's organization, potentially leaking user PII across tenant boundaries.
+   - Fix: Added `organizationMemberships.some` filter scoped to the project's org.
+
+Architecture notes:
+- tRPC routers are well-protected: `protectedProjectProcedure` and `protectedOrganizationProcedure` enforce membership checks via middleware in `trpc.ts`
+- All Prisma queries in routers filter by `projectId` or `orgId` from verified session context
+- ClickHouse queries consistently use `projectId` for tenant isolation
+- The main risk surface was the proxy layer (tenant-headers + proxy routes) and `authenticatedProcedure` routes that accept orgId in input without validating membership
+
 ### Known Bloat (future optimization)
 - `@tremor/react` (4.0.0-beta) - 15 imports, overlaps with recharts. Migrate to recharts + custom Radix components.
 - `@hanzo/ui` exists at ~/work/hanzo/ui but console doesn't use it. 64 local shadcn components duplicate @hanzo/ui's 90+ components.
