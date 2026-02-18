@@ -438,6 +438,7 @@ if (
       serverUrl: env.IAM_SERVER_URL,
       allowDangerousEmailAccountLinking:
         env.IAM_ALLOW_ACCOUNT_LINKING === "true",
+      checks: ["state", "pkce"],
     }),
   );
 
@@ -754,10 +755,27 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       },
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async (span) => {
+          // Debug logging for Hanzo IAM provider
+          if (account?.provider === "hanzo-iam") {
+            logger.info("Hanzo IAM signIn callback", {
+              userId: user.id,
+              userName: user.name,
+              userEmail: user.email,
+              accountType: account.type,
+              profileSub: (profile as Record<string, unknown>)?.sub,
+              profileEmail: (profile as Record<string, unknown>)?.email,
+              hasAccessToken: !!account.access_token,
+              hasIdToken: !!account.id_token,
+            });
+          }
+
           // Block sign in without valid user.email
           const email = user.email?.toLowerCase();
           if (!email) {
-            logger.error("No email found in user object");
+            logger.error("No email found in user object", {
+              provider: account?.provider,
+              profileKeys: profile ? Object.keys(profile) : [],
+            });
             throw new Error("No email found in user object");
           }
           if (z.string().email().safeParse(email).success === false) {
