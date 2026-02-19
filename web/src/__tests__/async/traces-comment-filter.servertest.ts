@@ -23,6 +23,8 @@ describe("Traces Comment Filtering", () => {
           role: "OWNER",
           plan: "cloud:hobby",
           cloudConfig: undefined,
+          metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -30,6 +32,7 @@ describe("Traces Comment Filtering", () => {
               retentionDays: 30,
               deletedAt: null,
               name: "Test Project",
+              metadata: {},
             },
           ],
         },
@@ -37,13 +40,14 @@ describe("Traces Comment Filtering", () => {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
     environment: {} as any,
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   // Helper to create standard query params
@@ -252,6 +256,8 @@ describe("Traces Comment Filtering", () => {
 
       const countResult = await caller.traces.countAll({
         projectId,
+        page: 0,
+        limit: 50,
         filter: [
           {
             type: "number",

@@ -1,13 +1,14 @@
 /** @jest-environment node */
 
 import { ChatMessageType, compileChatMessages, extractPlaceholderNames } from "@hanzo/shared";
+type PromptMessage = { role: string; content: string } | { type: any; name: string };
 
 describe("compileChatMessages", () => {
   it("should compile message placeholders with provided values", () => {
     // Simulates how message placeholders would be compiled
     // during execution (e.g., in playground or experiments)
 
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       { role: "system", content: "You are a helpful assistant." },
       {
         type: ChatMessageType.Placeholder,
@@ -41,7 +42,7 @@ describe("compileChatMessages", () => {
   });
 
   it("should throw error when placeholder value is missing", () => {
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       { role: "system", content: "You are a helpful assistant." },
       {
         type: ChatMessageType.Placeholder,
@@ -58,7 +59,7 @@ describe("compileChatMessages", () => {
   });
 
   it("should allow arbitrary placeholder fill-in values", () => {
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       { role: "system", content: "You are a helpful assistant." },
       {
         type: ChatMessageType.Placeholder,
@@ -99,7 +100,7 @@ describe("compileChatMessages", () => {
   });
 
   it("should compile placeholders without applying text substitutions when no variables provided", () => {
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       {
         role: "system",
         content: "You are a helpful assistant. {{system_var}}",
@@ -133,7 +134,7 @@ describe("compileChatMessages", () => {
   });
 
   it("should extract all placeholder names from messages", () => {
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       { role: "system", content: "System message" },
       {
         type: ChatMessageType.Placeholder,
@@ -152,7 +153,7 @@ describe("compileChatMessages", () => {
   });
 
   it("should return empty array when no placeholders exist", () => {
-    const promptTemplate = [
+    const promptTemplate: PromptMessage[] = [
       { role: "system", content: "System message" },
       { role: "user", content: "User message" },
     ];

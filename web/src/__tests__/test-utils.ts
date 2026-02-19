@@ -182,7 +182,7 @@ export type ErrorIngestion = {
   error: string;
 };
 
-export async function makeAPICall<T = IngestionAPIResponse>(
+export async function makeAPICall<T = Record<string, any>>(
   method: "POST" | "GET" | "PUT" | "DELETE" | "PATCH",
   url: string,
   body?: unknown,
@@ -244,7 +244,7 @@ export async function makeZodVerifiedAPICall<T extends z.ZodTypeAny>(
       `API call (${method} ${url}) did not return valid response, returned status ${status}, body ${JSON.stringify(resBody)}, error ${typeCheckResult.error}`,
     );
   }
-  return { body: resBody, status };
+  return { body: resBody as z.infer<T>, status };
 }
 
 export async function makeZodVerifiedAPICallSilent<T extends z.ZodTypeAny>(
@@ -266,5 +266,5 @@ export async function makeZodVerifiedAPICallSilent<T extends z.ZodTypeAny>(
     }
   }
 
-  return { body: resBody, status };
+  return { body: resBody as z.infer<T>, status };
 }

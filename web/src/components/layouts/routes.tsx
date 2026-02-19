@@ -233,6 +233,13 @@ export const ROUTES: Route[] = [
     section: RouteSection.Main,
   },
   {
+    title: "Logs",
+    pathname: `/project/[projectId]/agents/logs`,
+    icon: Play,
+    group: RouteGroup.Agents,
+    section: RouteSection.Main,
+  },
+  {
     title: "Packages",
     pathname: `/project/[projectId]/agents/packages`,
     icon: Package,

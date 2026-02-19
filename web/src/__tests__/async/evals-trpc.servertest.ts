@@ -26,6 +26,7 @@ async function prepare() {
           plan: "cloud:hobby",
           cloudConfig: undefined,
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: project.id,
@@ -41,6 +42,7 @@ async function prepare() {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
@@ -50,7 +52,7 @@ async function prepare() {
     },
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   __orgIds.push(org.id);
@@ -235,9 +237,7 @@ describe("evals trpc", () => {
             timeScope: ["NEW"],
           },
         }),
-      ).rejects.toThrow(
-        "The evaluator ran on existing traces already. This cannot be changed anymore.",
-      );
+      ).rejects.toThrow("The evaluator ran on existing traces already. This cannot be changed anymore.");
     });
 
     it("when the evaluator ran on existing traces, it cannot be deactivated", async () => {
@@ -266,9 +266,7 @@ describe("evals trpc", () => {
             status: "INACTIVE",
           },
         }),
-      ).rejects.toThrow(
-        "The evaluator is running on existing traces only and cannot be deactivated.",
-      );
+      ).rejects.toThrow("The evaluator is running on existing traces only and cannot be deactivated.");
     });
 
     it("when the evaluator ran on existing traces, it can be deactivated if it should also run on new traces", async () => {
@@ -430,7 +428,7 @@ describe("evals trpc", () => {
         expires: session.expires,
         environment: session.environment,
       };
-      const limitedCtx = createInnerTRPCContext({ session: limitedSession });
+      const limitedCtx = createInnerTRPCContext({ session: limitedSession, headers: {} });
       const limitedCaller = appRouter.createCaller({ ...limitedCtx, prisma });
 
       // Create a job
@@ -598,7 +596,7 @@ describe("evals trpc", () => {
   //       expires: session.expires,
   //       environment: session.environment,
   //     };
-  //     const limitedCtx = createInnerTRPCContext({ session: limitedSession });
+  //     const limitedCtx = createInnerTRPCContext({ session: limitedSession, headers: {} });
   //     const limitedCaller = appRouter.createCaller({ ...limitedCtx, prisma });
 
   //     // Create a template

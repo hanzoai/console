@@ -22,10 +22,16 @@ export function TopNavigation() {
     const breadcrumbs = [{ label: "Home", href: "/" }];
 
     // Define route mappings for better breadcrumb navigation
-    const routeMappings: Record<
-      string,
-      { label: string; href: string; parent?: string }
-    > = {
+    const routeMappings: Record<string, { label: string; href: string; parent?: string }> = {
+      dashboard: { label: "Overview", href: "/dashboard" },
+      "dashboard/enhanced": {
+        label: "Enhanced Dashboard",
+        href: "/dashboard/enhanced",
+        parent: "dashboard",
+      },
+      bots: { label: "Bots", href: "/bots/all" },
+      "bots/all": { label: "All Bots", href: "/bots/all", parent: "bots" },
+      playground: { label: "Playground", href: "/playground" },
       reasoners: { label: "Reasoners", href: "/reasoners/all" },
       "reasoners/all": {
         label: "All Reasoners",
@@ -43,18 +49,20 @@ export function TopNavigation() {
         parent: "reasoners",
       },
       nodes: { label: "Agent Nodes", href: "/nodes" },
-      packages: { label: "Packages", href: "/packages" },
+      executions: { label: "Executions", href: "/executions" },
+      workflows: { label: "Workflows", href: "/workflows" },
+      logs: { label: "Logs", href: "/logs" },
       settings: { label: "Settings", href: "/settings" },
+      "settings/space": { label: "Space Settings", href: "/settings/space", parent: "settings" },
+      "settings/webhooks": { label: "Webhooks", href: "/settings/webhooks", parent: "settings" },
+      spaces: { label: "Spaces", href: "/spaces" },
+      teams: { label: "Teams", href: "/teams" },
+      packages: { label: "Packages", href: "/packages" },
       agents: { label: "My Agents", href: "/agents" },
-      dashboard: { label: "Dashboard", href: "/dashboard" },
-      "dashboard/enhanced": {
-        label: "Enhanced Dashboard",
-        href: "/dashboard/enhanced",
-        parent: "dashboard",
-      },
-      identity: { label: "Identity & Trust", href: "/identity/dids" },
+      identity: { label: "Identity", href: "/identity/dids" },
       "identity/dids": { label: "DID Explorer", href: "/identity/dids" },
       "identity/credentials": { label: "Credentials", href: "/identity/credentials" },
+      welcome: { label: "Welcome", href: "/welcome" },
     };
 
     let currentPath = "";
@@ -69,9 +77,7 @@ export function TopNavigation() {
         // For reasoners/all, we want to show just "Reasoners" in breadcrumb
         if (routeKey === "reasoners/all") {
           // Replace the previous "Reasoners" breadcrumb if it exists
-          const existingReasonersIndex = breadcrumbs.findIndex(
-            (b) => b.label === "Reasoners"
-          );
+          const existingReasonersIndex = breadcrumbs.findIndex((b) => b.label === "Reasoners");
           if (existingReasonersIndex !== -1) {
             breadcrumbs[existingReasonersIndex] = {
               label: "Reasoners",
@@ -86,8 +92,7 @@ export function TopNavigation() {
         breadcrumbs.push({ label: mapping.label, href: mapping.href });
       } else {
         // Handle dynamic routes (like reasoner detail pages)
-        let label =
-          segment.charAt(0).toUpperCase() + segment.slice(1).replace("-", " ");
+        let label = segment.charAt(0).toUpperCase() + segment.slice(1).replace("-", " ");
         const href = currentPath;
 
         // Special handling for reasoner detail pages
@@ -111,9 +116,7 @@ export function TopNavigation() {
           }
 
           // Ensure the parent "Reasoners" breadcrumb points to /reasoners/all
-          const reasonersIndex = breadcrumbs.findIndex(
-            (b) => b.label === "Reasoners"
-          );
+          const reasonersIndex = breadcrumbs.findIndex((b) => b.label === "Reasoners");
           if (reasonersIndex !== -1) {
             breadcrumbs[reasonersIndex].href = "/reasoners/all";
           }
@@ -139,7 +142,7 @@ export function TopNavigation() {
         "bg-gradient-to-r from-bg-base via-bg-subtle to-bg-base",
         "backdrop-blur-xl border-none", // Borderless design
         "shadow-soft transition-all duration-200",
-        "px-4 md:px-6 lg:px-8" // Better horizontal padding
+        "px-4 md:px-6 lg:px-8", // Better horizontal padding
       )}
     >
       {/* Left Section - Refined Breadcrumbs */}
@@ -165,11 +168,7 @@ export function TopNavigation() {
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink asChild>
-                        <Link
-                          to={crumb.href}
-                          className="max-w-[150px] md:max-w-[200px] truncate"
-                          title={crumb.label}
-                        >
+                        <Link to={crumb.href} className="max-w-[150px] md:max-w-[200px] truncate" title={crumb.label}>
                           {crumb.label}
                         </Link>
                       </BreadcrumbLink>

@@ -10,6 +10,10 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.js"
+    },
+    "./src/index": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
     }
   },
   "scripts": {

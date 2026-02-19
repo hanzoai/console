@@ -24,6 +24,7 @@ async function prepare() {
           plan: "cloud:hobby",
           cloudConfig: undefined,
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: project.id,
@@ -39,6 +40,7 @@ async function prepare() {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },

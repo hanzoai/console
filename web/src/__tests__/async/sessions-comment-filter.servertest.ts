@@ -23,6 +23,8 @@ describe("Sessions Comment Filtering", () => {
           role: "OWNER",
           plan: "cloud:hobby",
           cloudConfig: undefined,
+          metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -30,6 +32,7 @@ describe("Sessions Comment Filtering", () => {
               retentionDays: 30,
               deletedAt: null,
               name: "Test Project",
+              metadata: {},
             },
           ],
         },
@@ -37,13 +40,14 @@ describe("Sessions Comment Filtering", () => {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
     environment: {} as any,
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   // Helper to create standard query params

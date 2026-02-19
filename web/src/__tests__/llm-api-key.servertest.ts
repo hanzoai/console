@@ -26,14 +26,13 @@ describe("llmApiKey.all RPC", () => {
           role: "OWNER",
           plan: "cloud:free",
           cloudConfig: undefined,
-          name: "Test Organization",
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
               name: "Test Project",
               role: "ADMIN",
-              name: "Test Project",
               deletedAt: null,
               retentionDays: null,
               metadata: {},
@@ -44,6 +43,7 @@ describe("llmApiKey.all RPC", () => {
       featureFlags: {
         templateFlag: true,
         excludeClickhouseRead: false,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },

@@ -52,6 +52,8 @@ describe("scores trpc", () => {
           role: "OWNER",
           plan: "cloud:hobby",
           cloudConfig: undefined,
+          metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -59,6 +61,7 @@ describe("scores trpc", () => {
               retentionDays: 30,
               deletedAt: null,
               name: "Test Project",
+              metadata: {},
             },
           ],
         },
@@ -66,13 +69,14 @@ describe("scores trpc", () => {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
     environment: {} as any,
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   describe("scores.deleteMany", () => {

@@ -1026,7 +1026,7 @@ describe("Public Organizations API", () => {
           data: {
             name: `Null Metadata Project ${randomUUID().substring(0, 8)}`,
             orgId: testOrgId,
-            metadata: null,
+            metadata: undefined,
           },
         });
 

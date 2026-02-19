@@ -521,8 +521,8 @@ describe("/api/public/v2/scores API Endpoint", () => {
         });
         for (const val of getAllScore.body.data) {
           expect(val.traceId).toBe(traceId);
-          expect(val.trace?.tags?.sort()).toEqual(["prod", "test"].sort());
-          expect(val.trace?.userId).toBe("user-name");
+          expect((val as any).trace?.tags?.sort()).toEqual(["prod", "test"].sort());
+          expect((val as any).trace?.userId).toBe("user-name");
         }
       });
 
@@ -1506,7 +1506,7 @@ describe("/api/public/v2/scores API Endpoint", () => {
         expect(getScores.body.data).toHaveLength(3);
         // All scores should have trace as null
         for (const score of getScores.body.data) {
-          expect(score.trace).toBeNull();
+          expect((score as any).trace).toBeNull();
         }
       });
     });

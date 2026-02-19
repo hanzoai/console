@@ -1,5 +1,5 @@
 import { LLMAdapter } from "@hanzo/shared/src/server";
-import { Hanzo } from "@hanzo/console";
+import { Hanzo } from "@hanzo/console/src/index";
 import { env } from "@/src/env.mjs";
 import { type FilterCondition, singleFilter } from "@hanzo/shared";
 import { z } from "zod/v4";

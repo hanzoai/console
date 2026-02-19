@@ -2,13 +2,14 @@ import { Route, BrowserRouter as Router, Routes } from "./adapters";
 import { SidebarNew } from "./components/Navigation/SidebarNew";
 import { TopNavigation } from "./components/Navigation/TopNavigation";
 import { RootRedirect } from "./components/RootRedirect";
-import { navigationSections } from "./config/navigation";
+import { primarySections, moreSections } from "./config/navigation";
 import { ModeProvider } from "./contexts/ModeContext";
 import { ThemeProvider } from "./components/theme-provider";
 import { useFocusManagement } from "./hooks/useFocusManagement";
 import { SidebarProvider, SidebarInset } from "./components/ui/sidebar";
 import { AllReasonersPage } from "./pages/AllReasonersPage.tsx";
 import { EnhancedDashboardPage } from "./pages/EnhancedDashboardPage";
+import { UnifiedExecutionsPage } from "./pages/UnifiedExecutionsPage";
 import { ExecutionsPage } from "./pages/ExecutionsPage";
 import { EnhancedExecutionDetailPage } from "./pages/EnhancedExecutionDetailPage";
 import { EnhancedWorkflowDetailPage } from "./pages/EnhancedWorkflowDetailPage";
@@ -16,55 +17,71 @@ import { NodeDetailPage } from "./pages/NodeDetailPage";
 import { NodesPage } from "./pages/NodesPage";
 import { PackagesPage } from "./pages/PackagesPage";
 import { ReasonerDetailPage } from "./pages/ReasonerDetailPage.tsx";
-import { WorkflowsPage } from "./pages/WorkflowsPage.tsx";
 import { WorkflowDeckGLTestPage } from "./pages/WorkflowDeckGLTestPage";
 import { DIDExplorerPage } from "./pages/DIDExplorerPage";
 import { CredentialsPage } from "./pages/CredentialsPage";
-import { ObservabilityWebhookSettingsPage } from "./pages/ObservabilityWebhookSettingsPage";
+import { UnifiedSettingsPage } from "./pages/UnifiedSettingsPage";
+import { WelcomePage } from "./pages/WelcomePage";
+import { LogsPage } from "./pages/LogsPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AuthGuard } from "./components/AuthGuard";
 
-// Placeholder pages for new routes
+// Placeholder pages for routes not yet implemented
 
-function AgentsPage() {
+function PlaygroundPage() {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="text-center">
-        <h2 className="text-heading-1 mb-2">
-          My Agents
-        </h2>
-        <p className="text-body">
-          Your configured and running agents
-        </p>
+        <h2 className="text-heading-1 mb-2">Playground</h2>
+        <p className="text-body">Canvas for visual bot orchestration</p>
       </div>
     </div>
   );
 }
 
-function SettingsPage() {
+function BotsPage() {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="text-center">
-        <h2 className="text-heading-1 mb-2">
-          Settings
-        </h2>
-        <p className="text-body">
-          System configuration and preferences
-        </p>
+        <h2 className="text-heading-1 mb-2">Bots</h2>
+        <p className="text-body">All bots in this space</p>
       </div>
     </div>
   );
 }
+
+function SpacesPage() {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-center">
+        <h2 className="text-heading-1 mb-2">Spaces</h2>
+        <p className="text-body">List and manage all spaces</p>
+      </div>
+    </div>
+  );
+}
+
+function TeamsPage() {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-center">
+        <h2 className="text-heading-1 mb-2">Teams</h2>
+        <p className="text-body">Team provisioning and management</p>
+      </div>
+    </div>
+  );
+}
+
+const pad = "p-4 md:p-6 lg:p-8 min-h-full";
 
 function AppContent() {
-  // Use focus management hook to ensure trackpad navigation works
   useFocusManagement();
 
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen w-full bg-background text-foreground transition-colors">
-        {/* Sidebar */}
-        <SidebarNew sections={navigationSections} />
+        {/* Sidebar — 6 primary items + collapsible More */}
+        <SidebarNew primarySections={primarySections} moreSections={moreSections} />
 
         {/* Main Content */}
         <SidebarInset>
@@ -74,32 +91,195 @@ function AppContent() {
           {/* Main Content Area */}
           <main className="flex flex-1 min-w-0 flex-col overflow-y-auto overflow-x-hidden">
             <Routes>
-              <Route path="/" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><RootRedirect /></div>} />
-              <Route path="/dashboard" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><EnhancedDashboardPage /></div>} />
-              <Route path="/nodes" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><NodesPage /></div>} />
-              <Route path="/nodes/:nodeId" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><NodeDetailPage /></div>} />
-              <Route path="/reasoners/all" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><AllReasonersPage /></div>} />
+              {/* Root redirect — smart routing */}
+              <Route
+                path="/"
+                element={
+                  <div className={pad}>
+                    <RootRedirect />
+                  </div>
+                }
+              />
+
+              {/* PRIMARY routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <div className={pad}>
+                    <EnhancedDashboardPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/bots/all"
+                element={
+                  <div className={pad}>
+                    <BotsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/playground"
+                element={
+                  <div className={pad}>
+                    <PlaygroundPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/executions"
+                element={
+                  <div className={pad}>
+                    <UnifiedExecutionsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/workflows"
+                element={
+                  <div className={pad}>
+                    <UnifiedExecutionsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/logs"
+                element={
+                  <div className={pad}>
+                    <LogsPage />
+                  </div>
+                }
+              />
+
+              {/* Settings — tabbed (Gateway / Space / Webhooks) */}
+              <Route
+                path="/settings"
+                element={
+                  <div className={pad}>
+                    <UnifiedSettingsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/settings/space"
+                element={
+                  <div className={pad}>
+                    <UnifiedSettingsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/settings/webhooks"
+                element={
+                  <div className={pad}>
+                    <UnifiedSettingsPage />
+                  </div>
+                }
+              />
+              {/* Legacy redirect */}
+              <Route
+                path="/settings/observability-webhook"
+                element={
+                  <div className={pad}>
+                    <UnifiedSettingsPage />
+                  </div>
+                }
+              />
+
+              {/* MORE routes */}
+              <Route
+                path="/spaces"
+                element={
+                  <div className={pad}>
+                    <SpacesPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/teams"
+                element={
+                  <div className={pad}>
+                    <TeamsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/identity/dids"
+                element={
+                  <div className={pad}>
+                    <DIDExplorerPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/identity/credentials"
+                element={
+                  <div className={pad}>
+                    <CredentialsPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/packages"
+                element={
+                  <div className={pad}>
+                    <PackagesPage />
+                  </div>
+                }
+              />
+
+              {/* Detail routes */}
+              <Route
+                path="/nodes"
+                element={
+                  <div className={pad}>
+                    <NodesPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/nodes/:nodeId"
+                element={
+                  <div className={pad}>
+                    <NodeDetailPage />
+                  </div>
+                }
+              />
+              <Route
+                path="/reasoners/all"
+                element={
+                  <div className={pad}>
+                    <AllReasonersPage />
+                  </div>
+                }
+              />
               <Route
                 path="/reasoners/:fullReasonerId"
-                element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><ReasonerDetailPage /></div>}
+                element={
+                  <div className={pad}>
+                    <ReasonerDetailPage />
+                  </div>
+                }
               />
-              <Route path="/executions" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><ExecutionsPage /></div>} />
               <Route
                 path="/executions/:executionId"
-                element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><EnhancedExecutionDetailPage /></div>}
+                element={
+                  <div className={pad}>
+                    <EnhancedExecutionDetailPage />
+                  </div>
+                }
               />
-              <Route path="/workflows" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><WorkflowsPage /></div>} />
+              <Route path="/workflows/:workflowId" element={<EnhancedWorkflowDetailPage />} />
+
+              {/* Dev/test */}
               <Route
-                path="/workflows/:workflowId"
-                element={<EnhancedWorkflowDetailPage />}
+                path="/test/deckgl"
+                element={
+                  <div className={pad}>
+                    <WorkflowDeckGLTestPage />
+                  </div>
+                }
               />
-              <Route path="/packages" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><PackagesPage /></div>} />
-              <Route path="/settings" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><SettingsPage /></div>} />
-              <Route path="/agents" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><AgentsPage /></div>} />
-              <Route path="/identity/dids" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><DIDExplorerPage /></div>} />
-              <Route path="/identity/credentials" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><CredentialsPage /></div>} />
-              <Route path="/settings/observability-webhook" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><ObservabilityWebhookSettingsPage /></div>} />
-              <Route path="/test/deckgl" element={<div className="p-4 md:p-6 lg:p-8 min-h-full"><WorkflowDeckGLTestPage /></div>} />
             </Routes>
           </main>
         </SidebarInset>
@@ -108,19 +288,24 @@ function AppContent() {
   );
 }
 
+/**
+ * Welcome page renders full-screen (outside sidebar layout).
+ */
+function WelcomeRoute() {
+  return <WelcomePage />;
+}
+
 function App() {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <ModeProvider>
         <AuthProvider>
           <AuthGuard>
             <Router basename={"/ui"}>
-              <AppContent />
+              <Routes>
+                <Route path="/welcome" element={<WelcomeRoute />} />
+                <Route path="/*" element={<AppContent />} />
+              </Routes>
             </Router>
           </AuthGuard>
         </AuthProvider>

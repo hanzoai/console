@@ -435,8 +435,8 @@ describe("SCIM API", () => {
 
         expect(response.status).toBe(201);
         expect(response.body.userName).toBe(uniqueEmail);
-        expect(response.body.name.formatted).toBe("Test User");
-        expect(response.body.emails[0].value).toBe(uniqueEmail);
+        expect(response.body.name!.formatted).toBe("Test User");
+        expect(response.body.emails![0].value).toBe(uniqueEmail);
 
         testUserId = response.body.id;
 
@@ -477,10 +477,10 @@ describe("SCIM API", () => {
 
         expect(response.status).toBe(201);
         expect(response.body.userName).toBe(uniqueEmail);
-        expect(response.body.name.formatted).toBe("Test User With Password");
-        expect(response.body.emails[0].value).toBe(uniqueEmail);
+        expect(response.body.name!.formatted).toBe("Test User With Password");
+        expect(response.body.emails![0].value).toBe(uniqueEmail);
         // Password should not be returned in the response
-        expect(response.body.password).toBeUndefined();
+        expect((response.body as any).password).toBeUndefined();
 
         testUserId = response.body.id;
 
@@ -538,7 +538,7 @@ describe("SCIM API", () => {
 
         expect(response.status).toBe(201);
         expect(response.body.userName).toBe(uniqueEmail);
-        expect(response.body.name.formatted).toBe("Test User With Role");
+        expect(response.body.name!.formatted).toBe("Test User With Role");
 
         testUserId = response.body.id;
 
@@ -618,7 +618,7 @@ describe("SCIM API", () => {
 
         expect(response.status).toBe(200);
         expect(response.body.id).toBe(testUserId);
-        expect(response.body.name.formatted).toBe("Test User");
+        expect(response.body.name!.formatted).toBe("Test User");
       });
 
       it("should return 404 when user does not exist", async () => {

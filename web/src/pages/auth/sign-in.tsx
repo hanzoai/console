@@ -147,9 +147,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
         : false,
     sso,
     hanzoIam:
-      env.IAM_CLIENT_ID !== undefined &&
-      env.IAM_CLIENT_SECRET !== undefined &&
-      env.IAM_SERVER_URL !== undefined,
+      env.IAM_CLIENT_ID !== undefined && env.IAM_CLIENT_SECRET !== undefined && env.IAM_SERVER_URL !== undefined,
   } satisfies PageProps["authProviders"];
 
   // Server-side redirect: when Hanzo IAM is the only enabled provider,
@@ -437,11 +435,7 @@ export function SSOButtons({
             />
           )}
           {authProviders.hanzoIam && (
-            <Button
-              onClick={() => handleSignIn("hanzo-iam")}
-              variant="secondary"
-              loading={providerSigningIn === "hanzo-iam"}
-            >
+            <Button onClick={() => handleSignIn("iam")} variant="secondary" loading={providerSigningIn === "iam"}>
               <Shield className="mr-3" size={18} />
               Hanzo IAM
             </Button>
@@ -655,8 +649,8 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     !authProviders.custom;
   useEffect(() => {
     if (hanzoIamOnly) {
-      capture("sign_in:button_click", { provider: "hanzo-iam" });
-      void signIn("hanzo-iam");
+      capture("sign_in:button_click", { provider: "iam" });
+      void signIn("iam");
     }
   }, [capture, hanzoIamOnly]);
 

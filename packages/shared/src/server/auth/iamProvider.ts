@@ -1,7 +1,4 @@
-import type {
-  OAuthConfig,
-  OAuthUserConfig,
-} from "next-auth/providers/oauth";
+import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers/oauth";
 
 interface IamProfile extends Record<string, unknown> {
   sub: string;
@@ -31,7 +28,7 @@ export function IamProvider<P extends IamProfile>(
   const issuer = options.serverUrl.replace(/\/$/, "");
 
   return {
-    id: "hanzo-iam",
+    id: "iam",
     name: "Hanzo IAM",
     type: "oauth",
     wellKnown: `${issuer}/.well-known/openid-configuration`,
@@ -41,12 +38,7 @@ export function IamProvider<P extends IamProfile>(
     profile(profile) {
       return {
         id: profile.sub,
-        name:
-          profile.displayName ||
-          profile.name ||
-          profile.preferred_username ||
-          profile.email ||
-          "",
+        name: profile.displayName || profile.name || profile.preferred_username || profile.email || "",
         email: profile.email,
         image: profile.avatar || profile.picture || null,
       };

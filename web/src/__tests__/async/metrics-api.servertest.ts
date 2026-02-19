@@ -591,7 +591,7 @@ describe("/api/public/metrics API Endpoint", () => {
       // Verify we got the tagged trace
       const taggedTraceResult = response.body.data.find((row: any) => row.name === "tagged-trace");
       expect(taggedTraceResult).toBeDefined();
-      expect(Number(taggedTraceResult.count_count)).toBe(1);
+      expect(Number(taggedTraceResult!.count_count)).toBe(1);
     });
   });
 });

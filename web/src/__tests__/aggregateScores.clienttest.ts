@@ -1,9 +1,9 @@
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
-import { type ScoreDomain } from "@hanzo/shared";
+import { type ScoreToAggregate } from "@/src/features/scores/lib/aggregateScores";
 
 describe("aggregateScores", () => {
   it("should return an empty object for an empty array", () => {
-    const scores: ScoreDomain[] = [];
+    const scores: ScoreToAggregate[] = [];
     expect(aggregateScores(scores)).toEqual({});
   });
 
@@ -16,7 +16,7 @@ describe("aggregateScores", () => {
         value: 5,
         comment: "test comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-API-NUMERIC": {
         type: "NUMERIC",
@@ -43,7 +43,7 @@ describe("aggregateScores", () => {
         value: 7,
         comment: "another comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-API-NUMERIC": {
         type: "NUMERIC",
@@ -70,7 +70,7 @@ describe("aggregateScores", () => {
         value: 5,
         comment: "another comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-API-NUMERIC": {
         type: "NUMERIC",
@@ -82,7 +82,7 @@ describe("aggregateScores", () => {
   });
 
   it("should correctly aggregate scores with different keys", () => {
-    const scores: ScoreDomain[] = [
+    const scores: ScoreToAggregate[] = [
       {
         name: "test1",
         source: "API",
@@ -97,7 +97,7 @@ describe("aggregateScores", () => {
         value: 7,
         comment: "another comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test1-API-NUMERIC": {
         type: "NUMERIC",
@@ -123,7 +123,7 @@ describe("aggregateScores", () => {
         stringValue: "good",
         comment: "test comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-ANNOTATION-CATEGORICAL": {
         type: "CATEGORICAL",
@@ -150,7 +150,7 @@ describe("aggregateScores", () => {
         stringValue: "False",
         comment: "another comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-API-BOOLEAN": {
         type: "CATEGORICAL",
@@ -197,7 +197,7 @@ describe("aggregateScores", () => {
         value: 0,
         comment: "last comment",
       },
-    ] as ScoreDomain[];
+    ] as ScoreToAggregate[];
     expect(aggregateScores(scores)).toEqual({
       "test-API-NUMERIC": {
         type: "NUMERIC",

@@ -2,7 +2,11 @@ import { OtelIngestionProcessor, createIngestionEventSchema } from "@hanzo/share
 
 // Test helper function to maintain backward compatibility with existing tests
 // This mimics the old convertOtelSpanToIngestionEvent function signature
-async function convertOtelSpanToIngestionEvent(resourceSpan: any, seenTraces: Set<string>, publicKey?: string) {
+async function convertOtelSpanToIngestionEvent(
+  resourceSpan: any,
+  seenTraces: Set<string>,
+  publicKey?: string,
+): Promise<Array<{ type: string; body: Record<string, any> }>> {
   const processor = new OtelIngestionProcessor({
     projectId: "test-project",
     publicKey,
@@ -4019,7 +4023,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const traceEvent = events.find((e) => e.type === "trace-create");
       expect(traceEvent).toBeDefined();
-      expect(traceEvent.body.sessionId).toBe("hanzo-session-123");
+      expect(traceEvent!.body.sessionId).toBe("hanzo-session-123");
     });
 
     it("should prioritize session.id over gen_ai.conversation.id when both are present", async () => {
@@ -4087,7 +4091,7 @@ describe("OTel Resource Span Mapping", () => {
 
       const traceEvent = events.find((e) => e.type === "trace-create");
       expect(traceEvent).toBeDefined();
-      expect(traceEvent.body.sessionId).toBe("session-id-123");
+      expect(traceEvent!.body.sessionId).toBe("session-id-123");
     });
 
     it("should default to span-create for unknown observation type", async () => {
@@ -4622,13 +4626,13 @@ describe("OTel Resource Span Mapping", () => {
       expect(updatedTraceEvent).toBeDefined();
 
       // original_span_attribute should still exist
-      expect(updatedTraceEvent.body.metadata?.attributes?.original_span_attribute).toBe("should_be_preserved");
+      expect(updatedTraceEvent!.body.metadata?.attributes?.original_span_attribute).toBe("should_be_preserved");
 
       // new_span_attribute should now exist
-      expect(updatedTraceEvent.body.metadata?.attributes?.new_span_attribute).toBe("new_value");
+      expect(updatedTraceEvent!.body.metadata?.attributes?.new_span_attribute).toBe("new_value");
 
       // The sessionId should be updated
-      expect(updatedTraceEvent.body.sessionId).toBe("new-session");
+      expect(updatedTraceEvent!.body.sessionId).toBe("new-session");
     });
   });
 

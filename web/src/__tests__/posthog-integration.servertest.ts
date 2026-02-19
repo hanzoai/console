@@ -36,6 +36,7 @@ describe("PostHog Integration SSRF Protection", () => {
           cloudConfig: undefined,
           name: "Test Organization",
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -51,6 +52,7 @@ describe("PostHog Integration SSRF Protection", () => {
       featureFlags: {
         templateFlag: true,
         excludeClickhouseRead: false,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },

@@ -405,8 +405,8 @@ describe("selfServeDashboards", () => {
         const modelRow = queryBuilderResult.find((row: any) => row.providedModelName === modelName);
 
         expect(modelRow).toBeDefined();
-        expect(modelRow.sum_totalCost).toBeDefined();
-        expect(modelRow.sum_totalTokens).toBeDefined();
+        expect(modelRow!.sum_totalCost).toBeDefined();
+        expect(modelRow!.sum_totalTokens).toBeDefined();
 
         // We could add more specific assertions about the expected costs and tokens
         // if we had that information calculated from our sample data
@@ -443,8 +443,8 @@ describe("selfServeDashboards", () => {
       expect(queryBuilderResult.length).toBe(2);
 
       const modelRow = queryBuilderResult[0];
-      expect(modelRow.providedModelName).toBe("gpt-4-turbo");
-      expect(modelRow.sum_totalCost).toBe(900);
+      expect(modelRow!.providedModelName).toBe("gpt-4-turbo");
+      expect(modelRow!.sum_totalCost).toBe(900);
       expect(Number(modelRow.sum_totalTokens)).toBe(20736);
     });
 
@@ -487,8 +487,8 @@ describe("selfServeDashboards", () => {
         const modelRow = queryBuilderResult.find((row: any) => row.providedModelName === modelName);
 
         expect(modelRow).toBeDefined();
-        expect(modelRow.sum_totalCost).toBeGreaterThan(500);
-        expect(Number(modelRow.sum_totalTokens)).toBeGreaterThan(10000);
+        expect(modelRow!.sum_totalCost).toBeGreaterThan(500);
+        expect(Number(modelRow!.sum_totalTokens)).toBeGreaterThan(10000);
       });
     });
   });
@@ -631,7 +631,7 @@ describe("selfServeDashboards", () => {
         // We might not have observations for all users, so we'll just check
         // that the structure is correct for the ones we do have
         if (userRow) {
-          expect(userRow.sum_totalCost).toBeDefined();
+          expect(userRow!.sum_totalCost).toBeDefined();
         }
       });
 
@@ -669,11 +669,11 @@ describe("selfServeDashboards", () => {
         const userRow = queryBuilderResult.find((row: any) => row.userId === userId);
 
         expect(userRow).toBeDefined();
-        expect(userRow.count_count).toBeDefined();
+        expect(userRow!.count_count).toBeDefined();
 
         // Verify the count matches what we expect based on our sample data
         // We could add more specific assertions if needed
-        expect(Number(userRow.count_count)).toBeGreaterThan(0);
+        expect(Number(userRow!.count_count)).toBeGreaterThan(0);
       });
 
       // Verify the total number of traces across all users matches our expected total
@@ -717,10 +717,10 @@ describe("selfServeDashboards", () => {
         // We might not have latency data for all models, so we'll just check
         // that the structure is correct for the ones we do have
         if (modelRow) {
-          expect(modelRow.p50_latency).toBeDefined();
-          expect(modelRow.p90_latency).toBeDefined();
-          expect(modelRow.p95_latency).toBeDefined();
-          expect(modelRow.p99_latency).toBeDefined();
+          expect(modelRow!.p50_latency).toBeDefined();
+          expect(modelRow!.p90_latency).toBeDefined();
+          expect(modelRow!.p95_latency).toBeDefined();
+          expect(modelRow!.p99_latency).toBeDefined();
 
           // Latencies should be positive numbers
           expect(Number(modelRow.p50_latency)).toBeGreaterThan(0);

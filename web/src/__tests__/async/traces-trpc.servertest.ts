@@ -35,6 +35,8 @@ describe("traces trpc", () => {
           role: "OWNER",
           plan: "cloud:free",
           cloudConfig: undefined,
+          metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -42,6 +44,7 @@ describe("traces trpc", () => {
               retentionDays: 30,
               deletedAt: null,
               name: "Test Project",
+              metadata: {},
             },
           ],
         },
@@ -49,13 +52,14 @@ describe("traces trpc", () => {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
     environment: {} as any,
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   describe("traces.all", () => {
@@ -311,7 +315,7 @@ describe("traces trpc", () => {
     });
 
     it("access trace without any authentication", async () => {
-      const unAuthedSession = createInnerTRPCContext({ session: null });
+      const unAuthedSession = createInnerTRPCContext({ session: null, headers: {} });
       const unAuthedCaller = appRouter.createCaller({
         ...unAuthedSession,
         prisma,
@@ -386,7 +390,7 @@ describe("traces trpc", () => {
 
   describe("traces.getAgentGraphData", () => {
     it("should allow unauthenticated access to public trace agent graph data", async () => {
-      const unAuthedSession = createInnerTRPCContext({ session: null });
+      const unAuthedSession = createInnerTRPCContext({ session: null, headers: {} });
       const unAuthedCaller = appRouter.createCaller({
         ...unAuthedSession,
         prisma,
@@ -421,7 +425,7 @@ describe("traces trpc", () => {
     });
 
     it("should deny unauthenticated access to private trace agent graph data", async () => {
-      const unAuthedSession = createInnerTRPCContext({ session: null });
+      const unAuthedSession = createInnerTRPCContext({ session: null, headers: {} });
       const unAuthedCaller = appRouter.createCaller({
         ...unAuthedSession,
         prisma,

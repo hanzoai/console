@@ -1,90 +1,101 @@
-import type { NavigationSection } from '@/src/features/agents/components/Navigation/types';
+import type { NavigationSection } from "@/src/features/agents/components/Navigation/types";
 
-export const navigationSections: NavigationSection[] = [
+/**
+ * PRIMARY section — space-scoped, always visible (6 items)
+ */
+export const primarySections: NavigationSection[] = [
   {
-    id: 'overview',
-    title: 'Overview',
+    id: "primary",
+    title: "",
     items: [
       {
-        id: 'dashboard',
-        label: 'Dashboard',
-        href: '/dashboard',
-        icon: 'dashboard',
-        description: 'Real-time system overview and operational metrics'
-      }
-    ]
-  },
-  {
-    id: 'agent-hub',
-    title: 'Agent Hub',
-    items: [
-      {
-        id: 'node-overview',
-        label: 'Agent Node',
-        href: '/nodes',
-        icon: 'data-center',
-        description: 'Node infrastructure and status'
+        id: "overview",
+        label: "Overview",
+        href: "/dashboard",
+        icon: "dashboard",
+        description: "Dashboard metrics scoped to active space",
       },
       {
-        id: 'all-reasoners',
-        label: 'Reasoners',
-        href: '/reasoners/all',
-        icon: 'function',
-        description: 'Browse and manage all reasoners'
-      }
-    ]
-  },
-  {
-    id: 'executions',
-    title: 'Executions',
-    items: [
-      {
-        id: 'individual-executions',
-        label: 'Individual Executions',
-        href: '/executions',
-        icon: 'run',
-        description: 'Single agent executions and calls'
+        id: "bots",
+        label: "Bots",
+        href: "/bots/all",
+        icon: "bot",
+        description: "All bots in this space",
       },
       {
-        id: 'workflow-executions',
-        label: 'Workflow Executions',
-        href: '/workflows',
-        icon: 'flow-data',
-        description: 'Multi-step workflow processes'
-      }
-    ]
-  },
-  {
-    id: 'identity-trust',
-    title: 'Identity & Trust',
-    items: [
-      {
-        id: 'did-explorer',
-        label: 'DID Explorer',
-        href: '/identity/dids',
-        icon: 'identification',
-        description: 'Explore decentralized identifiers for agents and reasoners'
+        id: "playground",
+        label: "Playground",
+        href: "/playground",
+        icon: "function",
+        description: "Canvas for visual orchestration",
       },
       {
-        id: 'credentials',
-        label: 'Credentials',
-        href: '/identity/credentials',
-        icon: 'shield-check',
-        description: 'View and verify execution credentials'
-      }
-    ]
-  },
-  {
-    id: 'settings',
-    title: 'Settings',
-    items: [
+        id: "executions",
+        label: "Executions",
+        href: "/executions",
+        icon: "run",
+        description: "Unified execution and workflow list",
+      },
       {
-        id: 'observability-webhook',
-        label: 'Observability Webhook',
-        href: '/settings/observability-webhook',
-        icon: 'settings',
-        description: 'Configure external event forwarding'
-      }
-    ]
-  }
+        id: "logs",
+        label: "Logs",
+        href: "/logs",
+        icon: "activity",
+        description: "Unified log viewer",
+      },
+      {
+        id: "settings",
+        label: "Settings",
+        href: "/settings",
+        icon: "settings",
+        description: "Gateway, Space, and Webhook settings",
+      },
+    ],
+  },
 ];
+
+/**
+ * MORE section — org-level, collapsible, collapsed by default (4 items)
+ */
+export const moreSections: NavigationSection[] = [
+  {
+    id: "more",
+    title: "More",
+    items: [
+      {
+        id: "spaces",
+        label: "Spaces",
+        href: "/spaces",
+        icon: "data-center",
+        description: "List and manage all spaces",
+      },
+      {
+        id: "teams",
+        label: "Teams",
+        href: "/teams",
+        icon: "users",
+        description: "Team provisioning",
+      },
+      {
+        id: "identity",
+        label: "Identity",
+        href: "/identity/dids",
+        icon: "shield-check",
+        description: "DID Explorer and Credentials",
+      },
+      {
+        id: "packages",
+        label: "Packages",
+        href: "/packages",
+        icon: "package",
+        description: "Bot templates",
+      },
+    ],
+  },
+];
+
+/**
+ * @deprecated Use primarySections + moreSections instead.
+ * Kept for backward compatibility during migration.
+ */
+export const navigationSections: NavigationSection[] = [...primarySections, ...moreSections];

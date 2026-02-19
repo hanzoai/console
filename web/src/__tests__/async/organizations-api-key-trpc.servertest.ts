@@ -23,12 +23,14 @@ describe("organization API keys trpc", () => {
           plan: "cloud:hobby",
           cloudConfig: undefined,
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [],
         },
       ],
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
@@ -49,25 +51,27 @@ describe("organization API keys trpc", () => {
           plan: "cloud:hobby",
           cloudConfig: undefined,
           metadata: {},
+          aiFeaturesEnabled: true,
           projects: [],
         },
       ],
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: false,
     },
     environment: {} as any,
   };
 
-  const ownerCtx = createInnerTRPCContext({ session: ownerSession });
+  const ownerCtx = createInnerTRPCContext({ session: ownerSession, headers: {} });
   const ownerCaller = appRouter.createCaller({ ...ownerCtx, prisma });
 
-  const memberCtx = createInnerTRPCContext({ session: memberSession });
+  const memberCtx = createInnerTRPCContext({ session: memberSession, headers: {} });
   const memberCaller = appRouter.createCaller({ ...memberCtx, prisma });
 
-  const unAuthedCtx = createInnerTRPCContext({ session: null });
+  const unAuthedCtx = createInnerTRPCContext({ session: null, headers: {} });
   const unAuthedCaller = appRouter.createCaller({ ...unAuthedCtx, prisma });
 
   describe("organizationApiKeys.byOrganizationId", () => {

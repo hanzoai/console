@@ -567,7 +567,9 @@ describe("Clickhouse Events Repository Test", () => {
           offset: 0,
         });
 
-        const filteredObservations = result.filter((o) => [traceId1, traceId2, traceId3].includes(o.traceId ?? ""));
+        const filteredObservations = result.filter((o) =>
+          ([traceId1, traceId2, traceId3] as string[]).includes(o.traceId ?? ""),
+        );
         expect(filteredObservations.length).toBe(2);
         const traceIds = filteredObservations.map((o) => o.traceId).sort();
         expect(traceIds).toEqual([traceId1, traceId2].sort());
@@ -677,7 +679,9 @@ describe("Clickhouse Events Repository Test", () => {
           offset: 0,
         });
 
-        const filteredObservations = result.filter((o) => [traceId1, traceId2, traceId3].includes(o.traceId ?? ""));
+        const filteredObservations = result.filter((o) =>
+          ([traceId1, traceId2, traceId3] as string[]).includes(o.traceId ?? ""),
+        );
         expect(filteredObservations.length).toBe(2);
         const names = filteredObservations.map((o) => o.name).sort();
         expect(names).toEqual(["user-alpha-event", "user-beta-event"]);
@@ -861,7 +865,9 @@ describe("Clickhouse Events Repository Test", () => {
           offset: 0,
         });
 
-        const filteredObservations = result.filter((o) => [traceId1, traceId2, traceId3].includes(o.traceId ?? ""));
+        const filteredObservations = result.filter((o) =>
+          ([traceId1, traceId2, traceId3] as string[]).includes(o.traceId ?? ""),
+        );
         expect(filteredObservations.length).toBe(1);
         expect(filteredObservations[0].name).toBe("new-user-1");
       });
@@ -1774,6 +1780,8 @@ describe("Clickhouse Events Repository Test", () => {
       const result = await getObservationsBatchIOFromEventsTable({
         projectId,
         observations: [],
+        minStartTime: new Date(),
+        maxStartTime: new Date(),
       });
 
       expect(result).toBeDefined();

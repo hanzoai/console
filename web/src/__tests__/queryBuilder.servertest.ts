@@ -3,8 +3,10 @@ import { type QueryType } from "@/src/features/query/types";
 import { executeQuery, validateQuery } from "@/src/features/query/server/queryExecutor";
 import {
   createTrace,
+  createEvent,
   createObservation,
   createTracesCh,
+  createEventsCh,
   createObservationsCh,
   createTraceScore,
   createScoresCh,
@@ -313,7 +315,7 @@ describe("queryBuilder", () => {
             trace_id: data.traceId,
             observation_id: data.observationId,
             name: data.name,
-            value: data.dataType === "NUMERIC" ? data.value || 0 : null,
+            value: data.dataType === "NUMERIC" ? data.value || 0 : undefined,
             string_value: ["CATEGORICAL", "BOOLEAN"].includes(data.dataType) ? data.stringValue || "" : null,
             environment: data.environment || "default",
             source: data.source || "API",
@@ -2833,8 +2835,8 @@ describe("queryBuilder", () => {
         const projectId = randomUUID();
 
         // Create traces with observations that have different costs
-        const traces = [];
-        const observations = [];
+        const traces: ReturnType<typeof createTrace>[] = [];
+        const observations: ReturnType<typeof createObservation>[] = [];
 
         // Create trace for cost distribution test
         const trace = createTrace({

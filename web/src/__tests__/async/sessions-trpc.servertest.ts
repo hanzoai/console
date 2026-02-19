@@ -23,6 +23,8 @@ describe("traces trpc", () => {
           role: "OWNER",
           plan: "cloud:free",
           cloudConfig: undefined,
+          metadata: {},
+          aiFeaturesEnabled: true,
           projects: [
             {
               id: projectId,
@@ -30,6 +32,7 @@ describe("traces trpc", () => {
               retentionDays: 30,
               deletedAt: null,
               name: "Test Project",
+              metadata: {},
             },
           ],
         },
@@ -37,13 +40,14 @@ describe("traces trpc", () => {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },
     environment: {} as any,
   };
 
-  const ctx = createInnerTRPCContext({ session });
+  const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
   describe("sessions.byIdWithScores", () => {

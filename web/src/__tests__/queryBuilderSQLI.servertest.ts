@@ -34,7 +34,7 @@ describe("QueryBuilder SQL Injection Tests", () => {
   };
 
   // Helper function to build a query without executing it
-  const buildQueryWithoutExecuting = (query: QueryType, projectId: string) => {
+  const buildQueryWithoutExecuting = (query: any, projectId: string) => {
     const queryBuilder = new QueryBuilder(mockClickhouseClient as any);
     return queryBuilder.build(query, projectId);
   };

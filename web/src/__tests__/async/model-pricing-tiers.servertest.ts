@@ -77,7 +77,7 @@ describe("validation methods", () => {
     it("should reject empty tier array", () => {
       const result = validatePricingTiers([]);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("At least one pricing tier is required");
+      expect((result as { valid: false; error: string }).error).toContain("At least one pricing tier is required");
     });
 
     it("should reject tiers with no default", () => {
@@ -93,7 +93,9 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Exactly one pricing tier must have isDefault: true");
+      expect((result as { valid: false; error: string }).error).toContain(
+        "Exactly one pricing tier must have isDefault: true",
+      );
     });
 
     it("should reject tiers with multiple defaults", () => {
@@ -116,7 +118,9 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Only one pricing tier can have isDefault: true");
+      expect((result as { valid: false; error: string }).error).toContain(
+        "Only one pricing tier can have isDefault: true",
+      );
     });
 
     it("should reject default tier with non-zero priority", () => {
@@ -132,7 +136,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Default pricing tier must have priority: 0");
+      expect((result as { valid: false; error: string }).error).toContain("Default pricing tier must have priority: 0");
     });
 
     it("should reject default tier with conditions", () => {
@@ -155,7 +159,9 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Default pricing tier must have empty conditions array");
+      expect((result as { valid: false; error: string }).error).toContain(
+        "Default pricing tier must have empty conditions array",
+      );
     });
 
     it("should reject duplicate priorities", () => {
@@ -199,7 +205,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("priorities must be unique");
+      expect((result as { valid: false; error: string }).error).toContain("priorities must be unique");
     });
 
     it("should reject duplicate names", () => {
@@ -229,7 +235,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("names must be unique");
+      expect((result as { valid: false; error: string }).error).toContain("names must be unique");
     });
 
     it("should reject tier with invalid regex pattern", () => {
@@ -259,7 +265,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Invalid regex pattern");
+      expect((result as { valid: false; error: string }).error).toContain("Invalid regex pattern");
     });
 
     it("should reject tier with no prices", () => {
@@ -275,7 +281,7 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("must have at least one price defined");
+      expect((result as { valid: false; error: string }).error).toContain("must have at least one price defined");
     });
 
     it("should reject non-default tier with no conditions", () => {
@@ -298,7 +304,9 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('Non-default pricing tier "Custom Tier" must have at least one condition');
+      expect((result as { valid: false; error: string }).error).toContain(
+        'Non-default pricing tier "Custom Tier" must have at least one condition',
+      );
     });
 
     it("should reject tiers with mismatched usage keys", () => {
@@ -328,8 +336,10 @@ describe("validation methods", () => {
 
       const result = validatePricingTiers(tiers);
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('Pricing tier "High Volume" must have the same usage keys as the default tier');
-      expect(result.error).toContain("Expected: [input, output]");
+      expect((result as { valid: false; error: string }).error).toContain(
+        'Pricing tier "High Volume" must have the same usage keys as the default tier',
+      );
+      expect((result as { valid: false; error: string }).error).toContain("Expected: [input, output]");
     });
 
     it("should accept tiers with same keys in different order", () => {
@@ -400,7 +410,7 @@ describe("validation methods", () => {
         hasPricingTiers: true,
       });
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Cannot provide both");
+      expect((result as { valid: false; error: string }).error).toContain("Cannot provide both");
     });
 
     it("should reject neither flat prices nor pricing tiers", () => {
@@ -409,7 +419,7 @@ describe("validation methods", () => {
         hasPricingTiers: false,
       });
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("Must provide either");
+      expect((result as { valid: false; error: string }).error).toContain("Must provide either");
     });
   });
 });

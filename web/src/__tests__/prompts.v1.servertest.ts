@@ -226,7 +226,6 @@ describe("/api/public/prompts API Endpoint", () => {
       throw new Error("Expected body to be a prompt");
     }
 
-    // @ts-expect-error
     expect(fetchedProductionPrompt.body.id).toBe(prompt2.body.id);
     expect(fetchedProductionPrompt.body.name).toBe("prompt-name");
     expect(fetchedProductionPrompt.body.prompt).toBe("prompt2");
@@ -250,7 +249,6 @@ describe("/api/public/prompts API Endpoint", () => {
       throw new Error("Expected body to be a prompt");
     }
 
-    // @ts-expect-error
     expect(fetchedOldProductionPrompt.body.id).toBe(prompt1.body.id);
     expect(fetchedOldProductionPrompt.body.name).toBe("prompt-name");
     expect(fetchedOldProductionPrompt.body.prompt).toBe("prompt1");
@@ -313,7 +311,6 @@ describe("/api/public/prompts API Endpoint", () => {
     if (!isPrompt(fetchedProductionPrompt.body)) {
       throw new Error("Expected body to be a prompt");
     }
-    // @ts-expect-error
     expect(fetchedProductionPrompt.body.id).toBe(prompt2.body.id);
     expect(fetchedProductionPrompt.body.labels).toEqual(["production"]); // Only production label should be present
 
@@ -325,7 +322,6 @@ describe("/api/public/prompts API Endpoint", () => {
       throw new Error("Expected body to be a prompt");
     }
 
-    // @ts-expect-error
     expect(fetchedFirstPrompt.body.id).toBe(prompt1.body.id);
     expect(fetchedFirstPrompt.body.labels).toEqual(["development"]);
 
@@ -337,7 +333,6 @@ describe("/api/public/prompts API Endpoint", () => {
       throw new Error("Expected body to be a prompt");
     }
 
-    // @ts-expect-error
     expect(fetchedThirdPrompt.body.id).toBe(prompt3.body.id);
     expect(fetchedThirdPrompt.body.labels).toEqual(["staging", "latest"]);
   });

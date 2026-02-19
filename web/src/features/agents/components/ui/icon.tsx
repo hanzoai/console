@@ -18,11 +18,14 @@ import {
   FileText,
   GithubLogo,
   Question,
+  Bot,
+  Users,
 } from "@/src/features/agents/components/ui/icon-bridge";
 import type { IconComponent } from "@/src/features/agents/components/ui/icon-bridge";
 
 const icons = {
   activity: Pulse,
+  bot: Bot,
   dashboard: SquaresFour,
   "data-center": Stack,
   function: Cpu,
@@ -30,6 +33,7 @@ const icons = {
   "flow-data": FlowArrow,
   settings: Settings,
   user: UserCircle,
+  users: Users,
   grid: GridFour,
   package: Package,
   sun: Sun,
@@ -56,10 +60,5 @@ export function Icon({ name, className, size = 16 }: IconProps) {
     return null;
   }
 
-  return (
-    <Component
-      className={cn("shrink-0", className)}
-      size={size}
-    />
-  );
+  return <Component className={cn("shrink-0", className)} size={size} />;
 }

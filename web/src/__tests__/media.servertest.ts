@@ -117,7 +117,7 @@ describe("Media Upload API", () => {
       // Upload file
       const uploadFileResponse = await fetch(getUploadUrlResponse.body.uploadUrl, {
         method: "PUT",
-        body: fileBytes,
+        body: fileBytes as unknown as BodyInit,
         headers: {
           "Content-Type": contentType,
           "X-Amz-Checksum-Sha256": sha256Hash,

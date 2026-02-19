@@ -63,8 +63,8 @@ describe("/api/public/v2/metrics API Endpoint", () => {
           cost_details: {
             input: 0.001 * (i + 1),
             output: 0.002 * (i + 1),
+            total: 0.003 * (i + 1),
           },
-          total_cost: 0.003 * (i + 1),
         }),
       );
     }
@@ -273,7 +273,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
             name: `histogram-observation-${index}`,
             type: "GENERATION",
             start_time: timeValue,
-            total_cost: cost,
+            cost_details: { total: cost },
             metadata_names: ["test"],
             metadata_raw_values: [testMetadataValue],
           }),

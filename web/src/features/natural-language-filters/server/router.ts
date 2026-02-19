@@ -95,7 +95,7 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
         const modelParams = getDefaultModelParams();
 
         const llmCompletion = await fetchLLMCompletion({
-          messages: messages.map((m) => ({
+          messages: messages.map((m: { role: string; content: string }) => ({
             role: m.role,
             content: m.content,
             type: ChatMessageType.PublicAPICreated,

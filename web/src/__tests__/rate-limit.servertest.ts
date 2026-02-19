@@ -3,6 +3,11 @@ import { Redis } from "ioredis";
 
 describe("RateLimitService", () => {
   const orgId = "seed-org-id";
+  const baseScopeFields = {
+    apiKeyId: "test-api-key-id",
+    publicKey: "pk-test",
+    isIngestionSuspended: false,
+  } as const;
   let redis: Redis;
 
   beforeAll(() => {
@@ -42,6 +47,7 @@ describe("RateLimitService", () => {
         plan: "cloud:free" as const,
         projectId: "test-project-id",
         accessLevel: "project" as const,
+        ...baseScopeFields,
         rateLimitOverrides: [],
       },
       consumedPoints: 1,
@@ -64,6 +70,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [],
     };
 
@@ -97,6 +104,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [],
     };
 
@@ -123,6 +131,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [{ resource: "public-api" as const, points: 100, durationInSec: 2 }],
     };
 
@@ -165,6 +174,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 60 }],
     };
 
@@ -194,6 +204,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 10 }],
     };
 
@@ -218,6 +229,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [{ resource: "public-api" as const, points: 5, durationInSec: 10 }],
     };
 
@@ -235,6 +247,7 @@ describe("RateLimitService", () => {
       plan: "cloud:free" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [{ resource: "ingestion" as const, points: null, durationInSec: null }],
     };
 
@@ -271,6 +284,7 @@ describe("RateLimitService", () => {
       plan: "self-hosted:pro" as const,
       projectId: "test-project-id",
       accessLevel: "project" as const,
+      ...baseScopeFields,
       rateLimitOverrides: [],
     };
 

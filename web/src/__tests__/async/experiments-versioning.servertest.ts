@@ -1,7 +1,6 @@
 /** @jest-environment node */
 // Set environment variables before imports to ensure VERSIONED mode
-process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION =
-  "true";
+process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
 import { appRouter } from "@/src/server/api/root";
@@ -54,6 +53,7 @@ async function prepare() {
       featureFlags: {
         excludeClickhouseRead: false,
         templateFlag: true,
+        v4BetaToggleVisible: false,
       },
       admin: true,
     },

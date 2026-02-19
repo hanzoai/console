@@ -1,21 +1,12 @@
 import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type User,
-  type NextAuthOptions,
-  type Session,
-} from "next-auth";
+import { getServerSession, type User, type NextAuthOptions, type Session } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@hanzo/shared/src/db";
 import { verifyPassword } from "@/src/features/auth-credentials/lib/credentialsServerUtils";
 import { parseFlags } from "@/src/features/feature-flags/utils";
 import { env } from "@/src/env.mjs";
 import { createProjectMembershipsOnSignup } from "@/src/features/auth/lib/createProjectMembershipsOnSignup";
-import {
-  type AdapterUser,
-  type Adapter,
-  type AdapterAccount,
-} from "next-auth/adapters";
+import { type AdapterUser, type Adapter, type AdapterAccount } from "next-auth/adapters";
 
 // Providers
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -78,8 +69,7 @@ function canCreateOrganizations(userEmail: string | null): boolean {
 
   if (!userEmail) return false;
 
-  const allowedOrgCreators =
-    env.HANZO_ALLOWED_ORGANIZATION_CREATORS.toLowerCase().split(",");
+  const allowedOrgCreators = env.HANZO_ALLOWED_ORGANIZATION_CREATORS.toLowerCase().split(",");
   return allowedOrgCreators.includes(userEmail.toLowerCase());
 }
 
@@ -97,21 +87,16 @@ const staticProviders: Provider[] = [
     async authorize(credentials, _req) {
       if (!credentials) throw new Error("No credentials");
       if (env.AUTH_DISABLE_USERNAME_PASSWORD === "true")
-        throw new Error(
-          "Sign in with email and password is disabled for this instance. Please use SSO.",
-        );
+        throw new Error("Sign in with email and password is disabled for this instance. Please use SSO.");
 
       const blockedDomains = getSSOBlockedDomains();
       const domain = credentials.email.split("@")[1]?.toLowerCase();
       if (domain && blockedDomains.includes(domain)) {
-        throw new Error(
-          "Sign in with email and password is disabled for this domain. Please use SSO.",
-        );
+        throw new Error("Sign in with email and password is disabled for this domain. Please use SSO.");
       }
 
       // EE: Check custom SSO enforcement
-      const multiTenantSsoProvider =
-        await getSsoAuthProviderIdForDomain(domain);
+      const multiTenantSsoProvider = await getSsoAuthProviderIdForDomain(domain);
       if (multiTenantSsoProvider) {
         throw new Error(ENTERPRISE_SSO_REQUIRED_MESSAGE);
       }
@@ -128,10 +113,7 @@ const staticProviders: Provider[] = [
           "Please sign in with the identity provider (e.g. Google, GitHub, Azure AD, etc.) that is linked to your account.",
         );
 
-      const isValidPassword = await verifyPassword(
-        credentials.password,
-        dbUser.password,
-      );
+      const isValidPassword = await verifyPassword(credentials.password, dbUser.password);
       if (!isValidPassword) throw new Error("Invalid credentials");
 
       const userObj: User = {
@@ -177,8 +159,7 @@ if (
       clientSecret: env.AUTH_CUSTOM_CLIENT_SECRET,
       issuer: env.AUTH_CUSTOM_ISSUER,
       idToken: env.AUTH_CUSTOM_ID_TOKEN === "true",
-      allowDangerousEmailAccountLinking:
-        env.AUTH_CUSTOM_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_CUSTOM_ALLOW_ACCOUNT_LINKING === "true",
       authorization: {
         params: { scope: env.AUTH_CUSTOM_SCOPE ?? "openid email profile" },
       },
@@ -194,8 +175,7 @@ if (env.AUTH_GOOGLE_CLIENT_ID && env.AUTH_GOOGLE_CLIENT_SECRET)
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_CLIENT_ID,
       clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_GOOGLE_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_GOOGLE_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_GOOGLE_CLIENT_AUTH_METHOD,
       },
@@ -203,18 +183,13 @@ if (env.AUTH_GOOGLE_CLIENT_ID && env.AUTH_GOOGLE_CLIENT_SECRET)
     }),
   );
 
-if (
-  env.AUTH_OKTA_CLIENT_ID &&
-  env.AUTH_OKTA_CLIENT_SECRET &&
-  env.AUTH_OKTA_ISSUER
-)
+if (env.AUTH_OKTA_CLIENT_ID && env.AUTH_OKTA_CLIENT_SECRET && env.AUTH_OKTA_ISSUER)
   staticProviders.push(
     OktaProvider({
       clientId: env.AUTH_OKTA_CLIENT_ID,
       clientSecret: env.AUTH_OKTA_CLIENT_SECRET,
       issuer: env.AUTH_OKTA_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_OKTA_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_OKTA_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_OKTA_CLIENT_AUTH_METHOD,
       },
@@ -222,39 +197,27 @@ if (
     }),
   );
 
-if (
-  env.AUTH_AUTHENTIK_CLIENT_ID &&
-  env.AUTH_AUTHENTIK_CLIENT_SECRET &&
-  env.AUTH_AUTHENTIK_ISSUER
-)
+if (env.AUTH_AUTHENTIK_CLIENT_ID && env.AUTH_AUTHENTIK_CLIENT_SECRET && env.AUTH_AUTHENTIK_ISSUER)
   staticProviders.push(
     AuthentikProvider({
       clientId: env.AUTH_AUTHENTIK_CLIENT_ID,
       clientSecret: env.AUTH_AUTHENTIK_CLIENT_SECRET,
       issuer: env.AUTH_AUTHENTIK_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_AUTHENTIK_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_AUTHENTIK_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_AUTHENTIK_CLIENT_AUTH_METHOD,
       },
-      ...(env.AUTH_AUTHENTIK_CHECKS
-        ? { checks: env.AUTH_AUTHENTIK_CHECKS }
-        : {}),
+      ...(env.AUTH_AUTHENTIK_CHECKS ? { checks: env.AUTH_AUTHENTIK_CHECKS } : {}),
     }),
   );
 
-if (
-  env.AUTH_ONELOGIN_CLIENT_ID &&
-  env.AUTH_ONELOGIN_CLIENT_SECRET &&
-  env.AUTH_ONELOGIN_ISSUER
-)
+if (env.AUTH_ONELOGIN_CLIENT_ID && env.AUTH_ONELOGIN_CLIENT_SECRET && env.AUTH_ONELOGIN_ISSUER)
   staticProviders.push(
     OneLoginProvider({
       clientId: env.AUTH_ONELOGIN_CLIENT_ID,
       clientSecret: env.AUTH_ONELOGIN_CLIENT_SECRET,
       issuer: env.AUTH_ONELOGIN_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_ONELOGIN_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_ONELOGIN_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_ONELOGIN_CLIENT_AUTH_METHOD,
       },
@@ -262,18 +225,13 @@ if (
     }),
   );
 
-if (
-  env.AUTH_AUTH0_CLIENT_ID &&
-  env.AUTH_AUTH0_CLIENT_SECRET &&
-  env.AUTH_AUTH0_ISSUER
-)
+if (env.AUTH_AUTH0_CLIENT_ID && env.AUTH_AUTH0_CLIENT_SECRET && env.AUTH_AUTH0_ISSUER)
   staticProviders.push(
     Auth0Provider({
       clientId: env.AUTH_AUTH0_CLIENT_ID,
       clientSecret: env.AUTH_AUTH0_CLIENT_SECRET,
       issuer: env.AUTH_AUTH0_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_AUTH0_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_AUTH0_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_AUTH0_CLIENT_AUTH_METHOD,
       },
@@ -286,8 +244,7 @@ if (env.AUTH_GITHUB_CLIENT_ID && env.AUTH_GITHUB_CLIENT_SECRET)
     GitHubProvider({
       clientId: env.AUTH_GITHUB_CLIENT_ID,
       clientSecret: env.AUTH_GITHUB_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_GITHUB_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_GITHUB_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_GITHUB_CLIENT_AUTH_METHOD,
       },
@@ -305,15 +262,11 @@ if (
       clientId: env.AUTH_GITHUB_ENTERPRISE_CLIENT_ID,
       clientSecret: env.AUTH_GITHUB_ENTERPRISE_CLIENT_SECRET,
       enterprise: { baseUrl: env.AUTH_GITHUB_ENTERPRISE_BASE_URL },
-      allowDangerousEmailAccountLinking:
-        env.AUTH_GITHUB_ENTERPRISE_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_GITHUB_ENTERPRISE_ALLOW_ACCOUNT_LINKING === "true",
       client: {
-        token_endpoint_auth_method:
-          env.AUTH_GITHUB_ENTERPRISE_CLIENT_AUTH_METHOD,
+        token_endpoint_auth_method: env.AUTH_GITHUB_ENTERPRISE_CLIENT_AUTH_METHOD,
       },
-      ...(env.AUTH_GITHUB_ENTERPRISE_CHECKS
-        ? { checks: env.AUTH_GITHUB_ENTERPRISE_CHECKS }
-        : {}),
+      ...(env.AUTH_GITHUB_ENTERPRISE_CHECKS ? { checks: env.AUTH_GITHUB_ENTERPRISE_CHECKS } : {}),
     }),
   );
 }
@@ -323,8 +276,7 @@ if (env.AUTH_GITLAB_CLIENT_ID && env.AUTH_GITLAB_CLIENT_SECRET)
     GitLabProvider({
       clientId: env.AUTH_GITLAB_CLIENT_ID,
       clientSecret: env.AUTH_GITLAB_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_GITLAB_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_GITLAB_ALLOW_ACCOUNT_LINKING === "true",
       issuer: env.AUTH_GITLAB_ISSUER,
       client: {
         token_endpoint_auth_method: env.AUTH_GITLAB_CLIENT_AUTH_METHOD,
@@ -339,18 +291,13 @@ if (env.AUTH_GITLAB_CLIENT_ID && env.AUTH_GITLAB_CLIENT_SECRET)
     }),
   );
 
-if (
-  env.AUTH_AZURE_AD_CLIENT_ID &&
-  env.AUTH_AZURE_AD_CLIENT_SECRET &&
-  env.AUTH_AZURE_AD_TENANT_ID
-)
+if (env.AUTH_AZURE_AD_CLIENT_ID && env.AUTH_AZURE_AD_CLIENT_SECRET && env.AUTH_AZURE_AD_TENANT_ID)
   staticProviders.push(
     AzureADProvider({
       clientId: env.AUTH_AZURE_AD_CLIENT_ID,
       clientSecret: env.AUTH_AZURE_AD_CLIENT_SECRET,
       tenantId: env.AUTH_AZURE_AD_TENANT_ID,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_AZURE_AD_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_AZURE_AD_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_AZURE_AD_CLIENT_AUTH_METHOD,
       },
@@ -358,40 +305,28 @@ if (
     }),
   );
 
-if (
-  env.AUTH_COGNITO_CLIENT_ID &&
-  env.AUTH_COGNITO_CLIENT_SECRET &&
-  env.AUTH_COGNITO_ISSUER
-)
+if (env.AUTH_COGNITO_CLIENT_ID && env.AUTH_COGNITO_CLIENT_SECRET && env.AUTH_COGNITO_ISSUER)
   staticProviders.push(
     CognitoProvider({
       clientId: env.AUTH_COGNITO_CLIENT_ID,
       clientSecret: env.AUTH_COGNITO_CLIENT_SECRET,
       issuer: env.AUTH_COGNITO_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_COGNITO_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_COGNITO_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_COGNITO_CLIENT_AUTH_METHOD,
       },
-      ...(env.AUTH_COGNITO_CHECKS
-        ? { checks: env.AUTH_COGNITO_CHECKS }
-        : { checks: "nonce" }),
+      ...(env.AUTH_COGNITO_CHECKS ? { checks: env.AUTH_COGNITO_CHECKS } : { checks: "nonce" }),
     }),
   );
 
-if (
-  env.AUTH_KEYCLOAK_CLIENT_ID &&
-  env.AUTH_KEYCLOAK_CLIENT_SECRET &&
-  env.AUTH_KEYCLOAK_ISSUER
-)
+if (env.AUTH_KEYCLOAK_CLIENT_ID && env.AUTH_KEYCLOAK_CLIENT_SECRET && env.AUTH_KEYCLOAK_ISSUER)
   staticProviders.push(
     KeycloakProvider({
       clientId: env.AUTH_KEYCLOAK_CLIENT_ID,
       clientSecret: env.AUTH_KEYCLOAK_CLIENT_SECRET,
       issuer: env.AUTH_KEYCLOAK_ISSUER,
       idToken: env.AUTH_KEYCLOAK_ID_TOKEN === "true",
-      allowDangerousEmailAccountLinking:
-        env.AUTH_KEYCLOAK_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_KEYCLOAK_ALLOW_ACCOUNT_LINKING === "true",
       authorization: {
         params: { scope: env.AUTH_KEYCLOAK_SCOPE ?? "openid email profile" },
       },
@@ -402,42 +337,30 @@ if (
     }),
   );
 
-if (
-  env.AUTH_JUMPCLOUD_CLIENT_ID &&
-  env.AUTH_JUMPCLOUD_CLIENT_SECRET &&
-  env.AUTH_JUMPCLOUD_ISSUER
-)
+if (env.AUTH_JUMPCLOUD_CLIENT_ID && env.AUTH_JUMPCLOUD_CLIENT_SECRET && env.AUTH_JUMPCLOUD_ISSUER)
   staticProviders.push(
     JumpCloudProvider({
       clientId: env.AUTH_JUMPCLOUD_CLIENT_ID,
       clientSecret: env.AUTH_JUMPCLOUD_CLIENT_SECRET,
       issuer: env.AUTH_JUMPCLOUD_ISSUER,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_JUMPCLOUD_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_JUMPCLOUD_ALLOW_ACCOUNT_LINKING === "true",
       authorization: {
         params: { scope: env.AUTH_JUMPCLOUD_SCOPE ?? "openid profile email" },
       },
       client: {
         token_endpoint_auth_method: env.AUTH_JUMPCLOUD_CLIENT_AUTH_METHOD,
       },
-      ...(env.AUTH_JUMPCLOUD_CHECKS
-        ? { checks: env.AUTH_JUMPCLOUD_CHECKS }
-        : {}),
+      ...(env.AUTH_JUMPCLOUD_CHECKS ? { checks: env.AUTH_JUMPCLOUD_CHECKS } : {}),
     }),
   );
 
-if (
-  env.IAM_CLIENT_ID &&
-  env.IAM_CLIENT_SECRET &&
-  env.IAM_SERVER_URL
-)
+if (env.IAM_CLIENT_ID && env.IAM_CLIENT_SECRET && env.IAM_SERVER_URL)
   staticProviders.push(
     HanzoIamProvider({
       clientId: env.IAM_CLIENT_ID,
       clientSecret: env.IAM_CLIENT_SECRET,
       serverUrl: env.IAM_SERVER_URL,
-      allowDangerousEmailAccountLinking:
-        env.IAM_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.IAM_ALLOW_ACCOUNT_LINKING === "true",
       checks: ["state", "pkce"],
     }),
   );
@@ -447,8 +370,7 @@ if (env.AUTH_WORKOS_CLIENT_ID && env.AUTH_WORKOS_CLIENT_SECRET)
     WorkOSProvider({
       clientId: env.AUTH_WORKOS_CLIENT_ID,
       clientSecret: env.AUTH_WORKOS_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_WORKOS_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_WORKOS_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: "client_secret_post",
       },
@@ -460,14 +382,11 @@ if (env.AUTH_WORDPRESS_CLIENT_ID && env.AUTH_WORDPRESS_CLIENT_SECRET)
     WordPressProvider({
       clientId: env.AUTH_WORDPRESS_CLIENT_ID,
       clientSecret: env.AUTH_WORDPRESS_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking:
-        env.AUTH_WORDPRESS_ALLOW_ACCOUNT_LINKING === "true",
+      allowDangerousEmailAccountLinking: env.AUTH_WORDPRESS_ALLOW_ACCOUNT_LINKING === "true",
       client: {
         token_endpoint_auth_method: env.AUTH_WORDPRESS_CLIENT_AUTH_METHOD,
       },
-      ...(env.AUTH_WORDPRESS_CHECKS
-        ? { checks: env.AUTH_WORDPRESS_CHECKS }
-        : {}),
+      ...(env.AUTH_WORDPRESS_CHECKS ? { checks: env.AUTH_WORDPRESS_CHECKS } : {}),
     }),
   );
 
@@ -477,19 +396,12 @@ const ignoredAccountFields = env.AUTH_IGNORE_ACCOUNT_FIELDS?.split(",") ?? [];
 const extendedPrismaAdapter: Adapter = {
   ...prismaAdapter,
   async createUser(profile: Omit<AdapterUser, "id">) {
-    if (!prismaAdapter.createUser)
-      throw new Error("createUser not implemented");
-    if (
-      env.NEXT_PUBLIC_SIGN_UP_DISABLED === "true" ||
-      env.AUTH_DISABLE_SIGNUP === "true"
-    ) {
+    if (!prismaAdapter.createUser) throw new Error("createUser not implemented");
+    if (env.NEXT_PUBLIC_SIGN_UP_DISABLED === "true" || env.AUTH_DISABLE_SIGNUP === "true") {
       throw new Error("Sign up is disabled.");
     }
     if (!profile.email) {
-      throw new Error(
-        "Cannot create db user as login profile does not contain an email: " +
-          JSON.stringify(profile),
-      );
+      throw new Error("Cannot create db user as login profile does not contain an email: " + JSON.stringify(profile));
     }
 
     const user = await prismaAdapter.createUser(profile);
@@ -500,8 +412,7 @@ const extendedPrismaAdapter: Adapter = {
   },
 
   async linkAccount(data: AdapterAccount) {
-    if (!prismaAdapter.linkAccount)
-      throw new Error("NextAuth: prismaAdapter.linkAccount not implemented");
+    if (!prismaAdapter.linkAccount) throw new Error("NextAuth: prismaAdapter.linkAccount not implemented");
 
     // Keycloak returns incompatible data with the nextjs-auth schema
     // (refresh_expires_in and not-before-policy in).
@@ -542,8 +453,7 @@ const extendedPrismaAdapter: Adapter = {
 
   // Make email-OTP login that is used for password reset safer
   async useVerificationToken(params) {
-    if (!prismaAdapter.useVerificationToken)
-      throw new Error("useVerificationToken not implemented");
+    if (!prismaAdapter.useVerificationToken) throw new Error("useVerificationToken not implemented");
 
     try {
       // First, attempt to use the token with the default behavior
@@ -594,10 +504,7 @@ const extendedPrismaAdapter: Adapter = {
         });
       } catch (deleteError) {
         // Log deletion error but don't throw to avoid masking original error
-        logger.error(
-          "Failed to delete verification tokens on error",
-          deleteError,
-        );
+        logger.error("Failed to delete verification tokens on error", deleteError);
       }
 
       // Re-throw the original error
@@ -671,8 +578,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           return {
             ...session,
             environment: {
-              enableExperimentalFeatures:
-                env.HANZO_ENABLE_EXPERIMENTAL_FEATURES === "true",
+              enableExperimentalFeatures: env.HANZO_ENABLE_EXPERIMENTAL_FEATURES === "true",
               // Enables features that are only available under an enterprise license when self-hosting Hanzo
               // If you edit this line, you risk executing code that is not MIT licensed (self-contained in /ee folders otherwise)
               selfHostedInstancePlan: getSelfHostedInstancePlanServerSide(),
@@ -684,68 +590,44 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                     id: dbUser.id,
                     name: dbUser.name,
                     email: dbUser.email,
-                    emailSupportHash: dbUser.email
-                      ? createSupportEmailHash(dbUser.email)
-                      : undefined,
+                    emailSupportHash: dbUser.email ? createSupportEmailHash(dbUser.email) : undefined,
                     image: dbUser.image,
                     admin: dbUser.admin,
                     v4BetaEnabled: dbUser.v4BetaEnabled,
-                    canCreateOrganizations: canCreateOrganizations(
-                      dbUser.email,
-                    ),
-                    organizations: dbUser.organizationMemberships.map(
-                      (orgMembership) => {
-                        const parsedCloudConfig = CloudConfigSchema.safeParse(
-                          orgMembership.organization.cloudConfig,
-                        );
-                        return {
-                          id: orgMembership.organization.id,
-                          name: orgMembership.organization.name,
-                          role: orgMembership.role,
-                          metadata:
-                            (orgMembership.organization.metadata as Record<
-                              string,
-                              unknown
-                            >) ?? {},
-                          aiFeaturesEnabled:
-                            orgMembership.organization.aiFeaturesEnabled,
-                          cloudConfig: parsedCloudConfig.data,
-                          projects: orgMembership.organization.projects
-                            .map((project) => {
-                              const projectRole = resolveProjectRole({
-                                projectId: project.id,
-                                projectMemberships:
-                                  orgMembership.ProjectMemberships,
-                                orgMembershipRole: orgMembership.role,
-                              });
-                              return {
-                                id: project.id,
-                                name: project.name,
-                                role: projectRole,
-                                retentionDays: project.retentionDays,
-                                deletedAt: project.deletedAt,
-                                metadata:
-                                  (project.metadata as Record<
-                                    string,
-                                    unknown
-                                  >) ?? {},
-                              };
-                            })
-                            // Only include projects where the user has the required role
-                            .filter((project) =>
-                              projectRoleAccessRights[project.role].includes(
-                                "project:read",
-                              ),
-                            ),
+                    canCreateOrganizations: canCreateOrganizations(dbUser.email),
+                    organizations: dbUser.organizationMemberships.map((orgMembership) => {
+                      const parsedCloudConfig = CloudConfigSchema.safeParse(orgMembership.organization.cloudConfig);
+                      return {
+                        id: orgMembership.organization.id,
+                        name: orgMembership.organization.name,
+                        role: orgMembership.role,
+                        metadata: (orgMembership.organization.metadata as Record<string, unknown>) ?? {},
+                        aiFeaturesEnabled: orgMembership.organization.aiFeaturesEnabled,
+                        cloudConfig: parsedCloudConfig.data,
+                        projects: orgMembership.organization.projects
+                          .map((project) => {
+                            const projectRole = resolveProjectRole({
+                              projectId: project.id,
+                              projectMemberships: orgMembership.ProjectMemberships,
+                              orgMembershipRole: orgMembership.role,
+                            });
+                            return {
+                              id: project.id,
+                              name: project.name,
+                              role: projectRole,
+                              retentionDays: project.retentionDays,
+                              deletedAt: project.deletedAt,
+                              metadata: (project.metadata as Record<string, unknown>) ?? {},
+                            };
+                          })
+                          // Only include projects where the user has the required role
+                          .filter((project) => projectRoleAccessRights[project.role].includes("project:read")),
 
-                          // Enables features/entitlements based on the plan of the organization, either cloud or EE version when self-hosting
-                          // If you edit this line, you risk executing code that is not MIT licensed (contained in /ee folders, see LICENSE)
-                          plan: getOrganizationPlanServerSide(
-                            parsedCloudConfig.data,
-                          ),
-                        };
-                      },
-                    ),
+                        // Enables features/entitlements based on the plan of the organization, either cloud or EE version when self-hosting
+                        // If you edit this line, you risk executing code that is not MIT licensed (contained in /ee folders, see LICENSE)
+                        plan: getOrganizationPlanServerSide(parsedCloudConfig.data),
+                      };
+                    }),
                     emailVerified: dbUser.emailVerified?.toISOString(),
                     featureFlags: parseFlags(dbUser.featureFlags),
                   }
@@ -756,7 +638,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async (span) => {
           // Debug logging for Hanzo IAM provider
-          if (account?.provider === "hanzo-iam") {
+          if (account?.provider === "iam") {
             logger.info("Hanzo IAM signIn callback", {
               userId: user.id,
               userName: user.name,
@@ -789,38 +671,27 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           // EE: Check custom SSO enforcement, enforce the specific SSO provider on email domain
           // This also blocks setting a password for an email that is enforced to use SSO via password reset flow
           const userDomain = email.split("@")[1].toLowerCase();
-          const multiTenantSsoProvider =
-            await getSsoAuthProviderIdForDomain(userDomain);
-          if (
-            multiTenantSsoProvider &&
-            account?.provider !== multiTenantSsoProvider
-          ) {
-            logger.info(
-              "Custom SSO provider enforced for domain, user signed in with other provider",
-              { email, attemptedProvider: account?.provider },
-            );
+          const multiTenantSsoProvider = await getSsoAuthProviderIdForDomain(userDomain);
+          if (multiTenantSsoProvider && account?.provider !== multiTenantSsoProvider) {
+            logger.info("Custom SSO provider enforced for domain, user signed in with other provider", {
+              email,
+              attemptedProvider: account?.provider,
+            });
             const params = new URLSearchParams({
               reason: "sso_enforced_domain",
             });
             if (email) params.set("email", email);
-            if (account?.provider)
-              params.set("attemptedProvider", account.provider);
+            if (account?.provider) params.set("attemptedProvider", account.provider);
             return `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/enterprise-sso-required?${params.toString()}`;
           }
 
           // EE: Check that provider is only used for the associated domain
           if (account?.provider) {
-            const { isMultiTenantSsoProvider, domain: ssoDomain } =
-              await findMultiTenantSsoConfig({
-                providerId: account.provider,
-              });
-            if (
-              isMultiTenantSsoProvider &&
-              ssoDomain.toLowerCase() !== userDomain.toLowerCase()
-            ) {
-              throw new Error(
-                `This domain is not associated with this SSO provider.`,
-              );
+            const { isMultiTenantSsoProvider, domain: ssoDomain } = await findMultiTenantSsoConfig({
+              providerId: account.provider,
+            });
+            if (isMultiTenantSsoProvider && ssoDomain.toLowerCase() !== userDomain.toLowerCase()) {
+              throw new Error(`This domain is not associated with this SSO provider.`);
             }
           }
 
@@ -835,9 +706,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
               return true;
             } else {
               // Add random delay to prevent leaking if user exists as otherwise it would be instant compared to sending an email
-              await new Promise((resolve) =>
-                setTimeout(resolve, Math.random() * 2000 + 200),
-              );
+              await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000 + 200));
               // Prevents sign in with email link if user does not exist
               return false;
             }
@@ -846,21 +715,12 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
           // Optional configuration: validate authorised email domains for google provider
           // uses hd (hosted domain) claim from google profile as the domain
           // https://developers.google.com/identity/openid-connect/openid-connect#an-id-tokens-payload
-          if (
-            env.AUTH_GOOGLE_ALLOWED_DOMAINS &&
-            account?.provider === "google"
-          ) {
+          if (env.AUTH_GOOGLE_ALLOWED_DOMAINS && account?.provider === "google") {
             const allowedDomains =
-              env.AUTH_GOOGLE_ALLOWED_DOMAINS?.split(",").map((domain) =>
-                domain.trim().toLowerCase(),
-              ) ?? [];
+              env.AUTH_GOOGLE_ALLOWED_DOMAINS?.split(",").map((domain) => domain.trim().toLowerCase()) ?? [];
 
             if (allowedDomains.length > 0) {
-              return await Promise.resolve(
-                allowedDomains.includes(
-                  (profile as GoogleProfile).hd?.toLowerCase(),
-                ),
-              );
+              return await Promise.resolve(allowedDomains.includes((profile as GoogleProfile).hd?.toLowerCase()));
             }
           }
 
@@ -947,10 +807,7 @@ export const getServerAuthSession = async (ctx: {
   // for api routes, we need to call the headers in the api route itself
 
   // disable caching for any api requiring server-side auth
-  ctx.res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate",
-  );
+  ctx.res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   ctx.res.setHeader("Pragma", "no-cache");
   ctx.res.setHeader("Expires", "0");
 

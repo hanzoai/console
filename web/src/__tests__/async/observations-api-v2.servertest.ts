@@ -426,7 +426,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
         level: "DEFAULT",
         start_time: timeValue,
         // Nested metadata: { scope: { name: "api-server" }, region: "us-east" }
-        metadata: { scope: { name: "api-server" }, region: "us-east" },
+        metadata: { scope: "api-server", region: "us-east" },
         metadata_names: ["scope.name", "region"],
         metadata_raw_values: ["api-server", "us-east"],
       });
@@ -441,7 +441,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
         level: "DEFAULT",
         start_time: timeValue + 1000 * 1000,
         // Nested metadata: { scope: { name: "ui-client" }, region: "us-west" }
-        metadata: { scope: { name: "ui-client" }, region: "us-west" },
+        metadata: { scope: "ui-client", region: "us-west" },
         metadata_names: ["scope.name", "region"],
         metadata_raw_values: ["ui-client", "us-west"],
       });
