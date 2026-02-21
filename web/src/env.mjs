@@ -396,6 +396,11 @@ export const env = createEnv({
     KMS_CLIENT_SECRET: z.string().optional(),
     KMS_PROJECT_ID: z.string().optional(),
 
+    // ZT (Zero Trust Network - OpenZiti controller)
+    ZT_API_URL: z.string().url().optional().default("https://zt-api.hanzo.ai"),
+    ZT_ADMIN_USERNAME: z.string().optional().default("admin"),
+    ZT_ADMIN_PASSWORD: z.string().optional(),
+
     // Bot Gateway (ZAP protocol over HTTP)
     ZAP_BOT_GATEWAY_URL: z.string().url().optional().default("https://bot.hanzo.ai"),
     ZAP_BOT_GATEWAY_TOKEN: z.string().optional(),
@@ -790,6 +795,10 @@ export const env = createEnv({
     KMS_CLIENT_ID: process.env.KMS_CLIENT_ID,
     KMS_CLIENT_SECRET: process.env.KMS_CLIENT_SECRET,
     KMS_PROJECT_ID: process.env.KMS_PROJECT_ID,
+    // ZT
+    ZT_API_URL: process.env.ZT_API_URL,
+    ZT_ADMIN_USERNAME: process.env.ZT_ADMIN_USERNAME,
+    ZT_ADMIN_PASSWORD: process.env.ZT_ADMIN_PASSWORD,
     // Bot Gateway (ZAP)
     ZAP_BOT_GATEWAY_URL: process.env.ZAP_BOT_GATEWAY_URL,
     ZAP_BOT_GATEWAY_TOKEN: process.env.ZAP_BOT_GATEWAY_TOKEN,

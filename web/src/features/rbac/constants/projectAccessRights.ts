@@ -82,6 +82,9 @@ export const projectScopes = [
   "kmsSecrets:CUD",
   "kmsKeys:read",
   "kmsKeys:CUD",
+
+  "zt:read",
+  "zt:CUD",
 ] as const;
 
 // type string of all Resource:Action, e.g. "members:read"
@@ -145,6 +148,8 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "kmsSecrets:CUD",
     "kmsKeys:read",
     "kmsKeys:CUD",
+    "zt:read",
+    "zt:CUD",
   ],
   ADMIN: [
     "project:read",
@@ -202,6 +207,8 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "kmsSecrets:CUD",
     "kmsKeys:read",
     "kmsKeys:CUD",
+    "zt:read",
+    "zt:CUD",
   ],
   ADMIN_BILLING: [
     "project:read",
@@ -254,6 +261,7 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "automations:read",
     "kmsSecrets:read",
     "kmsKeys:read",
+    "zt:read",
   ],
   VIEWER: [
     "project:read",
@@ -274,6 +282,7 @@ export const projectRoleAccessRights: Record<Role, ProjectScope[]> = {
     "automations:read",
     "kmsSecrets:read",
     "kmsKeys:read",
+    "zt:read",
   ],
   NONE: [],
 };
