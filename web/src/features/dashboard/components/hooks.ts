@@ -1,4 +1,4 @@
-import { type FilterState, getGenerationLikeTypes } from "@langfuse/shared";
+import { type FilterState, getGenerationLikeTypes } from "@hanzo/shared";
 
 export type TimeSeriesChartDataPoint = {
   ts: number;

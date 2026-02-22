@@ -8,14 +8,14 @@ import {
   queryClickhouse,
   measureAndReturn,
   scoresTableUiColumnDefinitions,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   removeObjectKeys,
   ScoreDataTypeEnum,
   type ScoreDataTypeType,
   type ScoreDomain,
   type FilterState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 /**
  * Converts a ScoreDomain object to API format.

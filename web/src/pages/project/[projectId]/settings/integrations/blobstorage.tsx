@@ -48,7 +48,7 @@ import {
   AnalyticsIntegrationExportSource,
   type BlobStorageIntegration,
   EXPORT_SOURCE_OPTIONS,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { Info, ExternalLink } from "lucide-react";

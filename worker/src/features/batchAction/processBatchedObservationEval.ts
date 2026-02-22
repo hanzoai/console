@@ -1,7 +1,7 @@
 import pLimit from "p-limit";
-import { prisma } from "@langfuse/shared/src/db";
-import { BatchActionStatus, observationForEvalSchema } from "@langfuse/shared";
-import { logger, traceException } from "@langfuse/shared/src/server";
+import { prisma } from "@hanzo/shared/src/db";
+import { BatchActionStatus, observationForEvalSchema } from "@hanzo/shared";
+import { logger, traceException } from "@hanzo/shared/src/server";
 import {
   createObservationEvalSchedulerDeps,
   scheduleObservationEvals,

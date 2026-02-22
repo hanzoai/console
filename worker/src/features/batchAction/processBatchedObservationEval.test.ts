@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-import { EvalTargetObject } from "@langfuse/shared";
+import { EvalTargetObject } from "@hanzo/shared";
 import { type ObservationEvalConfig } from "../evaluation/observationEval";
 
-vi.mock("@langfuse/shared/src/db", () => ({
+vi.mock("@hanzo/shared/src/db", () => ({
   prisma: {
     batchAction: {
       update: vi.fn().mockResolvedValue(undefined),
@@ -15,7 +15,7 @@ vi.mock("../evaluation/observationEval", () => ({
   scheduleObservationEvals: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import { scheduleObservationEvals } from "../evaluation/observationEval";
 import { processBatchedObservationEval } from "./processBatchedObservationEval";
 

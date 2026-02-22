@@ -3,7 +3,7 @@ import {
   type ScoreSourceType,
   type FilterState,
   type ScoreDataTypeType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type ViewVersion } from "@/src/features/query";
 import { createTracesTimeFilter } from "@/src/features/dashboard/lib/dashboard-utils";
 import React from "react";

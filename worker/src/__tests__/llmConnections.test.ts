@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { fetchLLMCompletion } from "@langfuse/shared/src/server";
-import { encrypt } from "@langfuse/shared/encryption";
-import { ChatMessageType, LLMAdapter } from "@langfuse/shared";
+import { fetchLLMCompletion } from "@hanzo/shared/src/server";
+import { encrypt } from "@hanzo/shared/encryption";
+import { ChatMessageType, LLMAdapter } from "@hanzo/shared";
 import { z } from "zod/v4";
 
 /**

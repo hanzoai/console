@@ -1,16 +1,16 @@
-import { DatasetItemDomain } from "@langfuse/shared";
+import { DatasetItemDomain } from "@hanzo/shared";
 import { PromptExperimentConfig } from "./utils";
 import {
   GenerationDetails,
   LangfuseInternalTraceEnvironment,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   fetchObservationEvalConfigs,
   scheduleObservationEvals,
   createObservationEvalSchedulerDeps,
   type ObservationForEval,
 } from "../evaluation/observationEval";
-import { logger, traceException } from "@langfuse/shared/src/server";
+import { logger, traceException } from "@hanzo/shared/src/server";
 
 interface ScheduleExperimentEvalsParams {
   projectId: string;

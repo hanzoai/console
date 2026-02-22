@@ -24,7 +24,7 @@ import {
   type ColumnDefinition,
   type availableDatasetEvalVariables,
   JobConfigState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { z } from "zod/v4";
 import { useEffect, useMemo, useState, memo } from "react";
 import { api } from "@/src/utils/api";
@@ -36,7 +36,7 @@ import {
   type EvalTemplate,
   variableMapping,
   observationVariableMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useRouter } from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";
@@ -51,7 +51,7 @@ import {
   type LangfuseObject,
 } from "@/src/features/evals/utils/evaluator-form-utils";
 import { validateAndTransformVariableMapping } from "@/src/features/evals/utils/variable-mapping-validation";
-import { EvalTargetObject } from "@langfuse/shared";
+import { EvalTargetObject } from "@hanzo/shared";
 import { ExecutionCountTooltip } from "@/src/features/evals/components/execution-count-tooltip";
 import { Suspense, lazy } from "react";
 import {

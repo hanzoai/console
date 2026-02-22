@@ -1,4 +1,4 @@
-import { createFilterFromFilterState } from "@langfuse/shared/src/server";
+import { createFilterFromFilterState } from "@hanzo/shared/src/server";
 
 /**
  * Unit tests for the parentObservationId null-filter special case in

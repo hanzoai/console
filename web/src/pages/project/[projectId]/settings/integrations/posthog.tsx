@@ -32,7 +32,7 @@ import { posthogIntegrationFormSchema } from "@/src/features/posthog-integration
 import {
   AnalyticsIntegrationExportSource,
   EXPORT_SOURCE_OPTIONS,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";

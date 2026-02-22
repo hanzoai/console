@@ -1,4 +1,4 @@
-import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@langfuse/shared";
+import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@hanzo/shared";
 import { getChartLoadingStateProps } from "@/src/features/widgets/chart-library/chartLoadingStateUtils";
 
 describe("getChartLoadingStateProps", () => {

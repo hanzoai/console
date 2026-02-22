@@ -66,7 +66,7 @@ import {
   getDatasetItemsCountGrouped,
   getDatasetVersionForRun,
   escapeSqlLikePattern,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { aggregateScores } from "@/src/features/scores/lib/aggregateScores";
 import {
   updateDataset,

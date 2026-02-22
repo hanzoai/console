@@ -2,7 +2,7 @@ import { api } from "@/src/utils/api";
 import {
   type ExperimentEvalOptions,
   type ObservationEvalOptions,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { useMemo } from "react";
 
 export function useEvalConfigFilterOptions({

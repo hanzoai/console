@@ -17,9 +17,9 @@ import {
   type ObservationRecordInsertType,
   type EventRecordInsertType,
   type ScoreRecordInsertType,
-} from "@langfuse/shared/src/server";
-import { getGenerationLikeTypes, type FilterCondition } from "@langfuse/shared";
-import { prisma } from "@langfuse/shared/src/db";
+} from "@hanzo/shared/src/server";
+import { getGenerationLikeTypes, type FilterCondition } from "@hanzo/shared";
+import { prisma } from "@hanzo/shared/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 import type { Session } from "next-auth";

@@ -10,7 +10,7 @@ import {
   type availableTraceEvalVariables,
   type EvalTemplate,
   observationEvalVariableColumns,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { Card } from "@/src/components/ui/card";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import DocPopup from "@/src/components/layouts/doc-popup";
@@ -19,7 +19,7 @@ import {
   type EvalFormType,
   fieldHasJsonSelectorOption,
 } from "@/src/features/evals/utils/evaluator-form-utils";
-import { EvalTargetObject } from "@langfuse/shared";
+import { EvalTargetObject } from "@hanzo/shared";
 import { VariableMappingDescription } from "@/src/features/evals/components/eval-form-descriptions";
 import {
   EvaluationPromptPreview,

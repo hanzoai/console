@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
-import { SLOW_QUERY_HINT_TEXT } from "@langfuse/shared";
+import { SLOW_QUERY_HINT_TEXT } from "@hanzo/shared";
 
 const DEFAULT_HINT_DELAY_MS = 2000;
 

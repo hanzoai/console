@@ -5,7 +5,7 @@ import {
   AnnotationQueueObjectType,
   isGenerationLike,
   LangfuseInternalTraceEnvironment,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { AggUsageBadge } from "@/src/components/token-usage-badge";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";

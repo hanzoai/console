@@ -6,8 +6,8 @@ import {
   AGGREGATABLE_SCORE_TYPES,
   ScoreDataTypeEnum,
   type ScoreDomain,
-} from "@langfuse/shared";
-import type { FullEventsObservations } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import type { FullEventsObservations } from "@hanzo/shared/src/server";
 import {
   type WithStringifiedMetadata,
   toDomainArrayWithStringifiedMetadata,

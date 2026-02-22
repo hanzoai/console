@@ -1,7 +1,7 @@
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
-import { type DefaultViewScope } from "@langfuse/shared/src/server";
+import { type DefaultViewScope } from "@hanzo/shared/src/server";
 
 interface UseDefaultViewMutationsProps {
   tableName: string;

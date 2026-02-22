@@ -2,7 +2,7 @@ import {
   type EvalTemplate,
   EvalTargetObject,
   type EvalTargetObject as EvalTargetObjectType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const partnerIdentifierToName = new Map([["ragas", "Ragas"]]);
 

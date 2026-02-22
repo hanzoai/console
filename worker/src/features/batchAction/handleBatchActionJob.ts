@@ -14,7 +14,7 @@ import {
   BatchTableNames,
   FilterCondition,
   EvalTargetObject,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import Decimal from "decimal.js";
 import {
   getDatabaseReadStreamPaginated,
@@ -36,7 +36,7 @@ import {
   getEventsStreamForDataset,
 } from "../database-read-stream/event-stream";
 import { processAddObservationsToDataset } from "./processAddObservationsToDataset";
-import { ObservationAddToDatasetConfigSchema } from "@langfuse/shared";
+import { ObservationAddToDatasetConfigSchema } from "@hanzo/shared";
 import { processBatchedObservationEval } from "./processBatchedObservationEval";
 
 const CHUNK_SIZE = 1000;

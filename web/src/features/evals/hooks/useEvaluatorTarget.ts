@@ -3,7 +3,7 @@ import {
   EvalTargetObject,
   availableTraceEvalVariables,
   availableDatasetEvalVariables,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   isTraceTarget,
   isEventTarget,

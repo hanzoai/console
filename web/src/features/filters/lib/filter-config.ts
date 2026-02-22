@@ -1,5 +1,5 @@
 import type React from "react";
-import type { ColumnDefinition } from "@langfuse/shared";
+import type { ColumnDefinition } from "@hanzo/shared";
 
 interface BaseFacet {
   column: string;

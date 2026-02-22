@@ -10,7 +10,7 @@ import type {
   AnalyticsGenerationEvent,
   AnalyticsScoreEvent,
   AnalyticsObservationEvent,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 describe("Mixpanel transformers", () => {
   const projectId = "test-project-id";

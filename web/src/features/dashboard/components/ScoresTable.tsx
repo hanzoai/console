@@ -4,7 +4,7 @@ import {
   type ScoreDataTypeType,
   type ScoreSourceType,
   type FilterState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type ViewVersion } from "@/src/features/query";
 import { api } from "@/src/utils/api";
 import { compactNumberFormatter } from "@/src/utils/numbers";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EvalTargetObject } from "@langfuse/shared";
+import { EvalTargetObject } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import {
   Dialog,

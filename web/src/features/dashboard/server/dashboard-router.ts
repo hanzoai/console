@@ -33,7 +33,7 @@ import {
   InvalidRequestError,
   singleFilter,
   type FilterState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { executeQuery } from "@/src/features/query/server/queryExecutor";
 

@@ -10,7 +10,7 @@ import {
   JobExecutionStatus,
   type FilterState,
   mapEventEvalFilterColumnIdToField,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { createW3CTraceId } from "../../utils";
 
 interface ScheduleObservationEvalsParams {

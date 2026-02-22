@@ -3,7 +3,7 @@ import {
   type EvalTemplate,
   EvalTargetObject,
   JobConfigState,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type PartialConfig } from "@/src/features/evals/types";
 import { createDefaultVariableMappings } from "@/src/features/experiments/utils/evaluatorMappingUtils";
 

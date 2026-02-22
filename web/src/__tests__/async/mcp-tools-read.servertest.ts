@@ -16,7 +16,7 @@ jest.mock("@hanzo/shared/src/server", () => {
 });
 
 import { nanoid } from "nanoid";
-import { prisma } from "@langfuse/shared/src/db";
+import { prisma } from "@hanzo/shared/src/db";
 import {
   createMcpTestSetup,
   createPromptInDb,

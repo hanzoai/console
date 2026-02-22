@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { EvalTargetObject, type BatchActionQuery } from "@langfuse/shared";
+import { EvalTargetObject, type BatchActionQuery } from "@hanzo/shared";
 import { api } from "@/src/utils/api";
 import {
   Dialog,

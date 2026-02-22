@@ -1,5 +1,5 @@
 import { type z } from "zod/v4";
-import { type FilterState, type singleFilter } from "@langfuse/shared";
+import { type FilterState, type singleFilter } from "@hanzo/shared";
 import { usdFormatter } from "@/src/utils/numbers";
 import {
   type QueryType,

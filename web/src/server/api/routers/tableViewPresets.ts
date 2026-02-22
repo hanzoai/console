@@ -14,12 +14,12 @@ import {
   GetDefaultViewInput,
   SetDefaultViewInput,
   ClearDefaultViewInput,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   LangfuseConflictError,
   Prisma,
   TableViewPresetTableName,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 export const TableViewPresetsRouter = createTRPCRouter({
   create: protectedProjectProcedure.input(CreateTableViewPresetsInput).mutation(async ({ input, ctx }) => {

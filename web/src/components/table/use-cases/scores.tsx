@@ -26,7 +26,7 @@ import {
   BatchActionType,
   TableViewPresetTableName,
   type TimeFilter,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import TagList from "@/src/features/tag/components/TagList";
 import { cn } from "@/src/utils/tailwind";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";

@@ -13,7 +13,7 @@ import {
   type ScoreDataTypeType,
   TimeFilter,
   TracingSearchType,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   getDistinctScoreNames,
   queryClickhouseStream,
@@ -24,7 +24,7 @@ import {
   clickhouseSearchCondition,
   EventsQueryBuilder,
   eventsScoresAggregation,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { Readable } from "stream";
 import { env } from "../../env";
 import {

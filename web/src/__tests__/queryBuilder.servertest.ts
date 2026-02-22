@@ -12,7 +12,7 @@ import {
   createScoresCh,
   createEvent,
   createEventsCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 describe("queryBuilder", () => {

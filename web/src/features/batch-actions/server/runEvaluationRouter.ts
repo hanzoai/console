@@ -9,14 +9,14 @@ import {
   logger,
   QueueJobs,
   getObservationsCountFromEventsTable,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 import {
   BatchTableNames,
   BatchActionStatus,
   ActionId,
   EvalTargetObject,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { env } from "@/src/env.mjs";
 import { CreateObservationBatchEvaluationActionSchema } from "../validation";
 

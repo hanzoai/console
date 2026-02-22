@@ -15,7 +15,7 @@ import {
   getTraceByIdFromEventsTable,
   createObservation,
   createObservationsCh,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import waitForExpect from "wait-for-expect";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";

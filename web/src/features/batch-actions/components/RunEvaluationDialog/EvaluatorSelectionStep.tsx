@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { observationVariableMappingList } from "@langfuse/shared";
+import { observationVariableMappingList } from "@hanzo/shared";
 import { type RouterOutputs } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";

@@ -1,7 +1,7 @@
 import React from "react";
 import { act, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { SLOW_QUERY_HINT_TEXT } from "@langfuse/shared";
+import { SLOW_QUERY_HINT_TEXT } from "@hanzo/shared";
 import { ChartLoadingState } from "@/src/features/widgets/chart-library/ChartLoadingState";
 
 describe("ChartLoadingState", () => {

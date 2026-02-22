@@ -1,7 +1,7 @@
 import {
   LangfuseInternalTraceEnvironment,
   observationEvalVariableColumns,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 /**
  * Constant for observation-based evaluators (event/experiment).

@@ -5,8 +5,8 @@ import {
   type OrderByState,
   type TableViewPresetDomain,
   type ColumnDefinition,
-} from "@langfuse/shared";
-import { type DefaultViewScope } from "@langfuse/shared/src/server";
+} from "@hanzo/shared";
+import { type DefaultViewScope } from "@hanzo/shared/src/server";
 import { useRouter } from "next/router";
 import { useEffect, useCallback, useState, useRef } from "react";
 import { type VisibilityState } from "@tanstack/react-table";

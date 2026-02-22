@@ -1,4 +1,4 @@
-import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@langfuse/shared";
+import { RESOURCE_LIMIT_ERROR_MESSAGE } from "@hanzo/shared";
 
 type ChartQueryState = {
   isPending: boolean;

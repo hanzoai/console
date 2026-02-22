@@ -10,14 +10,14 @@ import {
   getEventsForAnalyticsIntegrations,
   getCurrentSpan,
   validateWebhookURL,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import {
   transformTraceForPostHog,
   transformGenerationForPostHog,
   transformEventForPostHog,
   transformScoreForPostHog,
 } from "./transformers";
-import { decrypt } from "@langfuse/shared/encryption";
+import { decrypt } from "@hanzo/shared/encryption";
 import { PostHog } from "posthog-node";
 
 type PostHogExecutionConfig = {

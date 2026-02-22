@@ -3,7 +3,7 @@ import {
   extractGenerationDetails,
   LangfuseInternalTraceEnvironment,
   type GenerationDetails,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 import type { ObservationForEval } from "../../evaluation/observationEval";
 
 // Real events captured from an experiment run

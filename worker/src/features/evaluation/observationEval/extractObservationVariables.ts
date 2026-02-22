@@ -2,7 +2,7 @@ import { type ObservationForEval } from "./types";
 import {
   observationEvalVariableColumns,
   type ObservationVariableMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { JSONPath } from "jsonpath-plus";
 import { logger } from "@hanzo/shared/src/server";
 

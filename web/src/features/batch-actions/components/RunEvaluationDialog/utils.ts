@@ -2,7 +2,7 @@ import {
   extractValueFromObject,
   type BatchActionQuery,
   type ObservationVariableMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { type RouterOutputs } from "@/src/utils/api";
 
 type ObservationPreview = RouterOutputs["observations"]["byId"];

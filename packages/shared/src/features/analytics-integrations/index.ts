@@ -1,5 +1,5 @@
 // Export source options for analytics integrations (PostHog, Mixpanel, Blob Storage)
-// This is a client-safe file that can be imported from @langfuse/shared
+// This is a client-safe file that can be imported from @hanzo/shared
 
 import { AnalyticsIntegrationExportSource } from "@prisma/client";
 

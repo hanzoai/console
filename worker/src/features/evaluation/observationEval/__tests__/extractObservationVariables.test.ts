@@ -5,7 +5,7 @@ import {
   availableObservationEvalVariableColumns,
   ObservationEvalVariableColumn,
   type ObservationVariableMapping,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 
 describe("extractObservationVariables", () => {
   const mockObservation: ObservationForEval = {

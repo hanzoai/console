@@ -3,7 +3,7 @@ import {
   variableMapping,
   observationVariableMapping,
   type EvalTargetObject,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import {
   isEventTarget,
   isExperimentTarget,

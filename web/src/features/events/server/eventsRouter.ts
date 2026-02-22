@@ -12,7 +12,7 @@ import {
   getObservationsForTraceFromEventsTable,
   MAX_OBSERVATIONS_PER_TRACE,
   applyCommentFilters,
-} from "@langfuse/shared/src/server";
+} from "@hanzo/shared/src/server";
 
 import {
   AgentGraphDataSchema,

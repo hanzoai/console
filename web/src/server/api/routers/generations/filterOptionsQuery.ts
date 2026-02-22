@@ -4,7 +4,7 @@ import {
   ObservationType,
   timeFilter,
   type ObservationOptions,
-} from "@langfuse/shared";
+} from "@hanzo/shared";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getCategoricalScoresGroupedByName,
