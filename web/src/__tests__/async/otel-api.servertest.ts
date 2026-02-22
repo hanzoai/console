@@ -323,7 +323,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
           scopeSpans: [
             {
               scope: {
-                name: "langfuse-sdk",
+                name: "console-sdk",
                 version: "4.0.0",
                 attributes: [
                   {
@@ -358,17 +358,11 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
       ],
     };
 
-    const response = await makeAPICall(
-      "POST",
-      "/api/public/otel/v1/traces",
-      payload,
-      undefined,
-      {
-        x_langfuse_sdk_name: "python",
-        x_langfuse_sdk_version: "4.0.0",
-        x_langfuse_ingestion_version: "4",
-      },
-    );
+    const response = await makeAPICall("POST", "/api/public/otel/v1/traces", payload, undefined, {
+      x_console_sdk_name: "python",
+      x_console_sdk_version: "4.0.0",
+      x_console_ingestion_version: "4",
+    });
 
     expect(response.status).toBe(200);
 

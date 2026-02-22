@@ -100,9 +100,9 @@ export default withMiddlewares({
       }
 
       // Extract SDK headers for write path decision (supports both hyphen and underscore formats)
-      const sdkName = getConsoleHeader(req.headers, "x-langfuse-sdk-name");
-      const sdkVersion = getConsoleHeader(req.headers, "x-langfuse-sdk-version");
-      const ingestionVersion = getConsoleHeader(req.headers, "x-langfuse-ingestion-version");
+      const sdkName = getConsoleHeader(req.headers, "x-console-sdk-name");
+      const sdkVersion = getConsoleHeader(req.headers, "x-console-sdk-version");
+      const ingestionVersion = getConsoleHeader(req.headers, "x-console-ingestion-version");
 
       // Reject unsupported future ingestion versions (> 4)
       // Lower versions are valid but use dual write (path A)
@@ -110,7 +110,7 @@ export default withMiddlewares({
       if (parsedIngestionVersion !== undefined && (isNaN(parsedIngestionVersion) || parsedIngestionVersion > 4)) {
         res.status(400);
         return {
-          error: `Unsupported x-langfuse-ingestion-version: "${ingestionVersion}". Maximum supported: "4".`,
+          error: `Unsupported x-console-ingestion-version: "${ingestionVersion}". Maximum supported: "4".`,
         };
       }
 

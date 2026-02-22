@@ -163,7 +163,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
     },
     {
       sdkInfo: {
-        scopeName: "langfuse-sdk",
+        scopeName: "console-sdk",
         scopeVersion: "3.9.0",
         telemetrySdkLanguage: "python",
       },
@@ -173,7 +173,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
     },
     {
       sdkInfo: {
-        scopeName: "langfuse-sdk",
+        scopeName: "console-sdk",
         scopeVersion: "3.9.0",
         telemetrySdkLanguage: "python",
       },
@@ -183,7 +183,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
     },
     {
       sdkInfo: {
-        scopeName: "langfuse-sdk",
+        scopeName: "console-sdk",
         scopeVersion: "4.4.0",
         telemetrySdkLanguage: "js",
       },
@@ -207,10 +207,10 @@ describe("getSdkInfoFromResourceSpans (legacy fallback)", () => {
         resource: {
           attributes: [{ key: "telemetry.sdk.language", value: { stringValue: "python" } }],
         },
-        scopeSpans: [{ scope: { name: "langfuse-sdk", version: "3.14.1" }, spans: [] }],
+        scopeSpans: [{ scope: { name: "console-sdk", version: "3.14.1" }, spans: [] }],
       },
       expected: {
-        scopeName: "langfuse-sdk",
+        scopeName: "console-sdk",
         scopeVersion: "3.14.1",
         telemetrySdkLanguage: "python",
       },

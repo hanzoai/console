@@ -17,7 +17,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "langfuse-langchain": "3.38.6"
+    "@hanzo/langchain-upstream": "npm:langfuse-langchain@3.38.6"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

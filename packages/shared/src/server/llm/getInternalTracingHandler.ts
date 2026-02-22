@@ -1,4 +1,4 @@
-import CallbackHandler from "langfuse-langchain";
+import CallbackHandler from "hanzo-langchain";
 import { GenerationDetails, TraceSinkParams } from "./types";
 import { processEventBatch } from "../ingestion/processEventBatch";
 import { logger } from "../logger";
@@ -19,8 +19,7 @@ export function extractGenerationDetails(
 ): GenerationDetails | null {
   // 1. Filter to only generation events
   const generationEvents = processedEvents.filter(
-    (event) =>
-      event.type === "generation-create" || event.type === "generation-update",
+    (event) => event.type === "generation-create" || event.type === "generation-update",
   );
 
   if (generationEvents.length === 0) {
@@ -34,9 +33,7 @@ export function extractGenerationDetails(
   }
 
   // 3. Filter to events for this generation id only
-  const eventsForGeneration = generationEvents.filter(
-    (event) => event.body.id === generationId,
-  );
+  const eventsForGeneration = generationEvents.filter((event) => event.body.id === generationId);
 
   // 4. Merge event bodies (last non-null/non-undefined value wins)
   // Similar to IngestionService pattern but simplified for our use case
@@ -45,11 +42,7 @@ export function extractGenerationDetails(
       for (const [key, value] of Object.entries(event.body)) {
         if (value !== undefined && value !== null) {
           // Special handling for metadata: deep merge
-          if (
-            key === "metadata" &&
-            typeof value === "object" &&
-            !Array.isArray(value)
-          ) {
+          if (key === "metadata" && typeof value === "object" && !Array.isArray(value)) {
             acc[key] = {
               ...((acc[key] as Record<string, unknown>) || {}),
               ...(value as Record<string, unknown>),
@@ -87,7 +80,7 @@ export function getInternalTracingHandler(traceSinkParams: TraceSinkParams): {
 
   const processTracedEvents = async () => {
     try {
-      const events = await (handler as any).langfuse._exportLocalEvents(traceSinkParams.targetProjectId);
+      const events = await (handler as any).console._exportLocalEvents(traceSinkParams.targetProjectId);
 
       // Filter out unnecessary Langchain spans
       const blockedSpanIds = new Set();

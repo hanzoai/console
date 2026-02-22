@@ -36,9 +36,9 @@ import {
  * for direct event writes.
  *
  * Requirements:
- * - x-langfuse-sdk-name "python" with x-langfuse-sdk-version >= 4.0.0
- * - x-langfuse-sdk-name "javascript" with x-langfuse-sdk-version >= 5.0.0
- * - x-langfuse-ingestion-version === "4" (custom OTel exporter opt-in)
+ * - x-console-sdk-name "python" with x-console-sdk-version >= 4.0.0
+ * - x-console-sdk-name "javascript" with x-console-sdk-version >= 5.0.0
+ * - x-console-ingestion-version === "4" (custom OTel exporter opt-in)
  */
 export function checkHeaderBasedDirectWrite(params: {
   sdkName?: string;
@@ -47,7 +47,7 @@ export function checkHeaderBasedDirectWrite(params: {
 }): boolean {
   const { sdkName, sdkVersion, ingestionVersion } = params;
 
-  // Check x-langfuse-ingestion-version (>= 4 means direct write eligible).
+  // Check x-console-ingestion-version (>= 4 means direct write eligible).
   // Values > 4 are rejected at the API route, so anything reaching here is valid.
   const parsed = ingestionVersion ? parseInt(ingestionVersion, 10) : NaN;
   if (!isNaN(parsed) && parsed >= 4) {
@@ -249,12 +249,12 @@ export const otelIngestionQueueProcessor: Processor = async (
     // or via the dual write (staging table and batch job to events).
     //
     // Priority 1: HTTP headers from the SDK request (batch-level decision).
-    //   - x-langfuse-sdk-name/version: Python >= 4.0.0 or JS >= 5.0.0
-    //   - x-langfuse-ingestion-version: "4" (custom OTel exporter opt-in)
+    //   - x-console-sdk-name/version: Python >= 4.0.0 or JS >= 5.0.0
+    //   - x-console-ingestion-version: "4" (custom OTel exporter opt-in)
     //   When headers qualify, ALL spans in the batch (including third-party scoped) use direct write.
     //
     // Priority 2 (fallback): Per-span OTEL scope inspection (legacy).
-    //   - scope.name contains "langfuse", sdk-experiment environment, Python >= 3.9.0 or JS >= 4.4.0
+    //   - scope.name contains "console", sdk-experiment environment, Python >= 3.9.0 or JS >= 4.4.0
     const headerBasedDirectWrite = checkHeaderBasedDirectWrite({
       sdkName: job.data.payload.sdkName,
       sdkVersion: job.data.payload.sdkVersion,
