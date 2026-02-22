@@ -77,8 +77,8 @@ export const naturalLanguageFilterRouter = createTRPCRouter({
           targetProjectId: env.HANZO_AI_FEATURES_PROJECT_ID,
           userId: ctx.session.user.id,
           metadata: {
-            hanzo_user_id: ctx.session.user.id,
-            hanzo_project_id: ctx.session.projectId,
+            console_user_id: ctx.session.user.id,
+            console_project_id: ctx.session.projectId,
           },
           prompt: promptResponse,
         };

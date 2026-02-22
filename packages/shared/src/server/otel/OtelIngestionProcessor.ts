@@ -275,16 +275,17 @@ export class OtelIngestionProcessor {
                 let toolCalls = undefined;
                 let toolCallNames = undefined;
 
-                const { toolDefinitions: rawToolDefinitions, toolArguments } =
-                  extractToolsFromObservation(input, output);
+                const { toolDefinitions: rawToolDefinitions, toolArguments } = extractToolsFromObservation(
+                  input,
+                  output,
+                );
 
                 if (rawToolDefinitions.length > 0) {
                   toolDefinitions = convertDefinitionsToMap(rawToolDefinitions);
                 }
 
                 if (toolArguments.length > 0) {
-                  const { tool_calls, tool_call_names } =
-                    convertCallsToArrays(toolArguments);
+                  const { tool_calls, tool_call_names } = convertCallsToArrays(toolArguments);
                   toolCalls = tool_calls;
                   toolCallNames = tool_call_names;
                 }
@@ -342,9 +343,7 @@ export class OtelIngestionProcessor {
                   userId: this.extractUserId(spanAttributes),
                   sessionId: this.extractSessionId(spanAttributes),
                   release:
-                    (spanAttributes?.[
-                      HanzoOtelSpanAttributes.RELEASE
-                    ] as string) ??
+                    (spanAttributes?.[HanzoOtelSpanAttributes.RELEASE] as string) ??
                     resourceAttributes?.[HanzoOtelSpanAttributes.RELEASE] ??
                     null,
 
@@ -880,12 +879,12 @@ export class OtelIngestionProcessor {
       HanzoOtelSpanAttributes.TRACE_COMPAT_USER_ID,
       HanzoOtelSpanAttributes.TRACE_COMPAT_SESSION_ID,
       // OpenAI and Langchain integrations
-      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_user_id`,
-      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_session_id`,
-      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`,
-      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_session_id`,
-      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_user_id`,
-      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_user_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_session_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_tags`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.console_session_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.console_user_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.console_tags`,
       // Vercel AI SDK
       `ai.telemetry.metadata.sessionId`,
       `ai.telemetry.metadata.userId`,
@@ -1492,8 +1491,8 @@ export class OtelIngestionProcessor {
     const userIdKeys = [
       "hanzo.user.id",
       "user.id",
-      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_user_id`,
-      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_user_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_user_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.console_user_id`,
       `ai.telemetry.metadata.userId`,
     ];
 
@@ -1509,8 +1508,8 @@ export class OtelIngestionProcessor {
       "hanzo.session.id",
       "session.id",
       "gen_ai.conversation.id",
-      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_session_id`,
-      `${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_session_id`,
+      `${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_session_id`,
+      `${HanzoOtelSpanAttributes.TRACE_METADATA}.console_session_id`,
       `ai.telemetry.metadata.sessionId`,
     ];
 
@@ -1832,8 +1831,8 @@ export class OtelIngestionProcessor {
     const tagsValue =
       attributes[HanzoOtelSpanAttributes.TRACE_TAGS] ||
       attributes["hanzo.tags"] ||
-      attributes[`${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.hanzo_tags`] ||
-      attributes[`${HanzoOtelSpanAttributes.TRACE_METADATA}.hanzo_tags`] ||
+      attributes[`${HanzoOtelSpanAttributes.OBSERVATION_METADATA}.console_tags`] ||
+      attributes[`${HanzoOtelSpanAttributes.TRACE_METADATA}.console_tags`] ||
       attributes["ai.telemetry.metadata.tags"] ||
       attributes["tag.tags"];
 

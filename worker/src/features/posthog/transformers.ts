@@ -18,23 +18,23 @@ type PostHogEvent = {
 };
 
 export const transformTraceForPostHog = (trace: AnalyticsTraceEvent, projectId: string): PostHogEvent => {
-  const uuid = v5(`${projectId}-${trace.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
+  const uuid = v5(`${projectId}-${trace.console_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
 
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = trace;
 
   return {
-    distinctId: trace.hanzo_user_id ? (trace.hanzo_user_id as string) : uuid,
+    distinctId: trace.console_user_id ? (trace.console_user_id as string) : uuid,
     event: "hanzo trace",
     properties: {
       ...otherProps,
       $session_id: posthog_session_id ?? null,
       // PostHog-specific: add user profile enrichment or mark as anonymous
-      ...(trace.hanzo_user_id && trace.hanzo_user_url
+      ...(trace.console_user_id && trace.console_user_url
         ? {
             $set: {
-              hanzo_user_url: trace.hanzo_user_url,
+              console_user_url: trace.console_user_url,
             },
           }
         : // Capture as anonymous PostHog event (cheaper/faster)
@@ -50,23 +50,23 @@ export const transformGenerationForPostHog = (
   generation: AnalyticsGenerationEvent,
   projectId: string,
 ): PostHogEvent => {
-  const uuid = v5(`${projectId}-${generation.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
+  const uuid = v5(`${projectId}-${generation.console_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
 
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = generation;
 
   return {
-    distinctId: generation.hanzo_user_id ? (generation.hanzo_user_id as string) : uuid,
+    distinctId: generation.console_user_id ? (generation.console_user_id as string) : uuid,
     event: "hanzo generation",
     properties: {
       ...otherProps,
       $session_id: posthog_session_id ?? null,
       // PostHog-specific: add user profile enrichment or mark as anonymous
-      ...(generation.hanzo_user_id && generation.hanzo_user_url
+      ...(generation.console_user_id && generation.console_user_url
         ? {
             $set: {
-              hanzo_user_url: generation.hanzo_user_url,
+              console_user_url: generation.console_user_url,
             },
           }
         : // Capture as anonymous PostHog event (cheaper/faster)
@@ -79,23 +79,23 @@ export const transformGenerationForPostHog = (
 };
 
 export const transformScoreForPostHog = (score: AnalyticsScoreEvent, projectId: string): PostHogEvent => {
-  const uuid = v5(`${projectId}-${score.hanzo_id}`, POSTHOG_UUID_NAMESPACE);
+  const uuid = v5(`${projectId}-${score.console_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
 
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = score;
 
   return {
-    distinctId: score.hanzo_user_id ? (score.hanzo_user_id as string) : uuid,
+    distinctId: score.console_user_id ? (score.console_user_id as string) : uuid,
     event: "hanzo score",
     properties: {
       ...otherProps,
       $session_id: posthog_session_id ?? null,
       // PostHog-specific: add user profile enrichment or mark as anonymous
-      ...(score.hanzo_user_id && score.hanzo_user_url
+      ...(score.console_user_id && score.console_user_url
         ? {
             $set: {
-              hanzo_user_url: score.hanzo_user_url,
+              console_user_url: score.console_user_url,
             },
           }
         : // Capture as anonymous PostHog event (cheaper/faster)

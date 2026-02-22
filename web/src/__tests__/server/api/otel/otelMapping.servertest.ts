@@ -3481,15 +3481,15 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "hanzo.trace.metadata.hanzo_user_id",
+                      key: "hanzo.trace.metadata.console_user_id",
                       value: { stringValue: "user-123" },
                     },
                     {
-                      key: "hanzo.trace.metadata.hanzo_session_id",
+                      key: "hanzo.trace.metadata.console_session_id",
                       value: { stringValue: "session-456" },
                     },
                     {
-                      key: "hanzo.trace.metadata.hanzo_tags",
+                      key: "hanzo.trace.metadata.console_tags",
                       value: { stringValue: "tag1,tag2" },
                     },
                   ],
@@ -3562,15 +3562,15 @@ describe("OTel Resource Span Mapping", () => {
                   },
                   attributes: [
                     {
-                      key: "hanzo.observation.metadata.hanzo_user_id",
+                      key: "hanzo.observation.metadata.console_user_id",
                       value: { stringValue: "user-789" },
                     },
                     {
-                      key: "hanzo.observation.metadata.hanzo_session_id",
+                      key: "hanzo.observation.metadata.console_session_id",
                       value: { stringValue: "session-abc" },
                     },
                     {
-                      key: "hanzo.observation.metadata.hanzo_tags",
+                      key: "hanzo.observation.metadata.console_tags",
                       value: { stringValue: "tag3,tag4" },
                     },
                   ],

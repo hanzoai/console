@@ -22,7 +22,7 @@ export type MixpanelEvent = {
 };
 
 export const transformTraceForMixpanel = (trace: AnalyticsTraceEvent, projectId: string): MixpanelEvent => {
-  const insertId = v5(`${projectId}-${trace.hanzo_id}`, MIXPANEL_UUID_NAMESPACE);
+  const insertId = v5(`${projectId}-${trace.console_id}`, MIXPANEL_UUID_NAMESPACE);
 
   // Extract session IDs and exclude from properties
 
@@ -32,12 +32,12 @@ export const transformTraceForMixpanel = (trace: AnalyticsTraceEvent, projectId:
     event: "[Hanzo] Trace",
     properties: {
       time: new Date(trace.timestamp as Date).getTime(),
-      distinct_id: trace.hanzo_user_id ? (trace.hanzo_user_id as string) : insertId,
+      distinct_id: trace.console_user_id ? (trace.console_user_id as string) : insertId,
       $insert_id: insertId,
-      ...(trace.hanzo_user_id ? { $user_id: trace.hanzo_user_id as string } : {}),
+      ...(trace.console_user_id ? { $user_id: trace.console_user_id as string } : {}),
       session_id:
-        mixpanel_session_id || trace.hanzo_session_id
-          ? (mixpanel_session_id as string) || (trace.hanzo_session_id as string)
+        mixpanel_session_id || trace.console_session_id
+          ? (mixpanel_session_id as string) || (trace.console_session_id as string)
           : undefined,
       ...otherProps,
     },
@@ -48,7 +48,7 @@ export const transformGenerationForMixpanel = (
   generation: AnalyticsGenerationEvent,
   projectId: string,
 ): MixpanelEvent => {
-  const insertId = v5(`${projectId}-${generation.hanzo_id}`, MIXPANEL_UUID_NAMESPACE);
+  const insertId = v5(`${projectId}-${generation.console_id}`, MIXPANEL_UUID_NAMESPACE);
 
   // Extract session IDs and exclude from properties
 
@@ -58,12 +58,12 @@ export const transformGenerationForMixpanel = (
     event: "[Hanzo] Generation",
     properties: {
       time: new Date(generation.timestamp as Date).getTime(),
-      distinct_id: generation.hanzo_user_id ? (generation.hanzo_user_id as string) : insertId,
+      distinct_id: generation.console_user_id ? (generation.console_user_id as string) : insertId,
       $insert_id: insertId,
-      ...(generation.hanzo_user_id ? { $user_id: generation.hanzo_user_id as string } : {}),
+      ...(generation.console_user_id ? { $user_id: generation.console_user_id as string } : {}),
       session_id:
-        mixpanel_session_id || generation.hanzo_session_id
-          ? (mixpanel_session_id as string) || (generation.hanzo_session_id as string)
+        mixpanel_session_id || generation.console_session_id
+          ? (mixpanel_session_id as string) || (generation.console_session_id as string)
           : undefined,
       ...otherProps,
     },
@@ -71,7 +71,7 @@ export const transformGenerationForMixpanel = (
 };
 
 export const transformScoreForMixpanel = (score: AnalyticsScoreEvent, projectId: string): MixpanelEvent => {
-  const insertId = v5(`${projectId}-${score.hanzo_id}`, MIXPANEL_UUID_NAMESPACE);
+  const insertId = v5(`${projectId}-${score.console_id}`, MIXPANEL_UUID_NAMESPACE);
 
   // Extract session IDs and exclude from properties
 
@@ -81,12 +81,12 @@ export const transformScoreForMixpanel = (score: AnalyticsScoreEvent, projectId:
     event: "[Hanzo] Score",
     properties: {
       time: new Date(score.timestamp as Date).getTime(),
-      distinct_id: score.hanzo_user_id ? (score.hanzo_user_id as string) : insertId,
+      distinct_id: score.console_user_id ? (score.console_user_id as string) : insertId,
       $insert_id: insertId,
-      ...(score.hanzo_user_id ? { $user_id: score.hanzo_user_id as string } : {}),
+      ...(score.console_user_id ? { $user_id: score.console_user_id as string } : {}),
       session_id:
-        mixpanel_session_id || score.hanzo_session_id
-          ? (mixpanel_session_id as string) || (score.hanzo_session_id as string)
+        mixpanel_session_id || score.console_session_id
+          ? (mixpanel_session_id as string) || (score.console_session_id as string)
           : undefined,
       ...otherProps,
     },
