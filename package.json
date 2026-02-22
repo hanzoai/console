@@ -1,7 +1,7 @@
 {
-  "name": "hanzo",
-  "version": "3.152.0",
-  "author": "engineering@hanzo.com",
+  "name": "langfuse",
+  "version": "3.155.0",
+  "author": "engineering@langfuse.com",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -45,7 +45,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
     "release-it": "^19.0.4",
-    "turbo": "^2.7.6"
+    "turbo": "^2.8.10"
   },
   "release-it": {
     "git": {

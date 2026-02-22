@@ -9,6 +9,7 @@ import { context, SpanKind, trace } from "@opentelemetry/api";
 import { backOff } from "exponential-backoff";
 import { StorageService, StorageServiceFactory } from "../services/StorageService";
 import { ClickHouseSettings } from "@clickhouse/client";
+import { RESOURCE_LIMIT_ERROR_MESSAGE } from "../../errors/errorMessages";
 
 /**
  * Custom error class for ClickHouse resource-related errors
@@ -34,10 +35,7 @@ const ERROR_TYPE_CONFIG: Record<
 type ErrorType = keyof typeof ERROR_TYPE_CONFIG;
 
 export class ClickHouseResourceError extends Error {
-  static ERROR_ADVICE_MESSAGE = [
-    "Your query could not be completed because it required too many resources.",
-    "Please narrow your request by adding more specific filters (e.g., a shorter date range).",
-  ].join(" ");
+  static ERROR_ADVICE_MESSAGE = RESOURCE_LIMIT_ERROR_MESSAGE;
 
   public readonly errorType: ErrorType;
 
@@ -86,7 +84,25 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   return s3StorageServiceClient;
 };
 
-export async function upsertClickhouse<T extends Record<string, unknown>>(opts: {
+/**
+ * Guard against reads from the legacy 'events' table.
+ * Reads must use events_core or events_full instead.
+ * Matches "FROM events" or "JOIN events" as a standalone table name
+ * (not events_core, events_full, or CTE aliases like filtered_events).
+ */
+const LEGACY_EVENTS_TABLE_PATTERN = /\b(?:from|join)\s+events\b(?!_)/i;
+
+function assertNoLegacyEventsRead(query: string): void {
+  if (LEGACY_EVENTS_TABLE_PATTERN.test(query)) {
+    throw new Error(
+      `Reading from legacy 'events' table is forbidden. Use events_core or events_full. Query: ${query.slice(0, 200)}`,
+    );
+  }
+}
+
+export async function upsertClickhouse<
+  T extends Record<string, unknown>,
+>(opts: {
   table: "scores" | "traces" | "observations" | "traces_null";
   records: T[];
   eventBodyMapper: (body: T) => Record<string, unknown>;
@@ -187,7 +203,10 @@ export async function* queryClickhouseStream<T>(opts: {
   tags?: Record<string, string>;
   preferredClickhouseService?: PreferredClickhouseService;
   clickhouseSettings?: ClickHouseSettings;
+  allowLegacyEventsRead?: boolean;
 }): AsyncGenerator<T> {
+  if (!opts.allowLegacyEventsRead) assertNoLegacyEventsRead(opts.query);
+
   const tracer = getTracer("clickhouse-query-stream");
   const span = tracer.startSpan("clickhouse-query-stream", {
     kind: SpanKind.CLIENT,
@@ -314,13 +333,18 @@ export async function queryClickhouse<T>(opts: {
   tags?: Record<string, string>;
   preferredClickhouseService?: PreferredClickhouseService;
   clickhouseSettings?: ClickHouseSettings;
+  allowLegacyEventsRead?: boolean;
 }): Promise<T[]> {
-  return await instrumentAsync({ name: "clickhouse-query", spanKind: SpanKind.CLIENT }, async (span) => {
-    // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
-    span.setAttribute("ch.query.text", opts.query);
-    span.setAttribute("db.system", "clickhouse");
-    span.setAttribute("db.query.text", opts.query);
-    span.setAttribute("db.operation.name", "SELECT");
+  if (!opts.allowLegacyEventsRead) assertNoLegacyEventsRead(opts.query);
+
+  return await instrumentAsync(
+    { name: "clickhouse-query", spanKind: SpanKind.CLIENT },
+    async (span) => {
+      // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
+      span.setAttribute("ch.query.text", opts.query);
+      span.setAttribute("db.system", "clickhouse");
+      span.setAttribute("db.query.text", opts.query);
+      span.setAttribute("db.operation.name", "SELECT");
 
     // Retry logic for socket hang up and other network errors
     return await backOff(
@@ -401,6 +425,7 @@ export async function commandClickhouse(opts: {
   tags?: Record<string, string>;
   clickhouseSettings?: ClickHouseSettings;
   abortSignal?: AbortSignal;
+  session_id?: string;
 }): Promise<void> {
   return await instrumentAsync({ name: "clickhouse-command", spanKind: SpanKind.CLIENT }, async (span) => {
     // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
@@ -409,20 +434,23 @@ export async function commandClickhouse(opts: {
     span.setAttribute("db.query.text", opts.query);
     span.setAttribute("db.operation.name", "COMMAND");
 
-    const res = await clickhouseClient(opts.clickhouseConfigs).command({
-      query: opts.query,
-      query_params: opts.params,
-      ...(opts.tags?.queryId ? { query_id: opts.tags.queryId as string } : {}),
-      ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
-      clickhouse_settings: {
-        ...opts.clickhouseSettings,
-        log_comment: JSON.stringify(opts.tags ?? {}),
-      },
-    });
-    // same logic as for prisma. we want to see queries in development
-    if (env.NODE_ENV === "development") {
-      logger.info(`clickhouse:query ${res.query_id} ${opts.query}`);
-    }
+      const res = await clickhouseClient(opts.clickhouseConfigs).command({
+        query: opts.query,
+        query_params: opts.params,
+        ...(opts.session_id ? { session_id: opts.session_id } : {}),
+        ...(opts.tags?.queryId
+          ? { query_id: opts.tags.queryId as string }
+          : {}),
+        ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
+        clickhouse_settings: {
+          ...opts.clickhouseSettings,
+          log_comment: JSON.stringify(opts.tags ?? {}),
+        },
+      });
+      // same logic as for prisma. we want to see queries in development
+      if (env.NODE_ENV === "development") {
+        logger.info(`clickhouse:query ${res.query_id} ${opts.query}`);
+      }
 
     span.setAttribute("ch.queryId", res.query_id);
 

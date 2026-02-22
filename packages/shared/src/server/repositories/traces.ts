@@ -22,6 +22,8 @@ import type { AnalyticsTraceEvent } from "../analytics-integrations/types";
 import { measureAndReturn } from "../clickhouse/measureAndReturn";
 import { DEFAULT_RENDERING_PROPS, RenderingProps } from "../utils/rendering";
 import { logger } from "../logger";
+import { traceException } from "../instrumentation";
+import { prisma } from "../../db";
 
 /**
  * Checks if trace exists in clickhouse.
@@ -271,7 +273,24 @@ export const getTracesBySessionId = async (projectId: string, sessionIds: string
 };
 
 export const hasAnyTrace = async (projectId: string) => {
-  return measureAndReturn({
+  // Check PostgreSQL flag first — once set, it's never reverted
+  try {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { hasTraces: true },
+    });
+    if (project?.hasTraces) {
+      return true;
+    }
+  } catch (error) {
+    traceException(error);
+    logger.error("Failed to read hasTraces flag from PostgreSQL", {
+      projectId,
+      error,
+    });
+  }
+
+  const result = await measureAndReturn({
     operationName: "hasAnyTrace",
     projectId,
     input: {
@@ -298,11 +317,33 @@ export const hasAnyTrace = async (projectId: string) => {
           projectId: input.projectId,
         },
         tags: input.tags,
+        clickhouseSettings: {
+          max_threads: 1,
+        },
       });
 
       return rows.length > 0;
     },
   });
+
+  // Persist positive result in PostgreSQL — once a project has traces, it stays true
+  // Only update if not already set to avoid unnecessary writes
+  if (result) {
+    try {
+      await prisma.project.updateMany({
+        where: { id: projectId, hasTraces: false },
+        data: { hasTraces: true },
+      });
+    } catch (error) {
+      traceException(error);
+      logger.error("Failed to persist hasTraces flag to PostgreSQL", {
+        projectId,
+        error,
+      });
+    }
+  }
+
+  return result;
 };
 
 export const getTraceCountsByProjectInCreationInterval = async ({ start, end }: { start: Date; end: Date }) => {
@@ -1232,6 +1273,7 @@ export const getTracesForBlobStorageExport = function (projectId: string, minTim
 
 export const getTracesForAnalyticsIntegrations = async function* (
   projectId: string,
+  projectName: string,
   minTimestamp: Date,
   maxTimestamp: Date,
 ) {
@@ -1306,17 +1348,18 @@ export const getTracesForAnalyticsIntegrations = async function* (
       hanzo_user_url: record.user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.user_id as string)}`
         : undefined,
-      hanzo_cost_usd: record.total_cost,
-      hanzo_count_observations: record.observation_count,
-      hanzo_session_id: record.session_id,
-      hanzo_project_id: projectId,
-      hanzo_user_id: record.user_id || null,
-      hanzo_latency: record.latency,
-      hanzo_release: record.release,
-      hanzo_version: record.version,
-      hanzo_tags: record.tags,
-      hanzo_environment: record.environment,
-      hanzo_event_version: "1.0.0",
+      langfuse_cost_usd: record.total_cost,
+      langfuse_count_observations: record.observation_count,
+      langfuse_session_id: record.session_id,
+      langfuse_project_id: projectId,
+      langfuse_project_name: projectName,
+      langfuse_user_id: record.user_id || null,
+      langfuse_latency: record.latency,
+      langfuse_release: record.release,
+      langfuse_version: record.version,
+      langfuse_tags: record.tags,
+      langfuse_environment: record.environment,
+      langfuse_event_version: "1.0.0",
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsTraceEvent;

@@ -403,6 +403,8 @@ export type OpenAIModel = (typeof openAIModels)[number];
 export const anthropicModels = [
   "claude-sonnet-4-5-20250929",
   "claude-haiku-4-5-20251001",
+  "claude-sonnet-4-6",
+  "claude-opus-4-6",
   "claude-opus-4-5-20251101",
   "claude-sonnet-4-20250514",
   "claude-opus-4-1-20250805",
@@ -423,6 +425,7 @@ export const anthropicModels = [
 export const vertexAIModels = [
   "gemini-2.5-flash",
   "gemini-2.5-pro",
+  "gemini-3.1-pro-preview",
   "gemini-3-pro-preview",
   "gemini-3-flash-preview",
   "gemini-2.5-flash-preview-09-2025",
@@ -441,6 +444,7 @@ export const vertexAIModels = [
 export const googleAIStudioModels = [
   "gemini-2.5-flash",
   "gemini-2.5-pro",
+  "gemini-3.1-pro-preview",
   "gemini-3-pro-preview",
   "gemini-3-flash-preview",
   "gemini-2.5-flash-lite",
@@ -497,6 +501,18 @@ export enum HanzoInternalTraceEnvironment {
   LLMJudge = "hanzo-llm-as-a-judge",
 }
 
+/**
+ * Details of a generation extracted from traced events.
+ * Used to pass generation information from internal tracing to callbacks.
+ */
+export type GenerationDetails = {
+  observationId: string;
+  name: string;
+  input: unknown;
+  output: unknown;
+  metadata: Record<string, unknown>;
+};
+
 export type TraceSinkParams = {
   /**
    * IMPORTANT: This controls into what project the resulting traces are ingested.
@@ -512,4 +528,9 @@ export type TraceSinkParams = {
     name: string;
     version: number;
   };
+  /**
+   * Optional callback invoked after the generation events have been processed.
+   * Called with merged generation details (from create + update events).
+   */
+  onGenerationComplete?: (details: GenerationDetails) => void;
 };

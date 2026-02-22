@@ -71,8 +71,14 @@
   <a href="./README.kr.md"><img alt="README in Korean" src="https://img.shields.io/badge/한국어-d9d9d9"></a>
 </p>
 
-Hanzo is an **open source LLM engineering** platform. It helps teams collaboratively
-**develop, monitor, evaluate,** and **debug** AI applications. Hanzo can be **self-hosted in minutes** and is **battle-tested**.
+<p align="center">
+   <a href="https://github.com/ClickHouse/ClickHouse"><strong>Proudly made with ClickHouse open source database</strong></a>
+</p>
+
+
+
+Langfuse is an **open source LLM engineering** platform. It helps teams collaboratively
+**develop, monitor, evaluate,** and **debug** AI applications. Langfuse can be **self-hosted in minutes** and is **battle-tested**.
 
 [![Hanzo Overview Video](https://github.com/user-attachments/assets/925d71db-6331-445e-8f3e-727ee95d1c9f)](https://hanzo.com/watch-demo)
 

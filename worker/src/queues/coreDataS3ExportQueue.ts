@@ -32,77 +32,87 @@ export const coreDataS3ExportProcessor: Processor = async (): Promise<void> => {
   const s3Client = getS3StorageServiceClient(env.HANZO_S3_CORE_DATA_UPLOAD_BUCKET);
 
   // Fetch table data
-  const [projects, users, organizations, orgMemberships, projectMemberships, prompts, billingMeterBackup, surveys] =
-    await Promise.all([
-      prisma.project.findMany({
-        select: {
-          id: true,
-          name: true,
-          orgId: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          admin: true,
-          email: true,
-          featureFlags: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.organization.findMany({
-        select: {
-          id: true,
-          name: true,
-          cloudConfig: true,
-          // Remove both createdAt and updatedAt as they're not in the OrganizationSelect type
-        },
-      }),
-      prisma.organizationMembership.findMany({
-        select: {
-          id: true,
-          role: true,
-          orgId: true,
-          userId: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.projectMembership.findMany({
-        select: {
-          role: true,
-          projectId: true,
-          userId: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.prompt.findMany({
-        select: {
-          id: true,
-          name: true,
-          projectId: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.billingMeterBackup.findMany(),
-      prisma.survey.findMany({
-        select: {
-          id: true,
-          surveyName: true,
-          response: true,
-          userId: true,
-          userEmail: true,
-          orgId: true,
-          createdAt: true,
-        },
-      }),
-    ]);
+  const [
+    projects,
+    users,
+    organizations,
+    orgMemberships,
+    projectMemberships,
+    prompts,
+    billingMeterBackup,
+    surveys,
+  ] = await Promise.all([
+    prisma.project.findMany({
+      select: {
+        id: true,
+        name: true,
+        orgId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        admin: true,
+        email: true,
+        featureFlags: true,
+        v4BetaEnabled: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.organization.findMany({
+      select: {
+        id: true,
+        name: true,
+        cloudConfig: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.organizationMembership.findMany({
+      select: {
+        id: true,
+        role: true,
+        orgId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.projectMembership.findMany({
+      select: {
+        role: true,
+        projectId: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.prompt.findMany({
+      select: {
+        id: true,
+        name: true,
+        projectId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.billingMeterBackup.findMany(),
+    prisma.survey.findMany({
+      select: {
+        id: true,
+        surveyName: true,
+        response: true,
+        userId: true,
+        userEmail: true,
+        orgId: true,
+        createdAt: true,
+      },
+    }),
+  ]);
 
   // Iterate through the tables and upload them to S3 as JSONLs
   await Promise.all(

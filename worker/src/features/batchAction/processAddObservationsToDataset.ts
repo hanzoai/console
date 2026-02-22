@@ -1,7 +1,12 @@
-import { logger, traceException } from "@hanzo/shared/src/server";
-import { prisma } from "@hanzo/shared/src/db";
-import { createManyDatasetItems } from "@hanzo/shared/src/server";
-import { applyFullMapping, BatchActionStatus, type ObservationAddToDatasetConfig } from "@hanzo/shared";
+import { logger, traceException } from "@langfuse/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
+import { createManyDatasetItems } from "@langfuse/shared/src/server";
+import {
+  applyFullMapping,
+  BatchActionStatus,
+  type ObservationAddToDatasetConfig,
+  type MappingError,
+} from "@langfuse/shared";
 
 // Chunk size for batch processing. Smaller than the default 1000 because:
 // 1. Each observation requires JSON path evaluation and mapping transformation
@@ -17,6 +22,14 @@ type ObservationForMapping = {
   metadata: unknown;
 };
 
+function formatMappingErrors(
+  observationId: string,
+  errors: MappingError[],
+): string {
+  const details = errors.map((e) => e.message).join("; ");
+  return `Observation ${observationId}: Mapping failed - ${details}`;
+}
+
 async function processChunk(params: {
   projectId: string;
   datasetId: string;
@@ -25,7 +38,18 @@ async function processChunk(params: {
 }): Promise<{ processed: number; failed: number; errors: string[] }> {
   const { projectId, datasetId, mapping, observations } = params;
 
-  const items = observations.map((obs) => {
+  const items: Array<{
+    datasetId: string;
+    input: unknown;
+    expectedOutput: unknown;
+    metadata: unknown;
+    sourceTraceId: string;
+    sourceObservationId: string;
+  }> = [];
+  let mappingFailedCount = 0;
+  const mappingErrors: string[] = [];
+
+  for (const obs of observations) {
     const mapped = applyFullMapping({
       observation: {
         input: obs.input,
@@ -35,15 +59,30 @@ async function processChunk(params: {
       mapping,
     });
 
-    return {
+    if (mapped.errors.length > 0) {
+      mappingFailedCount++;
+      mappingErrors.push(formatMappingErrors(obs.id, mapped.errors));
+      continue;
+    }
+
+    items.push({
       datasetId,
       input: mapped.input,
       expectedOutput: mapped.expectedOutput ?? undefined,
       metadata: mapped.metadata ?? undefined,
       sourceTraceId: obs.traceId,
       sourceObservationId: obs.id,
+    });
+  }
+
+  // If all observations failed mapping, return early
+  if (items.length === 0) {
+    return {
+      processed: 0,
+      failed: mappingFailedCount,
+      errors: mappingErrors,
     };
-  });
+  }
 
   try {
     const result = await createManyDatasetItems({
@@ -58,15 +97,19 @@ async function processChunk(params: {
       // All items failed
       return {
         processed: 0,
-        failed: items.length,
-        errors: result.validationErrors.map(
-          (e) => `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
-        ),
+        failed: items.length + mappingFailedCount,
+        errors: [
+          ...mappingErrors,
+          ...result.validationErrors.map(
+            (e) =>
+              `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
+          ),
+        ],
       };
     }
 
     // Success (possibly partial)
-    const errors = result.validationErrors
+    const validationErrors = result.validationErrors
       ? result.validationErrors.map(
           (e) => `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
         )
@@ -74,16 +117,19 @@ async function processChunk(params: {
 
     return {
       processed: result.successCount,
-      failed: result.failedCount,
-      errors,
+      failed: result.failedCount + mappingFailedCount,
+      errors: [...mappingErrors, ...validationErrors],
     };
   } catch (error) {
     logger.error("Failed to create dataset items in chunk", error);
     traceException(error);
     return {
       processed: 0,
-      failed: items.length,
-      errors: [`Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`],
+      failed: items.length + mappingFailedCount,
+      errors: [
+        ...mappingErrors,
+        `Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`,
+      ],
     };
   }
 }

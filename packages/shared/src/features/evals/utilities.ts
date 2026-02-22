@@ -1,6 +1,4 @@
-import z from "zod/v4";
 import { JSONPath } from "jsonpath-plus";
-import { variableMapping } from "./types";
 
 /**
  * Parses an unknown value to a string representation
@@ -63,10 +61,11 @@ function parseJsonDefault(selectedColumn: unknown, jsonSelector: string) {
 
 export function extractValueFromObject(
   obj: Record<string, unknown>,
-  mapping: z.infer<typeof variableMapping>,
+  selectedColumnId: string,
+  jsonSelector?: string,
   parseJson?: (selectedColumn: unknown, jsonSelector: string) => unknown,
 ): { value: string; error: Error | null } {
-  let selectedColumn = obj[mapping.selectedColumnId];
+  let selectedColumn = obj[selectedColumnId];
 
   // Simple preprocessing: attempt to parse to valid JSON object
   if (typeof selectedColumn === "string") {
@@ -78,9 +77,9 @@ export function extractValueFromObject(
   let jsonSelectedColumn;
   let error: Error | null = null;
 
-  if (mapping.jsonSelector && selectedColumn) {
+  if (jsonSelector && selectedColumn) {
     try {
-      jsonSelectedColumn = jsonParser(selectedColumn, mapping.jsonSelector);
+      jsonSelectedColumn = jsonParser(selectedColumn, jsonSelector);
     } catch (err) {
       error = err instanceof Error ? err : new Error("There was an unknown error parsing the JSON");
       jsonSelectedColumn = selectedColumn; // Fallback to original value

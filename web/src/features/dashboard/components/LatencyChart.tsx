@@ -6,7 +6,6 @@ import {
   isEmptyTimeSeries,
 } from "@/src/features/dashboard/components/hooks";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
-import { BaseTimeSeriesChart } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
 import { TabComponent } from "@/src/features/dashboard/components/TabsComponent";
 import { latencyFormatter } from "@/src/utils/numbers";
 import {
@@ -14,9 +13,18 @@ import {
   dashboardDateRangeAggregationSettings,
 } from "@/src/utils/date-range-utils";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { ModelSelectorPopover, useModelSelection } from "@/src/features/dashboard/components/ModelSelector";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  ModelSelectorPopover,
+  useModelSelection,
+} from "@/src/features/dashboard/components/ModelSelector";
+import {
+  type QueryType,
+  type ViewVersion,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 import type { DatabaseRow } from "@/src/server/api/services/sqlInterface";
+import { Chart } from "@/src/features/widgets/chart-library/Chart";
+import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 
 export const GenerationLatencyChart = ({
   className,
@@ -26,6 +34,7 @@ export const GenerationLatencyChart = ({
   fromTimestamp,
   toTimestamp,
   isLoading = false,
+  metricsVersion,
 }: {
   className?: string;
   projectId: string;
@@ -34,9 +43,22 @@ export const GenerationLatencyChart = ({
   fromTimestamp: Date;
   toTimestamp: Date;
   isLoading?: boolean;
+  metricsVersion?: ViewVersion;
 }) => {
-  const { allModels, selectedModels, setSelectedModels, isAllSelected, buttonText, handleSelectAll } =
-    useModelSelection(projectId, globalFilterState, fromTimestamp, toTimestamp);
+  const {
+    allModels,
+    selectedModels,
+    setSelectedModels,
+    isAllSelected,
+    buttonText,
+    handleSelectAll,
+  } = useModelSelection(
+    projectId,
+    globalFilterState,
+    fromTimestamp,
+    toTimestamp,
+    metricsVersion,
+  );
 
   const latenciesQuery: QueryType = {
     view: "observations",
@@ -75,6 +97,7 @@ export const GenerationLatencyChart = ({
     {
       projectId,
       query: latenciesQuery,
+      version: metricsVersion,
     },
     {
       enabled: !isLoading && selectedModels.length > 0 && allModels.length > 0,
@@ -149,13 +172,19 @@ export const GenerationLatencyChart = ({
             content: (
               <>
                 {!isEmptyTimeSeries({ data: item.data }) ? (
-                  <BaseTimeSeriesChart
-                    className="[&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground"
-                    agg={agg}
-                    data={item.data}
-                    connectNulls={true}
-                    valueFormatter={latencyFormatter}
-                  />
+                  <div className="h-80 w-full shrink-0">
+                    <Chart
+                      chartType="LINE_TIME_SERIES"
+                      data={timeSeriesToDataPoints(item.data, agg)}
+                      rowLimit={100}
+                      chartConfig={{
+                        type: "LINE_TIME_SERIES",
+                        show_data_point_dots: false,
+                      }}
+                      valueFormatter={latencyFormatter}
+                      legendPosition="above"
+                    />
+                  </div>
                 ) : (
                   <NoDataOrLoading isLoading={isLoading || latencies.isPending} />
                 )}

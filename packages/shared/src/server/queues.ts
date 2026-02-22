@@ -1,6 +1,7 @@
 import { z } from "zod/v4";
 import { eventTypes } from "./ingestion/types";
 import {
+  ActionId,
   BatchActionQuerySchema,
   BatchActionType,
 } from "../features/batchAction/types";
@@ -40,6 +41,9 @@ export const OtelIngestionEvent = z.object({
     }),
   }),
   propagatedHeaders: z.record(z.string(), z.string()).optional(),
+  sdkName: z.string().optional(),
+  sdkVersion: z.string().optional(),
+  ingestionVersion: z.string().optional(),
 });
 
 export const BatchExportJobSchema = z.object({
@@ -185,6 +189,14 @@ export const BatchActionProcessingEventSchema = z.discriminatedUnion(
       batchActionId: z.string(),
       config: ObservationAddToDatasetConfigSchema,
       type: z.enum(BatchActionType),
+    }),
+    z.object({
+      actionId: z.literal(ActionId.ObservationBatchEvaluation),
+      projectId: z.string(),
+      query: BatchActionQuerySchema,
+      cutoffCreatedAt: z.date(),
+      batchActionId: z.string(),
+      evaluatorIds: z.array(z.string()),
     }),
   ],
 );

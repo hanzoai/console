@@ -1,7 +1,11 @@
 import React from "react";
 import { type DataPoint } from "@/src/features/widgets/chart-library/chart-props";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { ChartContainer, ChartTooltip } from "@/src/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/src/components/ui/chart";
 import { compactSmallNumberFormatter } from "@/src/utils/numbers";
 
 interface HistogramDataPoint {
@@ -12,7 +16,13 @@ interface HistogramDataPoint {
   height?: number;
 }
 
-const HistogramChart = ({ data }: { data: DataPoint[] }) => {
+const HistogramChart = ({
+  data,
+  subtleFill = false,
+}: {
+  data: DataPoint[];
+  subtleFill?: boolean;
+}) => {
   const transformHistogramData = (data: DataPoint[]): HistogramDataPoint[] => {
     if (!data.length) return [];
 
@@ -51,7 +61,10 @@ const HistogramChart = ({ data }: { data: DataPoint[] }) => {
   }
 
   return (
-    <ChartContainer config={config}>
+    <ChartContainer
+      config={config}
+      className="[&_.recharts-bar-rectangle:hover]:opacity-30 dark:[&_.recharts-bar-rectangle:hover]:opacity-100 dark:[&_.recharts-bar-rectangle:hover]:brightness-[3]"
+    >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={histogramData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <XAxis
@@ -64,12 +77,31 @@ const HistogramChart = ({ data }: { data: DataPoint[] }) => {
             textAnchor="end"
             height={90}
           />
-          <YAxis stroke="hsl(var(--chart-grid))" fontSize={12} tickLine={false} axisLine={false} />
-          <Bar dataKey="count" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} />
+          <YAxis
+            stroke="hsl(var(--chart-grid))"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Bar
+            dataKey="count"
+            fill="hsl(var(--chart-1))"
+            radius={[2, 2, 0, 0]}
+            fillOpacity={subtleFill ? 0.3 : 1}
+          />
           <ChartTooltip
+            cursor={false}
             contentStyle={{ backgroundColor: "hsl(var(--background))" }}
-            formatter={(value, name) => [`${value}`, name === "count" ? "Count" : name]}
-            labelFormatter={(label) => `Bin: ${label}`}
+            content={({ active, payload, label }) => (
+              <ChartTooltipContent
+                active={active}
+                payload={payload}
+                label={label}
+                valueFormatter={(v) => compactSmallNumberFormatter(Number(v))}
+                nameFormatter={(name) => (name === "count" ? "Count" : name)}
+                labelFormatter={(label) => `Bin: ${label}`}
+              />
+            )}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -33,7 +33,10 @@ export function NoDataOrLoading({ isLoading, description, href, className }: NoD
   if (isLoading) {
     return (
       <div
-        className={cn("flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-md", className)}
+        className={cn(
+          "flex h-3/4 min-h-[9rem] w-full items-center justify-center rounded-md",
+          className,
+        )}
       >
         <Skeleton className="h-full w-full" />
       </div>

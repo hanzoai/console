@@ -1,8 +1,10 @@
 import { api } from "@/src/utils/api";
 
-import { BaseTimeSeriesChart } from "@/src/features/dashboard/components/BaseTimeSeriesChart";
-import { Card } from "@/src/components/ui/card";
-import { type ScoreSourceType, type FilterState, type ScoreDataTypeType } from "@hanzo/shared";
+import {
+  type ScoreSourceType,
+  type FilterState,
+  type ScoreDataTypeType,
+} from "@langfuse/shared";
 import {
   extractTimeSeriesData,
   fillMissingValuesAndTransform,
@@ -15,8 +17,14 @@ import {
 } from "@/src/utils/date-range-utils";
 import React, { useMemo } from "react";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type QueryType,
+  type ViewVersion,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
+import { Chart } from "@/src/features/widgets/chart-library/Chart";
+import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 
 export function NumericScoreTimeSeriesChart(props: {
   projectId: string;
@@ -27,6 +35,7 @@ export function NumericScoreTimeSeriesChart(props: {
   globalFilterState: FilterState;
   fromTimestamp: Date;
   toTimestamp: Date;
+  metricsVersion?: ViewVersion;
 }) {
   const scoresQuery: QueryType = {
     view: "scores-numeric",
@@ -68,6 +77,7 @@ export function NumericScoreTimeSeriesChart(props: {
     {
       projectId: props.projectId,
       query: scoresQuery,
+      version: props.metricsVersion,
     },
     {
       trpc: {
@@ -95,14 +105,19 @@ export function NumericScoreTimeSeriesChart(props: {
     data: extractedScores,
     isNullValueAllowed: true,
   }) ? (
-    <Card className="min-h-[9rem] w-full flex-1 rounded-md border">
-      <BaseTimeSeriesChart
-        className="[&_text]:fill-muted-foreground [&_tspan]:fill-muted-foreground"
-        agg={props.agg}
-        data={extractedScores}
-        connectNulls
+    <div className="h-80 w-full shrink-0">
+      <Chart
+        chartType="LINE_TIME_SERIES"
+        data={timeSeriesToDataPoints(extractedScores, props.agg)}
+        rowLimit={100}
+        chartConfig={{
+          type: "LINE_TIME_SERIES",
+          show_data_point_dots: false,
+          subtle_fill: true,
+        }}
+        legendPosition="above"
       />
-    </Card>
+    </div>
   ) : (
     <NoDataOrLoading isLoading={scores.isLoading} />
   );

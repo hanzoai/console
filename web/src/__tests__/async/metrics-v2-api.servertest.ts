@@ -75,7 +75,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
     await waitForExpect(
       async () => {
         const result = await queryClickhouse<{ count: string }>({
-          query: `SELECT count() as count FROM events WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
+          query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
           params: { projectId, ids: observationIds },
         });
         expect(Number(result[0]?.count)).toBeGreaterThanOrEqual(observationIds.length);
@@ -275,7 +275,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
             start_time: timeValue,
             cost_details: { total: cost },
             metadata_names: ["test"],
-            metadata_raw_values: [testMetadataValue],
+            metadata_values: [testMetadataValue],
           }),
         );
       });

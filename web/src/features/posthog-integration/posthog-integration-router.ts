@@ -23,8 +23,22 @@ export const posthogIntegrationRouter = createTRPCRouter({
         },
       });
 
-      if (!dbConfig) {
-        return null;
+        if (!dbConfig) {
+          return null;
+        }
+
+        const { encryptedPosthogApiKey, exportSource, ...config } = dbConfig;
+
+        return {
+          ...config,
+          exportSource,
+          posthogApiKey: decrypt(encryptedPosthogApiKey),
+        };
+      } catch (e) {
+        console.error("posthog integration get", e);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
 
       const { encryptedPosthogApiKey, ...config } = dbConfig;
@@ -93,11 +107,13 @@ export const posthogIntegrationRouter = createTRPCRouter({
           posthogHostName: config.posthogHostname,
           encryptedPosthogApiKey,
           enabled: config.enabled,
+          exportSource: config.exportSource,
         },
         update: {
           encryptedPosthogApiKey,
           posthogHostName: config.posthogHostname,
           enabled: config.enabled,
+          exportSource: config.exportSource,
         },
       });
     }),

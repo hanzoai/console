@@ -15,7 +15,8 @@ import {
   getTraceByIdFromEventsTable,
   createObservation,
   createObservationsCh,
-} from "@hanzo/shared/src/server";
+} from "@langfuse/shared/src/server";
+import waitForExpect from "wait-for-expect";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
 
@@ -516,12 +517,31 @@ describe("traces trpc", () => {
       expect(updatedTrace?.bookmarked).toBe(true);
 
       if (useEventsTable) {
-        const eventTrace = await getTraceByIdFromEventsTable({
-          projectId,
-          traceId: trace.id,
+        await waitForExpect(async () => {
+          // Verify events_core
+          const eventTrace = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: trace.id,
+            renderingProps: {
+              truncated: true,
+              shouldJsonParse: false,
+            },
+          });
+          expect(eventTrace).toBeDefined();
+          expect(eventTrace?.bookmarked).toBe(true);
+
+          // Verify events_full
+          const eventTraceFull = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: trace.id,
+            renderingProps: {
+              truncated: false,
+              shouldJsonParse: true,
+            },
+          });
+          expect(eventTraceFull).toBeDefined();
+          expect(eventTraceFull?.bookmarked).toBe(true);
         });
-        expect(eventTrace).toBeDefined();
-        expect(eventTrace?.bookmarked).toBe(true);
       }
     });
 
@@ -578,12 +598,31 @@ describe("traces trpc", () => {
       expect(updatedTrace?.public).toBe(true);
 
       if (useEventsTable) {
-        const eventTrace = await getTraceByIdFromEventsTable({
-          projectId,
-          traceId: trace.id,
+        await waitForExpect(async () => {
+          // Verify events_core
+          const eventTrace = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: trace.id,
+            renderingProps: {
+              truncated: true,
+              shouldJsonParse: false,
+            },
+          });
+          expect(eventTrace).toBeDefined();
+          expect(eventTrace?.public).toBe(true);
+
+          // Verify events_full
+          const eventTraceFull = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: trace.id,
+            renderingProps: {
+              truncated: false,
+              shouldJsonParse: true,
+            },
+          });
+          expect(eventTraceFull).toBeDefined();
+          expect(eventTraceFull?.public).toBe(true);
         });
-        expect(eventTrace).toBeDefined();
-        expect(eventTrace?.public).toBe(true);
       }
     });
   });

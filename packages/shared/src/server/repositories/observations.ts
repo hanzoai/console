@@ -969,6 +969,7 @@ export const getObservationsGroupedByModelId = async (
 export const getObservationsGroupedByName = async (
   projectId: string,
   filter: FilterState,
+  type: ObservationType | null = "GENERATION",
 ) => {
   const observationsFilter = new FilterList([
     new StringFilter({
@@ -995,7 +996,7 @@ export const getObservationsGroupedByName = async (
     SELECT o.name as name
     FROM observations o
     WHERE ${appliedObservationsFilter.query}
-    AND o.type = 'GENERATION'
+    ${type ? `AND o.type = {type: String}` : ""}
     GROUP BY o.name
     ORDER BY count() DESC
     LIMIT 1000;
@@ -1005,6 +1006,7 @@ export const getObservationsGroupedByName = async (
     query,
     params: {
       ...appliedObservationsFilter.params,
+      ...(type ? { type } : {}),
     },
     tags: {
       feature: "tracing",
@@ -1820,6 +1822,7 @@ export const getObservationsForBlobStorageExport = function (
 
 export const getGenerationsForAnalyticsIntegrations = async function* (
   projectId: string,
+  projectName: string,
   minTimestamp: Date,
   maxTimestamp: Date,
 ) {
@@ -1893,23 +1896,24 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
       hanzo_user_url: record.trace_user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.trace_user_id as string)}`
         : undefined,
-      hanzo_id: record.id,
-      hanzo_cost_usd: record.total_cost,
-      hanzo_input_units: record.input_tokens,
-      hanzo_output_units: record.output_tokens,
-      hanzo_total_units: record.total_tokens,
-      hanzo_session_id: record.trace_session_id,
-      hanzo_project_id: projectId,
-      hanzo_user_id: record.trace_user_id || null,
-      hanzo_latency: record.latency,
-      hanzo_time_to_first_token: record.time_to_first_token,
-      hanzo_release: record.trace_release,
-      hanzo_version: record.version,
-      hanzo_model: record.model,
-      hanzo_level: record.level,
-      hanzo_tags: record.trace_tags,
-      hanzo_environment: record.environment,
-      hanzo_event_version: "1.0.0",
+      langfuse_id: record.id,
+      langfuse_cost_usd: record.total_cost,
+      langfuse_input_units: record.input_tokens,
+      langfuse_output_units: record.output_tokens,
+      langfuse_total_units: record.total_tokens,
+      langfuse_session_id: record.trace_session_id,
+      langfuse_project_id: projectId,
+      langfuse_project_name: projectName,
+      langfuse_user_id: record.trace_user_id || null,
+      langfuse_latency: record.latency,
+      langfuse_time_to_first_token: record.time_to_first_token,
+      langfuse_release: record.trace_release,
+      langfuse_version: record.version,
+      langfuse_model: record.model,
+      langfuse_level: record.level,
+      langfuse_tags: record.trace_tags,
+      langfuse_environment: record.environment,
+      langfuse_event_version: "1.0.0",
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsGenerationEvent;

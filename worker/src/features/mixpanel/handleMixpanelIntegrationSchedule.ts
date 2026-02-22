@@ -1,5 +1,9 @@
-import { prisma } from "@hanzo/shared/src/db";
-import { MixpanelIntegrationProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
+import { prisma } from "@langfuse/shared/src/db";
+import {
+  MixpanelIntegrationProcessingQueue,
+  QueueJobs,
+  logger,
+} from "@langfuse/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handleMixpanelIntegrationSchedule = async () => {
@@ -13,10 +17,20 @@ export const handleMixpanelIntegrationSchedule = async () => {
     },
   });
 
-  const mixpanelIntegrationProcessingQueue = MixpanelIntegrationProcessingQueue.getInstance();
+  if (mixpanelIntegrationProjects.length === 0) {
+    logger.info("[MIXPANEL] No Mixpanel integrations ready for sync");
+    return;
+  }
+
+  const mixpanelIntegrationProcessingQueue =
+    MixpanelIntegrationProcessingQueue.getInstance();
   if (!mixpanelIntegrationProcessingQueue) {
     throw new Error("MixpanelIntegrationProcessingQueue not initialized");
   }
+
+  logger.info(
+    `[MIXPANEL] Scheduling ${mixpanelIntegrationProjects.length} Mixpanel integrations for sync`,
+  );
 
   await mixpanelIntegrationProcessingQueue.addBulk(
     mixpanelIntegrationProjects.map((integration: { projectId: string; lastSyncAt: Date | null }) => ({
@@ -28,11 +42,14 @@ export const handleMixpanelIntegrationSchedule = async () => {
         payload: {
           projectId: integration.projectId,
         },
-      },
-      opts: {
-        // Use projectId and last sync as jobId to prevent duplicate jobs.
-        jobId: `${integration.projectId}-${integration.lastSyncAt?.toISOString() ?? ""}`,
-      },
-    })),
+        opts: {
+          // Deduplicate by projectId + lastSyncAt so the same project isn't queued
+          // twice for the same sync window. removeOnFail ensures failed jobs are
+          // immediately cleaned up so they don't block re-queuing on the next cycle.
+          jobId: `${integration.projectId}-${integration.lastSyncAt?.toISOString() ?? ""}`,
+          removeOnFail: true,
+        },
+      }),
+    ),
   );
 };

@@ -42,6 +42,7 @@ export default withMiddlewares({
         configId: query.configId ?? undefined,
         sessionId: query.sessionId ?? undefined,
         traceId: query.traceId ?? undefined,
+        observationId: query.observationId ?? undefined,
         datasetRunId: query.datasetRunId ?? undefined,
         queueId: query.queueId ?? undefined,
         traceTags: query.traceTags ?? undefined,
@@ -54,6 +55,7 @@ export default withMiddlewares({
         operator: query.operator ?? undefined,
         scoreIds: query.scoreIds ?? undefined,
         fields: query.fields ?? undefined,
+        advancedFilters: query.filter,
       };
       const scoresApiService = new ScoresApiService("v2");
       const [items, count] = await Promise.all([

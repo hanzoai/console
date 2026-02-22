@@ -50,7 +50,7 @@ export const billingProducts: BillingProduct[] = [
       usagePrice: "$8-6/100k units (100k included, graduated pricing)",
       mainFeatures: [
         "Everything in Core",
-        "Unlimited data access",
+        "3 years data access",
         "Unlimited annotation queues",
         "Data retention management",
         "High rate limits",

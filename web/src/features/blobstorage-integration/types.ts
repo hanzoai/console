@@ -1,5 +1,10 @@
 import { z } from "zod/v4";
-import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/shared";
+import {
+  BlobStorageIntegrationType,
+  BlobStorageIntegrationFileType,
+  BlobStorageExportMode,
+  AnalyticsIntegrationExportSource,
+} from "@langfuse/shared";
 
 export const blobStorageIntegrationFormSchema = z.object({
   type: z.enum(BlobStorageIntegrationType),
@@ -21,6 +26,9 @@ export const blobStorageIntegrationFormSchema = z.object({
   fileType: z.enum(BlobStorageIntegrationFileType).default(BlobStorageIntegrationFileType.JSONL),
   exportMode: z.enum(BlobStorageExportMode).default(BlobStorageExportMode.FULL_HISTORY),
   exportStartDate: z.coerce.date().optional().nullable(),
+  exportSource: z
+    .enum(AnalyticsIntegrationExportSource)
+    .default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
 });
 
 export type BlobStorageIntegrationFormSchema = z.infer<typeof blobStorageIntegrationFormSchema>;

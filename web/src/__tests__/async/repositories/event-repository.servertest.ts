@@ -13,7 +13,8 @@ import {
 import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
-import { type FilterCondition } from "@hanzo/shared";
+import { type FilterCondition } from "@langfuse/shared";
+import waitForExpect from "wait-for-expect";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
@@ -1567,12 +1568,41 @@ describe("Clickhouse Events Repository Test", () => {
       expect(result).toBeDefined();
       expect(result?.bookmarked).toBe(false);
 
+      async function checkTraceIdsBookmarked(
+        traceId: string,
+        bookmarkedExp: boolean,
+      ) {
+        await waitForExpect(async () => {
+          // Verify events_core
+          const eventTrace = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: traceId,
+            renderingProps: {
+              truncated: true,
+              shouldJsonParse: false,
+            },
+          });
+          expect(eventTrace).toBeDefined();
+          expect(eventTrace?.bookmarked).toBe(bookmarkedExp);
+
+          // Verify events_full
+          const eventTraceFull = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: traceId,
+            renderingProps: {
+              truncated: false,
+              shouldJsonParse: true,
+            },
+          });
+          expect(eventTraceFull).toBeDefined();
+          expect(eventTraceFull?.bookmarked).toBe(bookmarkedExp);
+        });
+      }
+
       // Model setting bookmark as true on the root span
       await updateEvents(projectId, { traceIds: [traceId], rootOnly: true }, { bookmarked: true });
 
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.bookmarked).toBe(true);
+      await checkTraceIdsBookmarked(traceId, true);
 
       // Non-root event on bookmarked
       await createEventsCh([
@@ -1592,17 +1622,10 @@ describe("Clickhouse Events Repository Test", () => {
       // including the non-root, added above
       await updateEvents(projectId, { traceIds: [traceId] }, { bookmarked: false });
 
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.bookmarked).toBe(false);
+      await checkTraceIdsBookmarked(traceId, false);
 
       // Trace id 2 should remain bookmarked
-      result = await getTraceByIdFromEventsTable({
-        projectId,
-        traceId: traceId2,
-      });
-      expect(result).toBeDefined();
-      expect(result?.bookmarked).toBe(true);
+      await checkTraceIdsBookmarked(traceId2, true);
     });
 
     it("should allow to set/unset public", async () => {
@@ -1630,23 +1653,45 @@ describe("Clickhouse Events Repository Test", () => {
         parent_span_id: "",
       });
 
+      async function checkTraceIdsPublic(traceId: string, publicExp: boolean) {
+        await waitForExpect(async () => {
+          // Verify events_core
+          const eventTrace = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: traceId,
+            renderingProps: {
+              truncated: true,
+              shouldJsonParse: false,
+            },
+          });
+          expect(eventTrace).toBeDefined();
+          expect(eventTrace?.public).toBe(publicExp);
+
+          // Verify events_full
+          const eventTraceFull = await getTraceByIdFromEventsTable({
+            projectId,
+            traceId: traceId,
+            renderingProps: {
+              truncated: false,
+              shouldJsonParse: true,
+            },
+          });
+          expect(eventTraceFull).toBeDefined();
+          expect(eventTraceFull?.public).toBe(publicExp);
+        });
+      }
+
       await createEventsCh([rootEvent, rootEvent2]);
 
-      var result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(false);
+      await checkTraceIdsPublic(traceId, false);
 
       await updateEvents(projectId, { traceIds: [traceId] }, { public: true });
 
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(true);
+      await checkTraceIdsPublic(traceId, true);
 
       await updateEvents(projectId, { traceIds: [traceId] }, { public: false });
 
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(false);
+      await checkTraceIdsPublic(traceId, false);
 
       // Non-root event with public
       await createEventsCh([
@@ -1661,24 +1706,16 @@ describe("Clickhouse Events Repository Test", () => {
           parent_span_id: rootSpanId,
         }),
       ]);
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(true);
+
+      await checkTraceIdsPublic(traceId, true);
 
       // Clearing public on non-root
       await updateEvents(projectId, { traceIds: [traceId] }, { public: false });
 
-      result = await getTraceByIdFromEventsTable({ projectId, traceId });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(false);
+      await checkTraceIdsPublic(traceId, false);
 
       // Trace id 2 should remain public
-      result = await getTraceByIdFromEventsTable({
-        projectId,
-        traceId: traceId2,
-      });
-      expect(result).toBeDefined();
-      expect(result?.public).toBe(true);
+      await checkTraceIdsPublic(traceId2, true);
     });
   });
 

@@ -208,7 +208,6 @@ export default function ModelDetailPage() {
                             mode="json"
                             value={JSON.stringify(activeTier.conditions, null, 2)}
                             onChange={() => {}} // Read-only
-                            minHeight="none"
                             className="max-h-[250px] overflow-y-auto"
                             editable={false}
                           />

@@ -5,19 +5,16 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod/v4";
 import { GetBatchActionByIdSchema } from "../validation";
 import { addToDatasetRouter } from "./addToDatasetRouter";
+import { runEvaluationRouter } from "./runEvaluationRouter";
 
 export const batchActionRouter = createTRPCRouter({
   addToDataset: addToDatasetRouter,
-  byId: protectedProjectProcedure.input(GetBatchActionByIdSchema).query(async ({ input, ctx }) => {
-    throwIfNoProjectAccess({
-      session: ctx.session,
-      projectId: input.projectId,
-      scope: "datasets:CUD",
-    });
-
-    const batchAction = await ctx.prisma.batchAction.findUnique({
-      where: {
-        id: input.batchActionId,
+  runEvaluation: runEvaluationRouter,
+  byId: protectedProjectProcedure
+    .input(GetBatchActionByIdSchema)
+    .query(async ({ input, ctx }) => {
+      throwIfNoProjectAccess({
+        session: ctx.session,
         projectId: input.projectId,
       },
       select: {

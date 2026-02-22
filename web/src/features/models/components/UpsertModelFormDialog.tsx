@@ -364,7 +364,6 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                         mode="json"
                         value={field.value ?? "{}"}
                         onChange={field.onChange}
-                        minHeight="none"
                       />
                       <FormDescription>
                         The config for the tokenizer. Required for openai. See the{" "}

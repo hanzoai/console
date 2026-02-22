@@ -1,5 +1,11 @@
 import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
-import { type ScoreDomain, type TraceDomain, AnnotationQueueObjectType, isGenerationLike } from "@hanzo/shared";
+import {
+  type ScoreDomain,
+  type TraceDomain,
+  AnnotationQueueObjectType,
+  isGenerationLike,
+  LangfuseInternalTraceEnvironment,
+} from "@langfuse/shared";
 import { AggUsageBadge } from "@/src/components/token-usage-badge";
 import { Badge } from "@/src/components/ui/badge";
 import { type ObservationReturnTypeWithMetadata } from "@/src/server/api/routers/traces";
@@ -48,6 +54,7 @@ import {
   AlertDialogTitle,
 } from "@/src/components/ui/alert-dialog";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
+import { resolveEvalExecutionMetadata } from "@/src/components/trace2/lib/resolve-metadata";
 
 const LOG_VIEW_CONFIRMATION_THRESHOLD = 150;
 const LOG_VIEW_DISABLED_THRESHOLD = 350;
@@ -157,6 +164,11 @@ export const TracePreview = ({
     setSelectedTab("log");
   };
 
+  const targetTraceId =
+    trace.environment === LangfuseInternalTraceEnvironment.LLMJudge
+      ? resolveEvalExecutionMetadata(parsedMetadata)
+      : null;
+
   return (
     <div className="col-span-2 flex h-full flex-1 flex-col overflow-hidden md:col-span-3">
       <div className="flex h-full flex-1 flex-col items-start gap-1 overflow-hidden @container">
@@ -252,7 +264,22 @@ export const TracePreview = ({
                   </Badge>
                 </Link>
               ) : null}
-              {trace.environment ? <Badge variant="tertiary">Env: {trace.environment}</Badge> : null}
+              {targetTraceId ? (
+                <Link
+                  href={`/project/${trace.projectId as string}/traces/${encodeURIComponent(targetTraceId)}`}
+                  className="inline-flex"
+                >
+                  <Badge>
+                    <span className="truncate">
+                      Target Trace: {targetTraceId}
+                    </span>
+                    <ExternalLinkIcon className="ml-1 h-3 w-3" />
+                  </Badge>
+                </Link>
+              ) : null}
+              {trace.environment ? (
+                <Badge variant="tertiary">Env: {trace.environment}</Badge>
+              ) : null}
 
               {viewType === "detailed" && (
                 <>

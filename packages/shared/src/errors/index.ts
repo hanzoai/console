@@ -9,3 +9,4 @@ export { InternalServerError } from "./InternalServerError";
 export { HanzoConflictError } from "./ConflictError";
 export { ServiceUnavailableError } from "./ServiceUnavailableError";
 export { NotImplementedError } from "./NotImplementedError";
+export * from "./errorMessages";

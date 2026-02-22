@@ -594,34 +594,54 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
                     image: dbUser.image,
                     admin: dbUser.admin,
                     v4BetaEnabled: dbUser.v4BetaEnabled,
-                    canCreateOrganizations: canCreateOrganizations(dbUser.email),
-                    organizations: dbUser.organizationMemberships.map((orgMembership) => {
-                      const parsedCloudConfig = CloudConfigSchema.safeParse(orgMembership.organization.cloudConfig);
-                      return {
-                        id: orgMembership.organization.id,
-                        name: orgMembership.organization.name,
-                        role: orgMembership.role,
-                        metadata: (orgMembership.organization.metadata as Record<string, unknown>) ?? {},
-                        aiFeaturesEnabled: orgMembership.organization.aiFeaturesEnabled,
-                        cloudConfig: parsedCloudConfig.data,
-                        projects: orgMembership.organization.projects
-                          .map((project) => {
-                            const projectRole = resolveProjectRole({
-                              projectId: project.id,
-                              projectMemberships: orgMembership.ProjectMemberships,
-                              orgMembershipRole: orgMembership.role,
-                            });
-                            return {
-                              id: project.id,
-                              name: project.name,
-                              role: projectRole,
-                              retentionDays: project.retentionDays,
-                              deletedAt: project.deletedAt,
-                              metadata: (project.metadata as Record<string, unknown>) ?? {},
-                            };
-                          })
-                          // Only include projects where the user has the required role
-                          .filter((project) => projectRoleAccessRights[project.role].includes("project:read")),
+                    canCreateOrganizations: canCreateOrganizations(
+                      dbUser.email,
+                    ),
+                    organizations: dbUser.organizationMemberships.map(
+                      (orgMembership) => {
+                        const parsedCloudConfig = CloudConfigSchema.safeParse(
+                          orgMembership.organization.cloudConfig,
+                        );
+                        return {
+                          id: orgMembership.organization.id,
+                          name: orgMembership.organization.name,
+                          role: orgMembership.role,
+                          metadata:
+                            (orgMembership.organization.metadata as Record<
+                              string,
+                              unknown
+                            >) ?? {},
+                          aiFeaturesEnabled:
+                            orgMembership.organization.aiFeaturesEnabled,
+                          cloudConfig: parsedCloudConfig.data,
+                          projects: orgMembership.organization.projects
+                            .map((project) => {
+                              const projectRole = resolveProjectRole({
+                                projectId: project.id,
+                                projectMemberships:
+                                  orgMembership.ProjectMemberships,
+                                orgMembershipRole: orgMembership.role,
+                              });
+                              return {
+                                id: project.id,
+                                name: project.name,
+                                role: projectRole,
+                                retentionDays: project.retentionDays,
+                                hasTraces: project.hasTraces,
+                                deletedAt: project.deletedAt,
+                                metadata:
+                                  (project.metadata as Record<
+                                    string,
+                                    unknown
+                                  >) ?? {},
+                              };
+                            })
+                            // Only include projects where the user has the required role
+                            .filter((project) =>
+                              projectRoleAccessRights[project.role].includes(
+                                "project:read",
+                              ),
+                            ),
 
                         // Enables features/entitlements based on the plan of the organization, either cloud or EE version when self-hosting
                         // If you edit this line, you risk executing code that is not MIT licensed (contained in /ee folders, see LICENSE)

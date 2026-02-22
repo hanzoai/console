@@ -9,8 +9,15 @@ import {
   getScoresAndCorrectionsForTraces,
   convertDateToClickhouseDateTime,
   getAgentGraphDataFromEventsTable,
-} from "@hanzo/shared/src/server";
-import { AgentGraphDataSchema, type AgentGraphDataResponse } from "@/src/features/trace-graph-view/types";
+  getObservationsForTraceFromEventsTable,
+  MAX_OBSERVATIONS_PER_TRACE,
+  applyCommentFilters,
+} from "@langfuse/shared/src/server";
+
+import {
+  AgentGraphDataSchema,
+  type AgentGraphDataResponse,
+} from "@/src/features/trace-graph-view/types";
 import type * as opentelemetry from "@opentelemetry/api";
 
 const GetAllEventsInput = EventsTableOptions.extend({
@@ -44,43 +51,69 @@ export const BatchIOInput = zodSchema.object({
 export type BatchIOInput = z.infer<typeof BatchIOInput>;
 
 export const eventsRouter = createTRPCRouter({
-  all: protectedProjectProcedure.input(GetAllEventsInput).query(async ({ input, ctx }) => {
-    return instrumentAsync(
-      {
-        name: "get-event-list-trpc",
-      },
-      async (span) => {
-        addAttributesToSpan({ span, input, orderBy: input.orderBy });
+  all: protectedProjectProcedure
+    .input(GetAllEventsInput)
+    .query(async ({ input, ctx }) => {
+      const { filterState, hasNoMatches } = await applyCommentFilters({
+        filterState: input.filter ?? [],
+        prisma: ctx.prisma,
+        projectId: ctx.session.projectId,
+        objectType: "OBSERVATION",
+      });
 
-        return getEventList({
-          projectId: ctx.session.projectId,
-          filter: input.filter ?? [],
-          searchQuery: input.searchQuery ?? undefined,
-          searchType: input.searchType,
-          orderBy: input.orderBy,
-          page: input.page,
-          limit: input.limit,
-        });
-      },
-    );
-  }),
-  countAll: protectedProjectProcedure.input(GetAllEventsInput).query(async ({ input, ctx }) => {
-    return instrumentAsync(
-      {
-        name: "get-event-count-trpc",
-      },
-      async (span) => {
-        addAttributesToSpan({ span, input, orderBy: input.orderBy });
-        return getEventCount({
-          projectId: ctx.session.projectId,
-          filter: input.filter ?? [],
-          searchQuery: input.searchQuery ?? undefined,
-          searchType: input.searchType,
-          orderBy: input.orderBy,
-        });
-      },
-    );
-  }),
+      if (hasNoMatches) {
+        return { observations: [] };
+      }
+
+      return instrumentAsync(
+        {
+          name: "get-event-list-trpc",
+        },
+        async (span) => {
+          addAttributesToSpan({ span, input, orderBy: input.orderBy });
+
+          return getEventList({
+            projectId: ctx.session.projectId,
+            filter: filterState,
+            searchQuery: input.searchQuery ?? undefined,
+            searchType: input.searchType,
+            orderBy: input.orderBy,
+            page: input.page,
+            limit: input.limit,
+          });
+        },
+      );
+    }),
+  countAll: protectedProjectProcedure
+    .input(GetAllEventsInput)
+    .query(async ({ input, ctx }) => {
+      const { filterState, hasNoMatches } = await applyCommentFilters({
+        filterState: input.filter ?? [],
+        prisma: ctx.prisma,
+        projectId: ctx.session.projectId,
+        objectType: "OBSERVATION",
+      });
+
+      if (hasNoMatches) {
+        return { totalCount: 0 };
+      }
+
+      return instrumentAsync(
+        {
+          name: "get-event-count-trpc",
+        },
+        async (span) => {
+          addAttributesToSpan({ span, input, orderBy: input.orderBy });
+          return getEventCount({
+            projectId: ctx.session.projectId,
+            filter: filterState,
+            searchQuery: input.searchQuery ?? undefined,
+            searchType: input.searchType,
+            orderBy: input.orderBy,
+          });
+        },
+      );
+    }),
   filterOptions: protectedProjectProcedure
     .input(
       zodSchema.object({
@@ -142,6 +175,41 @@ export const eventsRouter = createTRPCRouter({
           timestamp: input.timestamp,
         });
       });
+    }),
+  /**
+   * Fetch all observations for a trace from the events table.
+   * Returns up to MAX_OBSERVATIONS_PER_TRACE observations.
+   * Sets cutoffObservationsAfterMaxCount=true if trace exceeds the cap.
+   */
+  byTraceId: protectedProjectProcedure
+    .input(
+      zodSchema.object({
+        projectId: zodSchema.string(),
+        traceId: zodSchema.string(),
+        timestamp: zodSchema.date().optional(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      return instrumentAsync(
+        { name: "get-events-by-trace-id-trpc" },
+        async (span) => {
+          span.setAttribute("project_id", ctx.session.projectId);
+          span.setAttribute("trace_id", input.traceId);
+
+          const { observations, totalCount } =
+            await getObservationsForTraceFromEventsTable({
+              projectId: ctx.session.projectId,
+              traceId: input.traceId,
+              timestamp: input.timestamp,
+            });
+
+          return {
+            observations,
+            cutoffObservationsAfterMaxCount:
+              totalCount > MAX_OBSERVATIONS_PER_TRACE,
+          };
+        },
+      );
     }),
   /**
    * Fetch agent graph data from events table.

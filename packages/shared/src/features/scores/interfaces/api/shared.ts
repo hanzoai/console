@@ -3,7 +3,12 @@ import { publicApiPaginationZod } from "../../../../utils/zod";
 import { stringDateTime } from "../../../../utils/typeChecks";
 import { applyScoreValidation } from "../../../../utils/scores";
 import { PostScoreBodyFoundationSchema } from "../shared";
-import { ScoreDataTypeDomain, ScoreSourceDomain } from "../../../../domain/scores";
+import {
+  ScoreDataTypeDomain,
+  ScoreSourceDomain,
+} from "../../../../domain/scores";
+import { singleFilter } from "../../../../interfaces/filters";
+import { InvalidRequestError } from "../../../../errors";
 
 const operators = ["<", ">", "<=", ">=", "!=", "="] as const;
 
@@ -52,6 +57,20 @@ export const GetScoresQuery = z.object({
         .filter((f) => SCORE_FIELD_GROUPS.includes(f as ScoreFieldGroup));
     })
     .pipe(z.array(z.enum(SCORE_FIELD_GROUPS)).nullable()),
+  filter: z
+    .string()
+    .optional()
+    .transform((str) => {
+      if (!str) return undefined;
+      try {
+        const parsed = JSON.parse(str);
+        return parsed;
+      } catch (e) {
+        if (e instanceof InvalidRequestError) throw e;
+        throw new InvalidRequestError("Invalid JSON in filter parameter");
+      }
+    })
+    .pipe(z.array(singleFilter).optional()),
 });
 
 // POST /scores

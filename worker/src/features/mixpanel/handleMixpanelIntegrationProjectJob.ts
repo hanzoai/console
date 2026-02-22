@@ -7,14 +7,21 @@ import {
   getTracesForAnalyticsIntegrations,
   getGenerationsForAnalyticsIntegrations,
   getScoresForAnalyticsIntegrations,
+  getEventsForAnalyticsIntegrations,
   getCurrentSpan,
 } from "@hanzo/shared/src/server";
 import { decrypt } from "@hanzo/shared/encryption";
 import { MixpanelClient } from "./mixpanelClient";
-import { transformTraceForMixpanel, transformGenerationForMixpanel, transformScoreForMixpanel } from "./transformers";
+import {
+  transformTraceForMixpanel,
+  transformGenerationForMixpanel,
+  transformScoreForMixpanel,
+  transformEventForMixpanel,
+} from "./transformers";
 
 type MixpanelExecutionConfig = {
   projectId: string;
+  projectName: string;
   minTimestamp: Date;
   maxTimestamp: Date;
   decryptedMixpanelProjectToken: string;
@@ -22,9 +29,16 @@ type MixpanelExecutionConfig = {
 };
 
 const processMixpanelTraces = async (config: MixpanelExecutionConfig) => {
-  const traces = getTracesForAnalyticsIntegrations(config.projectId, config.minTimestamp, config.maxTimestamp);
+  const traces = getTracesForAnalyticsIntegrations(
+    config.projectId,
+    config.projectName,
+    config.minTimestamp,
+    config.maxTimestamp,
+  );
 
-  logger.info(`Sending traces for project ${config.projectId} to Mixpanel`);
+  logger.info(
+    `[MIXPANEL] Sending traces for project ${config.projectId} to Mixpanel`,
+  );
 
   const mixpanel = new MixpanelClient({
     projectToken: config.decryptedMixpanelProjectToken,
@@ -39,21 +53,28 @@ const processMixpanelTraces = async (config: MixpanelExecutionConfig) => {
 
     if (count % 1000 === 0) {
       await mixpanel.flush();
-      logger.info(`Sent ${count} traces to Mixpanel for project ${config.projectId}`);
+      logger.info(
+        `[MIXPANEL] Sent ${count} traces to Mixpanel for project ${config.projectId}`,
+      );
     }
   }
   await mixpanel.flush();
-  logger.info(`Sent ${count} traces to Mixpanel for project ${config.projectId}`);
+  logger.info(
+    `[MIXPANEL] Sent ${count} traces to Mixpanel for project ${config.projectId}`,
+  );
 };
 
 const processMixpanelGenerations = async (config: MixpanelExecutionConfig) => {
   const generations = getGenerationsForAnalyticsIntegrations(
     config.projectId,
+    config.projectName,
     config.minTimestamp,
     config.maxTimestamp,
   );
 
-  logger.info(`Sending generations for project ${config.projectId} to Mixpanel`);
+  logger.info(
+    `[MIXPANEL] Sending generations for project ${config.projectId} to Mixpanel`,
+  );
 
   const mixpanel = new MixpanelClient({
     projectToken: config.decryptedMixpanelProjectToken,
@@ -68,17 +89,28 @@ const processMixpanelGenerations = async (config: MixpanelExecutionConfig) => {
 
     if (count % 1000 === 0) {
       await mixpanel.flush();
-      logger.info(`Sent ${count} generations to Mixpanel for project ${config.projectId}`);
+      logger.info(
+        `[MIXPANEL] Sent ${count} generations to Mixpanel for project ${config.projectId}`,
+      );
     }
   }
   await mixpanel.flush();
-  logger.info(`Sent ${count} generations to Mixpanel for project ${config.projectId}`);
+  logger.info(
+    `[MIXPANEL] Sent ${count} generations to Mixpanel for project ${config.projectId}`,
+  );
 };
 
 const processMixpanelScores = async (config: MixpanelExecutionConfig) => {
-  const scores = getScoresForAnalyticsIntegrations(config.projectId, config.minTimestamp, config.maxTimestamp);
+  const scores = getScoresForAnalyticsIntegrations(
+    config.projectId,
+    config.projectName,
+    config.minTimestamp,
+    config.maxTimestamp,
+  );
 
-  logger.info(`Sending scores for project ${config.projectId} to Mixpanel`);
+  logger.info(
+    `[MIXPANEL] Sending scores for project ${config.projectId} to Mixpanel`,
+  );
 
   const mixpanel = new MixpanelClient({
     projectToken: config.decryptedMixpanelProjectToken,
@@ -93,11 +125,51 @@ const processMixpanelScores = async (config: MixpanelExecutionConfig) => {
 
     if (count % 1000 === 0) {
       await mixpanel.flush();
-      logger.info(`Sent ${count} scores to Mixpanel for project ${config.projectId}`);
+      logger.info(
+        `[MIXPANEL] Sent ${count} scores to Mixpanel for project ${config.projectId}`,
+      );
     }
   }
   await mixpanel.flush();
-  logger.info(`Sent ${count} scores to Mixpanel for project ${config.projectId}`);
+  logger.info(
+    `[MIXPANEL] Sent ${count} scores to Mixpanel for project ${config.projectId}`,
+  );
+};
+
+const processMixpanelEvents = async (config: MixpanelExecutionConfig) => {
+  const events = getEventsForAnalyticsIntegrations(
+    config.projectId,
+    config.projectName,
+    config.minTimestamp,
+    config.maxTimestamp,
+  );
+
+  logger.info(
+    `[MIXPANEL] Sending events for project ${config.projectId} to Mixpanel`,
+  );
+
+  const mixpanel = new MixpanelClient({
+    projectToken: config.decryptedMixpanelProjectToken,
+    region: config.mixpanelRegion,
+  });
+
+  let count = 0;
+  for await (const analyticsEvent of events) {
+    count++;
+    const event = transformEventForMixpanel(analyticsEvent, config.projectId);
+    mixpanel.addEvent(event);
+
+    if (count % 1000 === 0) {
+      await mixpanel.flush();
+      logger.info(
+        `[MIXPANEL] Sent ${count} events to Mixpanel for project ${config.projectId}`,
+      );
+    }
+  }
+  await mixpanel.flush();
+  logger.info(
+    `[MIXPANEL] Sent ${count} events to Mixpanel for project ${config.projectId}`,
+  );
 };
 
 export const handleMixpanelIntegrationProjectJob = async (
@@ -111,7 +183,9 @@ export const handleMixpanelIntegrationProjectJob = async (
     span.setAttribute("messaging.bullmq.job.input.projectId", projectId);
   }
 
-  logger.info(`Processing Mixpanel integration for project ${projectId}`);
+  logger.info(
+    `[MIXPANEL] Processing Mixpanel integration for project ${projectId}`,
+  );
 
   // Fetch Mixpanel integration information for project
   const mixpanelIntegration = await prisma.mixpanelIntegration.findFirst({
@@ -119,16 +193,31 @@ export const handleMixpanelIntegrationProjectJob = async (
       projectId,
       enabled: true,
     },
+    include: {
+      project: {
+        select: { name: true },
+      },
+    },
   });
 
   if (!mixpanelIntegration) {
-    logger.warn(`Enabled Mixpanel integration not found for project ${projectId}`);
+    logger.warn(
+      `[MIXPANEL] Enabled Mixpanel integration not found for project ${projectId}`,
+    );
+    return;
+  }
+
+  if (!mixpanelIntegration.project) {
+    logger.warn(
+      `[MIXPANEL] Project not found for Mixpanel integration ${projectId}`,
+    );
     return;
   }
 
   // Fetch relevant data and send it to Mixpanel
   const executionConfig: MixpanelExecutionConfig = {
     projectId,
+    projectName: mixpanelIntegration.project.name,
     // Start from 2000-01-01 if no lastSyncAt. Workaround because 1970-01-01 leads to subtle bugs in ClickHouse
     minTimestamp: mixpanelIntegration.lastSyncAt || new Date("2000-01-01"),
     maxTimestamp: new Date(new Date().getTime() - 30 * 60 * 1000), // 30 minutes ago
@@ -136,20 +225,50 @@ export const handleMixpanelIntegrationProjectJob = async (
     mixpanelRegion: mixpanelIntegration.mixpanelRegion,
   };
 
-  await Promise.all([
-    processMixpanelTraces(executionConfig),
-    processMixpanelGenerations(executionConfig),
-    processMixpanelScores(executionConfig),
-  ]);
+  try {
+    const processPromises: Promise<void>[] = [];
 
-  // Update the last run information for the mixpanelIntegration record
-  await prisma.mixpanelIntegration.update({
-    where: {
-      projectId,
-    },
-    data: {
-      lastSyncAt: executionConfig.maxTimestamp,
-    },
-  });
-  logger.info(`Mixpanel integration processing complete for project ${projectId}`);
+    // Always include scores
+    processPromises.push(processMixpanelScores(executionConfig));
+
+    // Traces and observations - for TRACES_OBSERVATIONS and TRACES_OBSERVATIONS_EVENTS
+    if (
+      mixpanelIntegration.exportSource === "TRACES_OBSERVATIONS" ||
+      mixpanelIntegration.exportSource === "TRACES_OBSERVATIONS_EVENTS"
+    ) {
+      processPromises.push(
+        processMixpanelTraces(executionConfig),
+        processMixpanelGenerations(executionConfig),
+      );
+    }
+
+    // Events - for EVENTS and TRACES_OBSERVATIONS_EVENTS
+    if (
+      mixpanelIntegration.exportSource === "EVENTS" ||
+      mixpanelIntegration.exportSource === "TRACES_OBSERVATIONS_EVENTS"
+    ) {
+      processPromises.push(processMixpanelEvents(executionConfig));
+    }
+
+    await Promise.all(processPromises);
+
+    // Update the last run information for the mixpanelIntegration record.
+    await prisma.mixpanelIntegration.update({
+      where: {
+        projectId,
+      },
+      data: {
+        lastSyncAt: executionConfig.maxTimestamp,
+      },
+    });
+    logger.info(
+      `[MIXPANEL] Mixpanel integration processing complete for project ${projectId}`,
+    );
+  } catch (error) {
+    logger.error(
+      `[MIXPANEL] Error processing Mixpanel integration for project ${projectId}`,
+      error,
+    );
+    throw error;
+  }
 };

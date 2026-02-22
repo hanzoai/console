@@ -116,7 +116,10 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   }, []);
 
   return (
-    <QueryParamProvider adapter={NextAdapterPages}>
+    <QueryParamProvider
+      adapter={NextAdapterPages}
+      options={{ enableBatching: true }}
+    >
       <TooltipProvider>
         <CommandMenuProvider>
           <PostHogProvider client={posthog}>

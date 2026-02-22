@@ -36,8 +36,8 @@ import {
 import { type ChartProps } from "@/src/features/widgets/chart-library/chart-props";
 import { numberFormatter } from "@/src/utils/numbers";
 import { formatMetricName } from "@/src/features/widgets/utils";
-import { type OrderByState } from "@hanzo/shared";
-import { Loader2 } from "lucide-react";
+import { type OrderByState } from "@langfuse/shared";
+import { ChartLoadingState } from "@/src/features/widgets/chart-library/ChartLoadingState";
 
 /**
  * Props interface for the PivotTable component
@@ -338,12 +338,11 @@ export const PivotTable: React.FC<PivotTableProps> = ({ data, config, sortState,
   return (
     <div className="relative h-full overflow-auto px-5 pb-2">
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Refreshing data...</span>
-          </div>
-        </div>
+        <ChartLoadingState
+          isLoading={isLoading}
+          className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm"
+          hintClassName="max-w-sm px-4"
+        />
       )}
       <Table>
         <TableHeader className="sticky top-0 z-10">

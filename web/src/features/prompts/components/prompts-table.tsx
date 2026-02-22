@@ -6,6 +6,7 @@ import TableLink from "@/src/components/table/table-link";
 import { type HanzoColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { DeletePrompt } from "@/src/features/prompts/components/delete-prompt";
+import { DeleteFolder } from "@/src/features/prompts/components/delete-folder";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import { type RouterOutput } from "@/src/utils/types";
@@ -343,9 +344,12 @@ export function PromptTable() {
       header: "Actions",
       size: 70,
       cell: (row) => {
-        if (row.row.original.type === "folder") return null;
+        const rowData = row.row.original;
+        if (rowData.type === "folder") {
+          return <DeleteFolder folderPath={rowData.fullPath} />;
+        }
 
-        const promptPath = row.row.original.fullPath;
+        const promptPath = rowData.fullPath;
         return <DeletePrompt promptName={promptPath} />;
       },
     }),

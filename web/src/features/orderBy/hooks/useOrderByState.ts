@@ -1,5 +1,6 @@
 import { type OrderByState } from "@hanzo/shared";
 import { ObjectParam, useQueryParam, withDefault } from "use-query-params";
+import { usePeekTableState } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 
 type OrderByQueryParamState = OrderByState | { [key: string]: string | undefined };
 
@@ -10,10 +11,28 @@ type OrderByQueryParamState = OrderByState | { [key: string]: string | undefined
  * @returns [orderByState, setOrderByState]
  */
 export const useOrderByState = (initialState: OrderByState = null) => {
+  const peekContext = usePeekTableState();
+
   const [orderByState, setOrderByState] = useQueryParam<OrderByQueryParamState>(
     "orderBy",
     withDefault(ObjectParam, initialState),
   );
 
-  return [orderByState, setOrderByState] as [OrderByState, (orderByState: OrderByState) => void];
+  if (peekContext) {
+    const setState = (newSorting: OrderByState) => {
+      peekContext.setTableState({
+        ...peekContext.tableState,
+        sorting: newSorting,
+      });
+    };
+    return [peekContext.tableState.sorting, setState] as [
+      OrderByState,
+      (orderByState: OrderByState) => void,
+    ];
+  }
+
+  return [orderByState, setOrderByState] as [
+    OrderByState,
+    (orderByState: OrderByState) => void,
+  ];
 };

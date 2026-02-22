@@ -92,6 +92,7 @@ export function useFilteredNavigation(session: Session | null, organization: Org
       cloudAdmin: Boolean(session?.user?.admin && isHanzoCloud && region !== "DEV"),
       entitlements,
       uiCustomization,
+      isLangfuseCloud,
       currentPath: router.asPath,
     }),
     [

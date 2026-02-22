@@ -9,7 +9,11 @@ import { compactNumberFormatter } from "@/src/utils/numbers";
 import { TotalMetric } from "./TotalMetric";
 import { totalCostDashboardFormatted } from "@/src/features/dashboard/lib/dashboard-utils";
 import { truncate } from "@/src/utils/string";
-import { type QueryType, mapLegacyUiTableFilterToView } from "@/src/features/query";
+import {
+  type QueryType,
+  type ViewVersion,
+  mapLegacyUiTableFilterToView,
+} from "@/src/features/query";
 
 export const ModelCostTable = ({
   className,
@@ -18,6 +22,7 @@ export const ModelCostTable = ({
   fromTimestamp,
   toTimestamp,
   isLoading = false,
+  metricsVersion,
 }: {
   className: string;
   projectId: string;
@@ -25,6 +30,7 @@ export const ModelCostTable = ({
   fromTimestamp: Date;
   toTimestamp: Date;
   isLoading?: boolean;
+  metricsVersion?: ViewVersion;
 }) => {
   const modelCostQuery: QueryType = {
     view: "observations",
@@ -45,13 +51,15 @@ export const ModelCostTable = ({
     timeDimension: null,
     fromTimestamp: fromTimestamp.toISOString(),
     toTimestamp: toTimestamp.toISOString(),
-    orderBy: null,
+    orderBy: [{ field: "sum_totalCost", direction: "desc" }],
+    chartConfig: { type: "table", row_limit: 20 },
   };
 
   const metrics = api.dashboard.executeQuery.useQuery(
     {
       projectId,
       query: modelCostQuery,
+      version: metricsVersion,
     },
     {
       trpc: {

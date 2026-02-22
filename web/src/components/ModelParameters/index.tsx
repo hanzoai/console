@@ -502,7 +502,6 @@ const ProviderOptionsInput = ({
             }}
             editable={enabled && !formDisabled}
             mode="json"
-            minHeight="none"
             lineNumbers={false}
           />
           {error && (

@@ -79,6 +79,7 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           fileType,
           exportMode,
           exportStartDate,
+          exportSource,
         } = input;
 
         const isSelfHosted = !env.NEXT_PUBLIC_HANZO_CLOUD_REGION;
@@ -114,6 +115,7 @@ export const blobStorageIntegrationRouter = createTRPCRouter({
           fileType,
           exportMode,
           exportStartDate: finalExportStartDate,
+          exportSource,
         };
 
         // Use a transaction to check if record exists, then create or update

@@ -32,13 +32,24 @@ import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomi
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import Page from "@/src/components/layouts/page";
 import { MultiSelect } from "@/src/features/filters/components/multi-select";
-import { convertSelectedEnvironmentsToFilter, useEnvironmentFilter } from "@/src/hooks/use-environment-filter";
+import {
+  convertSelectedEnvironmentsToFilter,
+  useEnvironmentFilter,
+} from "@/src/hooks/use-environment-filter";
+import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
+import { type ViewVersion } from "@/src/features/query";
 
 export default function Dashboard() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { timeRange, setTimeRange } = useDashboardDateRange();
-  const absoluteTimeRange = useMemo(() => toAbsoluteTimeRange(timeRange), [timeRange]);
+  const { isBetaEnabled } = useV4Beta();
+  const metricsVersion: ViewVersion = isBetaEnabled ? "v2" : "v1";
+
+  const absoluteTimeRange = useMemo(
+    () => toAbsoluteTimeRange(timeRange),
+    [timeRange],
+  );
 
   const uiCustomization = useUiCustomization();
 
@@ -232,6 +243,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <ModelCostTable
           className="col-span-1 xl:col-span-2"
@@ -240,12 +252,14 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <ScoresTable
           className="col-span-1 xl:col-span-2"
           projectId={projectId}
           globalFilterState={mergedFilterState}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <TracesAndObservationsTimeSeriesChart
           className="col-span-1 xl:col-span-3"
@@ -255,6 +269,7 @@ export default function Dashboard() {
           toTimestamp={toTimestamp}
           agg={agg}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <ModelUsageChart
           className="col-span-1 min-h-24 xl:col-span-3"
@@ -265,6 +280,7 @@ export default function Dashboard() {
           userAndEnvFilterState={[...userFilterState, ...environmentFilter]}
           agg={agg}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <UserChart
           className="col-span-1 xl:col-span-3"
@@ -273,6 +289,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <ChartScores
           className="col-span-1 xl:col-span-3"
@@ -282,6 +299,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <LatencyTables
           projectId={projectId}
@@ -289,6 +307,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <GenerationLatencyChart
           className="col-span-1 flex-auto justify-between lg:col-span-full"
@@ -298,6 +317,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
         <ScoreAnalytics
           className="col-span-1 flex-auto justify-between lg:col-span-full"
@@ -307,6 +327,7 @@ export default function Dashboard() {
           fromTimestamp={fromTimestamp}
           toTimestamp={toTimestamp}
           isLoading={environmentFilterOptions.isPending}
+          metricsVersion={metricsVersion}
         />
       </div>
     </Page>

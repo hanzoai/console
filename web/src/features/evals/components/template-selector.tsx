@@ -1,7 +1,19 @@
 import { type EvalTemplate } from "@hanzo/shared";
 
-import { CheckIcon, ChevronDown, Cog, ExternalLink, AlertCircle, ExternalLinkIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  CheckIcon,
+  ChevronDown,
+  Cog,
+  ExternalLink,
+  AlertCircle,
+  ExternalLinkIcon,
+} from "lucide-react";
+import { Badge } from "@/src/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -21,6 +33,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/too
 import { useSingleTemplateValidation } from "@/src/features/evals/hooks/useSingleTemplateValidation";
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
+import { useIsObservationEvalsFullyReleased } from "@/src/features/events/hooks/useObservationEvals";
 
 type TemplateSelectorProps = {
   projectId: string;
@@ -29,6 +42,7 @@ type TemplateSelectorProps = {
   disabled?: boolean;
   activeTemplateIds?: string[];
   inactiveTemplateIds?: string[];
+  evaluatorTargetObjects?: Record<string, string>;
   onConfigureTemplate?: (templateId: string) => void;
   onSelectEvaluator?: (templateId: string) => void;
   onEvaluatorToggled?: () => void;
@@ -41,6 +55,7 @@ export const TemplateSelector = ({
   evalTemplates,
   activeTemplateIds,
   inactiveTemplateIds,
+  evaluatorTargetObjects,
   onConfigureTemplate,
   onSelectEvaluator,
   onEvaluatorToggled,
@@ -49,7 +64,13 @@ export const TemplateSelector = ({
 }: TemplateSelectorProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const { activeTemplates, isTemplateActive, isTemplateInactive, handleRowClick } = useExperimentEvaluatorSelection({
+  const isFullyReleased = useIsObservationEvalsFullyReleased();
+  const {
+    activeTemplates,
+    isTemplateActive,
+    isTemplateInactive,
+    handleRowClick,
+  } = useExperimentEvaluatorSelection({
     projectId: projectId,
     datasetId: datasetId,
     initialActiveTemplateIds: activeTemplateIds,
@@ -169,6 +190,9 @@ export const TemplateSelector = ({
                         const isActive = isTemplateActive(latestTemplate.id);
                         const isInactive = isTemplateInactive(latestTemplate.id);
                         const isInvalid = isTemplateInvalid(latestTemplate);
+                        const isLegacy =
+                          evaluatorTargetObjects?.[latestTemplate.id] ===
+                          "dataset";
 
                         return (
                           <InputCommandItem
@@ -180,6 +204,11 @@ export const TemplateSelector = ({
                           >
                             {isActive ? <CheckIcon className="mr-2 h-4 w-4" /> : <div className="mr-2 h-4 w-4" />}
                             {name}
+                            {isFullyReleased && isLegacy && (
+                              <Badge variant="outline" className="ml-2 text-xs">
+                                legacy
+                              </Badge>
+                            )}
                             {isInvalid && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -234,6 +263,9 @@ export const TemplateSelector = ({
                       const isActive = isTemplateActive(latestTemplate.id);
                       const isInactive = isTemplateInactive(latestTemplate.id);
                       const isInvalid = isTemplateInvalid(latestTemplate);
+                      const isLegacy =
+                        evaluatorTargetObjects?.[latestTemplate.id] ===
+                        "dataset";
 
                       return (
                         <InputCommandItem
@@ -245,7 +277,14 @@ export const TemplateSelector = ({
                         >
                           {isActive ? <CheckIcon className="mr-2 h-4 w-4" /> : <div className="mr-2 h-4 w-4" />}
                           <div className="mr-1">{name}</div>
-                          <MaintainerTooltip maintainer={getMaintainer(latestTemplate)} />
+                          <MaintainerTooltip
+                            maintainer={getMaintainer(latestTemplate)}
+                          />
+                          {isFullyReleased && isLegacy && (
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              legacy
+                            </Badge>
+                          )}
                           {isInvalid && (
                             <Tooltip>
                               <TooltipTrigger asChild>

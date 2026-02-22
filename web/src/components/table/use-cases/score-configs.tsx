@@ -7,8 +7,12 @@ import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
 import { type ScoreConfigDataType, type Prisma, type ScoreConfigCategoryDomain } from "@hanzo/shared";
 import { IOTableCell } from "../../ui/IOTableCell";
-import { NumberParam, useQueryParams, withDefault } from "use-query-params";
-import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";
+import { usePaginationState } from "@/src/hooks/usePaginationState";
+import {
+  isBooleanDataType,
+  isCategoricalDataType,
+  isNumericDataType,
+} from "@/src/features/scores/lib/helpers";
 import { Edit, MoreVertical } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
@@ -64,9 +68,9 @@ function getConfigRange(originalRow: ScoreConfigTableRow): undefined | Prisma.Js
 export function ScoreConfigsTable({ projectId }: { projectId: string }) {
   const [editConfigId, setEditConfigId] = useState<string | null>(null);
   const [createConfigOpen, setCreateConfigOpen] = useState(false);
-  const [paginationState, setPaginationState] = useQueryParams({
-    pageIndex: withDefault(NumberParam, 0),
-    pageSize: withDefault(NumberParam, 50),
+  const [paginationState, setPaginationState] = usePaginationState(0, 50, {
+    page: "pageIndex",
+    limit: "pageSize",
   });
 
   const hasAccess = useHasProjectAccess({

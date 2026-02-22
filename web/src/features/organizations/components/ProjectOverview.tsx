@@ -1,14 +1,33 @@
-import ContainerPage from "@/src/components/layouts/container-page";
+import {
+  BookOpen,
+  LockIcon,
+  MessageSquareText,
+  Settings,
+  Users,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Separator } from "@/src/components/ui/separator";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
-import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
-import { isCloudPlan } from "@hanzo/shared";
-import { Separator } from "@/src/components/ui/separator";
-import { BookOpen, LockIcon, MessageSquareText, PlusIcon, Settings, Users } from "lucide-react";
+import { Fragment } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import {
+  createOrganizationRoute,
+  createProjectRoute,
+} from "@/src/features/setup/setupRoutes";
+import { isCloudPlan, planLabels } from "@langfuse/shared";
+import ContainerPage from "@/src/components/layouts/container-page";
 import { type User } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -261,8 +280,13 @@ export const OrganizationProjectOverview = () => {
         })
         .map((org) => (
           <Fragment key={org.id}>
-            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && <Separator className="my-4" />}
-            <SingleOrganizationProjectOverviewTile orgId={org.id} search={search ?? undefined} />
+            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && (
+              <Separator />
+            )}
+            <SingleOrganizationProjectOverviewTile
+              orgId={org.id}
+              search={search ?? undefined}
+            />
           </Fragment>
         ))}
     </ContainerPage>

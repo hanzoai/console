@@ -15,6 +15,8 @@ import { useState } from "react";
 import { cn } from "@/src/utils/tailwind";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { api } from "@/src/utils/api";
+import { LegacyEvalCallout } from "@/src/features/evals/components/legacy-eval-callout";
+import { isLegacyEvalTarget } from "@/src/features/evals/utils/typeHelpers";
 
 export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string }) => {
   const router = useRouter();
@@ -39,19 +41,45 @@ export const PeekViewEvaluatorConfigDetail = ({ projectId }: { projectId: string
         <div className="flex flex-row items-center gap-2">
           <span className="max-h-fit text-lg font-medium">Configuration</span>
           <div className="flex items-center gap-2">
-            <StatusBadge type={evalConfig.finalStatus.toLowerCase()} isLive className="max-h-8" />
-            <DeactivateEvalConfig projectId={projectId} evalConfig={evalConfig} />
+            <StatusBadge
+              type={evalConfig.finalStatus.toLowerCase()}
+              isLive
+              className="max-h-8"
+            />
+            {isLegacyEvalTarget(evalConfig.targetObject) && (
+              <DeactivateEvalConfig
+                projectId={projectId}
+                evalConfig={evalConfig}
+              />
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={cn("text-sm", isEditMode ? "" : "text-muted-foreground")}>Edit Mode</span>
           <Switch
-            disabled={!hasAccess || (evalConfig?.timeScope?.length === 1 && evalConfig.timeScope[0] === "EXISTING")}
+            disabled={
+              !hasAccess ||
+              (isLegacyEvalTarget(evalConfig.targetObject) &&
+                evalConfig?.timeScope?.length === 1 &&
+                evalConfig.timeScope[0] === "EXISTING")
+            }
             checked={isEditMode}
             onCheckedChange={setIsEditMode}
           />
         </div>
       </div>
+
+      {evalConfig &&
+        evalConfig.targetObject &&
+        evalConfig.evalTemplate &&
+        evalConfig.finalStatus === "ACTIVE" && (
+          <LegacyEvalCallout
+            projectId={projectId}
+            evalConfigId={evalConfig.id}
+            targetObject={evalConfig.targetObject}
+          />
+        )}
+
       <CardDescription className="flex items-center text-sm">
         <span className="mr-2 text-sm font-medium">Referenced Evaluator</span>
         {evalConfig.evalTemplate && (
