@@ -55,6 +55,9 @@ import { naturalLanguageFilterRouter } from "@/src/features/natural-language-fil
 import { notificationPreferencesRouter } from "@/src/server/api/routers/notificationPreferences";
 import { kmsRouter } from "@/src/features/kms/server/router";
 import { botRouter } from "@/src/features/bots/server/botRouter";
+import { platformRouter } from "@/src/features/platform/server/platformRouter";
+import { explorerRouter } from "@/src/features/explorer/server/explorerRouter";
+import { infrastructureRouter } from "@/src/features/infrastructure/server/infrastructureRouter";
 
 /**
  * This is the primary router for your server.
@@ -118,6 +121,9 @@ export const appRouter = createTRPCRouter({
   notificationPreferences: notificationPreferencesRouter,
   kms: kmsRouter,
   bots: botRouter,
+  platform: platformRouter,
+  explorer: explorerRouter,
+  infrastructure: infrastructureRouter,
 });
 
 // export type definition of API

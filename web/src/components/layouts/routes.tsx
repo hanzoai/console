@@ -29,6 +29,9 @@ import {
   ClipboardPen,
   Clock,
   Workflow,
+  Boxes,
+  Activity,
+  HardDrive,
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
@@ -55,6 +58,7 @@ export enum RouteGroup {
   Agents = "Agents",
   Bots = "Bots",
   KMS = "KMS",
+  Infrastructure = "Infrastructure",
 }
 
 export type Route = {
@@ -283,6 +287,28 @@ export const ROUTES: Route[] = [
     icon: KeyRound,
     projectRbacScopes: ["kmsKeys:read"],
     group: RouteGroup.KMS,
+    section: RouteSection.Main,
+  },
+  // Infrastructure
+  {
+    title: "Platform",
+    pathname: `/project/[projectId]/platform`,
+    icon: Boxes,
+    group: RouteGroup.Infrastructure,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Explorer",
+    pathname: `/project/[projectId]/explorer`,
+    icon: Activity,
+    group: RouteGroup.Infrastructure,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Infrastructure",
+    pathname: `/project/[projectId]/infrastructure`,
+    icon: HardDrive,
+    group: RouteGroup.Infrastructure,
     section: RouteSection.Main,
   },
   {
