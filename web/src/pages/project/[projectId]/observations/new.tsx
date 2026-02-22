@@ -4,10 +4,7 @@ import ObservationsEventsTable from "@/src/features/events/components/EventsTabl
 import Page from "@/src/components/layouts/page";
 import { api } from "@/src/utils/api";
 import { TracesOnboarding } from "@/src/components/onboarding/TracesOnboarding";
-import {
-  getTracingTabs,
-  TRACING_TABS,
-} from "@/src/features/navigation/utils/tracing-tabs";
+import { getTracingTabs, TRACING_TABS } from "@/src/features/navigation/utils/tracing-tabs";
 import { useQueryProject } from "@/src/features/projects/hooks";
 
 export default function Events() {
@@ -17,21 +14,18 @@ export default function Events() {
 
   // Check if the user has tracing configured
   // Skip polling entirely if the project flag is already set in the session
-  const { data: hasTracingConfigured, isLoading } =
-    api.traces.hasTracingConfigured.useQuery(
-      { projectId },
-      {
-        enabled: !!projectId,
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+  const { data: hasTracingConfigured, isLoading } = api.traces.hasTracingConfigured.useQuery(
+    { projectId },
+    {
+      enabled: !!projectId,
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-        refetchInterval: project?.hasTraces ? false : 10_000,
-        initialData: project?.hasTraces ? true : undefined,
-        staleTime: project?.hasTraces ? Infinity : 0,
       },
-      refetchInterval: 10_000,
+      refetchInterval: project?.hasTraces ? false : 10_000,
+      initialData: project?.hasTraces ? true : undefined,
+      staleTime: project?.hasTraces ? Infinity : 0,
     },
   );
 

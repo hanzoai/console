@@ -16,7 +16,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { Input } from "@/src/components/ui/input";
-import { useHanzoEnvCode } from "@/src/features/public-api/hooks/useHanzoEnvCode";
+import { useConsoleEnvCode } from "@/src/features/public-api/hooks/useConsoleEnvCode";
 import { Label } from "@/src/components/ui/label";
 import { cn } from "@/src/utils/tailwind";
 import { SubHeader } from "@/src/components/layouts/header";
@@ -155,7 +155,7 @@ export const ApiKeyRender = ({
   generatedKeys?: { secretKey: string; publicKey: string };
   className?: string;
 }) => {
-  const envCode = useHanzoEnvCode(generatedKeys);
+  const envCode = useConsoleEnvCode(generatedKeys);
 
   return (
     <div className={cn("space-y-6", className)}>

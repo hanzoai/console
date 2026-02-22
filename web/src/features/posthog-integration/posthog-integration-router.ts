@@ -23,28 +23,15 @@ export const posthogIntegrationRouter = createTRPCRouter({
         },
       });
 
-        if (!dbConfig) {
-          return null;
-        }
-
-        const { encryptedPosthogApiKey, exportSource, ...config } = dbConfig;
-
-        return {
-          ...config,
-          exportSource,
-          posthogApiKey: decrypt(encryptedPosthogApiKey),
-        };
-      } catch (e) {
-        console.error("posthog integration get", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      if (!dbConfig) {
+        return null;
       }
 
-      const { encryptedPosthogApiKey, ...config } = dbConfig;
+      const { encryptedPosthogApiKey, exportSource, ...config } = dbConfig;
 
       return {
         ...config,
+        exportSource,
         posthogApiKey: decrypt(encryptedPosthogApiKey),
       };
     } catch (e) {

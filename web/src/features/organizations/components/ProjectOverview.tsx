@@ -1,39 +1,20 @@
-import {
-  BookOpen,
-  LockIcon,
-  MessageSquareText,
-  Settings,
-  Users,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { BookOpen, LockIcon, MessageSquareText, PlusIcon, Settings, Users } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { Separator } from "@/src/components/ui/separator";
 import Header from "@/src/components/layouts/header";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/src/components/ui/card";
+import Link from "next/link";
+import { StringParam, useQueryParams } from "use-query-params";
 import { Input } from "@/src/components/ui/input";
+import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { env } from "@/src/env.mjs";
 import { Fragment } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import {
-  createOrganizationRoute,
-  createProjectRoute,
-} from "@/src/features/setup/setupRoutes";
+import { createOrganizationRoute, createProjectRoute } from "@/src/features/setup/setupRoutes";
 import { isCloudPlan, planLabels } from "@hanzo/shared";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { type User } from "next-auth";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Fragment } from "react";
-import { StringParam, useQueryParams } from "use-query-params";
 
 const OrganizationProjectTiles = ({ org, search }: { org: User["organizations"][number]; search?: string }) => {
   return (
@@ -280,13 +261,8 @@ export const OrganizationProjectOverview = () => {
         })
         .map((org) => (
           <Fragment key={org.id}>
-            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && (
-              <Separator />
-            )}
-            <SingleOrganizationProjectOverviewTile
-              orgId={org.id}
-              search={search ?? undefined}
-            />
+            {!queryOrgId && org.id === env.NEXT_PUBLIC_DEMO_ORG_ID && <Separator />}
+            <SingleOrganizationProjectOverviewTile orgId={org.id} search={search ?? undefined} />
           </Fragment>
         ))}
     </ContainerPage>

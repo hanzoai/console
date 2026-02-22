@@ -22,29 +22,15 @@ export const mixpanelIntegrationRouter = createTRPCRouter({
         },
       });
 
-        if (!dbConfig) {
-          return null;
-        }
-
-        const { encryptedMixpanelProjectToken, exportSource, ...config } =
-          dbConfig;
-
-        return {
-          ...config,
-          exportSource,
-          mixpanelProjectToken: decrypt(encryptedMixpanelProjectToken),
-        };
-      } catch (e) {
-        console.error("mixpanel integration get", e);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      if (!dbConfig) {
+        return null;
       }
 
-      const { encryptedMixpanelProjectToken, ...config } = dbConfig;
+      const { encryptedMixpanelProjectToken, exportSource, ...config } = dbConfig;
 
       return {
         ...config,
+        exportSource,
         mixpanelProjectToken: decrypt(encryptedMixpanelProjectToken),
       };
     } catch (e) {

@@ -22,14 +22,14 @@ import { TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import startCase from "lodash/startCase";
-import { useHanzoEnvCode } from "@/src/features/public-api/hooks/useHanzoEnvCode";
+import { useConsoleEnvCode } from "@/src/features/public-api/hooks/useConsoleEnvCode";
 
 type ApiKeyScope = "project" | "organization";
 type ApiKeyEntity = { id: string; note: string | null };
 
 export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
   const { entityId, scope } = props;
-  const envCode = useHanzoEnvCode();
+  const envCode = useConsoleEnvCode();
 
   if (!entityId) {
     throw new Error(`${scope}Id is required for ApiKeyList with scope ${scope}`);
