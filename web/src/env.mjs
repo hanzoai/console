@@ -401,6 +401,13 @@ export const env = createEnv({
     ZT_ADMIN_USERNAME: z.string().optional().default("admin"),
     ZT_ADMIN_PASSWORD: z.string().optional(),
 
+    // PaaS (platform.hanzo.ai)
+    PAAS_API_URL: z.string().url().optional().default("https://platform.hanzo.ai"),
+    PAAS_SERVICE_TOKEN: z.string().optional(),
+    PAAS_ORG_ID: z.string().optional(),
+    PAAS_PROJECT_ID: z.string().optional(),
+    PAAS_ENV_ID: z.string().optional(),
+
     // Bot Gateway (ZAP protocol over HTTP)
     ZAP_BOT_GATEWAY_URL: z.string().url().optional().default("https://bot.hanzo.ai"),
     ZAP_BOT_GATEWAY_TOKEN: z.string().optional(),
@@ -806,6 +813,12 @@ export const env = createEnv({
     ZT_API_URL: process.env.ZT_API_URL,
     ZT_ADMIN_USERNAME: process.env.ZT_ADMIN_USERNAME,
     ZT_ADMIN_PASSWORD: process.env.ZT_ADMIN_PASSWORD,
+    // PaaS
+    PAAS_API_URL: process.env.PAAS_API_URL,
+    PAAS_SERVICE_TOKEN: process.env.PAAS_SERVICE_TOKEN,
+    PAAS_ORG_ID: process.env.PAAS_ORG_ID,
+    PAAS_PROJECT_ID: process.env.PAAS_PROJECT_ID,
+    PAAS_ENV_ID: process.env.PAAS_ENV_ID,
     // Bot Gateway (ZAP)
     ZAP_BOT_GATEWAY_URL: process.env.ZAP_BOT_GATEWAY_URL,
     ZAP_BOT_GATEWAY_TOKEN: process.env.ZAP_BOT_GATEWAY_TOKEN,
