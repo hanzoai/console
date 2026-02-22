@@ -73,14 +73,14 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
     }
 
     // Query for the next partition after the last processed one
-    // Filter for partitions older than LANGFUSE_EXPERIMENT_EVENT_PROPAGATION_PARTITION_DELAY_MINUTES minutes and order by partition ASC to get the oldest first
+    // Filter for partitions older than HANZO_EXPERIMENT_EVENT_PROPAGATION_PARTITION_DELAY_MINUTES minutes and order by partition ASC to get the oldest first
     const partitions = await queryClickhouse<{ partition: string }>({
       query: `
         SELECT DISTINCT partition
         FROM system.parts
         WHERE table = 'observations_batch_staging'
           AND active = 1
-          AND toDateTime(partition) < now() - INTERVAL ${env.LANGFUSE_EXPERIMENT_EVENT_PROPAGATION_PARTITION_DELAY_MINUTES} MINUTE
+          AND toDateTime(partition) < now() - INTERVAL ${env.HANZO_EXPERIMENT_EVENT_PROPAGATION_PARTITION_DELAY_MINUTES} MINUTE
           ${lastProcessedPartition ? `AND partition > {lastProcessedPartition: String}` : ""}
         ORDER BY partition ASC
       `,

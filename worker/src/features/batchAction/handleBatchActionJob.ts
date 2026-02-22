@@ -436,7 +436,7 @@ export const handleBatchActionJob = async (
       filter: convertDatesInFiltersFromStrings(query.filter ?? []),
       searchQuery: query.searchQuery ?? undefined,
       searchType: query.searchType ?? ["id", "content"],
-      rowLimit: env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT,
+      rowLimit: env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
     });
 
     await processBatchedObservationEval({

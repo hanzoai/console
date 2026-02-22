@@ -33,7 +33,7 @@ export const runEvaluationRouter = createTRPCRouter({
 
         const { projectId, query, evaluatorIds: rawEvaluatorIds } = input;
 
-        if (env.LANGFUSE_ENABLE_EVENTS_TABLE_FLAGS !== "true") {
+        if (env.HANZO_ENABLE_EVENTS_TABLE_FLAGS !== "true") {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Events table is not enabled for this instance.",
@@ -82,10 +82,10 @@ export const runEvaluationRouter = createTRPCRouter({
         const observationCount =
           await getObservationsCountFromEventsTable(countQueryOpts);
 
-        if (observationCount > env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT) {
+        if (observationCount > env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Too many observations selected. Maximum allowed is ${env.LANGFUSE_MAX_HISTORIC_EVAL_CREATION_LIMIT}, but ${observationCount} observations match your filters. Please refine your filters to reduce the count.`,
+            message: `Too many observations selected. Maximum allowed is ${env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT}, but ${observationCount} observations match your filters. Please refine your filters to reduce the count.`,
           });
         }
 

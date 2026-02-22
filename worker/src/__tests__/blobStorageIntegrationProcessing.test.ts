@@ -24,9 +24,9 @@ import { encrypt } from "@hanzo/shared/encryption";
 // with multipart uploads. These tests use MinIO explicitly or are skipped.
 // Unfortunately, this is necessary as we don't have a good way to skip empty file uploads
 // and at least azurite doesn't handle them gracefully.
-const maybeIt = env.LANGFUSE_USE_AZURE_BLOB === "true" ? it.skip : it;
+const maybeIt = env.HANZO_USE_AZURE_BLOB === "true" ? it.skip : it;
 const maybeDescribe =
-  process.env.LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS === "true"
+  process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true"
     ? describe
     : describe.skip;
 
@@ -273,7 +273,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           region: region,
           endpoint: minioEndpoint,
           forcePathStyle:
-            env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "weekly",
           lastSyncAt: oneHourAgo,
@@ -339,7 +339,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           region: region ? region : "auto",
           endpoint: minioEndpoint,
           forcePathStyle:
-            env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "daily",
           lastSyncAt: oneHourAgo,
@@ -448,7 +448,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
             region: region ? region : "auto",
             endpoint: minioEndpoint,
             forcePathStyle:
-              env.LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+              env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
             enabled: true,
             exportFrequency: "hourly",
             exportSource: "TRACES_OBSERVATIONS_EVENTS",

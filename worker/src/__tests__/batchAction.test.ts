@@ -31,7 +31,7 @@ import { Decimal } from "decimal.js";
 import waitForExpect from "wait-for-expect";
 
 const maybeDescribe =
-  process.env.LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS === "true"
+  process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true"
     ? describe
     : describe.skip;
 

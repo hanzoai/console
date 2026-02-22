@@ -1954,21 +1954,21 @@ describe("/api/public/traces API Endpoint", () => {
 
   describe.skip("GET /api/public/traces env var controls", () => {
     const originalRejectNoDateRange =
-      env.LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE;
+      env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE;
     const originalDefaultDateRangeDays =
-      env.LANGFUSE_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
-    const originalDefaultFields = env.LANGFUSE_API_TRACES_DEFAULT_FIELDS;
+      env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
+    const originalDefaultFields = env.HANZO_API_TRACES_DEFAULT_FIELDS;
 
     afterEach(() => {
-      (env as any).LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE =
+      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE =
         originalRejectNoDateRange;
-      (env as any).LANGFUSE_API_TRACES_DEFAULT_DATE_RANGE_DAYS =
+      (env as any).HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS =
         originalDefaultDateRangeDays;
-      (env as any).LANGFUSE_API_TRACES_DEFAULT_FIELDS = originalDefaultFields;
+      (env as any).HANZO_API_TRACES_DEFAULT_FIELDS = originalDefaultFields;
     });
 
     it("should return 400 when REJECT_NO_DATE_RANGE=true and no fromTimestamp", async () => {
-      (env as any).LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE = "true";
+      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
 
       const response = await makeZodVerifiedAPICallSilent(
         GetTracesV1Response,
@@ -1980,7 +1980,7 @@ describe("/api/public/traces API Endpoint", () => {
     });
 
     it("should allow request when REJECT_NO_DATE_RANGE=true and fromTimestamp is provided", async () => {
-      (env as any).LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE = "true";
+      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
 
       const fromTimestamp = new Date(
         Date.now() - 7 * 24 * 60 * 60 * 1000,
@@ -1995,8 +1995,8 @@ describe("/api/public/traces API Endpoint", () => {
     });
 
     it("should reject even when DEFAULT_DATE_RANGE_DAYS is also set (rejection takes precedence)", async () => {
-      (env as any).LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE = "true";
-      (env as any).LANGFUSE_API_TRACES_DEFAULT_DATE_RANGE_DAYS = 7;
+      (env as any).HANZO_API_TRACES_REJECT_NO_DATE_RANGE = "true";
+      (env as any).HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS = 7;
 
       const response = await makeZodVerifiedAPICallSilent(
         GetTracesV1Response,
@@ -2008,7 +2008,7 @@ describe("/api/public/traces API Endpoint", () => {
     });
 
     it("should apply DEFAULT_FIELDS when no fields query param is provided", async () => {
-      (env as any).LANGFUSE_API_TRACES_DEFAULT_FIELDS = "core";
+      (env as any).HANZO_API_TRACES_DEFAULT_FIELDS = "core";
 
       const traceId = randomUUID();
       const createdTrace = createTrace({
@@ -2058,7 +2058,7 @@ describe("/api/public/traces API Endpoint", () => {
     });
 
     it("should override DEFAULT_FIELDS when explicit fields param is provided", async () => {
-      (env as any).LANGFUSE_API_TRACES_DEFAULT_FIELDS = "core";
+      (env as any).HANZO_API_TRACES_DEFAULT_FIELDS = "core";
 
       const traceId = randomUUID();
       const createdTrace = createTrace({

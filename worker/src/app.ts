@@ -574,7 +574,7 @@ if (env.HANZO_BATCH_PROJECT_CLEANER_ENABLED === "true") {
       (table !== "events_full" &&
         table !== "events_core" &&
         table !== "events") ||
-      env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
+      env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
     ) {
       const cleaner = new BatchProjectCleaner(table);
       batchProjectCleaners.push(cleaner);
@@ -593,7 +593,7 @@ if (env.HANZO_BATCH_DATA_RETENTION_CLEANER_ENABLED === "true") {
       (table !== "events_full" &&
         table !== "events_core" &&
         table !== "events") ||
-      env.LANGFUSE_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
+      env.HANZO_EXPERIMENT_INSERT_INTO_EVENTS_TABLE === "true"
     ) {
       const cleaner = new BatchDataRetentionCleaner(table);
       batchDataRetentionCleaners.push(cleaner);

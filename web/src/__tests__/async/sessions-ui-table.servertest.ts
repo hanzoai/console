@@ -21,7 +21,7 @@ import { createTrace } from "@langfuse/shared/src/server";
 import { type FilterState } from "@langfuse/shared";
 import { env } from "@/src/env.mjs";
 
-const isEventsPath = env.LANGFUSE_ENABLE_EVENTS_TABLE_V2_APIS === "true";
+const isEventsPath = env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true";
 
 // Pick the right listing function based on env flag
 const sessionsTable = isEventsPath

@@ -305,7 +305,7 @@ const EnvSchema = z.object({
     .default("true"),
 
   // Legacy events table (transitional deployment)
-  LANGFUSE_LEGACY_EVENTS_TABLE_EXISTS: z
+  HANZO_LEGACY_EVENTS_TABLE_EXISTS: z
     .enum(["true", "false"])
     .default("true"),
 

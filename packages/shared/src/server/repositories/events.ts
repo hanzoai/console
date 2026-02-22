@@ -80,7 +80,7 @@ import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
 async function commandLegacyEventsTable(
   opts: Parameters<typeof commandClickhouse>[0],
 ): Promise<void> {
-  if (env.LANGFUSE_LEGACY_EVENTS_TABLE_EXISTS !== "true") return;
+  if (env.HANZO_LEGACY_EVENTS_TABLE_EXISTS !== "true") return;
   try {
     await commandClickhouse(opts);
   } catch (e) {
@@ -809,10 +809,10 @@ export const getTraceByIdFromEventsTable = async ({
   if (renderingProps.truncated) {
     queryBuilder
       .select(
-        `leftUTF8(t.input, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as input`,
+        `leftUTF8(t.input, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as input`,
       )
       .select(
-        `leftUTF8(t.output, ${env.LANGFUSE_SERVER_SIDE_IO_CHAR_LIMIT}) as output`,
+        `leftUTF8(t.output, ${env.HANZO_SERVER_SIDE_IO_CHAR_LIMIT}) as output`,
       );
   } else {
     queryBuilder.selectColumns("t.input", "t.output");
@@ -2864,7 +2864,7 @@ export const getEventsForBlobStorageExport = function (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 };
@@ -2916,7 +2916,7 @@ export const getEventsForAnalyticsIntegrations = async function* (
       projectId,
     },
     clickhouseConfigs: {
-      request_timeout: env.LANGFUSE_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 

@@ -223,7 +223,7 @@ export async function fetchLLMCompletion(
   // Common proxy configuration for all adapters
   const proxyUrl = env.HTTPS_PROXY;
   const proxyDispatcher = proxyUrl ? new ProxyAgent(proxyUrl) : undefined;
-  const timeoutMs = env.LANGFUSE_FETCH_LLM_COMPLETION_TIMEOUT_MS;
+  const timeoutMs = env.HANZO_FETCH_LLM_COMPLETION_TIMEOUT_MS;
 
   let chatModel:
     | ChatOpenAI

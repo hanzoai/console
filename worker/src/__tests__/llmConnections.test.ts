@@ -111,7 +111,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(process.env.LANGFUSE_LLM_CONNECTION_OPENAI_KEY!),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_OPENAI_KEY!),
         },
       });
 
@@ -258,7 +258,7 @@ describe("LLM Connection Tests", () => {
         },
         llmConnection: {
           secretKey: encrypt(
-            process.env.LANGFUSE_LLM_CONNECTION_ANTHROPIC_KEY!,
+            process.env.HANZO_LLM_CONNECTION_ANTHROPIC_KEY!,
           ),
         },
       });
@@ -413,13 +413,13 @@ describe("LLM Connection Tests", () => {
         modelParams: {
           provider: "azure",
           adapter: LLMAdapter.Azure,
-          model: process.env.LANGFUSE_LLM_CONNECTION_AZURE_MODEL!,
+          model: process.env.HANZO_LLM_CONNECTION_AZURE_MODEL!,
           temperature: 0,
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(process.env.LANGFUSE_LLM_CONNECTION_AZURE_KEY!),
-          baseURL: process.env.LANGFUSE_LLM_CONNECTION_AZURE_BASE_URL!,
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_AZURE_KEY!),
+          baseURL: process.env.HANZO_LLM_CONNECTION_AZURE_BASE_URL!,
         },
       });
 
@@ -744,7 +744,7 @@ describe("LLM Connection Tests", () => {
           max_tokens: 10,
         },
         llmConnection: {
-          secretKey: encrypt(process.env.LANGFUSE_LLM_CONNECTION_VERTEXAI_KEY!),
+          secretKey: encrypt(process.env.HANZO_LLM_CONNECTION_VERTEXAI_KEY!),
           config: null,
         },
       });
@@ -894,7 +894,7 @@ describe("LLM Connection Tests", () => {
         },
         llmConnection: {
           secretKey: encrypt(
-            process.env.LANGFUSE_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
+            process.env.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY!,
           ),
         },
       });

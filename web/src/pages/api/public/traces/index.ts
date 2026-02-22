@@ -64,7 +64,7 @@ export default withMiddlewares({
       // Api-performance controls.
       // 1. Reject if no date range and rejection is enabled
       if (
-        env.LANGFUSE_API_TRACES_REJECT_NO_DATE_RANGE === "true" &&
+        env.HANZO_API_TRACES_REJECT_NO_DATE_RANGE === "true" &&
         !query.fromTimestamp
       ) {
         throw new InvalidRequestError(
@@ -74,7 +74,7 @@ export default withMiddlewares({
 
       // 2. Apply default date range if configured and no fromTimestamp provided
       const defaultDateRangeDays =
-        env.LANGFUSE_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
+        env.HANZO_API_TRACES_DEFAULT_DATE_RANGE_DAYS;
       let effectiveFromTimestamp = query.fromTimestamp ?? undefined;
       if (!query.fromTimestamp && defaultDateRangeDays) {
         const referenceDateMs = query.toTimestamp
@@ -87,8 +87,8 @@ export default withMiddlewares({
 
       // 3. Apply default fields if configured and no fields query param provided
       let effectiveFields = query.fields ?? undefined;
-      if (!query.fields && env.LANGFUSE_API_TRACES_DEFAULT_FIELDS) {
-        const parsed = env.LANGFUSE_API_TRACES_DEFAULT_FIELDS.split(",")
+      if (!query.fields && env.HANZO_API_TRACES_DEFAULT_FIELDS) {
+        const parsed = env.HANZO_API_TRACES_DEFAULT_FIELDS.split(",")
           .map((f) => f.trim())
           .filter((f): f is TraceFieldGroup =>
             TRACE_FIELD_GROUPS.includes(f as TraceFieldGroup),
