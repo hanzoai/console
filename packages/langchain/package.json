@@ -27,6 +27,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/hanzoai/console.git",
-    "directory": "packages/hanzo-langchain"
+    "directory": "packages/langchain"
   }
 }
