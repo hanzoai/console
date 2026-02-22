@@ -13,7 +13,7 @@ import {
   createDatasetRunItem,
   createOrgProjectAndApiKey,
   LLMCompletionError,
-  HanzoInternalTraceEnvironment,
+  ConsoleInternalTraceEnvironment,
 } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
@@ -2952,7 +2952,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       expect(capturedTraceSinkParams.targetProjectId).toBe(projectId);
       expect(capturedTraceSinkParams.traceId).toMatch(/^[a-f0-9]{32}$/);
       expect(capturedTraceSinkParams.traceName).toBe("Execute evaluator: test-evaluator");
-      expect(capturedTraceSinkParams.environment).toBe(HanzoInternalTraceEnvironment.LLMJudge);
+      expect(capturedTraceSinkParams.environment).toBe(ConsoleInternalTraceEnvironment.LLMJudge);
       expect(capturedTraceSinkParams.metadata).toMatchObject({
         job_execution_id: jobExecutionId,
         job_configuration_id: configId,
@@ -2972,7 +2972,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: HanzoInternalTraceEnvironment.LLMJudge,
+        environment: ConsoleInternalTraceEnvironment.LLMJudge,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -2996,7 +2996,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const payload = {
         projectId,
         traceId,
-        traceEnvironment: HanzoInternalTraceEnvironment.LLMJudge,
+        traceEnvironment: ConsoleInternalTraceEnvironment.LLMJudge,
       };
 
       // Attempt to create eval jobs
@@ -3024,7 +3024,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: HanzoInternalTraceEnvironment.PromptExperiments,
+        environment: ConsoleInternalTraceEnvironment.PromptExperiments,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3048,7 +3048,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const payload = {
         projectId,
         traceId,
-        traceEnvironment: HanzoInternalTraceEnvironment.PromptExperiments,
+        traceEnvironment: ConsoleInternalTraceEnvironment.PromptExperiments,
       };
 
       // Attempt to create eval jobs
@@ -3119,7 +3119,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        environment: HanzoInternalTraceEnvironment.PromptExperiments,
+        environment: ConsoleInternalTraceEnvironment.PromptExperiments,
         timestamp: convertDateToClickhouseDateTime(new Date()),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
@@ -3144,7 +3144,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         projectId,
         traceId,
         datasetItemId,
-        traceEnvironment: HanzoInternalTraceEnvironment.PromptExperiments,
+        traceEnvironment: ConsoleInternalTraceEnvironment.PromptExperiments,
       };
 
       // Attempt to create eval jobs via dataset-run-item-upsert

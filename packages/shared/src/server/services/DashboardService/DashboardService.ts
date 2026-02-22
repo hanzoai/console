@@ -1,5 +1,5 @@
 import { prisma } from "../../../db";
-import { HanzoConflictError, ConsoleNotFoundError, type OrderByState } from "../../../";
+import { ConsoleConflictError, ConsoleNotFoundError, type OrderByState } from "../../../";
 import {
   CreateWidgetInput,
   WidgetDomain,
@@ -359,7 +359,7 @@ export class DashboardService {
     if (referencingDashboards.length > 0) {
       const dashboardNames = referencingDashboards.map((d) => `"${d.name}"`).join(", ");
 
-      throw new HanzoConflictError(
+      throw new ConsoleConflictError(
         `Cannot delete widget because it is still used in the following dashboards: ${dashboardNames}. Please remove the widget from these dashboards first.`,
       );
     }

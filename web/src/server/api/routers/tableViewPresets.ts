@@ -31,7 +31,7 @@ export const TableViewPresetsRouter = createTRPCRouter({
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        throw new HanzoConflictError(
+        throw new ConsoleConflictError(
           "Table view preset with this name already exists. Please choose a different name.",
         );
       }

@@ -6,7 +6,7 @@ import { DashboardWidgetChartType, DashboardWidgetViews } from "@hanzo/shared/sr
 import { DashboardService, DimensionSchema, MetricSchema, ChartConfigSchema } from "@hanzo/shared/src/server";
 import { views } from "@/src/features/query";
 import { TRPCError } from "@trpc/server";
-import { HanzoConflictError } from "@hanzo/shared";
+import { ConsoleConflictError } from "@hanzo/shared";
 
 const CreateDashboardWidgetInput = z.object({
   projectId: z.string(),
@@ -204,7 +204,7 @@ export const dashboardWidgetRouter = createTRPCRouter({
         };
       } catch (error) {
         // If the widget is still referenced in dashboards, throw a CONFLICT error
-        if (error instanceof HanzoConflictError) {
+        if (error instanceof ConsoleConflictError) {
           throw new TRPCError({
             code: "CONFLICT",
             message: error.message,

@@ -20,7 +20,7 @@ export const evalConfigFormSchema = z.object({
 
 export type EvalFormType = z.infer<typeof evalConfigFormSchema>;
 
-export type HanzoObject = (typeof consoleObjects)[number];
+export type ConsoleObject = (typeof consoleObjects)[number];
 
 export type VariableMapping = z.infer<typeof wipVariableMapping>;
 

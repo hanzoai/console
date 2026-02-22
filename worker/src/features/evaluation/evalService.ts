@@ -28,7 +28,7 @@ import {
   getDatasetItemIdsByTraceIdCh,
   mapDatasetRunItemFilterColumn,
   tableColumnsToSqlFilterAndPrefix,
-  HanzoInternalTraceEnvironment,
+  ConsoleInternalTraceEnvironment,
   DEFAULT_TRACE_ENVIRONMENT,
   setNoEvalConfigsCache,
   DatasetRunItemUpsertEventType,
@@ -210,14 +210,14 @@ export const createEvalJobs = async ({
   // IMPLEMENTATION:
   // - Block ALL traces with environment starting with "hanzo-" when coming from trace-upsert queue
   // - This excludes traces from prompt experiments that come via dataset-run-item-upsert queue
-  // - Internal traces (e.g., eval executions) use HanzoInternalTraceEnvironment enum values
+  // - Internal traces (e.g., eval executions) use ConsoleInternalTraceEnvironment enum values
   //
   // DUAL SAFEGUARD:
   // - This check prevents eval job CREATION for internal traces
   // - fetchLLMCompletion.ts enforces that internal traces MUST use "hanzo-" prefix
   //
   // See: packages/shared/src/server/llm/fetchLLMCompletion.ts (enforcement)
-  // See: packages/shared/src/server/llm/types.ts (HanzoInternalTraceEnvironment enum)
+  // See: packages/shared/src/server/llm/types.ts (ConsoleInternalTraceEnvironment enum)
   if (sourceEventType === "trace-upsert" && event.traceEnvironment?.startsWith("hanzo")) {
     logger.debug("Skipping eval job creation for internal Hanzo trace", {
       traceId: event.traceId,

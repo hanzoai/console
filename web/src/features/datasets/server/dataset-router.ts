@@ -15,7 +15,7 @@ import {
   timeFilter,
   isClickhouseFilterColumn,
   optionalPaginationZod,
-  HanzoConflictError,
+  ConsoleConflictError,
   ConsoleNotFoundError,
 } from "@hanzo/shared";
 import { TRPCError } from "@trpc/server";
@@ -957,7 +957,7 @@ export const datasetRouter = createTRPCRouter({
         return deletedDataset;
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
-          throw new HanzoConflictError("The dataset you are trying to delete has likely been deleted");
+          throw new ConsoleConflictError("The dataset you are trying to delete has likely been deleted");
         }
         throw error;
       }
