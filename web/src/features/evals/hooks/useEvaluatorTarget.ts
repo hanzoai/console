@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
-import {
-  EvalTargetObject,
-  availableTraceEvalVariables,
-  availableDatasetEvalVariables,
-} from "@hanzo/shared";
+import { EvalTargetObject, availableTraceEvalVariables, availableDatasetEvalVariables } from "@hanzo/shared";
 import {
   isTraceTarget,
   isEventTarget,
   isExperimentTarget,
   isLegacyEvalTarget,
 } from "@/src/features/evals/utils/typeHelpers";
-import {
-  type VariableMapping,
-  type LangfuseObject,
-} from "../utils/evaluator-form-utils";
+import { type VariableMapping, type ConsoleObject } from "../utils/evaluator-form-utils";
 import { OBSERVATION_VARIABLES } from "../utils/evaluator-constants";
 
 /**
@@ -21,11 +14,8 @@ import { OBSERVATION_VARIABLES } from "../utils/evaluator-constants";
  * Maps internal target objects to UI tabs (trace/event/offline-experiment).
  */
 export const useUserFacingTarget = (targetObject?: string) => {
-  const [userFacingTarget, setUserFacingTarget] = useState<
-    "trace" | "event" | "offline-experiment"
-  >("event");
-  const [useOtelDataForExperiment, setUseOtelDataForExperiment] =
-    useState(true);
+  const [userFacingTarget, setUserFacingTarget] = useState<"trace" | "event" | "offline-experiment">("event");
+  const [useOtelDataForExperiment, setUseOtelDataForExperiment] = useState(true);
 
   useEffect(() => {
     const currentTarget = targetObject ?? EvalTargetObject.EVENT;
@@ -61,36 +51,28 @@ export const useEvaluatorTargetState = () => {
     if (isEventTarget(targetObject) || isExperimentTarget(targetObject)) {
       return OBSERVATION_VARIABLES;
     }
-    return isTraceTarget(targetObject)
-      ? availableTraceEvalVariables
-      : availableDatasetEvalVariables;
+    return isTraceTarget(targetObject) ? availableTraceEvalVariables : availableDatasetEvalVariables;
   };
 
-  const transformMapping = (
-    currentMapping: VariableMapping[],
-    targetObject: string,
-  ): VariableMapping[] => {
-    const isObservationBased =
-      isEventTarget(targetObject) || isExperimentTarget(targetObject);
+  const transformMapping = (currentMapping: VariableMapping[], targetObject: string): VariableMapping[] => {
+    const isObservationBased = isEventTarget(targetObject) || isExperimentTarget(targetObject);
 
     return currentMapping.map((field) => {
       if (isObservationBased) {
-        // Placeholder langfuseObject (stripped in onSubmit)
+        // Placeholder consoleObject (stripped in onSubmit)
         return {
           templateVariable: field.templateVariable,
           selectedColumnId: field.selectedColumnId,
           jsonSelector: field.jsonSelector,
-          langfuseObject: "event" as LangfuseObject,
+          consoleObject: "event" as ConsoleObject,
           objectName: null,
         };
       }
 
-      // Proper langfuseObject for trace/dataset
+      // Proper consoleObject for trace/dataset
       return {
         ...field,
-        langfuseObject: (isTraceTarget(targetObject)
-          ? "trace"
-          : "dataset_item") as LangfuseObject,
+        consoleObject: (isTraceTarget(targetObject) ? "trace" : "dataset_item") as ConsoleObject,
         objectName: field.objectName ?? null,
       };
     });

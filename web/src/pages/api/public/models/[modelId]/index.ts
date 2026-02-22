@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import {
@@ -57,7 +57,7 @@ export default withMiddlewares({
       });
 
       if (!model) {
-        throw new HanzoNotFoundError("No model with this id found.");
+        throw new ConsoleNotFoundError("No model with this id found.");
       }
 
       return prismaToApiModelDefinition(model);
@@ -76,7 +76,7 @@ export default withMiddlewares({
         },
       });
       if (!model) {
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           "No model with this id found. Note: You cannot delete built-in models, override them with a model with the same name.",
         );
       }

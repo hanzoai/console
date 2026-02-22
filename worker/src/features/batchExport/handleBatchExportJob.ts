@@ -5,7 +5,7 @@ import {
   BatchExportStatus,
   BatchExportTableName,
   exportOptions,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
 } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {
@@ -57,7 +57,7 @@ export const handleBatchExportJob = async (batchExportJob: BatchExportJobType) =
   });
 
   if (!jobDetails) {
-    throw new HanzoNotFoundError(`Job not found for project: ${projectId} and export ${batchExportId}`);
+    throw new ConsoleNotFoundError(`Job not found for project: ${projectId} and export ${batchExportId}`);
   }
 
   // Check if the batch export has been cancelled

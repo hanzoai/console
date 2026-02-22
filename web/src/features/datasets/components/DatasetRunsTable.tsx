@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { api } from "@/src/utils/api";
 import { formatIntervalSeconds } from "@/src/utils/dates";
@@ -295,8 +295,7 @@ export function DatasetRunsTable(props: {
   }, [runsMetrics.data, scoreIdToName]);
 
   const { scoreAnalyticsOptions } = useMemo(
-    () =>
-      convertScoreColumnsToAnalyticsData(scoreKeysAndProps.data?.scoreColumns),
+    () => convertScoreColumnsToAnalyticsData(scoreKeysAndProps.data?.scoreColumns),
     [scoreKeysAndProps.data?.scoreColumns],
   );
 
@@ -304,7 +303,7 @@ export function DatasetRunsTable(props: {
     setScoreOptions(scoreAnalyticsOptions);
   }, [scoreAnalyticsOptions, setScoreOptions]);
 
-  const columns: HanzoColumnDef<DatasetRunRowData>[] = [
+  const columns: ConsoleColumnDef<DatasetRunRowData>[] = [
     {
       id: "select",
       accessorKey: "select",
@@ -543,17 +542,9 @@ export function DatasetRunsTable(props: {
 
                   if (!Boolean(runAggregatedMetrics?.size)) {
                     return (
-                      <div
-                        key={key}
-                        className="flex h-full min-w-80 max-w-full flex-col gap-2"
-                      >
-                        <span className="shrink-0 text-sm font-medium">
-                          {title}
-                        </span>
-                        <NoDataOrLoading
-                          isLoading={runsMetrics.isPending}
-                          className="min-h-[200px]"
-                        />
+                      <div key={key} className="flex h-full min-w-80 max-w-full flex-col gap-2">
+                        <span className="shrink-0 text-sm font-medium">{title}</span>
+                        <NoDataOrLoading isLoading={runsMetrics.isPending} className="min-h-[200px]" />
                       </div>
                     );
                   }
@@ -563,11 +554,7 @@ export function DatasetRunsTable(props: {
 
                   // TODO: remove when revamping the datasets api for it to directly return ms
                   const valueFormatter =
-                    key === "latency"
-                      ? formatIntervalSeconds
-                      : key === "cost"
-                        ? usdFormatter
-                        : compactNumberFormatter;
+                    key === "latency" ? formatIntervalSeconds : key === "cost" ? usdFormatter : compactNumberFormatter;
 
                   const dataPoints =
                     chartLabels.length === 1
@@ -576,24 +563,13 @@ export function DatasetRunsTable(props: {
                           dimension: chartLabels[0]!,
                           metric: (d[chartLabels[0]!] as number) ?? 0,
                         }))
-                      : compareViewChartDataToDataPoints(
-                          chartData,
-                          chartLabels,
-                        );
-                  const chartType =
-                    chartLabels.length === 1
-                      ? "LINE_TIME_SERIES"
-                      : "BAR_TIME_SERIES";
+                      : compareViewChartDataToDataPoints(chartData, chartLabels);
+                  const chartType = chartLabels.length === 1 ? "LINE_TIME_SERIES" : "BAR_TIME_SERIES";
 
                   if (dataPoints.length === 0) {
                     return (
-                      <div
-                        key={key}
-                        className="flex h-full min-w-80 max-w-full flex-col gap-2"
-                      >
-                        <span className="shrink-0 text-sm font-medium">
-                          {title}
-                        </span>
+                      <div key={key} className="flex h-full min-w-80 max-w-full flex-col gap-2">
+                        <span className="shrink-0 text-sm font-medium">{title}</span>
                         <NoDataOrLoading
                           isLoading={runsMetrics.isPending}
                           description="No chart data available for the selected runs."
@@ -604,13 +580,8 @@ export function DatasetRunsTable(props: {
                   }
 
                   return (
-                    <div
-                      key={key}
-                      className="flex h-full min-w-80 max-w-full flex-col gap-2"
-                    >
-                      <span className="shrink-0 text-sm font-medium">
-                        {title}
-                      </span>
+                    <div key={key} className="flex h-full min-w-80 max-w-full flex-col gap-2">
+                      <span className="shrink-0 text-sm font-medium">{title}</span>
                       <div className="min-h-[200px] min-w-0 flex-1">
                         <Chart
                           chartType={chartType}
@@ -618,9 +589,7 @@ export function DatasetRunsTable(props: {
                           rowLimit={Math.max(dataPoints.length, 1)}
                           chartConfig={{ type: chartType }}
                           valueFormatter={valueFormatter}
-                          legendPosition={
-                            chartLabels.length > 1 ? "above" : "none"
-                          }
+                          legendPosition={chartLabels.length > 1 ? "above" : "none"}
                         />
                       </div>
                     </div>

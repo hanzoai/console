@@ -4,7 +4,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { redis } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import { HanzoNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
+import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
 
 export default withMiddlewares({
   DELETE: handleDeleteBlobStorageIntegration,
@@ -48,7 +48,7 @@ async function handleDeleteBlobStorageIntegration(req: NextApiRequest, res: Next
   });
 
   if (!integration || integration.project.orgId !== authCheck.scope.orgId) {
-    throw new HanzoNotFoundError("Blob storage integration not found");
+    throw new ConsoleNotFoundError("Blob storage integration not found");
   }
 
   // Delete the integration

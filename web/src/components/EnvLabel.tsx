@@ -1,4 +1,4 @@
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { cn } from "@/src/utils/tailwind";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -6,8 +6,8 @@ import { useState } from "react";
 export const EnvLabel = ({ className }: { className?: string }) => {
   const [isHidden, setIsHidden] = useState(false);
   const session = useSession();
-  const { isHanzoCloud, region } = useHanzoCloudRegion();
-  if (!isHanzoCloud) return null;
+  const { isConsoleCloud, region } = useConsoleCloudRegion();
+  if (!isConsoleCloud) return null;
   if (!session.data?.user?.email?.endsWith("@hanzo.com")) return null;
   if (isHidden) return null;
   return (

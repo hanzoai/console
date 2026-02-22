@@ -1,12 +1,12 @@
 export { BaseError } from "./BaseError";
-export { HanzoNotFoundError } from "./NotFoundError";
+export { ConsoleNotFoundError } from "./NotFoundError";
 export { InvalidRequestError } from "./InvalidRequestError";
 export { UnauthorizedError } from "./UnauthorizedError";
 export { ForbiddenError } from "./ForbiddenError";
 export { MethodNotAllowedError } from "./MethodNotAllowedError";
 export { ApiError } from "./ApiError";
 export { InternalServerError } from "./InternalServerError";
-export { HanzoConflictError } from "./ConflictError";
+export { ConsoleConflictError } from "./ConflictError";
 export { ServiceUnavailableError } from "./ServiceUnavailableError";
 export { NotImplementedError } from "./NotImplementedError";
 export * from "./errorMessages";

@@ -15,11 +15,7 @@ import {
   scoresTableUiColumnDefinitions,
   scoresTableUiColumnDefinitionsFromEvents,
 } from "../tableMappings";
-import {
-  convertScoreAggregation,
-  convertClickhouseScoreToDomain,
-  ScoreAggregation,
-} from "./scores_converters";
+import { convertScoreAggregation, convertClickhouseScoreToDomain, ScoreAggregation } from "./scores_converters";
 import { SCORE_TO_TRACE_OBSERVATIONS_INTERVAL } from "./constants";
 import { convertDateToClickhouseDateTime, PreferredClickhouseService } from "../clickhouse/client";
 import { ScoreRecordReadType } from "./definitions";
@@ -987,20 +983,11 @@ const getScoresUiGenericFromEvents = async <T>(props: {
   const { scoresFilter } = getProjectIdDefaultFilter(projectId, {
     tracesPrefix: "e",
   });
-  scoresFilter.push(
-    ...createFilterFromFilterState(
-      filter,
-      scoresTableUiColumnDefinitionsFromEvents,
-    ),
-  );
+  scoresFilter.push(...createFilterFromFilterState(filter, scoresTableUiColumnDefinitionsFromEvents));
 
   // Separate trace filters (events_core) from score filters
-  const traceFilters = scoresFilter.filter(
-    (f) => f.clickhouseTable === "events_core",
-  );
-  const scoreOnlyFilters = scoresFilter.filter(
-    (f) => f.clickhouseTable !== "events_core",
-  );
+  const traceFilters = scoresFilter.filter((f) => f.clickhouseTable === "events_core");
+  const scoreOnlyFilters = scoresFilter.filter((f) => f.clickhouseTable !== "events_core");
 
   const scoreOnlyFilterRes = scoreOnlyFilters.apply();
 
@@ -1026,8 +1013,7 @@ const getScoresUiGenericFromEvents = async <T>(props: {
   const orderByColumn = orderBy
     ? scoresTableUiColumnDefinitionsFromEvents.find(
         (c) =>
-          (c.uiTableName === orderBy.column ||
-            c.uiTableId === orderBy.column) &&
+          (c.uiTableName === orderBy.column || c.uiTableId === orderBy.column) &&
           c.clickhouseTableName === "events_core",
       )
     : null;
@@ -1202,16 +1188,8 @@ export async function getScoresUiTableFromEvents(props: {
   });
 }
 
-export const getScoreNames = async (
-  projectId: string,
-  timestampFilter: FilterState,
-) => {
-  const chFilter = new FilterList(
-    createFilterFromFilterState(
-      timestampFilter,
-      scoresTableUiColumnDefinitions,
-    ),
-  );
+export const getScoreNames = async (projectId: string, timestampFilter: FilterState) => {
+  const chFilter = new FilterList(createFilterFromFilterState(timestampFilter, scoresTableUiColumnDefinitions));
   const timestampFilterRes = chFilter.apply();
 
   // We mainly use queries like this to retrieve filter options.
@@ -1765,34 +1743,34 @@ export const getScoresForAnalyticsIntegrations = async function* (
 
     yield {
       timestamp: record.timestamp,
-      hanzo_score_name: record.name,
-      hanzo_score_value: record.value,
-      hanzo_score_comment: record.comment,
-      hanzo_score_metadata: record.metadata,
-      hanzo_score_string_value: record.string_value,
-      hanzo_score_data_type: record.data_type,
-      hanzo_trace_name: record.trace_name,
-      hanzo_trace_id: effectiveTraceId,
-      hanzo_user_url: record.trace_user_id
+      console_score_name: record.name,
+      console_score_value: record.value,
+      console_score_comment: record.comment,
+      console_score_metadata: record.metadata,
+      console_score_string_value: record.string_value,
+      console_score_data_type: record.data_type,
+      console_trace_name: record.trace_name,
+      console_trace_id: effectiveTraceId,
+      console_user_url: record.trace_user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.trace_user_id as string)}`
         : undefined,
-      langfuse_id: record.id,
-      langfuse_session_id: effectiveSessionId,
-      langfuse_project_id: projectId,
-      langfuse_project_name: projectName,
-      langfuse_user_id: record.trace_user_id || null,
-      langfuse_release: record.trace_release,
-      langfuse_tags: record.trace_tags,
-      langfuse_environment: record.environment,
-      langfuse_event_version: "1.0.0",
-      langfuse_score_entity_type: record.score_trace_id
+      console_id: record.id,
+      console_session_id: effectiveSessionId,
+      console_project_id: projectId,
+      console_project_name: projectName,
+      console_user_id: record.trace_user_id || null,
+      console_release: record.trace_release,
+      console_tags: record.trace_tags,
+      console_environment: record.environment,
+      console_event_version: "1.0.0",
+      console_score_entity_type: record.score_trace_id
         ? "trace"
         : record.score_session_id
           ? "session"
           : record.score_dataset_run_id
             ? "dataset_run"
             : "unknown",
-      hanzo_dataset_run_id: record.score_dataset_run_id,
+      console_dataset_run_id: record.score_dataset_run_id,
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsScoreEvent;
@@ -1912,10 +1890,7 @@ export const getScoreCountsByProjectAndDay = async ({ startDate, endDate }: { st
   }));
 };
 
-export async function getScoresTraceMetricsFromEvents(params: {
-  projectId: string;
-  traceIds: string[];
-}) {
+export async function getScoresTraceMetricsFromEvents(params: { projectId: string; traceIds: string[] }) {
   const { projectId, traceIds } = params;
   if (traceIds.length === 0) return [];
 

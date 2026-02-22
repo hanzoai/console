@@ -4,7 +4,7 @@ import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { InlineFilterState } from "@/src/features/filters/components/filter-builder";
 import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
@@ -19,19 +19,10 @@ import { useQueryParam, StringParam, withDefault } from "use-query-params";
 import { usePaginationState } from "@/src/hooks/usePaginationState";
 import { z } from "zod/v4";
 import { generateJobExecutionCounts } from "@/src/features/evals/utils/job-execution-utils";
-import {
-  isLegacyEvalTarget,
-  isEventTarget,
-} from "@/src/features/evals/utils/typeHelpers";
+import { isLegacyEvalTarget, isEventTarget } from "@/src/features/evals/utils/typeHelpers";
 import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import TableIdOrName from "@/src/components/table/table-id";
-import {
-  MoreVertical,
-  Loader2,
-  ExternalLinkIcon,
-  Edit,
-  Info,
-} from "lucide-react";
+import { MoreVertical, Loader2, ExternalLinkIcon, Edit, Info } from "lucide-react";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { PeekViewEvaluatorConfigDetail } from "@/src/components/table/peek/peek-evaluator-config-detail";
 import { TablePeekView } from "@/src/components/table/peek";
@@ -56,11 +47,7 @@ import { usdFormatter } from "@/src/utils/numbers";
 import { Callout } from "@/src/components/ui/callout";
 import Link from "next/link";
 import { Badge } from "@/src/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { useIsObservationEvalsFullyReleased } from "@/src/features/events/hooks/useObservationEvals";
 
 export type EvaluatorDataRow = {
@@ -102,10 +89,10 @@ function LegacyBadgeCell({ status }: { status: string }) {
               <div className="space-y-1 text-sm">
                 <p className="font-medium">Action required</p>
                 <p className="text-muted-foreground">
-                  This evaluator requires changes to benefit from new features
-                  and performance improvements. Please follow{" "}
+                  This evaluator requires changes to benefit from new features and performance improvements. Please
+                  follow{" "}
                   <Link
-                    href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
+                    href="https://hanzo.ai/docs/faq/all/llm-as-a-judge-migration"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-dark-blue hover:opacity-80"
@@ -148,14 +135,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     target: ["trace", "dataset"],
   };
 
-  const queryFilter = useSidebarFilterState(
-    evaluatorFilterConfig,
-    newFilterOptions,
-    projectId,
-    false,
-    false,
-    [],
-  );
+  const queryFilter = useSidebarFilterState(evaluatorFilterConfig, newFilterOptions, projectId, false, false, []);
 
   const evaluators = api.evals.allConfigs.useQuery({
     page: paginationState.pageIndex,
@@ -199,9 +179,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
   const hasLegacyEvals = useMemo(() => {
     if (!evaluators.data?.configs) return false;
     return evaluators.data.configs.some(
-      (config) =>
-        config.finalStatus === "ACTIVE" &&
-        isLegacyEvalTarget(config.targetObject),
+      (config) => config.finalStatus === "ACTIVE" && isLegacyEvalTarget(config.targetObject),
     );
   }, [evaluators.data?.configs]);
 
@@ -336,9 +314,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       enableHiding: true,
       cell: (row) => {
         const targetObject = row.getValue();
-        const renderText = isEventTarget(targetObject)
-          ? "observations"
-          : targetObject;
+        const renderText = isEventTarget(targetObject) ? "observations" : targetObject;
         return <span className="text-muted-foreground">{renderText}</span>;
       },
     }),
@@ -420,7 +396,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
         );
       },
     }),
-  ] as HanzoColumnDef<EvaluatorDataRow>[];
+  ] as ConsoleColumnDef<EvaluatorDataRow>[];
 
   const [columnVisibility, setColumnVisibility] = useColumnVisibility<EvaluatorDataRow>(
     "evalConfigColumnVisibility",
@@ -444,9 +420,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     [projectId, peekNavigationProps],
   );
 
-  const convertToTableRow = (
-    jobConfig: RouterOutputs["evals"]["allConfigs"]["configs"][number],
-  ): EvaluatorDataRow => {
+  const convertToTableRow = (jobConfig: RouterOutputs["evals"]["allConfigs"]["configs"][number]): EvaluatorDataRow => {
     const result = generateJobExecutionCounts(jobConfig.jobExecutionsByState);
     const costData = costs.data?.[jobConfig.id];
 
@@ -486,19 +460,14 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       <div className="flex h-full w-full flex-col">
         {isFullyReleased && hasLegacyEvals && (
           <div className="p-2 pb-0">
-            <Callout
-              id="eval-remapping-table"
-              variant="info"
-              key="dismissed-eval-remapping-callouts"
-            >
+            <Callout id="eval-remapping-table" variant="info" key="dismissed-eval-remapping-callouts">
               <span>New LLM-as-a-Judge functionality has landed. </span>
               <span className="font-semibold">
-                Some of your evaluators (marked &quot;Legacy&quot;) require
-                changes{" "}
+                Some of your evaluators (marked &quot;Legacy&quot;) require changes{" "}
               </span>
               <span>for new features and improvements. </span>
               <Link
-                href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
+                href="https://hanzo.ai/docs/faq/all/llm-as-a-judge-migration"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-dark-blue hover:opacity-80"

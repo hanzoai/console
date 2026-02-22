@@ -8,7 +8,7 @@ import {
   PostDatasetRunItemsV1Body,
   PostDatasetRunItemsV1Response,
 } from "@/src/features/public-api/types/datasets";
-import { type JSONValue, HanzoNotFoundError } from "@hanzo/shared";
+import { type JSONValue, ConsoleNotFoundError } from "@hanzo/shared";
 import { addDatasetRunItemsToEvalQueue } from "@/src/features/evals/server/addDatasetRunItemsToEvalQueue";
 import {
   eventTypes,
@@ -54,7 +54,7 @@ export default withMiddlewares({
       });
 
       if (!datasetItem) {
-        throw new HanzoNotFoundError("Dataset item not found");
+        throw new ConsoleNotFoundError("Dataset item not found");
       }
 
       let finalTraceId = traceId;
@@ -67,13 +67,13 @@ export default withMiddlewares({
           fetchWithInputOutput: false,
         });
         if (observationId && !observation) {
-          throw new HanzoNotFoundError("Observation not found");
+          throw new ConsoleNotFoundError("Observation not found");
         }
         finalTraceId = observation?.traceId;
       }
 
       if (!finalTraceId) {
-        throw new HanzoNotFoundError("Trace not found");
+        throw new ConsoleNotFoundError("Trace not found");
       }
 
       /********************
@@ -127,9 +127,7 @@ export default withMiddlewares({
       });
       if (ingestionResult.errors.length > 0) {
         const error = ingestionResult.errors[0];
-        res
-          .status(error.status)
-          .json({ message: error.error ?? error.message });
+        res.status(error.status).json({ message: error.error ?? error.message });
         // We will still return the mock dataset run item in the response for now. Logs are to be monitored.
       }
       if (ingestionResult.successes.length !== 1) {
@@ -190,9 +188,7 @@ export default withMiddlewares({
       });
 
       if (!datasetRun) {
-        throw new HanzoNotFoundError(
-          "Dataset run not found for the given project and dataset id",
-        );
+        throw new ConsoleNotFoundError("Dataset run not found for the given project and dataset id");
       }
 
       const { datasetId, limit, page } = query;

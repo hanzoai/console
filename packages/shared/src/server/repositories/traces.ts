@@ -867,9 +867,7 @@ export const deleteTraces = async (projectId: string, traceIds: string[]) => {
 
       const count = Number(preflight[0]?.cnt ?? 0);
       if (count === 0) {
-        logger.info(
-          `deleteTraces: no rows found for project ${projectId}, skipping DELETE`,
-        );
+        logger.info(`deleteTraces: no rows found for project ${projectId}, skipping DELETE`);
         return;
       }
 
@@ -1342,24 +1340,24 @@ export const getTracesForAnalyticsIntegrations = async function* (
   for await (const record of records) {
     yield {
       timestamp: record.timestamp,
-      hanzo_id: record.id,
-      hanzo_trace_name: record.name,
-      hanzo_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
-      hanzo_user_url: record.user_id
+      console_id: record.id,
+      console_trace_name: record.name,
+      console_url: `${baseUrl}/project/${projectId}/traces/${encodeURIComponent(record.id as string)}`,
+      console_user_url: record.user_id
         ? `${baseUrl}/project/${projectId}/users/${encodeURIComponent(record.user_id as string)}`
         : undefined,
-      langfuse_cost_usd: record.total_cost,
-      langfuse_count_observations: record.observation_count,
-      langfuse_session_id: record.session_id,
-      langfuse_project_id: projectId,
-      langfuse_project_name: projectName,
-      langfuse_user_id: record.user_id || null,
-      langfuse_latency: record.latency,
-      langfuse_release: record.release,
-      langfuse_version: record.version,
-      langfuse_tags: record.tags,
-      langfuse_environment: record.environment,
-      langfuse_event_version: "1.0.0",
+      console_cost_usd: record.total_cost,
+      console_count_observations: record.observation_count,
+      console_session_id: record.session_id,
+      console_project_id: projectId,
+      console_project_name: projectName,
+      console_user_id: record.user_id || null,
+      console_latency: record.latency,
+      console_release: record.release,
+      console_version: record.version,
+      console_tags: record.tags,
+      console_environment: record.environment,
+      console_event_version: "1.0.0",
       posthog_session_id: record.posthog_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsTraceEvent;

@@ -2,7 +2,7 @@ import React from "react";
 import { api } from "@/src/utils/api";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { IOTableCell } from "@/src/components/ui/IOTableCell";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
@@ -42,7 +42,7 @@ export const AutomationExecutionsTable: React.FC<AutomationExecutionsTableProps>
     limit: paginationState.pageSize,
   });
 
-  const columns: HanzoColumnDef<ActionExecutionRow>[] = [
+  const columns: ConsoleColumnDef<ActionExecutionRow>[] = [
     {
       accessorKey: "status",
       header: "Status",

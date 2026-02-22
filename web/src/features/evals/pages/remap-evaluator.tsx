@@ -3,11 +3,7 @@ import { useRouter } from "next/router";
 import Page from "@/src/components/layouts/page";
 import { api } from "@/src/utils/api";
 import { InnerEvaluatorForm } from "@/src/features/evals/components/inner-evaluator-form";
-import {
-  mapLegacyToModernTarget,
-  isTraceTarget,
-  isEventTarget,
-} from "@/src/features/evals/utils/typeHelpers";
+import { mapLegacyToModernTarget, isTraceTarget, isEventTarget } from "@/src/features/evals/utils/typeHelpers";
 import { type PartialConfig } from "@/src/features/evals/types";
 import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { Skeleton } from "@/src/components/ui/skeleton";
@@ -33,25 +29,22 @@ export default function RemapEvaluatorPage() {
   const evalCapabilities = useEvalCapabilities(projectId);
 
   const [error, setError] = useState<string | null>(null);
-  const [legacyAction, setLegacyAction] =
-    useState<LegacyEvalAction>("mark-inactive");
+  const [legacyAction, setLegacyAction] = useState<LegacyEvalAction>("mark-inactive");
 
   // Fetch old eval config
-  const { data: oldConfig, isLoading: isLoadingConfig } =
-    api.evals.configById.useQuery(
-      { projectId, id: evalConfigId },
-      { enabled: !!projectId && !!evalConfigId },
-    );
+  const { data: oldConfig, isLoading: isLoadingConfig } = api.evals.configById.useQuery(
+    { projectId, id: evalConfigId },
+    { enabled: !!projectId && !!evalConfigId },
+  );
 
   // Fetch eval template
-  const { data: evalTemplate, isLoading: isLoadingTemplate } =
-    api.evals.templateById.useQuery(
-      {
-        projectId,
-        id: oldConfig?.evalTemplateId ?? "",
-      },
-      { enabled: !!projectId && !!oldConfig?.evalTemplateId },
-    );
+  const { data: evalTemplate, isLoading: isLoadingTemplate } = api.evals.templateById.useQuery(
+    {
+      projectId,
+      id: oldConfig?.evalTemplateId ?? "",
+    },
+    { enabled: !!projectId && !!oldConfig?.evalTemplateId },
+  );
 
   const utils = api.useUtils();
 
@@ -88,10 +81,7 @@ export default function RemapEvaluatorPage() {
       scoreName: oldConfig.scoreName,
       targetObject: mapLegacyToModernTarget(oldConfig.targetObject),
       jobType: oldConfig.jobType,
-      filter:
-        oldConfig.targetObject === "trace"
-          ? DEFAULT_OBSERVATION_FILTER_WHEN_REMAPPING
-          : [],
+      filter: oldConfig.targetObject === "trace" ? DEFAULT_OBSERVATION_FILTER_WHEN_REMAPPING : [],
       variableMapping: [],
       sampling: oldConfig.sampling,
       delay: oldConfig.delay,
@@ -154,10 +144,9 @@ export default function RemapEvaluatorPage() {
       <div className="space-y-4">
         <div>
           <p className="text-sm text-muted-foreground">
-            Review your legacy evaluator on the left and configure the new eval
-            settings on the right.{" "}
+            Review your legacy evaluator on the left and configure the new eval settings on the right.{" "}
             <a
-              href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
+              href="https://hanzo.ai/docs/faq/all/llm-as-a-judge-migration"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-dark-blue hover:opacity-80"
@@ -167,10 +156,7 @@ export default function RemapEvaluatorPage() {
             to upgrade successfully.
           </p>
           {mappedConfig ? (
-            <Alert
-              variant="default"
-              className="mt-2 border-light-yellow bg-light-yellow"
-            >
+            <Alert variant="default" className="mt-2 border-light-yellow bg-light-yellow">
               <AlertDescription>
                 <div className="flex flex-col gap-2">
                   {isEventTarget(mappedConfig.targetObject ?? "event")
@@ -190,9 +176,7 @@ export default function RemapEvaluatorPage() {
             </div>
           ) : !oldConfig || !evalTemplate ? (
             <Alert variant="destructive">
-              <AlertDescription>
-                Failed to load eval configuration or template.
-              </AlertDescription>
+              <AlertDescription>Failed to load eval configuration or template.</AlertDescription>
             </Alert>
           ) : (
             <div className="grid grid-cols-[1fr_2px_1fr] items-start">
@@ -200,14 +184,9 @@ export default function RemapEvaluatorPage() {
               <div className="space-y-4 p-3">
                 <div className="flex items-center gap-2 pb-2">
                   <h3 className="text-lg font-semibold">
-                    Legacy Configuration{" "}
-                    {isTraceTarget(oldConfig.targetObject)
-                      ? "(runs on traces)"
-                      : ""}
+                    Legacy Configuration {isTraceTarget(oldConfig.targetObject) ? "(runs on traces)" : ""}
                   </h3>
-                  <span className="text-xs text-muted-foreground">
-                    Read-only
-                  </span>
+                  <span className="text-xs text-muted-foreground">Read-only</span>
                 </div>
                 <InnerEvaluatorForm
                   projectId={projectId}
@@ -230,10 +209,7 @@ export default function RemapEvaluatorPage() {
               {/* RIGHT: Editable new config form */}
               <div className="space-y-4 p-3">
                 <h3 className="pb-2 text-lg font-semibold">
-                  New Configuration{" "}
-                  {isTraceTarget(oldConfig.targetObject)
-                    ? "(runs on observations)"
-                    : ""}
+                  New Configuration {isTraceTarget(oldConfig.targetObject) ? "(runs on observations)" : ""}
                 </h3>
                 <InnerEvaluatorForm
                   projectId={projectId}
@@ -251,11 +227,7 @@ export default function RemapEvaluatorPage() {
                   renderFooter={({ isLoading, formError }) => (
                     <div className="flex w-full flex-col items-end gap-4">
                       <div className="flex items-center">
-                        <Button
-                          type="submit"
-                          loading={isLoading}
-                          className="mt-3 rounded-l-md rounded-r-none"
-                        >
+                        <Button type="submit" loading={isLoading} className="mt-3 rounded-l-md rounded-r-none">
                           {legacyAction === "keep-active"
                             ? "Save & keep legacy active"
                             : legacyAction === "mark-inactive"
@@ -273,21 +245,15 @@ export default function RemapEvaluatorPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => setLegacyAction("keep-active")}
-                            >
+                            <DropdownMenuItem onClick={() => setLegacyAction("keep-active")}>
                               {legacyAction === "keep-active" && "✓ "}
                               Save & keep legacy active
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setLegacyAction("mark-inactive")}
-                            >
+                            <DropdownMenuItem onClick={() => setLegacyAction("mark-inactive")}>
                               {legacyAction === "mark-inactive" && "✓ "}
                               Save & mark legacy inactive
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setLegacyAction("delete")}
-                            >
+                            <DropdownMenuItem onClick={() => setLegacyAction("delete")}>
                               {legacyAction === "delete" && "✓ "}
                               Save & delete legacy
                             </DropdownMenuItem>

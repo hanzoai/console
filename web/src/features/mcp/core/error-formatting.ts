@@ -8,7 +8,7 @@
 import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod/v4";
 import { isUserInputError, isApiServerError } from "./errors";
-import { BaseError, UnauthorizedError, ForbiddenError, HanzoNotFoundError, InvalidRequestError } from "@hanzo/shared";
+import { BaseError, UnauthorizedError, ForbiddenError, ConsoleNotFoundError, InvalidRequestError } from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
 
 /**
@@ -51,7 +51,7 @@ export function formatErrorForUser(error: unknown): McpError {
     );
   }
 
-  if (error instanceof HanzoNotFoundError) {
+  if (error instanceof ConsoleNotFoundError) {
     return new McpError(ErrorCode.InvalidRequest, error.message);
   }
 

@@ -5,7 +5,7 @@ import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { IOTableCell } from "@/src/components/ui/IOTableCell";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -162,7 +162,7 @@ export default function EvalLogTable({
         ) : undefined;
       },
     }),
-  ] as HanzoColumnDef<JobExecutionRow>[];
+  ] as ConsoleColumnDef<JobExecutionRow>[];
 
   if (!jobConfigurationId) {
     columns.push(
@@ -175,7 +175,7 @@ export default function EvalLogTable({
             <TableLink path={`/project/${projectId}/evals/${encodeURIComponent(evaluatorId)}`} value={evaluatorId} />
           ) : undefined;
         },
-      }) as HanzoColumnDef<JobExecutionRow>,
+      }) as ConsoleColumnDef<JobExecutionRow>,
     );
   }
 

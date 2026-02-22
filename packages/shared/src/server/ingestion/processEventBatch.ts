@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { z } from "zod/v4";
 
 import { env } from "../../env";
-import { InvalidRequestError, HanzoNotFoundError, UnauthorizedError } from "../../errors";
+import { InvalidRequestError, ConsoleNotFoundError, UnauthorizedError } from "../../errors";
 import { AuthHeaderValidVerificationResultIngestion } from "../auth/types";
 import { getClickhouseEntityType } from "../clickhouse/schemaUtils";
 import {
@@ -387,7 +387,7 @@ export const aggregateBatchResult = (
         message: "Authentication error",
         error: error.error.message,
       });
-    } else if (error.error instanceof HanzoNotFoundError) {
+    } else if (error.error instanceof ConsoleNotFoundError) {
       returnedErrors.push({
         id: error.id,
         status: 404,

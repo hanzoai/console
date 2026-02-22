@@ -13,7 +13,7 @@ import { type VisibilityState } from "@tanstack/react-table";
 import { StringParam, withDefault } from "use-query-params";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { useQueryParam } from "use-query-params";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import isEqual from "lodash/isEqual";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -33,7 +33,7 @@ interface UseTableStateProps {
   projectId: string;
   stateUpdaters: TableStateUpdaters;
   validationContext?: {
-    columns?: HanzoColumnDef<any, any>[];
+    columns?: ConsoleColumnDef<any, any>[];
     filterColumnDefinition?: ColumnDefinition[];
   };
   currentFilterState?: FilterState;
@@ -60,14 +60,13 @@ export function useTableViewManager({
   const [selectedViewId, setSelectedViewId] = useQueryParam("viewId", withDefault(StringParam, storedViewId));
 
   // Query for resolved default view (user > project > null)
-  const { data: resolvedDefault, isLoading: isDefaultLoading } =
-    api.TableViewPresets.getDefault.useQuery(
-      { projectId, viewName: tableName },
-      {
-        enabled: !!projectId,
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      },
-    );
+  const { data: resolvedDefault, isLoading: isDefaultLoading } = api.TableViewPresets.getDefault.useQuery(
+    { projectId, viewName: tableName },
+    {
+      enabled: !!projectId,
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    },
+  );
 
   // Keep track of the viewId in session storage and in the query params
   const handleSetViewId = useCallback(
@@ -171,14 +170,12 @@ export function useTableViewManager({
   ]);
 
   // Fetch view data if viewId is provided (skip for system presets)
-  const { data: viewData, error: viewError } =
-    api.TableViewPresets.getById.useQuery(
-      { viewId: viewId as string, projectId },
-      {
-        enabled:
-          !!viewId && !isInitialized && !isSystemPresetId(viewId as string),
-      },
-    );
+  const { data: viewData, error: viewError } = api.TableViewPresets.getById.useQuery(
+    { viewId: viewId as string, projectId },
+    {
+      enabled: !!viewId && !isInitialized && !isSystemPresetId(viewId as string),
+    },
+  );
 
   // Method to apply state from a view
   const applyViewState = useCallback(

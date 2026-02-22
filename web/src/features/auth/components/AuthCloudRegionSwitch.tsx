@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 const regions =
   env.NEXT_PUBLIC_HANZO_CLOUD_REGION === "STAGING"
@@ -60,9 +60,9 @@ const regions =
 
 export function CloudRegionSwitch({ isSignUpPage }: { isSignUpPage?: boolean }) {
   const capture = usePostHogClientCapture();
-  const { isHanzoCloud, region: cloudRegion } = useHanzoCloudRegion();
+  const { isConsoleCloud, region: cloudRegion } = useConsoleCloudRegion();
 
-  if (!isHanzoCloud) return null;
+  if (!isConsoleCloud) return null;
 
   const currentRegion = regions.find((region) => region.name === cloudRegion);
 

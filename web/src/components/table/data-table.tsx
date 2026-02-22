@@ -8,7 +8,7 @@ import {
   type RowHeight,
   getRowHeightTailwindClass,
 } from "@/src/components/table/data-table-row-height-switch";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { type ModelTableRow } from "@/src/components/table/use-cases/models";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -34,7 +34,7 @@ import { useRouter } from "next/router";
 import { useColumnSizing } from "@/src/components/table/hooks/useColumnSizing";
 
 interface DataTableProps<TData, TValue> {
-  columns: HanzoColumnDef<TData, TValue>[];
+  columns: ConsoleColumnDef<TData, TValue>[];
   data: AsyncTableData<TData[]>;
   pagination?: {
     totalCount: number | null; // null if loading
@@ -254,7 +254,7 @@ export function DataTable<TData extends object, TValue>({
               {tableHeaders.map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
-                    const columnDef = header.column.columnDef as HanzoColumnDef<ModelTableRow>;
+                    const columnDef = header.column.columnDef as ConsoleColumnDef<ModelTableRow>;
                     const sortingEnabled = columnDef.enableSorting;
                     // if the header id does not translate to a valid css variable name, default to 150px as width
                     // may only happen for dynamic columns, as column names are user defined
@@ -412,7 +412,7 @@ interface TableBodyComponentProps<TData> {
   table: ReturnType<typeof useReactTable<TData>>;
   rowheighttw?: string;
   rowHeight?: RowHeight;
-  columns: HanzoColumnDef<TData, any>[];
+  columns: ConsoleColumnDef<TData, any>[];
   data: AsyncTableData<TData[]>;
   help?: { description: string; href: string };
   noResultsMessage?: React.ReactNode;
@@ -530,12 +530,7 @@ function TableBodyComponent<TData>({
           <TableCell colSpan={columns.length} className="h-24">
             <div className="pointer-events-none absolute left-[50%] flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-center">
               {noResultsMessage ?? (
-                <>
-                  No results.{" "}
-                  {help && (
-                    <DocPopup description={help.description} href={help.href} />
-                  )}
-                </>
+                <>No results. {help && <DocPopup description={help.description} href={help.href} />}</>
               )}
             </div>
           </TableCell>
@@ -566,10 +561,8 @@ const MemoizedTableBody = React.memo(TableBodyComponent, (prev, next) => {
 
   // Compare actual data arrays from the AsyncTableData prop.
   // prev.table.options.data won't work — TanStack Table returns a stable mutable instance.
-  const prevDataArr =
-    !prev.data.isLoading && !prev.data.isError ? prev.data.data : undefined;
-  const nextDataArr =
-    !next.data.isLoading && !next.data.isError ? next.data.data : undefined;
+  const prevDataArr = !prev.data.isLoading && !prev.data.isError ? prev.data.data : undefined;
+  const nextDataArr = !next.data.isLoading && !next.data.isError ? next.data.data : undefined;
   if (prevDataArr !== nextDataArr) return false;
   if (prev.data.isLoading !== next.data.isLoading) return false;
   if (prev.rowheighttw !== next.rowheighttw) return false;

@@ -43,10 +43,7 @@ export function useExtractVariables({
   // Create a stable string representation of the current mapping for comparison
   const currentMappingString = variables.length > 0 ? JSON.stringify(variableMapping) : "";
 
-  const id =
-    previewData.type === EvalTargetObject.EVENT
-      ? previewData.observationId
-      : previewData.traceId;
+  const id = previewData.type === EvalTargetObject.EVENT ? previewData.observationId : previewData.traceId;
   const idRef = useRef<string | undefined>(id);
 
   // Handle error toasts separately to avoid repeated toasts on re-renders
@@ -87,9 +84,7 @@ export function useExtractVariables({
 
     // Clear existing variables immediately when id changes to avoid showing stale data
     if (idChanged) {
-      setExtractedVariables(
-        variables.map((variable) => ({ variable, value: "n/a" })),
-      );
+      setExtractedVariables(variables.map((variable) => ({ variable, value: "n/a" })));
     }
 
     // Set loading state and clear previous errors
@@ -100,11 +95,7 @@ export function useExtractVariables({
     const extractPromises = variables.map(async (variable) => {
       const mapping = variableMapping.find((m) => m.templateVariable === variable);
 
-      if (
-        !mapping ||
-        !mapping.selectedColumnId ||
-        (!mapping.langfuseObject && !(previewData.type === "event"))
-      ) {
+      if (!mapping || !mapping.selectedColumnId || (!mapping.consoleObject && !(previewData.type === "event"))) {
         return { variable, value: "n/a" };
       }
 
@@ -114,9 +105,9 @@ export function useExtractVariables({
         object = previewData.data; // Already has input/output
       } else {
         // Trace eval: can map to trace or observation fields
-        if (mapping.langfuseObject === "trace") {
+        if (mapping.consoleObject === "trace") {
           object = previewData.data;
-        } else if (mapping.langfuseObject !== "dataset_item") {
+        } else if (mapping.consoleObject !== "dataset_item") {
           // Find observation by name from mapping
           const observation = getObservationByName(
             mapping.objectName,
@@ -126,13 +117,12 @@ export function useExtractVariables({
           if (observation?.id) {
             try {
               // Fetch observation to get input/output
-              const observationWithInputAndOutput =
-                await utils.observations.byId.fetch({
-                  observationId: observation.id as string,
-                  startTime: observation.startTime as Date | null,
-                  traceId: previewData.data.id as string,
-                  projectId: previewData.data.projectId as string,
-                });
+              const observationWithInputAndOutput = await utils.observations.byId.fetch({
+                observationId: observation.id as string,
+                startTime: observation.startTime as Date | null,
+                traceId: previewData.data.id as string,
+                projectId: previewData.data.projectId as string,
+              });
               object = observationWithInputAndOutput;
             } catch (error) {
               console.error(`Error fetching observation data:`, error);
@@ -178,15 +168,7 @@ export function useExtractVariables({
         setIsExtracting(false);
       });
     // Include all dependencies that should trigger a re-extraction
-  }, [
-    variables,
-    variableMapping,
-    currentMappingString,
-    isLoading,
-    id,
-    utils.observations.byId,
-    previewData,
-  ]);
+  }, [variables, variableMapping, currentMappingString, isLoading, id, utils.observations.byId, previewData]);
 
   return { extractedVariables, isExtracting };
 }

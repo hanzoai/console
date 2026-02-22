@@ -98,7 +98,7 @@ import { BaseError, parseIO } from "@hanzo/shared";
 
 setUpSuperjson();
 
-const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
+const isConsoleCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -172,7 +172,7 @@ const withErrorHandling = t.middleware(async ({ ctx, next }) => {
       // - Either the original error message OR "Internal error" if it's a 5xx error
       const { code, httpStatus } = resolveError(res.error);
       const isSafeToExpose = httpStatus >= 400 && httpStatus < 500;
-      const errorMessage = isHanzoCloud
+      const errorMessage = isConsoleCloud
         ? "We have been notified and are working on it."
         : "Please check error logs in your self-hosted deployment.";
 

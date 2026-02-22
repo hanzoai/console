@@ -15,24 +15,11 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { Switch } from "@/src/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/src/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { posthogIntegrationFormSchema } from "@/src/features/posthog-integration/types";
-import {
-  AnalyticsIntegrationExportSource,
-  EXPORT_SOURCE_OPTIONS,
-} from "@hanzo/shared";
+import { AnalyticsIntegrationExportSource, EXPORT_SOURCE_OPTIONS } from "@hanzo/shared";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
@@ -214,21 +201,16 @@ const PostHogIntegrationSettings = ({
                     <TooltipTrigger>
                       <Info className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="max-w-[350px] space-y-2 p-3"
-                    >
+                    <TooltipContent side="bottom" className="max-w-[350px] space-y-2 p-3">
                       {EXPORT_SOURCE_OPTIONS.map((option) => (
                         <div key={option.value} className="space-y-0.5">
                           <div className="font-medium">{option.label}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {option.description}
-                          </div>
+                          <div className="text-xs text-muted-foreground">{option.description}</div>
                         </div>
                       ))}
                       <div className="border-t pt-2">
                         <a
-                          href="https://langfuse.com/docs/integrations/export-sources"
+                          href="https://hanzo.ai/docs/integrations/export-sources"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline"
@@ -255,8 +237,7 @@ const PostHogIntegrationSettings = ({
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  Choose which data sources to export to PostHog. Scores are
-                  always included.
+                  Choose which data sources to export to PostHog. Scores are always included.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

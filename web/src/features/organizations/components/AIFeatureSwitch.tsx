@@ -6,7 +6,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import Header from "@/src/components/layouts/header";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { useHanzoCloudRegion, useQueryOrganization } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion, useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
 import { LockIcon, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -20,7 +20,7 @@ const aiFeaturesSchema = z.object({
 
 export default function AIFeatureSwitch() {
   const { update: updateSession } = useSession();
-  const { isHanzoCloud } = useHanzoCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
   const capture = usePostHogClientCapture();
   const organization = useQueryOrganization();
   const [isAIFeatureSwitchEnabled, setIsAIFeatureSwitchEnabled] = useState(organization?.aiFeaturesEnabled ?? false);
@@ -68,7 +68,7 @@ export default function AIFeatureSwitch() {
     });
   }
 
-  if (!isHanzoCloud) return null;
+  if (!isConsoleCloud) return null;
 
   return (
     <div>

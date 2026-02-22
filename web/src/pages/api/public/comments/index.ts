@@ -10,7 +10,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { v4 } from "uuid";
 import { validateCommentReferenceObject } from "@/src/features/comments/validateCommentReferenceObject";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   POST: createAuthedProjectAPIRoute({
@@ -27,7 +27,7 @@ export default withMiddlewares({
       });
 
       if (result.errorMessage) {
-        throw new HanzoNotFoundError(result.errorMessage);
+        throw new ConsoleNotFoundError(result.errorMessage);
       }
 
       // Create comment with content as-is (no mention processing, no inline positioning)

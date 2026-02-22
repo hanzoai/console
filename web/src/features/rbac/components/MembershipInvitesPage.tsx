@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { api } from "@/src/utils/api";
@@ -80,7 +80,7 @@ export function MembershipInvitesPage({ orgId, projectId }: { orgId: string; pro
     scope: "organizationMembers:CUD",
   });
 
-  const columns: HanzoColumnDef<InvitesTableRow>[] = [
+  const columns: ConsoleColumnDef<InvitesTableRow>[] = [
     {
       accessorKey: "email",
       id: "email",

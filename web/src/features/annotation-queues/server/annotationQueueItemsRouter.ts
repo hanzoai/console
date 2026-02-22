@@ -11,7 +11,7 @@ import {
   BatchActionType,
   BatchExportTableName,
   type BatchTableNames,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
   paginationZod,
   Prisma,
 } from "@hanzo/shared";
@@ -26,10 +26,7 @@ const isItemLocked = (item: AnnotationQueueItem) => {
 const MAP_OBJECT_TYPE_TO_ACTION_PROPS: Record<
   AnnotationQueueObjectType,
   {
-    actionId: Exclude<
-      ActionId,
-      ActionId.ObservationAddToDataset | ActionId.ObservationBatchEvaluation
-    >;
+    actionId: Exclude<ActionId, ActionId.ObservationAddToDataset | ActionId.ObservationBatchEvaluation>;
     tableName: BatchTableNames;
   }
 > = {
@@ -117,7 +114,7 @@ export const queueItemRouter = createTRPCRouter({
         });
 
         if (!clickhouseObservation) {
-          throw new HanzoNotFoundError("Observation not found");
+          throw new ConsoleNotFoundError("Observation not found");
         }
 
         return {

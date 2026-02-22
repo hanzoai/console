@@ -8,7 +8,7 @@ import {
   CreateBlobStorageIntegrationRequest,
   type BlobStorageIntegrationResponseType,
 } from "@/src/features/public-api/types/blob-storage-integrations";
-import { HanzoNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
+import { ConsoleNotFoundError, UnauthorizedError, ForbiddenError } from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
 
 export default withMiddlewares({
@@ -109,7 +109,7 @@ async function handleUpsertBlobStorageIntegration(req: NextApiRequest, res: Next
     select: { id: true, orgId: true },
   });
   if (!project || project.orgId !== authCheck.scope.orgId) {
-    throw new HanzoNotFoundError("Project not found");
+    throw new ConsoleNotFoundError("Project not found");
   }
 
   // Prepare data for database

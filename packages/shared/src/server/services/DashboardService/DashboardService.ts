@@ -1,5 +1,5 @@
 import { prisma } from "../../../db";
-import { HanzoConflictError, HanzoNotFoundError, type OrderByState } from "../../../";
+import { HanzoConflictError, ConsoleNotFoundError, type OrderByState } from "../../../";
 import {
   CreateWidgetInput,
   WidgetDomain,
@@ -393,7 +393,7 @@ export class DashboardService {
     });
 
     if (!sourceWidget) {
-      throw new HanzoNotFoundError(`Source widget ${sourceWidgetId} not found`);
+      throw new ConsoleNotFoundError(`Source widget ${sourceWidgetId} not found`);
     }
 
     // Duplicate widget and update dashboard definition atomically
@@ -421,7 +421,7 @@ export class DashboardService {
       });
 
       if (!dashboard) {
-        throw new HanzoNotFoundError(`Dashboard ${dashboardId} not found in project ${projectId}`);
+        throw new ConsoleNotFoundError(`Dashboard ${dashboardId} not found in project ${projectId}`);
       }
 
       const definition = (dashboard.definition ?? {

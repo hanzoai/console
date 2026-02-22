@@ -182,9 +182,7 @@ const SEED_DATASET_ITEMS_GREETINGS = [
   { input: { language: "German" }, output: "Guten Tag" },
 ];
 
-const SEED_DATASET_ITEMS_VERSION_TEST = [
-  { input: { color: "red" }, output: "#FF0000" },
-];
+const SEED_DATASET_ITEMS_VERSION_TEST = [{ input: { color: "red" }, output: "#FF0000" }];
 
 export const SEED_DATASETS = [
   {
@@ -717,12 +715,12 @@ export const SEED_EVALUATOR_CONFIGS = [
     ],
     variableMapping: [
       {
-        hanzoObject: "trace",
+        consoleObject: "trace",
         selectedColumnId: "input",
         templateVariable: "input",
       },
       {
-        hanzoObject: "trace",
+        consoleObject: "trace",
         selectedColumnId: "metadata",
         templateVariable: "output",
       },

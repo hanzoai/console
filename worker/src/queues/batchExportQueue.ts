@@ -1,6 +1,6 @@
 import { Job } from "bullmq";
 
-import { BaseError, BatchExportStatus, HanzoNotFoundError } from "@hanzo/shared";
+import { BaseError, BatchExportStatus, ConsoleNotFoundError } from "@hanzo/shared";
 import { kyselyPrisma } from "@hanzo/shared/src/db";
 
 import { traceException, logger } from "@hanzo/shared/src/server";
@@ -16,7 +16,7 @@ export const batchExportQueueProcessor = async (job: Job<TQueueJobTypes[QueueNam
 
     return true;
   } catch (e) {
-    if (e instanceof HanzoNotFoundError) {
+    if (e instanceof ConsoleNotFoundError) {
       logger.warn(`Batch export ${job.data.payload.batchExportId} not found. Job will be skipped.`);
       return true;
     }

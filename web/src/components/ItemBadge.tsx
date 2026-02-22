@@ -25,7 +25,7 @@ import { cva } from "class-variance-authority";
 import { type ObservationType } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
 
-export type HanzoItemType =
+export type ConsoleItemType =
   | ObservationType
   | "TRACE"
   | "SESSION"
@@ -90,12 +90,10 @@ const iconVariants = cva(cn("h-4 w-4"), {
 });
 
 export function renderFilterIcon(value: string): React.ReactNode {
-  const type = value as LangfuseItemType;
+  const type = value as ConsoleItemType;
   const Icon = iconMap[type];
   if (!Icon) return null;
-  return (
-    <Icon className={cn("h-3.5 w-3.5 shrink-0", iconVariants({ type }))} />
-  );
+  return <Icon className={cn("h-3.5 w-3.5 shrink-0", iconVariants({ type }))} />;
 }
 
 export function ItemBadge({
@@ -104,7 +102,7 @@ export function ItemBadge({
   isSmall = false,
   className,
 }: {
-  type: HanzoItemType;
+  type: ConsoleItemType;
   showLabel?: boolean;
   isSmall?: boolean;
   className?: string;

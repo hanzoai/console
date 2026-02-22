@@ -596,7 +596,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined, auth);
       expect(status).toBe(404);
       expect(body).toEqual({
-        error: "HanzoNotFoundError",
+        error: "ConsoleNotFoundError",
         message: "Prompt not found",
       });
     });
@@ -624,7 +624,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       const { body, status } = await makeAPICall("GET", `${baseURI}/${promptName}`, undefined, auth);
       expect(status).toBe(404);
-      expect(body.error).toBe("HanzoNotFoundError");
+      expect(body.error).toBe("ConsoleNotFoundError");
     });
 
     it("should fail if text prompt has message format", async () => {
@@ -646,7 +646,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
 
       const { body, status } = await makeAPICall("GET", `${baseURI}/${promptName}`, undefined, auth);
       expect(status).toBe(404);
-      expect(body.error).toBe("HanzoNotFoundError");
+      expect(body.error).toBe("ConsoleNotFoundError");
     });
 
     it("should fail if previous versions have different prompt type", async () => {
@@ -705,7 +705,7 @@ describe("/api/public/v2/prompts API Endpoint", () => {
       // Check that the text prompt has not been created
       const getResponse2 = await makeAPICall("GET", `${baseURI}/${promptName}?version=2`, undefined, auth);
       expect(getResponse2.status).toBe(404);
-      expect(getResponse2.body.error).toBe("HanzoNotFoundError");
+      expect(getResponse2.body.error).toBe("ConsoleNotFoundError");
     });
 
     it("should correctly handle overwriting labels", async () => {

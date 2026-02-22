@@ -1,7 +1,7 @@
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
-import { HanzoNotFoundError, optionalPaginationZod, Prisma } from "@hanzo/shared";
+import { ConsoleNotFoundError, optionalPaginationZod, Prisma } from "@hanzo/shared";
 import { getUserProjectRoles } from "@hanzo/shared/src/server";
 import partition from "lodash/partition";
 import z from "zod/v4";
@@ -31,7 +31,7 @@ export const queueAssignmentRouter = createTRPCRouter({
       });
 
       if (!queue) {
-        throw new HanzoNotFoundError("Annotation queue not found");
+        throw new ConsoleNotFoundError("Annotation queue not found");
       }
 
       // Verify the users exist and have access to the project
@@ -105,7 +105,7 @@ export const queueAssignmentRouter = createTRPCRouter({
       });
 
       if (!queue) {
-        throw new HanzoNotFoundError("Annotation queue not found");
+        throw new ConsoleNotFoundError("Annotation queue not found");
       }
 
       // Remove memberships
@@ -154,7 +154,7 @@ export const queueAssignmentRouter = createTRPCRouter({
       });
 
       if (!queue) {
-        throw new HanzoNotFoundError("Annotation queue not found");
+        throw new ConsoleNotFoundError("Annotation queue not found");
       }
 
       const assignments = await ctx.prisma.annotationQueueAssignment.findMany({

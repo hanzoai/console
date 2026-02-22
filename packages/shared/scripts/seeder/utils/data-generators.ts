@@ -38,8 +38,8 @@ import {
  * Generates realistic test data for traces, observations, and scores.
  *
  * Use generateXxxTraces() for creating different data types:
- * - generateDatasetTrace(): For dataset experiment runs (langfuse-prompt-experiment env)
- * - generateEvaluationTraces(): For evaluation data (langfuse-evaluation env)
+ * - generateDatasetTrace(): For dataset experiment runs (console-prompt-experiment env)
+ * - generateEvaluationTraces(): For evaluation data (console-evaluation env)
  * - generateSyntheticTraces(): For large-scale synthetic data (default env)
  */
 export class DataGenerator {
@@ -130,8 +130,8 @@ export class DataGenerator {
       name: `dataset-run-item-${uuidv4()}`,
       input: traceInput,
       output: traceOutput,
-      environment: "langfuse-prompt-experiment",
-      metadata: { experimentType: "langfuse-prompt-experiment" },
+      environment: "console-prompt-experiment",
+      metadata: { experimentType: "console-prompt-experiment" },
       public: false,
       bookmarked: false,
       session_id: null,
@@ -191,7 +191,7 @@ export class DataGenerator {
         total: Math.round(totalCost * 100000) / 100000,
       },
       total_cost: Math.round(totalCost * 100000) / 100000,
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
     });
   }
 
@@ -216,7 +216,7 @@ export class DataGenerator {
       string_value: undefined,
       data_type: "NUMERIC",
       source: "API",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
     });
   }
 
@@ -244,7 +244,7 @@ export class DataGenerator {
       string_value: undefined,
       data_type: "NUMERIC",
       source: "API",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
     });
   }
 

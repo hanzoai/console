@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 import { GetSessionV1Query, GetSessionV1Response } from "@/src/features/public-api/types/sessions";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
@@ -28,7 +28,7 @@ export default withMiddlewares({
       });
 
       if (!session) {
-        throw new HanzoNotFoundError("Session not found within authorized project");
+        throw new ConsoleNotFoundError("Session not found within authorized project");
       }
 
       const traces = await getTracesBySessionId(auth.scope.projectId, [sessionId]);

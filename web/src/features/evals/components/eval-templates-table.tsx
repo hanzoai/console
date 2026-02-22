@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { type RouterOutputs, api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
@@ -266,7 +266,7 @@ export default function EvalsTemplateTable({ projectId }: { projectId: string })
         );
       },
     }),
-  ] as HanzoColumnDef<EvalsTemplateRow>[];
+  ] as ConsoleColumnDef<EvalsTemplateRow>[];
 
   const [columnVisibility, setColumnVisibility] = useColumnVisibility<EvalsTemplateRow>(
     "evalTemplatesColumnVisibility",
@@ -284,9 +284,7 @@ export default function EvalsTemplateTable({ projectId }: { projectId: string })
       itemType: "EVALUATOR" as const,
       detailNavigationKey: "eval-templates",
       peekEventOptions: {
-        ignoredSelectors: [
-          "[aria-label='apply'], [aria-label='actions'], [aria-label='edit'], [aria-label='clone']",
-        ],
+        ignoredSelectors: ["[aria-label='apply'], [aria-label='actions'], [aria-label='edit'], [aria-label='clone']"],
       },
       children: <PeekViewEvaluatorTemplateDetail projectId={projectId} />,
       ...peekNavigationProps,

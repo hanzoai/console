@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
@@ -54,7 +54,7 @@ export function DatasetRunItemsByItemTable(props: { projectId: string; datasetId
     }),
   });
 
-  const columns: HanzoColumnDef<DatasetRunItemByItemRowData>[] = [
+  const columns: ConsoleColumnDef<DatasetRunItemByItemRowData>[] = [
     {
       accessorKey: "datasetRunName",
       header: "Run Name",

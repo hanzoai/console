@@ -95,9 +95,7 @@ export const CreateExperimentsForm = ({
                   <Wand2 className="size-4" />
                   via User Interface
                 </CardTitle>
-                <CardDescription>
-                  Test single prompts and model configurations via Langfuse UI.
-                </CardDescription>
+                <CardDescription>Test single prompts and model configurations via Console UI.</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="list-disc space-y-2 pl-4 text-sm text-muted-foreground">
@@ -128,8 +126,7 @@ export const CreateExperimentsForm = ({
                   via SDK / API
                 </CardTitle>
                 <CardDescription>
-                  Start any dataset run via the Langfuse SDKs. To configure runs
-                  via webhook, use the button below.
+                  Start any dataset run via the Console SDKs. To configure runs via webhook, use the button below.
                 </CardDescription>
               </CardHeader>
               <CardContent>

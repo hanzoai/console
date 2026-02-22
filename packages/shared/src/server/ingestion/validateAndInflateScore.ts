@@ -8,7 +8,7 @@ import {
   CORRECTION_NAME,
 } from "../../../src";
 import { prisma } from "../../db";
-import { InvalidRequestError, HanzoNotFoundError } from "../../errors";
+import { InvalidRequestError, ConsoleNotFoundError } from "../../errors";
 import { validateDbScoreConfigSafe } from "../../features/scoreConfigs/validation";
 import { ScoreEventType } from "./types";
 
@@ -30,7 +30,7 @@ export async function validateAndInflateScore(params: ValidateAndInflateScorePar
     });
 
     if (!config || !validateDbScoreConfigSafe(config).success)
-      throw new HanzoNotFoundError("The configId you provided does not match a valid config in this project");
+      throw new ConsoleNotFoundError("The configId you provided does not match a valid config in this project");
 
     // Override some fields in the score body with config fields
     // We ignore the set fields in the body

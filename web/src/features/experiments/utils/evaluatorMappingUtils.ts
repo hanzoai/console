@@ -3,7 +3,7 @@ import { type EvalTemplate } from "@hanzo/shared";
 // Define the type locally to match what's in @hanzo/shared
 type VariableMapping = {
   templateVariable: string;
-  hanzoObject: "trace" | "generation" | "span" | "score" | "dataset_item";
+  consoleObject: "trace" | "generation" | "span" | "score" | "dataset_item";
   objectName?: string;
   selectedColumnId: string;
   jsonSelector?: string;
@@ -21,7 +21,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "input",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "input",
       objectName: undefined,
     },
@@ -29,7 +29,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "query",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "input",
       objectName: undefined,
     },
@@ -37,7 +37,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "question",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "input",
       objectName: undefined,
     },
@@ -45,7 +45,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "prompt",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "input",
       objectName: undefined,
     },
@@ -55,7 +55,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "output",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "output",
       objectName: undefined,
     },
@@ -63,7 +63,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "response",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "output",
       objectName: undefined,
     },
@@ -71,7 +71,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "answer",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "output",
       objectName: undefined,
     },
@@ -79,7 +79,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "completion",
     {
-      langfuseObject: "trace",
+      consoleObject: "trace",
       selectedColumnId: "output",
       objectName: undefined,
     },
@@ -89,7 +89,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "expected_output",
     {
-      langfuseObject: "dataset_item",
+      consoleObject: "dataset_item",
       selectedColumnId: "expected_output",
       objectName: undefined,
     },
@@ -97,7 +97,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "ground_truth",
     {
-      langfuseObject: "dataset_item",
+      consoleObject: "dataset_item",
       selectedColumnId: "expected_output",
       objectName: undefined,
     },
@@ -105,7 +105,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
   [
     "reference",
     {
-      langfuseObject: "dataset_item",
+      consoleObject: "dataset_item",
       selectedColumnId: "expected_output",
       objectName: undefined,
     },
@@ -113,10 +113,7 @@ const defaultMappings = new Map<string, Partial<VariableMapping>>([
 ]);
 
 // Default mappings for observation-based evaluators (event/experiment)
-const observationDefaultMappings = new Map<
-  string,
-  Partial<ObservationVariableMapping>
->([
+const observationDefaultMappings = new Map<string, Partial<ObservationVariableMapping>>([
   // Common input variables
   ["input", { selectedColumnId: "input" }],
   ["query", { selectedColumnId: "input" }],
@@ -154,7 +151,7 @@ export function createDefaultVariableMappings(template: EvalTemplate): VariableM
     if (defaultMapping) {
       return {
         templateVariable: variable,
-        hanzoObject: defaultMapping.hanzoObject || "dataset_item",
+        consoleObject: defaultMapping.consoleObject || "dataset_item",
         selectedColumnId: defaultMapping.selectedColumnId || "expected_output",
         objectName: defaultMapping.objectName,
         jsonSelector: defaultMapping.jsonSelector,
@@ -162,7 +159,7 @@ export function createDefaultVariableMappings(template: EvalTemplate): VariableM
     }
 
     return {
-      hanzoObject: "dataset_item",
+      consoleObject: "dataset_item",
       templateVariable: variable,
       selectedColumnId: "expected_output",
       objectName: undefined,
@@ -173,29 +170,24 @@ export function createDefaultVariableMappings(template: EvalTemplate): VariableM
 
 /**
  * Creates default variable mappings for observation-based evaluators (event/experiment).
- * Uses simplified schema without langfuseObject.
+ * Uses simplified schema without consoleObject.
  *
  * @param template - The evaluation template containing variables
  * @returns Array of observation variable mappings
  */
-export function createDefaultObservationVariableMappings(
-  template: EvalTemplate,
-): ObservationVariableMapping[] {
+export function createDefaultObservationVariableMappings(template: EvalTemplate): ObservationVariableMapping[] {
   if (!template.vars || template.vars.length === 0) {
     return [];
   }
 
   return template.vars.map((variable) => {
     // Check if we have a default mapping for this variable name
-    const defaultMapping = observationDefaultMappings.get(
-      variable.toLowerCase(),
-    );
+    const defaultMapping = observationDefaultMappings.get(variable.toLowerCase());
 
     if (defaultMapping) {
       return {
         templateVariable: variable,
-        selectedColumnId:
-          defaultMapping.selectedColumnId || "experimentItemExpectedOutput",
+        selectedColumnId: defaultMapping.selectedColumnId || "experimentItemExpectedOutput",
         jsonSelector: defaultMapping.jsonSelector,
       };
     }

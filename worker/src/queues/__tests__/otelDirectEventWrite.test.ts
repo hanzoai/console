@@ -159,7 +159,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
       },
       isExperiment: true,
       expected: false,
-      label: "non-Langfuse scope name",
+      label: "non-Console scope name",
     },
     {
       sdkInfo: {
@@ -205,13 +205,9 @@ describe("getSdkInfoFromResourceSpans (legacy fallback)", () => {
     {
       input: {
         resource: {
-          attributes: [
-            { key: "telemetry.sdk.language", value: { stringValue: "python" } },
-          ],
+          attributes: [{ key: "telemetry.sdk.language", value: { stringValue: "python" } }],
         },
-        scopeSpans: [
-          { scope: { name: "langfuse-sdk", version: "3.14.1" }, spans: [] },
-        ],
+        scopeSpans: [{ scope: { name: "langfuse-sdk", version: "3.14.1" }, spans: [] }],
       },
       expected: {
         scopeName: "langfuse-sdk",

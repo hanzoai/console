@@ -71,7 +71,7 @@ import { env } from "@/src/env.mjs";
 import { ThemeProvider } from "@/src/features/theming/ThemeProvider";
 import { MarkdownContextProvider } from "@/src/features/theming/useMarkdownContext";
 import { SupportDrawerProvider } from "@/src/features/support-chat/SupportDrawerProvider";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { ScoreCacheProvider } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { CorrectionCacheProvider } from "@/src/features/corrections/contexts/CorrectionCacheContext";
 
@@ -116,10 +116,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   }, []);
 
   return (
-    <QueryParamProvider
-      adapter={NextAdapterPages}
-      options={{ enableBatching: true }}
-    >
+    <QueryParamProvider adapter={NextAdapterPages} options={{ enableBatching: true }}>
       <TooltipProvider>
         <CommandMenuProvider>
           <PostHogProvider client={posthog}>
@@ -157,7 +154,7 @@ export default api.withTRPC(MyApp);
 
 function UserTracking() {
   const session = useSession();
-  const { region } = useHanzoCloudRegion();
+  const { region } = useConsoleCloudRegion();
   const sessionUser = session.data?.user;
 
   // Track user identity and properties

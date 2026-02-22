@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, type Dispatch, type SetStateAction } from 
 import { Button } from "@/src/components/ui/button";
 import { type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Component, Menu, X } from "lucide-react";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import {
@@ -32,7 +32,7 @@ import { Checkbox } from "@/src/components/ui/checkbox";
 import { Separator } from "@/src/components/ui/separator";
 
 interface DataTableColumnVisibilityFilterProps<TData, TValue> {
-  columns: HanzoColumnDef<TData, TValue>[];
+  columns: ConsoleColumnDef<TData, TValue>[];
   columnVisibility: VisibilityState;
   setColumnVisibility: Dispatch<SetStateAction<VisibilityState>>;
   columnOrder?: ColumnOrderState;
@@ -40,7 +40,7 @@ interface DataTableColumnVisibilityFilterProps<TData, TValue> {
 }
 
 const calculateColumnCounts = <TData, TValue>(
-  columns: HanzoColumnDef<TData, TValue>[],
+  columns: ConsoleColumnDef<TData, TValue>[],
   columnVisibility: VisibilityState,
 ) => {
   return columns.reduce(
@@ -67,7 +67,7 @@ function ColumnVisibilityListItem<TData, TValue>({
   columnVisibility,
   isOrderable = false,
 }: {
-  column: HanzoColumnDef<TData, TValue>;
+  column: ConsoleColumnDef<TData, TValue>;
   toggleColumn: (columnId: string) => void;
   columnVisibility: VisibilityState;
   isOrderable?: boolean;
@@ -146,7 +146,7 @@ function GroupVisibilityHeader<TData, TValue>({
   children,
   toggleAll,
 }: {
-  column: HanzoColumnDef<TData, TValue>;
+  column: ConsoleColumnDef<TData, TValue>;
   groupTotalCount: number;
   groupVisibleCount: number;
   isOpen: boolean;
@@ -217,7 +217,11 @@ function GroupVisibilityHeader<TData, TValue>({
   );
 }
 
-function setAllColumns<TData, TValue>(columns: HanzoColumnDef<TData, TValue>[], visible: boolean, groupName?: string) {
+function setAllColumns<TData, TValue>(
+  columns: ConsoleColumnDef<TData, TValue>[],
+  visible: boolean,
+  groupName?: string,
+) {
   return (oldVisibility: VisibilityState) => {
     const newColumnVisibility: VisibilityState = { ...oldVisibility };
     columns.forEach((col) => {

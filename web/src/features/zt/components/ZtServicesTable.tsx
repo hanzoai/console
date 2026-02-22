@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DataTable, type AsyncTableData } from "@/src/components/table/data-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { useZtServices, useDeleteZtService } from "@/src/features/zt/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Button } from "@/src/components/ui/button";
@@ -46,7 +46,7 @@ export function ZtServicesTable({ projectId }: { projectId: string }) {
     createdAt: s.createdAt as string,
   }));
 
-  const columns: HanzoColumnDef<ServiceRow>[] = [
+  const columns: ConsoleColumnDef<ServiceRow>[] = [
     {
       accessorKey: "name",
       id: "name",
@@ -75,10 +75,7 @@ export function ZtServicesTable({ projectId }: { projectId: string }) {
         return (
           <div className="flex flex-wrap gap-1">
             {attrs.map((attr) => (
-              <span
-                key={attr}
-                className="rounded bg-muted px-1.5 py-0.5 text-xs"
-              >
+              <span key={attr} className="rounded bg-muted px-1.5 py-0.5 text-xs">
                 {attr}
               </span>
             ))}
@@ -111,10 +108,7 @@ export function ZtServicesTable({ projectId }: { projectId: string }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={() => setDeleteTarget(service)}
-              >
+              <DropdownMenuItem className="text-destructive" onClick={() => setDeleteTarget(service)}>
                 <Trash className="mr-2 h-4 w-4" />
                 Delete
               </DropdownMenuItem>
@@ -139,11 +133,7 @@ export function ZtServicesTable({ projectId }: { projectId: string }) {
         </div>
       )}
 
-      <DataTable
-        tableName="ztServices"
-        columns={columns}
-        data={tableData}
-      />
+      <DataTable tableName="ztServices" columns={columns} data={tableData} />
 
       <AlertDialog
         open={deleteTarget !== null}
@@ -155,8 +145,8 @@ export function ZtServicesTable({ projectId }: { projectId: string }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Service</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the service &quot;{deleteTarget?.name}&quot;? This
-              action cannot be undone.
+              Are you sure you want to delete the service &quot;{deleteTarget?.name}&quot;? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

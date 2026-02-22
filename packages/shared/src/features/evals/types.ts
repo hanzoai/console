@@ -7,12 +7,11 @@ export const EvalTargetObject = {
   EXPERIMENT: "experiment",
 } as const;
 
-export type EvalTargetObject =
-  (typeof EvalTargetObject)[keyof typeof EvalTargetObject];
+export type EvalTargetObject = (typeof EvalTargetObject)[keyof typeof EvalTargetObject];
 
 export const EvalTargetObjectSchema = z.enum(Object.values(EvalTargetObject));
 
-export const hanzoObjects = [
+export const consoleObjects = [
   "trace",
   "span",
   "generation",
@@ -27,8 +26,8 @@ export const hanzoObjects = [
   "dataset_item",
 ] as const;
 
-const hanzoObject = z.enum(hanzoObjects);
-export type HanzoEvaluationObject = z.infer<typeof hanzoObject>;
+const consoleObject = z.enum(consoleObjects);
+export type ConsoleObject = z.infer<typeof consoleObject>;
 
 // variable mapping stored in the db for eval templates
 export const variableMapping = z
@@ -37,30 +36,26 @@ export const variableMapping = z
     // name of the observation to extract the variable from
     // not required for trace or dataset_item, as we only have one of each.
     objectName: z.string().nullish(),
-    hanzoObject: hanzoObject,
+    consoleObject: consoleObject,
     selectedColumnId: z.string(),
     jsonSelector: z.string().nullish(),
   })
   .refine(
-    (value) =>
-      value.langfuseObject === "trace" ||
-      value.langfuseObject === "dataset_item" ||
-      value.objectName !== null,
+    (value) => value.consoleObject === "trace" || value.consoleObject === "dataset_item" || value.objectName !== null,
     {
-      message:
-        "objectName is required for observation objects (generation, span, score)",
+      message: "objectName is required for observation objects (generation, span, score)",
     },
   );
 
 export const variableMappingList = z.array(variableMapping);
 
-// WIP version for forms - langfuseObject optional to support both:
-// - Trace/Dataset evals: Include langfuseObject and objectName to specify which observation
+// WIP version for forms - consoleObject optional to support both:
+// - Trace/Dataset evals: Include consoleObject and objectName to specify which observation
 // - Event/Experiment evals: Omit them since the observation is already selected
 export const wipVariableMapping = z.object({
   templateVariable: z.string(),
   objectName: z.string().nullish(),
-  langfuseObject: langfuseObject.optional(),
+  consoleObject: consoleObject.optional(),
   selectedColumnId: z.string().nullish(),
   jsonSelector: z.string().nullish(),
 });
@@ -186,9 +181,5 @@ export const observationVariableMapping = z.object({
   jsonSelector: z.string().nullish(), // optional JSON path selector
 });
 
-export const observationVariableMappingList = z.array(
-  observationVariableMapping,
-);
-export type ObservationVariableMapping = z.infer<
-  typeof observationVariableMapping
->;
+export const observationVariableMappingList = z.array(observationVariableMapping);
+export type ObservationVariableMapping = z.infer<typeof observationVariableMapping>;

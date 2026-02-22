@@ -2,10 +2,10 @@ import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import Link from "next/link";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 export function CloudStatusMenu() {
-  const { isHanzoCloud } = useHanzoCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
   const { data, isLoading } = api.cloudStatus.getStatus.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -13,11 +13,11 @@ export function CloudStatusMenu() {
     // Refresh status data every 5 minutes, keep response cached for 5 minutes
     refetchInterval: 5 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
-    enabled: !!isHanzoCloud,
+    enabled: !!isConsoleCloud,
   });
 
   // Skip component rendering if not running on Hanzo Cloud
-  if (!isHanzoCloud) {
+  if (!isConsoleCloud) {
     return null;
   }
 

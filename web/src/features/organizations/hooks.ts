@@ -22,12 +22,12 @@ export const useOrganization = (organizationId: string | null) => {
   return organization ?? null;
 };
 
-export const useHanzoCloudRegion = (): {
-  isHanzoCloud: boolean;
+export const useConsoleCloudRegion = (): {
+  isConsoleCloud: boolean;
   region: string | undefined;
 } => {
   return {
-    isHanzoCloud: Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION),
+    isConsoleCloud: Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION),
     region: env.NEXT_PUBLIC_HANZO_CLOUD_REGION,
   };
 };

@@ -1,7 +1,4 @@
-import {
-  LangfuseInternalTraceEnvironment,
-  observationEvalVariableColumns,
-} from "@hanzo/shared";
+import { ConsoleInternalTraceEnvironment, observationEvalVariableColumns } from "@hanzo/shared";
 
 /**
  * Constant for observation-based evaluators (event/experiment).
@@ -29,22 +26,16 @@ export const COLUMN_IDENTIFIERS_THAT_REQUIRE_PROPAGATION = new Set([
   "tags",
 ]);
 
-export const OUTPUT_MAPPING = [
-  "generation",
-  "output",
-  "response",
-  "answer",
-  "completion",
-];
+export const OUTPUT_MAPPING = ["generation", "output", "response", "answer", "completion"];
 
 export const INTERNAL_ENVIRONMENTS = [
-  LangfuseInternalTraceEnvironment.LLMJudge,
-  "langfuse-prompt-experiment",
-  "langfuse-evaluation",
+  ConsoleInternalTraceEnvironment.LLMJudge,
+  "console-prompt-experiment",
+  "console-evaluation",
   "sdk-experiment",
 ] as const;
 
-// Default filter for new trace evaluators - excludes internal Langfuse environments
+// Default filter for new trace evaluators - excludes internal Console environments
 // to prevent evaluators from running on their own traces
 export const DEFAULT_TRACE_FILTER = [
   {

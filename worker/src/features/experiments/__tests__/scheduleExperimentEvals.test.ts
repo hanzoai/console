@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   extractGenerationDetails,
-  LangfuseInternalTraceEnvironment,
+  ConsoleInternalTraceEnvironment,
   type GenerationDetails,
 } from "@hanzo/shared/src/server";
 import type { ObservationForEval } from "../../evaluation/observationEval";
@@ -16,14 +16,13 @@ const realExperimentEvents = [
     body: {
       id: "4a56b6d74bbdffd08b9a2485f3315eeb",
       timestamp: "2026-01-31T06:58:02.218Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       name: "dataset-run-item-008e4",
       metadata: {
         dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
         dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
         experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-        experiment_run_name:
-          "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+        experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
       },
       input: [
         {
@@ -44,15 +43,14 @@ const realExperimentEvents = [
     body: {
       id: "4a56b6d74bbdffd08b9a2485f3315eeb",
       startTime: "2026-01-31T06:58:02.218Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       traceId: "4a56b6d74bbdffd08b9a2485f3315eeb",
       name: "dataset-run-item-008e4",
       metadata: {
         dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
         dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
         experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-        experiment_run_name:
-          "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+        experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
       },
       input: [
         {
@@ -73,7 +71,7 @@ const realExperimentEvents = [
     body: {
       id: "d6f103ed-6ef6-4f83-a520-ab746e717360",
       startTime: "2026-01-31T06:58:02.220Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       traceId: "4a56b6d74bbdffd08b9a2485f3315eeb",
       name: "ChatOpenAI",
       metadata: {
@@ -81,8 +79,7 @@ const realExperimentEvents = [
         dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
         dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
         experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-        experiment_run_name:
-          "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+        experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
         ls_provider: "openai",
         ls_model_name: "gpt-4.1",
         ls_model_type: "chat",
@@ -109,7 +106,7 @@ const realExperimentEvents = [
     body: {
       id: "d6f103ed-6ef6-4f83-a520-ab746e717360",
       startTime: "2026-01-31T06:58:02.220Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       traceId: "4a56b6d74bbdffd08b9a2485f3315eeb",
       name: "ChatOpenAI",
       metadata: {
@@ -117,8 +114,7 @@ const realExperimentEvents = [
         dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
         dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
         experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-        experiment_run_name:
-          "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+        experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
         ls_provider: "openai",
         ls_model_name: "gpt-4.1",
         ls_model_type: "chat",
@@ -211,7 +207,7 @@ const realExperimentEvents = [
     body: {
       id: "8bd2ff9f-1d45-4240-9581-45a7190c77fd",
       startTime: "2026-01-31T06:58:03.708Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       traceId: "4a56b6d74bbdffd08b9a2485f3315eeb",
       parentObservationId: "4a56b6d74bbdffd08b9a2485f3315eeb",
       name: "StrOutputParser",
@@ -220,8 +216,7 @@ const realExperimentEvents = [
         dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
         dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
         experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-        experiment_run_name:
-          "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+        experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
       },
       input: "The capital of Germany is Berlin.",
     },
@@ -255,7 +250,7 @@ const realExperimentEvents = [
     body: {
       id: "4a56b6d74bbdffd08b9a2485f3315eeb",
       timestamp: "2026-01-31T06:58:03.709Z",
-      environment: "langfuse-prompt-experiment",
+      environment: "console-prompt-experiment",
       output: "The capital of Germany is Berlin.",
       tags: [],
     },
@@ -288,8 +283,7 @@ describe("extractGenerationDetails", () => {
       dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
       dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
       experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-      experiment_run_name:
-        "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+      experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
       ls_provider: "openai",
       ls_model_name: "gpt-4.1",
       ls_model_type: "chat",
@@ -297,9 +291,7 @@ describe("extractGenerationDetails", () => {
   });
 
   it("should return null when no generation events are present", () => {
-    const nonGenerationEvents = realExperimentEvents.filter(
-      (e) => !e.type.startsWith("generation"),
-    );
+    const nonGenerationEvents = realExperimentEvents.filter((e) => !e.type.startsWith("generation"));
 
     const result = extractGenerationDetails(nonGenerationEvents);
 
@@ -386,8 +378,7 @@ describe("buildObservationForEval", () => {
       expectedOutput?: unknown;
     };
   }): ObservationForEval {
-    const { projectId, traceId, generationDetails, config, datasetItem } =
-      params;
+    const { projectId, traceId, generationDetails, config, datasetItem } = params;
 
     return {
       // Identifiers
@@ -398,7 +389,7 @@ describe("buildObservationForEval", () => {
       // Core properties
       type: "GENERATION",
       name: generationDetails.name || "generation",
-      environment: LangfuseInternalTraceEnvironment.PromptExperiments,
+      environment: ConsoleInternalTraceEnvironment.PromptExperiments,
       level: "DEFAULT",
 
       // Prompt info
@@ -410,9 +401,7 @@ describe("buildObservationForEval", () => {
       experiment_name: config.experimentName,
       experiment_dataset_id: datasetItem.datasetId,
       experiment_item_id: datasetItem.id,
-      experiment_item_expected_output: datasetItem.expectedOutput
-        ? JSON.stringify(datasetItem.expectedOutput)
-        : null,
+      experiment_item_expected_output: datasetItem.expectedOutput ? JSON.stringify(datasetItem.expectedOutput) : null,
       experiment_item_root_span_id: generationDetails.observationId, // Same as span_id for root
 
       // Data fields
@@ -461,9 +450,7 @@ describe("buildObservationForEval", () => {
     // Verify core properties
     expect(observation.type).toBe("GENERATION");
     expect(observation.name).toBe("ChatOpenAI");
-    expect(observation.environment).toBe(
-      LangfuseInternalTraceEnvironment.PromptExperiments,
-    );
+    expect(observation.environment).toBe(ConsoleInternalTraceEnvironment.PromptExperiments);
     expect(observation.level).toBe("DEFAULT");
 
     // Verify prompt info
@@ -472,16 +459,10 @@ describe("buildObservationForEval", () => {
 
     // Verify experiment fields (critical for filter matching)
     expect(observation.experiment_id).toBe("run-456");
-    expect(observation.experiment_name).toBe(
-      "Prompt Capital guesser-v1 on dataset countries",
-    );
+    expect(observation.experiment_name).toBe("Prompt Capital guesser-v1 on dataset countries");
     expect(observation.experiment_dataset_id).toBe("cml1yj2ag0001xsej1fcv6vz8");
-    expect(observation.experiment_item_id).toBe(
-      "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
-    );
-    expect(observation.experiment_item_expected_output).toBe(
-      JSON.stringify({ capital: "Berlin" }),
-    );
+    expect(observation.experiment_item_id).toBe("f0c467a1-539b-4e25-b41b-8db3ae399ef4");
+    expect(observation.experiment_item_expected_output).toBe(JSON.stringify({ capital: "Berlin" }));
     // Root span ID should equal span_id for experiment evals
     expect(observation.experiment_item_root_span_id).toBe(observation.span_id);
 
@@ -501,8 +482,7 @@ describe("buildObservationForEval", () => {
       dataset_id: "cml1yj2ag0001xsej1fcv6vz8",
       dataset_item_id: "f0c467a1-539b-4e25-b41b-8db3ae399ef4",
       experiment_name: "Prompt Capital guesser-v1 on dataset countries",
-      experiment_run_name:
-        "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
+      experiment_run_name: "Prompt Capital guesser-v1 on dataset countries - 2026-01-31T06:57:38.646Z",
       ls_provider: "openai",
       ls_model_name: "gpt-4.1",
       ls_model_type: "chat",

@@ -65,10 +65,7 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
       const lastPartitionTime = new Date(lastProcessedPartition).getTime();
       if (!isNaN(lastPartitionTime)) {
         const delaySeconds = (Date.now() - lastPartitionTime) / 1000;
-        recordGauge(
-          "langfuse.event_propagation.last_processed_partition_delay_seconds",
-          delaySeconds,
-        );
+        recordGauge("console.event_propagation.last_processed_partition_delay_seconds", delaySeconds);
       }
     }
 
@@ -294,10 +291,7 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
     const processedPartitionTime = new Date(partitionToProcess).getTime();
     if (!isNaN(processedPartitionTime)) {
       const delaySeconds = (Date.now() - processedPartitionTime) / 1000;
-      recordGauge(
-        "langfuse.event_propagation.processed_partition_delay_seconds",
-        delaySeconds,
-      );
+      recordGauge("console.event_propagation.processed_partition_delay_seconds", delaySeconds);
     }
 
     // Step 3: Update the last processed partition cursor in Redis

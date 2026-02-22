@@ -15,7 +15,7 @@
 
 import { type ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
-import { ItemBadge, type HanzoItemType } from "@/src/components/ItemBadge";
+import { ItemBadge, type ConsoleItemType } from "@/src/components/ItemBadge";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
 
@@ -28,7 +28,7 @@ export interface TreeNodeMetadata {
 interface TreeNodeWrapperProps {
   // Tree structure data
   metadata: TreeNodeMetadata;
-  nodeType: HanzoItemType; // For the icon badge (e.g., "SPAN", "GENERATION", "TRACE")
+  nodeType: ConsoleItemType; // For the icon badge (e.g., "SPAN", "GENERATION", "TRACE")
   hasChildren: boolean;
   isCollapsed: boolean;
   onToggleCollapse: () => void;

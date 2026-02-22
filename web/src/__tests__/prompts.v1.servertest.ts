@@ -563,7 +563,7 @@ describe("/api/public/prompts API Endpoint", () => {
     const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
     expect(status).toBe(404);
     expect(body).toEqual({
-      error: "HanzoNotFoundError",
+      error: "ConsoleNotFoundError",
       message: "Prompt not found",
     });
   });
@@ -587,7 +587,7 @@ describe("/api/public/prompts API Endpoint", () => {
     const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
     expect(status).toBe(404);
     expect(body).toEqual({
-      error: "HanzoNotFoundError",
+      error: "ConsoleNotFoundError",
       message: "Prompt not found",
     });
   });
@@ -606,7 +606,7 @@ describe("/api/public/prompts API Endpoint", () => {
     const { body, status } = await makeAPICall("GET", `/api/public/prompts?name=${promptName}`, undefined);
     expect(status).toBe(404);
     expect(body).toEqual({
-      error: "HanzoNotFoundError",
+      error: "ConsoleNotFoundError",
       message: "Prompt not found",
     });
   });
@@ -663,7 +663,7 @@ describe("/api/public/prompts API Endpoint", () => {
     const getResponse2 = await makeAPICall("GET", `/api/public/prompts?name=${promptName}&version=2`, undefined);
     expect(getResponse2.status).toBe(404);
     expect(getResponse2.body).toEqual({
-      error: "HanzoNotFoundError",
+      error: "ConsoleNotFoundError",
       message: "Prompt not found",
     });
   });

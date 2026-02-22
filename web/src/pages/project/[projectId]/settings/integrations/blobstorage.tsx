@@ -14,18 +14,8 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { PasswordInput } from "@/src/components/ui/password-input";
 import { Switch } from "@/src/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/src/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import {
   blobStorageIntegrationFormSchema,
@@ -49,7 +39,7 @@ import {
   type BlobStorageIntegration,
   EXPORT_SOURCE_OPTIONS,
 } from "@hanzo/shared";
-import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { Info, ExternalLink } from "lucide-react";
 
@@ -154,13 +144,12 @@ const BlobStorageIntegrationSettingsForm = ({
   isLoading: boolean;
 }) => {
   const capture = usePostHogClientCapture();
-  const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
   const { isBetaEnabled } = useV4Beta();
-  const [integrationType, setIntegrationType] =
-    useState<BlobStorageIntegrationType>(BlobStorageIntegrationType.S3);
+  const [integrationType, setIntegrationType] = useState<BlobStorageIntegrationType>(BlobStorageIntegrationType.S3);
 
   // Check if this is a self-hosted instance (no cloud region set)
-  const isSelfHosted = !isHanzoCloud;
+  const isSelfHosted = !isConsoleCloud;
 
   const blobStorageForm = useForm({
     resolver: zodResolver(blobStorageIntegrationFormSchema),
@@ -532,21 +521,16 @@ const BlobStorageIntegrationSettingsForm = ({
                     <TooltipTrigger>
                       <Info className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="max-w-[350px] space-y-2 p-3"
-                    >
+                    <TooltipContent side="bottom" className="max-w-[350px] space-y-2 p-3">
                       {EXPORT_SOURCE_OPTIONS.map((option) => (
                         <div key={option.value} className="space-y-0.5">
                           <div className="font-medium">{option.label}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {option.description}
-                          </div>
+                          <div className="text-xs text-muted-foreground">{option.description}</div>
                         </div>
                       ))}
                       <div className="border-t pt-2">
                         <a
-                          href="https://langfuse.com/docs/integrations/export-sources"
+                          href="https://hanzo.ai/docs/integrations/export-sources"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline"
@@ -573,8 +557,7 @@ const BlobStorageIntegrationSettingsForm = ({
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  Choose which data sources to export to blob storage. Scores
-                  are always included.
+                  Choose which data sources to export to blob storage. Scores are always included.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -582,8 +565,7 @@ const BlobStorageIntegrationSettingsForm = ({
           />
         )}
 
-        {blobStorageForm.watch("exportMode") ===
-          BlobStorageExportMode.FROM_CUSTOM_DATE && (
+        {blobStorageForm.watch("exportMode") === BlobStorageExportMode.FROM_CUSTOM_DATE && (
           <FormField
             control={blobStorageForm.control}
             name="exportStartDate"

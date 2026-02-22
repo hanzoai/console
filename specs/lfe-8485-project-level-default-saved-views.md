@@ -1,6 +1,6 @@
 # Persist Saved Views and Make Them Default for Users or Projects
 
-linear issue: https://linear.app/langfuse/issue/LFE-8485/settings-saved-views-default-for-users-or-projects
+linear issue: https://linear.app/console/issue/LFE-8485/settings-saved-views-default-for-users-or-projects
 
 ## What?
 
@@ -16,7 +16,7 @@ Resolution order of views:
 2. Session storage (temporary selection)
 3. User's personal default for view
 4. Project default for view
-5. System default (i.e. a `__langfuse__` preset)
+5. System default (i.e. a `__console__` preset)
 6. No view applied (show all data)
 
 in a future version, a project default could take precedence if it was created after the user set their default.
@@ -49,7 +49,7 @@ model DefaultView {
     user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     viewName  String  @map("view_name")  // e.g. "traces", "sessions", "session-detail"
-    viewId    String  @map("view_id")    // no FK - allows system presets (e.g. __langfuse_*)
+    viewId    String  @map("view_id")    // no FK - allows system presets (e.g. __console_*)
 
     // Uniqueness enforced via partial indexes in migration (not expressible in Prisma)
     // - User defaults: UNIQUE(project_id, user_id, view_name) WHERE user_id IS NOT NULL
@@ -64,7 +64,7 @@ model DefaultView {
 
 1. **NULL uniqueness:** Enforced via partial unique indexes in raw SQL migration (Prisma can't express this). One index for user defaults (`WHERE user_id IS NOT NULL`), one for project defaults (`WHERE user_id IS NULL`).
 
-2. **No FK on viewId:** Intentionally omitted to allow system presets (e.g. `__langfuse_last_generation__`) to be set as defaults. Orphan cleanup needed if a user-created view is deleted while set as default.
+2. **No FK on viewId:** Intentionally omitted to allow system presets (e.g. `__console_last_generation__`) to be set as defaults. Orphan cleanup needed if a user-created view is deleted while set as default.
 
 ### tRPC Updates
 
@@ -98,7 +98,7 @@ model DefaultView {
 
 - Default actions in view drawer (set as my default / set as project default / clear) -> not changed from current implementation, will do in v2
 - Badge on view indicating "Your default" / "Project default"
-- System presets (`__langfuse_*`) can be set as defaults (they have stable IDs)
+- System presets (`__console_*`) can be set as defaults (they have stable IDs)
 
 ## Questions
 

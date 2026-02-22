@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 /**
  * Server-side check to determine if cloud billing is enabled.
@@ -23,6 +23,6 @@ export function isCloudBillingEnabled(): boolean {
  * @returns true if cloud billing features should be shown/enabled
  */
 export function useIsCloudBillingAvailable(): boolean {
-  const { region } = useHanzoCloudRegion();
+  const { region } = useConsoleCloudRegion();
   return Boolean(region);
 }

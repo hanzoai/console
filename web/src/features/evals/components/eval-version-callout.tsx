@@ -19,10 +19,7 @@ interface CalloutContent {
   description: React.ReactNode;
 }
 
-const getCalloutContent = (
-  targetObject: string,
-  evalCapabilities: EvalCapabilities,
-): CalloutContent => {
+const getCalloutContent = (targetObject: string, evalCapabilities: EvalCapabilities): CalloutContent => {
   const hidden = { visible: false, title: "", description: "" };
 
   // For event/observation target
@@ -36,11 +33,10 @@ const getCalloutContent = (
       title: "Please verify your SDK version",
       description: (
         <>
-          This evaluator targets observations, which require JS SDK v4+ or
-          Python SDK v3+. You can still configure this evaluator now—it will
-          start running once you upgrade.{" "}
+          This evaluator targets observations, which require JS SDK v4+ or Python SDK v3+. You can still configure this
+          evaluator now—it will start running once you upgrade.{" "}
           <a
-            href="https://langfuse.com/docs/tracing/overview#langfuse-tracing-vs-opentelemetry"
+            href="https://hanzo.ai/docs/tracing/overview#console-tracing-vs-opentelemetry"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-dark-blue hover:opacity-80"
@@ -61,11 +57,10 @@ const getCalloutContent = (
         title: "Please verify you are using the Experiment Runner SDK",
         description: (
           <>
-            The Experiment Runner SDK requires JS SDK v4.4+ or Python SDK v3.9+.
-            You can still configure this evaluator now—it will start running
-            once you upgrade.{" "}
+            The Experiment Runner SDK requires JS SDK v4.4+ or Python SDK v3.9+. You can still configure this evaluator
+            now—it will start running once you upgrade.{" "}
             <a
-              href="https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
+              href="https://hanzo.ai/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-dark-blue hover:opacity-80"
@@ -88,12 +83,10 @@ const getCalloutContent = (
       title: "Legacy low-level SDK methods",
       description: (
         <>
-          This evaluator targets traces from legacy low-level SDK methods for
-          dataset runs that manually linked dataset items to traces. Consider
-          upgrading to the Experiment Runner SDK for improved performance and
-          features.{" "}
+          This evaluator targets traces from legacy low-level SDK methods for dataset runs that manually linked dataset
+          items to traces. Consider upgrading to the Experiment Runner SDK for improved performance and features.{" "}
           <a
-            href="https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
+            href="https://hanzo.ai/docs/evaluation/experiments/experiments-via-sdk#experiment-runner-sdk"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-dark-blue hover:opacity-80"
@@ -113,10 +106,10 @@ const getCalloutContent = (
       title: "Consider upgrading to observation evaluators",
       description: (
         <>
-          Observation evaluators provide more granular control and an easier
-          workflow. We strongly recommend upgrading to observation evaluators.{" "}
+          Observation evaluators provide more granular control and an easier workflow. We strongly recommend upgrading
+          to observation evaluators.{" "}
           <a
-            href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
+            href="https://hanzo.ai/docs/faq/all/llm-as-a-judge-migration"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-dark-blue hover:opacity-80"
@@ -132,10 +125,7 @@ const getCalloutContent = (
   return hidden;
 };
 
-export function EvalVersionCallout({
-  targetObject,
-  evalCapabilities,
-}: EvalVersionCalloutProps) {
+export function EvalVersionCallout({ targetObject, evalCapabilities }: EvalVersionCalloutProps) {
   const content = getCalloutContent(targetObject, evalCapabilities);
 
   if (!content.visible) {
@@ -143,18 +133,13 @@ export function EvalVersionCallout({
   }
 
   return (
-    <Alert
-      variant="default"
-      className="mt-2 max-w-4xl border-light-blue bg-light-blue"
-    >
+    <Alert variant="default" className="mt-2 max-w-4xl border-light-blue bg-light-blue">
       <Info className="h-4 w-4 text-dark-blue dark:text-dark-blue" />
       <AlertDescription>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <span className="font-medium text-foreground">{content.title}</span>
-            <span className="text-sm text-foreground">
-              {content.description}
-            </span>
+            <span className="text-sm text-foreground">{content.description}</span>
           </div>
         </div>
       </AlertDescription>

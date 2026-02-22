@@ -1,10 +1,4 @@
-import {
-  ApiError,
-  LLMAdapter,
-  ObservationType,
-  variableMappingList,
-  EvalTargetObject,
-} from "@hanzo/shared";
+import { ApiError, LLMAdapter, ObservationType, variableMappingList, EvalTargetObject } from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
 import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import {
@@ -28,11 +22,7 @@ import { afterEach } from "node:test";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { compileTemplateString } from "../features/utils/utilities";
 import { OpenAIServer } from "./network";
-import {
-  createEvalJobs,
-  evaluate,
-  extractVariablesFromTracingData,
-} from "../features/evaluation/evalService";
+import { createEvalJobs, evaluate, extractVariablesFromTracingData } from "../features/evaluation/evalService";
 import { requiresDatabaseLookup } from "../features/evaluation/traceFilterUtils";
 
 // Mock fetchLLMCompletion module with default passthrough behavior
@@ -40,9 +30,7 @@ vi.mock("@hanzo/shared/src/server", async () => {
   const actual = await vi.importActual("@hanzo/shared/src/server");
   return {
     ...actual,
-    fetchLLMCompletion: vi
-      .fn()
-      .mockImplementation(actual.fetchLLMCompletion as any),
+    fetchLLMCompletion: vi.fn().mockImplementation(actual.fetchLLMCompletion as any),
   };
 });
 
@@ -53,9 +41,7 @@ import { UnrecoverableError } from "../errors/UnrecoverableError";
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // Check for both OPENAI_API_KEY and HANZO_LLM_CONNECTION_OPENAI_KEY
 // to avoid interfering with llmConnections tests that use the latter
-const hasActiveKey = Boolean(
-  OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY,
-);
+const hasActiveKey = Boolean(OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY);
 if (!hasActiveKey) {
   OPENAI_API_KEY = "sk-test_not_used_as_network_mocks_are_activated";
 }
@@ -116,9 +102,7 @@ describe("eval service tests", () => {
     test("compile template string with all variables missing keeps all original", async () => {
       const template = "{{greeting}} {{name}}, welcome to {{place}}!";
       const compiledString = compileTemplateString(template, {});
-      expect(compiledString).toBe(
-        "{{greeting}} {{name}}, welcome to {{place}}!",
-      );
+      expect(compiledString).toBe("{{greeting}} {{name}}, welcome to {{place}}!");
     });
 
     test("compile template string with whitespace variable missing keeps original with whitespace", async () => {
@@ -279,9 +263,7 @@ describe("eval service tests", () => {
       const compiledString = compileTemplateString(template, {
         query: "SELECT * FROM users WHERE name = 'test'",
       });
-      expect(compiledString).toBe(
-        "Query: SELECT * FROM users WHERE name = 'test'",
-      );
+      expect(compiledString).toBe("Query: SELECT * FROM users WHERE name = 'test'");
     });
 
     test("compile template string with HTML in value (no escaping)", async () => {
@@ -372,8 +354,7 @@ Provide a score from 0 to 1 based on correctness.`;
         expected: "4",
       });
 
-      expect(compiledString)
-        .toBe(`You are an expert evaluator. Please evaluate the following:
+      expect(compiledString).toBe(`You are an expert evaluator. Please evaluate the following:
 
 Input: What is 2+2?
 Output: 4
@@ -418,8 +399,7 @@ Provide a score from 0 to 1 based on correctness.`);
     });
 
     test("compile template string with many variables", async () => {
-      const template =
-        "{{a}} {{b}} {{c}} {{d}} {{e}} {{f}} {{g}} {{h}} {{i}} {{j}}";
+      const template = "{{a}} {{b}} {{c}} {{d}} {{e}} {{f}} {{g}} {{h}} {{i}} {{j}}";
       const compiledString = compileTemplateString(template, {
         a: "1",
         b: "2",
@@ -1459,10 +1439,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         .selectFrom("job_executions")
         .selectAll()
         .where("project_id", "=", projectId)
-        .where("job_configuration_id", "in", [
-          jobConfiguration.id,
-          jobConfiguration2.id,
-        ])
+        .where("job_configuration_id", "in", [jobConfiguration.id, jobConfiguration2.id])
         .where("job_input_trace_id", "=", traceId)
         .execute();
 
@@ -2323,9 +2300,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       const { projectId } = await createOrgProjectAndApiKey();
       // Set up the mock to simulate timeout for this test only
       const mockFetchLLMCompletion = vi.mocked(fetchLLMCompletion);
-      mockFetchLLMCompletion.mockRejectedValueOnce(
-        new ApiError("Request timeout after 120000ms", 500),
-      );
+      mockFetchLLMCompletion.mockRejectedValueOnce(new ApiError("Request timeout after 120000ms", 500));
 
       const traceId = randomUUID();
 
@@ -2415,9 +2390,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       };
 
       // Test that timeout error is thrown
-      await expect(evaluate({ event: payload })).rejects.toThrowError(
-        /timeout/i,
-      );
+      await expect(evaluate({ event: payload })).rejects.toThrowError(/timeout/i);
 
       const jobs = await kyselyPrisma.$kysely
         .selectFrom("job_executions")
@@ -2465,12 +2438,12 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "dataset_item",
+          consoleObject: "dataset_item",
           selectedColumnId: "input",
           templateVariable: "input",
         },
         {
-          hanzoObject: "dataset_item",
+          consoleObject: "dataset_item",
           selectedColumnId: "expected_output",
           templateVariable: "output",
         },
@@ -2514,12 +2487,12 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "trace",
+          consoleObject: "trace",
           selectedColumnId: "input",
           templateVariable: "input",
         },
         {
-          hanzoObject: "trace",
+          consoleObject: "trace",
           selectedColumnId: "output",
           templateVariable: "output",
         },
@@ -2577,13 +2550,13 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -2617,13 +2590,13 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -2673,13 +2646,13 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -2730,9 +2703,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         type: "GENERATION",
         input: JSON.stringify({ huhu: "This is a great prompt" }),
         output: JSON.stringify({ haha: "This is a great response" }),
-        start_time: convertDateToClickhouseDateTime(
-          new Date("2022-01-01T00:00:00.000Z"),
-        ),
+        start_time: convertDateToClickhouseDateTime(new Date("2022-01-01T00:00:00.000Z")),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
       });
@@ -2745,22 +2716,20 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         type: "GENERATION",
         input: JSON.stringify({ huhu: "This is a great prompt again" }),
         output: JSON.stringify({ haha: "This is a great response again" }),
-        start_time: convertDateToClickhouseDateTime(
-          new Date("2022-01-02T00:00:00.000Z"),
-        ),
+        start_time: convertDateToClickhouseDateTime(new Date("2022-01-02T00:00:00.000Z")),
         created_at: convertDateToClickhouseDateTime(new Date()),
         updated_at: convertDateToClickhouseDateTime(new Date()),
       });
 
       const variableMapping = variableMappingList.parse([
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "input",
           templateVariable: "input",
           objectName: "great-llm-name",
         },
         {
-          hanzoObject: "generation",
+          consoleObject: "generation",
           selectedColumnId: "output",
           templateVariable: "output",
           objectName: "great-llm-name",
@@ -2788,11 +2757,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       ]);
     }, 10_000);
 
-    test.each(
-      Object.values(ObservationType).filter(
-        (type) => !["SPAN", "EVENT", "GENERATION"].includes(type),
-      ),
-    )(
+    test.each(Object.values(ObservationType).filter((type) => !["SPAN", "EVENT", "GENERATION"].includes(type)))(
       "extracts variables from a %s observation",
       async (observationType) => {
         const { projectId } = await createOrgProjectAndApiKey();
@@ -2825,13 +2790,13 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
 
         const variableMapping = variableMappingList.parse([
           {
-            hanzoObject: observationType.toLowerCase(),
+            consoleObject: observationType.toLowerCase(),
             selectedColumnId: "input",
             templateVariable: "input",
             objectName: `great-${observationType.toLowerCase()}-name`,
           },
           {
-            hanzoObject: observationType.toLowerCase(),
+            consoleObject: observationType.toLowerCase(),
             selectedColumnId: "output",
             templateVariable: "output",
             objectName: `great-${observationType.toLowerCase()}-name`,
@@ -2878,9 +2843,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
     expect(!requiresDatabaseLookup(simpleFilters)).toBe(true);
 
     // Complex filters that require observation data
-    const complexFilters = [
-      { column: "level", type: "string", operator: "=", value: "ERROR" },
-    ];
+    const complexFilters = [{ column: "level", type: "string", operator: "=", value: "ERROR" }];
 
     expect(!requiresDatabaseLookup(complexFilters)).toBe(false);
 
@@ -2950,7 +2913,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
           targetObject: EvalTargetObject.TRACE,
           scoreName: "test-score",
           variableMapping: JSON.parse(
-            '[{"hanzoObject":"trace","selectedColumnId":"input","templateVariable":"input"}]',
+            '[{"consoleObject":"trace","selectedColumnId":"input","templateVariable":"input"}]',
           ),
           status: "ACTIVE",
           evalTemplateId: templateId,
@@ -2972,12 +2935,10 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       // Mock fetchLLMCompletion to capture the traceSinkParams
       let capturedTraceSinkParams: any = null;
 
-      vi.mocked(fetchLLMCompletion).mockImplementationOnce(
-        async (params: any) => {
-          capturedTraceSinkParams = params.traceSinkParams;
-          return { score: 0.8, reasoning: "Good response" };
-        },
-      );
+      vi.mocked(fetchLLMCompletion).mockImplementationOnce(async (params: any) => {
+        capturedTraceSinkParams = params.traceSinkParams;
+        return { score: 0.8, reasoning: "Good response" };
+      });
 
       await evaluate({
         event: {
@@ -2990,12 +2951,8 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       expect(capturedTraceSinkParams).toBeDefined();
       expect(capturedTraceSinkParams.targetProjectId).toBe(projectId);
       expect(capturedTraceSinkParams.traceId).toMatch(/^[a-f0-9]{32}$/);
-      expect(capturedTraceSinkParams.traceName).toBe(
-        "Execute evaluator: test-evaluator",
-      );
-      expect(capturedTraceSinkParams.environment).toBe(
-        HanzoInternalTraceEnvironment.LLMJudge,
-      );
+      expect(capturedTraceSinkParams.traceName).toBe("Execute evaluator: test-evaluator");
+      expect(capturedTraceSinkParams.environment).toBe(HanzoInternalTraceEnvironment.LLMJudge);
       expect(capturedTraceSinkParams.metadata).toMatchObject({
         job_execution_id: jobExecutionId,
         job_configuration_id: configId,

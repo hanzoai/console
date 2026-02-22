@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { organizationFormSchema } from "@/src/features/organizations/utils/organizationNameSchema";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { SurveyName } from "@prisma/client";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) => void }) => {
   const { update: updateSession } = useSession();
@@ -38,7 +38,7 @@ export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) 
   });
   const createSurveyMutation = api.surveys.create.useMutation();
   const watchedType = form.watch("type");
-  const { isHanzoCloud } = useHanzoCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
 
   function onSubmit(values: z.infer<typeof organizationFormSchema>) {
     capture("organizations:new_form_submit");
@@ -48,7 +48,7 @@ export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) 
       })
       .then(async (org) => {
         // Submit survey with organization data only on Cloud and if type is provided
-        if (isHanzoCloud && values.type) {
+        if (isConsoleCloud && values.type) {
           const surveyResponse: Record<string, string> = {
             type: values.type,
           };
@@ -110,7 +110,7 @@ export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) 
             </FormItem>
           )}
         />
-        {isHanzoCloud && (
+        {isConsoleCloud && (
           <>
             <FormField
               control={form.control}

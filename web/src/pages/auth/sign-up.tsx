@@ -15,7 +15,7 @@ import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPriv
 import { CloudRegionSwitch } from "@/src/features/auth/components/AuthCloudRegionSwitch";
 import { SSOButtons, useHuggingFaceRedirect, type PageProps } from "@/src/pages/auth/sign-in";
 import { PasswordInput } from "@/src/components/ui/password-input";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
@@ -28,7 +28,7 @@ type NextAuthProvider = NonNullable<Parameters<typeof signIn>[0]>;
 
 export default function SignIn({ authProviders, runningOnHuggingFaceSpaces }: PageProps) {
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
-  const { isHanzoCloud, region } = useHanzoCloudRegion();
+  const { isConsoleCloud, region } = useConsoleCloudRegion();
   const router = useRouter();
   const capture = usePostHogClientCapture();
 
@@ -150,7 +150,7 @@ export default function SignIn({ authProviders, runningOnHuggingFaceSpaces }: Pa
         password: values.password,
         callbackUrl:
           targetPath ??
-          (isHanzoCloud && region !== "DEV"
+          (isConsoleCloud && region !== "DEV"
             ? `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/onboarding`
             : `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/`),
       });
@@ -172,7 +172,7 @@ export default function SignIn({ authProviders, runningOnHuggingFaceSpaces }: Pa
             Create new account
           </h2>
         </div>
-        {isHanzoCloud ? (
+        {isConsoleCloud ? (
           <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">No credit card required.</div>
         ) : null}
 

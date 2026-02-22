@@ -107,29 +107,24 @@ export const transformScoreForPostHog = (score: AnalyticsScoreEvent, projectId: 
   };
 };
 
-export const transformEventForPostHog = (
-  event: AnalyticsObservationEvent,
-  projectId: string,
-): PostHogEvent => {
-  const uuid = v5(`${projectId}-${event.langfuse_id}`, POSTHOG_UUID_NAMESPACE);
+export const transformEventForPostHog = (event: AnalyticsObservationEvent, projectId: string): PostHogEvent => {
+  const uuid = v5(`${projectId}-${event.console_id}`, POSTHOG_UUID_NAMESPACE);
 
   // Extract posthog_session_id and map to $session_id
 
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = event;
 
   return {
-    distinctId: event.langfuse_user_id
-      ? (event.langfuse_user_id as string)
-      : uuid,
-    event: "langfuse observation",
+    distinctId: event.console_user_id ? (event.console_user_id as string) : uuid,
+    event: "console observation",
     properties: {
       ...otherProps,
       $session_id: posthog_session_id ?? null,
       // PostHog-specific: add user profile enrichment or mark as anonymous
-      ...(event.langfuse_user_id && event.langfuse_user_url
+      ...(event.console_user_id && event.console_user_url
         ? {
             $set: {
-              langfuse_user_url: event.langfuse_user_url,
+              console_user_url: event.console_user_url,
             },
           }
         : // Capture as anonymous PostHog event (cheaper/faster)

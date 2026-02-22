@@ -1,4 +1,4 @@
-import { PrismaClient, HanzoNotFoundError } from "@hanzo/shared";
+import { PrismaClient, ConsoleNotFoundError } from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
 import { env } from "../env";
 
@@ -133,7 +133,7 @@ export class ClickhouseReadSkipCache {
       });
 
       if (!project) {
-        throw new HanzoNotFoundError(`Project ${projectId} not found`);
+        throw new ConsoleNotFoundError(`Project ${projectId} not found`);
       }
 
       const cutoffDate = new Date(

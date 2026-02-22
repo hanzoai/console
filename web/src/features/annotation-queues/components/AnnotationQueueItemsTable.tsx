@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
@@ -167,7 +167,7 @@ export function AnnotationQueueItemsTable({ projectId, queueId }: { projectId: s
     limit: paginationState.pageSize,
   });
 
-  const columns: HanzoColumnDef<QueueItemRowData>[] = [
+  const columns: ConsoleColumnDef<QueueItemRowData>[] = [
     {
       id: "select",
       accessorKey: "select",

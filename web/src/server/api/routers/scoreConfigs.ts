@@ -5,7 +5,7 @@ import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/tr
 import {
   filterAndValidateDbScoreConfigList,
   InvalidRequestError,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
   optionalPaginationZod,
   ScoreConfigCategory,
   ScoreConfigDataType,
@@ -114,7 +114,7 @@ export const scoreConfigsRouter = createTRPCRouter({
       },
     });
     if (!existingConfig) {
-      throw new HanzoNotFoundError("No score config with this id in this project.");
+      throw new ConsoleNotFoundError("No score config with this id in this project.");
     }
 
     // Merge the input with the existing config and verify schema compliance

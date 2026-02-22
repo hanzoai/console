@@ -1,7 +1,7 @@
 import { api } from "@/src/utils/api";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
@@ -34,10 +34,7 @@ import { useOrderByState } from "@/src/features/orderBy/hooks/useOrderByState";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import { MemoizedIOTableCell } from "../../ui/IOTableCell";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
-import {
-  toAbsoluteTimeRange,
-  type TableDateRange,
-} from "@/src/utils/date-range-utils";
+import { toAbsoluteTimeRange, type TableDateRange } from "@/src/utils/date-range-utils";
 import { type ScoreAggregate } from "@hanzo/shared";
 import TagList from "@/src/features/tag/components/TagList";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
@@ -65,10 +62,7 @@ import { useSelectAll } from "@/src/features/table/hooks/useSelectAll";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { TableActionMenu } from "@/src/features/table/components/TableActionMenu";
 import { type TableAction } from "@/src/features/table/types";
-import {
-  type DataTablePeekViewProps,
-  TablePeekView,
-} from "@/src/components/table/peek";
+import { type DataTablePeekViewProps, TablePeekView } from "@/src/components/table/peek";
 import { useScoreColumns } from "@/src/features/scores/hooks/useScoreColumns";
 import { scoreFilters } from "@/src/features/scores/lib/scoreColumns";
 import { AddObservationsToDatasetDialog } from "@/src/features/batch-actions/components/AddObservationsToDatasetDialog/index";
@@ -198,10 +192,7 @@ export default function ObservationsTable({
     limit: "pageSize",
   });
 
-  const [storedRowHeight, setRowHeight] = useRowHeightLocalStorage(
-    "generations",
-    "s",
-  );
+  const [storedRowHeight, setRowHeight] = useRowHeightLocalStorage("generations", "s");
   const rowHeight = hideControls ? "s" : storedRowHeight;
 
   const [inputFilterState] = useQueryFilterState(
@@ -478,9 +469,7 @@ export default function ObservationsTable({
           id: g.id,
           params: {
             traceId: g.traceId || "",
-            ...(g.traceTimestamp
-              ? { timestamp: g.traceTimestamp.toISOString() }
-              : {}),
+            ...(g.traceTimestamp ? { timestamp: g.traceTimestamp.toISOString() } : {}),
           },
         })),
       );
@@ -546,7 +535,7 @@ export default function ObservationsTable({
 
   const enableSorting = !hideControls;
 
-  const columns: LangfuseColumnDef<ObservationsTableRow>[] = [
+  const columns: ConsoleColumnDef<ObservationsTableRow>[] = [
     ...(hideControls ? [] : [selectActionColumn]),
     {
       accessorKey: "startTime",
@@ -1214,12 +1203,7 @@ export default function ObservationsTable({
               projectId,
               controllers: viewControllers,
             }}
-            columnsWithCustomSelect={[
-              "model",
-              "name",
-              "traceName",
-              "promptName",
-            ]}
+            columnsWithCustomSelect={["model", "name", "traceName", "promptName"]}
             columnVisibility={columnVisibility}
             setColumnVisibility={setColumnVisibilityState}
             columnOrder={columnOrder}
@@ -1231,8 +1215,7 @@ export default function ObservationsTable({
             setTimeRange={setTimeRange}
             refreshConfig={{
               onRefresh: handleRefresh,
-              isRefreshing:
-                generations.isFetching || totalCountQuery.isFetching,
+              isRefreshing: generations.isFetching || totalCountQuery.isFetching,
               interval: refreshInterval,
               setInterval: setRefreshInterval,
             }}
@@ -1249,9 +1232,7 @@ export default function ObservationsTable({
                 key="batchExport"
               />,
               Object.keys(selectedRows).filter((generationId) =>
-                generations.data?.generations
-                  .map((g) => g.id)
-                  .includes(generationId),
+                generations.data?.generations.map((g) => g.id).includes(generationId),
               ).length > 0 ? (
                 <TableActionMenu
                   key="observations-multi-select-actions"
@@ -1270,9 +1251,7 @@ export default function ObservationsTable({
               selectAll,
               setSelectAll,
               selectedRowIds: Object.keys(selectedRows).filter((generationId) =>
-                generations.data?.generations
-                  .map((g) => g.id)
-                  .includes(generationId),
+                generations.data?.generations.map((g) => g.id).includes(generationId),
               ),
               setRowSelection: setSelectedRows,
               totalCount,

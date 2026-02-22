@@ -6,7 +6,7 @@ import {
 } from "@/src/features/public-api/types/datasets";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 
 export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
@@ -32,7 +32,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset not found");
+        throw new ConsoleNotFoundError("Dataset not found");
       }
 
       const totalItems = await prisma.datasetRuns.count({

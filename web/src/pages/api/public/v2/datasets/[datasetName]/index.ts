@@ -1,5 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 import {
   GetDatasetV2Query,
   GetDatasetV2Response,
@@ -25,7 +25,7 @@ export default withMiddlewares({
       });
 
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset not found");
+        throw new ConsoleNotFoundError("Dataset not found");
       }
       return transformDbDatasetToAPIDataset(dataset);
     },

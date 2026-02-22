@@ -8,7 +8,7 @@ import {
   PostDatasetItemsV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { HanzoNotFoundError, Prisma } from "@hanzo/shared";
+import { ConsoleNotFoundError, Prisma } from "@hanzo/shared";
 import {
   createDatasetItemFilterState,
   getDatasetItems,
@@ -33,16 +33,7 @@ export default withMiddlewares({
     responseSchema: PostDatasetItemsV1Response,
     rateLimitResource: "datasets",
     fn: async ({ body, auth }) => {
-      const {
-        datasetName,
-        id,
-        input,
-        expectedOutput,
-        metadata,
-        sourceTraceId,
-        sourceObservationId,
-        status,
-      } = body;
+      const { datasetName, id, input, expectedOutput, metadata, sourceTraceId, sourceObservationId, status } = body;
 
       try {
         const datasetItem = await upsertDatasetItem({
@@ -84,7 +75,7 @@ export default withMiddlewares({
             logger.warn(
               `Failed to upsert dataset item. Dataset item ${id} in project ${auth.scope.projectId} already exists for a different dataset than ${datasetName}`,
             );
-            throw new HanzoNotFoundError(
+            throw new ConsoleNotFoundError(
               `The dataset item with id ${id} already exists in a dataset other than ${datasetName}`,
             );
           }
@@ -99,14 +90,7 @@ export default withMiddlewares({
     responseSchema: GetDatasetItemsV1Response,
     rateLimitResource: "datasets",
     fn: async ({ query, auth }) => {
-      const {
-        datasetName,
-        sourceTraceId,
-        sourceObservationId,
-        version,
-        page,
-        limit,
-      } = query;
+      const { datasetName, sourceTraceId, sourceObservationId, version, page, limit } = query;
 
       let datasetId: string | undefined = undefined;
       if (datasetName) {
@@ -117,7 +101,7 @@ export default withMiddlewares({
           },
         });
         if (!dataset) {
-          throw new HanzoNotFoundError("Dataset not found");
+          throw new ConsoleNotFoundError("Dataset not found");
         }
         datasetId = dataset.id;
       }
@@ -143,9 +127,7 @@ export default withMiddlewares({
       });
 
       return {
-        data: items.map((item) =>
-          transformDbDatasetItemDomainToAPIDatasetItem(item),
-        ),
+        data: items.map((item) => transformDbDatasetItemDomainToAPIDatasetItem(item)),
         meta: {
           page,
           limit,

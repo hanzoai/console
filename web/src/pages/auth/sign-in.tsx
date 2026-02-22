@@ -33,7 +33,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { AuthProviderButton } from "@/src/features/auth/components/AuthProviderButton";
 import { cn } from "@/src/utils/tailwind";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
 
 const credentialAuthForm = z.object({
@@ -510,7 +510,7 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
   );
 
   const capture = usePostHogClientCapture();
-  const { isHanzoCloud } = useHanzoCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
 
   // Count available auth methods to determine if we should show "Last used" badge
   const availableProviders = Object.entries(authProviders).filter(
@@ -682,7 +682,7 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
           </h2>
         </div>
 
-        {isHanzoCloud && (
+        {isConsoleCloud && (
           <div className="-mb-4 mt-4 rounded-lg bg-card p-3 text-center text-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-6">
             If you are experiencing issues signing in, please force refresh this page (CMD + SHIFT + R) or clear your
             browser cache.{" "}
@@ -791,7 +791,7 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
                 {credentialsFormError}
                 <br />
                 Contact support if this error is unexpected.{" "}
-                {isHanzoCloud && "Make sure you are using the correct cloud data region."}
+                {isConsoleCloud && "Make sure you are using the correct cloud data region."}
               </div>
             ) : null}
             <SSOButtons

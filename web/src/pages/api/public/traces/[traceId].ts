@@ -7,7 +7,7 @@ import {
   DeleteTraceV1Query,
   DeleteTraceV1Response,
 } from "@/src/features/public-api/types/traces";
-import { filterAndValidateDbTraceScoreList, HanzoNotFoundError } from "@hanzo/shared";
+import { filterAndValidateDbTraceScoreList, ConsoleNotFoundError } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {
   getObservationsForTrace,
@@ -34,7 +34,7 @@ export default withMiddlewares({
       });
 
       if (!trace) {
-        throw new HanzoNotFoundError(`Trace ${traceId} not found within authorized project`);
+        throw new ConsoleNotFoundError(`Trace ${traceId} not found within authorized project`);
       }
 
       const [observations, scores] = await Promise.all([

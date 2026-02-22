@@ -10,11 +10,7 @@ interface LegacyEvalCalloutProps {
   targetObject: string;
 }
 
-export function LegacyEvalCallout({
-  projectId,
-  evalConfigId,
-  targetObject,
-}: LegacyEvalCalloutProps) {
+export function LegacyEvalCallout({ projectId, evalConfigId, targetObject }: LegacyEvalCalloutProps) {
   const router = useRouter();
   const isDeprecated = isLegacyEvalTarget(targetObject);
 
@@ -30,11 +26,7 @@ export function LegacyEvalCallout({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() =>
-              router.push(
-                `/project/${projectId}/evals/remap?evaluator=${evalConfigId}`,
-              )
-            }
+            onClick={() => router.push(`/project/${projectId}/evals/remap?evaluator=${evalConfigId}`)}
             className="h-7 text-xs text-dark-blue hover:opacity-80"
           >
             Upgrade this evaluator
@@ -44,18 +36,11 @@ export function LegacyEvalCallout({
     >
       <span>This evaluator </span>
       <span className="text-dark-blue hover:opacity-80">
-        <Link
-          href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link href="https://hanzo.ai/docs/faq/all/llm-as-a-judge-migration" target="_blank" rel="noopener noreferrer">
           requires changes{" "}
         </Link>
       </span>
-      <span>
-        to benefit from new features and performance improvements. Upgrade for
-        full compatibility.
-      </span>
+      <span>to benefit from new features and performance improvements. Upgrade for full compatibility.</span>
     </Callout>
   );
 }

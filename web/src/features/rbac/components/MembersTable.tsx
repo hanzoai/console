@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -126,7 +126,7 @@ export function MembersTable({
 
   const projectRolesEntitlement = useHasEntitlement("rbac-project-roles");
 
-  const columns: HanzoColumnDef<MembersTableRow>[] = [
+  const columns: ConsoleColumnDef<MembersTableRow>[] = [
     {
       accessorKey: "user",
       id: "user",

@@ -1,17 +1,10 @@
 import { z } from "zod/v4";
-import {
-  variableMapping,
-  observationVariableMapping,
-  type EvalTargetObject,
-} from "@hanzo/shared";
-import {
-  isEventTarget,
-  isExperimentTarget,
-} from "@/src/features/evals/utils/typeHelpers";
+import { variableMapping, observationVariableMapping, type EvalTargetObject } from "@hanzo/shared";
+import { isEventTarget, isExperimentTarget } from "@/src/features/evals/utils/typeHelpers";
 
 type FormMappingValue = {
   templateVariable: string;
-  langfuseObject?: string;
+  consoleObject?: string;
   objectName?: string | null;
   selectedColumnId?: string | null;
   jsonSelector?: string | null;
@@ -20,9 +13,7 @@ type FormMappingValue = {
 type ValidationResult =
   | {
       success: true;
-      data:
-        | z.infer<typeof variableMapping>[]
-        | z.infer<typeof observationVariableMapping>[];
+      data: z.infer<typeof variableMapping>[] | z.infer<typeof observationVariableMapping>[];
     }
   | {
       success: false;
@@ -37,15 +28,11 @@ export function validateAndTransformVariableMapping(
   mappings: FormMappingValue[],
   target: EvalTargetObject,
 ): ValidationResult {
-  const isEventOrExperimentTarget =
-    isEventTarget(target) || isExperimentTarget(target);
+  const isEventOrExperimentTarget = isEventTarget(target) || isExperimentTarget(target);
 
   // Check for incomplete mappings (missing selectedColumnId)
   const incompleteMappings = mappings.filter(
-    (m) =>
-      !m.selectedColumnId ||
-      m.selectedColumnId === null ||
-      m.selectedColumnId.trim() === "",
+    (m) => !m.selectedColumnId || m.selectedColumnId === null || m.selectedColumnId.trim() === "",
   );
 
   if (incompleteMappings.length > 0) {
@@ -59,8 +46,8 @@ export function validateAndTransformVariableMapping(
   if (!isEventOrExperimentTarget) {
     const missingObjectName = mappings.filter(
       (m) =>
-        m.langfuseObject !== "trace" &&
-        m.langfuseObject !== "dataset_item" &&
+        m.consoleObject !== "trace" &&
+        m.consoleObject !== "dataset_item" &&
         (!m.objectName || m.objectName.trim() === ""),
     );
 
@@ -91,7 +78,7 @@ export function validateAndTransformVariableMapping(
         mappings.map((m) => {
           const mapping: Record<string, any> = {
             templateVariable: m.templateVariable,
-            langfuseObject: m.langfuseObject,
+            consoleObject: m.consoleObject,
             selectedColumnId: m.selectedColumnId!,
           };
           // Only include objectName if it has a value

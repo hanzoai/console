@@ -1,6 +1,6 @@
 import { prisma } from "../../../db";
 import { TableViewPresetTableName, type TableViewPresetDomain } from "../../../domain/table-view-presets";
-import { HanzoNotFoundError } from "../../../errors";
+import { ConsoleNotFoundError } from "../../../errors";
 import {
   TableViewPresetsNamesCreatorList,
   TableViewPresetsNamesCreatorListSchema,
@@ -52,7 +52,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new HanzoNotFoundError(
+      throw new ConsoleNotFoundError(
         `Saved table view preset not found for table ${input.tableName} in project ${input.projectId}`,
       );
     }
@@ -89,7 +89,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new HanzoNotFoundError(
+      throw new ConsoleNotFoundError(
         `Saved table view preset not found for table ${input.tableName} in project ${input.projectId}`,
       );
     }
@@ -161,7 +161,7 @@ export class TableViewService {
     });
 
     if (!tableViewPresets) {
-      throw new HanzoNotFoundError(`Saved table view preset not found for id ${id} in project ${projectId}`);
+      throw new ConsoleNotFoundError(`Saved table view preset not found for id ${id} in project ${projectId}`);
     }
 
     return tableViewPresets as unknown as TableViewPresetDomain;

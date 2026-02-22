@@ -12,7 +12,7 @@ import {
   type TracingSearchType,
 } from "@hanzo/shared";
 import { type RowSelectionState, type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableRowHeightSwitch, type RowHeight } from "@/src/components/table/data-table-row-height-switch";
 import { Search, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
@@ -78,7 +78,7 @@ interface RefreshConfig {
 }
 
 interface DataTableToolbarProps<TData, TValue> {
-  columns: HanzoColumnDef<TData, TValue>[];
+  columns: ConsoleColumnDef<TData, TValue>[];
   filterColumnDefinition?: ColumnDefinition[];
   searchConfig?: SearchConfig;
   actionButtons?: React.ReactNode;

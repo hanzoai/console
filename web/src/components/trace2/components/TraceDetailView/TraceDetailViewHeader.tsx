@@ -14,7 +14,7 @@ import {
   type TraceDomain,
   type ScoreDomain,
   AnnotationQueueObjectType,
-  LangfuseInternalTraceEnvironment,
+  ConsoleInternalTraceEnvironment,
 } from "@hanzo/shared";
 import { type SelectionData } from "@/src/features/comments/contexts/InlineCommentSelectionContext";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
@@ -35,10 +35,7 @@ import {
   TargetTraceBadge,
 } from "./TraceMetadataBadges";
 import { LatencyBadge } from "../ObservationDetailView/ObservationMetadataBadgesSimple";
-import {
-  CostBadge,
-  UsageBadge,
-} from "../ObservationDetailView/ObservationMetadataBadgesTooltip";
+import { CostBadge, UsageBadge } from "../ObservationDetailView/ObservationMetadataBadgesTooltip";
 import { aggregateTraceMetrics } from "@/src/components/trace2/lib/trace-aggregation";
 import { resolveEvalExecutionMetadata } from "@/src/components/trace2/lib/resolve-metadata";
 
@@ -72,13 +69,10 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
   isCommentDrawerOpen,
   onCommentDrawerOpenChange,
 }: TraceDetailViewHeaderProps) {
-  const aggregatedMetrics = useMemo(
-    () => aggregateTraceMetrics(observations),
-    [observations],
-  );
+  const aggregatedMetrics = useMemo(() => aggregateTraceMetrics(observations), [observations]);
 
   const targetTraceId =
-    trace.environment === LangfuseInternalTraceEnvironment.LLMJudge
+    trace.environment === ConsoleInternalTraceEnvironment.LLMJudge
       ? resolveEvalExecutionMetadata(parsedMetadata)
       : null;
 
@@ -146,11 +140,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
       <div className="flex flex-col gap-2">
         {/* Timestamp */}
         <div className="flex flex-wrap items-center gap-1">
-          <LocalIsoDate
-            date={trace.timestamp}
-            accuracy="millisecond"
-            className="text-sm"
-          />
+          <LocalIsoDate date={trace.timestamp} accuracy="millisecond" className="text-sm" />
         </div>
 
         {/* Other badges */}
@@ -158,27 +148,20 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
           <LatencyBadge latencySeconds={trace.latency ?? null} />
           <SessionBadge sessionId={trace.sessionId} projectId={projectId} />
           <UserIdBadge userId={trace.userId} projectId={projectId} />
-          <TargetTraceBadge
-            targetTraceId={targetTraceId}
-            projectId={projectId}
-          />
+          <TargetTraceBadge targetTraceId={targetTraceId} projectId={projectId} />
           <EnvironmentBadge environment={trace.environment} />
           <ReleaseBadge release={trace.release} />
           <VersionBadge version={trace.version} />
-          <CostBadge
-            totalCost={aggregatedMetrics.totalCost}
-            costDetails={aggregatedMetrics.costDetails}
-          />
-          {aggregatedMetrics.hasGenerationLike &&
-            aggregatedMetrics.usageDetails && (
-              <UsageBadge
-                type="GENERATION"
-                inputUsage={aggregatedMetrics.inputUsage}
-                outputUsage={aggregatedMetrics.outputUsage}
-                totalUsage={aggregatedMetrics.totalUsage}
-                usageDetails={aggregatedMetrics.usageDetails}
-              />
-            )}
+          <CostBadge totalCost={aggregatedMetrics.totalCost} costDetails={aggregatedMetrics.costDetails} />
+          {aggregatedMetrics.hasGenerationLike && aggregatedMetrics.usageDetails && (
+            <UsageBadge
+              type="GENERATION"
+              inputUsage={aggregatedMetrics.inputUsage}
+              outputUsage={aggregatedMetrics.outputUsage}
+              totalUsage={aggregatedMetrics.totalUsage}
+              usageDetails={aggregatedMetrics.usageDetails}
+            />
+          )}
         </div>
       </div>
     </div>

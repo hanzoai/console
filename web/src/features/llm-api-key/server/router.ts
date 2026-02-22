@@ -120,10 +120,10 @@ export const llmApiKeyRouter = createTRPCRouter({
       });
 
       // Validate that default credentials sentinel is only allowed for Bedrock/VertexAI in self-hosted deployments
-      const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
+      const isConsoleCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
       if (input.secretKey === BEDROCK_USE_DEFAULT_CREDENTIALS) {
-        if (isHanzoCloud || input.adapter !== LLMAdapter.Bedrock) {
+        if (isConsoleCloud || input.adapter !== LLMAdapter.Bedrock) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Default AWS credentials are only allowed for Bedrock in self-hosted deployments.",
@@ -132,7 +132,7 @@ export const llmApiKeyRouter = createTRPCRouter({
       }
 
       if (input.secretKey === VERTEXAI_USE_DEFAULT_CREDENTIALS) {
-        if (isHanzoCloud || input.adapter !== LLMAdapter.VertexAI) {
+        if (isConsoleCloud || input.adapter !== LLMAdapter.VertexAI) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Default GCP credentials (ADC) are only allowed for Vertex AI in self-hosted deployments.",
@@ -408,10 +408,10 @@ export const llmApiKeyRouter = createTRPCRouter({
       }
 
       // Validate that default credentials sentinel is only allowed for Bedrock/VertexAI in self-hosted deployments
-      const isHanzoCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
+      const isConsoleCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
       if (input.secretKey === BEDROCK_USE_DEFAULT_CREDENTIALS) {
-        if (isHanzoCloud || input.adapter !== LLMAdapter.Bedrock) {
+        if (isConsoleCloud || input.adapter !== LLMAdapter.Bedrock) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Default AWS credentials are only allowed for Bedrock in self-hosted deployments.",
@@ -420,7 +420,7 @@ export const llmApiKeyRouter = createTRPCRouter({
       }
 
       if (input.secretKey === VERTEXAI_USE_DEFAULT_CREDENTIALS) {
-        if (isHanzoCloud || input.adapter !== LLMAdapter.VertexAI) {
+        if (isConsoleCloud || input.adapter !== LLMAdapter.VertexAI) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Default GCP credentials (ADC) are only allowed for Vertex AI in self-hosted deployments.",

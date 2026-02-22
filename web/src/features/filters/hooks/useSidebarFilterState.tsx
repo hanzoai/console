@@ -177,11 +177,7 @@ export interface StringKeyValueUIFilter extends BaseUIFilter {
   onChange: (filters: StringKeyValueFilterEntry[]) => void;
 }
 
-export type PositionInTraceMode =
-  | "root"
-  | "last"
-  | "nthFromStart"
-  | "nthFromEnd";
+export type PositionInTraceMode = "root" | "last" | "nthFromStart" | "nthFromEnd";
 
 export interface PositionInTraceUIFilter extends BaseUIFilter {
   type: "positionInTrace";
@@ -205,21 +201,13 @@ type MutualExclusionContext = {
   facetsByColumn: Map<string, FilterConfig["facets"][number]>;
 };
 
-function buildMutualExclusionContext(
-  config: FilterConfig,
-): MutualExclusionContext {
+function buildMutualExclusionContext(config: FilterConfig): MutualExclusionContext {
   return {
-    facetsByColumn: new Map(
-      config.facets.map((facet) => [facet.column, facet]),
-    ),
+    facetsByColumn: new Map(config.facets.map((facet) => [facet.column, facet])),
   };
 }
 
-function areMutuallyExclusive(
-  firstColumn: string,
-  secondColumn: string,
-  context: MutualExclusionContext,
-): boolean {
+function areMutuallyExclusive(firstColumn: string, secondColumn: string, context: MutualExclusionContext): boolean {
   if (firstColumn === secondColumn) return false;
 
   const firstFacet = context.facetsByColumn.get(firstColumn);
@@ -227,26 +215,18 @@ function areMutuallyExclusive(
 
   if (!firstFacet || !secondFacet) return false;
 
-  const firstBlocksSecond =
-    firstFacet.mutuallyExclusiveWith?.includes(secondColumn) ?? false;
-  const secondBlocksFirst =
-    secondFacet.mutuallyExclusiveWith?.includes(firstColumn) ?? false;
+  const firstBlocksSecond = firstFacet.mutuallyExclusiveWith?.includes(secondColumn) ?? false;
+  const secondBlocksFirst = secondFacet.mutuallyExclusiveWith?.includes(firstColumn) ?? false;
 
   return firstBlocksSecond || secondBlocksFirst;
 }
 
-function reconcileMutuallyExclusiveFilters(
-  filters: FilterState,
-  context: MutualExclusionContext,
-): FilterState {
+function reconcileMutuallyExclusiveFilters(filters: FilterState, context: MutualExclusionContext): FilterState {
   // Last added filter wins: when a conflicting filter is added, drop the older side.
   let reconciled: FilterState = [];
 
   for (const filter of filters) {
-    reconciled = reconciled.filter(
-      (existing) =>
-        !areMutuallyExclusive(existing.column, filter.column, context),
-    );
+    reconciled = reconciled.filter((existing) => !areMutuallyExclusive(existing.column, filter.column, context));
     reconciled.push(filter);
   }
 
@@ -317,10 +297,7 @@ export function useSidebarFilterState(
 
   const [filtersQuery, setFiltersQuery] = useQueryParam("filter", withDefault(StringParam, ""));
 
-  const mutualExclusionContext = useMemo(
-    () => buildMutualExclusionContext(config),
-    [config],
-  );
+  const mutualExclusionContext = useMemo(() => buildMutualExclusionContext(config), [config]);
 
   // TODO: Canonicalize URL when reconciliation drops mutually exclusive filters.
   // Why: links can still contain mutually exclusive filters while the effective in-memory state has one side removed,
@@ -332,20 +309,12 @@ export function useSidebarFilterState(
       decodeAndNormalizeFilters(filtersQuery, config.columnDefinitions),
       mutualExclusionContext,
     );
-  }, [
-    filtersQuery,
-    config.columnDefinitions,
-    disableUrlPersistence,
-    mutualExclusionContext,
-  ]);
+  }, [filtersQuery, config.columnDefinitions, disableUrlPersistence, mutualExclusionContext]);
 
-  const rawFilterState: FilterState = peekContext
-    ? peekContext.tableState.filters
-    : urlFilterState;
+  const rawFilterState: FilterState = peekContext ? peekContext.tableState.filters : urlFilterState;
 
   const filterState: FilterState = useMemo(
-    () =>
-      reconcileMutuallyExclusiveFilters(rawFilterState, mutualExclusionContext),
+    () => reconcileMutuallyExclusiveFilters(rawFilterState, mutualExclusionContext),
     [rawFilterState, mutualExclusionContext],
   );
 
@@ -357,10 +326,7 @@ export function useSidebarFilterState(
     (newFilters: FilterState) => {
       // Keep mutual exclusion reconciliation canonicalized in one place.
       // Any direct writes to peekContext.tableState.filters outside this hook can bypass this guard.
-      const reconciledFilters = reconcileMutuallyExclusiveFilters(
-        newFilters,
-        mutualExclusionContext,
-      );
+      const reconciledFilters = reconcileMutuallyExclusiveFilters(newFilters, mutualExclusionContext);
 
       if (peekContext) {
         peekContext.setTableState({
@@ -382,12 +348,7 @@ export function useSidebarFilterState(
       const encoded = encodeFiltersGeneric(reconciledFilters);
       setFiltersQuery(encoded || null);
     },
-    [
-      setFiltersQuery,
-      disableUrlPersistence,
-      peekContext,
-      mutualExclusionContext,
-    ],
+    [setFiltersQuery, disableUrlPersistence, peekContext, mutualExclusionContext],
   );
 
   // track if defaults have been applied before, versioned to support future changes
@@ -417,31 +378,22 @@ export function useSidebarFilterState(
     }
     // Priority 2: Fallback to legacy environment filter (one-time with localStorage)
     else if (!defaultsApplied) {
-      const environmentFacet = config.facets.find(
-        (f) => f.column === "environment" && f.type === "categorical",
-      );
+      const environmentFacet = config.facets.find((f) => f.column === "environment" && f.type === "categorical");
 
       if (environmentFacet) {
         const environmentOptions = options["environment"];
-        if (
-          Array.isArray(environmentOptions) &&
-          environmentOptions.length > 0
-        ) {
-          const environments = environmentOptions.map((opt) =>
-            typeof opt === "string" ? opt : opt.value,
-          );
+        if (Array.isArray(environmentOptions) && environmentOptions.length > 0) {
+          const environments = environmentOptions.map((opt) => (typeof opt === "string" ? opt : opt.value));
 
-          const langfuseEnvironments = environments.filter((env) =>
-            env.startsWith("langfuse-"),
-          );
+          const consoleEnvironments = environments.filter((env) => env.startsWith("console-"));
 
-          if (langfuseEnvironments.length > 0) {
+          if (consoleEnvironments.length > 0) {
             filtersToApply = [
               {
                 column: "environment",
                 type: "stringOptions",
                 operator: "none of",
-                value: langfuseEnvironments,
+                value: consoleEnvironments,
               },
             ];
           }
@@ -819,16 +771,8 @@ export function useSidebarFilterState(
       // Keep currently active facets interactive so users can adjust or clear.
       if (!isActive) {
         for (const activeColumn of activeFilterColumns) {
-          if (
-            areMutuallyExclusive(
-              facet.column,
-              activeColumn,
-              mutualExclusionContext,
-            )
-          ) {
-            const blockingLabel =
-              mutualExclusionContext.facetsByColumn.get(activeColumn)?.label ??
-              activeColumn;
+          if (areMutuallyExclusive(facet.column, activeColumn, mutualExclusionContext)) {
+            const blockingLabel = mutualExclusionContext.facetsByColumn.get(activeColumn)?.label ?? activeColumn;
             return {
               isDisabled: true,
               reason: `Disabled because "${facet.label}" cannot be used with "${blockingLabel}".`,
@@ -843,19 +787,11 @@ export function useSidebarFilterState(
     return config.facets
       .map((facet): UIFilter | null => {
         if (facet.type === "positionInTrace") {
-          const existing = filterState.find(
-            (f) => f.column === facet.column && f.type === "positionInTrace",
-          );
+          const existing = filterState.find((f) => f.column === facet.column && f.type === "positionInTrace");
           const currentMode: PositionInTraceMode | null =
-            existing && "key" in existing
-              ? (existing.key as PositionInTraceMode)
-              : null;
+            existing && "key" in existing ? (existing.key as PositionInTraceMode) : null;
           const currentNthValue =
-            existing &&
-            "value" in existing &&
-            typeof existing.value === "number"
-              ? existing.value
-              : 1;
+            existing && "value" in existing && typeof existing.value === "number" ? existing.value : 1;
           const isActive = currentMode !== null;
           const disableState = getFacetDisabledState(facet, isActive);
 
@@ -872,14 +808,12 @@ export function useSidebarFilterState(
             disabledReason: disableState.reason,
             onModeChange: (mode: PositionInTraceMode | null) => {
               const withoutPosition = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "positionInTrace"),
+                (f) => !(f.column === facet.column && f.type === "positionInTrace"),
               );
               if (mode === null) {
                 setFilterState(withoutPosition);
               } else {
-                const needsValue =
-                  mode === "nthFromStart" || mode === "nthFromEnd";
+                const needsValue = mode === "nthFromStart" || mode === "nthFromEnd";
                 setFilterState([
                   ...withoutPosition,
                   {
@@ -894,8 +828,7 @@ export function useSidebarFilterState(
             },
             onNthValueChange: (value: number) => {
               const withoutPosition = filterState.filter(
-                (f) =>
-                  !(f.column === facet.column && f.type === "positionInTrace"),
+                (f) => !(f.column === facet.column && f.type === "positionInTrace"),
               );
               const mode = currentMode ?? "nthFromStart";
               setFilterState([
@@ -910,14 +843,7 @@ export function useSidebarFilterState(
               ]);
             },
             onReset: () => {
-              setFilterState(
-                filterState.filter(
-                  (f) =>
-                    !(
-                      f.column === facet.column && f.type === "positionInTrace"
-                    ),
-                ),
-              );
+              setFilterState(filterState.filter((f) => !(f.column === facet.column && f.type === "positionInTrace")));
             },
           };
         }
@@ -925,9 +851,7 @@ export function useSidebarFilterState(
         if (facet.type === "numeric") {
           const currentRange = computeNumericRange(facet.column, filterState, facet.min, facet.max);
           // Check if there are any numeric filters for this column
-          const isActive = filterState.some(
-            (f) => f.column === facet.column && f.type === "number",
-          );
+          const isActive = filterState.some((f) => f.column === facet.column && f.type === "number");
           const disableState = getFacetDisabledState(facet, isActive);
           return {
             type: "numeric",
@@ -945,10 +869,8 @@ export function useSidebarFilterState(
             isActive,
             isDisabled: disableState.isDisabled,
             disabledReason: disableState.reason,
-            onChange: (value: [number, number]) =>
-              updateNumericFilter(facet.column, value, facet.min, facet.max),
-            onReset: () =>
-              updateNumericFilter(facet.column, null, facet.min, facet.max),
+            onChange: (value: [number, number]) => updateNumericFilter(facet.column, value, facet.min, facet.max),
+            onReset: () => updateNumericFilter(facet.column, null, facet.min, facet.max),
           };
         }
 
@@ -972,8 +894,7 @@ export function useSidebarFilterState(
             isActive,
             isDisabled: disableState.isDisabled,
             disabledReason: disableState.reason,
-            onChange: (value: string) =>
-              updateStringFilter(facet.column, value),
+            onChange: (value: string) => updateStringFilter(facet.column, value),
             onReset: () => updateStringFilter(facet.column, ""),
           };
         }
@@ -1370,8 +1291,7 @@ export function useSidebarFilterState(
           isActive,
           isDisabled: disableState.isDisabled,
           disabledReason: disableState.reason,
-          renderIcon:
-            facet.type === "categorical" ? facet.renderIcon : undefined,
+          renderIcon: facet.type === "categorical" ? facet.renderIcon : undefined,
           onChange: (values: string[]) => updateFilter(facet.column, values),
           onOnlyChange: (value: string) => {
             if (selectedValues.length === 1 && selectedValues.includes(value)) {

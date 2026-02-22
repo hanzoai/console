@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
@@ -57,7 +57,7 @@ export function AnnotationQueuesTable({ projectId }: { projectId: string }) {
     scope: "annotationQueues:CUD",
   });
 
-  const columns: HanzoColumnDef<RowData>[] = [
+  const columns: ConsoleColumnDef<RowData>[] = [
     {
       accessorKey: "key",
       header: "Name",

@@ -1,4 +1,4 @@
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { type FilterState, type ColumnDefinition, type OrderByState } from "@hanzo/shared";
 import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-transform";
 
@@ -7,7 +7,7 @@ import { normalizeFilterColumnNames } from "@/src/features/filters/lib/filter-tr
  */
 export function validateOrderBy(
   orderBy: OrderByState | null,
-  columns?: HanzoColumnDef<any, any>[],
+  columns?: ConsoleColumnDef<any, any>[],
 ): OrderByState | null {
   if (!orderBy || !columns || columns.length === 0) return null;
 

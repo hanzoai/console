@@ -2,17 +2,13 @@ import React, { useState } from "react";
 import { useRowHeightLocalStorage } from "@/src/components/table/data-table-row-height-switch";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
 import { api } from "@/src/utils/api";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTable } from "@/src/components/table/data-table";
 import { type ScoreConfigDataType, type Prisma, type ScoreConfigCategoryDomain } from "@hanzo/shared";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { usePaginationState } from "@/src/hooks/usePaginationState";
-import {
-  isBooleanDataType,
-  isCategoricalDataType,
-  isNumericDataType,
-} from "@/src/features/scores/lib/helpers";
+import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";
 import { Edit, MoreVertical } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import useColumnOrder from "@/src/features/column-visibility/hooks/useColumnOrder";
@@ -96,7 +92,7 @@ export function ScoreConfigsTable({ projectId }: { projectId: string }) {
 
   const totalCount = configs.data?.totalCount ?? null;
 
-  const columns: HanzoColumnDef<ScoreConfigTableRow>[] = [
+  const columns: ConsoleColumnDef<ScoreConfigTableRow>[] = [
     {
       accessorKey: "name",
       id: "name",

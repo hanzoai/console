@@ -8,7 +8,7 @@ import {
   DeleteDatasetItemV1Response,
   transformDbDatasetItemDomainToAPIDatasetItem,
 } from "@/src/features/public-api/types/datasets";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 import { auditLog } from "@/src/features/audit-logs/auditLog";
 import { deleteDatasetItem, getDatasetItemById } from "@hanzo/shared/src/server";
 
@@ -26,7 +26,7 @@ export default withMiddlewares({
         datasetItemId: datasetItemId,
       });
       if (!datasetItem) {
-        throw new HanzoNotFoundError("Dataset item not found");
+        throw new ConsoleNotFoundError("Dataset item not found");
       }
 
       const dataset = await prisma.dataset.findUnique({
@@ -43,7 +43,7 @@ export default withMiddlewares({
 
       // Note that we cascade items on delete, so returning a 404 here is expected
       if (!dataset) {
-        throw new HanzoNotFoundError("Dataset item not found");
+        throw new ConsoleNotFoundError("Dataset item not found");
       }
 
       return transformDbDatasetItemDomainToAPIDatasetItem({

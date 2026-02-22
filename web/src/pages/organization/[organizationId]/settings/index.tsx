@@ -34,7 +34,7 @@ export function useOrganizationSettingsPages(): OrganizationSettingsPage[] {
   const showOrgApiKeySettings = useHasEntitlement("admin-api");
   const showAuditLogs = useHasEntitlement("audit-logs");
   const plan = usePlan();
-  const isHanzoCloud = isCloudPlan(plan) ?? false;
+  const isConsoleCloud = isCloudPlan(plan) ?? false;
   const isCloudBillingAvailable = useIsCloudBillingAvailable();
 
   if (!organization) return [];
@@ -44,7 +44,7 @@ export function useOrganizationSettingsPages(): OrganizationSettingsPage[] {
     showBillingSettings: showBillingSettings && isCloudBillingAvailable,
     showOrgApiKeySettings,
     showAuditLogs,
-    isHanzoCloud,
+    isConsoleCloud,
   });
 }
 
@@ -53,13 +53,13 @@ export const getOrganizationSettingsPages = ({
   showBillingSettings,
   showOrgApiKeySettings,
   showAuditLogs,
-  isHanzoCloud,
+  isConsoleCloud,
 }: {
   organization: { id: string; name: string; metadata: Record<string, unknown> };
   showBillingSettings: boolean;
   showOrgApiKeySettings: boolean;
   showAuditLogs: boolean;
-  isHanzoCloud: boolean;
+  isConsoleCloud: boolean;
 }): OrganizationSettingsPage[] => [
   {
     title: "General",
@@ -140,7 +140,7 @@ export const getOrganizationSettingsPages = ({
     slug: "sso",
     cmdKKeywords: ["sso", "login", "auth", "okta", "saml", "azure"],
     content: <SSOSettings />,
-    show: isHanzoCloud,
+    show: isConsoleCloud,
   },
   {
     title: "KMS",

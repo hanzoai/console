@@ -15,7 +15,7 @@ import { SpendAlertDialog } from "./SpendAlertDialog";
 import { DeleteSpendAlertDialog } from "./DeleteSpendAlertDialog";
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { usdFormatter } from "@/src/utils/numbers";
 
 interface SpendAlertsTableProps {
@@ -67,7 +67,7 @@ export function SpendAlertsTable({ orgId }: SpendAlertsTableProps) {
     return { isLoading: false, isError: false, data: rows } as const;
   }, [isLoading, isError, rows]);
 
-  const columns: HanzoColumnDef<AlertRow>[] = [
+  const columns: ConsoleColumnDef<AlertRow>[] = [
     {
       accessorKey: "title",
       id: "title",

@@ -1,5 +1,5 @@
 import { DataTable } from "@/src/components/table/data-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { safeExtract } from "@/src/utils/map-utils";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
@@ -38,7 +38,7 @@ export function BatchActionsTable(props: { projectId: string }) {
     page: paginationState.pageIndex,
   });
 
-  const columns: HanzoColumnDef<BatchActionRow>[] = [
+  const columns: ConsoleColumnDef<BatchActionRow>[] = [
     {
       accessorKey: "actionType",
       id: "actionType",

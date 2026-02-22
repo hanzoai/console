@@ -1,4 +1,4 @@
-import { HanzoNotFoundError } from "../../errors";
+import { ConsoleNotFoundError } from "../../errors";
 import { eventTypes } from "../ingestion/types";
 import { ClickhouseTableName, ClickhouseTableNames } from "./schema";
 
@@ -36,6 +36,6 @@ export const getClickhouseEntityType = (eventType: string): IngestionEntityTypes
     case eventTypes.SDK_LOG:
       return "sdk_log";
     default:
-      throw new HanzoNotFoundError(`Unknown event type: ${eventType}`);
+      throw new ConsoleNotFoundError(`Unknown event type: ${eventType}`);
   }
 };

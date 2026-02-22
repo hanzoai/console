@@ -1,12 +1,5 @@
 import type React from "react";
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { useMediaQuery } from "react-responsive";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { cn } from "@/src/utils/tailwind";
@@ -16,11 +9,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Button } from "@/src/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/src/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { Slider } from "@/src/components/ui/slider";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -35,14 +24,10 @@ import type {
   PositionInTraceMode,
 } from "@/src/features/filters/hooks/useSidebarFilterState";
 import { KeyValueFilterBuilder } from "@/src/components/table/key-value-filter-builder";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { DataTableAIFilters } from "@/src/components/table/data-table-ai-filters";
 import { type FilterState } from "@hanzo/shared";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
 interface ControlsContextType {
   open: boolean;
@@ -62,9 +47,7 @@ export function DataTableControlsProvider({
   defaultSidebarCollapsed?: boolean;
 }) {
   const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
-  const storageKey = tableName
-    ? `data-table-controls-${tableName}`
-    : "data-table-controls";
+  const storageKey = tableName ? `data-table-controls-${tableName}` : "data-table-controls";
   const defaultOpen = isDesktop ? !defaultSidebarCollapsed : false;
   const [open, setOpen] = useSessionStorage(storageKey, defaultOpen);
 
@@ -106,11 +89,8 @@ interface DataTableControlsProps {
   filterWithAI?: boolean;
 }
 
-export function DataTableControls({
-  queryFilter,
-  filterWithAI,
-}: DataTableControlsProps) {
-  const { isHanzoCloud } = useHanzoCloudRegion();
+export function DataTableControls({ queryFilter, filterWithAI }: DataTableControlsProps) {
+  const { isConsoleCloud } = useConsoleCloudRegion();
   const [aiPopoverOpen, setAiPopoverOpen] = useState(false);
 
   const handleFiltersGenerated = useCallback(
@@ -123,9 +103,7 @@ export function DataTableControls({
 
       // Get current expanded state and merge with new columns
       const currentExpanded = queryFilter.expanded;
-      const newExpanded = Array.from(
-        new Set([...currentExpanded, ...columnsToExpand]),
-      );
+      const newExpanded = Array.from(new Set([...currentExpanded, ...columnsToExpand]));
       queryFilter.onExpandedChange(newExpanded);
 
       // Close popover
@@ -147,19 +125,14 @@ export function DataTableControls({
           {queryFilter.isFiltered && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => queryFilter.clearAll()}
-                  className="h-7 px-2 text-xs"
-                >
+                <Button variant="ghost" size="sm" onClick={() => queryFilter.clearAll()} className="h-7 px-2 text-xs">
                   Clear all
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Clear all filters</TooltipContent>
             </Tooltip>
           )}
-          {filterWithAI && isHanzoCloud && (
+          {filterWithAI && isConsoleCloud && (
             <Popover open={aiPopoverOpen} onOpenChange={setAiPopoverOpen}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -172,9 +145,7 @@ export function DataTableControls({
                 <TooltipContent>Filter with AI</TooltipContent>
               </Tooltip>
               <PopoverContent align="center" className="w-[400px]">
-                <DataTableAIFilters
-                  onFiltersGenerated={handleFiltersGenerated}
-                />
+                <DataTableAIFilters onFiltersGenerated={handleFiltersGenerated} />
               </PopoverContent>
             </Popover>
           )}
@@ -374,14 +345,8 @@ interface CategoricalFacetProps extends BaseFacetProps {
   operator?: "any of" | "all of";
   onOperatorChange?: (operator: "any of" | "all of") => void;
   textFilters?: TextFilterEntry[];
-  onTextFilterAdd?: (
-    operator: "contains" | "does not contain",
-    value: string,
-  ) => void;
-  onTextFilterRemove?: (
-    operator: "contains" | "does not contain",
-    value: string,
-  ) => void;
+  onTextFilterAdd?: (operator: "contains" | "does not contain", value: string) => void;
+  onTextFilterRemove?: (operator: "contains" | "does not contain", value: string) => void;
 }
 
 interface NumericFacetProps extends BaseFacetProps {
@@ -480,8 +445,7 @@ export function FilterAccordionItem({
       <FilterAccordionTrigger
         className={cn(
           "px-3 py-1.5 text-sm font-normal text-muted-foreground hover:text-foreground hover:no-underline",
-          isDisabled &&
-            "cursor-not-allowed text-muted-foreground/60 hover:text-muted-foreground/60",
+          isDisabled && "cursor-not-allowed text-muted-foreground/60 hover:text-muted-foreground/60",
         )}
       >
         <div className="flex grow items-center gap-1.5 pr-2">
@@ -491,15 +455,11 @@ export function FilterAccordionItem({
                 <span className="flex grow items-baseline gap-1">
                   {label}
                   {filterKeyShort && (
-                    <code className="hidden font-mono text-xs text-muted-foreground/70">
-                      {filterKeyShort}
-                    </code>
+                    <code className="hidden font-mono text-xs text-muted-foreground/70">{filterKeyShort}</code>
                   )}
                 </span>
               </TooltipTrigger>
-              <TooltipContent className="max-w-80 text-xs">
-                {disabledReason}
-              </TooltipContent>
+              <TooltipContent className="max-w-80 text-xs">{disabledReason}</TooltipContent>
             </Tooltip>
           ) : tooltip ? (
             <Tooltip delayDuration={80}>
@@ -508,23 +468,17 @@ export function FilterAccordionItem({
                   {label}
                   <InfoIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
                   {filterKeyShort && (
-                    <code className="hidden font-mono text-xs text-muted-foreground/70">
-                      {filterKeyShort}
-                    </code>
+                    <code className="hidden font-mono text-xs text-muted-foreground/70">{filterKeyShort}</code>
                   )}
                 </span>
               </TooltipTrigger>
-              <TooltipContent className="max-w-80 text-xs">
-                {tooltip}
-              </TooltipContent>
+              <TooltipContent className="max-w-80 text-xs">{tooltip}</TooltipContent>
             </Tooltip>
           ) : (
             <span className="flex grow items-baseline gap-1">
               {label}
               {filterKeyShort && (
-                <code className="hidden font-mono text-xs text-muted-foreground/70">
-                  {filterKeyShort}
-                </code>
+                <code className="hidden font-mono text-xs text-muted-foreground/70">{filterKeyShort}</code>
               )}
             </span>
           )}
@@ -555,10 +509,7 @@ export function FilterAccordionItem({
       <FilterAccordionContent className="pb-2">
         <fieldset
           disabled={isDisabled}
-          className={cn(
-            "m-0 min-w-0 border-0 p-0",
-            isDisabled && "pointer-events-none opacity-60",
-          )}
+          className={cn("m-0 min-w-0 border-0 p-0", isDisabled && "pointer-events-none opacity-60")}
         >
           {children}
         </fieldset>
@@ -623,15 +574,11 @@ export function CategoricalFacet({
 
   // Filter options by search query
   const filteredOptions = searchQuery
-    ? options.filter((option) =>
-        option.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+    ? options.filter((option) => option.toLowerCase().includes(searchQuery.toLowerCase()))
     : options;
 
   const hasMoreFilteredOptions = filteredOptions.length > MAX_VISIBLE_OPTIONS;
-  const visibleOptions = showAll
-    ? filteredOptions
-    : filteredOptions.slice(0, MAX_VISIBLE_OPTIONS);
+  const visibleOptions = showAll ? filteredOptions : filteredOptions.slice(0, MAX_VISIBLE_OPTIONS);
 
   return (
     <FilterAccordionItem
@@ -646,9 +593,7 @@ export function CategoricalFacet({
     >
       <div className="flex flex-col">
         {/* Tab switcher - only show when text filtering is supported */}
-        {onTextFilterAdd && (
-          <FilterModeTabs mode={filterMode} onModeChange={handleModeChange} />
-        )}
+        {onTextFilterAdd && <FilterModeTabs mode={filterMode} onModeChange={handleModeChange} />}
 
         {/* SELECT MODE: Checkboxes with optional counts */}
         {filterMode === "select" && (
@@ -671,9 +616,7 @@ export function CategoricalFacet({
             */}
             {onOperatorChange && value.length > 0 && (
               <div className="mb-1.5 flex items-center gap-1.5 px-2">
-                <span className="text-[10px] text-muted-foreground/80">
-                  Match:
-                </span>
+                <span className="text-[10px] text-muted-foreground/80">Match:</span>
                 <div className="inline-flex rounded border border-input/50 bg-background text-[10px]">
                   <button
                     onClick={() => onOperatorChange("any of")}
@@ -721,8 +664,7 @@ export function CategoricalFacet({
               <div className="py-1 text-xs text-muted-foreground">
                 {filterKey === "sessionId" ? (
                   <span>
-                    Sessions group traces together, which is useful for tracing
-                    multi-step workflows.{" "}
+                    Sessions group traces together, which is useful for tracing multi-step workflows.{" "}
                     <a
                       href="https://hanzo.com/docs/observability/features/sessions"
                       target="_blank"
@@ -737,8 +679,7 @@ export function CategoricalFacet({
                   <span>No trace names found in the given time range.</span>
                 ) : filterKey === "tags" ? (
                   <span>
-                    Tags let you filter traces according to custom categories
-                    (e.g. feature flags).{" "}
+                    Tags let you filter traces according to custom categories (e.g. feature flags).{" "}
                     <a
                       href="https://hanzo.com/docs/observability/features/tags"
                       target="_blank"
@@ -772,9 +713,7 @@ export function CategoricalFacet({
 
                 {/* Checkbox list */}
                 {filteredOptions.length === 0 ? (
-                  <div className="py-1 text-center text-sm text-muted-foreground">
-                    No matches found
-                  </div>
+                  <div className="py-1 text-center text-sm text-muted-foreground">No matches found</div>
                 ) : (
                   <>
                     {visibleOptions.map((option: string) => (
@@ -786,14 +725,10 @@ export function CategoricalFacet({
                         count={counts.get(option) || 0}
                         checked={value.includes(option)}
                         onCheckedChange={(checked) => {
-                          const newValues = checked
-                            ? [...value, option]
-                            : value.filter((v: string) => v !== option);
+                          const newValues = checked ? [...value, option] : value.filter((v: string) => v !== option);
                           onChange(newValues);
                         }}
-                        onLabelClick={
-                          onOnlyChange ? () => onOnlyChange(option) : undefined
-                        }
+                        onLabelClick={onOnlyChange ? () => onOnlyChange(option) : undefined}
                         totalSelected={value.length}
                       />
                     ))}
@@ -811,12 +746,9 @@ export function CategoricalFacet({
                     )}
                   </>
                 )}
-                {filterKey === "environment" &&
-                options.length === 1 &&
-                options[0]?.toLowerCase() === "default" ? (
+                {filterKey === "environment" && options.length === 1 && options[0]?.toLowerCase() === "default" ? (
                   <div className="mt-2 px-2 text-xs text-muted-foreground">
-                    Environments help you separate traces from different
-                    contexts (e.g. production, staging).{" "}
+                    Environments help you separate traces from different contexts (e.g. production, staging).{" "}
                     <a
                       href="https://hanzo.com/docs/observability/features/environments"
                       target="_blank"
@@ -836,11 +768,7 @@ export function CategoricalFacet({
         {/* TEXT MODE: Contains/Does Not Contain filters */}
         {filterMode === "text" && onTextFilterAdd && (
           <div className="px-2 py-1">
-            <TextFilterSection
-              allFilters={textFilters ?? []}
-              onAdd={onTextFilterAdd}
-              onRemove={onTextFilterRemove}
-            />
+            <TextFilterSection allFilters={textFilters ?? []} onAdd={onTextFilterAdd} onRemove={onTextFilterRemove} />
           </div>
         )}
       </div>
@@ -949,10 +877,7 @@ export function NumericFacet({
           <div className="grid gap-4">
             <div className="flex items-center gap-4">
               <div className="grid w-full gap-1.5">
-                <Label
-                  htmlFor={`min-${filterKey}`}
-                  className="text-xs text-muted-foreground"
-                >
+                <Label htmlFor={`min-${filterKey}`} className="text-xs text-muted-foreground">
                   Min.
                 </Label>
                 <div className="flex items-center gap-1">
@@ -966,18 +891,11 @@ export function NumericFacet({
                     onChange={handleMinInputChange}
                     className="h-8"
                   />
-                  {unit && (
-                    <span className="text-xs text-muted-foreground">
-                      {unit}
-                    </span>
-                  )}
+                  {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
                 </div>
               </div>
               <div className="grid w-full gap-1.5">
-                <Label
-                  htmlFor={`max-${filterKey}`}
-                  className="text-xs text-muted-foreground"
-                >
+                <Label htmlFor={`max-${filterKey}`} className="text-xs text-muted-foreground">
                   Max.
                 </Label>
                 <div className="flex items-center gap-1">
@@ -991,11 +909,7 @@ export function NumericFacet({
                     onChange={handleMaxInputChange}
                     className="h-8"
                   />
-                  {unit && (
-                    <span className="text-xs text-muted-foreground">
-                      {unit}
-                    </span>
-                  )}
+                  {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
                 </div>
               </div>
             </div>
@@ -1119,9 +1033,7 @@ export function KeyValueFacet({
       onReset={onReset}
     >
       {loading ? (
-        <div className="px-4 py-2 text-sm text-muted-foreground">
-          Loading...
-        </div>
+        <div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>
       ) : (
         <KeyValueFilterBuilder
           mode="categorical"
@@ -1164,9 +1076,7 @@ export function NumericKeyValueFacet({
       onReset={onReset}
     >
       {loading ? (
-        <div className="px-4 py-2 text-sm text-muted-foreground">
-          Loading...
-        </div>
+        <div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>
       ) : (
         <KeyValueFilterBuilder
           mode="numeric"
@@ -1208,9 +1118,7 @@ export function StringKeyValueFacet({
       onReset={onReset}
     >
       {loading ? (
-        <div className="px-4 py-2 text-sm text-muted-foreground">
-          Loading...
-        </div>
+        <div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>
       ) : (
         <KeyValueFilterBuilder
           mode="string"
@@ -1293,10 +1201,7 @@ function PositionInTraceFacetComponent({
             </div>
             {showNthInput && (
               <div className="flex items-center gap-2">
-                <Label
-                  htmlFor={`nth-${filterKey}`}
-                  className="text-xs text-muted-foreground"
-                >
+                <Label htmlFor={`nth-${filterKey}`} className="text-xs text-muted-foreground">
                   Position:
                 </Label>
                 <Input
@@ -1371,9 +1276,7 @@ function TextFilterSection({
   onRemove?: (op: "contains" | "does not contain", val: string) => void;
 }) {
   const [inputValue, setInputValue] = useState("");
-  const [selectedOperator, setSelectedOperator] = useState<
-    "contains" | "does not contain"
-  >("contains");
+  const [selectedOperator, setSelectedOperator] = useState<"contains" | "does not contain">("contains");
 
   const handleAdd = () => {
     // people have filtered for a single " ", e.g. does not contain " " on sessionID to get all traces with a session id
@@ -1450,10 +1353,7 @@ function TextFilterSection({
               <span className="shrink-0 text-[10px] font-medium text-muted-foreground">
                 {f.operator === "contains" ? "contains" : "does not contain"}
               </span>
-              <span
-                className="min-w-0 flex-1 truncate font-medium"
-                title={f.value}
-              >
+              <span className="min-w-0 flex-1 truncate font-medium" title={f.value}>
                 {f.value}
               </span>
               <Button
@@ -1503,12 +1403,7 @@ export function FilterValueCheckbox({
   const displayTitle = label === "" ? "(empty)" : label;
 
   return (
-    <div
-      className={cn(
-        "relative flex items-center px-2",
-        disabled && "cursor-not-allowed opacity-50",
-      )}
-    >
+    <div className={cn("relative flex items-center px-2", disabled && "cursor-not-allowed opacity-50")}>
       {/* Checkbox hover area */}
       <div className="group/checkbox flex items-center rounded-sm p-1 transition-colors hover:bg-accent">
         <Checkbox
@@ -1530,10 +1425,7 @@ export function FilterValueCheckbox({
       >
         {icon ? <span className="mr-2">{icon}</span> : null}
         <span
-          className={cn(
-            "min-w-0 flex-1 truncate text-xs",
-            label === "" && "italic text-muted-foreground",
-          )}
+          className={cn("min-w-0 flex-1 truncate text-xs", label === "" && "italic text-muted-foreground")}
           title={displayTitle}
         >
           {displayLabel}
@@ -1541,9 +1433,7 @@ export function FilterValueCheckbox({
 
         {/* "Only" or "All" indicator when hovering label */}
         {onLabelClick && !disabled && (
-          <span className="hidden pl-1 text-xs text-muted-foreground group-hover/label:block">
-            {labelText}
-          </span>
+          <span className="hidden pl-1 text-xs text-muted-foreground group-hover/label:block">{labelText}</span>
         )}
 
         {count > 0 ? (
@@ -1556,13 +1446,7 @@ export function FilterValueCheckbox({
   );
 }
 
-export function DataTableControlsSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+export function DataTableControlsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium text-foreground">{title}</h3>

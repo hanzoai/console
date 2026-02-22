@@ -2,7 +2,7 @@ import { Dataset, DatasetItem, DatasetStatus, prisma, Prisma } from "../../db";
 import type { FilterState } from "../../types";
 import { tableColumnsToSqlFilterAndPrefix } from "../filterToPrisma";
 import { datasetItemsFilterCols } from "./dataset-items-columns";
-import { InternalServerError, InvalidRequestError, HanzoNotFoundError } from "../../errors";
+import { InternalServerError, InvalidRequestError, ConsoleNotFoundError } from "../../errors";
 import { DatasetItemValidator } from "../services/DatasetService";
 import {
   executeWithDatasetServiceStrategy,
@@ -12,10 +12,7 @@ import {
 import { v4 } from "uuid";
 import { FieldValidationError } from "../../utils/jsonSchemaValidation";
 import { DatasetItemDomain, DatasetItemDomainWithoutIO } from "../../domain";
-import {
-  parseClickhouseUTCDateTimeFormat,
-  queryClickhouse,
-} from "./clickhouse";
+import { parseClickhouseUTCDateTimeFormat, queryClickhouse } from "./clickhouse";
 
 const emptyNormalizeOpts: { sanitizeControlChars?: boolean } = {};
 const emptyValidateOpts: { normalizeUndefinedToNull?: boolean } = {};
@@ -57,7 +54,7 @@ async function getDatasets(props: {
   });
 
   if (datasets.length !== props.datasetIds.length)
-    throw new HanzoNotFoundError(`One or more datasets not found for project ${props.projectId}`);
+    throw new ConsoleNotFoundError(`One or more datasets not found for project ${props.projectId}`);
 
   return datasets;
 }
@@ -89,7 +86,7 @@ async function getDatasetByName(props: {
     },
   });
   if (!dataset) {
-    throw new HanzoNotFoundError(`Dataset ${props.datasetName} not found for project ${props.projectId}`);
+    throw new ConsoleNotFoundError(`Dataset ${props.datasetName} not found for project ${props.projectId}`);
   }
   return dataset;
 }
@@ -267,7 +264,7 @@ export async function upsertDatasetItem(
       datasetItemId: props.datasetItemId,
     });
     if (!!existingItem && existingItem.datasetId !== dataset.id) {
-      throw new HanzoNotFoundError(
+      throw new ConsoleNotFoundError(
         `Dataset item with id ${props.datasetItemId} not found for project ${props.projectId}`,
       );
     }
@@ -381,7 +378,7 @@ export async function upsertDatasetItem(
 /**
  * Deletes a dataset item by ID.
  *
- * @throws HanzoNotFoundError if item doesn't exist
+ * @throws ConsoleNotFoundError if item doesn't exist
  */
 export async function deleteDatasetItem(props: {
   projectId: string;
@@ -395,7 +392,7 @@ export async function deleteDatasetItem(props: {
   });
 
   if (!item) {
-    throw new HanzoNotFoundError(
+    throw new ConsoleNotFoundError(
       `Dataset item with id ${props.datasetItemId} not found for project ${props.projectId}`,
     );
   }
@@ -1604,8 +1601,7 @@ export async function getDatasetVersionForRun(params: {
       });
 
       const maxCreatedAt = maxCreatedAtResult[0]?.max_created_at ?? null;
-      const maxDatasetItemVersion =
-        maxCreatedAtResult[0]?.max_dataset_item_version ?? null;
+      const maxDatasetItemVersion = maxCreatedAtResult[0]?.max_dataset_item_version ?? null;
 
       if (maxDatasetItemVersion) {
         return parseClickhouseUTCDateTimeFormat(maxDatasetItemVersion);

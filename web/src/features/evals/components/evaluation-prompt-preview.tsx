@@ -1,4 +1,4 @@
-import { ItemBadge, type LangfuseItemType } from "@/src/components/ItemBadge";
+import { ItemBadge, type ConsoleItemType } from "@/src/components/ItemBadge";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useExtractVariables } from "@/src/features/evals/hooks/useExtractVariables";
 import { type VariableMapping } from "@/src/features/evals/utils/evaluator-form-utils";
@@ -222,16 +222,8 @@ export const EvaluationPromptPreview = ({
         <div className="flex flex-row items-center gap-2">
           Evaluation Prompt Preview
           {targetLink && (
-            <Link
-              href={targetLink.href}
-              className="hover:cursor-pointer"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ItemBadge
-                type={targetLink.badgeType as LangfuseItemType}
-                showLabel
-              />
+            <Link href={targetLink.href} className="hover:cursor-pointer" target="_blank" rel="noopener noreferrer">
+              <ItemBadge type={targetLink.badgeType as ConsoleItemType} showLabel />
             </Link>
           )}
         </div>

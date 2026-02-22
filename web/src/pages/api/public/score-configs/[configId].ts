@@ -7,7 +7,12 @@ import {
   PutScoreConfigQuery as PatchScoreConfigQuery,
   PutScoreConfigResponse as PatchScoreConfigResponse,
 } from "@/src/features/public-api/types/score-configs";
-import { InternalServerError, InvalidRequestError, HanzoNotFoundError, validateDbScoreConfigSafe } from "@hanzo/shared";
+import {
+  InternalServerError,
+  InvalidRequestError,
+  ConsoleNotFoundError,
+  validateDbScoreConfigSafe,
+} from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import { traceException } from "@hanzo/shared/src/server";
 
@@ -25,7 +30,7 @@ export default withMiddlewares({
       });
 
       if (!config) {
-        throw new HanzoNotFoundError("Score config not found within authorized project");
+        throw new ConsoleNotFoundError("Score config not found within authorized project");
       }
 
       const parsedConfig = validateDbScoreConfigSafe(config);
@@ -51,7 +56,7 @@ export default withMiddlewares({
       });
 
       if (!existingConfig) {
-        throw new HanzoNotFoundError("Score config not found within authorized project");
+        throw new ConsoleNotFoundError("Score config not found within authorized project");
       }
 
       // Merge the body with the existing config and verify schema compliance

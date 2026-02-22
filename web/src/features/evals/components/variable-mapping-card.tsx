@@ -1,10 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import {
   type availableDatasetEvalVariables,
   type availableTraceEvalVariables,
@@ -15,16 +9,10 @@ import { Card } from "@/src/components/ui/card";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { cn } from "@/src/utils/tailwind";
-import {
-  type EvalFormType,
-  fieldHasJsonSelectorOption,
-} from "@/src/features/evals/utils/evaluator-form-utils";
+import { type EvalFormType, fieldHasJsonSelectorOption } from "@/src/features/evals/utils/evaluator-form-utils";
 import { EvalTargetObject } from "@hanzo/shared";
 import { VariableMappingDescription } from "@/src/features/evals/components/eval-form-descriptions";
-import {
-  EvaluationPromptPreview,
-  getVariableColor,
-} from "@/src/features/evals/components/evaluation-prompt-preview";
+import { EvaluationPromptPreview, getVariableColor } from "@/src/features/evals/components/evaluation-prompt-preview";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import {
   isEventTarget,
@@ -33,13 +21,7 @@ import {
   isTraceOrDatasetObject,
   isTraceOrEventTarget,
 } from "@/src/features/evals/utils/typeHelpers";
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/src/components/ui/form";
+import { FormControl, FormDescription, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
 import { Input } from "@/src/components/ui/input";
 import { Switch } from "@/src/components/ui/switch";
@@ -58,9 +40,7 @@ export const VariableMappingCard = ({
   hideAdvancedSettings = false,
 }: {
   projectId: string;
-  availableVariables:
-    | typeof availableTraceEvalVariables
-    | typeof availableDatasetEvalVariables;
+  availableVariables: typeof availableTraceEvalVariables | typeof availableDatasetEvalVariables;
   evalTemplate: EvalTemplate;
   form: UseFormReturn<EvalFormType>;
   oldConfigId?: string;
@@ -75,11 +55,7 @@ export const VariableMappingCard = ({
     name: "mapping",
   });
 
-  const { namesByObject, isLoading, previewData } = useEvalConfigMappingData(
-    projectId,
-    form,
-    disabled,
-  );
+  const { namesByObject, isLoading, previewData } = useEvalConfigMappingData(projectId, form, disabled);
 
   useEffect(() => {
     if (isTraceOrEventTarget(form.getValues("target")) && !disabled) {
@@ -96,24 +72,14 @@ export const VariableMappingCard = ({
       {isTraceOrEventTarget(form.watch("target")) && !disabled && (
         <>
           <span className="text-xs text-muted-foreground">Preview</span>
-          <Switch
-            checked={showPreview}
-            onCheckedChange={setShowPreview}
-            disabled={disabled}
-          />
+          <Switch checked={showPreview} onCheckedChange={setShowPreview} disabled={disabled} />
           {showPreview &&
             (previewData ? (
               <DetailPageNav
                 currentId={
-                  previewData.type === EvalTargetObject.EVENT
-                    ? previewData.observationId
-                    : previewData.traceId
+                  previewData.type === EvalTargetObject.EVENT ? previewData.observationId : previewData.traceId
                 }
-                listKey={
-                  isEventTarget(form.watch("target"))
-                    ? "observations"
-                    : "traces"
-                }
+                listKey={isEventTarget(form.watch("target")) ? "observations" : "traces"}
                 path={(entry) => {
                   const isEvent = isEventTarget(form.watch("target"));
                   const basePath = hideAdvancedSettings
@@ -146,8 +112,8 @@ export const VariableMappingCard = ({
       </div>
       {isTraceTarget(form.watch("target")) && !disabled && (
         <FormDescription>
-          Preview of the evaluation prompt with the variables replaced with the
-          first matched trace data subject to the filters.
+          Preview of the evaluation prompt with the variables replaced with the first matched trace data subject to the
+          filters.
         </FormDescription>
       )}
       <div className="flex max-w-full flex-col gap-4">
@@ -156,12 +122,7 @@ export const VariableMappingCard = ({
           name="mapping"
           render={() => (
             <>
-              <div
-                className={cn(
-                  "my-2 flex max-w-full flex-col gap-2",
-                  !shouldWrapVariables && "lg:flex-row",
-                )}
-              >
+              <div className={cn("my-2 flex max-w-full flex-col gap-2", !shouldWrapVariables && "lg:flex-row")}>
                 {showPreview ? (
                   previewData ? (
                     <EvaluationPromptPreview
@@ -170,10 +131,7 @@ export const VariableMappingCard = ({
                       evalTemplate={evalTemplate}
                       variableMapping={form.watch("mapping")}
                       isLoading={isLoading}
-                      className={cn(
-                        "min-h-48 bg-muted/50",
-                        !shouldWrapVariables && "lg:w-2/3",
-                      )}
+                      className={cn("min-h-48 bg-muted/50", !shouldWrapVariables && "lg:w-2/3")}
                       controlButtons={mappingControlButtons}
                     />
                   ) : (
@@ -183,14 +141,11 @@ export const VariableMappingCard = ({
                           Evaluation Prompt Preview
                           <Skeleton className="h-[25px] w-[63px]" />
                         </div>
-                        <div className="flex justify-end">
-                          {mappingControlButtons}
-                        </div>
+                        <div className="flex justify-end">{mappingControlButtons}</div>
                       </div>
                       <div className="flex h-full w-full flex-1 items-center justify-center rounded border">
                         <p className="text-center text-sm text-muted-foreground">
-                          No trace data found, please adjust filters or switch
-                          to not show preview.
+                          No trace data found, please adjust filters or switch to not show preview.
                         </p>
                       </div>
                     </div>
@@ -199,56 +154,35 @@ export const VariableMappingCard = ({
                   <JSONView
                     title={"Evaluation Prompt"}
                     json={evalTemplate.prompt ?? null}
-                    className={cn(
-                      "min-h-48 bg-muted/50",
-                      !shouldWrapVariables && "lg:w-2/3",
-                    )}
+                    className={cn("min-h-48 bg-muted/50", !shouldWrapVariables && "lg:w-2/3")}
                     codeClassName="flex-1"
                     collapseStringsAfterLength={null}
                     controlButtons={mappingControlButtons}
                   />
                 )}
-                <div
-                  className={cn(
-                    "flex flex-col gap-2",
-                    !shouldWrapVariables && "lg:w-1/3",
-                  )}
-                >
+                <div className={cn("flex flex-col gap-2", !shouldWrapVariables && "lg:w-1/3")}>
                   {isLegacyEvalTarget(form.watch("target")) // Complex variable mapping for trace/dataset targets (legacy)
                     ? fields.map((mappingField, index) => (
                         <Card className="flex flex-col gap-2 p-4" key={index}>
-                          <div
-                            className={cn(
-                              "text-sm font-semibold",
-                              getVariableColor(index),
-                            )}
-                          >
+                          <div className={cn("text-sm font-semibold", getVariableColor(index))}>
                             {"{{"}
                             {mappingField.templateVariable}
                             {"}}"}
                             <DocPopup
-                              description={
-                                "Variable in the template to be replaced with the mapped data."
-                              }
-                              href={
-                                "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                              }
+                              description={"Variable in the template to be replaced with the mapped data."}
+                              href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                             />
                           </div>
                           <FormField
                             control={form.control}
-                            key={`${mappingField.id}-langfuseObject`}
-                            name={`mapping.${index}.langfuseObject`}
+                            key={`${mappingField.id}-consoleObject`}
+                            name={`mapping.${index}.consoleObject`}
                             render={({ field }) => (
                               <div className="flex items-center gap-2">
                                 <VariableMappingDescription
                                   title="Object"
-                                  description={
-                                    "Langfuse object to retrieve the data from."
-                                  }
-                                  href={
-                                    "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                  }
+                                  description={"Console object to retrieve the data from."}
+                                  href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                 />
                                 <FormItem className="w-2/3">
                                   <FormControl>
@@ -257,26 +191,18 @@ export const VariableMappingCard = ({
                                       defaultValue={field.value}
                                       onValueChange={(value) => {
                                         field.onChange(value);
-                                        form.setValue(
-                                          `mapping.${index}.objectName`,
-                                          undefined,
-                                        );
+                                        form.setValue(`mapping.${index}.objectName`, undefined);
                                       }}
                                     >
                                       <SelectTrigger>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        {availableVariables.map(
-                                          (evalObject) => (
-                                            <SelectItem
-                                              value={evalObject.id}
-                                              key={evalObject.id}
-                                            >
-                                              {evalObject.display}
-                                            </SelectItem>
-                                          ),
-                                        )}
+                                        {availableVariables.map((evalObject) => (
+                                          <SelectItem value={evalObject.id} key={evalObject.id}>
+                                            {evalObject.display}
+                                          </SelectItem>
+                                        ))}
                                       </SelectContent>
                                     </Select>
                                   </FormControl>
@@ -286,34 +212,22 @@ export const VariableMappingCard = ({
                             )}
                           />
 
-                          {!isTraceOrDatasetObject(
-                            form.watch(`mapping.${index}.langfuseObject`) ?? "",
-                          ) ? (
+                          {!isTraceOrDatasetObject(form.watch(`mapping.${index}.consoleObject`) ?? "") ? (
                             <FormField
                               control={form.control}
                               key={`${mappingField.id}-objectName`}
                               name={`mapping.${index}.objectName`}
                               render={({ field }) => {
-                                const type = String(
-                                  form.watch(`mapping.${index}.langfuseObject`),
-                                ).toUpperCase();
-                                const nameOptions = Array.from(
-                                  namesByObject.get(type) ?? [],
-                                );
+                                const type = String(form.watch(`mapping.${index}.consoleObject`)).toUpperCase();
+                                const nameOptions = Array.from(namesByObject.get(type) ?? []);
                                 const isCustomOption =
-                                  field.value === "custom" ||
-                                  (field.value &&
-                                    !nameOptions.includes(field.value));
+                                  field.value === "custom" || (field.value && !nameOptions.includes(field.value));
                                 return (
                                   <div className="flex items-center gap-2">
                                     <VariableMappingDescription
                                       title={"Object Name"}
-                                      description={
-                                        "Name of the Langfuse object to retrieve the data from."
-                                      }
-                                      href={
-                                        "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                      }
+                                      description={"Name of the Console object to retrieve the data from."}
+                                      href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                     />
                                     <FormItem className="w-2/3">
                                       <FormControl>
@@ -329,37 +243,23 @@ export const VariableMappingCard = ({
                                               disabled={disabled}
                                             >
                                               <SelectTrigger>
-                                                <SelectValue>
-                                                  Enter name...
-                                                </SelectValue>
+                                                <SelectValue>Enter name...</SelectValue>
                                               </SelectTrigger>
                                               <SelectContent>
                                                 {nameOptions?.map((name) => (
-                                                  <SelectItem
-                                                    key={name}
-                                                    value={name}
-                                                  >
+                                                  <SelectItem key={name} value={name}>
                                                     {name}
                                                   </SelectItem>
                                                 ))}
-                                                <SelectItem
-                                                  key="custom"
-                                                  value="custom"
-                                                >
+                                                <SelectItem key="custom" value="custom">
                                                   Enter name...
                                                 </SelectItem>
                                               </SelectContent>
                                             </Select>
                                             <Input
-                                              value={
-                                                field.value === "custom"
-                                                  ? ""
-                                                  : field.value || ""
-                                              }
-                                              onChange={(e) =>
-                                                field.onChange(e.target.value)
-                                              }
-                                              placeholder="Enter langfuse object name"
+                                              value={field.value === "custom" ? "" : field.value || ""}
+                                              onChange={(e) => field.onChange(e.target.value)}
+                                              placeholder="Enter console object name"
                                               disabled={disabled}
                                             />
                                           </div>
@@ -375,17 +275,11 @@ export const VariableMappingCard = ({
                                             </SelectTrigger>
                                             <SelectContent>
                                               {nameOptions?.map((name) => (
-                                                <SelectItem
-                                                  key={name}
-                                                  value={name}
-                                                >
+                                                <SelectItem key={name} value={name}>
                                                   {name}
                                                 </SelectItem>
                                               ))}
-                                              <SelectItem
-                                                key="custom"
-                                                value="custom"
-                                              >
+                                              <SelectItem key="custom" value="custom">
                                                 Enter name...
                                               </SelectItem>
                                             </SelectContent>
@@ -408,12 +302,8 @@ export const VariableMappingCard = ({
                               <div className="flex items-center gap-2">
                                 <VariableMappingDescription
                                   title={"Object Field"}
-                                  description={
-                                    "Field on the Langfuse object to insert into the template."
-                                  }
-                                  href={
-                                    "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                  }
+                                  description={"Field on the Console object to insert into the template."}
+                                  href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                 />
                                 <FormItem className="w-2/3">
                                   <FormControl>
@@ -421,18 +311,12 @@ export const VariableMappingCard = ({
                                       disabled={disabled}
                                       defaultValue={field.value ?? undefined}
                                       onValueChange={(value) => {
-                                        const availableColumns =
-                                          availableVariables.find(
-                                            (evalObject) =>
-                                              evalObject.id ===
-                                              form.watch(
-                                                `mapping.${index}.langfuseObject`,
-                                              ),
-                                          )?.availableColumns;
+                                        const availableColumns = availableVariables.find(
+                                          (evalObject) =>
+                                            evalObject.id === form.watch(`mapping.${index}.consoleObject`),
+                                        )?.availableColumns;
 
-                                        const column = availableColumns?.find(
-                                          (column) => column.id === value,
-                                        );
+                                        const column = availableColumns?.find((column) => column.id === value);
 
                                         field.onChange(column?.id);
                                       }}
@@ -444,16 +328,10 @@ export const VariableMappingCard = ({
                                         {availableVariables
                                           .find(
                                             (evalObject) =>
-                                              evalObject.id ===
-                                              form.watch(
-                                                `mapping.${index}.langfuseObject`,
-                                              ),
+                                              evalObject.id === form.watch(`mapping.${index}.consoleObject`),
                                           )
                                           ?.availableColumns.map((column) => (
-                                            <SelectItem
-                                              value={column.id}
-                                              key={column.id}
-                                            >
+                                            <SelectItem value={column.id} key={column.id}>
                                               {column.name}
                                             </SelectItem>
                                           ))}
@@ -465,9 +343,7 @@ export const VariableMappingCard = ({
                               </div>
                             )}
                           />
-                          {fieldHasJsonSelectorOption(
-                            form.watch(`mapping.${index}.selectedColumnId`),
-                          ) ? (
+                          {fieldHasJsonSelectorOption(form.watch(`mapping.${index}.selectedColumnId`)) ? (
                             <FormField
                               control={form.control}
                               key={`${mappingField.id}-jsonSelector`}
@@ -479,9 +355,7 @@ export const VariableMappingCard = ({
                                     description={
                                       "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt."
                                     }
-                                    href={
-                                      "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                    }
+                                    href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                   />
                                   <FormItem className="w-2/3">
                                     <FormControl>
@@ -503,22 +377,13 @@ export const VariableMappingCard = ({
                     : // Simplified variable mapping for event/experiment targets
                       fields.map((mappingField, index) => (
                         <Card className="flex flex-col gap-2 p-4" key={index}>
-                          <div
-                            className={cn(
-                              "text-sm font-semibold",
-                              getVariableColor(index),
-                            )}
-                          >
+                          <div className={cn("text-sm font-semibold", getVariableColor(index))}>
                             {"{{"}
                             {mappingField.templateVariable}
                             {"}}"}
                             <DocPopup
-                              description={
-                                "Variable in the template to be replaced with the mapped data."
-                              }
-                              href={
-                                "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                              }
+                              description={"Variable in the template to be replaced with the mapped data."}
+                              href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                             />
                           </div>
                           {hideAdvancedSettings && (
@@ -526,15 +391,11 @@ export const VariableMappingCard = ({
                               <VariableMappingDescription
                                 title="Object"
                                 description="Type of object to retrieve the data from."
-                                href="https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
+                                href="https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               />
                               <div className="w-2/3">
                                 <Input
-                                  value={
-                                    isEventTarget(form.watch("target"))
-                                      ? "Observation"
-                                      : "Experiment item"
-                                  }
+                                  value={isEventTarget(form.watch("target")) ? "Observation" : "Experiment item"}
                                   disabled
                                 />
                               </div>
@@ -550,9 +411,7 @@ export const VariableMappingCard = ({
                               const availableColumns =
                                 form.watch("target") === EvalTargetObject.EVENT
                                   ? observationEvalVariableColumns.filter(
-                                      (col) =>
-                                        col.id !==
-                                        "experimentItemExpectedOutput",
+                                      (col) => col.id !== "experimentItemExpectedOutput",
                                     )
                                   : observationEvalVariableColumns;
 
@@ -560,12 +419,8 @@ export const VariableMappingCard = ({
                                 <div className="flex items-center gap-2">
                                   <VariableMappingDescription
                                     title={"Object Field"}
-                                    description={
-                                      "Observation field to insert into the template."
-                                    }
-                                    href={
-                                      "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                    }
+                                    description={"Observation field to insert into the template."}
+                                    href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                   />
                                   <FormItem className="w-2/3">
                                     <FormControl>
@@ -579,10 +434,7 @@ export const VariableMappingCard = ({
                                         </SelectTrigger>
                                         <SelectContent>
                                           {availableColumns.map((column) => (
-                                            <SelectItem
-                                              value={column.id}
-                                              key={column.id}
-                                            >
+                                            <SelectItem value={column.id} key={column.id}>
                                               {column.name}
                                             </SelectItem>
                                           ))}
@@ -595,14 +447,10 @@ export const VariableMappingCard = ({
                               );
                             }}
                           />
-                          {(form.watch(`mapping.${index}.selectedColumnId`) ===
-                            "metadata" ||
-                            form.watch(`mapping.${index}.selectedColumnId`) ===
-                              "input" ||
-                            form.watch(`mapping.${index}.selectedColumnId`) ===
-                              "output" ||
-                            form.watch(`mapping.${index}.selectedColumnId`) ===
-                              "experimentItemExpectedOutput") && (
+                          {(form.watch(`mapping.${index}.selectedColumnId`) === "metadata" ||
+                            form.watch(`mapping.${index}.selectedColumnId`) === "input" ||
+                            form.watch(`mapping.${index}.selectedColumnId`) === "output" ||
+                            form.watch(`mapping.${index}.selectedColumnId`) === "experimentItemExpectedOutput") && (
                             <FormField
                               control={form.control}
                               key={`${mappingField.id}-jsonSelector`}
@@ -614,9 +462,7 @@ export const VariableMappingCard = ({
                                     description={
                                       "Optional selection: Use JsonPath syntax to select from a JSON object. If not selected, we will pass the entire object into the prompt."
                                     }
-                                    href={
-                                      "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
-                                    }
+                                    href={"https://hanzo.ai/docs/evaluation/evaluation-methods/llm-as-a-judge"}
                                   />
                                   <FormItem className="w-2/3">
                                     <FormControl>

@@ -24,7 +24,7 @@ import { HanzoLogo } from "@/src/components/HanzoLogo";
 import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications";
 import { type RouteGroup } from "@/src/components/layouts/routes";
 import { ExternalLink, Grid2X2 } from "lucide-react";
-import { useHanzoCloudRegion } from "@/src/features/organizations/hooks";
+import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import type { Session } from "next-auth";
 
 type AppSidebarProps = {
@@ -82,7 +82,7 @@ export function AppSidebar({ session, navItems, secondaryNavItems, userNavProps,
 
 const DemoBadge = () => {
   const router = useRouter();
-  const { isHanzoCloud } = useHanzoCloudRegion();
+  const { isConsoleCloud } = useConsoleCloudRegion();
   const routerProjectId = router.query.projectId as string | undefined;
 
   if (
@@ -90,7 +90,7 @@ const DemoBadge = () => {
       env.NEXT_PUBLIC_DEMO_ORG_ID &&
       env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
       routerProjectId === env.NEXT_PUBLIC_DEMO_PROJECT_ID &&
-      isHanzoCloud
+      isConsoleCloud
     )
   )
     return null;

@@ -1,7 +1,7 @@
 import { prisma } from "@hanzo/shared/src/db";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
-import { HanzoNotFoundError } from "@hanzo/shared";
+import { ConsoleNotFoundError } from "@hanzo/shared";
 import { GetCommentV1Query, GetCommentV1Response } from "@/src/features/public-api/types/comments";
 
 export default withMiddlewares({
@@ -20,7 +20,7 @@ export default withMiddlewares({
       });
 
       if (!comment) {
-        throw new HanzoNotFoundError("Comment not found within authorized project");
+        throw new ConsoleNotFoundError("Comment not found within authorized project");
       }
 
       // Exclude inline positioning fields from public API

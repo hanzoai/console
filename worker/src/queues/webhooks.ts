@@ -3,7 +3,7 @@ import {
   PromptWebhookOutboundSchema,
   WebhookDefaultHeaders,
   ActionExecutionStatus,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
   JobConfigState,
   isSlackActionConfig,
   isWebhookAction,
@@ -210,7 +210,7 @@ async function executeHttpAction({
     logger.error("Error executing HTTP action", error);
 
     // Handle action failure with retry logic and trigger disabling
-    const shouldRetryJob = error instanceof HanzoNotFoundError || error instanceof InternalServerError;
+    const shouldRetryJob = error instanceof ConsoleNotFoundError || error instanceof InternalServerError;
 
     if (shouldRetryJob) {
       logger.warn(`Retrying BullMQ for action ${automation.action.id}`);

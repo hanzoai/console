@@ -496,7 +496,7 @@ export const LLMApiKeySchema = z
 
 export type LLMApiKey = z.infer<typeof LLMApiKeySchema> extends LlmApiKeys ? z.infer<typeof LLMApiKeySchema> : never;
 
-export enum HanzoInternalTraceEnvironment {
+export enum ConsoleInternalTraceEnvironment {
   PromptExperiments = "hanzo-prompt-experiment",
   LLMJudge = "hanzo-llm-as-a-judge",
 }

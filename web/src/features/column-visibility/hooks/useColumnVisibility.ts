@@ -1,5 +1,5 @@
 import { type VisibilityState } from "@tanstack/react-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { useEffect } from "react";
 import isEqual from "lodash/isEqual";
@@ -18,7 +18,7 @@ const readStoredVisibilityState = (localStorageKey: string): VisibilityState => 
   }
 };
 
-function setVisibility<TData>(visibilityState: VisibilityState, column: HanzoColumnDef<TData>) {
+function setVisibility<TData>(visibilityState: VisibilityState, column: ConsoleColumnDef<TData>) {
   if (column.columns) {
     column.columns.forEach((groupColumn) => {
       setVisibility(visibilityState, groupColumn);
@@ -30,7 +30,7 @@ function setVisibility<TData>(visibilityState: VisibilityState, column: HanzoCol
   }
 }
 
-function useColumnVisibility<TData>(localStorageKey: string, columns: HanzoColumnDef<TData>[]) {
+function useColumnVisibility<TData>(localStorageKey: string, columns: ConsoleColumnDef<TData>[]) {
   const initialVisibilityState = () => {
     const storedVisibilityState = readStoredVisibilityState(localStorageKey);
     const visibilityState: VisibilityState = storedVisibilityState;

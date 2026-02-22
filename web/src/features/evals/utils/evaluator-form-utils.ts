@@ -1,16 +1,11 @@
 import { z } from "zod/v4";
-import {
-  singleFilter,
-  type langfuseObjects,
-  TimeScopeSchema,
-} from "@hanzo/shared";
+import { singleFilter, type consoleObjects, TimeScopeSchema } from "@hanzo/shared";
 import { wipVariableMapping } from "@hanzo/shared";
 import { OUTPUT_MAPPING } from "@/src/features/evals/utils/evaluator-constants";
 
 // Legacy eval targets (TRACE, DATASET) use full variable mapping UI with object selector
 // Modern eval targets (EVENT, EXPERIMENT) use simplified UI with just column selection
-export const isLegacyEvalTarget = (target: string): boolean =>
-  target === "trace" || target === "dataset";
+export const isLegacyEvalTarget = (target: string): boolean => target === "trace" || target === "dataset";
 
 export const evalConfigFormSchema = z.object({
   scoreName: z.string(),
@@ -25,23 +20,17 @@ export const evalConfigFormSchema = z.object({
 
 export type EvalFormType = z.infer<typeof evalConfigFormSchema>;
 
-export type HanzoObject = (typeof hanzoObjects)[number];
+export type HanzoObject = (typeof consoleObjects)[number];
 
 export type VariableMapping = z.infer<typeof wipVariableMapping>;
 
-export const inferDefaultMapping = (
-  variable: string,
-): Pick<VariableMapping, "selectedColumnId"> => {
+export const inferDefaultMapping = (variable: string): Pick<VariableMapping, "selectedColumnId"> => {
   return {
-    selectedColumnId: OUTPUT_MAPPING.includes(variable.toLowerCase())
-      ? "output"
-      : "input",
+    selectedColumnId: OUTPUT_MAPPING.includes(variable.toLowerCase()) ? "output" : "input",
   };
 };
 
-export const fieldHasJsonSelectorOption = (
-  selectedColumnId: string | undefined | null,
-): boolean =>
+export const fieldHasJsonSelectorOption = (selectedColumnId: string | undefined | null): boolean =>
   selectedColumnId === "input" ||
   selectedColumnId === "output" ||
   selectedColumnId === "metadata" ||

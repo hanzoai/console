@@ -6,7 +6,7 @@ import {
   AnnotationQueueStatus,
   CreateQueueData,
   filterAndValidateDbScoreConfigList,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
   optionalPaginationZod,
   Prisma,
 } from "@hanzo/shared";
@@ -381,7 +381,7 @@ export const queueRouter = createTRPCRouter({
         });
 
         if (!queue) {
-          throw new HanzoNotFoundError("Queue not found in project");
+          throw new ConsoleNotFoundError("Queue not found in project");
         }
 
         const updatedQueue = await ctx.prisma.annotationQueue.update({

@@ -5,7 +5,7 @@ import { getMediaStorageServiceClient } from "@/src/features/media/server/getMed
 import { GetMediaQuerySchema, GetMediaResponseSchema, PatchMediaBodySchema } from "@/src/features/media/validation";
 import { createAuthedProjectAPIRoute } from "@/src/features/public-api/server/createAuthedProjectAPIRoute";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
-import { ForbiddenError, InternalServerError, HanzoNotFoundError } from "@hanzo/shared";
+import { ForbiddenError, InternalServerError, ConsoleNotFoundError } from "@hanzo/shared";
 import { Prisma, prisma } from "@hanzo/shared/src/db";
 import { recordIncrement, recordHistogram } from "@hanzo/shared/src/server";
 
@@ -29,10 +29,10 @@ export default withMiddlewares({
         },
       });
 
-      if (!media) throw new HanzoNotFoundError("Media asset not found");
-      if (!media.uploadHttpStatus) throw new HanzoNotFoundError("Media not yet uploaded");
+      if (!media) throw new ConsoleNotFoundError("Media asset not found");
+      if (!media.uploadHttpStatus) throw new ConsoleNotFoundError("Media not yet uploaded");
       if (!(media.uploadHttpStatus === 200 || media.uploadHttpStatus === 201))
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           `Media upload failed with status ${media.uploadHttpStatus}: \n ${media.uploadHttpError}`,
         );
 
@@ -99,7 +99,7 @@ export default withMiddlewares({
           /* https://www.prisma.io/docs/orm/reference/error-reference#p2025
            * An operation failed because it depends on one or more records that were required but not found.
            */
-          throw new HanzoNotFoundError(`Media asset ${mediaId} not found in project ${projectId}`);
+          throw new ConsoleNotFoundError(`Media asset ${mediaId} not found in project ${projectId}`);
         }
 
         throw new InternalServerError(

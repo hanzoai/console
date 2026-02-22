@@ -12,7 +12,7 @@ import {
   timeFilter,
   UpdateAnnotationScoreData,
   validateDbScore,
-  HanzoNotFoundError,
+  ConsoleNotFoundError,
   InternalServerError,
   BatchActionQuerySchema,
   BatchActionType,
@@ -188,89 +188,79 @@ export const scoresRouter = createTRPCRouter({
       offset: 0,
     });
 
-      return {
-        totalCount: clickhouseScoreData,
-      };
-    }),
+    return {
+      totalCount: clickhouseScoreData,
+    };
+  }),
   /**
    * v4: Get all scores without traces JOIN. Trace metadata loaded via metricsFromEvents.
    */
-  allFromEvents: protectedProjectProcedure
-    .input(ScoreAllOptions)
-    .query(async ({ input, ctx }) => {
-      const clickhouseScoreData = await getScoresUiTableFromEvents({
-        projectId: input.projectId,
-        filter: input.filter ?? [],
-        orderBy: input.orderBy,
-        limit: input.limit,
-        offset: input.page * input.limit,
-      });
+  allFromEvents: protectedProjectProcedure.input(ScoreAllOptions).query(async ({ input, ctx }) => {
+    const clickhouseScoreData = await getScoresUiTableFromEvents({
+      projectId: input.projectId,
+      filter: input.filter ?? [],
+      orderBy: input.orderBy,
+      limit: input.limit,
+      offset: input.page * input.limit,
+    });
 
-      const [jobExecutions, users] = await Promise.all([
-        ctx.prisma.jobExecution.findMany({
-          where: {
-            projectId: input.projectId,
-            jobOutputScoreId: {
-              in: clickhouseScoreData.map((score) => score.id),
-            },
+    const [jobExecutions, users] = await Promise.all([
+      ctx.prisma.jobExecution.findMany({
+        where: {
+          projectId: input.projectId,
+          jobOutputScoreId: {
+            in: clickhouseScoreData.map((score) => score.id),
           },
-          select: {
-            id: true,
-            jobConfigurationId: true,
-            jobOutputScoreId: true,
+        },
+        select: {
+          id: true,
+          jobConfigurationId: true,
+          jobOutputScoreId: true,
+        },
+      }),
+      ctx.prisma.user.findMany({
+        where: {
+          id: {
+            in: clickhouseScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
           },
-        }),
-        ctx.prisma.user.findMany({
-          where: {
-            id: {
-              in: clickhouseScoreData
-                .map((score) => score.authorUserId)
-                .filter((s): s is string => Boolean(s)),
-            },
-          },
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        }),
-      ]);
+        },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      }),
+    ]);
 
-      return {
-        scores: clickhouseScoreData.map<AllScoresFromEventsReturnType>(
-          (score) => {
-            const jobExecution = jobExecutions.find(
-              (je) => je.jobOutputScoreId === score.id,
-            );
-            const user = users.find((u) => u.id === score.authorUserId);
-            return {
-              ...score,
-              jobConfigurationId: jobExecution?.jobConfigurationId ?? null,
-              authorUserImage: user?.image ?? null,
-              authorUserName: user?.name ?? null,
-            };
-          },
-        ),
-      };
-    }),
+    return {
+      scores: clickhouseScoreData.map<AllScoresFromEventsReturnType>((score) => {
+        const jobExecution = jobExecutions.find((je) => je.jobOutputScoreId === score.id);
+        const user = users.find((u) => u.id === score.authorUserId);
+        return {
+          ...score,
+          jobConfigurationId: jobExecution?.jobConfigurationId ?? null,
+          authorUserImage: user?.image ?? null,
+          authorUserName: user?.name ?? null,
+        };
+      }),
+    };
+  }),
   /**
    * v4: Count scores without traces JOIN.
    */
-  countAllFromEvents: protectedProjectProcedure
-    .input(ScoreAllOptions)
-    .query(async ({ input }) => {
-      const count = await getScoresUiCountFromEvents({
-        projectId: input.projectId,
-        filter: input.filter ?? [],
-        orderBy: input.orderBy,
-        limit: 1,
-        offset: 0,
-      });
+  countAllFromEvents: protectedProjectProcedure.input(ScoreAllOptions).query(async ({ input }) => {
+    const count = await getScoresUiCountFromEvents({
+      projectId: input.projectId,
+      filter: input.filter ?? [],
+      orderBy: input.orderBy,
+      limit: 1,
+      offset: 0,
+    });
 
-      return {
-        totalCount: count,
-      };
-    }),
+    return {
+      totalCount: count,
+    };
+  }),
   /**
    * v4: Load trace metadata (name, userId, tags) from events_core for a page of scores.
    */
@@ -311,14 +301,13 @@ export const scoresRouter = createTRPCRouter({
         );
       }
 
-      const [names, tags, traceNames, userIds, stringValues] =
-        await Promise.all([
-          getScoreNames(input.projectId, timestampFilter ?? []),
-          getEventsGroupedByTraceTags(input.projectId, eventsFilter),
-          getEventsGroupedByTraceName(input.projectId, eventsFilter),
-          getEventsGroupedByUserId(input.projectId, eventsFilter),
-          getScoreStringValues(input.projectId, timestampFilter ?? []),
-        ]);
+      const [names, tags, traceNames, userIds, stringValues] = await Promise.all([
+        getScoreNames(input.projectId, timestampFilter ?? []),
+        getEventsGroupedByTraceTags(input.projectId, eventsFilter),
+        getEventsGroupedByTraceName(input.projectId, eventsFilter),
+        getEventsGroupedByUserId(input.projectId, eventsFilter),
+        getScoreStringValues(input.projectId, timestampFilter ?? []),
+      ]);
 
       return {
         name: names.map((i) => ({ value: i.name, count: i.count })),
@@ -467,7 +456,7 @@ export const scoresRouter = createTRPCRouter({
 
       if (!clickhouseTrace) {
         logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
         );
       }
@@ -478,7 +467,7 @@ export const scoresRouter = createTRPCRouter({
         logger.error(
           `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
         );
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
         );
       }
@@ -584,7 +573,7 @@ export const scoresRouter = createTRPCRouter({
         logger.warn(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse, and no timestamp provided`,
         );
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
       }
@@ -601,7 +590,7 @@ export const scoresRouter = createTRPCRouter({
         },
       });
       if (!config) {
-        throw new HanzoNotFoundError(`No score config with id ${input.configId} in project ${input.projectId}`);
+        throw new ConsoleNotFoundError(`No score config with id ${input.configId} in project ${input.projectId}`);
       }
 
       // Upsert with provided data
@@ -626,7 +615,7 @@ export const scoresRouter = createTRPCRouter({
 
         if (!clickhouseTrace) {
           logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
-          throw new HanzoNotFoundError(
+          throw new ConsoleNotFoundError(
             `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
           );
         }
@@ -637,7 +626,7 @@ export const scoresRouter = createTRPCRouter({
           logger.error(
             `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
           );
-          throw new HanzoNotFoundError(
+          throw new ConsoleNotFoundError(
             `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
           );
         }
@@ -722,7 +711,7 @@ export const scoresRouter = createTRPCRouter({
           },
         });
         if (!config) {
-          throw new HanzoNotFoundError(`No score config with id ${score.configId} in project ${input.projectId}`);
+          throw new ConsoleNotFoundError(`No score config with id ${score.configId} in project ${input.projectId}`);
         }
         try {
           validateConfigAgainstBody({
@@ -822,7 +811,7 @@ export const scoresRouter = createTRPCRouter({
       });
       if (!clickhouseScore) {
         logger.warn(`No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`);
-        throw new HanzoNotFoundError(
+        throw new ConsoleNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
         );
       }
@@ -867,7 +856,7 @@ export const scoresRouter = createTRPCRouter({
 
       if (!clickhouseTrace) {
         logger.error(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
-        throw new HanzoNotFoundError(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
+        throw new ConsoleNotFoundError(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
       }
 
       const clickhouseScore = await searchExistingAnnotationScore(

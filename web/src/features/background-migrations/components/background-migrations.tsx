@@ -1,6 +1,6 @@
 import { DataTable } from "@/src/components/table/data-table";
 import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { api } from "@/src/utils/api";
 import { type BackgroundMigration } from "@hanzo/shared";
 import { RetryBackgroundMigration } from "@/src/features/background-migrations/components/retry-background-migration";
@@ -75,7 +75,7 @@ export default function BackgroundMigrationsTable() {
         return <RetryBackgroundMigration backgroundMigrationName={name} isRetryable={isRetryable} />;
       },
     },
-  ] as HanzoColumnDef<BackgroundMigration>[];
+  ] as ConsoleColumnDef<BackgroundMigration>[];
 
   return (
     <Page

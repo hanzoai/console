@@ -1,9 +1,6 @@
 import { DatasetItemDomain } from "@hanzo/shared";
 import { PromptExperimentConfig } from "./utils";
-import {
-  GenerationDetails,
-  LangfuseInternalTraceEnvironment,
-} from "@hanzo/shared/src/server";
+import { GenerationDetails, ConsoleInternalTraceEnvironment } from "@hanzo/shared/src/server";
 import {
   fetchObservationEvalConfigs,
   scheduleObservationEvals,
@@ -33,9 +30,7 @@ interface ScheduleExperimentEvalsParams {
  * @param params.config - The prompt experiment configuration
  * @param params.generationDetails - The generation details extracted from traced events
  */
-export async function scheduleExperimentObservationEvals(
-  params: ScheduleExperimentEvalsParams,
-): Promise<void> {
+export async function scheduleExperimentObservationEvals(params: ScheduleExperimentEvalsParams): Promise<void> {
   const { projectId, traceId, datasetItem, config, generationDetails } = params;
 
   try {
@@ -55,7 +50,7 @@ export async function scheduleExperimentObservationEvals(
       // Core properties
       type: "GENERATION",
       name: generationDetails.name || "generation",
-      environment: LangfuseInternalTraceEnvironment.PromptExperiments,
+      environment: ConsoleInternalTraceEnvironment.PromptExperiments,
       level: "DEFAULT",
 
       // Prompt info
@@ -67,9 +62,7 @@ export async function scheduleExperimentObservationEvals(
       experiment_name: config.experimentName,
       experiment_dataset_id: datasetItem.datasetId,
       experiment_item_id: datasetItem.id,
-      experiment_item_expected_output: datasetItem.expectedOutput
-        ? JSON.stringify(datasetItem.expectedOutput)
-        : null,
+      experiment_item_expected_output: datasetItem.expectedOutput ? JSON.stringify(datasetItem.expectedOutput) : null,
       experiment_item_root_span_id: generationDetails.observationId, // Same as span_id for root
 
       // Data fields

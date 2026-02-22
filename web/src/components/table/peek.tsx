@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
 import { Expand, ExternalLink } from "lucide-react";
 import { Separator } from "@/src/components/ui/separator";
-import { ItemBadge, type HanzoItemType } from "@/src/components/ItemBadge";
+import { ItemBadge, type ConsoleItemType } from "@/src/components/ItemBadge";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
 import { type ListEntry } from "@/src/features/navigate-detail-pages/context";
 import { cn } from "@/src/utils/tailwind";
@@ -10,7 +10,7 @@ import { memo } from "react";
 import { useRouter } from "next/router";
 import { PeekTableStateProvider } from "@/src/components/table/peek/contexts/PeekTableStateContext";
 
-type PeekViewItemType = Extract<HanzoItemType, "TRACE" | "DATASET_ITEM" | "RUNNING_EVALUATOR" | "EVALUATOR">;
+type PeekViewItemType = Extract<ConsoleItemType, "TRACE" | "DATASET_ITEM" | "RUNNING_EVALUATOR" | "EVALUATOR">;
 
 /**
  * Options to control peek event behavior.

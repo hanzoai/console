@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DataTable } from "@/src/components/table/data-table";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { useKmsKeys, useUpdateKey, useDeleteKey } from "@/src/features/kms/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { CreateKeyDialog } from "./CreateKeyDialog";
@@ -66,7 +66,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
       createdAt: k.createdAt,
     })) ?? [];
 
-  const columns: HanzoColumnDef<KeyRow>[] = [
+  const columns: ConsoleColumnDef<KeyRow>[] = [
     {
       accessorKey: "name",
       id: "name",
@@ -75,11 +75,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
       cell: ({ row }) => (
         <div>
           <div className="font-medium">{row.original.name}</div>
-          {row.original.description && (
-            <div className="text-xs text-muted-foreground">
-              {row.original.description}
-            </div>
-          )}
+          {row.original.description && <div className="text-xs text-muted-foreground">{row.original.description}</div>}
         </div>
       ),
     },
@@ -88,9 +84,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
       id: "encryptionAlgorithm",
       header: "Algorithm",
       size: 130,
-      cell: ({ row }) => (
-        <code className="text-xs">{row.original.encryptionAlgorithm}</code>
-      ),
+      cell: ({ row }) => <code className="text-xs">{row.original.encryptionAlgorithm}</code>,
     },
     {
       accessorKey: "keyUsage",
@@ -103,22 +97,14 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
       id: "status",
       header: "Status",
       size: 100,
-      cell: ({ row }) =>
-        row.original.isDisabled ? (
-          <StatusBadge type="disabled" />
-        ) : (
-          <StatusBadge type="active" />
-        ),
+      cell: ({ row }) => (row.original.isDisabled ? <StatusBadge type="disabled" /> : <StatusBadge type="active" />),
     },
     {
       accessorKey: "createdAt",
       id: "createdAt",
       header: "Created",
       size: 150,
-      cell: ({ row }) =>
-        row.original.createdAt
-          ? new Date(row.original.createdAt).toLocaleString()
-          : "-",
+      cell: ({ row }) => (row.original.createdAt ? new Date(row.original.createdAt).toLocaleString() : "-"),
     },
     {
       accessorKey: "actions",
@@ -135,11 +121,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() =>
-                  setEncryptKey({ id: key.id, name: key.name })
-                }
-              >
+              <DropdownMenuItem onClick={() => setEncryptKey({ id: key.id, name: key.name })}>
                 <KeyRound className="mr-2 h-4 w-4" />
                 Encrypt / Decrypt
               </DropdownMenuItem>
@@ -168,9 +150,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
-                    onClick={() =>
-                      setDeleteTarget({ id: key.id, name: key.name })
-                    }
+                    onClick={() => setDeleteTarget({ id: key.id, name: key.name })}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
@@ -186,9 +166,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-end">
-        {hasCUD && <CreateKeyDialog projectId={projectId} />}
-      </div>
+      <div className="flex items-center justify-end">{hasCUD && <CreateKeyDialog projectId={projectId} />}</div>
 
       <DataTable
         tableName="kmsKeys"
@@ -220,8 +198,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete encryption key?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete key{" "}
-              <strong>{deleteTarget?.name}</strong>? This action cannot be undone
+              Are you sure you want to delete key <strong>{deleteTarget?.name}</strong>? This action cannot be undone
               and any data encrypted with this key will become unrecoverable.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -230,10 +207,7 @@ export function EncryptionKeysTable({ projectId }: { projectId: string }) {
             <AlertDialogAction
               onClick={() => {
                 if (!deleteTarget) return;
-                deleteKey.mutate(
-                  { projectId, keyId: deleteTarget.id },
-                  { onSuccess: () => setDeleteTarget(null) },
-                );
+                deleteKey.mutate({ projectId, keyId: deleteTarget.id }, { onSuccess: () => setDeleteTarget(null) });
               }}
             >
               Delete

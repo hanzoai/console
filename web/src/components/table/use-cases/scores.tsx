@@ -4,7 +4,7 @@ import { DataTableToolbar } from "@/src/components/table/data-table-toolbar";
 import { DataTableControlsProvider, DataTableControls } from "@/src/components/table/data-table-controls";
 import { ResizableFilterLayout } from "@/src/components/table/resizable-filter-layout";
 import TableLink from "@/src/components/table/table-link";
-import { type HanzoColumnDef } from "@/src/components/table/types";
+import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { IOTableCell } from "../../ui/IOTableCell";
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -202,10 +202,7 @@ export default function ScoresTable({
   // Filter options — v3 vs v4
   const filterOptionsTimestampInput = {
     projectId,
-    timestampFilter:
-      dateRangeFilter.length > 0
-        ? (dateRangeFilter as TimeFilter[])
-        : undefined,
+    timestampFilter: dateRangeFilter.length > 0 ? (dateRangeFilter as TimeFilter[]) : undefined,
   };
 
   const filterOptionsQueryConfig = {
@@ -220,21 +217,15 @@ export default function ScoresTable({
     staleTime: Infinity,
   } as const;
 
-  const filterOptionsV3 = api.scores.filterOptions.useQuery(
-    filterOptionsTimestampInput,
-    {
-      ...filterOptionsQueryConfig,
-      enabled: !isBetaEnabled,
-    },
-  );
+  const filterOptionsV3 = api.scores.filterOptions.useQuery(filterOptionsTimestampInput, {
+    ...filterOptionsQueryConfig,
+    enabled: !isBetaEnabled,
+  });
 
-  const filterOptionsV4 = api.scores.filterOptionsFromEvents.useQuery(
-    filterOptionsTimestampInput,
-    {
-      ...filterOptionsQueryConfig,
-      enabled: isBetaEnabled,
-    },
-  );
+  const filterOptionsV4 = api.scores.filterOptionsFromEvents.useQuery(filterOptionsTimestampInput, {
+    ...filterOptionsQueryConfig,
+    enabled: isBetaEnabled,
+  });
 
   const filterOptions = isBetaEnabled ? filterOptionsV4 : filterOptionsV3;
 
@@ -338,11 +329,7 @@ export default function ScoresTable({
     {
       projectId,
       traceIds: [
-        ...new Set(
-          scoresV4.data?.scores
-            .map((s) => s.traceId)
-            .filter((id): id is string => Boolean(id)) ?? [],
-        ),
+        ...new Set(scoresV4.data?.scores.map((s) => s.traceId).filter((id): id is string => Boolean(id)) ?? []),
       ],
     },
     {
@@ -356,7 +343,7 @@ export default function ScoresTable({
     setSelectedRows,
   });
 
-  const rawColumns: HanzoColumnDef<ScoresTableRow>[] = [
+  const rawColumns: ConsoleColumnDef<ScoresTableRow>[] = [
     selectActionColumn,
     {
       accessorKey: "id",
@@ -380,8 +367,7 @@ export default function ScoresTable({
       enableSorting: true,
       size: 150,
       cell: ({ row }) => {
-        if (isBetaEnabled && !scoreMetrics.data)
-          return <Skeleton className="h-3 w-1/2" />;
+        if (isBetaEnabled && !scoreMetrics.data) return <Skeleton className="h-3 w-1/2" />;
         const value = row.getValue("traceName") as ScoresTableRow["traceName"];
         const filter = encodeURIComponent(`name;stringOptions;;any of;${value}`);
         return value ? (
@@ -478,8 +464,7 @@ export default function ScoresTable({
       enableSorting: true,
       size: 100,
       cell: ({ row }) => {
-        if (isBetaEnabled && !scoreMetrics.data)
-          return <Skeleton className="h-3 w-1/2" />;
+        if (isBetaEnabled && !scoreMetrics.data) return <Skeleton className="h-3 w-1/2" />;
         const value = row.getValue("userId");
         return typeof value === "string" ? (
           <>
@@ -605,8 +590,7 @@ export default function ScoresTable({
       enableHiding: true,
       defaultHidden: true,
       cell: ({ row }) => {
-        if (isBetaEnabled && !scoreMetrics.data)
-          return <Skeleton className="h-3 w-1/2" />;
+        if (isBetaEnabled && !scoreMetrics.data) return <Skeleton className="h-3 w-1/2" />;
         const traceTags: string[] | undefined = row.getValue("traceTags");
         return (
           traceTags && (
@@ -690,9 +674,7 @@ export default function ScoresTable({
     const v4Data = scoresV4.data?.scores;
     if (!v4Data) return undefined;
 
-    const metaByTraceId = new Map(
-      scoreMetrics.data?.map((m) => [m.traceId, m]) ?? [],
-    );
+    const metaByTraceId = new Map(scoreMetrics.data?.map((m) => [m.traceId, m]) ?? []);
 
     return v4Data.map((score) => {
       const meta = metaByTraceId.get(score.traceId ?? "");
@@ -807,7 +789,7 @@ export default function ScoresTable({
                 <div className="flex flex-col items-center">
                   <span>No scores found.</span>
                   <a
-                    href="https://langfuse.com/faq/all/what-are-scores"
+                    href="https://hanzo.ai/docs/faq/all/what-are-scores"
                     className="pointer-events-auto italic text-primary underline"
                     target="_blank"
                     rel="noopener noreferrer"

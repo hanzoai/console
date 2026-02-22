@@ -4,7 +4,7 @@ import {
   type TraceDomain,
   AnnotationQueueObjectType,
   isGenerationLike,
-  LangfuseInternalTraceEnvironment,
+  ConsoleInternalTraceEnvironment,
 } from "@hanzo/shared";
 import { AggUsageBadge } from "@/src/components/token-usage-badge";
 import { Badge } from "@/src/components/ui/badge";
@@ -165,7 +165,7 @@ export const TracePreview = ({
   };
 
   const targetTraceId =
-    trace.environment === LangfuseInternalTraceEnvironment.LLMJudge
+    trace.environment === ConsoleInternalTraceEnvironment.LLMJudge
       ? resolveEvalExecutionMetadata(parsedMetadata)
       : null;
 
@@ -270,16 +270,12 @@ export const TracePreview = ({
                   className="inline-flex"
                 >
                   <Badge>
-                    <span className="truncate">
-                      Target Trace: {targetTraceId}
-                    </span>
+                    <span className="truncate">Target Trace: {targetTraceId}</span>
                     <ExternalLinkIcon className="ml-1 h-3 w-3" />
                   </Badge>
                 </Link>
               ) : null}
-              {trace.environment ? (
-                <Badge variant="tertiary">Env: {trace.environment}</Badge>
-              ) : null}
+              {trace.environment ? <Badge variant="tertiary">Env: {trace.environment}</Badge> : null}
 
               {viewType === "detailed" && (
                 <>
