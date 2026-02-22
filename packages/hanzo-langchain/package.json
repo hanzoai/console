@@ -1,10 +1,9 @@
 {
-  "name": "hanzo-langchain",
-  "version": "1.0.0",
+  "name": "@hanzo/langchain",
+  "version": "3.38.6",
   "description": "Hanzo LangChain callback handler for observability",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "private": true,
   "license": "MIT",
   "exports": {
     ".": {
@@ -17,9 +16,17 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@hanzo/langchain-upstream": "npm:langfuse-langchain@3.38.6"
+    "@hanzo/langchain-core": "npm:langfuse-langchain@3.38.6"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hanzoai/console.git",
+    "directory": "packages/hanzo-langchain"
   }
 }

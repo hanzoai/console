@@ -1,13 +1,13 @@
 ---
 name: add-model-price
-description: Add new LLM model pricing entries to Langfuse's default-model-prices.json. Use when adding model prices, updating model pricing, creating model entries, adding Claude/OpenAI/Anthropic/Google/Gemini/AWS Bedrock/Azure/Vertex AI model pricing, working with matchPattern regex, pricingTiers, or model cost configuration. Covers model price JSON structure, regex patterns for multi-provider matching, tiered pricing with conditions, cache pricing, and validation rules.
+description: Add new LLM model pricing entries to Console's default-model-prices.json. Use when adding model prices, updating model pricing, creating model entries, adding Claude/OpenAI/Anthropic/Google/Gemini/AWS Bedrock/Azure/Vertex AI model pricing, working with matchPattern regex, pricingTiers, or model cost configuration. Covers model price JSON structure, regex patterns for multi-provider matching, tiered pricing with conditions, cache pricing, and validation rules.
 ---
 
 # Add Model Price
 
 ## Purpose
 
-Guide for adding new LLM model pricing entries to Langfuse's default model prices configuration. This enables accurate cost tracking across different model providers and deployment platforms.
+Guide for adding new LLM model pricing entries to Console's default model prices configuration. This enables accurate cost tracking across different model providers and deployment platforms.
 
 ## When to Use This Skill
 
@@ -332,7 +332,7 @@ Add the entry to the JSON array in `/worker/src/constants/default-model-prices.j
 
 ### Step 5: Add to LLM Types (for Playground & LLM-as-Judge)
 
-To make the model available in the Langfuse playground and for LLM-as-a-judge evaluations, add it to the appropriate model array in `/packages/shared/src/server/llm/types.ts`.
+To make the model available in the Console playground and for LLM-as-a-judge evaluations, add it to the appropriate model array in `/packages/shared/src/server/llm/types.ts`.
 
 **File**: `/packages/shared/src/server/llm/types.ts`
 

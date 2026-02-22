@@ -1,4 +1,4 @@
-import CallbackHandler from "hanzo-langchain";
+import CallbackHandler from "@hanzo/langchain";
 import { GenerationDetails, TraceSinkParams } from "./types";
 import { processEventBatch } from "../ingestion/processEventBatch";
 import { logger } from "../logger";

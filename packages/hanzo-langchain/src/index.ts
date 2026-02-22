@@ -1,12 +1,9 @@
 /**
- * Hanzo LangChain callback handler
- *
- * Re-exports from the upstream LangChain integration package.
+ * @hanzo/langchain - Hanzo LangChain callback handler for observability
  */
 
-// @ts-ignore - upstream types may not be fully compatible
-export { default, default as CallbackHandler } from "@hanzo/langchain-upstream";
-
-// Re-export any additional types that might be needed
 // @ts-ignore
-export * from "@hanzo/langchain-upstream";
+export { default, default as CallbackHandler } from "@hanzo/langchain-core";
+
+// @ts-ignore
+export * from "@hanzo/langchain-core";

@@ -19,7 +19,7 @@ jobs:
           # or you can sign up for free at https://snyk.io/login
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: langfuse/langfuse
+          image: hanzoai/console
           args: --sarif-file-output=snyk.sarif
       - name: Fix SARIF file
         if: always()
