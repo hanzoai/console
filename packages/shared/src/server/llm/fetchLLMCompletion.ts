@@ -86,7 +86,7 @@ export async function fetchLLMCompletion(
   params: LLMCompletionParams & {
     streaming: false;
   },
-): Promise<string>;
+): Promise<string | CompletionWithReasoning>;
 
 export async function fetchLLMCompletion(
   params: LLMCompletionParams & {
@@ -100,11 +100,13 @@ export async function fetchLLMCompletion(
     streaming: false;
     tools: LLMToolDefinition[];
   },
-): Promise<ToolCallResponse>;
+): Promise<ToolCallResponse & { reasoning?: string }>;
 
 export async function fetchLLMCompletion(
   params: FetchLLMCompletionParams,
-): Promise<string | IterableReadableStream<Uint8Array> | Record<string, unknown> | ToolCallResponse> {
+): Promise<
+  string | CompletionWithReasoning | IterableReadableStream<Uint8Array> | Record<string, unknown> | ToolCallResponse
+> {
   const {
     messages,
     tools,
