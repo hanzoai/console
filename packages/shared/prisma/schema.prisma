@@ -1426,7 +1426,7 @@ model DefaultView {
   user   User?   @relation("DefaultViewUser", fields: [userId], references: [id], onDelete: Cascade)
 
   viewName String @map("view_name")
-  viewId   String @map("view_id") // no FK - to allow system presets (i.e. frontend defined starting in __langfuse_)
+  viewId   String @map("view_id") // no FK - to allow system presets (i.e. frontend defined starting in __console_)
 
   // Uniqueness enforced via partial indexes in migration (PostgreSQL 12+ compatible)
   // - User defaults: UNIQUE(project_id, user_id, view_name) WHERE user_id IS NOT NULL
