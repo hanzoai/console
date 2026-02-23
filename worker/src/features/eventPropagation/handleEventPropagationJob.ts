@@ -278,6 +278,8 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
         request_timeout: 600000, // 10 minutes timeout
       },
       datastoreSettings: {
+        parallel_view_processing: 1,
+        max_insert_threads: "8",
         type_json_skip_duplicated_paths: true,
       },
     });
