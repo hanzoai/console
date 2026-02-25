@@ -159,6 +159,7 @@ export async function executeQuery(
       datastoreConfig: {
         datastore_settings: {
           date_time_output_format: "iso",
+          ...(env.DATASTORE_USE_QUERY_CONDITION_CACHE === "true" ? { use_query_condition_cache: "true" } : {}),
           max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
         },
       },
@@ -187,6 +188,7 @@ export async function executeQuery(
         datastoreConfig: {
           datastore_settings: {
             date_time_output_format: "iso",
+            ...(env.DATASTORE_USE_QUERY_CONDITION_CACHE === "true" ? { use_query_condition_cache: "true" } : {}),
             max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
           },
         },

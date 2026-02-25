@@ -239,6 +239,9 @@ export const env = createEnv({
     DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY: z.coerce
       .number()
       .default(32_000_000_000), // ~32GB
+    DATASTORE_USE_QUERY_CONDITION_CACHE: z
+      .enum(["true", "false"])
+      .default("false"),
 
     // EE ui customization
     HANZO_UI_API_HOST: z.string().optional(),
@@ -739,6 +742,8 @@ export const env = createEnv({
     DATASTORE_CLUSTER_ENABLED: process.env.DATASTORE_CLUSTER_ENABLED,
     DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY:
       process.env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
+    DATASTORE_USE_QUERY_CONDITION_CACHE:
+      process.env.DATASTORE_USE_QUERY_CONDITION_CACHE,
     // EE ui customization
     HANZO_UI_API_HOST: process.env.HANZO_UI_API_HOST,
     HANZO_UI_DOCUMENTATION_HREF: process.env.HANZO_UI_DOCUMENTATION_HREF,
