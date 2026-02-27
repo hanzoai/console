@@ -150,7 +150,7 @@ services:
     build:
       context: images
       dockerfile: Dockerfile.postgres
-    image: ghcr.io/hanzoai/postgres:17
+    image: ghcr.io/hanzoai/sql:18
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
