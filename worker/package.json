@@ -80,7 +80,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-prettier": "^5.5.4",
-    "kysely-codegen": "^0.16.8",
+    "kysely-codegen": "^0.20.0",
     "msw": "^2.6.5",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
