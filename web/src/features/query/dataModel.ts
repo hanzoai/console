@@ -161,7 +161,14 @@ export const eventsTracesView: ViewDeclarationType = {
       alias: "name",
       type: "string",
       description: "Name assigned to the trace (often the endpoint or operation).",
-      aggregationFunction: "argMaxIf(events_traces.trace_name, events_traces.event_ts, events_traces.trace_name <> '')",
+      // First try most-recent non-empty trace_name, then fall back to root event's name
+      aggregationFunction:
+        "COALESCE(nullIf(argMaxIf(events_traces.trace_name, events_traces.event_ts, events_traces.trace_name <> ''), ''), argMaxIf(events_traces.name, events_traces.event_ts, events_traces.parent_span_id = '' AND events_traces.name <> ''))",
+      // Pruning columns for WHERE: OR'd together to help datastore skip blocks,
+      // then dimension.sql is AND'd for exact row-level match.
+      filterSql: {
+        where: ["events_traces.trace_name", "events_traces.name"],
+      },
     },
     tags: {
       sql: "events_traces.tags",
@@ -1061,8 +1068,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       sql: "mapKeys(events_observations.cost_details)",
       alias: "costType",
       type: "string",
-      description:
-        "Cost category key from cost_details map (e.g. 'input', 'output', 'total').",
+      description: "Cost category key from cost_details map (e.g. 'input', 'output', 'total').",
       pairExpand: {
         valuesSql: "mapValues(events_observations.cost_details)",
         valueAlias: "cost_value",
@@ -1072,8 +1078,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       sql: "mapKeys(events_observations.usage_details)",
       alias: "usageType",
       type: "string",
-      description:
-        "Token usage category key from usage_details map (e.g. 'input', 'output', 'total').",
+      description: "Token usage category key from usage_details map (e.g. 'input', 'output', 'total').",
       pairExpand: {
         valuesSql: "mapValues(events_observations.usage_details)",
         valueAlias: "usage_value",
@@ -1094,8 +1099,7 @@ export const eventsObservationsView: ViewDeclarationType = {
       aggs: { agg: "any" },
       alias: "traceId",
       type: "string",
-      description:
-        "Trace identifier; apply uniq aggregation to count distinct traces.",
+      description: "Trace identifier; apply uniq aggregation to count distinct traces.",
     },
     latency: {
       sql: "date_diff('millisecond', @@AGG1@@(events_observations.start_time), @@AGG1@@(events_observations.end_time))",

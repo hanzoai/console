@@ -3,7 +3,7 @@ import { convertDateToDatastoreDateTime, shouldSkipObservationsFinal } from "@ha
 import type { QueryType, ViewDeclarationType, metricAggregations, granularities, ViewVersion, views } from "../types";
 import { query as queryModel } from "../types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
-import { FilterList, createFilterFromFilterState } from "@hanzo/shared/src/server";
+import { FilterList, createFilterFromFilterState, type Filter } from "@hanzo/shared/src/server";
 import { InvalidRequestError } from "@hanzo/shared";
 
 type AppliedDimensionType = {
@@ -24,6 +24,13 @@ type AppliedMetricType = {
   aggs?: Record<string, string>;
   measureName: string; // Original measure name for lookups
   requiresDimension?: string;
+};
+
+type RawSqlPart = { query: string; params: Record<string, unknown> };
+
+type MappedFilters = {
+  whereFilters: Filter[];
+  whereRawParts: RawSqlPart[];
 };
 
 export class QueryBuilder {
@@ -180,21 +187,112 @@ export class QueryBuilder {
     return parts[0];
   }
 
-  private mapFilters(filters: z.infer<typeof queryModel>["filters"], view: ViewDeclarationType) {
+  /**
+   * Resolves a filter column to a dimension, with fallback for *Name columns.
+   */
+  private resolveDimension(
+    filterColumn: string,
+    view: ViewDeclarationType,
+  ): ViewDeclarationType["dimensions"][string] | undefined {
+    if (filterColumn in view.dimensions) {
+      return view.dimensions[filterColumn];
+    }
+    // Fallback: scoreName/traceName → "name" dimension (LFE-4838)
+    if (filterColumn.endsWith("Name") && "name" in view.dimensions) {
+      return view.dimensions["name"];
+    }
+    return undefined;
+  }
+
+  /**
+   * Builds a WHERE condition for a filterSql dimension:
+   *   (col1 OP X OR col2 OP X) AND dimensionSql OP X
+   *
+   * The OR'd part is pruning-friendly (helps datastore skip blocks).
+   * The exact part uses the dimension's row-level sql expression for correctness.
+   * Both delegate to createFilterFromFilterState for full operator/type support.
+   */
+  private buildFilterSqlWhereCondition(params: {
+    filter: z.infer<typeof queryModel>["filters"][number];
+    whereCols: string[];
+    dimensionSql: string;
+    tableName: string;
+  }): RawSqlPart {
+    const { filter, whereCols, dimensionSql, tableName } = params;
+
+    const syntheticMapping = (datastoreSelect: string) => [
+      {
+        uiTableName: filter.column,
+        uiTableId: filter.column,
+        datastoreTableName: tableName,
+        datastoreSelect,
+        queryPrefix: "",
+      },
+    ];
+
+    // Pruning: one filter per where column, OR'd together
+    const pruneApplied = whereCols.map((col) => {
+      const filters = createFilterFromFilterState([filter], syntheticMapping(col));
+      return filters[0].apply();
+    });
+    const pruneQuery = `(${pruneApplied.map((p) => p.query).join(" OR ")})`;
+    const pruneParams = pruneApplied.reduce<Record<string, unknown>>((acc, p) => ({ ...acc, ...p.params }), {});
+
+    // Exact match: filter on the dimension's row-level sql expression
+    const exactFilters = createFilterFromFilterState([filter], syntheticMapping(dimensionSql));
+    const exactApplied = exactFilters[0].apply();
+
+    return {
+      query: `${pruneQuery} AND ${exactApplied.query}`,
+      params: { ...pruneParams, ...exactApplied.params },
+    };
+  }
+
+  private mapFilters(filters: z.infer<typeof queryModel>["filters"], view: ViewDeclarationType): MappedFilters {
     // Validate all filters before processing
     this.validateFilters(filters, view);
 
     const actualTableName = this.actualTableName(view);
 
-    // Transform our filters to match the column mapping format expected by createFilterFromFilterState
-    const columnMappings = filters.map((filter) => {
+    const result: MappedFilters = {
+      whereFilters: [],
+      whereRawParts: [],
+    };
+
+    // Separate filters into normal (createFilterFromFilterState) and filterSql-aware
+    const normalFilters: z.infer<typeof queryModel>["filters"] = [];
+    const normalMappings: Array<{
+      uiTableName: string;
+      uiTableId: string;
+      datastoreTableName: string;
+      datastoreSelect: string;
+      queryPrefix: string;
+      type: string;
+    }> = [];
+
+    for (const filter of filters) {
+      const dimension = this.resolveDimension(filter.column, view);
+
+      // Dimension with filterSql: pruning OR + exact match, both in WHERE
+      if (dimension?.filterSql) {
+        result.whereRawParts.push(
+          this.buildFilterSqlWhereCondition({
+            filter,
+            whereCols: dimension.filterSql.where,
+            dimensionSql: dimension.sql,
+            tableName: actualTableName,
+          }),
+        );
+        continue;
+      }
+
+      // Normal dimension or special-case filter: build column mapping
       let datastoreSelect: string;
       let queryPrefix: string = "";
       let datastoreTableName: string = actualTableName;
       let type: string;
 
-      if (filter.column in view.dimensions) {
-        const dimension = view.dimensions[filter.column];
+      if (dimension) {
         datastoreSelect = dimension.sql;
         type = "string";
         if (dimension.relationTable) {
@@ -229,18 +327,20 @@ export class QueryBuilder {
         );
       }
 
-      return {
+      normalFilters.push(filter);
+      normalMappings.push({
         uiTableName: filter.column,
         uiTableId: filter.column,
         datastoreTableName,
         datastoreSelect,
         queryPrefix,
         type,
-      };
-    });
+      });
+    }
 
-    // Use the createFilterFromFilterState function to create proper Datastore filters
-    return createFilterFromFilterState(filters, columnMappings);
+    // Create filters for non-filterSql dimensions using existing infrastructure
+    result.whereFilters = createFilterFromFilterState(normalFilters, normalMappings);
+    return result;
   }
 
   private addStandardFilters(
@@ -1047,8 +1147,9 @@ export class QueryBuilder {
       }
     }
 
-    // Create a new FilterList with the mapped filters
-    let filterList = new FilterList(this.mapFilters(query.filters, view));
+    // Create filters: normal WHERE filters + raw WHERE parts (filterSql pruning + exact match)
+    const { whereFilters, whereRawParts } = this.mapFilters(query.filters, view);
+    let filterList = new FilterList(whereFilters);
 
     // Add standard filters (project_id, timestamps)
     filterList = this.addStandardFilters(filterList, view, projectId, query.fromTimestamp, query.toTimestamp);
@@ -1071,6 +1172,12 @@ export class QueryBuilder {
 
     // Build WHERE clause with parameters
     fromClause += this.buildWhereClause(filterList, parameters);
+
+    // Append raw WHERE pruning parts (OR'd conditions from filterSql.where)
+    for (const part of whereRawParts) {
+      fromClause += ` AND ${part.query}`;
+      Object.assign(parameters, part.params);
+    }
 
     // When rootEventCondition is set, add a subquery filter to restrict rows
     // to traces whose root event has timeDimension in the query window.
