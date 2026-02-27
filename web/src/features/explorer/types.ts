@@ -26,5 +26,6 @@ export const IndexerHealthSchema = z.object({
   latestBlockTimestamp: z.string().optional(),
   syncLag: z.number().optional(),
   responseTimeMs: z.number().optional(),
+  networkUtilization: z.number().optional(),
 });
 export type IndexerHealth = z.infer<typeof IndexerHealthSchema>;
