@@ -162,12 +162,16 @@ export const ApiKeyRender = ({
       <div>
         <SubHeader title="Secret Key" />
         <div className="text-sm text-muted-foreground">
+          Server-side only. Required for completions, embeddings, and management.
           This key can only be viewed once. You can always create new keys in the {scope} settings.
         </div>
         <CodeView content={generatedKeys?.secretKey ?? "Loading ..."} className="mt-2" />
       </div>
       <div>
         <SubHeader title="Public Key" />
+        <div className="text-sm text-muted-foreground">
+          Safe to use in client-side code. Can list models and check health.
+        </div>
         <CodeView content={generatedKeys?.publicKey ?? "Loading ..."} className="mt-2" />
       </div>
       <div>
