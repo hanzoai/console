@@ -40,7 +40,7 @@
     "@release-it/bumper": "^7.0.5",
     "@types/dagre": "^0.7.53",
     "braces": "3.0.3",
-    "dotenv-cli": "^7.4.4",
+    "dotenv-cli": "^11.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
