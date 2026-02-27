@@ -1,6 +1,6 @@
 /**
  * Support or Upgrade Page - Stub for Hanzo console.
- * Premium features are available through Hanzo IAM.
+ * Premium features are available through Hanzo Billing.
  */
 
 import { Card } from "@/src/components/ui/card";
@@ -19,7 +19,7 @@ export const SupportOrUpgradePage = ({
       <h3 className="mb-2 text-lg font-semibold">{title}</h3>
       <p className="mb-4 text-muted-foreground">{description}</p>
       <Button asChild>
-        <a href="https://hanzo.id/upgrade" target="_blank" rel="noopener noreferrer">
+        <a href="https://billing.hanzo.ai/upgrade" target="_blank" rel="noopener noreferrer">
           <ExternalLink className="mr-2 h-4 w-4" />
           Upgrade Plan
         </a>

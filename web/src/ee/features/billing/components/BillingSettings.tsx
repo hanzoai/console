@@ -1,6 +1,6 @@
 /**
  * Billing Settings - Stub for Hanzo console.
- * Billing is handled by Hanzo IAM (hanzo.id).
+ * Billing is handled by billing.hanzo.ai.
  */
 
 import Header from "@/src/components/layouts/header";
@@ -14,9 +14,9 @@ export const BillingSettings = () => {
       <Header title="Usage & Billing" />
       <Card className="p-6">
         <div className="space-y-4">
-          <p className="text-muted-foreground">Billing and usage are managed through Hanzo IAM.</p>
+          <p className="text-muted-foreground">Billing and usage are managed through Hanzo Billing.</p>
           <Button asChild>
-            <a href="https://hanzo.id/billing" target="_blank" rel="noopener noreferrer">
+            <a href="https://billing.hanzo.ai" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
               Manage Billing
             </a>
