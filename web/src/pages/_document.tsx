@@ -1,7 +1,7 @@
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
-  const analyticsUrl = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://a.hanzo.ai";
+  const analyticsUrl = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_URL || "https://analytics.hanzo.ai";
   const analyticsTrackerScript = process.env.NEXT_PUBLIC_HANZO_ANALYTICS_SCRIPT || "hanzo.js";
 
   return (
