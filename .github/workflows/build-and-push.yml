@@ -63,7 +63,7 @@ jobs:
         cache-to: type=gha,mode=max
         build-args: |
           NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
-          NEXT_PUBLIC_HANZO_CLOUD_REGION=us
+          NEXT_PUBLIC_HANZO_CLOUD_REGION=US
 
   build-worker:
     runs-on: ubuntu-latest
