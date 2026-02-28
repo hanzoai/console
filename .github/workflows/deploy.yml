@@ -132,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send notification
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.SLACK_WEBHOOK != ''
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
@@ -142,6 +142,5 @@ jobs:
             Commit: ${{ github.sha }}
             Author: ${{ github.actor }}
             Message: ${{ github.event.head_commit.message }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

@@ -46,10 +46,7 @@ import { ClickhouseReadSkipCache } from "./utils/clickhouseReadSkipCache";
 import { experimentCreateQueueProcessor } from "./queues/experimentQueue";
 import { traceDeleteProcessor } from "./queues/traceDelete";
 import { projectDeleteProcessor } from "./queues/projectDelete";
-import {
-  postHogIntegrationProcessingProcessor,
-  postHogIntegrationProcessor,
-} from "./queues/postHogIntegrationQueue";
+import { postHogIntegrationProcessingProcessor, postHogIntegrationProcessor } from "./queues/postHogIntegrationQueue";
 import {
   mixpanelIntegrationProcessingProcessor,
   mixpanelIntegrationProcessor,
