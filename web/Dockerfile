@@ -177,8 +177,8 @@ ENV PORT 3000
 # Reasoning: ENTRYPOINT is overridden by some self-hosted deployments, thus changing this is breaking
 ENTRYPOINT ["dumb-init", "--", "./web/entrypoint.sh"]
 
-# startup command - use dd-trace if NEXT_PUBLIC_HANZO_CLOUD_REGION is configured
-CMD if [ -n "$NEXT_PUBLIC_HANZO_CLOUD_REGION" ]; then \
+# startup command - use dd-trace only if it was installed at build time
+CMD if [ -f "/app/node_modules/dd-trace/initialize.mjs" ]; then \
     node --import dd-trace/initialize.mjs ./web/server.js --keepAliveTimeout 110000; \
     else \
     node ./web/server.js --keepAliveTimeout 110000; \
