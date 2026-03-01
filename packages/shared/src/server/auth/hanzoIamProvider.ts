@@ -29,7 +29,7 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
   const issuer = options.serverUrl.replace(/\/$/, "");
 
   return {
-    id: "iam",
+    id: "hanzo-iam",
     name: "Hanzo IAM",
     type: "oauth",
     wellKnown: `${issuer}/.well-known/openid-configuration`,

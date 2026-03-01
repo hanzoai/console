@@ -360,10 +360,30 @@ const enforceIsAuthedAndOrgMember = t.middleware(async (opts) => {
   const orgId = result.data.orgId;
   const sessionOrg = ctx.session.user.organizations.find((org) => org.id === orgId);
 
-  if (
-    !sessionOrg
-    // && ctx.session.user.admin !== true
-  ) {
+  if (!sessionOrg) {
+    if (ctx.session.user.admin === true) {
+      // Admins can access any org — verify it exists in DB
+      const dbOrg = await ctx.prisma.organization.findFirst({
+        select: { id: true },
+        where: { id: orgId },
+      });
+      if (!dbOrg) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+      return next({
+        ctx: {
+          session: {
+            ...ctx.session,
+            user: ctx.session.user,
+            orgId: orgId,
+            orgRole: Role.OWNER,
+          },
+        },
+      });
+    }
     logger.error(`User ${ctx.session.user.id} is not a member of org ${orgId}`);
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -377,7 +397,7 @@ const enforceIsAuthedAndOrgMember = t.middleware(async (opts) => {
         ...ctx.session,
         user: ctx.session.user,
         orgId: orgId,
-        orgRole: ctx.session.user.admin === true ? Role.OWNER : sessionOrg!.role,
+        orgRole: sessionOrg.role,
       },
     },
   });
