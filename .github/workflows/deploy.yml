@@ -29,6 +29,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write  # required for KMS OIDC auth
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
@@ -41,6 +42,15 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Load Docker Hub secrets from Hanzo KMS
+        uses: hanzoai/universe/.github/actions/kms-action@main
+        with:
+          identity-id: ${{ vars.KMS_IDENTITY_ID }}
+          project-id: ${{ vars.KMS_PROJECT_ID }}
+          environment: production
+          secret-path: /github-actions/docker
+          kms-domain: https://kms.hanzo.ai
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -51,8 +61,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata
         id: meta
@@ -85,10 +95,21 @@ jobs:
     if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: read
+      id-token: write  # required for KMS OIDC auth
     steps:
+      - name: Load deploy secrets from Hanzo KMS
+        uses: hanzoai/universe/.github/actions/kms-action@main
+        with:
+          identity-id: ${{ vars.KMS_IDENTITY_ID }}
+          project-id: ${{ vars.KMS_PROJECT_ID }}
+          environment: production
+          secret-path: /github-actions/deploy
+          kms-domain: https://kms.hanzo.ai
+
       - name: Trigger Hanzo Platform Deployment
         run: |
-          # Trigger deployment via Hanzo Platform webhook
           curl -X POST \
             -H "Content-Type: application/json" \
             -H "User-Agent: Go-http-client/1.1" \
@@ -101,17 +122,28 @@ jobs:
                 "repo_name": "hanzoai/console"
               }
             }' \
-            "https://platform.hanzo.ai/api/deploy/${{ secrets.PLATFORM_DEPLOY_TOKEN }}"
+            "https://platform.hanzo.ai/api/deploy/${{ env.PLATFORM_DEPLOY_TOKEN }}"
 
   deploy-staging:
     needs: build
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
     runs-on: ubuntu-latest
     environment: staging
+    permissions:
+      contents: read
+      id-token: write  # required for KMS OIDC auth
     steps:
+      - name: Load staging deploy secrets from Hanzo KMS
+        uses: hanzoai/universe/.github/actions/kms-action@main
+        with:
+          identity-id: ${{ vars.KMS_IDENTITY_ID }}
+          project-id: ${{ vars.KMS_PROJECT_ID }}
+          environment: staging
+          secret-path: /github-actions/deploy
+          kms-domain: https://kms.hanzo.ai
+
       - name: Trigger Hanzo Platform Staging Deployment
         run: |
-          # Trigger staging deployment via Hanzo Platform webhook
           curl -X POST \
             -H "Content-Type: application/json" \
             -H "User-Agent: Go-http-client/1.1" \
@@ -124,7 +156,7 @@ jobs:
                 "repo_name": "hanzoai/console"
               }
             }' \
-            "https://platform.hanzo.ai/api/deploy/${{ secrets.PLATFORM_DEPLOY_TOKEN_STAGING }}"
+            "https://platform.hanzo.ai/api/deploy/${{ env.PLATFORM_DEPLOY_TOKEN_STAGING }}"
 
   notify:
     needs: [build, deploy-production, deploy-staging]
@@ -132,7 +164,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send notification
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.SLACK_WEBHOOK != ''
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.SLACK_WEBHOOK != ''
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
@@ -143,4 +175,4 @@ jobs:
             Author: ${{ github.actor }}
             Message: ${{ github.event.head_commit.message }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK }}
