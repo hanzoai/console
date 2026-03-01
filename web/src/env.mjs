@@ -365,6 +365,22 @@ export const env = createEnv({
       .optional(),
     HANZO_INIT_USER_NAME: z.string().optional(),
     HANZO_INIT_USER_PASSWORD: z.string().optional(),
+    // CSV of "email:orgId" pairs — grants OWNER of specific org. Use "email:*" to grant all orgs.
+    // Example: "z@lux.network:lux,z@zoo.ngo:zoo,z@pars.network:pars"
+    HANZO_INIT_ORG_OWNERS: z
+      .string()
+      .optional()
+      .transform((val) =>
+        val
+          ? val
+              .split(",")
+              .map((pair) => {
+                const [email, orgId] = pair.trim().split(":");
+                return email && orgId ? { email: email.trim(), orgId: orgId.trim() } : null;
+              })
+              .filter((x): x is { email: string; orgId: string } => x !== null)
+          : undefined,
+      ),
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
       .number()
       .positive()
@@ -800,6 +816,7 @@ export const env = createEnv({
     HANZO_INIT_USER_EMAIL: process.env.HANZO_INIT_USER_EMAIL,
     HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
     HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
+    HANZO_INIT_ORG_OWNERS: process.env.HANZO_INIT_ORG_OWNERS,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
     NEXT_PUBLIC_BOT_GATEWAY_URL: process.env.NEXT_PUBLIC_BOT_GATEWAY_URL,

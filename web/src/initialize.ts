@@ -200,16 +200,32 @@ if (initOrganizations.length > 0) {
     }
   }
 
-  // Create User: Org -> User
+  // Helper to grant OWNER membership for an email across a set of org IDs
+  const grantOwner = async (email: string, targetOrgIds: Iterable<string>) => {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (!existingUser) {
+      logger.warn(
+        `[Hanzo Init] User "${email}" not found in DB — skipping org membership grant. ` +
+          `They will be granted OWNER on next startup after first login.`,
+      );
+      return;
+    }
+    for (const orgId of targetOrgIds) {
+      if (!orgIds.has(orgId)) continue;
+      await prisma.organizationMembership.upsert({
+        where: { orgId_userId: { userId: existingUser.id, orgId } },
+        update: { role: "OWNER" },
+        create: { userId: existingUser.id, orgId, role: "OWNER" },
+      });
+    }
+  };
+
+  // HANZO_INIT_USER_EMAIL → OWNER of all initialized orgs
   if (env.HANZO_INIT_USER_EMAIL) {
     const email = env.HANZO_INIT_USER_EMAIL.toLowerCase();
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     let userId = existingUser?.id;
 
-    // Create user if it doesn't exist yet
     if (!userId && env.HANZO_INIT_USER_PASSWORD) {
       userId = await createUserEmailPassword(
         email,
@@ -224,19 +240,24 @@ if (initOrganizations.length > 0) {
           `HANZO_INIT_USER_PASSWORD is not set. Skipping membership bootstrap for initialized orgs.`,
       );
     } else {
-      // Create OrgMembership: Org -> OrgMembership <- User for all initialized organizations
       for (const orgId of orgIds) {
         await prisma.organizationMembership.upsert({
-          where: {
-            orgId_userId: { userId, orgId },
-          },
+          where: { orgId_userId: { userId, orgId } },
           update: { role: "OWNER" },
-          create: {
-            userId,
-            orgId,
-            role: "OWNER",
-          },
+          create: { userId, orgId, role: "OWNER" },
         });
+      }
+    }
+  }
+
+  // HANZO_INIT_ORG_OWNERS → scoped per-email OWNER grants ("email:orgId" or "email:*")
+  if (env.HANZO_INIT_ORG_OWNERS) {
+    for (const { email, orgId } of env.HANZO_INIT_ORG_OWNERS) {
+      const normalizedEmail = email.toLowerCase();
+      if (orgId === "*") {
+        await grantOwner(normalizedEmail, orgIds);
+      } else {
+        await grantOwner(normalizedEmail, [orgId]);
       }
     }
   }
