@@ -1,6 +1,6 @@
 import { Job, Processor } from "bullmq";
 import {
-  clickhouseClient,
+  datastoreClient,
   createIngestionEventSchema,
   getClickhouseEntityType,
   getCurrentSpan,
@@ -19,11 +19,10 @@ import {
   compareVersions,
   ResourceSpan,
 } from "@hanzo/shared/src/server";
-import { applyIngestionMasking, isIngestionMaskingEnabled } from "@hanzo/shared/src/server/ee/ingestionMasking";
 import { env } from "../env";
 import { IngestionService } from "../services/IngestionService";
 import { prisma } from "@hanzo/shared/src/db";
-import { ClickhouseWriter } from "../services/ClickhouseWriter";
+import { DatastoreWriter } from "../services/DatastoreWriter";
 import { ForbiddenError, convertEventRecordToObservationForEval } from "@hanzo/shared";
 import {
   fetchObservationEvalConfigs,
@@ -187,26 +186,6 @@ export const otelIngestionQueueProcessor: Processor = async (
     // Parse spans from S3 download
     let parsedSpans = JSON.parse(resourceSpans);
 
-    // Apply ingestion masking if enabled (EE feature)
-    if (isIngestionMaskingEnabled()) {
-      const maskingResult = await applyIngestionMasking({
-        data: parsedSpans,
-        projectId,
-        orgId: job.data.payload.authCheck.scope.orgId,
-        propagatedHeaders: job.data.payload.propagatedHeaders,
-      });
-
-      if (!maskingResult.success) {
-        // Fail-closed: drop event
-        logger.warn(`Dropping OTEL event due to masking failure`, {
-          projectId,
-          error: maskingResult.error,
-        });
-        return;
-      }
-      parsedSpans = maskingResult.data;
-    }
-
     // Generate events via OtelIngestionProcessor
     const processor = new OtelIngestionProcessor({
       projectId,
@@ -243,7 +222,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     if (!redis) throw new Error("Redis not available");
     if (!prisma) throw new Error("Prisma not available");
 
-    const ingestionService = new IngestionService(redis, prisma, ClickhouseWriter.getInstance(), clickhouseClient());
+    const ingestionService = new IngestionService(redis, prisma, DatastoreWriter.getInstance(), datastoreClient());
 
     // Decide whether observations should be processed via new flow (directly to events table)
     // or via the dual write (staging table and batch job to events).

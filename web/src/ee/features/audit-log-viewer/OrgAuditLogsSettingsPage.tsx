@@ -1,5 +1,7 @@
-/**
- * Organization Audit Logs Settings Page — delegates to the full implementation.
- * All self-hosted plans include audit logs.
- */
-export { OrgAuditLogsSettingsPage } from "@/src/features/audit-log-viewer/OrgAuditLogsSettingsPage";
+interface OrgAuditLogsSettingsPageProps {
+  orgId?: string;
+}
+
+export function OrgAuditLogsSettingsPage(_props: OrgAuditLogsSettingsPageProps) {
+  return null;
+}

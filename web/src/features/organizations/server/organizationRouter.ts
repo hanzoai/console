@@ -155,7 +155,8 @@ export const organizationsRouter = createTRPCRouter({
       if (isCloudBillingEnabled()) {
         try {
           const billingService = createBillingServiceFromContext(ctx);
-          await billingService.cancelImmediatelyAndInvoice(input.orgId);
+          if (!billingService) throw new Error("Billing service not available");
+          await (billingService as any).cancelImmediatelyAndInvoice(input.orgId);
         } catch (e) {
           // If billing cancellation fails for reasons other than no subscription, abort deletion
           throw new TRPCError({

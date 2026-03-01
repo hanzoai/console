@@ -1,5 +1,8 @@
-/**
- * Audit Logs Settings Page — delegates to the full implementation.
- * All self-hosted plans include audit logs.
- */
-export { AuditLogsSettingsPage } from "@/src/features/audit-log-viewer/AuditLogsSettingsPage";
+interface AuditLogsSettingsPageProps {
+  projectId?: string;
+  orgId?: string;
+}
+
+export function AuditLogsSettingsPage(_props: AuditLogsSettingsPageProps) {
+  return null;
+}

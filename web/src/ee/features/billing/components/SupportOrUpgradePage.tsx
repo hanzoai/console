@@ -1,29 +1,12 @@
-/**
- * Support or Upgrade Page - Stub for Hanzo console.
- * Premium features are available through Hanzo Billing.
- */
+import type { ReactNode } from "react";
 
-import { Card } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
-import { ExternalLink } from "lucide-react";
-
-export const SupportOrUpgradePage = ({
-  title = "Premium Feature",
-  description = "This feature requires a premium subscription.",
-}: {
+interface SupportOrUpgradePageProps {
+  children?: ReactNode;
   title?: string;
   description?: string;
-}) => {
-  return (
-    <Card className="p-6 text-center">
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-      <p className="mb-4 text-muted-foreground">{description}</p>
-      <Button asChild>
-        <a href="https://billing.hanzo.ai/upgrade" target="_blank" rel="noopener noreferrer">
-          <ExternalLink className="mr-2 h-4 w-4" />
-          Upgrade Plan
-        </a>
-      </Button>
-    </Card>
-  );
-};
+}
+
+export function SupportOrUpgradePage({ children, title, description }: SupportOrUpgradePageProps) {
+  if (children) return <>{children}</>;
+  return null;
+}
