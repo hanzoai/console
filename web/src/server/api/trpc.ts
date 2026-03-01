@@ -85,7 +85,7 @@ import {
   getTraceById,
   logger,
   contextWithHanzoProps,
-  ClickHouseResourceError,
+  DatastoreResourceError,
 } from "@hanzo/shared/src/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
@@ -158,13 +158,13 @@ const withErrorHandling = t.middleware(async ({ ctx, next }) => {
   const res = await next({ ctx }); // pass the context to the next middleware
 
   if (!res.ok) {
-    if (res.error.cause instanceof ClickHouseResourceError) {
+    if (res.error.cause instanceof DatastoreResourceError) {
       // Surface ClickHouse errors using an advice message
       // which is supposed to provide a bit of guidance to the user.
       logErrorByCode("UNPROCESSABLE_CONTENT", res.error);
       res.error = new TRPCError({
         code: "UNPROCESSABLE_CONTENT",
-        message: ClickHouseResourceError.ERROR_ADVICE_MESSAGE,
+        message: DatastoreResourceError.ERROR_ADVICE_MESSAGE,
       });
     } else {
       // Throw a new TRPC error with:
@@ -421,7 +421,7 @@ const enforceTraceAccess = t.middleware(async (opts) => {
   const fromTimestamp = result.data.fromTimestamp;
   const verbosity = result.data.verbosity;
 
-  const clickhouseTrace = await getTraceById({
+  const datastoreTrace = await getTraceById({
     traceId,
     projectId,
     timestamp: timestamp ?? undefined,
@@ -430,10 +430,10 @@ const enforceTraceAccess = t.middleware(async (opts) => {
       truncated: verbosity === "truncated",
       shouldJsonParse: false, // we do not want to parse the input/output for tRPC
     },
-    clickhouseFeatureTag: "tracing-trpc",
+    datastoreFeatureTag: "tracing-trpc",
   });
 
-  if (!clickhouseTrace) {
+  if (!datastoreTrace) {
     logger.error(`Trace with id ${traceId} not found for project ${projectId}`);
     throw new TRPCError({
       code: "NOT_FOUND",
@@ -442,9 +442,9 @@ const enforceTraceAccess = t.middleware(async (opts) => {
   }
 
   const trace = {
-    ...clickhouseTrace,
-    input: parseIO(clickhouseTrace.input, verbosity),
-    output: parseIO(clickhouseTrace.output, verbosity),
+    ...datastoreTrace,
+    input: parseIO(datastoreTrace.input, verbosity),
+    output: parseIO(datastoreTrace.output, verbosity),
   };
 
   const sessionProject = ctx.session?.user?.organizations

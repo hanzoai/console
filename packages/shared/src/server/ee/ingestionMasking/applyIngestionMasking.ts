@@ -46,7 +46,7 @@ export function isIngestionMaskingEnabled(envOverride?: SharedEnv): boolean {
     return false;
   }
 
-  if (!isEnterpriseLicenseAvailable(envOverride)) {
+  if (!isEnterpriseLicenseAvailable()) {
     logger.warn(
       "Ingestion masking callback URL is configured but enterprise license is not available. Masking will be disabled. Ingestion masking requires Hanzo Cloud or a self-hosted enterprise license (hanzo_ee_*).",
     );

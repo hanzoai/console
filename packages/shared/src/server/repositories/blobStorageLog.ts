@@ -1,6 +1,6 @@
-import { commandClickhouse, queryClickhouse, queryClickhouseStream } from "./clickhouse";
+import { commandDatastore, queryDatastore, queryDatastoreStream } from "./datastore";
 import { BlobStorageFileRefRecordReadType } from "./definitions";
-import { convertDateToClickhouseDateTime } from "../clickhouse/client";
+import { convertDateToDatastoreDateTime } from "../datastore/client";
 
 export const getBlobStorageByProjectAndEntityId = async (
   projectId: string,
@@ -15,7 +15,7 @@ export const getBlobStorageByProjectAndEntityId = async (
     and entity_id = {entityId: String}
   `;
 
-  return queryClickhouse<BlobStorageFileRefRecordReadType>({
+  return queryDatastore<BlobStorageFileRefRecordReadType>({
     query,
     params: {
       projectId,
@@ -37,7 +37,7 @@ export const getBlobStorageByProjectId = (projectId: string): AsyncGenerator<Blo
     where project_id = {projectId: String}
   `;
 
-  return queryClickhouseStream<BlobStorageFileRefRecordReadType>({
+  return queryDatastoreStream<BlobStorageFileRefRecordReadType>({
     query,
     params: {
       projectId,
@@ -61,11 +61,11 @@ export const getBlobStorageByProjectIdBeforeDate = (
         and created_at <= {beforeDate: DateTime64(3)}
     `;
 
-  return queryClickhouseStream<BlobStorageFileRefRecordReadType>({
+  return queryDatastoreStream<BlobStorageFileRefRecordReadType>({
     query,
     params: {
       projectId,
-      beforeDate: convertDateToClickhouseDateTime(beforeDate),
+      beforeDate: convertDateToDatastoreDateTime(beforeDate),
     },
     tags: {
       feature: "eventLog",
@@ -88,14 +88,14 @@ export const getBlobStorageByProjectIdAndEntityIds = (
       and entity_id in ({entityIds: Array(String)})
   `;
 
-  return queryClickhouseStream<BlobStorageFileRefRecordReadType>({
+  return queryDatastoreStream<BlobStorageFileRefRecordReadType>({
     query,
     params: {
       projectId,
       entityType,
       entityIds,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: 120_000, // 2 minutes
     },
     tags: {
@@ -155,13 +155,13 @@ export const getBlobStorageByProjectIdAndTraceIds = (
     where el.project_id = {projectId: String}
   `;
 
-  return queryClickhouseStream<BlobStorageFileRefRecordReadType>({
+  return queryDatastoreStream<BlobStorageFileRefRecordReadType>({
     query,
     params: {
       projectId,
       traceIds,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: 120_000, // 2 minutes
     },
     tags: {
@@ -194,7 +194,7 @@ export const insertIntoS3RefsTableFromEventLog = async (limit: number, offset: n
     OFFSET {offset: Int32}
   `;
 
-  await commandClickhouse({
+  await commandDatastore({
     query,
     params: {
       limit,
@@ -214,7 +214,7 @@ export const getLastEventLogPrimaryKey = async () => {
     ORDER BY (project_id, entity_type, entity_id, bucket_path) ASC
     LIMIT 1
   `;
-  const result = await queryClickhouse<{
+  const result = await queryDatastore<{
     project_id: string;
     entity_type: string;
     entity_id: string;
@@ -237,7 +237,7 @@ export const findS3RefsByPrimaryKey = async (primaryKey: {
       AND entity_id = {entity_id: String}
       AND bucket_path = {bucket_path: String}
   `;
-  return queryClickhouse<BlobStorageFileRefRecordReadType>({
+  return queryDatastore<BlobStorageFileRefRecordReadType>({
     query,
     params: primaryKey,
   });

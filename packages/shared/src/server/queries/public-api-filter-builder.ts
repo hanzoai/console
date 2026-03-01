@@ -16,11 +16,11 @@ import { createFilterFromFilterState } from "./clickhouse-sql/factory";
 
 export type ApiColumnMapping = {
   id: string;
-  clickhouseSelect: string;
-  clickhouseTable: string;
+  datastoreSelect: string;
+  datastoreTable: string;
   filterType: string;
   operator?: ClickhouseOperator;
-  clickhousePrefix?: string;
+  datastorePrefix?: string;
 };
 
 /**
@@ -94,29 +94,29 @@ export function createPublicApiTracesColumnMapping(
       simpleFilters.push(
         {
           id: "fromTimestamp",
-          clickhouseSelect: timestampColumn,
+          datastoreSelect: timestampColumn,
           operator: ">=" as const,
           filterType: def.filterType,
-          clickhouseTable: tableName,
-          clickhousePrefix: tablePrefix,
+          datastoreTable: tableName,
+          datastorePrefix: tablePrefix,
         },
         {
           id: "toTimestamp",
-          clickhouseSelect: timestampColumn,
+          datastoreSelect: timestampColumn,
           operator: "<" as const,
           filterType: def.filterType,
-          clickhouseTable: tableName,
-          clickhousePrefix: tablePrefix,
+          datastoreTable: tableName,
+          datastorePrefix: tablePrefix,
         },
       );
     } else {
       // Regular column mapping for simple filters
       simpleFilters.push({
         id: def.id,
-        clickhouseSelect: def.column,
+        datastoreSelect: def.column,
         filterType: def.filterType,
-        clickhouseTable: tableName,
-        clickhousePrefix: tablePrefix,
+        datastoreTable: tableName,
+        datastorePrefix: tablePrefix,
       });
     }
   }
@@ -135,75 +135,75 @@ export function createPublicApiObservationsColumnMapping(
   return [
     {
       id: "userId",
-      clickhouseSelect: "user_id",
+      datastoreSelect: "user_id",
       filterType: "StringFilter",
-      clickhouseTable: "traces",
-      clickhousePrefix: "t",
+      datastoreTable: "traces",
+      datastorePrefix: "t",
     },
     {
       id: "traceId",
-      clickhouseSelect: "trace_id",
+      datastoreSelect: "trace_id",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "name",
-      clickhouseSelect: "name",
+      datastoreSelect: "name",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "level",
-      clickhouseSelect: "level",
+      datastoreSelect: "level",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "type",
-      clickhouseSelect: "type",
+      datastoreSelect: "type",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "parentObservationId",
-      clickhouseSelect: parentFieldName,
+      datastoreSelect: parentFieldName,
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "fromStartTime",
-      clickhouseSelect: "start_time",
+      datastoreSelect: "start_time",
       operator: ">=",
       filterType: "DateTimeFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "toStartTime",
-      clickhouseSelect: "start_time",
+      datastoreSelect: "start_time",
       operator: "<",
       filterType: "DateTimeFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "version",
-      clickhouseSelect: "version",
+      datastoreSelect: "version",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
     {
       id: "environment",
-      clickhouseSelect: "environment",
+      datastoreSelect: "environment",
       filterType: "StringFilter",
-      clickhouseTable: tableName,
-      clickhousePrefix: tablePrefix,
+      datastoreTable: tableName,
+      datastorePrefix: tablePrefix,
     },
   ];
 }
@@ -234,11 +234,11 @@ export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType
 
           finalOperator && typeof value === "string" && ["<", "<=", ">", ">="].includes(finalOperator)
             ? (filterInstance = new DateTimeFilter({
-                clickhouseTable: columnMapping.clickhouseTable,
-                field: columnMapping.clickhouseSelect,
+                datastoreTable: columnMapping.datastoreTable,
+                field: columnMapping.datastoreSelect,
                 operator: finalOperator as "<" | "<=" | ">" | ">=",
                 value: new Date(value),
-                tablePrefix: columnMapping.clickhousePrefix,
+                tablePrefix: columnMapping.datastorePrefix,
               }))
             : undefined;
 
@@ -247,22 +247,22 @@ export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType
         case "ArrayOptionsFilter":
           if (Array.isArray(value) || typeof value === "string") {
             filterInstance = new ArrayOptionsFilter({
-              clickhouseTable: columnMapping.clickhouseTable,
-              field: columnMapping.clickhouseSelect,
+              datastoreTable: columnMapping.datastoreTable,
+              field: columnMapping.datastoreSelect,
               operator: "all of",
               values: Array.isArray(value) ? value : value.split(","),
-              tablePrefix: columnMapping.clickhousePrefix,
+              tablePrefix: columnMapping.datastorePrefix,
             });
           }
           break;
         case "StringOptionsFilter":
           if (Array.isArray(value) || typeof value === "string") {
             filterInstance = new StringOptionsFilter({
-              clickhouseTable: columnMapping.clickhouseTable,
-              field: columnMapping.clickhouseSelect,
+              datastoreTable: columnMapping.datastoreTable,
+              field: columnMapping.datastoreSelect,
               operator: "any of",
               values: Array.isArray(value) ? value : value.split(","),
-              tablePrefix: columnMapping.clickhousePrefix,
+              tablePrefix: columnMapping.datastorePrefix,
             });
           }
           break;
@@ -273,12 +273,12 @@ export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType
 
             if (parsedOperatorCategory.success && typeof filter.key === "string") {
               filterInstance = new CategoryOptionsFilter({
-                clickhouseTable: columnMapping.clickhouseTable,
-                field: columnMapping.clickhouseSelect,
+                datastoreTable: columnMapping.datastoreTable,
+                field: columnMapping.datastoreSelect,
                 key: filter.key,
                 operator: parsedOperatorCategory.data,
                 values: value,
-                tablePrefix: columnMapping.clickhousePrefix,
+                tablePrefix: columnMapping.datastorePrefix,
               });
             }
           }
@@ -287,11 +287,11 @@ export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType
         case "StringFilter":
           if (typeof value === "string") {
             filterInstance = new StringFilter({
-              clickhouseTable: columnMapping.clickhouseTable,
-              field: columnMapping.clickhouseSelect,
+              datastoreTable: columnMapping.datastoreTable,
+              field: columnMapping.datastoreSelect,
               operator: "=",
               value: value,
-              tablePrefix: columnMapping.clickhousePrefix,
+              tablePrefix: columnMapping.datastorePrefix,
             });
           }
           break;
@@ -301,11 +301,11 @@ export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType
 
           if (parsedOperatorNum.success) {
             filterInstance = new NumberFilter({
-              clickhouseTable: columnMapping.clickhouseTable,
-              field: columnMapping.clickhouseSelect,
+              datastoreTable: columnMapping.datastoreTable,
+              field: columnMapping.datastoreSelect,
               operator: parsedOperatorNum.data,
               value: Number(value),
-              tablePrefix: columnMapping.clickhousePrefix,
+              tablePrefix: columnMapping.datastorePrefix,
             });
           }
           break;

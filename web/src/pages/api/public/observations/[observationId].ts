@@ -26,7 +26,7 @@ export default withMiddlewares({
           ? query.useEventsTable === true
           : env.HANZO_ENABLE_EVENTS_TABLE_OBSERVATIONS;
 
-      const clickhouseObservation = useEventsTable
+      const datastoreObservation = useEventsTable
         ? await getObservationByIdFromEventsTable({
             id: query.observationId,
             projectId: auth.scope.projectId,
@@ -36,19 +36,19 @@ export default withMiddlewares({
             id: query.observationId,
             projectId: auth.scope.projectId,
             fetchWithInputOutput: true,
-            preferredClickhouseService: "ReadOnly",
+            preferredService: "ReadOnly",
           });
 
-      if (!clickhouseObservation) {
+      if (!datastoreObservation) {
         throw new ConsoleNotFoundError("Observation not found within authorized project");
       }
 
-      const model = clickhouseObservation.internalModelId
+      const model = datastoreObservation.internalModelId
         ? await prisma.model.findFirst({
             where: {
               AND: [
                 {
-                  id: clickhouseObservation.internalModelId,
+                  id: datastoreObservation.internalModelId,
                 },
                 {
                   OR: [
@@ -75,7 +75,7 @@ export default withMiddlewares({
         : undefined;
 
       const observation = {
-        ...clickhouseObservation,
+        ...datastoreObservation,
         ...enrichObservationWithModelData(model),
       };
 

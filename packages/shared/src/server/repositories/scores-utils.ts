@@ -1,8 +1,8 @@
 import { ScoreDataTypeType, ScoreDomain, ScoreSourceType } from "../../domain";
-import { PreferredClickhouseService } from "../clickhouse/client";
-import { queryClickhouse } from "./clickhouse";
+import { PreferredDatastoreService } from "../datastore/client";
+import { queryDatastore } from "./datastore";
 import { ScoreRecordReadType } from "./definitions";
-import { convertClickhouseScoreToDomain } from "./scores_converters";
+import { convertDatastoreScoreToDomain } from "./scores_converters";
 
 /**
  * @internal
@@ -15,14 +15,14 @@ export const _handleGetScoreById = async ({
   source,
   scoreScope,
   scoreDataTypes,
-  preferredClickhouseService,
+  preferredService,
 }: {
   projectId: string;
   scoreId: string;
   source?: ScoreSourceType;
   scoreScope: "traces_only" | "all";
   scoreDataTypes?: readonly ScoreDataTypeType[];
-  preferredClickhouseService?: PreferredClickhouseService;
+  preferredService?: PreferredDatastoreService;
 }): Promise<ScoreDomain | undefined> => {
   const query = `
   SELECT *
@@ -37,7 +37,7 @@ export const _handleGetScoreById = async ({
   LIMIT 1
 `;
 
-  const rows = await queryClickhouse<ScoreRecordReadType>({
+  const rows = await queryDatastore<ScoreRecordReadType>({
     query,
     params: {
       projectId,
@@ -51,9 +51,9 @@ export const _handleGetScoreById = async ({
       kind: "byId",
       projectId,
     },
-    preferredClickhouseService,
+    preferredService,
   });
-  return rows.map((row) => convertClickhouseScoreToDomain(row)).shift();
+  return rows.map((row) => convertDatastoreScoreToDomain(row)).shift();
 };
 
 /**
@@ -86,7 +86,7 @@ export const _handleGetScoresByIds = async ({
   LIMIT 1 BY s.id, s.project_id
 `;
 
-  const rows = await queryClickhouse<ScoreRecordReadType>({
+  const rows = await queryDatastore<ScoreRecordReadType>({
     query,
     params: {
       projectId,
@@ -101,5 +101,5 @@ export const _handleGetScoresByIds = async ({
       projectId,
     },
   });
-  return rows.map((row) => convertClickhouseScoreToDomain(row));
+  return rows.map((row) => convertDatastoreScoreToDomain(row));
 };

@@ -1,14 +1,5 @@
 /**
- * Organization Audit Logs Settings Page - stub for community edition.
- * Audit log features are only available in the enterprise/cloud edition.
+ * Organization Audit Logs Settings Page — delegates to the full implementation.
+ * All self-hosted plans include audit logs.
  */
-
-import { Card } from "@/src/components/ui/card";
-
-export const OrgAuditLogsSettingsPage = (_props: { orgId: string }) => {
-  return (
-    <Card className="p-4">
-      <p className="text-sm text-muted-foreground">Audit logs are only available in the enterprise edition.</p>
-    </Card>
-  );
-};
+export { OrgAuditLogsSettingsPage } from "@/src/features/audit-log-viewer/OrgAuditLogsSettingsPage";

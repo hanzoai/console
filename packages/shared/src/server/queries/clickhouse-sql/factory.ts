@@ -1,7 +1,7 @@
 import z from "zod/v4";
 import { singleFilter } from "../../../interfaces/filters";
 import { FilterCondition } from "../../../types";
-import { isValidTableName } from "../../clickhouse/schemaUtils";
+import { isValidTableName } from "../../datastore/schemaUtils";
 import { logger } from "../../logger";
 import { UiColumnMappings } from "../../../tableDefinitions";
 import {
@@ -46,32 +46,32 @@ export const createFilterFromFilterState = (
     switch (frontEndFilter.type) {
       case "string":
         return new StringFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           value: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
         });
       case "datetime":
         return new DateTimeFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           value: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
         });
       case "stringOptions":
         return new StringOptionsFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           values: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
         });
       case "categoryOptions":
         return new CategoryOptionsFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           key: frontEndFilter.key,
           values: frontEndFilter.value,
@@ -79,33 +79,33 @@ export const createFilterFromFilterState = (
         });
       case "number":
         return new NumberFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           value: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
-          clickhouseTypeOverwrite: column.clickhouseTypeOverwrite,
+          datastoreTypeOverwrite: column.datastoreTypeOverwrite,
         });
       case "arrayOptions":
         return new ArrayOptionsFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           values: frontEndFilter.value,
           tablePrefix: column.queryPrefix,
         });
       case "boolean":
         return new BooleanFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           value: frontEndFilter.value,
           operator: frontEndFilter.operator,
           tablePrefix: column.queryPrefix,
         });
       case "numberObject":
         return new NumberObjectFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           key: frontEndFilter.key,
           operator: frontEndFilter.operator,
           value: frontEndFilter.value,
@@ -113,8 +113,8 @@ export const createFilterFromFilterState = (
         });
       case "stringObject":
         return new StringObjectFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           key: frontEndFilter.key,
           value: frontEndFilter.value,
@@ -124,23 +124,23 @@ export const createFilterFromFilterState = (
         // Events_* table uses empty string instead of NULL for parent_span_id
         if (
           frontEndFilter.column === "parentObservationId" &&
-          column.clickhouseTableName.startsWith("events")
+          column.datastoreTableName.startsWith("events")
         ) {
           const isNull = frontEndFilter.operator === "is null";
           // When the dimension SQL wraps the column with nullIf(col, ''), the value
           // is already NULL for empty strings — use a standard IS NULL / IS NOT NULL check.
           // When there is no nullIf wrapper, the column stores '' directly — use = '' / != ''.
-          const hasNullIf = NULL_IF_EMPTY_RE.test(column.clickhouseSelect);
+          const hasNullIf = NULL_IF_EMPTY_RE.test(column.datastoreSelect);
           const fieldWithPrefix = column.queryPrefix
-            ? `${column.queryPrefix}.${column.clickhouseSelect}`
-            : column.clickhouseSelect;
+            ? `${column.queryPrefix}.${column.datastoreSelect}`
+            : column.datastoreSelect;
           const query = hasNullIf
             ? `${fieldWithPrefix} IS ${isNull ? "" : "NOT "}NULL`
             : `${fieldWithPrefix} ${isNull ? "=" : "!="} ''`;
 
           return {
-            clickhouseTable: column.clickhouseTableName,
-            field: column.clickhouseSelect,
+            datastoreTable: column.datastoreTableName,
+            field: column.datastoreSelect,
             operator: isNull ? ("=" as const) : ("!=" as const),
             tablePrefix: column.queryPrefix,
             apply: () => ({ query, params: {} }),
@@ -148,8 +148,8 @@ export const createFilterFromFilterState = (
         }
 
         return new NullFilter({
-          clickhouseTable: column.clickhouseTableName,
-          field: column.clickhouseSelect,
+          datastoreTable: column.datastoreTableName,
+          field: column.datastoreSelect,
           operator: frontEndFilter.operator,
           tablePrefix: column.queryPrefix,
         });
@@ -184,9 +184,9 @@ const matchAndVerifyTracesUiColumn = (
     throw new QueryBuilderError(errorMessage);
   }
 
-  if (!isValidTableName(uiTable.clickhouseTableName)) {
+  if (!isValidTableName(uiTable.datastoreTableName)) {
     throw new QueryBuilderError(
-      `Invalid clickhouse table name: ${uiTable.clickhouseTableName}`,
+      `Invalid clickhouse table name: ${uiTable.datastoreTableName}`,
     );
   }
 
@@ -204,7 +204,7 @@ export function getProjectIdDefaultFilter(
   return {
     tracesFilter: new FilterList([
       new StringFilter({
-        clickhouseTable: "traces",
+        datastoreTable: "traces",
         field: "project_id",
         operator: "=",
         value: projectId,
@@ -213,7 +213,7 @@ export function getProjectIdDefaultFilter(
     ]),
     scoresFilter: new FilterList([
       new StringFilter({
-        clickhouseTable: "scores",
+        datastoreTable: "scores",
         field: "project_id",
         operator: "=",
         value: projectId,
@@ -221,7 +221,7 @@ export function getProjectIdDefaultFilter(
     ]),
     observationsFilter: new FilterList([
       new StringFilter({
-        clickhouseTable: "observations",
+        datastoreTable: "observations",
         field: "project_id",
         operator: "=",
         value: projectId,

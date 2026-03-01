@@ -5,7 +5,7 @@ import {
   AGGREGATABLE_SCORE_TYPES,
   AggregatableScoreDataType,
 } from "../../domain/scores";
-import { commandClickhouse, queryClickhouse, queryClickhouseStream, upsertClickhouse } from "./clickhouse";
+import { commandDatastore, queryDatastore, queryDatastoreStream, upsertDatastore } from "./datastore";
 import { FilterList, orderByToClickhouseSql } from "../queries";
 import { FilterCondition, FilterState, TimeFilter } from "../../types";
 import { createFilterFromFilterState, getProjectIdDefaultFilter } from "../queries/clickhouse-sql/factory";
@@ -15,18 +15,18 @@ import {
   scoresTableUiColumnDefinitions,
   scoresTableUiColumnDefinitionsFromEvents,
 } from "../tableMappings";
-import { convertScoreAggregation, convertClickhouseScoreToDomain, ScoreAggregation } from "./scores_converters";
+import { convertScoreAggregation, convertDatastoreScoreToDomain, ScoreAggregation } from "./scores_converters";
 import { SCORE_TO_TRACE_OBSERVATIONS_INTERVAL } from "./constants";
-import { convertDateToClickhouseDateTime, PreferredClickhouseService } from "../clickhouse/client";
+import { convertDateToDatastoreDateTime, PreferredDatastoreService } from "../datastore/client";
 import { ScoreRecordReadType } from "./definitions";
 import { env } from "../../env";
 import { _handleGetScoreById, _handleGetScoresByIds } from "./scores-utils";
-import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
+import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
 import type { AnalyticsScoreEvent } from "../analytics-integrations/types";
-import { ClickHouseClientConfigOptions } from "@clickhouse/client";
+import type { DatastoreClientConfig } from "../datastore/types";
 import { recordDistribution } from "../instrumentation";
 import { prisma } from "../../db";
-import { measureAndReturn } from "../clickhouse/measureAndReturn";
+import { measureAndReturn } from "../datastore/measureAndReturn";
 import { scoresColumnsTableUiColumnDefinitions } from "../tableMappings/mapScoresColumnsTable";
 
 export const searchExistingAnnotationScore = async (
@@ -61,7 +61,7 @@ export const searchExistingAnnotationScore = async (
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<ScoreRecordReadType>({
+  const rows = await queryDatastore<ScoreRecordReadType>({
     query,
     params: {
       projectId,
@@ -79,7 +79,7 @@ export const searchExistingAnnotationScore = async (
       projectId,
     },
   });
-  return rows.map((row) => convertClickhouseScoreToDomain(row)).shift();
+  return rows.map((row) => convertDatastoreScoreToDomain(row)).shift();
 };
 
 export const getScoreById = async ({
@@ -121,10 +121,10 @@ export const upsertScore = async (score: Partial<ScoreRecordReadType>) => {
   if (!["id", "project_id", "name", "timestamp"].every((key) => key in score)) {
     throw new Error("Identifier fields must be provided to upsert Score.");
   }
-  await upsertClickhouse({
+  await upsertDatastore({
     table: "scores",
     records: [score as ScoreRecordReadType],
-    eventBodyMapper: convertClickhouseScoreToDomain,
+    eventBodyMapper: convertDatastoreScoreToDomain,
     tags: {
       feature: "tracing",
       type: "score",
@@ -140,10 +140,10 @@ export type GetScoresForTracesProps<ExcludeMetadata extends boolean, IncludeHasM
   timestamp?: Date;
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: ExcludeMetadata;
   includeHasMetadata?: IncludeHasMetadata;
-  preferredClickhouseService?: PreferredClickhouseService;
+  preferredService?: PreferredDatastoreService;
 };
 
 type GetScoresForSessionsProps<ExcludeMetadata extends boolean, IncludeHasMetadata extends boolean> = {
@@ -151,7 +151,7 @@ type GetScoresForSessionsProps<ExcludeMetadata extends boolean, IncludeHasMetada
   sessionIds: string[];
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: ExcludeMetadata;
   includeHasMetadata?: IncludeHasMetadata;
 };
@@ -161,7 +161,7 @@ type GetScoresForDatasetRunsProps<ExcludeMetadata extends boolean, IncludeHasMet
   runIds: string[];
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: ExcludeMetadata;
   includeHasMetadata?: IncludeHasMetadata;
 };
@@ -183,7 +183,7 @@ export const getScoresForSessions = async <ExcludeMetadata extends boolean, Incl
     sessionIds,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadata = false,
   } = props;
@@ -202,7 +202,7 @@ export const getScoresForSessions = async <ExcludeMetadata extends boolean, Incl
       ${limit && offset ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
-  const rows = await queryClickhouse<ScoreRecordReadType>({
+  const rows = await queryDatastore<ScoreRecordReadType>({
     query: query,
     params: {
       projectId,
@@ -217,11 +217,11 @@ export const getScoresForSessions = async <ExcludeMetadata extends boolean, Incl
       kind: "list",
       projectId,
     },
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const includeMetadataPayload = excludeMetadata ? false : true;
-  return rows.map((row) => convertClickhouseScoreToDomain(row, includeMetadataPayload));
+  return rows.map((row) => convertDatastoreScoreToDomain(row, includeMetadataPayload));
 };
 
 export const getScoresForDatasetRuns = async <ExcludeMetadata extends boolean, IncludeHasMetadata extends boolean>(
@@ -232,7 +232,7 @@ export const getScoresForDatasetRuns = async <ExcludeMetadata extends boolean, I
     runIds,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadata = false,
   } = props;
@@ -251,7 +251,7 @@ export const getScoresForDatasetRuns = async <ExcludeMetadata extends boolean, I
       ${limit && offset ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
-  const rows = await queryClickhouse<ScoreRecordReadType>({
+  const rows = await queryDatastore<ScoreRecordReadType>({
     query: query,
     params: {
       projectId,
@@ -266,12 +266,12 @@ export const getScoresForDatasetRuns = async <ExcludeMetadata extends boolean, I
       kind: "list",
       projectId,
     },
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const includeMetadataPayload = excludeMetadata ? false : true;
   return rows.map((row) =>
-    convertClickhouseScoreToDomain<ExcludeMetadata, AggregatableScoreDataType>(row, includeMetadataPayload),
+    convertDatastoreScoreToDomain<ExcludeMetadata, AggregatableScoreDataType>(row, includeMetadataPayload),
   );
 };
 
@@ -318,7 +318,7 @@ export const getTraceScoresForDatasetRuns = async (
     LIMIT 1 BY s.id, s.project_id, dri.dataset_run_id
   `;
 
-  const rows = await queryClickhouse<
+  const rows = await queryDatastore<
     Omit<ScoreRecordReadType, "metadata"> & {
       has_metadata: 0 | 1;
       run_id: string;
@@ -340,7 +340,7 @@ export const getTraceScoresForDatasetRuns = async (
 
   const includeMetadataPayload = false;
   return rows.map((row) => ({
-    ...convertClickhouseScoreToDomain({ ...row, metadata: {} }, includeMetadataPayload),
+    ...convertDatastoreScoreToDomain({ ...row, metadata: {} }, includeMetadataPayload),
     datasetRunId: row.run_id,
     hasMetadata: !!row.has_metadata,
   }));
@@ -362,10 +362,10 @@ const getScoresForTracesInternal = async <
     dataTypes,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadata = false,
-    preferredClickhouseService,
+    preferredService,
   } = props;
 
   const select = formatMetadataSelect(excludeMetadata, includeHasMetadata);
@@ -383,7 +383,7 @@ const getScoresForTracesInternal = async <
       ${limit && offset ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
-  const rows = await queryClickhouse<
+  const rows = await queryDatastore<
     ScoreRecordReadType & {
       metadata: ExcludeMetadata extends true ? never : ScoreRecordReadType["metadata"];
       // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
@@ -397,7 +397,7 @@ const getScoresForTracesInternal = async <
       limit,
       offset,
       ...(dataTypes ? { dataTypes: dataTypes.map((d) => d.toString()) } : {}),
-      ...(timestamp ? { traceTimestamp: convertDateToClickhouseDateTime(timestamp) } : {}),
+      ...(timestamp ? { traceTimestamp: convertDateToDatastoreDateTime(timestamp) } : {}),
     },
     tags: {
       feature: "tracing",
@@ -405,13 +405,13 @@ const getScoresForTracesInternal = async <
       kind: "list",
       projectId,
     },
-    clickhouseConfigs,
-    preferredClickhouseService,
+    datastoreConfig,
+    preferredService,
   });
 
   const includeMetadataPayload = excludeMetadata ? false : true;
   return rows.map((row) => {
-    const score = convertClickhouseScoreToDomain(
+    const score = convertDatastoreScoreToDomain(
       {
         ...row,
         metadata: excludeMetadata ? {} : row.metadata,
@@ -457,7 +457,7 @@ export type GetScoresForObservationsProps<ExcludeMetadata extends boolean, Inclu
   observationIds: string[];
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: ExcludeMetadata;
   includeHasMetadata?: IncludeHasMetadata;
 };
@@ -471,7 +471,7 @@ export const getScoresForObservations = async <ExcludeMetadata extends boolean, 
     observationIds,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadata = false,
   } = props;
@@ -495,7 +495,7 @@ export const getScoresForObservations = async <ExcludeMetadata extends boolean, 
       ${limit !== undefined && offset !== undefined ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
-  const rows = await queryClickhouse<
+  const rows = await queryDatastore<
     ScoreRecordReadType & {
       metadata: ExcludeMetadata extends true ? never : ScoreRecordReadType["metadata"];
       // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
@@ -516,12 +516,12 @@ export const getScoresForObservations = async <ExcludeMetadata extends boolean, 
       kind: "list",
       projectId,
     },
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const includeMetadataPayload = excludeMetadata ? false : true;
   return rows.map((row) => ({
-    ...convertClickhouseScoreToDomain(
+    ...convertDatastoreScoreToDomain(
       {
         ...row,
         metadata: excludeMetadata ? {} : row.metadata,
@@ -550,7 +550,7 @@ export const getScoresGroupedByNameSourceType = async ({
   const scoresFilterRes = scoresFilter.apply();
 
   // Only join dataset run items and traces if there is a dataset run items filter
-  const performDatasetRunItemsAndTracesJoin = scoresFilter.some((f) => f.clickhouseTable === "dataset_run_items_rmt");
+  const performDatasetRunItemsAndTracesJoin = scoresFilter.some((f) => f.datastoreTable === "dataset_run_items_rmt");
 
   // We mainly use queries like this to retrieve filter options.
   // Therefore, we can skip final as some inaccuracy in count is acceptable.
@@ -572,7 +572,7 @@ export const getScoresGroupedByNameSourceType = async ({
     LIMIT 1000;
   `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     name: string;
     source: string;
     data_type: string;
@@ -581,8 +581,8 @@ export const getScoresGroupedByNameSourceType = async ({
     params: {
       projectId: projectId,
       dataTypes: AGGREGATABLE_SCORE_TYPES,
-      ...(fromTimestamp ? { fromTimestamp: convertDateToClickhouseDateTime(fromTimestamp) } : {}),
-      ...(toTimestamp ? { toTimestamp: convertDateToClickhouseDateTime(toTimestamp) } : {}),
+      ...(fromTimestamp ? { fromTimestamp: convertDateToDatastoreDateTime(fromTimestamp) } : {}),
+      ...(toTimestamp ? { toTimestamp: convertDateToDatastoreDateTime(toTimestamp) } : {}),
       ...(scoresFilterRes ? scoresFilterRes.params : {}),
     },
     tags: {
@@ -606,8 +606,8 @@ export const getNumericScoresGroupedByName = async (projectId: string, timestamp
         {
           uiTableName: "Timestamp",
           uiTableId: "timestamp",
-          clickhouseTableName: "scores",
-          clickhouseSelect: "timestamp",
+          datastoreTableName: "scores",
+          datastoreSelect: "timestamp",
         },
       ])
     : undefined;
@@ -628,7 +628,7 @@ export const getNumericScoresGroupedByName = async (projectId: string, timestamp
       LIMIT 1000;
     `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     name: string;
   }>({
     query: query,
@@ -653,8 +653,8 @@ export const getCategoricalScoresGroupedByName = async (projectId: string, times
         {
           uiTableName: "Timestamp",
           uiTableId: "timestamp",
-          clickhouseTableName: "scores",
-          clickhouseSelect: "timestamp",
+          datastoreTableName: "scores",
+          datastoreSelect: "timestamp",
         },
       ])
     : undefined;
@@ -674,7 +674,7 @@ export const getCategoricalScoresGroupedByName = async (projectId: string, times
     LIMIT 1000;
   `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     label: string;
     values: string[];
   }>({
@@ -770,11 +770,11 @@ export async function getScoresUiTable<ExcludeMetadata extends boolean, IncludeH
   orderBy: OrderByState;
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: ExcludeMetadata;
   includeHasMetadataFlag?: IncludeHasMetadata;
 }) {
-  const { excludeMetadata = false, includeHasMetadataFlag = false, clickhouseConfigs, ...rest } = props;
+  const { excludeMetadata = false, includeHasMetadataFlag = false, datastoreConfig, ...rest } = props;
 
   const rows = await getScoresUiGeneric<{
     id: string;
@@ -813,13 +813,13 @@ export async function getScoresUiTable<ExcludeMetadata extends boolean, IncludeH
     tags: { kind: "analytic" },
     excludeMetadata,
     includeHasMetadataFlag,
-    clickhouseConfigs,
+    datastoreConfig,
     ...rest,
   });
 
   const includeMetadataPayload = excludeMetadata ? false : true;
   return rows.map((row) => {
-    const score = convertClickhouseScoreToDomain(
+    const score = convertDatastoreScoreToDomain(
       {
         ...row,
         metadata: excludeMetadata ? {} : row.metadata,
@@ -848,7 +848,7 @@ const getScoresUiGeneric = async <T>(props: {
   limit?: number;
   offset?: number;
   tags?: Record<string, string>;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: boolean;
   includeHasMetadataFlag?: boolean;
 }): Promise<T[]> => {
@@ -858,7 +858,7 @@ const getScoresUiGeneric = async <T>(props: {
     orderBy,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadataFlag = false,
   } = props;
@@ -906,7 +906,7 @@ const getScoresUiGeneric = async <T>(props: {
   const scoresFilterRes = scoresFilter.apply();
 
   // Only join traces for rows or if there is a trace filter on counts
-  const performTracesJoin = props.select === "rows" || scoresFilter.some((f) => f.clickhouseTable === "traces");
+  const performTracesJoin = props.select === "rows" || scoresFilter.some((f) => f.datastoreTable === "traces");
 
   const query = `
       SELECT
@@ -941,11 +941,11 @@ const getScoresUiGeneric = async <T>(props: {
       },
     },
     fn: async (input) => {
-      return queryClickhouse<T>({
+      return queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs,
+        datastoreConfig,
       });
     },
   });
@@ -965,7 +965,7 @@ const getScoresUiGenericFromEvents = async <T>(props: {
   limit?: number;
   offset?: number;
   tags?: Record<string, string>;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
   excludeMetadata?: boolean;
   includeHasMetadataFlag?: boolean;
 }): Promise<T[]> => {
@@ -975,7 +975,7 @@ const getScoresUiGenericFromEvents = async <T>(props: {
     orderBy,
     limit,
     offset,
-    clickhouseConfigs,
+    datastoreConfig,
     excludeMetadata = false,
     includeHasMetadataFlag = false,
   } = props;
@@ -986,8 +986,8 @@ const getScoresUiGenericFromEvents = async <T>(props: {
   scoresFilter.push(...createFilterFromFilterState(filter, scoresTableUiColumnDefinitionsFromEvents));
 
   // Separate trace filters (events_core) from score filters
-  const traceFilters = scoresFilter.filter((f) => f.clickhouseTable === "events_core");
-  const scoreOnlyFilters = scoresFilter.filter((f) => f.clickhouseTable !== "events_core");
+  const traceFilters = scoresFilter.filter((f) => f.datastoreTable === "events_core");
+  const scoreOnlyFilters = scoresFilter.filter((f) => f.datastoreTable !== "events_core");
 
   const scoreOnlyFilterRes = scoreOnlyFilters.apply();
 
@@ -1014,7 +1014,7 @@ const getScoresUiGenericFromEvents = async <T>(props: {
     ? scoresTableUiColumnDefinitionsFromEvents.find(
         (c) =>
           (c.uiTableName === orderBy.column || c.uiTableId === orderBy.column) &&
-          c.clickhouseTableName === "events_core",
+          c.datastoreTableName === "events_core",
       )
     : null;
 
@@ -1098,11 +1098,11 @@ const getScoresUiGenericFromEvents = async <T>(props: {
       },
     },
     fn: async (input) => {
-      return queryClickhouse<T>({
+      return queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs,
+        datastoreConfig,
       });
     },
   });
@@ -1135,9 +1135,9 @@ export async function getScoresUiTableFromEvents(props: {
   orderBy: OrderByState;
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
 }) {
-  const { clickhouseConfigs, ...rest } = props;
+  const { datastoreConfig, ...rest } = props;
 
   const rows = await getScoresUiGenericFromEvents<{
     id: string;
@@ -1168,12 +1168,12 @@ export async function getScoresUiTableFromEvents(props: {
     tags: { kind: "analytic" },
     excludeMetadata: true,
     includeHasMetadataFlag: true,
-    clickhouseConfigs,
+    datastoreConfig,
     ...rest,
   });
 
   return rows.map((row) => {
-    const score = convertClickhouseScoreToDomain(
+    const score = convertDatastoreScoreToDomain(
       {
         ...row,
         metadata: {},
@@ -1207,7 +1207,7 @@ export const getScoreNames = async (projectId: string, timestampFilter: FilterSt
       LIMIT 1000;
     `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     name: string;
     count: string;
   }>({
@@ -1249,7 +1249,7 @@ export const getScoreStringValues = async (projectId: string, timestampFilter: F
       LIMIT 1000;
     `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     string_value: string;
     count: string;
   }>({
@@ -1278,13 +1278,13 @@ export const deleteScores = async (projectId: string, scoreIds: string[]) => {
     WHERE project_id = {projectId: String}
     AND id in ({scoreIds: Array(String)});
   `;
-  await commandClickhouse({
+  await commandDatastore({
     query: query,
     params: {
       projectId,
       scoreIds,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1302,13 +1302,13 @@ export const deleteScoresByTraceIds = async (projectId: string, traceIds: string
     WHERE project_id = {projectId: String}
     AND trace_id IN ({traceIds: Array(String)});
   `;
-  await commandClickhouse({
+  await commandDatastore({
     query: query,
     params: {
       projectId,
       traceIds,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: 120_000, // 2 minutes
     },
     tags: {
@@ -1337,10 +1337,10 @@ export const deleteScoresByProjectId = async (projectId: string): Promise<boolea
     projectId,
   };
 
-  await commandClickhouse({
+  await commandDatastore({
     query,
     params: { projectId },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags,
@@ -1358,11 +1358,11 @@ export const hasAnyScoreOlderThan = async (projectId: string, beforeDate: Date) 
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: {
       projectId,
-      cutoffDate: convertDateToClickhouseDateTime(beforeDate),
+      cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
     tags: {
       feature: "tracing",
@@ -1386,13 +1386,13 @@ export const deleteScoresOlderThanDays = async (projectId: string, beforeDate: D
     WHERE project_id = {projectId: String}
     AND timestamp < {cutoffDate: DateTime64(3)};
   `;
-  await commandClickhouse({
+  await commandDatastore({
     query: query,
     params: {
       projectId,
-      cutoffDate: convertDateToClickhouseDateTime(beforeDate),
+      cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1410,7 +1410,7 @@ export const getNumericScoreHistogram = async (projectId: string, filter: Filter
   const chFilter = new FilterList(createFilterFromFilterState(filter, dashboardColumnDefinitions));
   const chFilterRes = chFilter.apply();
 
-  const traceFilter = chFilter.find((f) => f.clickhouseTable === "traces");
+  const traceFilter = chFilter.find((f) => f.datastoreTable === "traces");
 
   const query = `
     select s.value
@@ -1442,7 +1442,7 @@ export const getNumericScoreHistogram = async (projectId: string, filter: Filter
       },
     },
     fn: async (input) => {
-      return queryClickhouse<{ value: number }>({
+      return queryDatastore<{ value: number }>({
         query,
         params: input.params,
         tags: input.tags,
@@ -1481,7 +1481,7 @@ export const getAggregatedScoresForPrompts = async (
     AND s.data_type IN ({dataTypes: Array(String)})
   `;
 
-  const rows = await queryClickhouse<
+  const rows = await queryDatastore<
     ScoreAggregation & {
       prompt_id: string;
       // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
@@ -1521,11 +1521,11 @@ export const getScoreCountsByProjectInCreationInterval = async ({ start, end }: 
     GROUP BY project_id
   `;
 
-  const rows = await queryClickhouse<{ project_id: string; count: string }>({
+  const rows = await queryDatastore<{ project_id: string; count: string }>({
     query,
     params: {
-      start: convertDateToClickhouseDateTime(start),
-      end: convertDateToClickhouseDateTime(end),
+      start: convertDateToDatastoreDateTime(start),
+      end: convertDateToDatastoreDateTime(end),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
@@ -1556,11 +1556,11 @@ export const getScoreCountOfProjectsSinceCreationDate = async ({
     AND created_at >= {start: DateTime64(3)}
   `;
 
-  const rows = await queryClickhouse<{ count: string }>({
+  const rows = await queryDatastore<{ count: string }>({
     query,
     params: {
       projectIds,
-      start: convertDateToClickhouseDateTime(start),
+      start: convertDateToDatastoreDateTime(start),
     },
     tags: {
       feature: "tracing",
@@ -1577,9 +1577,9 @@ export const getDistinctScoreNames = async (p: {
   cutoffCreatedAt: Date;
   filter: FilterState;
   isTimestampFilter: (filter: FilterCondition) => filter is TimeFilter;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 }) => {
-  const { projectId, cutoffCreatedAt, filter, isTimestampFilter, clickhouseConfigs } = p;
+  const { projectId, cutoffCreatedAt, filter, isTimestampFilter, datastoreConfig } = p;
   const scoreTimestampFilter = filter?.find(isTimestampFilter);
 
   const query = `    SELECT DISTINCT
@@ -1591,15 +1591,15 @@ export const getDistinctScoreNames = async (p: {
     AND s.data_type IN ({dataTypes: Array(String)})
   `;
 
-  const rows = await queryClickhouse<{ name: string }>({
+  const rows = await queryDatastore<{ name: string }>({
     query,
     params: {
       projectId,
-      cutoffCreatedAt: convertDateToClickhouseDateTime(cutoffCreatedAt),
+      cutoffCreatedAt: convertDateToDatastoreDateTime(cutoffCreatedAt),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
       ...(scoreTimestampFilter
         ? {
-            filterTimestamp: convertDateToClickhouseDateTime(scoreTimestampFilter.value),
+            filterTimestamp: convertDateToDatastoreDateTime(scoreTimestampFilter.value),
           }
         : {}),
     },
@@ -1609,7 +1609,7 @@ export const getDistinctScoreNames = async (p: {
       kind: "list",
       projectId,
     },
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   return rows.map((row) => row.name);
@@ -1637,12 +1637,12 @@ export const getScoresForBlobStorageExport = function (projectId: string, minTim
     AND data_type IN ({dataTypes: Array(String)})
   `;
 
-  const records = queryClickhouseStream<Record<string, unknown>>({
+  const records = queryDatastoreStream<Record<string, unknown>>({
     query,
     params: {
       projectId,
-      minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
-      maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      minTimestamp: convertDateToDatastoreDateTime(minTimestamp),
+      maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
@@ -1651,7 +1651,7 @@ export const getScoresForBlobStorageExport = function (projectId: string, minTim
       kind: "analytic",
       projectId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
@@ -1710,12 +1710,12 @@ export const getScoresForAnalyticsIntegrations = async function* (
     )
   `;
 
-  const records = queryClickhouseStream<Record<string, unknown>>({
+  const records = queryDatastoreStream<Record<string, unknown>>({
     query,
     params: {
       projectId,
-      minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
-      maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      minTimestamp: convertDateToDatastoreDateTime(minTimestamp),
+      maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
@@ -1724,7 +1724,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
       kind: "analytic",
       projectId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
       clickhouse_settings: {
         join_algorithm: "grace_hash",
@@ -1784,7 +1784,7 @@ export const hasAnyScore = async (projectId: string) => {
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: {
       projectId,
@@ -1812,7 +1812,7 @@ export const getScoreMetadataById = async (projectId: string, id: string, source
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<Pick<ScoreRecordReadType, "metadata">>({
+  const rows = await queryDatastore<Pick<ScoreRecordReadType, "metadata">>({
     query,
     params: {
       projectId,
@@ -1827,7 +1827,7 @@ export const getScoreMetadataById = async (projectId: string, id: string, source
     },
   });
 
-  return rows.map((row) => parseMetadataCHRecordToDomain(row.metadata as Record<string, string>)).shift();
+  return rows.map((row) => parseMetadataDatastoreRecordToDomain(row.metadata as Record<string, string>)).shift();
 };
 
 /**
@@ -1848,7 +1848,7 @@ export const getScoreMetadataById = async (projectId: string, id: string, source
  * });
  *
  * Note: Skips using FINAL (double counting risk) for faster and cheaper
- * queries against clickhouse. Generous 4x overcompensation before blocking allows
+ * queries against datastore. Generous 4x overcompensation before blocking allows
  * for usage aggregation to be meaningful.
  *
  */
@@ -1865,15 +1865,15 @@ export const getScoreCountsByProjectAndDay = async ({ startDate, endDate }: { st
     GROUP BY project_id, toDate(timestamp)
   `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     count: string;
     project_id: string;
     date: string;
   }>({
     query,
     params: {
-      startDate: convertDateToClickhouseDateTime(startDate),
-      endDate: convertDateToClickhouseDateTime(endDate),
+      startDate: convertDateToDatastoreDateTime(startDate),
+      endDate: convertDateToDatastoreDateTime(endDate),
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
@@ -1907,7 +1907,7 @@ export async function getScoresTraceMetricsFromEvents(params: { projectId: strin
     GROUP BY trace_id
   `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     trace_id: string;
     trace_name: string | null;
     user_id: string | null;

@@ -4,21 +4,21 @@ import { FilterState } from "../../types";
 import { StringFilter, StringOptionsFilter, DateTimeFilter } from "../queries/clickhouse-sql/clickhouse-filter";
 import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
 import { orderByToClickhouseSql } from "../queries/clickhouse-sql/orderby-factory";
-import { clickhouseSearchCondition } from "../queries/clickhouse-sql/search";
+import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
 import { TraceRecordReadType } from "../repositories/definitions";
 import Decimal from "decimal.js";
 import { ScoreAggregate } from "../../features/scores";
 import {
   OBSERVATIONS_TO_TRACE_INTERVAL,
   SCORE_TO_TRACE_OBSERVATIONS_INTERVAL,
-  parseClickhouseUTCDateTimeFormat,
-  queryClickhouse,
+  parseDatastoreUTCDateTimeFormat,
+  queryDatastore,
   reduceUsageOrCostDetails,
 } from "../repositories";
-import { measureAndReturn } from "../clickhouse/measureAndReturn";
+import { measureAndReturn } from "../datastore/measureAndReturn";
 import { TracingSearchType } from "../../interfaces/search";
 import { ObservationLevelType, TraceDomain } from "../../domain";
-import { ClickHouseClientConfigOptions } from "@clickhouse/client";
+import type { DatastoreClientConfig } from "../datastore/types";
 import { shouldSkipObservationsFinal } from "../queries/clickhouse-sql/query-options";
 
 export type TracesTableReturnType = Pick<
@@ -78,7 +78,7 @@ export const convertToUiTableRows = (row: TracesTableReturnType): TracesTableUiR
   return {
     id: row.id,
     projectId: row.project_id,
-    timestamp: parseClickhouseUTCDateTimeFormat(row.timestamp),
+    timestamp: parseDatastoreUTCDateTimeFormat(row.timestamp),
     tags: row.tags,
     bookmarked: row.bookmarked,
     name: row.name ?? null,
@@ -142,7 +142,7 @@ export type FetchTracesTableProps = {
   orderBy?: OrderByState;
   limit?: number;
   page?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
   tags?: Record<string, string>;
 };
 
@@ -177,7 +177,7 @@ async function getTracesTableGeneric(
 ): Promise<Array<SelectReturnTypeMap[keyof SelectReturnTypeMap]>>;
 
 async function getTracesTableGeneric(props: FetchTracesTableProps) {
-  const { select, projectId, filter, orderBy, limit, page, searchQuery, searchType, clickhouseConfigs } = props;
+  const { select, projectId, filter, orderBy, limit, page, searchQuery, searchType, datastoreConfig } = props;
 
   // OTel projects use immutable spans - no need for deduplication
   const skipObservationsDedup = await shouldSkipObservationsFinal(projectId);
@@ -188,7 +188,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
 
   tracesFilter.push(...createFilterFromFilterState(filter, tracesTableUiColumnDefinitions));
 
-  const traceIdFilter = tracesFilter.find((f) => f.clickhouseTable === "traces" && f.field === "id") as
+  const traceIdFilter = tracesFilter.find((f) => f.datastoreTable === "traces" && f.field === "id") as
     | StringFilter
     | StringOptionsFilter
     | undefined;
@@ -196,7 +196,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
   traceIdFilter
     ? scoresFilter.push(
         new StringOptionsFilter({
-          clickhouseTable: "scores",
+          datastoreTable: "scores",
           field: "trace_id",
           operator: "any of",
           values: traceIdFilter instanceof StringFilter ? [traceIdFilter.value] : traceIdFilter.values,
@@ -206,7 +206,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
   traceIdFilter
     ? observationsFilter.push(
         new StringOptionsFilter({
-          clickhouseTable: "observations",
+          datastoreTable: "observations",
           field: "trace_id",
           operator: "any of",
           values: traceIdFilter instanceof StringFilter ? [traceIdFilter.value] : traceIdFilter.values,
@@ -221,14 +221,14 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
   ) as DateTimeFilter | undefined;
 
   const requiresScoresJoin =
-    tracesFilter.find((f) => f.clickhouseTable === "scores") !== undefined ||
+    tracesFilter.find((f) => f.datastoreTable === "scores") !== undefined ||
     tracesTableUiColumnDefinitions.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
-      ?.clickhouseTableName === "scores";
+      ?.datastoreTableName === "scores";
 
   const requiresObservationsJoin =
-    tracesFilter.find((f) => f.clickhouseTable === "observations") !== undefined ||
+    tracesFilter.find((f) => f.datastoreTable === "observations") !== undefined ||
     tracesTableUiColumnDefinitions.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
-      ?.clickhouseTableName === "observations";
+      ?.datastoreTableName === "observations";
 
   const tracesFilterRes = tracesFilter.apply();
   const scoresFilterRes = scoresFilter.apply();
@@ -352,22 +352,22 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
           throw new Error(`Unknown select type: ${select}`);
       }
 
-      const search = clickhouseSearchCondition(searchQuery, searchType, "t");
+      const search = datastoreSearchCondition(searchQuery, searchType, "t");
 
       const defaultOrder = orderBy?.order && orderBy?.column === "timestamp";
       const orderByCols = [
         ...tracesTableUiColumnDefinitions,
         {
-          clickhouseSelect: "toDate(t.timestamp)",
+          datastoreSelect: "toDate(t.timestamp)",
           uiTableName: "timestamp_to_date",
           uiTableId: "timestamp_to_date",
-          clickhouseTableName: "traces",
+          datastoreTableName: "traces",
         },
         {
-          clickhouseSelect: "t.event_ts",
+          datastoreSelect: "t.event_ts",
           uiTableName: "event_ts",
           uiTableId: "event_ts",
-          clickhouseTableName: "traces",
+          datastoreTableName: "traces",
         },
       ];
       const chOrderBy = orderByToClickhouseSql(
@@ -412,7 +412,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
         ${limit !== undefined && page !== undefined ? `LIMIT {limit: Int32} OFFSET {offset: Int32}` : ""}
       `;
 
-      const res = await queryClickhouse<SelectReturnTypeMap[keyof SelectReturnTypeMap]>({
+      const res = await queryDatastore<SelectReturnTypeMap[keyof SelectReturnTypeMap]>({
         query: query,
         params: {
           limit: limit,
@@ -431,7 +431,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
           projectId,
           operation_name: "getTracesTableGeneric",
         },
-        clickhouseConfigs,
+        datastoreConfig,
       });
 
       return res;
@@ -468,7 +468,7 @@ export const getTracesTableMetrics = async (props: {
   orderBy?: OrderByState;
   limit?: number;
   page?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 }): Promise<Array<Omit<TracesMetricsUiReturnType, "scores">>> => {
   const countRows = await getTracesTableGeneric({
     select: "metrics",
@@ -487,9 +487,9 @@ export const getTracesTable = async (p: {
   orderBy?: OrderByState;
   limit?: number;
   page?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 }) => {
-  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, clickhouseConfigs } = p;
+  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, datastoreConfig } = p;
   const rows = await getTracesTableGeneric({
     select: "rows",
     tags: { kind: "list" },
@@ -500,7 +500,7 @@ export const getTracesTable = async (p: {
     orderBy,
     limit,
     page,
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   return rows.map(convertToUiTableRows);
@@ -514,9 +514,9 @@ export const getTraceIdentifiers = async (props: {
   orderBy?: OrderByState;
   limit?: number;
   page?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 }) => {
-  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, clickhouseConfigs } = props;
+  const { projectId, filter, searchQuery, searchType, orderBy, limit, page, datastoreConfig } = props;
   const identifiers = await getTracesTableGeneric({
     select: "identifiers",
     tags: { kind: "list" },
@@ -527,12 +527,12 @@ export const getTraceIdentifiers = async (props: {
     orderBy,
     limit,
     page,
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   return identifiers.map((row) => ({
     id: row.id,
     projectId: row.projectId,
-    timestamp: parseClickhouseUTCDateTimeFormat(row.timestamp),
+    timestamp: parseDatastoreUTCDateTimeFormat(row.timestamp),
   }));
 };

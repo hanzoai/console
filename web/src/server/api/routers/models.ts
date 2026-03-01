@@ -7,7 +7,7 @@ import { GetModelResultSchema, ModelLastUsedQueryResult, UpsertModelSchema } fro
 import { throwIfNoProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import { ModelUsageUnit, paginationZod, Prisma } from "@hanzo/shared";
-import { clearModelCacheForProject, queryClickhouse, findModel, matchPricingTier } from "@hanzo/shared/src/server";
+import { clearModelCacheForProject, queryDatastore, findModel, matchPricingTier } from "@hanzo/shared/src/server";
 import { TRPCError } from "@trpc/server";
 
 const ModelAllOptions = z.object({
@@ -195,7 +195,7 @@ export const modelRouter = createTRPCRouter({
       `;
 
       const result = ModelLastUsedQueryResult.safeParse(
-        await queryClickhouse({
+        await queryDatastore({
           query: lastUsedQuery,
           params: { projectId, modelIds },
         }),

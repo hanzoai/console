@@ -3,7 +3,7 @@ import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { type ZodError } from "zod/v4";
 import { BaseError, ConsoleNotFoundError, MethodNotAllowedError, UnauthorizedError } from "@hanzo/shared";
-import { logger, traceException, contextWithHanzoProps, ClickHouseResourceError } from "@hanzo/shared/src/server";
+import { logger, traceException, contextWithHanzoProps, DatastoreResourceError } from "@hanzo/shared/src/server";
 import * as opentelemetry from "@opentelemetry/api";
 
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -19,7 +19,7 @@ const defaultHandler = () => {
 };
 
 const CH_ERROR_ADVICE_FULL = [
-  ClickHouseResourceError.ERROR_ADVICE_MESSAGE,
+  DatastoreResourceError.ERROR_ADVICE_MESSAGE,
   "See https://hanzo.com/docs/api-and-data-platform/features/public-api for more details.",
 ].join("\n");
 
@@ -66,8 +66,8 @@ export function withMiddlewares(handlers: Handlers) {
         }
 
         // Handle ClickHouse resource errors
-        if (error instanceof ClickHouseResourceError) {
-          const resourceError = error as ClickHouseResourceError;
+        if (error instanceof DatastoreResourceError) {
+          const resourceError = error as DatastoreResourceError;
 
           logger.warn("ClickHouse resource limit exceeded", {
             errorType: resourceError.errorType,

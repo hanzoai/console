@@ -1,4 +1,4 @@
-import { queryClickhouse } from "@hanzo/shared/src/server";
+import { queryDatastore } from "@hanzo/shared/src/server";
 import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
 
 /**
@@ -92,7 +92,7 @@ export async function buildEstimateQuery(params: {
       ) as estimated_matched_count
   `;
 
-  const result = await queryClickhouse<{
+  const result = await queryDatastore<{
     score1_count: string;
     score2_count: string;
     estimated_matched_count: string;

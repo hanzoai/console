@@ -2,11 +2,11 @@ import { prisma } from "../../db";
 import { Observation, EventsObservation, ObservationType } from "../../domain";
 import { env } from "../../env";
 import { InternalServerError, ConsoleNotFoundError } from "../../errors";
-import { convertDateToClickhouseDateTime, PreferredClickhouseService } from "../clickhouse/client";
-import { measureAndReturn } from "../clickhouse/measureAndReturn";
+import { convertDateToDatastoreDateTime, PreferredDatastoreService } from "../datastore/client";
+import { measureAndReturn } from "../datastore/measureAndReturn";
 import { recordDistribution } from "../instrumentation";
 import { logger } from "../logger";
-import { convertClickhouseToDomain, convertClickhouseTracesListToDomain } from "./traces_converters";
+import { convertDatastoreToDomain, convertDatastoreTracesListToDomain } from "./traces_converters";
 import {
   DateTimeFilter,
   FilterList,
@@ -27,16 +27,16 @@ import {
   eventsTracesAggregation,
   eventsTracesScoresAggregation,
 } from "../queries/clickhouse-sql/query-fragments";
-import { clickhouseSearchCondition } from "../queries/clickhouse-sql/search";
+import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
 import { eventsTableNativeUiColumnDefinitions, eventsTableUiColumnDefinitions } from "../tableMappings/mapEventsTable";
 import { tracesTableUiColumnDefinitions } from "../tableMappings/mapTracesTable";
 import { applyInputOutputRendering, DEFAULT_RENDERING_PROPS, RenderingProps } from "../utils/rendering";
 import {
-  commandClickhouse,
-  parseClickhouseUTCDateTimeFormat,
-  queryClickhouse,
-  queryClickhouseStream,
-} from "./clickhouse";
+  commandDatastore,
+  parseDatastoreUTCDateTimeFormat,
+  queryDatastore,
+  queryDatastoreStream,
+} from "./datastore";
 import { ObservationRecordReadType, TraceRecordReadType } from "./definitions";
 import type { AnalyticsObservationEvent } from "../analytics-integrations/types";
 import { ObservationsTableQueryResult, ObservationTableQuery } from "./observations";
@@ -52,16 +52,16 @@ import {
 } from "../queries/clickhouse-sql/event-query-builder";
 import { type EventsObservationPublic } from "../queries/createGenerationsQuery";
 import { UiColumnMappings } from "../../tableDefinitions";
-import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
+import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
 
 /**
  * Attempt to command the legacy events table.
  * Skips if env toggle is off; swallows errors if the table no longer exists.
  */
-async function commandLegacyEventsTable(opts: Parameters<typeof commandClickhouse>[0]): Promise<void> {
+async function commandLegacyEventsTable(opts: Parameters<typeof commandDatastore>[0]): Promise<void> {
   if (env.HANZO_LEGACY_EVENTS_TABLE_EXISTS !== "true") return;
   try {
-    await commandClickhouse(opts);
+    await commandDatastore(opts);
   } catch (e) {
     logger.warn("Legacy events table command failed (table may not exist)", e);
   }
@@ -194,12 +194,12 @@ function extractTimeFilter(
   const timeFilter = filter.find(
     (f) =>
       // For events tables, match any events_* prefix (events_proto, events_core, events_full)
-      (tableName === "events_proto" ? f.clickhouseTable.startsWith("events_") : f.clickhouseTable === tableName) &&
+      (tableName === "events_proto" ? f.datastoreTable.startsWith("events_") : f.datastoreTable === tableName) &&
       f.field === fieldName &&
       (f.operator === ">=" || f.operator === ">"),
   );
 
-  return timeFilter ? convertDateToClickhouseDateTime((timeFilter as DateTimeFilter).value) : null;
+  return timeFilter ? convertDateToDatastoreDateTime((timeFilter as DateTimeFilter).value) : null;
 }
 
 /**
@@ -221,17 +221,17 @@ const PUBLIC_API_TRACES_COLUMN_MAPPING = createPublicApiTracesColumnMapping("tra
 const TRACES_FROM_EVENTS_UI_COLUMN_DEFINITIONS = tracesTableUiColumnDefinitions.map((col) => {
   // If this column references the observations table with 'o' prefix,
   // remap it to use 't' prefix since observations are aggregated into traces CTE
-  if (col.clickhouseTableName === "observations") {
-    // Replace o. prefix with t. in clickhouseSelect (only when followed by identifier)
+  if (col.datastoreTableName === "observations") {
+    // Replace o. prefix with t. in datastoreSelect (only when followed by identifier)
     // Technically we do not need to deal with the prefix at all,
     // since here these columns are always used inside a CTE.
-    const updatedSelect = col.clickhouseSelect.replace(/\bo\.([a-z_])/g, "t.$1");
+    const updatedSelect = col.datastoreSelect.replace(/\bo\.([a-z_])/g, "t.$1");
 
     return {
       ...col,
-      clickhouseTableName: "traces", // Now it's in the traces CTE
+      datastoreTableName: "traces", // Now it's in the traces CTE
       queryPrefix: undefined,
-      clickhouseSelect: updatedSelect,
+      datastoreSelect: updatedSelect,
     };
   }
   return col;
@@ -246,7 +246,7 @@ const TRACES_ORDER_BY_COLUMNS = TRACES_FROM_EVENTS_UI_COLUMN_DEFINITIONS.filter(
 ).map((col) => ({
   ...col,
   // Adjust column names that change after aggregation (start_time -> timestamp)
-  clickhouseSelect: col.uiTableId === "timestamp" ? "timestamp" : col.clickhouseSelect,
+  datastoreSelect: col.uiTableId === "timestamp" ? "timestamp" : col.datastoreSelect,
   queryPrefix: "t", // Use 't' prefix because we're selecting from traces CTE
 }));
 
@@ -348,7 +348,7 @@ async function getObservationsFromEventsTableInternal<T>(
     limit,
     offset,
     orderBy,
-    clickhouseConfigs,
+    datastoreConfig,
   } = opts;
 
   // Extract positionInTrace filter and build baseFilter without it
@@ -364,7 +364,7 @@ async function getObservationsFromEventsTableInternal<T>(
 
   const startTimeFrom = extractTimeFilter(observationsFilter);
   const hasScoresFilter = baseFilter.some((f) => f.column.toLowerCase().includes("score"));
-  const search = clickhouseSearchCondition(opts.searchQuery, opts.searchType, "e", [
+  const search = datastoreSearchCondition(opts.searchQuery, opts.searchType, "e", [
     "span_id",
     "name",
     "user_id",
@@ -498,12 +498,12 @@ async function getObservationsFromEventsTableInternal<T>(
       },
     },
     fn: async (input) => {
-      return queryClickhouse<T>({
+      return queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs,
-        preferredClickhouseService: "EventsReadOnly",
+        datastoreConfig,
+        preferredService: "EventsReadOnly",
       });
     },
   });
@@ -517,7 +517,7 @@ export const getObservationByIdFromEventsTable = async ({
   type,
   traceId,
   renderingProps = DEFAULT_RENDERING_PROPS,
-  preferredClickhouseService,
+  preferredService,
 }: {
   id: string;
   projectId: string;
@@ -526,7 +526,7 @@ export const getObservationByIdFromEventsTable = async ({
   type?: ObservationType;
   traceId?: string;
   renderingProps?: RenderingProps;
-  preferredClickhouseService?: PreferredClickhouseService;
+  preferredService?: PreferredDatastoreService;
 }) => {
   const records = await getObservationByIdFromEventsTableInternal({
     id,
@@ -536,7 +536,7 @@ export const getObservationByIdFromEventsTable = async ({
     type,
     traceId,
     renderingProps,
-    preferredClickhouseService: preferredClickhouseService ?? "EventsReadOnly",
+    preferredService: preferredService ?? "EventsReadOnly",
   });
   const mapped = records.map((record) => convertObservation(record, renderingProps));
 
@@ -564,7 +564,7 @@ async function getObservationByIdFromEventsTableInternal({
   type,
   traceId,
   renderingProps = DEFAULT_RENDERING_PROPS,
-  preferredClickhouseService,
+  preferredService,
 }: {
   id: string;
   projectId: string;
@@ -573,7 +573,7 @@ async function getObservationByIdFromEventsTableInternal({
   type?: ObservationType;
   traceId?: string;
   renderingProps?: RenderingProps;
-  preferredClickhouseService?: PreferredClickhouseService;
+  preferredService?: PreferredDatastoreService;
 }) {
   const queryBuilder = new EventsQueryBuilder({ projectId })
     .selectFieldSet("byIdBase", "byIdModel", "byIdPrompt", "byIdTimestamps")
@@ -581,7 +581,7 @@ async function getObservationByIdFromEventsTableInternal({
     .whereRaw("span_id = {id: String}", { id })
     .when(Boolean(startTime), (b) =>
       b.whereRaw("toDate(start_time) = toDate({startTime: DateTime64(3)})", {
-        startTime: convertDateToClickhouseDateTime(startTime!),
+        startTime: convertDateToDatastoreDateTime(startTime!),
       }),
     )
     .when(Boolean(type), (b) => b.whereRaw("type = {type: String}", { type }))
@@ -594,7 +594,7 @@ async function getObservationByIdFromEventsTableInternal({
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  return await queryClickhouse<ObservationRecordReadType>({
+  return await queryDatastore<ObservationRecordReadType>({
     query,
     params,
     tags: {
@@ -603,7 +603,7 @@ async function getObservationByIdFromEventsTableInternal({
       kind: "byId",
       projectId,
     },
-    preferredClickhouseService,
+    preferredService,
   });
 }
 
@@ -617,23 +617,23 @@ export const getTraceByIdFromEventsTable = async ({
   timestamp,
   fromTimestamp,
   renderingProps = DEFAULT_RENDERING_PROPS,
-  clickhouseFeatureTag = "tracing",
-  preferredClickhouseService,
+  datastoreFeatureTag = "tracing",
+  preferredService,
 }: {
   traceId: string;
   projectId: string;
   timestamp?: Date;
   fromTimestamp?: Date;
   renderingProps?: RenderingProps;
-  clickhouseFeatureTag?: string;
-  preferredClickhouseService?: PreferredClickhouseService;
+  datastoreFeatureTag?: string;
+  preferredService?: PreferredDatastoreService;
 }) => {
   // Build traces CTE using eventsTracesAggregation
   // Pass truncated flag to select events_core (truncated) or events_full (full I/O)
   const tracesBuilder = eventsTracesAggregation({
     projectId,
     traceIds: [traceId],
-    startTimeFrom: fromTimestamp ? convertDateToClickhouseDateTime(fromTimestamp) : null,
+    startTimeFrom: fromTimestamp ? convertDateToDatastoreDateTime(fromTimestamp) : null,
     truncated: renderingProps.truncated,
   });
 
@@ -662,7 +662,7 @@ export const getTraceByIdFromEventsTable = async ({
 
   if (timestamp) {
     queryBuilder.whereRaw(`toDate(t.timestamp) = toDate({timestamp: DateTime64(3)})`, {
-      timestamp: convertDateToClickhouseDateTime(timestamp),
+      timestamp: convertDateToDatastoreDateTime(timestamp),
     });
   }
 
@@ -686,7 +686,7 @@ export const getTraceByIdFromEventsTable = async ({
     input: {
       params,
       tags: {
-        feature: clickhouseFeatureTag,
+        feature: datastoreFeatureTag,
         type: "trace",
         kind: "byId",
         projectId,
@@ -694,16 +694,16 @@ export const getTraceByIdFromEventsTable = async ({
       },
     },
     fn: async (input) => {
-      return queryClickhouse<TraceRecordReadType>({
+      return queryDatastore<TraceRecordReadType>({
         query,
         params: input.params,
         tags: input.tags,
-        preferredClickhouseService,
+        preferredService,
       });
     },
   });
 
-  const res = records.map((record) => convertClickhouseToDomain(record, renderingProps));
+  const res = records.map((record) => convertDatastoreToDomain(record, renderingProps));
 
   res.forEach((trace) => {
     recordDistribution("hanzo.query_by_id_age", new Date().getTime() - trace.timestamp.getTime(), {
@@ -792,7 +792,7 @@ function buildObservationsQueryComponents(
   );
 
   // Determine if we need to join traces (check both simple params and advanced filters)
-  const hasTraceFilter = observationsFilter.some((f) => f.clickhouseTable === "traces");
+  const hasTraceFilter = observationsFilter.some((f) => f.datastoreTable === "traces");
 
   // Extract time filter and apply filters
   const startTimeFrom = extractTimeFilter(observationsFilter);
@@ -859,7 +859,7 @@ function applyCursorPagination(opts: PublicApiObservationsQuery, queryBuilder: E
     return b.whereRaw(
       "e.start_time <= {lastStartTime: DateTime64(6)} AND (e.start_time, xxHash32(e.trace_id), e.span_id) < ({lastStartTime: DateTime64(6)}, xxHash32({lastTraceId: String}), {lastId: String})",
       {
-        lastStartTime: convertDateToClickhouseDateTime(cursor.lastStartTimeTo),
+        lastStartTime: convertDateToDatastoreDateTime(cursor.lastStartTimeTo),
         lastTraceId: cursor.lastTraceId,
         lastId: cursor.lastId,
       },
@@ -890,11 +890,11 @@ async function getObservationsRowsFromBuilder<T>(
       },
     },
     fn: async (input) => {
-      return await queryClickhouse<T>({
+      return await queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        preferredClickhouseService: "EventsReadOnly",
+        preferredService: "EventsReadOnly",
       });
     },
   });
@@ -929,11 +929,11 @@ async function getObservationsCountFromEventsTableForPublicApiInternal(
       },
     },
     fn: async (input) => {
-      return await queryClickhouse<{ count: string }>({
+      return await queryDatastore<{ count: string }>({
         query,
         params: input.params,
         tags: input.tags,
-        preferredClickhouseService: "EventsReadOnly",
+        preferredService: "EventsReadOnly",
       });
     },
   });
@@ -1098,7 +1098,7 @@ async function getTracesFromEventsTableForPublicApiInternal<T>(
   const appliedFilter = tracesFilter.apply();
 
   // Check if any filters reference the scores table
-  const filtersNeedScores = tracesFilter.some((f) => f.clickhouseTable === "scores");
+  const filtersNeedScores = tracesFilter.some((f) => f.datastoreTable === "scores");
 
   // Check if filters specifically reference score aggregation columns
   const hasScoreAggregationFilters = tracesFilter.some(
@@ -1195,11 +1195,11 @@ async function getTracesFromEventsTableForPublicApiInternal<T>(
       },
     },
     fn: async (input) => {
-      return await queryClickhouse<T>({
+      return await queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        preferredClickhouseService: "EventsReadOnly",
+        preferredService: "EventsReadOnly",
       });
     },
   });
@@ -1223,7 +1223,7 @@ export const getTracesFromEventsTableForPublicApi = async (opts: PublicApiTraces
   });
 
   // Convert ClickHouse format to domain format and handle field groups
-  return convertClickhouseTracesListToDomain(result, {
+  return convertDatastoreTracesListToDomain(result, {
     scores: includeScores,
     observations: includeObservations,
     metrics: includeMetrics,
@@ -1300,8 +1300,8 @@ export const updateEvents = async (
   });
 
   await Promise.all([
-    commandClickhouse(updateOpts("events_full")),
-    commandClickhouse(updateOpts("events_core")),
+    commandDatastore(updateOpts("events_full")),
+    commandDatastore(updateOpts("events_core")),
     commandLegacyEventsTable(updateOpts("events")),
   ]);
 };
@@ -1327,7 +1327,7 @@ export const getEventsGroupedByModel = async (projectId: string, filter: FilterS
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ name: string; count: number }>({
+  const res = await queryDatastore<{ name: string; count: number }>({
     query,
     params,
     tags: {
@@ -1361,7 +1361,7 @@ export const getEventsGroupedByModelId = async (projectId: string, filter: Filte
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ modelId: string; count: number }>({
+  const res = await queryDatastore<{ modelId: string; count: number }>({
     query,
     params,
     tags: {
@@ -1395,7 +1395,7 @@ export const getEventsGroupedByName = async (projectId: string, filter: FilterSt
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ name: string; count: number }>({
+  const res = await queryDatastore<{ name: string; count: number }>({
     query,
     params,
     tags: {
@@ -1429,7 +1429,7 @@ export const getEventsGroupedByTraceName = async (projectId: string, filter: Fil
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ traceName: string; count: number }>({
+  const res = await queryDatastore<{ traceName: string; count: number }>({
     query,
     params,
     tags: {
@@ -1472,7 +1472,7 @@ export const getEventsGroupedByTraceTags = async (projectId: string, filter: Fil
     projectId,
     input: { params: { projectId, ...appliedEventsFilter.params } },
     fn: async (input) => {
-      return queryClickhouse<{ tag: string }>({
+      return queryDatastore<{ tag: string }>({
         query,
         params: input.params,
         tags: {
@@ -1508,7 +1508,7 @@ export const getEventsGroupedByPromptName = async (projectId: string, filter: Fi
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ promptName: string; count: number }>({
+  const res = await queryDatastore<{ promptName: string; count: number }>({
     query,
     params,
     tags: {
@@ -1543,7 +1543,7 @@ export const getEventsGroupedByType = async (projectId: string, filter: FilterSt
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ type: string; count: number }>({
+  const res = await queryDatastore<{ type: string; count: number }>({
     query,
     params,
     tags: {
@@ -1579,7 +1579,7 @@ export const getEventsGroupedByUserId = async (projectId: string, filter: Filter
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ userId: string; count: number }>({
+  const res = await queryDatastore<{ userId: string; count: number }>({
     query,
     params,
     tags: {
@@ -1615,7 +1615,7 @@ export const getEventsGroupedByVersion = async (projectId: string, filter: Filte
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ version: string; count: number }>({
+  const res = await queryDatastore<{ version: string; count: number }>({
     query,
     params,
     tags: {
@@ -1651,7 +1651,7 @@ export const getEventsGroupedBySessionId = async (projectId: string, filter: Fil
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ sessionId: string; count: number }>({
+  const res = await queryDatastore<{ sessionId: string; count: number }>({
     query,
     params,
     tags: {
@@ -1687,7 +1687,7 @@ export const getEventsGroupedByLevel = async (projectId: string, filter: FilterS
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ level: string; count: number }>({
+  const res = await queryDatastore<{ level: string; count: number }>({
     query,
     params,
     tags: {
@@ -1723,7 +1723,7 @@ export const getEventsGroupedByEnvironment = async (projectId: string, filter: F
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ environment: string; count: number }>({
+  const res = await queryDatastore<{ environment: string; count: number }>({
     query,
     params,
     tags: {
@@ -1757,7 +1757,7 @@ export const getEventsGroupedByExperimentDatasetId = async (projectId: string, f
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{
+  const res = await queryDatastore<{
     experimentDatasetId: string;
     count: number;
   }>({
@@ -1794,7 +1794,7 @@ export const getEventsGroupedByExperimentId = async (projectId: string, filter: 
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ experimentId: string; count: number }>({
+  const res = await queryDatastore<{ experimentId: string; count: number }>({
     query,
     params,
     tags: {
@@ -1828,7 +1828,7 @@ export const getEventsGroupedByExperimentName = async (projectId: string, filter
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ experimentName: string; count: number }>({
+  const res = await queryDatastore<{ experimentName: string; count: number }>({
     query,
     params,
     tags: {
@@ -1861,7 +1861,7 @@ export const getEventsGroupedByHasParentObservation = async (projectId: string, 
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  return queryClickhouse<{ hasParentObservation: boolean; count: number }>({
+  return queryDatastore<{ hasParentObservation: boolean; count: number }>({
     query,
     params,
     tags: {
@@ -1894,7 +1894,7 @@ export const getEventsGroupedByToolName = async (projectId: string, filter: Filt
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{ toolName: string; count: number }>({
+  const res = await queryDatastore<{ toolName: string; count: number }>({
     query,
     params,
     tags: {
@@ -1928,7 +1928,7 @@ export const getEventsGroupedByCalledToolName = async (projectId: string, filter
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const res = await queryClickhouse<{
+  const res = await queryDatastore<{
     calledToolName: string;
     count: number;
   }>({
@@ -1950,7 +1950,7 @@ export const getEventsGroupedByCalledToolName = async (projectId: string, filter
  */
 export const deleteEventsByTraceIds = async (projectId: string, traceIds: string[]) => {
   // Preflight query uses events_core (faster)
-  const preflight = await queryClickhouse<{
+  const preflight = await queryDatastore<{
     min_ts: string;
     max_ts: string;
     cnt: string;
@@ -1964,7 +1964,7 @@ export const deleteEventsByTraceIds = async (projectId: string, traceIds: string
       WHERE project_id = {projectId: String} AND trace_id IN ({traceIds: Array(String)})
     `,
     params: { projectId, traceIds },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1997,7 +1997,7 @@ export const deleteEventsByTraceIds = async (projectId: string, traceIds: string
   const deleteOpts = (table: string) => ({
     query: deleteQuery(table),
     params: deleteParams,
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -2010,8 +2010,8 @@ export const deleteEventsByTraceIds = async (projectId: string, traceIds: string
 
   // Delete from all tables in parallel
   await Promise.all([
-    commandClickhouse(deleteOpts("events_full")),
-    commandClickhouse(deleteOpts("events_core")),
+    commandDatastore(deleteOpts("events_full")),
+    commandDatastore(deleteOpts("events_core")),
     commandLegacyEventsTable(deleteOpts("events")),
   ]);
 };
@@ -2024,7 +2024,7 @@ export const hasAnyEvent = async (projectId: string) => {
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: { projectId },
     tags: {
@@ -2052,16 +2052,16 @@ export const deleteEventsByProjectId = async (projectId: string): Promise<boolea
   const deleteOpts = (table: string) => ({
     query: `DELETE FROM ${table} WHERE project_id = {projectId: String}`,
     params: { projectId },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: { feature: "tracing", type: table, kind: "delete", projectId },
-    clickhouseSettings: { send_logs_level: "trace" as const },
+    datastoreSettings: { send_logs_level: "trace" as const },
   });
 
   await Promise.all([
-    commandClickhouse(deleteOpts("events_full")),
-    commandClickhouse(deleteOpts("events_core")),
+    commandDatastore(deleteOpts("events_full")),
+    commandDatastore(deleteOpts("events_core")),
     commandLegacyEventsTable(deleteOpts("events")),
   ]);
 
@@ -2107,7 +2107,7 @@ export async function getAgentGraphDataFromEventsTable(params: {
       },
     },
     fn: async (input) => {
-      return queryClickhouse({
+      return queryDatastore({
         query,
         params: input.params,
         tags: input.tags,
@@ -2125,11 +2125,11 @@ export const hasAnyEventOlderThan = async (projectId: string, beforeDate: Date) 
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: {
       projectId,
-      cutoffDate: convertDateToClickhouseDateTime(beforeDate),
+      cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
     tags: {
       feature: "tracing",
@@ -2160,17 +2160,17 @@ export const deleteEventsOlderThanDays = async (projectId: string, beforeDate: D
     `,
     params: {
       projectId,
-      cutoffDate: convertDateToClickhouseDateTime(beforeDate),
+      cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: { feature: "tracing", type: table, kind: "delete", projectId },
   });
 
   await Promise.all([
-    commandClickhouse(deleteOpts("events_full")),
-    commandClickhouse(deleteOpts("events_core")),
+    commandDatastore(deleteOpts("events_full")),
+    commandDatastore(deleteOpts("events_core")),
     commandLegacyEventsTable(deleteOpts("events")),
   ]);
 
@@ -2224,7 +2224,7 @@ export const getObservationsBatchIOFromEventsTable = async (opts: {
       AND e.start_time <= {maxTimestamp: DateTime64(3)}
   `;
 
-  const results = await queryClickhouse<{
+  const results = await queryDatastore<{
     id: string;
     input: string | null;
     output: string | null;
@@ -2235,8 +2235,8 @@ export const getObservationsBatchIOFromEventsTable = async (opts: {
       projectId: opts.projectId,
       observationIds,
       traceIds,
-      minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
-      maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      minTimestamp: convertDateToDatastoreDateTime(minTimestamp),
+      maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
     },
     tags: {
       feature: "tracing",
@@ -2244,14 +2244,14 @@ export const getObservationsBatchIOFromEventsTable = async (opts: {
       kind: "batchIO",
       projectId: opts.projectId,
     },
-    preferredClickhouseService: "EventsReadOnly",
+    preferredService: "EventsReadOnly",
   });
 
   return results.map((r) => ({
     id: r.id,
     input: r.input !== undefined ? applyInputOutputRendering(r.input, DEFAULT_RENDERING_PROPS) : null,
     output: r.output !== undefined ? applyInputOutputRendering(r.output, DEFAULT_RENDERING_PROPS) : null,
-    metadata: r.metadata !== undefined ? parseMetadataCHRecordToDomain(r.metadata) : {},
+    metadata: r.metadata !== undefined ? parseMetadataDatastoreRecordToDomain(r.metadata) : {},
   }));
 };
 
@@ -2265,8 +2265,8 @@ const usersFromEventsTableColumnDefinitions: UiColumnMappings = [
   {
     uiTableName: "Timestamp",
     uiTableId: "timestamp",
-    clickhouseTableName: "events_proto",
-    clickhouseSelect: 'e."start_time"',
+    datastoreTableName: "events_proto",
+    datastoreSelect: 'e."start_time"',
   },
 ];
 
@@ -2302,7 +2302,7 @@ export const getUsersFromEventsTable = async (
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  return queryClickhouse<{ user: string; count: string }>({
+  return queryDatastore<{ user: string; count: string }>({
     query,
     params,
     tags: {
@@ -2338,7 +2338,7 @@ export const getUsersCountFromEventsTable = async (
     ${searchCondition}
   `;
 
-  return queryClickhouse<{ totalCount: string }>({
+  return queryDatastore<{ totalCount: string }>({
     query,
     params: {
       projectId,
@@ -2406,7 +2406,7 @@ export const getUserMetricsFromEventsTable = async (projectId: string, userIds: 
     FROM stats
   `;
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     user_id: string;
     environment: string;
     max_timestamp: string;
@@ -2431,8 +2431,8 @@ export const getUserMetricsFromEventsTable = async (projectId: string, userIds: 
   return rows.map((row) => ({
     userId: row.user_id,
     environment: row.environment,
-    maxTimestamp: parseClickhouseUTCDateTimeFormat(row.max_timestamp),
-    minTimestamp: parseClickhouseUTCDateTimeFormat(row.min_timestamp),
+    maxTimestamp: parseDatastoreUTCDateTimeFormat(row.max_timestamp),
+    minTimestamp: parseDatastoreUTCDateTimeFormat(row.min_timestamp),
     inputUsage: Number(row.input_usage),
     outputUsage: Number(row.output_usage),
     totalUsage: Number(row.total_usage),
@@ -2458,7 +2458,7 @@ export const hasAnyUserFromEventsTable = async (projectId: string): Promise<bool
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: { projectId },
     tags: {
@@ -2482,15 +2482,15 @@ export const getEventsForBlobStorageExport = function (projectId: string, minTim
     .selectIO(false) // Full I/O, no truncation
     .selectFieldSet("metadata")
     .whereRaw("e.start_time >= {minTimestamp: DateTime64(3)} AND e.start_time <= {maxTimestamp: DateTime64(3)}", {
-      minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
-      maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      minTimestamp: convertDateToDatastoreDateTime(minTimestamp),
+      maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
     })
     .whereRaw("e.is_deleted = 0")
     .limitBy("e.span_id", "e.project_id");
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  return queryClickhouseStream<Record<string, unknown>>({
+  return queryDatastoreStream<Record<string, unknown>>({
     query,
     params,
     tags: {
@@ -2499,7 +2499,7 @@ export const getEventsForBlobStorageExport = function (projectId: string, minTim
       kind: "analytic",
       projectId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
@@ -2531,15 +2531,15 @@ export const getEventsForAnalyticsIntegrations = async function* (
       "mapFromArrays(e.metadata_names, e.metadata_prefixes)['$mixpanel_session_id'] as mixpanel_session_id",
     )
     .whereRaw("e.start_time >= {minTimestamp: DateTime64(3)} AND e.start_time <= {maxTimestamp: DateTime64(3)}", {
-      minTimestamp: convertDateToClickhouseDateTime(minTimestamp),
-      maxTimestamp: convertDateToClickhouseDateTime(maxTimestamp),
+      minTimestamp: convertDateToDatastoreDateTime(minTimestamp),
+      maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
     })
     .whereRaw("e.is_deleted = 0")
     .limitBy("e.span_id", "e.project_id");
 
   const { query, params } = queryBuilder.buildWithParams();
 
-  const records = queryClickhouseStream<Record<string, unknown>>({
+  const records = queryDatastoreStream<Record<string, unknown>>({
     query,
     params,
     tags: {
@@ -2548,7 +2548,7 @@ export const getEventsForAnalyticsIntegrations = async function* (
       kind: "analytic",
       projectId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
@@ -2609,7 +2609,7 @@ export const hasAnySessionFromEventsTable = async (projectId: string): Promise<b
     projectId,
     input: { params: { projectId } },
     fn: async (input) => {
-      return queryClickhouse<{ 1: number }>({
+      return queryDatastore<{ 1: number }>({
         query,
         params: input.params,
         tags: {
@@ -2650,7 +2650,7 @@ export const getAvgCostByEvaluatorIds = async (
 
   const { query, params } = builder.buildWithParams();
 
-  const rows = await queryClickhouse<{
+  const rows = await queryDatastore<{
     evaluator_id: string;
     avg_cost: string;
     execution_count: string;
@@ -2682,7 +2682,7 @@ export const getSessionMetricsFromEvents = async (props: {
   const builder = eventsSessionsAggregation({
     projectId: props.projectId,
     sessionIds: props.sessionIds,
-    startTimeFrom: props.queryFromTimestamp ? convertDateToClickhouseDateTime(props.queryFromTimestamp) : undefined,
+    startTimeFrom: props.queryFromTimestamp ? convertDateToDatastoreDateTime(props.queryFromTimestamp) : undefined,
   }).limit(props.sessionIds.length);
 
   const { query, params } = builder.buildWithParams();
@@ -2699,7 +2699,7 @@ export const getSessionMetricsFromEvents = async (props: {
       },
     },
     fn: async (input) =>
-      queryClickhouse<SessionEventsMetricsRow>({
+      queryDatastore<SessionEventsMetricsRow>({
         query,
         params: input.params,
         tags: input.tags,

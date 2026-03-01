@@ -19,24 +19,24 @@ describe("createFilterFromFilterState parentObservationId on events tables", () 
   // Column mapping that mirrors eventsObservationsView (nullIf wrapper present)
   const withNullIf = {
     ...baseMapping,
-    clickhouseTableName: "events_core",
-    clickhouseSelect: "nullIf(events_observations.parent_span_id, '')",
+    datastoreTableName: "events_core",
+    datastoreSelect: "nullIf(events_observations.parent_span_id, '')",
     queryPrefix: "",
   };
 
   // Column mapping without nullIf (raw column, e.g. eventsTracesView)
   const withoutNullIf = {
     ...baseMapping,
-    clickhouseTableName: "events_core",
-    clickhouseSelect: "events_traces.parent_span_id",
+    datastoreTableName: "events_core",
+    datastoreSelect: "events_traces.parent_span_id",
     queryPrefix: "",
   };
 
   // Non-events table — should fall through to standard NullFilter
   const nonEvents = {
     ...baseMapping,
-    clickhouseTableName: "observations",
-    clickhouseSelect: "observations.parent_observation_id",
+    datastoreTableName: "observations",
+    datastoreSelect: "observations.parent_observation_id",
     queryPrefix: "",
   };
 

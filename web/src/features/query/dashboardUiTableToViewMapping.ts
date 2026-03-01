@@ -224,32 +224,32 @@ const isLegacyUiTableFilter = (filter: z.infer<typeof singleFilter>): boolean =>
       {
         uiTableName: "Session",
         uiTableId: "sessionId",
-        clickhouseTableName: "traces",
-        clickhouseSelect: 't."sessionId"',
+        datastoreTableName: "traces",
+        datastoreSelect: 't."sessionId"',
       },
       {
         uiTableName: "Observation Name",
         uiTableId: "observationName",
-        clickhouseTableName: "observations",
-        clickhouseSelect: 'o."name"',
+        datastoreTableName: "observations",
+        datastoreSelect: 'o."name"',
       },
       {
         uiTableName: "Metadata",
         uiTableId: "metadata",
-        clickhouseTableName: "traces",
-        clickhouseSelect: 't."metadata"',
+        datastoreTableName: "traces",
+        datastoreSelect: 't."metadata"',
       },
       {
         uiTableName: "Score Value",
         uiTableId: "value",
-        clickhouseTableName: "scores",
-        clickhouseSelect: 's."value"',
+        datastoreTableName: "scores",
+        datastoreSelect: 's."value"',
       },
       {
         uiTableName: "Score String Value",
         uiTableId: "stringValue",
-        clickhouseTableName: "scores",
-        clickhouseSelect: 's."string_value"',
+        datastoreTableName: "scores",
+        datastoreSelect: 's."string_value"',
       },
     ])
     .some((columnDef) => columnDef.uiTableName === filter.column);

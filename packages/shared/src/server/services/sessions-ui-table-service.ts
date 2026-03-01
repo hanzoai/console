@@ -1,12 +1,12 @@
-import { ClickHouseClientConfigOptions } from "@clickhouse/client";
+import type { DatastoreClientConfig } from "../datastore/types";
 import { OrderByState } from "../../interfaces/orderBy";
 import { sessionCols } from "../tableMappings/mapSessionTable";
 import { FilterState } from "../../types";
-import { convertDateToClickhouseDateTime } from "../clickhouse/client";
-import { measureAndReturn } from "../clickhouse/measureAndReturn";
+import { convertDateToDatastoreDateTime } from "../datastore/client";
+import { measureAndReturn } from "../datastore/measureAndReturn";
 import { DateTimeFilter, FilterList, orderByToClickhouseSql } from "../queries";
 import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
-import { TRACE_TO_OBSERVATIONS_INTERVAL, queryClickhouse } from "../repositories";
+import { TRACE_TO_OBSERVATIONS_INTERVAL, queryDatastore } from "../repositories";
 
 export type SessionDataReturnType = {
   session_id: string;
@@ -83,7 +83,7 @@ export const getSessionsWithMetrics = async (props: {
   orderBy?: OrderByState;
   limit?: number;
   page?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 }) => {
   const rows = await getSessionsTableGeneric<SessionWithMetricsReturnType>({
     select: "metrics",
@@ -92,7 +92,7 @@ export const getSessionsWithMetrics = async (props: {
     orderBy: props.orderBy,
     limit: props.limit,
     page: props.page,
-    clickhouseConfigs: props.clickhouseConfigs,
+    datastoreConfig: props.datastoreConfig,
     tags: { kind: "analytic" },
   });
 
@@ -112,11 +112,11 @@ export type FetchSessionsTableProps = {
   limit?: number;
   page?: number;
   tags?: Record<string, string>;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 };
 
 const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
-  const { select, projectId, filter, orderBy, limit, page, clickhouseConfigs } = props;
+  const { select, projectId, filter, orderBy, limit, page, datastoreConfig } = props;
 
   let sqlSelect: string;
   switch (select) {
@@ -180,7 +180,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
   if (traceTimestampFilter) {
     filters.push(
       new DateTimeFilter({
-        clickhouseTable: "traces",
+        datastoreTable: "traces",
         field: "timestamp",
         operator: traceTimestampFilter.operator,
         value: traceTimestampFilter.value,
@@ -195,9 +195,9 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
   const singleTraceFilter = filters.length > 0 ? new FilterList(filters).apply() : undefined;
 
   const requiresScoresJoin =
-    tracesFilter.find((f) => f.clickhouseTable === "scores") !== undefined ||
+    tracesFilter.find((f) => f.datastoreTable === "scores") !== undefined ||
     sessionCols.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
-      ?.clickhouseTableName === "scores";
+      ?.datastoreTableName === "scores";
 
   const hasMetricsFilter =
     tracesFilter.find((f) =>
@@ -368,7 +368,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
         ...scoresFilterRes.params,
         ...(traceTimestampFilter
           ? {
-              observationsStartTime: convertDateToClickhouseDateTime(traceTimestampFilter.value),
+              observationsStartTime: convertDateToDatastoreDateTime(traceTimestampFilter.value),
             }
           : {}),
       },
@@ -381,11 +381,11 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
       },
     },
     fn: async (input) => {
-      return queryClickhouse<T>({
+      return queryDatastore<T>({
         query: query.replace("__TRACE_TABLE__", "traces"),
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs,
+        datastoreConfig,
       });
     },
   });

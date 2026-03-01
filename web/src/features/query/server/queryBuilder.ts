@@ -1,6 +1,6 @@
 import { type z } from "zod/v4";
 import {
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   shouldSkipObservationsFinal,
 } from "@hanzo/shared/src/server";
 import type {
@@ -204,8 +204,8 @@ export class QueryBuilder {
     // e.g., "events_core events_traces" -> "events_traces"
     //       "traces FINAL"              -> "traces"  (FINAL is a modifier, not an alias)
     const parts = view.baseCte.split(/\s+/);
-    const clickhouseModifiers = new Set(["FINAL", "SAMPLE", "PREWHERE"]);
-    if (parts.length >= 2 && !clickhouseModifiers.has(parts[1].toUpperCase())) {
+    const datastoreModifiers = new Set(["FINAL", "SAMPLE", "PREWHERE"]);
+    if (parts.length >= 2 && !datastoreModifiers.has(parts[1].toUpperCase())) {
       return parts[1];
     }
     return parts[0];
@@ -222,40 +222,40 @@ export class QueryBuilder {
 
     // Transform our filters to match the column mapping format expected by createFilterFromFilterState
     const columnMappings = filters.map((filter) => {
-      let clickhouseSelect: string;
+      let datastoreSelect: string;
       let queryPrefix: string = "";
-      let clickhouseTableName: string = actualTableName;
+      let datastoreTableName: string = actualTableName;
       let type: string;
 
       if (filter.column in view.dimensions) {
         const dimension = view.dimensions[filter.column];
-        clickhouseSelect = dimension.sql;
+        datastoreSelect = dimension.sql;
         type = "string";
         if (dimension.relationTable) {
-          clickhouseTableName = dimension.relationTable;
+          datastoreTableName = dimension.relationTable;
         }
         // Filters on measures are underdefined and not allowed in the initial version
         // } else if (filter.column in view.measures) {
         //   const measure = view.measures[filter.column];
-        //   clickhouseSelect = measure.sql;
+        //   datastoreSelect = measure.sql;
         //   type = measure.type;
         //   if (measure.relationTable) {
-        //     clickhouseTableName = measure.relationTable;
+        //     datastoreTableName = measure.relationTable;
         //   }
       } else if (filter.column === view.timeDimension) {
-        clickhouseSelect = view.timeDimension;
-        queryPrefix = clickhouseTableName;
+        datastoreSelect = view.timeDimension;
+        queryPrefix = datastoreTableName;
         type = "datetime";
       } else if (filter.column === "metadata") {
-        clickhouseSelect = "metadata";
-        queryPrefix = clickhouseTableName;
+        datastoreSelect = "metadata";
+        queryPrefix = datastoreTableName;
         type = "stringObject";
       } else if (filter.column.endsWith("Name")) {
         // Sometimes, the filter does not update correctly and sends us scoreName instead of name for scores, etc.
         // If this happens, none of the conditions above apply, and we use this fallback to avoid raising an error.
         // As this is hard to catch, we include this workaround. (LFE-4838).
-        clickhouseSelect = "name";
-        queryPrefix = clickhouseTableName;
+        datastoreSelect = "name";
+        queryPrefix = datastoreTableName;
         type = "string";
       } else {
         throw new InvalidRequestError(
@@ -266,8 +266,8 @@ export class QueryBuilder {
       return {
         uiTableName: filter.column,
         uiTableId: filter.column,
-        clickhouseTableName,
-        clickhouseSelect,
+        datastoreTableName,
+        datastoreSelect,
         queryPrefix,
         type,
       };
@@ -290,8 +290,8 @@ export class QueryBuilder {
     const projectIdMapping = {
       uiTableName: "project_id",
       uiTableId: "project_id",
-      clickhouseTableName: actualTableName,
-      clickhouseSelect: "project_id",
+      datastoreTableName: actualTableName,
+      datastoreSelect: "project_id",
       queryPrefix: actualTableName,
       type: "string",
     };
@@ -299,8 +299,8 @@ export class QueryBuilder {
     const timeDimensionMapping = {
       uiTableName: view.timeDimension,
       uiTableId: view.timeDimension,
-      clickhouseTableName: actualTableName,
-      clickhouseSelect: view.timeDimension,
+      datastoreTableName: actualTableName,
+      datastoreSelect: view.timeDimension,
       queryPrefix: actualTableName,
       type: "datetime",
     };
@@ -353,8 +353,8 @@ export class QueryBuilder {
       const segmentsMappings = view.segments.map((segment) => ({
         uiTableName: segment.column,
         uiTableId: segment.column,
-        clickhouseTableName: view.name,
-        clickhouseSelect: segment.column,
+        datastoreTableName: view.name,
+        datastoreSelect: segment.column,
         queryPrefix: view.name,
         type: segment.type,
       }));
@@ -391,10 +391,10 @@ export class QueryBuilder {
     filters.forEach((filter) => {
       // Only add as relation table if it's not the base table
       if (
-        filter.clickhouseTable !== view.name &&
-        filter.clickhouseTable !== actualTableName
+        filter.datastoreTable !== view.name &&
+        filter.datastoreTable !== actualTableName
       ) {
-        relationTables.add(filter.clickhouseTable);
+        relationTables.add(filter.datastoreTable);
       }
     });
     return relationTables;
@@ -468,8 +468,8 @@ export class QueryBuilder {
       const relationTimeDimensionMapping = {
         uiTableName: relation.timeDimension,
         uiTableId: relation.timeDimension,
-        clickhouseTableName: relation.name,
-        clickhouseSelect: relation.timeDimension,
+        datastoreTableName: relation.name,
+        datastoreSelect: relation.timeDimension,
         queryPrefix: relationTableName,
         type: "datetime",
       };
@@ -836,10 +836,10 @@ export class QueryBuilder {
         step = "INTERVAL 1 DAY"; // Default to day if granularity is unknown
     }
 
-    parameters["fillFromDate"] = convertDateToClickhouseDateTime(
+    parameters["fillFromDate"] = convertDateToDatastoreDateTime(
       new Date(fromTimestamp),
     );
-    parameters["fillToDate"] = convertDateToClickhouseDateTime(
+    parameters["fillToDate"] = convertDateToDatastoreDateTime(
       new Date(toTimestamp),
     );
 

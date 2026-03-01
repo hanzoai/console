@@ -7,7 +7,7 @@ import {
 import { BlobStorageFileRefRecordReadType } from "../repositories/definitions";
 import { logger } from "../logger";
 import { env } from "../../env";
-import { clickhouseClient } from "../clickhouse/client";
+import { datastoreClient } from "../datastore/client";
 import { getS3EventStorageClient } from "../s3";
 
 export const deleteIngestionEventsFromS3AndClickhouseForScores = async (p: {
@@ -64,7 +64,7 @@ async function removeIngestionEventsFromS3AndDeleteClickhouseRefs(p: {
       // Delete the current batch and reset the list
       await eventStorageClient.deleteFiles(blobStorageRefs.map((r) => r.bucket_path));
 
-      // soft delete the blob storage references in clickhouse
+      // soft delete the blob storage references in datastore
       await softDeleteInClickhouse(blobStorageRefs);
       batch++;
       logger.info(`Deleted batch ${batch} of size ${blobStorageRefs.length} for ${projectId} of deleting s3 refs`);
@@ -78,7 +78,7 @@ async function removeIngestionEventsFromS3AndDeleteClickhouseRefs(p: {
 }
 
 async function softDeleteInClickhouse(blobStorageRefs: BlobStorageFileRefRecordReadType[]) {
-  await clickhouseClient().insert({
+  await datastoreClient().insert({
     table: "blob_storage_file_log",
     values: blobStorageRefs.map((e) => ({
       ...e,

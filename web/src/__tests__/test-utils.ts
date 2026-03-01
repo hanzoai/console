@@ -1,7 +1,7 @@
 import { env } from "@/src/env.mjs";
 import { prisma } from "@hanzo/shared/src/db";
 import {
-  clickhouseClient,
+  datastoreClient,
   createBasicAuthHeader,
   getQueue,
   IngestionQueue,
@@ -144,7 +144,7 @@ export const disconnectQueues = async () => {
 
 export const truncateClickhouseTables = async () => {
   if (!env.CLICKHOUSE_URL?.includes("localhost:8123")) {
-    throw new Error("You cannot prune clickhouse unless running on localhost.");
+    throw new Error("You cannot prune datastore unless running on localhost.");
   }
 
   // Additional safety check for test database
@@ -154,13 +154,13 @@ export const truncateClickhouseTables = async () => {
     console.log("Running tests against ClickHouse database:", env.CLICKHOUSE_DB);
   }
 
-  await clickhouseClient().command({
+  await datastoreClient().command({
     query: "TRUNCATE TABLE IF EXISTS observations",
   });
-  await clickhouseClient().command({
+  await datastoreClient().command({
     query: "TRUNCATE TABLE IF EXISTS scores",
   });
-  await clickhouseClient().command({
+  await datastoreClient().command({
     query: "TRUNCATE TABLE IF EXISTS traces",
   });
 };

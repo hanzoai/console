@@ -3,8 +3,8 @@ import { z } from "zod/v4";
 import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getScoresGroupedByNameSourceType,
-  queryClickhouse,
-  convertDateToClickhouseDateTime,
+  queryDatastore,
+  convertDateToDatastoreDateTime,
 } from "@hanzo/shared/src/server";
 import { buildEstimateQuery } from "./buildEstimateQuery";
 import { buildScoreComparisonQuery } from "./buildScoreComparisonQuery";
@@ -285,7 +285,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
       });
 
       // Execute query
-      const results = await queryClickhouse<{
+      const results = await queryDatastore<{
         result_type: string;
         col1: number | null;
         col2: number | null;
@@ -309,8 +309,8 @@ export const scoreAnalyticsRouter = createTRPCRouter({
           score2Source: score2.source,
           dataType1: score1.dataType,
           dataType2: score2.dataType,
-          fromTimestamp: convertDateToClickhouseDateTime(fromTimestamp),
-          toTimestamp: convertDateToClickhouseDateTime(toTimestamp),
+          fromTimestamp: convertDateToDatastoreDateTime(fromTimestamp),
+          toTimestamp: convertDateToDatastoreDateTime(toTimestamp),
           nBins,
         },
         tags: {
@@ -319,7 +319,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
           kind: "comparison",
           projectId,
         },
-        clickhouseSettings: {
+        datastoreSettings: {
           // Enable short-circuit evaluation to prevent correlation errors
           // This ensures if() conditions are evaluated before function calls
           short_circuit_function_evaluation: "enable",

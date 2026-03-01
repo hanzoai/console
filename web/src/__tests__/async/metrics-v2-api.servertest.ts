@@ -6,7 +6,7 @@ import {
   createEventsCh,
   createScoresCh,
   createTraceScore,
-  queryClickhouse,
+  queryDatastore,
 } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import waitForExpect from "wait-for-expect";
@@ -74,7 +74,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
     // Wait for ClickHouse to process
     await waitForExpect(
       async () => {
-        const result = await queryClickhouse<{ count: string }>({
+        const result = await queryDatastore<{ count: string }>({
           query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
           params: { projectId, ids: observationIds },
         });
@@ -784,7 +784,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM scores WHERE project_id = {projectId: String} AND id IN ({ids: Array(String)})`,
             params: { projectId, ids: scoreIds },
           });
@@ -941,7 +941,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM scores WHERE project_id = {projectId: String} AND id IN ({ids: Array(String)})`,
             params: { projectId, ids: [eventsScoreId] },
           });
@@ -1033,7 +1033,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM scores WHERE project_id = {projectId: String} AND id IN ({ids: Array(String)})`,
             params: { projectId, ids: [obsEventsScoreId] },
           });

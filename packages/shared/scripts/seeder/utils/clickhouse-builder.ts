@@ -7,7 +7,7 @@ import {
 } from "../../../src/server";
 import { SEED_TEXT_PROMPTS } from "./postgres-seed-constants";
 import { createTracesCh, createObservationsCh, createScoresCh } from "../../../src/server";
-import { InsertResult } from "@clickhouse/client";
+import type { InsertResult } from "../../../src/server/datastore/types";
 
 /**
  * Builds or executes ClickHouse SQL INSERT queries for seeding test data.
@@ -15,7 +15,7 @@ import { InsertResult } from "@clickhouse/client";
  * Use executeXxxInsert() for custom curated data with detailed control.
  * Use buildBulkXxxInsert() for large datasets (>1000 items) for random distribution of data.
  */
-export class ClickHouseQueryBuilder {
+export class DatastoreQueryBuilder {
   private escapeString(str: string): string {
     return str.replace(/'/g, "''");
   }

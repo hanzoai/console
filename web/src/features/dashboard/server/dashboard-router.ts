@@ -133,7 +133,7 @@ function prepareScoresNumericV2Params(filter: FilterState) {
  * The result column is named "histogram_value" by QueryBuilder
  * (pattern: `${aggregation}_${alias}`).
  */
-function clickhouseHistogramToChartData(
+function datastoreHistogramToChartData(
   result: Array<Record<string, unknown>>,
 ): {
   chartData: Array<{ binLabel: string; count: number }>;
@@ -423,7 +423,7 @@ export const dashboardRouter = createTRPCRouter({
           histogramQuery,
           "v2",
         );
-        return clickhouseHistogramToChartData(result);
+        return datastoreHistogramToChartData(result);
       }
 
       const data = await getNumericScoreHistogram(

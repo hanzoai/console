@@ -10,14 +10,14 @@ import {
   StringFilter,
   StringOptionsFilter,
 } from "../queries";
-import { parseClickhouseUTCDateTimeFormat, queryClickhouse } from "./clickhouse";
-import { convertDatasetRunItemClickhouseToDomain } from "./dataset-run-items-converters";
+import { parseDatastoreUTCDateTimeFormat, queryDatastore } from "./datastore";
+import { convertDatasetRunItemDatastoreToDomain } from "./dataset-run-items-converters";
 import { DatasetRunItemRecord } from "./definitions";
 import { env } from "../../env";
-import { commandClickhouse } from "./clickhouse";
+import { commandDatastore } from "./datastore";
 import Decimal from "decimal.js";
-import { ClickHouseClientConfigOptions } from "@clickhouse/client";
-import { convertDateToClickhouseDateTime } from "../clickhouse/client";
+import type { DatastoreClientConfig } from "../datastore/types";
+import { convertDateToDatastoreDateTime } from "../datastore/client";
 import { ScoreAggregate } from "../../features/scores";
 
 type DatasetItemIdsByTraceIdQuery = {
@@ -34,7 +34,7 @@ type DatasetRunItemsTableQuery = {
   orderBy?: OrderByState | OrderByState[];
   limit?: number;
   offset?: number;
-  clickhouseConfigs?: ClickHouseClientConfigOptions;
+  datastoreConfig?: DatastoreClientConfig;
 };
 
 type BaseDatasetItemWithRunDataQuery = {
@@ -167,7 +167,7 @@ const convertDatasetRunsRowsRecord = (record: DatasetRunsRowsRecordType): Datase
     id: record.dataset_run_id,
     name: record.dataset_run_name,
     projectId: record.project_id,
-    createdAt: parseClickhouseUTCDateTimeFormat(record.dataset_run_created_at),
+    createdAt: parseDatastoreUTCDateTimeFormat(record.dataset_run_created_at),
     datasetId: record.dataset_id,
     description: record.dataset_run_description,
     metadata: record.dataset_run_metadata,
@@ -178,7 +178,7 @@ const getProjectDatasetIdDefaultFilter = (projectId: string, datasetId?: string,
   return {
     datasetRunItemsFilter: new FilterList([
       new StringFilter({
-        clickhouseTable: "dataset_run_items_rmt",
+        datastoreTable: "dataset_run_items_rmt",
         field: "project_id",
         operator: "=",
         value: projectId,
@@ -186,7 +186,7 @@ const getProjectDatasetIdDefaultFilter = (projectId: string, datasetId?: string,
       ...(datasetId
         ? [
             new StringFilter({
-              clickhouseTable: "dataset_run_items_rmt",
+              datastoreTable: "dataset_run_items_rmt",
               field: "dataset_id",
               operator: "=",
               value: datasetId,
@@ -196,7 +196,7 @@ const getProjectDatasetIdDefaultFilter = (projectId: string, datasetId?: string,
       ...(runIds && runIds.length > 0
         ? [
             new StringOptionsFilter({
-              clickhouseTable: "dataset_run_items_rmt",
+              datastoreTable: "dataset_run_items_rmt",
               field: "dataset_run_id",
               operator: "any of",
               values: runIds,
@@ -266,7 +266,7 @@ const getDatasetRunsTableInternal = async <T>(
 
   const scoresFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "scores",
+      datastoreTable: "scores",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -445,7 +445,7 @@ const getDatasetRunsTableInternal = async <T>(
     ${orderByClause}
     ${limit !== undefined && offset !== undefined ? `LIMIT ${limit} OFFSET ${offset}` : ""};`;
 
-  const res = await queryClickhouse<T>({
+  const res = await queryDatastore<T>({
     query,
     params: {
       projectId,
@@ -540,7 +540,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
 
     // Create run ID condition
     const runConditionFilter = new StringFilter({
-      clickhouseTable: "dataset_run_items_rmt",
+      datastoreTable: "dataset_run_items_rmt",
       field: "dataset_run_id",
       operator: "=",
       value: runId,
@@ -562,7 +562,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
     // Create run ID condition
     const runConditionFilter = new FilterList([
       new StringFilter({
-        clickhouseTable: "dataset_run_items_rmt",
+        datastoreTable: "dataset_run_items_rmt",
         field: "dataset_run_id",
         operator: "=",
         value: runId,
@@ -582,7 +582,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
   // Build scores filter
   const scoresFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "scores",
+      datastoreTable: "scores",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -655,7 +655,7 @@ const getQualifyingDatasetItems = async <T>(opts: {
     ${select === "count" ? "" : "ORDER BY dataset_item_id -- for consistent pagination"}
     ${limit !== undefined && offset !== undefined ? `LIMIT ${limit} OFFSET ${offset}` : ""};`;
 
-  const res = await queryClickhouse<T>({
+  const res = await queryDatastore<T>({
     query,
     params: {
       ...baseFilter.params,
@@ -722,7 +722,7 @@ const getDatasetRunItemsTableInternal = async <T, IncludeIO extends boolean = tr
 
   const scoresFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "scores",
+      datastoreTable: "scores",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -818,7 +818,7 @@ const getDatasetRunItemsTableInternal = async <T, IncludeIO extends boolean = tr
     ${hasScoresFilter ? `LEFT JOIN scores_aggregated sa ON dri.dataset_run_id = sa.dataset_run_id AND dri.project_id = sa.project_id AND dri.trace_id = sa.trace_id` : ""}
     WHERE ${appliedFilter.query};`;
 
-  const res = await queryClickhouse<T>({
+  const res = await queryDatastore<T>({
     query,
     params: {
       ...appliedFilter.params,
@@ -834,7 +834,7 @@ const getDatasetRunItemsTableInternal = async <T, IncludeIO extends boolean = tr
       projectId,
       ...(datasetId ? { datasetId } : {}),
     },
-    clickhouseConfigs: opts.clickhouseConfigs,
+    datastoreConfig: opts.datastoreConfig,
   });
 
   return res;
@@ -847,7 +847,7 @@ export const getDatasetRunItemsCh = async (opts: DatasetRunItemsTableQuery): Pro
     tags: { kind: "list" },
   });
 
-  return rows.map((row) => convertDatasetRunItemClickhouseToDomain(row));
+  return rows.map((row) => convertDatasetRunItemDatastoreToDomain(row));
 };
 
 export const getDatasetRunItemsByDatasetIdCh = async (
@@ -859,7 +859,7 @@ export const getDatasetRunItemsByDatasetIdCh = async (
     tags: { kind: "list" },
   });
 
-  return rows.map((row) => convertDatasetRunItemClickhouseToDomain(row));
+  return rows.map((row) => convertDatasetRunItemDatastoreToDomain(row));
 };
 
 export const getDatasetItemsWithRunDataCount = async (opts: DatasetItemsWithRunDataCountQuery): Promise<number> => {
@@ -914,7 +914,7 @@ export const getDatasetRunItemsWithoutIOByItemIds = async (
   });
 
   // Step 2: Convert to domain
-  return rows.map((row) => convertDatasetRunItemClickhouseToDomain(row));
+  return rows.map((row) => convertDatasetRunItemDatastoreToDomain(row));
 };
 
 export const getDatasetItemIdsByTraceIdCh = async (
@@ -924,13 +924,13 @@ export const getDatasetItemIdsByTraceIdCh = async (
 
   const datasetRunItemsFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "dataset_run_items_rmt",
+      datastoreTable: "dataset_run_items_rmt",
       field: "project_id",
       operator: "=",
       value: projectId,
     }),
     new StringFilter({
-      clickhouseTable: "dataset_run_items_rmt",
+      datastoreTable: "dataset_run_items_rmt",
       field: "trace_id",
       operator: "=",
       value: traceId,
@@ -949,7 +949,7 @@ export const getDatasetItemIdsByTraceIdCh = async (
   WHERE ${appliedFilter.query}
   LIMIT 1 BY dri.project_id, dri.dataset_id, dri.dataset_run_id, dri.dataset_item_id;`;
 
-  const res = await queryClickhouse<{
+  const res = await queryDatastore<{
     dataset_item_id: string;
     observation_id: string | null;
     dataset_id: string;
@@ -1003,7 +1003,7 @@ export const hasAnyDatasetRunItem = async (projectId: string): Promise<boolean> 
     LIMIT 1
   `;
 
-  const rows = await queryClickhouse<{ 1: number }>({
+  const rows = await queryDatastore<{ 1: number }>({
     query,
     params: { projectId },
     tags: {
@@ -1027,10 +1027,10 @@ export const deleteDatasetRunItemsByProjectId = async (projectId: string): Promi
     DELETE FROM dataset_run_items_rmt
     WHERE project_id = {projectId: String};
   `;
-  await commandClickhouse({
+  await commandDatastore({
     query,
     params: { projectId },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1057,13 +1057,13 @@ export const deleteDatasetRunItemsByDatasetId = async ({
   AND dataset_id = {datasetId: String}
 `;
 
-  await commandClickhouse({
+  await commandDatastore({
     query,
     params: {
       projectId,
       datasetId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1091,14 +1091,14 @@ export const deleteDatasetRunItemsByDatasetRunIds = async ({
     AND dataset_run_id IN ({datasetRunIds: Array(String)})
   `;
 
-  await commandClickhouse({
+  await commandDatastore({
     query,
     params: {
       projectId,
       datasetRunIds,
       datasetId,
     },
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
     },
     tags: {
@@ -1127,11 +1127,11 @@ export const getDatasetRunItemCountsByProjectInCreationInterval = async ({
   GROUP BY project_id
 `;
 
-  const rows = await queryClickhouse<{ project_id: string; count: string }>({
+  const rows = await queryDatastore<{ project_id: string; count: string }>({
     query,
     params: {
-      start: convertDateToClickhouseDateTime(start),
-      end: convertDateToClickhouseDateTime(end),
+      start: convertDateToDatastoreDateTime(start),
+      end: convertDateToDatastoreDateTime(end),
     },
     tags: {
       feature: "datasets",

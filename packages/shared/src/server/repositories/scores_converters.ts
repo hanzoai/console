@@ -1,7 +1,7 @@
 import { ScoreRecordReadType } from "./definitions";
 import type { ScoreDataTypeType, ScoreByDataType, ScoreSourceType } from "../../domain/scores";
-import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
-import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
+import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
+import { parseDatastoreUTCDateTimeFormat } from "./datastore";
 
 export type ScoreAggregation = {
   id: string;
@@ -14,7 +14,7 @@ export type ScoreAggregation = {
   timestamp: Date;
 };
 
-export const convertClickhouseScoreToDomain = <
+export const convertDatastoreScoreToDomain = <
   ExcludeMetadata extends boolean = false,
   DataType extends ScoreDataTypeType = ScoreDataTypeType,
 >(
@@ -23,7 +23,7 @@ export const convertClickhouseScoreToDomain = <
 ): ScoreByDataType<DataType> => {
   const baseScore = {
     id: record.id,
-    timestamp: parseClickhouseUTCDateTimeFormat(record.timestamp),
+    timestamp: parseDatastoreUTCDateTimeFormat(record.timestamp),
     projectId: record.project_id,
     environment: record.environment,
     traceId: record.trace_id ?? null,
@@ -40,11 +40,11 @@ export const convertClickhouseScoreToDomain = <
     dataType: record.data_type as DataType,
     queueId: record.queue_id ?? null,
     executionTraceId: record.execution_trace_id ?? null,
-    createdAt: record.created_at ? parseClickhouseUTCDateTimeFormat(record.created_at) : new Date(),
-    updatedAt: record.updated_at ? parseClickhouseUTCDateTimeFormat(record.updated_at) : new Date(),
+    createdAt: record.created_at ? parseDatastoreUTCDateTimeFormat(record.created_at) : new Date(),
+    updatedAt: record.updated_at ? parseDatastoreUTCDateTimeFormat(record.updated_at) : new Date(),
     metadata: (includeMetadataPayload
-      ? (parseMetadataCHRecordToDomain(record.metadata ?? {}) ?? {})
-      : {}) as ExcludeMetadata extends true ? never : NonNullable<ReturnType<typeof parseMetadataCHRecordToDomain>>,
+      ? (parseMetadataDatastoreRecordToDomain(record.metadata ?? {}) ?? {})
+      : {}) as ExcludeMetadata extends true ? never : NonNullable<ReturnType<typeof parseMetadataDatastoreRecordToDomain>>,
   };
 
   if (record.data_type === "NUMERIC") {

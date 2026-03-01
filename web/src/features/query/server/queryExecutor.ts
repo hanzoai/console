@@ -1,4 +1,4 @@
-import { queryClickhouse, measureAndReturn } from "@hanzo/shared/src/server";
+import { queryDatastore, measureAndReturn } from "@hanzo/shared/src/server";
 import { QueryBuilder } from "@/src/features/query/server/queryBuilder";
 import { type QueryType, type ViewVersion } from "@/src/features/query/types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
@@ -142,7 +142,7 @@ export async function executeQuery(
   // Route events_core queries to the dedicated events read replica.
   // Checked via the view declaration's baseCte rather than scanning the compiled SQL.
   const view = getViewDeclaration(query.view, version);
-  const preferredClickhouseService = view.baseCte.includes("events_")
+  const preferredService = view.baseCte.includes("events_")
     ? ("EventsReadOnly" as const)
     : undefined;
 
@@ -155,10 +155,10 @@ export async function executeQuery(
 
   if (!usesTraceTable) {
     // No trace table placeholders, execute normally
-    return queryClickhouse<Record<string, unknown>>({
+    return queryDatastore<Record<string, unknown>>({
       query: compiledQuery,
       params: parameters,
-      clickhouseConfigs: {
+      datastoreConfig: {
         clickhouse_settings: {
           date_time_output_format: "iso",
           max_bytes_before_external_group_by: String(
@@ -167,7 +167,7 @@ export async function executeQuery(
         },
       },
       tags,
-      preferredClickhouseService,
+      preferredService,
     });
   }
 
@@ -185,10 +185,10 @@ export async function executeQuery(
       },
     },
     fn: async (input) => {
-      return queryClickhouse<Record<string, unknown>>({
+      return queryDatastore<Record<string, unknown>>({
         query: input.query,
         params: input.params,
-        clickhouseConfigs: {
+        datastoreConfig: {
           clickhouse_settings: {
             date_time_output_format: "iso",
             max_bytes_before_external_group_by: String(
@@ -197,7 +197,7 @@ export async function executeQuery(
           },
         },
         tags: input.tags,
-        preferredClickhouseService,
+        preferredService,
       });
     },
   });

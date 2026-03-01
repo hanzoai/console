@@ -12,7 +12,7 @@ import {
 import { v4 } from "uuid";
 import { FieldValidationError } from "../../utils/jsonSchemaValidation";
 import { DatasetItemDomain, DatasetItemDomainWithoutIO } from "../../domain";
-import { parseClickhouseUTCDateTimeFormat, queryClickhouse } from "./clickhouse";
+import { parseDatastoreUTCDateTimeFormat, queryDatastore } from "./datastore";
 
 const emptyNormalizeOpts: { sanitizeControlChars?: boolean } = {};
 const emptyValidateOpts: { normalizeUndefinedToNull?: boolean } = {};
@@ -1576,7 +1576,7 @@ export async function getDatasetVersionForRun(params: {
     },
     [Implementation.VERSIONED]: async () => {
       // Step 1: Get the latest creation timestamp from dataset run items (ClickHouse)
-      const maxCreatedAtResult = await queryClickhouse<{
+      const maxCreatedAtResult = await queryDatastore<{
         max_created_at: string | null;
         max_dataset_item_version: string | null;
       }>({
@@ -1604,7 +1604,7 @@ export async function getDatasetVersionForRun(params: {
       const maxDatasetItemVersion = maxCreatedAtResult[0]?.max_dataset_item_version ?? null;
 
       if (maxDatasetItemVersion) {
-        return parseClickhouseUTCDateTimeFormat(maxDatasetItemVersion);
+        return parseDatastoreUTCDateTimeFormat(maxDatasetItemVersion);
       }
 
       if (!maxCreatedAt) {
@@ -1613,7 +1613,7 @@ export async function getDatasetVersionForRun(params: {
 
       // dataset item version takes precedence over created_at
       // max_created_at as fallback for experiments that ran before dataset item versioning was introduced
-      const formattedTimestamp = parseClickhouseUTCDateTimeFormat(maxCreatedAt);
+      const formattedTimestamp = parseDatastoreUTCDateTimeFormat(maxCreatedAt);
       // Step 2: Resolve to dataset version using temporal query (PostgreSQL)
       const result = await prisma.$queryRaw<Array<{ valid_from: Date | null }>>(
         Prisma.sql`

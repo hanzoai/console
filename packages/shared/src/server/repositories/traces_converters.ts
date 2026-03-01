@@ -1,14 +1,14 @@
-import { parseClickhouseUTCDateTimeFormat } from "./clickhouse";
+import { parseDatastoreUTCDateTimeFormat } from "./datastore";
 import { TraceRecordExtraFieldsType, TraceRecordReadType } from "./definitions";
-import { convertDateToClickhouseDateTime } from "../clickhouse/client";
+import { convertDateToDatastoreDateTime } from "../datastore/client";
 import { TraceDomain } from "../../domain";
-import { parseMetadataCHRecordToDomain } from "../utils/metadata_conversion";
+import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
 import { RenderingProps, DEFAULT_RENDERING_PROPS, applyInputOutputRendering } from "../utils/rendering";
 
-export const convertTraceDomainToClickhouse = (trace: TraceDomain): TraceRecordReadType => {
+export const convertTraceDomainToDatastore = (trace: TraceDomain): TraceRecordReadType => {
   return {
     id: trace.id,
-    timestamp: convertDateToClickhouseDateTime(trace.timestamp),
+    timestamp: convertDateToDatastoreDateTime(trace.timestamp),
     name: trace.name,
     user_id: trace.userId,
     metadata: trace.metadata as Record<string, string>,
@@ -22,14 +22,14 @@ export const convertTraceDomainToClickhouse = (trace: TraceDomain): TraceRecordR
     input: trace.input as string,
     output: trace.output as string,
     session_id: trace.sessionId,
-    created_at: convertDateToClickhouseDateTime(trace.createdAt),
-    updated_at: convertDateToClickhouseDateTime(trace.updatedAt),
-    event_ts: convertDateToClickhouseDateTime(new Date()),
+    created_at: convertDateToDatastoreDateTime(trace.createdAt),
+    updated_at: convertDateToDatastoreDateTime(trace.updatedAt),
+    event_ts: convertDateToDatastoreDateTime(new Date()),
     is_deleted: 0,
   };
 };
 
-export const convertClickhouseToDomain = (
+export const convertDatastoreToDomain = (
   record: TraceRecordReadType,
   renderingProps: RenderingProps = DEFAULT_RENDERING_PROPS,
 ): TraceDomain => {
@@ -37,7 +37,7 @@ export const convertClickhouseToDomain = (
     id: record.id,
     projectId: record.project_id,
     name: record.name ?? null,
-    timestamp: parseClickhouseUTCDateTimeFormat(record.timestamp),
+    timestamp: parseDatastoreUTCDateTimeFormat(record.timestamp),
     environment: record.environment,
     tags: record.tags,
     bookmarked: record.bookmarked,
@@ -48,19 +48,19 @@ export const convertClickhouseToDomain = (
     public: record.public,
     input: applyInputOutputRendering(record.input, renderingProps),
     output: applyInputOutputRendering(record.output, renderingProps),
-    metadata: parseMetadataCHRecordToDomain(record.metadata),
-    createdAt: parseClickhouseUTCDateTimeFormat(record.created_at),
-    updatedAt: parseClickhouseUTCDateTimeFormat(record.updated_at),
+    metadata: parseMetadataDatastoreRecordToDomain(record.metadata),
+    createdAt: parseDatastoreUTCDateTimeFormat(record.created_at),
+    updatedAt: parseDatastoreUTCDateTimeFormat(record.updated_at),
   };
 };
 
-export const convertClickhouseTracesListToDomain = (
+export const convertDatastoreTracesListToDomain = (
   result: Array<TraceRecordReadType & TraceRecordExtraFieldsType>,
   include: { observations: boolean; scores: boolean; metrics: boolean },
 ): Array<TraceDomain & TraceRecordExtraFieldsType> => {
   return result.map((trace) => {
     return {
-      ...convertClickhouseToDomain(trace, DEFAULT_RENDERING_PROPS),
+      ...convertDatastoreToDomain(trace, DEFAULT_RENDERING_PROPS),
       // Conditionally include additional fields based on request
       // We need to return empty list on excluded scores / observations
       // and -1 on excluded metrics to not break the SDK API clients

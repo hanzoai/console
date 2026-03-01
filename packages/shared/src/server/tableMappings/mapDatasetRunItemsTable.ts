@@ -5,44 +5,44 @@ export const datasetRunItemsTableUiColumnDefinitions: UiColumnMappings = [
   {
     uiTableName: "Dataset Run ID",
     uiTableId: "datasetRunId",
-    clickhouseTableName: "dataset_run_items_rmt",
-    clickhouseSelect: 'dri."dataset_run_id"',
+    datastoreTableName: "dataset_run_items_rmt",
+    datastoreSelect: 'dri."dataset_run_id"',
   },
   {
     uiTableName: "Created At",
     uiTableId: "createdAt",
-    clickhouseTableName: "dataset_run_items_rmt",
-    clickhouseSelect: 'dri."created_at"',
+    datastoreTableName: "dataset_run_items_rmt",
+    datastoreSelect: 'dri."created_at"',
   },
   {
     uiTableName: "Event Timestamp",
     uiTableId: "eventTs",
-    clickhouseTableName: "dataset_run_items_rmt",
-    clickhouseSelect: 'dri."event_ts"',
+    datastoreTableName: "dataset_run_items_rmt",
+    datastoreSelect: 'dri."event_ts"',
   },
   {
     uiTableName: "Dataset Item ID",
     uiTableId: "datasetItemId",
-    clickhouseTableName: "dataset_run_items_rmt",
-    clickhouseSelect: 'dri."dataset_item_id"',
+    datastoreTableName: "dataset_run_items_rmt",
+    datastoreSelect: 'dri."dataset_item_id"',
   },
   {
     uiTableName: "Dataset",
     uiTableId: "datasetId",
-    clickhouseTableName: "dataset_run_items_rmt",
-    clickhouseSelect: 'dri."dataset_id"',
+    datastoreTableName: "dataset_run_items_rmt",
+    datastoreSelect: 'dri."dataset_id"',
   },
   {
     uiTableName: "Scores (numeric)",
     uiTableId: "agg_scores_avg",
-    clickhouseTableName: "scores",
-    clickhouseSelect: "sa.scores_avg",
+    datastoreTableName: "scores",
+    datastoreSelect: "sa.scores_avg",
   },
   {
     uiTableName: "Scores (categorical)",
     uiTableId: "agg_score_categories",
-    clickhouseTableName: "scores",
-    clickhouseSelect: "sa.score_categories",
+    datastoreTableName: "scores",
+    datastoreSelect: "sa.score_categories",
   },
 ];
 
@@ -51,7 +51,7 @@ export const mapDatasetRunItemFilterColumn = (
   column: string,
 ): unknown => {
   const columnDef = datasetRunItemsTableUiColumnDefinitions.find(
-    (col) => col.uiTableId === column || col.uiTableName === column || col.clickhouseSelect === column,
+    (col) => col.uiTableId === column || col.uiTableName === column || col.datastoreSelect === column,
   );
   if (!columnDef) {
     throw new Error(`Unhandled column for dataset run items filter: ${column}`);

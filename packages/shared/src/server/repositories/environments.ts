@@ -1,5 +1,5 @@
 import { AGGREGATABLE_SCORE_TYPES } from "../../domain/scores";
-import { queryClickhouse } from "./clickhouse";
+import { queryDatastore } from "./datastore";
 
 export type EnvironmentFilterProps = {
   projectId: string;
@@ -29,7 +29,7 @@ export const getEnvironmentsForProject = async (props: EnvironmentFilterProps): 
     )
   `;
 
-  const results = await queryClickhouse<{
+  const results = await queryDatastore<{
     environment: string;
   }>({
     query,

@@ -46,7 +46,7 @@ import {
   logger,
   getTraceById,
   getScoreById,
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   searchExistingAnnotationScore,
   hasAnyScore,
   ScoreDeleteQueue,
@@ -95,7 +95,7 @@ export const scoresRouter = createTRPCRouter({
    * Get all scores for a project, meant for internal use and *excludes metadata of scores*
    */
   all: protectedProjectProcedure.input(ScoreAllOptions).query(async ({ input, ctx }) => {
-    const clickhouseScoreData = await getScoresUiTable({
+    const datastoreScoreData = await getScoresUiTable({
       projectId: input.projectId,
       filter: input.filter ?? [],
       orderBy: input.orderBy,
@@ -110,7 +110,7 @@ export const scoresRouter = createTRPCRouter({
         where: {
           projectId: input.projectId,
           jobOutputScoreId: {
-            in: clickhouseScoreData.map((score) => score.id),
+            in: datastoreScoreData.map((score) => score.id),
           },
         },
         select: {
@@ -124,7 +124,7 @@ export const scoresRouter = createTRPCRouter({
       ctx.prisma.user.findMany({
         where: {
           id: {
-            in: clickhouseScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
+            in: datastoreScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
           },
           organizationMemberships: {
             some: {
@@ -147,7 +147,7 @@ export const scoresRouter = createTRPCRouter({
     ]);
 
     return {
-      scores: clickhouseScoreData.map<AllScoresReturnType>((score) => {
+      scores: datastoreScoreData.map<AllScoresReturnType>((score) => {
         const jobExecution = jobExecutions.find((je) => je.jobOutputScoreId === score.id);
         const user = users.find((u) => u.id === score.authorUserId);
         return {
@@ -180,7 +180,7 @@ export const scoresRouter = createTRPCRouter({
       return toDomainWithStringifiedMetadata(score);
     }),
   countAll: protectedProjectProcedure.input(ScoreAllOptions).query(async ({ input }) => {
-    const clickhouseScoreData = await getScoresUiCount({
+    const datastoreScoreData = await getScoresUiCount({
       projectId: input.projectId,
       filter: input.filter ?? [],
       orderBy: input.orderBy,
@@ -189,14 +189,14 @@ export const scoresRouter = createTRPCRouter({
     });
 
     return {
-      totalCount: clickhouseScoreData,
+      totalCount: datastoreScoreData,
     };
   }),
   /**
    * v4: Get all scores without traces JOIN. Trace metadata loaded via metricsFromEvents.
    */
   allFromEvents: protectedProjectProcedure.input(ScoreAllOptions).query(async ({ input, ctx }) => {
-    const clickhouseScoreData = await getScoresUiTableFromEvents({
+    const datastoreScoreData = await getScoresUiTableFromEvents({
       projectId: input.projectId,
       filter: input.filter ?? [],
       orderBy: input.orderBy,
@@ -209,7 +209,7 @@ export const scoresRouter = createTRPCRouter({
         where: {
           projectId: input.projectId,
           jobOutputScoreId: {
-            in: clickhouseScoreData.map((score) => score.id),
+            in: datastoreScoreData.map((score) => score.id),
           },
         },
         select: {
@@ -221,7 +221,7 @@ export const scoresRouter = createTRPCRouter({
       ctx.prisma.user.findMany({
         where: {
           id: {
-            in: clickhouseScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
+            in: datastoreScoreData.map((score) => score.authorUserId).filter((s): s is string => Boolean(s)),
           },
         },
         select: {
@@ -233,7 +233,7 @@ export const scoresRouter = createTRPCRouter({
     ]);
 
     return {
-      scores: clickhouseScoreData.map<AllScoresFromEventsReturnType>((score) => {
+      scores: datastoreScoreData.map<AllScoresFromEventsReturnType>((score) => {
         const jobExecution = jobExecutions.find((je) => je.jobOutputScoreId === score.id);
         const user = users.find((u) => u.id === score.authorUserId);
         return {
@@ -448,13 +448,13 @@ export const scoresRouter = createTRPCRouter({
         };
 
     if (inflatedParams.traceId) {
-      const clickhouseTrace = await getTraceById({
+      const datastoreTrace = await getTraceById({
         traceId: inflatedParams.traceId,
         projectId: input.projectId,
-        clickhouseFeatureTag: "annotations-trpc",
+        datastoreFeatureTag: "annotations-trpc",
       });
 
-      if (!clickhouseTrace) {
+      if (!datastoreTrace) {
         logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
         throw new ConsoleNotFoundError(
           `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
@@ -473,7 +473,7 @@ export const scoresRouter = createTRPCRouter({
       }
     }
 
-    const clickhouseScore = await searchExistingAnnotationScore(
+    const datastoreScore = await searchExistingAnnotationScore(
       input.projectId,
       inflatedParams.observationId,
       inflatedParams.traceId,
@@ -485,9 +485,9 @@ export const scoresRouter = createTRPCRouter({
 
     const timestamp = input.timestamp ?? new Date();
 
-    const score = !!clickhouseScore
+    const score = !!datastoreScore
       ? {
-          ...clickhouseScore,
+          ...datastoreScore,
           value: input.value,
           stringValue: input.stringValue ?? null,
           comment: input.comment ?? null,
@@ -521,7 +521,7 @@ export const scoresRouter = createTRPCRouter({
 
     await upsertScore({
       id: score.id, // Reuse ID that was generated by Prisma
-      timestamp: convertDateToClickhouseDateTime(timestamp),
+      timestamp: convertDateToDatastoreDateTime(timestamp),
       project_id: input.projectId,
       environment: input.environment ?? "default",
       trace_id: inflatedParams.traceId,
@@ -536,8 +536,8 @@ export const scoresRouter = createTRPCRouter({
       data_type: input.dataType,
       string_value: input.stringValue,
       queue_id: input.queueId,
-      created_at: convertDateToClickhouseDateTime(score.createdAt),
-      updated_at: convertDateToClickhouseDateTime(score.updatedAt),
+      created_at: convertDateToDatastoreDateTime(score.createdAt),
+      updated_at: convertDateToDatastoreDateTime(score.updatedAt),
       metadata: score.metadata as Record<string, string>,
     });
 
@@ -607,13 +607,13 @@ export const scoresRouter = createTRPCRouter({
           };
 
       if (inflatedParams.traceId) {
-        const clickhouseTrace = await getTraceById({
+        const datastoreTrace = await getTraceById({
           traceId: inflatedParams.traceId,
           projectId: input.projectId,
-          clickhouseFeatureTag: "annotations-trpc",
+          datastoreFeatureTag: "annotations-trpc",
         });
 
-        if (!clickhouseTrace) {
+        if (!datastoreTrace) {
           logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
           throw new ConsoleNotFoundError(
             `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
@@ -636,7 +636,7 @@ export const scoresRouter = createTRPCRouter({
 
       await upsertScore({
         id: input.id,
-        timestamp: convertDateToClickhouseDateTime(timestamp),
+        timestamp: convertDateToDatastoreDateTime(timestamp),
         project_id: input.projectId,
         environment: input.environment ?? "default",
         trace_id: inflatedParams.traceId,
@@ -651,8 +651,8 @@ export const scoresRouter = createTRPCRouter({
         data_type: input.dataType,
         string_value: input.stringValue,
         queue_id: input.queueId,
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
         metadata: {},
       });
 
@@ -735,7 +735,7 @@ export const scoresRouter = createTRPCRouter({
       await upsertScore({
         id: input.id,
         project_id: input.projectId,
-        timestamp: convertDateToClickhouseDateTime(score.timestamp),
+        timestamp: convertDateToDatastoreDateTime(score.timestamp),
         value: input.value !== null ? input.value : undefined,
         string_value: input.stringValue,
         comment: input.comment,
@@ -749,8 +749,8 @@ export const scoresRouter = createTRPCRouter({
         observation_id: score.observationId,
         session_id: score.sessionId,
         environment: score.environment,
-        created_at: convertDateToClickhouseDateTime(score.createdAt),
-        updated_at: convertDateToClickhouseDateTime(score.updatedAt),
+        created_at: convertDateToDatastoreDateTime(score.createdAt),
+        updated_at: convertDateToDatastoreDateTime(score.updatedAt),
         metadata: score.metadata as Record<string, string>,
       });
 
@@ -804,12 +804,12 @@ export const scoresRouter = createTRPCRouter({
       });
 
       // Fetch the current score from Clickhouse
-      const clickhouseScore = await getScoreById({
+      const datastoreScore = await getScoreById({
         projectId: input.projectId,
         scoreId: input.id,
         source: ScoreSourceEnum.ANNOTATION,
       });
-      if (!clickhouseScore) {
+      if (!datastoreScore) {
         logger.warn(`No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`);
         throw new ConsoleNotFoundError(
           `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
@@ -821,12 +821,12 @@ export const scoresRouter = createTRPCRouter({
         resourceType: "score",
         resourceId: input.id,
         action: "delete",
-        before: clickhouseScore,
+        before: datastoreScore,
       });
 
-      await deleteScores(input.projectId, [clickhouseScore.id]);
+      await deleteScores(input.projectId, [datastoreScore.id]);
 
-      return validateDbScore(clickhouseScore);
+      return validateDbScore(datastoreScore);
     }),
   upsertCorrection: protectedProjectProcedure
     .input(
@@ -848,18 +848,18 @@ export const scoresRouter = createTRPCRouter({
         scope: "scores:CUD",
       });
 
-      const clickhouseTrace = await getTraceById({
+      const datastoreTrace = await getTraceById({
         traceId: input.traceId,
         projectId: input.projectId,
-        clickhouseFeatureTag: "annotations-trpc",
+        datastoreFeatureTag: "annotations-trpc",
       });
 
-      if (!clickhouseTrace) {
+      if (!datastoreTrace) {
         logger.error(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
         throw new ConsoleNotFoundError(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
       }
 
-      const clickhouseScore = await searchExistingAnnotationScore(
+      const datastoreScore = await searchExistingAnnotationScore(
         input.projectId,
         input.observationId ?? null,
         input.traceId,
@@ -871,9 +871,9 @@ export const scoresRouter = createTRPCRouter({
 
       const timestamp = input.timestamp;
 
-      const score = !!clickhouseScore
+      const score = !!datastoreScore
         ? {
-            ...clickhouseScore,
+            ...datastoreScore,
             value: 0,
             stringValue: null,
             comment: null,
@@ -910,7 +910,7 @@ export const scoresRouter = createTRPCRouter({
 
       await upsertScore({
         id: score.id, // Reuse ID that was generated by Prisma
-        timestamp: convertDateToClickhouseDateTime(timestamp),
+        timestamp: convertDateToDatastoreDateTime(timestamp),
         project_id: input.projectId,
         environment: input.environment ?? "default",
         trace_id: input.traceId,
@@ -925,8 +925,8 @@ export const scoresRouter = createTRPCRouter({
         data_type: ScoreDataTypeEnum.CORRECTION,
         string_value: null,
         queue_id: input.queueId ?? null,
-        created_at: convertDateToClickhouseDateTime(score.createdAt),
-        updated_at: convertDateToClickhouseDateTime(score.updatedAt),
+        created_at: convertDateToDatastoreDateTime(score.createdAt),
+        updated_at: convertDateToDatastoreDateTime(score.updatedAt),
         metadata: score.metadata as Record<string, string>,
         long_string_value: input.value,
       });

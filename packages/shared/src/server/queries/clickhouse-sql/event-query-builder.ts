@@ -767,7 +767,7 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
     const traceIdFilter = filterList.find(
       (f) =>
         // events_full / events_core proof
-        f.clickhouseTable.startsWith("events") &&
+        f.datastoreTable.startsWith("events") &&
         f.field === 'e."trace_id"' &&
         f.operator === "=",
     );

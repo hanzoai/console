@@ -1,7 +1,7 @@
 import { convertApiProvidedFilterToClickhouseFilter } from "@hanzo/shared/src/server";
 import {
-  convertDateToClickhouseDateTime,
-  queryClickhouse,
+  convertDateToDatastoreDateTime,
+  queryDatastore,
   TRACE_TO_OBSERVATIONS_INTERVAL,
   type DateTimeFilter,
   measureAndReturn,
@@ -20,14 +20,14 @@ type QueryType = {
 
 export const generateDailyMetrics = async (props: QueryType) => {
   const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
-  const hasTracesFilter = filter.some((f) => f.clickhouseTable === "traces");
-  const tracesFilter = filter.filter((f) => f.clickhouseTable === "traces");
+  const hasTracesFilter = filter.some((f) => f.datastoreTable === "traces");
+  const tracesFilter = filter.filter((f) => f.datastoreTable === "traces");
   const appliedFilter = filter.apply();
   const appliedTracesFilter = tracesFilter.apply();
 
   const timeFilter = filter.find(
     (f) =>
-      f.clickhouseTable === "traces" && f.field.includes("timestamp") && (f.operator === ">=" || f.operator === ">"),
+      f.datastoreTable === "traces" && f.field.includes("timestamp") && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
 
   // If there is any other filter than fromTimestamp, we join the traces table to be on the safe side.
@@ -101,7 +101,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
         ...(props.page !== undefined ? { offset: (props.page - 1) * props.limit } : {}),
         ...(timeFilter
           ? {
-              cteTimeFilter: convertDateToClickhouseDateTime(timeFilter.value),
+              cteTimeFilter: convertDateToDatastoreDateTime(timeFilter.value),
             }
           : {}),
       },
@@ -115,7 +115,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
       timestamp,
     },
     fn: async (input) => {
-      const result = await queryClickhouse<{
+      const result = await queryDatastore<{
         date: string;
         countTraces: number;
         countObservations: number;
@@ -125,7 +125,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
         query: query.replaceAll("__TRACE_TABLE__", "traces"),
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs: {
+        datastoreConfig: {
           request_timeout: 60_000, // Use 1 minute timeout for daily metrics
         },
       });
@@ -151,7 +151,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
 
 export const getDailyMetricsCount = async (props: QueryType) => {
   const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
-  const appliedFilter = filter.filter((f) => f.clickhouseTable === "traces").apply();
+  const appliedFilter = filter.filter((f) => f.datastoreTable === "traces").apply();
 
   const query = `
     SELECT count(distinct toDate(timestamp)) as count
@@ -177,7 +177,7 @@ export const getDailyMetricsCount = async (props: QueryType) => {
       timestamp,
     },
     fn: async (input) => {
-      const records = await queryClickhouse<{ count: string }>({
+      const records = await queryDatastore<{ count: string }>({
         query: query.replace("__TRACE_TABLE__", "traces"),
         params: input.params,
         tags: input.tags,
@@ -190,53 +190,53 @@ export const getDailyMetricsCount = async (props: QueryType) => {
 const filterParams = [
   {
     id: "userId",
-    clickhouseSelect: "user_id",
+    datastoreSelect: "user_id",
     filterType: "StringFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
   {
     id: "traceName",
-    clickhouseSelect: "name",
+    datastoreSelect: "name",
     filterType: "StringFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
   {
     id: "tags",
-    clickhouseSelect: "tags",
+    datastoreSelect: "tags",
     filterType: "ArrayOptionsFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
   {
     id: "traceEnvironment",
-    clickhouseSelect: "environment",
+    datastoreSelect: "environment",
     filterType: "StringOptionsFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
   {
     id: "observationEnvironment",
-    clickhouseSelect: "environment",
+    datastoreSelect: "environment",
     filterType: "StringOptionsFilter",
-    clickhouseTable: "observations",
-    clickhousePrefix: "o",
+    datastoreTable: "observations",
+    datastorePrefix: "o",
   },
   {
     id: "fromTimestamp",
-    clickhouseSelect: "timestamp",
+    datastoreSelect: "timestamp",
     operator: ">=" as const,
     filterType: "DateTimeFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
   {
     id: "toTimestamp",
-    clickhouseSelect: "timestamp",
+    datastoreSelect: "timestamp",
     operator: "<" as const,
     filterType: "DateTimeFilter",
-    clickhouseTable: "traces",
-    clickhousePrefix: "t",
+    datastoreTable: "traces",
+    datastorePrefix: "t",
   },
 ];

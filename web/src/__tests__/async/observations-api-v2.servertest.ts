@@ -1,4 +1,4 @@
-import { createEvent, createEventsCh, queryClickhouse } from "@hanzo/shared/src/server";
+import { createEvent, createEventsCh, queryDatastore } from "@hanzo/shared/src/server";
 import { makeZodVerifiedAPICall } from "@/src/__tests__/test-utils";
 import { GetObservationsV2Response } from "@/src/features/public-api/types/observations";
 import { randomUUID } from "crypto";
@@ -235,7 +235,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
             params: { projectId, ids: [observationId1, observationId2] },
           });
@@ -419,7 +419,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id IN ({ids: Array(String)})`,
             params: { projectId, ids: [observationId1, observationId2] },
           });
@@ -489,7 +489,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id = {id: String}`,
             params: { projectId, id: observationId },
           });
@@ -547,7 +547,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id = {id: String}`,
             params: { projectId, id: observationId },
           });
@@ -605,7 +605,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND span_id = {id: String}`,
             params: { projectId, id: observationId },
           });
@@ -664,7 +664,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
       // Wait for ClickHouse to process
       await waitForExpect(
         async () => {
-          const result = await queryClickhouse<{ count: string }>({
+          const result = await queryDatastore<{ count: string }>({
             query: `SELECT count() as count FROM events_core WHERE project_id = {projectId: String} AND trace_id = {traceId: String}`,
             params: { projectId, traceId },
           });

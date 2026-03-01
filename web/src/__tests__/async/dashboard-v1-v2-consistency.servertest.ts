@@ -11,8 +11,8 @@ import {
   createEventsCh,
   createTraceScore,
   createScoresCh,
-  queryClickhouse,
-  clickhouseClient,
+  queryDatastore,
+  datastoreClient,
   type TraceRecordInsertType,
   type ObservationRecordInsertType,
   type EventRecordInsertType,
@@ -174,7 +174,7 @@ const SEED_PROJECT_ID = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 // ── Seeder mode: copy seed data into an isolated project ─────────────────────
 
 async function seedFromSeeder(targetProjectId: string) {
-  const client = clickhouseClient();
+  const client = datastoreClient();
   for (const table of ["traces", "observations", "events", "scores"]) {
     try {
       await client.command({
@@ -189,7 +189,7 @@ async function seedFromSeeder(targetProjectId: string) {
     }
   }
 
-  const maxTsResult = await queryClickhouse<{ max_ts: string }>({
+  const maxTsResult = await queryDatastore<{ max_ts: string }>({
     query: `SELECT max(timestamp) as max_ts FROM traces WHERE project_id = {projectId: String}`,
     params: { projectId: targetProjectId },
   });
@@ -197,7 +197,7 @@ async function seedFromSeeder(targetProjectId: string) {
 
   let maxTsEvents = new Date(0);
   if (env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true") {
-    const maxTsEventsResult = await queryClickhouse<{ max_ts: string }>({
+    const maxTsEventsResult = await queryDatastore<{ max_ts: string }>({
       query: `SELECT max(event_ts) as max_ts FROM events_core WHERE project_id = {projectId: String}`,
       params: { projectId: targetProjectId },
     });

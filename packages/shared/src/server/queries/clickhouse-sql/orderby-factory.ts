@@ -39,7 +39,7 @@ export function orderByToClickhouseSql(
       throw new Error("Invalid order: " + ob.order);
     }
 
-    const column = `${col.queryPrefix ? col.queryPrefix + "." : ""}${col.clickhouseSelect}`;
+    const column = `${col.queryPrefix ? col.queryPrefix + "." : ""}${col.datastoreSelect}`;
 
     // Append the order by clause to the array
     orderByClauses.push(`${usedInAggregation ? `anyLast(${column})` : column} ${order.data}`);
@@ -89,7 +89,7 @@ export function orderByToEntries(
       throw new Error("Invalid order: " + ob.order);
     }
 
-    const column = `${col.queryPrefix ? col.queryPrefix + "." : ""}${col.clickhouseSelect}`;
+    const column = `${col.queryPrefix ? col.queryPrefix + "." : ""}${col.datastoreSelect}`;
 
     entries.push({
       column,

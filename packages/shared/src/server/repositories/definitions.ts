@@ -1,7 +1,7 @@
 import z from "zod/v4";
 import { DEFAULT_TRACE_ENVIRONMENT } from "../ingestion/types";
 
-export const clickhouseStringDateSchema = z
+export const datastoreStringDateSchema = z
   .string()
   // clickhouse stores UTC like '2024-05-23 18:33:41.602000'
   // we need to convert it to '2024-05-23T18:33:41.602000Z'
@@ -59,12 +59,12 @@ export const observationRecordBaseSchema = z.object({
 });
 
 export const observationRecordReadSchema = observationRecordBaseSchema.extend({
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  start_time: clickhouseStringDateSchema,
-  end_time: clickhouseStringDateSchema.nullish(),
-  completion_start_time: clickhouseStringDateSchema.nullish(),
-  event_ts: clickhouseStringDateSchema,
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  start_time: datastoreStringDateSchema,
+  end_time: datastoreStringDateSchema.nullish(),
+  completion_start_time: datastoreStringDateSchema.nullish(),
+  event_ts: datastoreStringDateSchema,
   provided_usage_details: UsageCostSchema,
   provided_cost_details: UsageCostSchema,
   usage_details: UsageCostSchema,
@@ -137,10 +137,10 @@ export const traceRecordExtraFields = z.object({
 export type TraceRecordExtraFieldsType = z.infer<typeof traceRecordExtraFields>;
 
 export const traceRecordReadSchema = traceRecordBaseSchema.extend({
-  timestamp: clickhouseStringDateSchema,
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  event_ts: clickhouseStringDateSchema,
+  timestamp: datastoreStringDateSchema,
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  event_ts: datastoreStringDateSchema,
 });
 export type TraceRecordReadType = z.infer<typeof traceRecordReadSchema>;
 
@@ -213,10 +213,10 @@ export const scoreRecordBaseSchema = z.object({
 });
 
 export const scoreRecordReadSchema = scoreRecordBaseSchema.extend({
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  timestamp: clickhouseStringDateSchema,
-  event_ts: clickhouseStringDateSchema,
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  timestamp: datastoreStringDateSchema,
+  event_ts: datastoreStringDateSchema,
 });
 export type ScoreRecordReadType = z.infer<typeof scoreRecordReadSchema>;
 
@@ -247,11 +247,11 @@ const datasetRunItemRecordBaseSchema = z.object({
 });
 
 const _datasetRunItemRecordReadSchema = datasetRunItemRecordBaseSchema.extend({
-  dataset_run_created_at: clickhouseStringDateSchema,
-  dataset_item_version: clickhouseStringDateSchema.nullish(),
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  event_ts: clickhouseStringDateSchema,
+  dataset_run_created_at: datastoreStringDateSchema,
+  dataset_item_version: datastoreStringDateSchema.nullish(),
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  event_ts: datastoreStringDateSchema,
 });
 export type DatasetRunItemRecordReadType = z.infer<typeof _datasetRunItemRecordReadSchema>;
 // Conditional type for dataset run item records with optional IO
@@ -284,9 +284,9 @@ export const blobStorageFileLogRecordBaseSchema = z.object({
   is_deleted: z.number(),
 });
 export const blobStorageFileRefRecordReadSchema = blobStorageFileLogRecordBaseSchema.extend({
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  event_ts: clickhouseStringDateSchema,
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  event_ts: datastoreStringDateSchema,
 });
 export type BlobStorageFileRefRecordReadType = z.infer<typeof blobStorageFileRefRecordReadSchema>;
 export const blobStorageFileLogRecordInsertSchema = blobStorageFileLogRecordBaseSchema.extend({
@@ -646,7 +646,7 @@ export const eventRecordBaseSchema = z.object({
   experiment_description: z.string().nullish(),
   experiment_dataset_id: z.string().nullish(),
   experiment_item_id: z.string().nullish(),
-  experiment_item_version: clickhouseStringDateSchema.nullish(),
+  experiment_item_version: datastoreStringDateSchema.nullish(),
   experiment_item_expected_output: z.string().nullish(),
   experiment_item_metadata_names: z.array(z.string()).default([]),
   experiment_item_metadata_values: z.array(z.string().nullish()).default([]),
@@ -677,12 +677,12 @@ export const eventRecordReadSchema = eventRecordBaseSchema.extend({
   metadata_long_values: z.record(z.number().int(), z.string()).default({}),
   total_cost: z.number().nullish(),
 
-  start_time: clickhouseStringDateSchema,
-  end_time: clickhouseStringDateSchema.nullish(),
-  completion_start_time: clickhouseStringDateSchema.nullish(),
-  created_at: clickhouseStringDateSchema,
-  updated_at: clickhouseStringDateSchema,
-  event_ts: clickhouseStringDateSchema,
+  start_time: datastoreStringDateSchema,
+  end_time: datastoreStringDateSchema.nullish(),
+  completion_start_time: datastoreStringDateSchema.nullish(),
+  created_at: datastoreStringDateSchema,
+  updated_at: datastoreStringDateSchema,
+  event_ts: datastoreStringDateSchema,
 });
 export type EventRecordReadType = z.infer<typeof eventRecordReadSchema>;
 

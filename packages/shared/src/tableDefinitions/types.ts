@@ -3,9 +3,9 @@ export type UiColumnMappings = readonly UiColumnMapping[];
 export type UiColumnMapping = Readonly<{
   uiTableName: string;
   uiTableId: string;
-  clickhouseTableName: string;
-  clickhouseSelect: string;
-  clickhouseTypeOverwrite?: string;
+  datastoreTableName: string;
+  datastoreSelect: string;
+  datastoreTypeOverwrite?: string;
   queryPrefix?: string;
 }>;
 

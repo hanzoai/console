@@ -108,18 +108,18 @@ export const queueItemRouter = createTRPCRouter({
       };
 
       if (item.objectType === AnnotationQueueObjectType.OBSERVATION) {
-        const clickhouseObservation = await getObservationById({
+        const datastoreObservation = await getObservationById({
           id: item.objectId,
           projectId: input.projectId,
         });
 
-        if (!clickhouseObservation) {
+        if (!datastoreObservation) {
           throw new ConsoleNotFoundError("Observation not found");
         }
 
         return {
           ...inflatedItem,
-          parentTraceId: clickhouseObservation?.traceId,
+          parentTraceId: datastoreObservation?.traceId,
         };
       }
 

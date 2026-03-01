@@ -134,6 +134,21 @@ importers:
         specifier: ^5.7.2
         version: 5.9.2
 
+  packages/datastore:
+    devDependencies:
+      '@opentelemetry/api':
+        specifier: '>=1.0.0 <1.10.0'
+        version: 1.9.0
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../config-typescript
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.3.0
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.2
+
   packages/ee:
     dependencies:
       '@hanzo/shared':
@@ -177,9 +192,6 @@ importers:
       '@azure/storage-blob':
         specifier: ^12.26.0
         version: 12.26.0
-      '@clickhouse/client':
-        specifier: ^1.13.0
-        version: 1.13.0
       '@google-cloud/storage':
         specifier: ^7.18.0
         version: 7.18.0
@@ -2067,13 +2079,6 @@ packages:
 
   '@chevrotain/utils@10.5.0':
     resolution: {integrity: sha512-hBzuU5+JjB2cqNZyszkDHZgOSrUUT8V3dhgRl8Q9Gp6dAj/H5+KILGjbhDpc3Iy9qmqlm/akuOI2ut9VUtzJxQ==}
-
-  '@clickhouse/client-common@1.13.0':
-    resolution: {integrity: sha512-QlGUMd3EaKkIRLCv0WW8Rw9cOlqhwQPT+ucNWY8eC4UALsMhJLpa0H7Cd7MYc9CEtTv/xlr3IcYw5Tdho4Hr2g==}
-
-  '@clickhouse/client@1.13.0':
-    resolution: {integrity: sha512-uK+zqPaJnAoq3QIOvUNbHtbWUhyg2A/aSbdJtrY2+kawp4SMBLcfIbB9ucRv5Yht1CAa3b24CiUlypkmgarukg==}
-    engines: {node: '>=16'}
 
   '@codemirror/autocomplete@6.17.0':
     resolution: {integrity: sha512-fdfj6e6ZxZf8yrkMHUSJJir7OJkHkZKaOZGzLWIYp2PZ3jd+d+UjG8zVPqJF6d3bKxkhvXTPan/UZ1t7Bqm0gA==}
@@ -15171,12 +15176,6 @@ snapshots:
   '@chevrotain/types@10.5.0': {}
 
   '@chevrotain/utils@10.5.0': {}
-
-  '@clickhouse/client-common@1.13.0': {}
-
-  '@clickhouse/client@1.13.0':
-    dependencies:
-      '@clickhouse/client-common': 1.13.0
 
   '@codemirror/autocomplete@6.17.0(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8)(@lezer/common@1.5.1)':
     dependencies:

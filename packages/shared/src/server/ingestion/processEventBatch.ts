@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { env } from "../../env";
 import { InvalidRequestError, ConsoleNotFoundError, UnauthorizedError } from "../../errors";
 import { AuthHeaderValidVerificationResultIngestion } from "../auth/types";
-import { getClickhouseEntityType } from "../clickhouse/schemaUtils";
+import { getDatastoreEntityType } from "../datastore/schemaUtils";
 import {
   getCurrentSpan,
   instrumentAsync,
@@ -181,7 +181,7 @@ export const processEventBatch = async (
       if (!event.body?.id) {
         return acc;
       }
-      const key = `${getClickhouseEntityType(event.type)}-${event.body.id}`;
+      const key = `${getDatastoreEntityType(event.type)}-${event.body.id}`;
       if (!acc[key]) {
         acc[key] = {
           data: [],
@@ -210,7 +210,7 @@ export const processEventBatch = async (
         // That way we batch updates from the same invocation into a single file and reduce
         // write operations on S3.
         const { data, key, type, eventBodyId } = sortedBatchByEventBodyId[id];
-        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getClickhouseEntityType(type)}/${eventBodyId}/${key}.json`;
+        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getDatastoreEntityType(type)}/${eventBodyId}/${key}.json`;
         return getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, data);
       }),
     );
@@ -252,8 +252,8 @@ export const processEventBatch = async (
       const shardingKey = `${authCheck.scope.projectId}-${eventData.eventBodyId}`;
       const queue = IngestionQueue.getInstance({ shardingKey });
 
-      const isDatasetRunItemEvent = getClickhouseEntityType(eventData.type) === "dataset_run_item";
-      const isObservationEvent = getClickhouseEntityType(eventData.type) === "observation";
+      const isDatasetRunItemEvent = getDatastoreEntityType(eventData.type) === "dataset_run_item";
+      const isObservationEvent = getDatastoreEntityType(eventData.type) === "observation";
 
       const isOtelOrSkipS3Project =
         authCheck.scope.projectId !== null &&

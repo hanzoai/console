@@ -1,11 +1,11 @@
 import { FileContent, SeederOptions, getTotalObservationsForMode } from "./types";
 import { DataGenerator } from "./data-generators";
-import { ClickHouseQueryBuilder } from "./clickhouse-builder";
+import { DatastoreQueryBuilder } from "./clickhouse-builder";
 import { FrameworkTraceLoader } from "./framework-traces/framework-trace-loader";
 import { EVAL_TRACE_COUNT, SEED_DATASETS } from "./postgres-seed-constants";
 import { MEDIA_TEST_TRACE_IDS } from "../seed-media";
 import {
-  clickhouseClient,
+  datastoreClient,
   createTrace,
   DatasetRunItemRecordInsertType,
   logger,
@@ -30,12 +30,12 @@ const DATASET_RUN_SCORE_NAMES = ["dataset-run-score-1", "dataset-run-score-2", "
  */
 export class SeederOrchestrator {
   private dataGenerator: DataGenerator;
-  private queryBuilder: ClickHouseQueryBuilder;
+  private queryBuilder: DatastoreQueryBuilder;
   private fileContent: FileContent | null = null;
 
   constructor() {
     this.dataGenerator = DataGenerator.getInstance();
-    this.queryBuilder = new ClickHouseQueryBuilder();
+    this.queryBuilder = new DatastoreQueryBuilder();
     this.loadFileContent();
   }
 
@@ -308,7 +308,7 @@ export class SeederOrchestrator {
 
   private async executeQuery(query: string): Promise<void> {
     try {
-      await clickhouseClient().command({
+      await datastoreClient().command({
         query,
         clickhouse_settings: {
           wait_end_of_query: 1,
@@ -339,7 +339,7 @@ export class SeederOrchestrator {
           ORDER BY count() desc
         `;
 
-        const result = await clickhouseClient().query({
+        const result = await datastoreClient().query({
           query,
           format: "TabSeparated",
         });

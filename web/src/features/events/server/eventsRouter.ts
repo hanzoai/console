@@ -7,7 +7,7 @@ import { getEventList, getEventCount, getEventFilterOptions, getEventBatchIO } f
 import {
   instrumentAsync,
   getScoresAndCorrectionsForTraces,
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   getAgentGraphDataFromEventsTable,
   getObservationsForTraceFromEventsTable,
   MAX_OBSERVATIONS_PER_TRACE,
@@ -232,8 +232,8 @@ export const eventsRouter = createTRPCRouter({
 
         const { traceId, minStartTime, maxStartTime } = input;
 
-        const chMinStartTime = convertDateToClickhouseDateTime(new Date(minStartTime));
-        const chMaxStartTime = convertDateToClickhouseDateTime(new Date(maxStartTime));
+        const chMinStartTime = convertDateToDatastoreDateTime(new Date(minStartTime));
+        const chMaxStartTime = convertDateToDatastoreDateTime(new Date(maxStartTime));
 
         const records = await getAgentGraphDataFromEventsTable({
           projectId: ctx.session.projectId,

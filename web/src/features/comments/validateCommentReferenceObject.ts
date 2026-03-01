@@ -16,20 +16,20 @@ export const validateCommentReferenceObject = async ({
   const { objectId, objectType, projectId } = input;
 
   if (isObservationOrTrace(objectType)) {
-    let clickhouseObject;
+    let datastoreObject;
     if (objectType === CommentObjectType.OBSERVATION) {
-      clickhouseObject = await getObservationById({
+      datastoreObject = await getObservationById({
         id: objectId,
         projectId,
       });
     } else {
-      clickhouseObject = await getTraceById({
+      datastoreObject = await getTraceById({
         traceId: objectId,
         projectId,
       });
     }
 
-    return !!clickhouseObject
+    return !!datastoreObject
       ? {}
       : {
           errorMessage: `Reference object, ${objectType}: ${objectId} not found in Clickhouse. Skipping creating comment.`,

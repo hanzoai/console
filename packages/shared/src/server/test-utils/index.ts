@@ -1,3 +1,3 @@
 export * from "./tracing-factory";
-export * from "./clickhouse-helpers";
+export * from "./datastore-helpers";
 export * from "./org-factory";

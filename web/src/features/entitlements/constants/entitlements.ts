@@ -27,7 +27,31 @@ export type Entitlement = (typeof entitlements)[number];
 
 const cloudAllPlansEntitlements: Entitlement[] = ["cloud-billing", "trace-deletion"];
 
-const selfHostedAllPlansEntitlements: Entitlement[] = ["trace-deletion", "scheduled-blob-exports"];
+// All features available for self-hosted and OSS deployments (permissive open source)
+const allEntitlements: Entitlement[] = [
+  "rbac-project-roles",
+  "trace-deletion",
+  "audit-logs",
+  "data-retention",
+  "scheduled-blob-exports",
+  "prompt-protected-labels",
+  "admin-api",
+  "annotation-queues",
+  "model-based-evaluations",
+  "playground",
+  "prompt-experiments",
+  "integration-posthog",
+  "self-host-ui-customization",
+  "self-host-allowed-organization-creators",
+];
+
+const unlimitedLimits = {
+  "annotation-queue-count": false as const,
+  "organization-member-count": false as const,
+  "data-access-days": false as const,
+  "model-based-evaluations-count-evaluators": false as const,
+  "prompt-management-count-prompts": false as const,
+};
 
 // Entitlement Limits: Limits on the number of resources that can be created/used
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -55,7 +79,6 @@ export const entitlementAccess: Record<
   }
 > = {
   "cloud:free": {
-    // Add new free plan
     entitlements: [...cloudAllPlansEntitlements],
     entitlementLimits: {
       "organization-member-count": 2,
@@ -107,13 +130,7 @@ export const entitlementAccess: Record<
       "scheduled-blob-exports",
       "cloud-spend-alerts",
     ],
-    entitlementLimits: {
-      "annotation-queue-count": false,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
-      "prompt-management-count-prompts": false,
-    },
+    entitlementLimits: unlimitedLimits,
   },
   "cloud:enterprise": {
     entitlements: [
@@ -127,68 +144,23 @@ export const entitlementAccess: Record<
       "scheduled-blob-exports",
       "cloud-spend-alerts",
     ],
-    entitlementLimits: {
-      "annotation-queue-count": false,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
-      "prompt-management-count-prompts": false,
-    },
+    entitlementLimits: unlimitedLimits,
   },
+  // Open source and self-hosted: full access to all features, no limits
   oss: {
-    entitlements: selfHostedAllPlansEntitlements,
-    entitlementLimits: {
-      "annotation-queue-count": false,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
-      "prompt-management-count-prompts": false,
-    },
+    entitlements: allEntitlements,
+    entitlementLimits: unlimitedLimits,
   },
   "self-hosted:pro": {
-    entitlements: selfHostedAllPlansEntitlements,
-    entitlementLimits: {
-      "annotation-queue-count": false,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
-      "prompt-management-count-prompts": false,
-    },
+    entitlements: allEntitlements,
+    entitlementLimits: unlimitedLimits,
   },
   "self-hosted:team": {
-    entitlements: [
-      ...selfHostedAllPlansEntitlements,
-      "rbac-project-roles",
-      "self-host-allowed-organization-creators",
-      "self-host-ui-customization",
-      "audit-logs",
-      "data-retention",
-      "prompt-protected-labels",
-      "admin-api",
-    ],
-    entitlementLimits: {
-      "annotation-queue-count": false,
-      "organization-member-count": false,
-      "data-access-days": false,
-      "model-based-evaluations-count-evaluators": false,
-      "prompt-management-count-prompts": false,
-    },
+    entitlements: allEntitlements,
+    entitlementLimits: unlimitedLimits,
   },
   "self-hosted:dev": {
-    entitlements: [
-      ...selfHostedAllPlansEntitlements,
-      "annotation-queues",
-      "model-based-evaluations",
-      "playground",
-      "prompt-experiments",
-      "integration-posthog",
-    ],
-    entitlementLimits: {
-      "annotation-queue-count": 1,
-      "organization-member-count": 2,
-      "data-access-days": 30,
-      "model-based-evaluations-count-evaluators": 1,
-      "prompt-management-count-prompts": false,
-    },
+    entitlements: allEntitlements,
+    entitlementLimits: unlimitedLimits,
   },
 };

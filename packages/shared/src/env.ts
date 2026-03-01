@@ -54,13 +54,39 @@ const EnvSchema = z.object({
   HANZO_CACHE_MODEL_MATCH_TTL_SECONDS: z.coerce.number().default(86400), // 24 hours
   HANZO_CACHE_PROMPT_ENABLED: z.enum(["true", "false"]).default("true"),
   HANZO_CACHE_PROMPT_TTL_SECONDS: z.coerce.number().default(300), // 5 minutes
-  CLICKHOUSE_URL: z.string().url(),
+  // DATASTORE_* vars take precedence; CLICKHOUSE_* kept for backward compatibility.
+  DATASTORE_URL: z.string().url().optional(),
+  DATASTORE_READ_ONLY_URL: z.string().url().optional(),
+  DATASTORE_EVENTS_READ_ONLY_URL: z.string().url().optional(),
+  DATASTORE_CLUSTER_NAME: z.string().optional(),
+  DATASTORE_DB: z.string().optional(),
+  DATASTORE_USER: z.string().optional(),
+  DATASTORE_PASSWORD: z.string().optional(),
+  DATASTORE_KEEP_ALIVE_IDLE_SOCKET_TTL: z.coerce.number().int().optional(),
+  DATASTORE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().optional(),
+  DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE: z.string().optional(),
+  DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS: z.coerce.number().int().optional(),
+  DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS: z.coerce
+    .number()
+    .int()
+    .min(50)
+    .optional(),
+  DATASTORE_LIGHTWEIGHT_DELETE_MODE: z
+    .enum(["alter_update", "lightweight_update", "lightweight_update_force"])
+    .optional(),
+  DATASTORE_USE_LIGHTWEIGHT_UPDATE: z.enum(["true", "false"]).optional(),
+  DATASTORE_UPDATE_PARALLEL_MODE: z
+    .enum(["sync", "async", "auto"])
+    .optional(),
+
+  // Legacy CLICKHOUSE_* vars (backward compatibility — use DATASTORE_* in new deployments)
+  CLICKHOUSE_URL: z.string().url().optional(),
   CLICKHOUSE_READ_ONLY_URL: z.string().url().optional(),
   CLICKHOUSE_EVENTS_READ_ONLY_URL: z.string().url().optional(),
   CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
   CLICKHOUSE_DB: z.string().default("default"),
-  CLICKHOUSE_USER: z.string(),
-  CLICKHOUSE_PASSWORD: z.string(),
+  CLICKHOUSE_USER: z.string().default("default"),
+  CLICKHOUSE_PASSWORD: z.string().default(""),
   CLICKHOUSE_KEEP_ALIVE_IDLE_SOCKET_TTL: z.coerce.number().int().default(9000),
   CLICKHOUSE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
   // Optional to allow for server-setting fallbacks

@@ -1,8 +1,8 @@
-import { ClickHouseClientConfigOptions } from "@clickhouse/client";
+import type { DatastoreClientConfig } from "../datastore/types";
 import { OrderByState } from "../../interfaces/orderBy";
 import { FilterState } from "../../types";
-import { convertDateToClickhouseDateTime } from "../clickhouse/client";
-import { measureAndReturn } from "../clickhouse/measureAndReturn";
+import { convertDateToDatastoreDateTime } from "../datastore/client";
+import { measureAndReturn } from "../datastore/measureAndReturn";
 import {
   CTEQueryBuilder,
   DateTimeFilter,
@@ -16,9 +16,9 @@ import {
   eventsSessionScoresAggregation,
   eventsTracesAggregation,
 } from "../queries/clickhouse-sql/query-fragments";
-import { queryClickhouse } from "../repositories";
+import { queryDatastore } from "../repositories";
 import { sessionCols } from "../tableMappings/mapSessionTable";
-import { parseClickhouseUTCDateTimeFormat } from "../repositories/clickhouse";
+import { parseDatastoreUTCDateTimeFormat } from "../repositories/datastore";
 
 type SessionEventsBaseReturnType = {
   session_id: string;
@@ -83,7 +83,7 @@ export const getSessionTracesFromEvents = async (props: {
       },
     },
     fn: async (input) => {
-      return queryClickhouse<{
+      return queryDatastore<{
         id: string;
         name: string | null;
         timestamp: string;
@@ -100,7 +100,7 @@ export const getSessionTracesFromEvents = async (props: {
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
-    timestamp: parseClickhouseUTCDateTimeFormat(row.timestamp),
+    timestamp: parseDatastoreUTCDateTimeFormat(row.timestamp),
     environment: row.environment,
     userId: row.user_id,
   }));
@@ -159,13 +159,13 @@ export type FetchSessionsTableFromEventsProps = {
   limit?: number;
   page?: number;
   tags?: Record<string, string>;
-  clickhouseConfigs?: ClickHouseClientConfigOptions | undefined;
+  datastoreConfig?: DatastoreClientConfig | undefined;
 };
 
 const getSessionsTableFromEventsGeneric = async <T>(
   props: FetchSessionsTableFromEventsProps,
 ) => {
-  const { select, projectId, filter, orderBy, limit, page, clickhouseConfigs } =
+  const { select, projectId, filter, orderBy, limit, page, datastoreConfig } =
     props;
 
   const sessionFilters = new FilterList(
@@ -184,18 +184,18 @@ const getSessionsTableFromEventsGeneric = async <T>(
   ) as StringOptionsFilter | undefined;
 
   const requiresScoresJoin =
-    sessionFilters.some((f) => f.clickhouseTable === "scores") ||
+    sessionFilters.some((f) => f.datastoreTable === "scores") ||
     sessionCols.find(
       (c) =>
         c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column,
-    )?.clickhouseTableName === "scores";
+    )?.datastoreTableName === "scores";
 
   // Build session_data CTE
   const sessionsBuilder = eventsSessionsAggregation({
     projectId,
     sessionIds: sessionIdFilter?.values,
     startTimeFrom: traceTimestampFilter
-      ? convertDateToClickhouseDateTime(traceTimestampFilter.value)
+      ? convertDateToDatastoreDateTime(traceTimestampFilter.value)
       : null,
   });
 
@@ -295,11 +295,11 @@ const getSessionsTableFromEventsGeneric = async <T>(
       },
     },
     fn: async (input) => {
-      return queryClickhouse<T>({
+      return queryDatastore<T>({
         query,
         params: input.params,
         tags: input.tags,
-        clickhouseConfigs,
+        datastoreConfig,
       });
     },
   });

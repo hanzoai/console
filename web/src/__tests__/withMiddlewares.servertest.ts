@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { withMiddlewares } from "@/src/features/public-api/server/withMiddlewares";
 import { BaseError, ConsoleNotFoundError, UnauthorizedError, ServiceUnavailableError } from "@hanzo/shared";
-import { ClickHouseResourceError, logger, traceException } from "@hanzo/shared/src/server";
+import { DatastoreResourceError, logger, traceException } from "@hanzo/shared/src/server";
 import { createMocks } from "node-mocks-http";
 import { z } from "zod/v4";
 import { Prisma } from "@prisma/client";
@@ -167,10 +167,10 @@ describe("withMiddlewares error handling", () => {
     });
   });
 
-  describe("ClickHouseResourceError handling", () => {
-    it("should handle ClickHouseResourceError with 422 status", async () => {
+  describe("DatastoreResourceError handling", () => {
+    it("should handle DatastoreResourceError with 422 status", async () => {
       const originalError = new Error("Memory limit exceeded: maximum: 10GB");
-      const resourceError = new ClickHouseResourceError("MEMORY_LIMIT", originalError);
+      const resourceError = new DatastoreResourceError("MEMORY_LIMIT", originalError);
 
       const handler = withMiddlewares({
         POST: async () => {
@@ -190,7 +190,7 @@ describe("withMiddlewares error handling", () => {
       expect(res._getStatusCode()).toBe(422);
       const jsonData = JSON.parse(res._getData());
       expect(jsonData["message"]).toBeDefined();
-      expect(jsonData["message"]).toContain(ClickHouseResourceError.ERROR_ADVICE_MESSAGE);
+      expect(jsonData["message"]).toContain(DatastoreResourceError.ERROR_ADVICE_MESSAGE);
       expect(jsonData["error"]).toBe("Unprocessable Content");
     });
   });

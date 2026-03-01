@@ -489,7 +489,7 @@ describe("traces trpc", () => {
       const cleanTrace = await getTraceById({
         traceId: trace.id,
         projectId,
-        clickhouseFeatureTag: "tracing-test",
+        datastoreFeatureTag: "tracing-test",
       });
 
       expect(cleanTrace).toBeDefined();
@@ -510,7 +510,7 @@ describe("traces trpc", () => {
       const updatedTrace = await getTraceById({
         traceId: trace.id,
         projectId,
-        clickhouseFeatureTag: "tracing-test",
+        datastoreFeatureTag: "tracing-test",
       });
 
       expect(updatedTrace).toBeDefined();
@@ -570,7 +570,7 @@ describe("traces trpc", () => {
       const cleanTrace = await getTraceById({
         traceId: trace.id,
         projectId,
-        clickhouseFeatureTag: "tracing-test",
+        datastoreFeatureTag: "tracing-test",
       });
 
       expect(cleanTrace).toBeDefined();
@@ -591,7 +591,7 @@ describe("traces trpc", () => {
       const updatedTrace = await getTraceById({
         traceId: trace.id,
         projectId,
-        clickhouseFeatureTag: "tracing-test",
+        datastoreFeatureTag: "tracing-test",
       });
 
       expect(updatedTrace).toBeDefined();

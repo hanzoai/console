@@ -3,10 +3,10 @@ import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { telemetry } from "@/src/features/telemetry";
 import { prisma } from "@hanzo/shared/src/db";
 import {
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   logger,
   measureAndReturn,
-  queryClickhouse,
+  queryDatastore,
   traceException,
 } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
@@ -38,10 +38,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           operationName: "healthCheckTraces",
           projectId: "__CROSS_PROJECT__",
           input: {
-            now: convertDateToClickhouseDateTime(now),
+            now: convertDateToDatastoreDateTime(now),
           },
           fn: async (input: { now: string }) => {
-            return queryClickhouse<{ id: string }>({
+            return queryDatastore<{ id: string }>({
               query: `
                 SELECT id
                 FROM traces
@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
           },
         });
-        const observations = await queryClickhouse({
+        const observations = await queryDatastore({
           query: `
             SELECT id
             FROM observations
@@ -66,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             LIMIT 1
           `,
           params: {
-            now: convertDateToClickhouseDateTime(now),
+            now: convertDateToDatastoreDateTime(now),
           },
           tags: {
             feature: "health-check",

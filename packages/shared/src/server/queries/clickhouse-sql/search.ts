@@ -2,7 +2,7 @@ import { TracingSearchType } from "../../../interfaces/search";
 
 const regexIndefiniteCharacters = "%";
 
-export const clickhouseSearchCondition = (
+export const datastoreSearchCondition = (
   query?: string,
   searchType?: TracingSearchType[],
   tablePrefix?: string,

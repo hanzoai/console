@@ -1,0 +1,58 @@
+{
+  "name": "@hanzo/datastore",
+  "version": "1.0.0",
+  "description": "Native Hanzo Datastore HTTP client — zero dependencies, ClickHouse-compatible HTTP API via fetch",
+  "license": "MIT",
+  "author": "Hanzo AI Inc.",
+  "homepage": "https://hanzo.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hanzoai/console.git",
+    "directory": "packages/datastore"
+  },
+  "keywords": [
+    "hanzo",
+    "datastore",
+    "clickhouse",
+    "database",
+    "client",
+    "http"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@opentelemetry/api": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@opentelemetry/api": ">=1.0.0 <1.10.0",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

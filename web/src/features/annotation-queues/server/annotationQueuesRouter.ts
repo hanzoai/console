@@ -501,13 +501,13 @@ export const queueRouter = createTRPCRouter({
         };
 
         if (item.objectType === AnnotationQueueObjectType.OBSERVATION) {
-          const clickhouseObservation = await getObservationById({
+          const datastoreObservation = await getObservationById({
             id: item.objectId,
             projectId: input.projectId,
           });
           return {
             ...inflatedUpdatedItem,
-            parentTraceId: clickhouseObservation?.traceId,
+            parentTraceId: datastoreObservation?.traceId,
           };
         }
 
