@@ -33,7 +33,7 @@ export function HanzoIamProvider<P extends HanzoIamProfile>(
     name: "Hanzo IAM",
     type: "oauth",
     wellKnown: `${issuer}/.well-known/openid-configuration`,
-    idToken: true,
+    idToken: false,
     checks: options.checks ?? ["state"],
     authorization: { params: { scope: "openid profile email" } },
     profile(profile) {
