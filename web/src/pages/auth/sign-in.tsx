@@ -435,9 +435,13 @@ export function SSOButtons({
             />
           )}
           {authProviders.hanzoIam && (
-            <Button onClick={() => handleSignIn("iam")} variant="secondary" loading={providerSigningIn === "iam"}>
+            <Button
+              onClick={() => handleSignIn("hanzo-iam")}
+              variant="secondary"
+              loading={providerSigningIn === "hanzo-iam"}
+            >
               <Shield className="mr-3" size={18} />
-              Hanzo IAM
+              Sign in with Hanzo
             </Button>
           )}
         </div>
@@ -649,8 +653,8 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     !authProviders.custom;
   useEffect(() => {
     if (hanzoIamOnly) {
-      capture("sign_in:button_click", { provider: "iam" });
-      void signIn("iam");
+      capture("sign_in:button_click", { provider: "hanzo-iam" });
+      void signIn("hanzo-iam");
     }
   }, [capture, hanzoIamOnly]);
 
