@@ -1,6 +1,6 @@
 import {
-  clickhouseClient,
-  ClickhouseClientType,
+  datastoreClient,
+  DatastoreClient,
   BlobStorageFileLogInsertType,
   getCurrentSpan,
   ObservationRecordInsertType,
@@ -20,9 +20,9 @@ import { logger } from "@hanzo/shared/src/server";
 import { instrumentAsync } from "@hanzo/shared/src/server";
 import { backOff } from "exponential-backoff";
 
-export class ClickhouseWriter {
-  private static instance: ClickhouseWriter | null = null;
-  private static client: ClickhouseClientType | null = null;
+export class DatastoreWriter {
+  private static instance: DatastoreWriter | null = null;
+  private static client: DatastoreClient | null = null;
   batchSize: number;
   writeInterval: number;
   maxAttempts: number;
@@ -32,9 +32,9 @@ export class ClickhouseWriter {
   intervalId: NodeJS.Timeout | null = null;
 
   private constructor() {
-    this.batchSize = env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE;
-    this.writeInterval = env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS;
-    this.maxAttempts = env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS;
+    this.batchSize = env.HANZO_INGESTION_DATASTORE_WRITE_BATCH_SIZE;
+    this.writeInterval = env.HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS;
+    this.maxAttempts = env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS;
 
     this.isIntervalFlushInProgress = false;
 
@@ -53,23 +53,23 @@ export class ClickhouseWriter {
   }
 
   /**
-   * Get the singleton instance of ClickhouseWriter.
+   * Get the singleton instance of DatastoreWriter.
    * Client parameter is only used for testing.
    */
-  public static getInstance(clickhouseClient?: ClickhouseClientType) {
-    if (clickhouseClient) {
-      ClickhouseWriter.client = clickhouseClient;
+  public static getInstance(datastoreClient?: DatastoreClient) {
+    if (datastoreClient) {
+      DatastoreWriter.client = datastoreClient;
     }
 
-    if (!ClickhouseWriter.instance) {
-      ClickhouseWriter.instance = new ClickhouseWriter();
+    if (!DatastoreWriter.instance) {
+      DatastoreWriter.instance = new DatastoreWriter();
     }
 
-    return ClickhouseWriter.instance;
+    return DatastoreWriter.instance;
   }
 
   private start() {
-    logger.info(`Starting ClickhouseWriter. Max interval: ${this.writeInterval} ms, Max batch size: ${this.batchSize}`);
+    logger.info(`Starting DatastoreWriter. Max interval: ${this.writeInterval} ms, Max batch size: ${this.batchSize}`);
 
     this.intervalId = setInterval(() => {
       if (this.isIntervalFlushInProgress) return;
@@ -85,7 +85,7 @@ export class ClickhouseWriter {
   }
 
   public async shutdown(): Promise<void> {
-    logger.info("Shutting down ClickhouseWriter...");
+    logger.info("Shutting down DatastoreWriter...");
 
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -94,7 +94,7 @@ export class ClickhouseWriter {
 
     await this.flushAll(true);
 
-    logger.info("ClickhouseWriter shutdown complete.");
+    logger.info("DatastoreWriter shutdown complete.");
   }
 
   private async flushAll(fullQueue = false) {
@@ -114,7 +114,7 @@ export class ClickhouseWriter {
           this.flush(TableName.DatasetRunItems, fullQueue),
           this.flush(TableName.Events, fullQueue),
         ]).catch((err) => {
-          logger.error("ClickhouseWriter.flushAll", err);
+          logger.error("DatastoreWriter.flushAll", err);
         });
       },
     );
@@ -160,10 +160,10 @@ export class ClickhouseWriter {
    */
   private handleStringLengthError<T extends TableName>(
     tableName: T,
-    queueItems: ClickhouseWriterQueueItem<T>[],
+    queueItems: DatastoreWriterQueueItem<T>[],
   ): {
-    retryItems: ClickhouseWriterQueueItem<T>[];
-    requeueItems: ClickhouseWriterQueueItem<T>[];
+    retryItems: DatastoreWriterQueueItem<T>[];
+    requeueItems: DatastoreWriterQueueItem<T>[];
   } {
     // If batch size is 1, fallback to truncation to prevent infinite loops
     if (queueItems.length === 1) {
@@ -274,7 +274,7 @@ export class ClickhouseWriter {
             records: recordsToWrite,
           }),
         {
-          numOfAttempts: env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS,
+          numOfAttempts: env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS,
           retry: (error: Error, attemptNumber: number) => {
             const isRetryable = this.isRetryableError(error);
             const isSizeError = this.isSizeError(error);
@@ -282,7 +282,7 @@ export class ClickhouseWriter {
 
             if (isRetryable) {
               logger.warn(
-                `ClickHouse Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS}): ${error.message}`,
+                `ClickHouse Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): ${error.message}`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -295,7 +295,7 @@ export class ClickhouseWriter {
               return true;
             } else if (isStringLengthError) {
               logger.warn(
-                `ClickHouse Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS}): Splitting batch and retrying`,
+                `ClickHouse Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): Splitting batch and retrying`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -323,7 +323,7 @@ export class ClickhouseWriter {
               return true;
             } else if (isSizeError && !hasBeenTruncated) {
               logger.warn(
-                `ClickHouse Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
+                `ClickHouse Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -359,7 +359,7 @@ export class ClickhouseWriter {
       });
 
       logger.debug(
-        `Flushed ${queueItems.length} records to Clickhouse ${tableName}. New queue length: ${entityQueue.length}`,
+        `Flushed ${queueItems.length} records to Datastore ${tableName}. New queue length: ${entityQueue.length}`,
       );
 
       recordGauge("ingestion_clickhouse_insert_queue_length", entityQueue.length, {
@@ -367,7 +367,7 @@ export class ClickhouseWriter {
         entityType: tableName,
       });
     } catch (err) {
-      logger.error(`ClickhouseWriter.flush ${tableName}`, err);
+      logger.error(`DatastoreWriter.flush ${tableName}`, err);
 
       // Re-add the records to the queue with incremented attempts
       let droppedCount = 0;
@@ -385,7 +385,7 @@ export class ClickhouseWriter {
       });
 
       if (droppedCount > 0) {
-        logger.error(`ClickhouseWriter: Max attempts reached, dropped ${droppedCount} ${tableName} record(s)`);
+        logger.error(`DatastoreWriter: Max attempts reached, dropped ${droppedCount} ${tableName} record(s)`);
       }
     }
   }
@@ -402,7 +402,7 @@ export class ClickhouseWriter {
       logger.debug(`Queue is full. Flushing ${tableName}...`);
 
       this.flush(tableName).catch((err) => {
-        logger.error("ClickhouseWriter.addToQueue flush", err);
+        logger.error("DatastoreWriter.addToQueue flush", err);
       });
     }
   }
@@ -413,7 +413,7 @@ export class ClickhouseWriter {
   }): Promise<void> {
     const startTime = Date.now();
 
-    await (ClickhouseWriter.client ?? clickhouseClient())
+    await (DatastoreWriter.client ?? datastoreClient())
       .insert({
         table: params.table,
         format: "JSONEachRow",
@@ -428,12 +428,12 @@ export class ClickhouseWriter {
         },
       })
       .catch((err) => {
-        logger.error(`ClickhouseWriter.writeToClickhouse ${err}`);
+        logger.error(`DatastoreWriter.writeToClickhouse ${err}`);
 
         throw err;
       });
 
-    logger.debug(`ClickhouseWriter.writeToClickhouse: ${Date.now() - startTime} ms`);
+    logger.debug(`DatastoreWriter.writeToClickhouse: ${Date.now() - startTime} ms`);
 
     recordGauge("ingestion_clickhouse_insert", params.records.length);
   }
@@ -469,10 +469,10 @@ type RecordInsertType<T extends TableName> = T extends TableName.Scores
                 : never;
 
 type ClickhouseQueue = {
-  [T in TableName]: ClickhouseWriterQueueItem<T>[];
+  [T in TableName]: DatastoreWriterQueueItem<T>[];
 };
 
-type ClickhouseWriterQueueItem<T extends TableName> = {
+type DatastoreWriterQueueItem<T extends TableName> = {
   createdAt: number;
   attempts: number;
   data: RecordInsertType<T>;

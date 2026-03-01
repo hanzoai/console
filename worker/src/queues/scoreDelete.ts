@@ -1,11 +1,11 @@
 import { Job, Processor } from "bullmq";
 import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 
-import { processClickhouseScoreDelete } from "../features/scores/processClickhouseScoreDelete";
+import { processDatastoreScoreDelete } from "../features/scores/processDatastoreScoreDelete";
 
 export const scoreDeleteProcessor: Processor = async (
   job: Job<TQueueJobTypes[QueueName.ScoreDelete]>,
 ): Promise<void> => {
   const { scoreIds, projectId } = job.data.payload;
-  await processClickhouseScoreDelete(projectId, scoreIds);
+  await processDatastoreScoreDelete(projectId, scoreIds);
 };

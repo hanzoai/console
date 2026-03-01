@@ -1,6 +1,6 @@
 import { Job, Processor } from "bullmq";
 import {
-  clickhouseClient,
+  datastoreClient,
   getClickhouseEntityType,
   getCurrentSpan,
   getQueue,
@@ -22,7 +22,7 @@ import { prisma } from "@hanzo/shared/src/db";
 
 import { env } from "../env";
 import { IngestionService } from "../services/IngestionService";
-import { ClickhouseWriter, TableName } from "../services/ClickhouseWriter";
+import { DatastoreWriter, TableName } from "../services/DatastoreWriter";
 import { chunk } from "lodash";
 import { randomUUID } from "crypto";
 
@@ -42,7 +42,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
       }
 
       // We write the new file into the ClickHouse event log to keep track for retention and deletions
-      const clickhouseWriter = ClickhouseWriter.getInstance();
+      const datastoreWriter = DatastoreWriter.getInstance();
 
       if (
         env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true" &&
@@ -50,7 +50,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
         job.data.payload.data.fileKey
       ) {
         const fileName = `${job.data.payload.data.fileKey}.json`;
-        clickhouseWriter.addToQueue(TableName.BlobStorageFileLog, {
+        datastoreWriter.addToQueue(TableName.BlobStorageFileLog, {
           id: randomUUID(),
           project_id: job.data.payload.authCheck.scope.projectId,
           entity_type: getClickhouseEntityType(job.data.payload.data.type),
@@ -219,7 +219,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
           env.QUEUE_CONSUMER_EVENT_PROPAGATION_QUEUE_IS_ENABLED === "true" &&
           env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true");
 
-      await new IngestionService(redis, prisma, clickhouseWriter, clickhouseClient()).mergeAndWrite(
+      await new IngestionService(redis, prisma, datastoreWriter, datastoreClient()).mergeAndWrite(
         getClickhouseEntityType(events[0].type),
         job.data.payload.authCheck.scope.projectId,
         job.data.payload.data.eventBodyId,

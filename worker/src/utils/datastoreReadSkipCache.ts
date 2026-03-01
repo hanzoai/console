@@ -2,8 +2,8 @@ import { PrismaClient, ConsoleNotFoundError } from "@hanzo/shared";
 import { logger } from "@hanzo/shared/src/server";
 import { env } from "../env";
 
-export class ClickhouseReadSkipCache {
-  private static instance: ClickhouseReadSkipCache | null = null;
+export class DatastoreReadSkipCache {
+  private static instance: DatastoreReadSkipCache | null = null;
   private projectSkipMap = new Map<string, boolean>();
   private initialized = false;
   private initializing = false;
@@ -14,14 +14,14 @@ export class ClickhouseReadSkipCache {
     this.prisma = prisma;
   }
 
-  public static getInstance(prisma?: PrismaClient): ClickhouseReadSkipCache {
-    if (!ClickhouseReadSkipCache.instance) {
+  public static getInstance(prisma?: PrismaClient): DatastoreReadSkipCache {
+    if (!DatastoreReadSkipCache.instance) {
       if (!prisma) {
         throw new Error("PrismaClient is required for first initialization");
       }
-      ClickhouseReadSkipCache.instance = new ClickhouseReadSkipCache(prisma);
+      DatastoreReadSkipCache.instance = new DatastoreReadSkipCache(prisma);
     }
-    return ClickhouseReadSkipCache.instance;
+    return DatastoreReadSkipCache.instance;
   }
 
   public async initialize(): Promise<void> {
@@ -50,14 +50,14 @@ export class ClickhouseReadSkipCache {
   }
 
   private async performInitialization(): Promise<void> {
-    if (!env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE) {
-      logger.info("No min project create date set, ClickhouseReadSkipCache will not pre-populate");
+    if (!env.HANZO_SKIP_INGESTION_DATASTORE_READ_MIN_PROJECT_CREATE_DATE) {
+      logger.info("No min project create date set, DatastoreReadSkipCache will not pre-populate");
       return;
     }
 
-    const cutoffDate = new Date(env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE);
+    const cutoffDate = new Date(env.HANZO_SKIP_INGESTION_DATASTORE_READ_MIN_PROJECT_CREATE_DATE);
 
-    logger.info(`Initializing ClickhouseReadSkipCache with cutoff date: ${cutoffDate.toISOString()}`);
+    logger.info(`Initializing DatastoreReadSkipCache with cutoff date: ${cutoffDate.toISOString()}`);
 
     try {
       const projects = await this.prisma.project.findMany({
@@ -85,10 +85,10 @@ export class ClickhouseReadSkipCache {
       }
 
       logger.debug(
-        `ClickhouseReadSkipCache initialized with ${projects.length} projects (${skipCount} will skip, ${noSkipCount} will not skip)`,
+        `DatastoreReadSkipCache initialized with ${projects.length} projects (${skipCount} will skip, ${noSkipCount} will not skip)`,
       );
     } catch (error) {
-      logger.error("Failed to initialize ClickhouseReadSkipCache", error);
+      logger.error("Failed to initialize DatastoreReadSkipCache", error);
       throw error;
     }
   }
@@ -96,14 +96,14 @@ export class ClickhouseReadSkipCache {
   public async shouldSkipClickHouseRead(projectId: string, minProjectCreateDate?: string): Promise<boolean> {
     // Check explicit project ID list first
     if (
-      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS &&
-      env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_PROJECT_IDS.split(",").includes(projectId)
+      env.HANZO_SKIP_INGESTION_DATASTORE_READ_PROJECT_IDS &&
+      env.HANZO_SKIP_INGESTION_DATASTORE_READ_PROJECT_IDS.split(",").includes(projectId)
     ) {
       return true;
     }
 
     // If no cutoff date configuration, don't skip
-    if (!env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE && !minProjectCreateDate) {
+    if (!env.HANZO_SKIP_INGESTION_DATASTORE_READ_MIN_PROJECT_CREATE_DATE && !minProjectCreateDate) {
       return false;
     }
 
@@ -137,7 +137,7 @@ export class ClickhouseReadSkipCache {
       }
 
       const cutoffDate = new Date(
-        env.HANZO_SKIP_INGESTION_CLICKHOUSE_READ_MIN_PROJECT_CREATE_DATE ?? minProjectCreateDate ?? new Date(), // Fallback to today. Should never apply.
+        env.HANZO_SKIP_INGESTION_DATASTORE_READ_MIN_PROJECT_CREATE_DATE ?? minProjectCreateDate ?? new Date(), // Fallback to today. Should never apply.
       );
 
       const shouldSkip = project.createdAt >= cutoffDate;

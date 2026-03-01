@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeAll } from "vitest";
 import {
-  clickhouseClient,
+  datastoreClient,
   createObservation,
   createObservationsCh,
   createOrgProjectAndApiKey,
@@ -16,7 +16,7 @@ import {
   StorageServiceFactory,
 } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
-import { processClickhouseTraceDelete } from "../features/traces/processClickhouseTraceDelete";
+import { processDatastoreTraceDelete } from "../features/traces/processDatastoreTraceDelete";
 import { env } from "../env";
 import { prisma } from "@hanzo/shared/src/db";
 
@@ -44,7 +44,7 @@ describe("trace deletion", () => {
     });
   });
 
-  it("should delete all traces, observations, and scores from Clickhouse", async () => {
+  it("should delete all traces, observations, and scores from Datastore", async () => {
     // Setup
     const { projectId } = await createOrgProjectAndApiKey();
 
@@ -54,7 +54,7 @@ describe("trace deletion", () => {
     await createScoresCh([createTraceScore({ trace_id: traceId })]);
 
     // When
-    await processClickhouseTraceDelete("projectId", [traceId]);
+    await processDatastoreTraceDelete("projectId", [traceId]);
 
     // Then
     const traces = await getTracesByIds([traceId], projectId);
@@ -154,7 +154,7 @@ describe("trace deletion", () => {
     });
 
     // When
-    await processClickhouseTraceDelete(projectId, [traceId]);
+    await processDatastoreTraceDelete(projectId, [traceId]);
 
     // Then
     const files = await mediaStorageService.listFiles(projectId);
@@ -225,7 +225,7 @@ describe("trace deletion", () => {
     });
 
     // When
-    await processClickhouseTraceDelete(projectId, [traceId1]);
+    await processDatastoreTraceDelete(projectId, [traceId1]);
 
     // Then
     const files = await mediaStorageService.listFiles(projectId);
@@ -291,7 +291,7 @@ describe("trace deletion", () => {
       }),
     ]);
 
-    await clickhouseClient().insert({
+    await datastoreClient().insert({
       table: "blob_storage_file_log",
       format: "JSONEachRow",
       values: [
@@ -332,7 +332,7 @@ describe("trace deletion", () => {
     });
 
     // When
-    await processClickhouseTraceDelete(projectId, [traceId]);
+    await processDatastoreTraceDelete(projectId, [traceId]);
 
     // Then
     const eventLog = getBlobStorageByProjectId(projectId);

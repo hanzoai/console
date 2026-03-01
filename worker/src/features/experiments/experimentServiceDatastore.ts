@@ -12,7 +12,7 @@ import {
   ConsoleInternalTraceEnvironment,
   logger,
   processEventBatch,
-  queryClickhouse,
+  queryDatastore,
   QueueJobs,
   redis,
   TraceSinkParams,
@@ -43,7 +43,7 @@ async function getExistingRunItemDatasetItemIds(
   AND dataset_run_id = {runId: String}
 `;
 
-  const rows = await queryClickhouse<{ id: string }>({
+  const rows = await queryDatastore<{ id: string }>({
     query,
     params: {
       projectId,
@@ -258,7 +258,7 @@ async function getItemsToProcess(projectId: string, datasetId: string, runId: st
   return itemsToProcess;
 }
 
-export const createExperimentJobClickhouse = async ({
+export const createExperimentJobDatastore = async ({
   event,
 }: {
   event: z.infer<typeof ExperimentCreateEventSchema>;

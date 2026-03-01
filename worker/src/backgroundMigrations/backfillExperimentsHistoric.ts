@@ -1,5 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { clickhouseClient, convertDateToClickhouseDateTime, logger, queryClickhouse } from "@hanzo/shared/src/server";
+import { datastoreClient, convertDateToDatastoreDateTime, logger, queryDatastore } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import {
@@ -94,9 +94,9 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
   // --------------------------------------------------------------------------
 
   private async countTotalDRIs(maxDate: Date): Promise<number> {
-    const result = await queryClickhouse<{ count: string }>({
+    const result = await queryDatastore<{ count: string }>({
       query: `SELECT count(*) as count FROM dataset_run_items_rmt WHERE created_at <= {maxDate: DateTime64(3)}`,
-      params: { maxDate: convertDateToClickhouseDateTime(maxDate) },
+      params: { maxDate: convertDateToDatastoreDateTime(maxDate) },
       tags: {
         feature: "background-migration",
         operation: "countTotalDRIs",
@@ -164,7 +164,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
       `;
     }
 
-    return queryClickhouse<DatasetRunItem>({
+    return queryDatastore<DatasetRunItem>({
       query,
       params: cursor
         ? {
@@ -173,9 +173,9 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
             cursor_dataset_run_id: cursor.dataset_run_id,
             cursor_id: cursor.id,
             chunkSize,
-            maxDate: convertDateToClickhouseDateTime(maxDate),
+            maxDate: convertDateToDatastoreDateTime(maxDate),
           }
-        : { chunkSize, maxDate: convertDateToClickhouseDateTime(maxDate) },
+        : { chunkSize, maxDate: convertDateToDatastoreDateTime(maxDate) },
       tags: {
         feature: "background-migration",
         operation: "fetchDRIsChunk",
@@ -244,7 +244,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
       LIMIT 1 BY o.project_id, o.trace_id, o.id
     `;
 
-    return queryClickhouse<SpanRecord>({
+    return queryDatastore<SpanRecord>({
       query,
       params: { projectIds, traceIds },
       tags: {
@@ -306,7 +306,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
       LIMIT 1 BY t.project_id, t.id
     `;
 
-    return queryClickhouse<SpanRecord>({
+    return queryDatastore<SpanRecord>({
       query,
       params: { projectIds, traceIds },
       tags: {
@@ -338,7 +338,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
     });
 
     // Check ClickHouse credentials
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
         invalidReason: "ClickHouse credentials must be configured to perform migration",
@@ -346,7 +346,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
     }
 
     // Check required tables exist
-    const tables = await clickhouseClient().query({ query: "SHOW TABLES" });
+    const tables = await datastoreClient().query({ query: "SHOW TABLES" });
     const tableNames = (await tables.json()).data as { name: string }[];
 
     const requiredTables = ["events", "dataset_run_items_rmt"];

@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { pruneDatabase } from "./utils";
 import { LLMAdapter } from "@hanzo/shared";
 import { encrypt } from "@hanzo/shared/encryption";
-import { createExperimentJobClickhouse } from "../features/experiments/experimentServiceClickhouse";
+import { createExperimentJobDatastore } from "../features/experiments/experimentServiceDatastore";
 import { createDatasetItem, logger } from "@hanzo/shared/src/server";
 
 // Mock the logger to capture log calls
@@ -99,7 +99,7 @@ describe("create experiment jobs", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -157,7 +157,7 @@ describe("create experiment jobs", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Verify it doesn't throw and returns success even with validation errors
     expect(result).toEqual({ success: true });
@@ -235,7 +235,7 @@ describe("create experiment jobs", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -307,7 +307,7 @@ describe("create experiment jobs", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -411,7 +411,7 @@ describe("create experiment jobs with placeholders", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -435,7 +435,7 @@ describe("create experiment jobs with placeholders", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -459,7 +459,7 @@ describe("create experiment jobs with placeholders", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it doesn't throw and returns success
     expect(result).toEqual({ success: true });
@@ -541,7 +541,7 @@ describe("experiment processing integration", () => {
       runId,
     };
 
-    const result = await createExperimentJobClickhouse({ event: payload });
+    const result = await createExperimentJobDatastore({ event: payload });
 
     // Just verify it completes successfully
     expect(result).toEqual({ success: true });

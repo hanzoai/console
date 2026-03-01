@@ -1,5 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { clickhouseClient, convertPostgresObservationToInsert, logger } from "@hanzo/shared/src/server";
+import { datastoreClient, convertPostgresObservationToInsert, logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
@@ -7,7 +7,7 @@ import { env } from "../env";
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "7526e7c9-0026-4595-af2c-369dfd9176ec";
 
-export default class MigrateObservationsFromPostgresToClickhouse implements IBackgroundMigration {
+export default class MigrateObservationsFromPostgresToDatastore implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -49,16 +49,16 @@ export default class MigrateObservationsFromPostgresToClickhouse implements IBac
     args: Record<string, unknown>,
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
-    // Check if Clickhouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    // Check if Datastore credentials are configured
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
     // Check if ClickHouse observations table exists
-    const tables = await clickhouseClient().query({
+    const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
     const tableNames = (await tables.json()).data as { name: string }[];
@@ -83,7 +83,7 @@ export default class MigrateObservationsFromPostgresToClickhouse implements IBac
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(`Migrating observations from postgres to clickhouse with ${JSON.stringify(args)}`);
+    logger.info(`Migrating observations from postgres to datastore with ${JSON.stringify(args)}`);
 
     const stateSuffix = (args.stateSuffix as string) ?? "";
     const initialDate = await this.getMaxDate(stateSuffix);
@@ -116,13 +116,13 @@ export default class MigrateObservationsFromPostgresToClickhouse implements IBac
       logger.info(`Got ${observations.length} records from Postgres in ${Date.now() - fetchStart}ms`);
 
       const insertStart = Date.now();
-      await clickhouseClient().insert({
+      await datastoreClient().insert({
         table: "observations",
         values: observations.map(convertPostgresObservationToInsert),
         format: "JSONEachRow",
       });
 
-      logger.info(`Inserted ${observations.length} observations into Clickhouse in ${Date.now() - insertStart}ms`);
+      logger.info(`Inserted ${observations.length} observations into Datastore in ${Date.now() - insertStart}ms`);
 
       await this.updateMaxDate(stateSuffix, new Date(observations[observations.length - 1].created_at));
 
@@ -139,16 +139,16 @@ export default class MigrateObservationsFromPostgresToClickhouse implements IBac
 
     if (this.isAborted) {
       logger.info(
-        `Migration of observations from Postgres to Clickhouse aborted after processing ${processedRows} rows. Skipping cleanup.`,
+        `Migration of observations from Postgres to Datastore aborted after processing ${processedRows} rows. Skipping cleanup.`,
       );
       return;
     }
 
-    logger.info(`Finished migration of observations from Postgres to Clickhouse in ${Date.now() - start}ms`);
+    logger.info(`Finished migration of observations from Postgres to Datastore in ${Date.now() - start}ms`);
   }
 
   async abort(): Promise<void> {
-    logger.info(`Aborting migration of observations from Postgres to clickhouse`);
+    logger.info(`Aborting migration of observations from Postgres to datastore`);
     this.isAborted = true;
   }
 }
@@ -169,7 +169,7 @@ async function main() {
     },
   });
 
-  const migration = new MigrateObservationsFromPostgresToClickhouse();
+  const migration = new MigrateObservationsFromPostgresToDatastore();
   await migration.validate(args.values);
   await migration.run(args.values);
 }

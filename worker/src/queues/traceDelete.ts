@@ -8,7 +8,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 
-import { processClickhouseTraceDelete } from "../features/traces/processClickhouseTraceDelete";
+import { processDatastoreTraceDelete } from "../features/traces/processDatastoreTraceDelete";
 import { processPostgresTraceDelete } from "../features/traces/processPostgresTraceDelete";
 import { env } from "../env";
 
@@ -78,7 +78,7 @@ export const traceDeleteProcessor: Processor = async (
     // Delete from both Postgres and ClickHouse
     await Promise.all([
       processPostgresTraceDelete(projectId, traceIdsToDelete),
-      processClickhouseTraceDelete(projectId, traceIdsToDelete),
+      processDatastoreTraceDelete(projectId, traceIdsToDelete),
     ]);
 
     // Mark only the pending traces as deleted (not the ones from the event, as they might be legacy)

@@ -1,10 +1,4 @@
-import {
-  logger,
-  queryClickhouse,
-  commandClickhouse,
-  traceException,
-  recordIncrement,
-} from "@hanzo/shared/src/server";
+import { logger, queryDatastore, commandDatastore, traceException, recordIncrement } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 
 export const BATCH_DELETION_TABLES = [
@@ -21,8 +15,7 @@ import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";
 
 export type BatchDeletionTable = (typeof BATCH_DELETION_TABLES)[number];
 
-export const BATCH_PROJECT_CLEANER_LOCK_PREFIX =
-  "hanzo:batch-project-cleaner";
+export const BATCH_PROJECT_CLEANER_LOCK_PREFIX = "hanzo:batch-project-cleaner";
 
 interface ProjectCount {
   project_id: string;
@@ -52,9 +45,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
 
   constructor(tableName: BatchDeletionTable) {
     // TTL = DELETE timeout + 5 minutes buffer
-    const lockTtlSeconds =
-      Math.ceil(env.HANZO_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS / 1000) +
-      300;
+    const lockTtlSeconds = Math.ceil(env.HANZO_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS / 1000) + 300;
 
     super({
       name: `BatchProjectCleaner(${tableName})`,
@@ -103,14 +94,9 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
     // Step 2: Query ClickHouse for counts per project (no lock needed)
     let initialCounts: Map<string, number>;
     try {
-      initialCounts = await this.getProjectCounts(
-        deletedProjects.map((p) => p.id),
-      );
+      initialCounts = await this.getProjectCounts(deletedProjects.map((p) => p.id));
     } catch (error) {
-      logger.error(
-        `${this.instanceName}: Failed to query ClickHouse counts`,
-        error,
-      );
+      logger.error(`${this.instanceName}: Failed to query ClickHouse counts`, error);
       traceException(error);
       return env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS;
     }
@@ -121,9 +107,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
       .map(([projectId]) => projectId);
 
     if (projectIdsWithData.length === 0) {
-      logger.info(
-        `${this.instanceName}: No data found for deleted projects in ${this.tableName}`,
-      );
+      logger.info(`${this.instanceName}: No data found for deleted projects in ${this.tableName}`);
       return env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS;
     }
 
@@ -133,10 +117,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
         async () => {
           await this.executeDelete(projectIdsWithData);
 
-          const totalRows = Array.from(initialCounts.values()).reduce(
-            (sum, count) => sum + count,
-            0,
-          );
+          const totalRows = Array.from(initialCounts.values()).reduce((sum, count) => sum + count, 0);
           logger.info(`${this.instanceName}: Batch deletion completed`, {
             table: this.tableName,
             projectsProcessed: projectIdsWithData.length,
@@ -156,10 +137,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
             finalCounts = await this.getProjectCounts(projectIdsWithData);
           } catch (countError) {
             // Can't determine partial success
-            logger.error(
-              `${this.instanceName}: Failed to re-query counts after DELETE failure`,
-              countError,
-            );
+            logger.error(`${this.instanceName}: Failed to re-query counts after DELETE failure`, countError);
           }
 
           // Calculate projects that couldn't be fully cleaned
@@ -171,11 +149,9 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
             : projectIdsWithData;
 
           if (incompleteProjects.length > 0) {
-            recordIncrement(
-              "hanzo.batch_project_cleaner.incomplete_cleanups",
-              incompleteProjects.length,
-              { table: this.tableName },
-            );
+            recordIncrement("hanzo.batch_project_cleaner.incomplete_cleanups", incompleteProjects.length, {
+              table: this.tableName,
+            });
             logger.warn(`${this.instanceName}: Partial deletion completed`, {
               table: this.tableName,
               incompleteProjectCount: incompleteProjects.length,
@@ -183,9 +159,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
               error: (error as Error).message,
             });
           } else {
-            logger.info(
-              `${this.instanceName}: All projects cleaned successfully on re-check`,
-            );
+            logger.info(`${this.instanceName}: All projects cleaned successfully on re-check`);
           }
 
           return env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS;
@@ -204,9 +178,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
     });
   }
 
-  private async getProjectCounts(
-    projectIds: string[],
-  ): Promise<Map<string, number>> {
+  private async getProjectCounts(projectIds: string[]): Promise<Map<string, number>> {
     if (projectIds.length === 0) {
       return new Map();
     }
@@ -219,7 +191,7 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
       ORDER BY count DESC
     `;
 
-    const results = await queryClickhouse<ProjectCount>({
+    const results = await queryDatastore<ProjectCount>({
       query,
       params: { projectIds },
       tags: {
@@ -248,10 +220,10 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
       WHERE project_id IN ({projectIds: Array(String)})
     `;
 
-    await commandClickhouse({
+    await commandDatastore({
       query,
       params: { projectIds },
-      clickhouseConfigs: {
+      datastoreConfig: {
         request_timeout: env.HANZO_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS,
       },
       tags: {

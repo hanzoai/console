@@ -7,7 +7,7 @@ import {
 } from "@hanzo/shared";
 import {
   getDistinctScoreNames,
-  queryClickhouseStream,
+  queryDatastoreStream,
   logger,
   ObservationRecordReadType,
   StringFilter,
@@ -15,7 +15,7 @@ import {
   createFilterFromFilterState,
   observationsTableUiColumnDefinitions,
   enrichObservationWithModelData,
-  clickhouseSearchCondition,
+  datastoreSearchCondition,
   convertObservation,
   shouldSkipObservationsFinal,
 } from "@hanzo/shared/src/server";
@@ -89,7 +89,7 @@ export const getObservationStream = async (props: {
   // Check if we should skip deduplication for OTEL projects
   const skipDedup = await shouldSkipObservationsFinal(projectId);
 
-  const clickhouseConfigs = {
+  const datastoreConfig = {
     request_timeout: 180_000, // 3 minutes
     clickhouse_settings: {
       join_algorithm: "partial_merge" as const,
@@ -107,7 +107,7 @@ export const getObservationStream = async (props: {
       (col) => col.uiTableName === f.column || col.uiTableId === f.column,
     );
     // Keep the filter if it's not a trace-level filter
-    return columnDef?.clickhouseTableName !== "traces";
+    return columnDef?.datastoreTableName !== "traces";
   });
 
   const distinctScoreNames = await getDistinctScoreNames({
@@ -117,12 +117,12 @@ export const getObservationStream = async (props: {
     isTimestampFilter: (filter: FilterCondition): filter is TimeFilter => {
       return filter.column === "Start Time" && filter.type === "datetime";
     },
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const scoresFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "scores",
+      datastoreTable: "scores",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -133,7 +133,7 @@ export const getObservationStream = async (props: {
 
   const observationsFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "observations",
+      datastoreTable: "observations",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -158,7 +158,7 @@ export const getObservationStream = async (props: {
 
   const appliedObservationsFilter = observationsFilter.apply();
 
-  const search = clickhouseSearchCondition(searchQuery, searchType, "o");
+  const search = datastoreSearchCondition(searchQuery, searchType, "o");
 
   const query = `
 
@@ -250,7 +250,7 @@ export const getObservationStream = async (props: {
       limit {rowLimit: Int64}
   `;
 
-  const asyncGenerator = queryClickhouseStream<
+  const asyncGenerator = queryDatastoreStream<
     ObservationRecordReadType & {
       scores_avg:
         | {
@@ -276,7 +276,7 @@ export const getObservationStream = async (props: {
       ...appliedObservationsFilter.params,
       ...search.params,
     },
-    clickhouseConfigs,
+    datastoreConfig,
     tags: {
       feature: "batch-export",
       type: "observation",

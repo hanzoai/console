@@ -1,6 +1,6 @@
 import { expect, describe, it, vi } from "vitest";
 import { IngestionService } from "../../IngestionService";
-import { convertDateToClickhouseDateTime } from "@hanzo/shared/src/server";
+import { convertDateToDatastoreDateTime } from "@hanzo/shared/src/server";
 
 describe("IngestionService unit tests", () => {
   it("correctly sorts events in ascending order by timestamp", async () => {
@@ -16,11 +16,11 @@ describe("IngestionService unit tests", () => {
     expect(sortedEventList).not.toBe(records); // Ensure that the original array is not mutated
   });
 
-  it("correctly convert Date to Clickhouse DateTime", async () => {
+  it("correctly convert Date to Datastore DateTime", async () => {
     const date = new Date("2024-10-12T12:13:14.123Z");
 
-    const clickhouseDateTime = convertDateToClickhouseDateTime(date);
+    const datastoreDateTime = convertDateToDatastoreDateTime(date);
 
-    expect(clickhouseDateTime).toEqual("2024-10-12 12:13:14.123");
+    expect(datastoreDateTime).toEqual("2024-10-12 12:13:14.123");
   });
 });

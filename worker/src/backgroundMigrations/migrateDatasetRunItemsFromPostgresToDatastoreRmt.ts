@@ -1,5 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { clickhouseClient, convertPostgresDatasetRunItemToInsert, logger } from "@hanzo/shared/src/server";
+import { datastoreClient, convertPostgresDatasetRunItemToInsert, logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
@@ -7,7 +7,7 @@ import { env } from "../env";
 // This is hard-coded in our migrations and uniquely identifies the row in background_migrations table
 const backgroundMigrationId = "9f32e84c-7b1d-4f59-a803-d67ae5c9b2e8";
 
-export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implements IBackgroundMigration {
+export default class MigrateDatasetRunItemsFromPostgresToDatastoreRmt implements IBackgroundMigration {
   private isAborted = false;
   private isFinished = false;
 
@@ -15,16 +15,16 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implement
     args: Record<string, unknown>,
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
-    // Check if Clickhouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    // Check if Datastore credentials are configured
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
     // Check if ClickHouse dataset_run_items_rmt table exists
-    const tables = await clickhouseClient().query({
+    const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
     const tableNames = (await tables.json()).data as { name: string }[];
@@ -49,7 +49,7 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implement
 
   async run(args: Record<string, unknown>): Promise<void> {
     const start = Date.now();
-    logger.info(`Migrating dataset run items from postgres to clickhouse with ${JSON.stringify(args)}`);
+    logger.info(`Migrating dataset run items from postgres to datastore with ${JSON.stringify(args)}`);
 
     // @ts-ignore
     const initialMigrationState: { state: { maxDate: string | undefined } } =
@@ -136,14 +136,14 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implement
       logger.info(`Got ${datasetRunItems.length} records from Postgres in ${Date.now() - fetchStart}ms`);
 
       const insertStart = Date.now();
-      await clickhouseClient().insert({
+      await datastoreClient().insert({
         table: "dataset_run_items_rmt",
         values: datasetRunItems.map(convertPostgresDatasetRunItemToInsert),
         format: "JSONEachRow",
       });
 
       logger.info(
-        `Inserted ${datasetRunItems.length} dataset run items into Clickhouse in ${Date.now() - insertStart}ms`,
+        `Inserted ${datasetRunItems.length} dataset run items into Datastore in ${Date.now() - insertStart}ms`,
       );
 
       await prisma.backgroundMigration.update({
@@ -168,16 +168,16 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouseRmt implement
 
     if (this.isAborted) {
       logger.info(
-        `Migration of dataset run items from Postgres to Clickhouse aborted after processing ${processedRows} rows. Skipping cleanup.`,
+        `Migration of dataset run items from Postgres to Datastore aborted after processing ${processedRows} rows. Skipping cleanup.`,
       );
       return;
     }
 
-    logger.info(`Finished migration of dataset run items from Postgres to Clickhouse in ${Date.now() - start}ms`);
+    logger.info(`Finished migration of dataset run items from Postgres to Datastore in ${Date.now() - start}ms`);
   }
 
   async abort(): Promise<void> {
-    logger.info(`Aborting migration of dataset run items from Postgres to clickhouse`);
+    logger.info(`Aborting migration of dataset run items from Postgres to datastore`);
     this.isAborted = true;
   }
 }
@@ -195,7 +195,7 @@ async function main() {
     },
   });
 
-  const migration = new MigrateDatasetRunItemsFromPostgresToClickhouseRmt();
+  const migration = new MigrateDatasetRunItemsFromPostgresToDatastoreRmt();
   await migration.validate(args.values);
   await migration.run(args.values);
 }

@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseJsonPrioritised } from "@hanzo/shared";
 import { prisma, Prisma } from "@hanzo/shared/src/db";
-import { clickhouseClient, clickhouseStringDateSchema, logger } from "@hanzo/shared/src/server";
+import { datastoreClient, datastoreStringDateSchema, logger } from "@hanzo/shared/src/server";
 
 const getErrorMessage = (params: {
   type: "observation" | "trace" | "score";
@@ -264,14 +264,14 @@ async function main(params: MainParams) {
 
 async function verifyClickhouseObservation(postgresObservation: any) {
   const { id: observationId, project_id: projectId } = postgresObservation;
-  const clickhouseResult = await clickhouseClient().query({
+  const clickhouseResult = await datastoreClient().query({
     query: `SELECT * FROM observations WHERE project_id = '${projectId}' AND id = '${observationId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseRecord = (await clickhouseResult.json()).shift();
+  const clickhouseRecord = (await clickhouseResult.json()).data.shift();
   if (!clickhouseRecord) {
-    throw new Error(`Observation ${observationId} not found in Clickhouse for project ${projectId}`);
+    throw new Error(`Observation ${observationId} not found in Datastore for project ${projectId}`);
   }
 
   logger.info(`Comparing delta for observation ${projectId}-${observationId}`);
@@ -323,7 +323,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
 
       // Start_time cannot be overwritten in CH, so they are allowed to be different
       case "start_time": {
-        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof clickhouseStringDateSchema.parse(chValue)) {
+        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof datastoreStringDateSchema.parse(chValue)) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -342,7 +342,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       // Dates
       case "completion_start_time":
       case "end_time": {
-        if (pgValue && chValue && pgValue.toISOString() !== clickhouseStringDateSchema.parse(chValue)) {
+        if (pgValue && chValue && pgValue.toISOString() !== datastoreStringDateSchema.parse(chValue)) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -627,14 +627,14 @@ async function verifyClickhouseObservation(postgresObservation: any) {
 async function verifyClickhouseTrace(postgresTrace: any) {
   const { id: traceId, project_id: projectId } = postgresTrace;
 
-  const clickhouseResult = await clickhouseClient().query({
+  const clickhouseResult = await datastoreClient().query({
     query: `SELECT * FROM traces WHERE project_id = '${projectId}' AND id = '${traceId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseTrace = (await clickhouseResult.json())[0];
+  const clickhouseTrace = (await clickhouseResult.json()).data[0];
   if (!clickhouseTrace) {
-    throw new Error(`Trace ${traceId} not found in Clickhouse for project ${projectId}`);
+    throw new Error(`Trace ${traceId} not found in Datastore for project ${projectId}`);
   }
 
   for (const key of Object.keys(postgresTrace)) {
@@ -679,7 +679,7 @@ async function verifyClickhouseTrace(postgresTrace: any) {
 
       // timestamp cannot be overwritten in CH, so they are allowed to be different
       case "timestamp": {
-        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof clickhouseStringDateSchema.parse(chValue)) {
+        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof datastoreStringDateSchema.parse(chValue)) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -778,14 +778,14 @@ async function verifyClickhouseTrace(postgresTrace: any) {
 async function verifyClickhouseScore(postgresScore: any) {
   const { id: scoreId, project_id: projectId } = postgresScore;
 
-  const clickhouseResult = await clickhouseClient().query({
+  const clickhouseResult = await datastoreClient().query({
     query: `SELECT * FROM scores WHERE project_id = '${projectId}' AND id = '${scoreId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseScore = (await clickhouseResult.json())[0];
+  const clickhouseScore = (await clickhouseResult.json()).data[0];
   if (!clickhouseScore) {
-    throw new Error(`Score ${scoreId} not found in Clickhouse for project ${projectId}`);
+    throw new Error(`Score ${scoreId} not found in Datastore for project ${projectId}`);
   }
 
   for (const key of Object.keys(postgresScore)) {
@@ -834,7 +834,7 @@ async function verifyClickhouseScore(postgresScore: any) {
 
       // timestamp cannot be overwritten in CH, so they are allowed to be different
       case "timestamp": {
-        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof clickhouseStringDateSchema.parse(chValue)) {
+        if (pgValue && chValue && typeof pgValue.toISOString() !== typeof datastoreStringDateSchema.parse(chValue)) {
           throw new Error(
             getErrorMessage({
               projectId,

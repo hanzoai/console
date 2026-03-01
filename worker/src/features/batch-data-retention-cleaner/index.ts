@@ -3,10 +3,10 @@ import { createHash } from "crypto";
 import { percentile } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {
-  commandClickhouse,
-  convertDateToClickhouseDateTime,
+  commandDatastore,
+  convertDateToDatastoreDateTime,
   logger,
-  queryClickhouse,
+  queryDatastore,
   recordGauge,
   recordIncrement,
 } from "@hanzo/shared/src/server";
@@ -24,13 +24,11 @@ export const BATCH_DATA_RETENTION_TABLES = [
   "events",
 ] as const;
 
-export type BatchDataRetentionTable =
-  (typeof BATCH_DATA_RETENTION_TABLES)[number];
+export type BatchDataRetentionTable = (typeof BATCH_DATA_RETENTION_TABLES)[number];
 
 const METRIC_PREFIX = "hanzo.batch_data_retention_cleaner";
 
-export const BATCH_DATA_RETENTION_CLEANER_LOCK_PREFIX =
-  "hanzo:batch-data-retention-cleaner";
+export const BATCH_DATA_RETENTION_CLEANER_LOCK_PREFIX = "hanzo:batch-data-retention-cleaner";
 
 export const TIMESTAMP_COLUMN_MAP: Record<BatchDataRetentionTable, string> = {
   traces: "timestamp",
@@ -72,9 +70,7 @@ function buildRetentionConditions(
     const key = toParamKey(p.projectId);
     const existing = keyToProject.get(key);
     if (existing && existing !== p.projectId) {
-      throw new Error(
-        `Hash collision detected: projectIds "${existing}" and "${p.projectId}" both hash to "${key}"`,
-      );
+      throw new Error(`Hash collision detected: projectIds "${existing}" and "${p.projectId}" both hash to "${key}"`);
     }
     projectToKey.set(p.projectId, key);
     keyToProject.set(key, p.projectId);
@@ -91,7 +87,7 @@ function buildRetentionConditions(
   for (const p of projects) {
     const key = projectToKey.get(p.projectId)!;
     params[`pid_${key}`] = p.projectId;
-    params[`cutoff_${key}`] = convertDateToClickhouseDateTime(p.cutoffDate);
+    params[`cutoff_${key}`] = convertDateToDatastoreDateTime(p.cutoffDate);
   }
 
   return { conditions, params };
@@ -121,10 +117,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
 
   constructor(tableName: BatchDataRetentionTable) {
     // TTL = DELETE timeout + 5 minutes buffer
-    const lockTtlSeconds =
-      Math.ceil(
-        env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS / 1000,
-      ) + 300;
+    const lockTtlSeconds = Math.ceil(env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS / 1000) + 300;
 
     super({
       name: `BatchDataRetentionCleaner(${tableName})`,
@@ -141,8 +134,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
     logger.info(`Starting ${this.instanceName}`, {
       intervalMs: env.HANZO_BATCH_DATA_RETENTION_CLEANER_INTERVAL_MS,
       projectLimit: env.HANZO_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT,
-      deleteTimeoutMs:
-        env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
+      deleteTimeoutMs: env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
     });
     super.start();
   }
@@ -178,8 +170,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
           .filter((w) => w.oldestAgeSeconds !== null)
           .map((w) => ({
             projectId: w.projectId,
-            secondsPastCutoff:
-              w.oldestAgeSeconds! - w.retentionDays * SECONDS_PER_DAY,
+            secondsPastCutoff: w.oldestAgeSeconds! - w.retentionDays * SECONDS_PER_DAY,
           }));
 
         // Compute p90 for the gauge metric (0 when no pending work)
@@ -188,23 +179,16 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
           0.9,
         );
 
-        recordGauge(
-          `${METRIC_PREFIX}.seconds_past_cutoff`,
-          Math.max(p90SecondsPastCutoff, 0),
-          {
-            table: this.tableName,
-          },
-        );
+        recordGauge(`${METRIC_PREFIX}.seconds_past_cutoff`, Math.max(p90SecondsPastCutoff, 0), {
+          table: this.tableName,
+        });
 
         // Step 2: Execute DELETE
         if (workloads.length >= 0) {
-          logger.info(
-            `${this.instanceName}: Processing ${workloads.length} projects`,
-            {
-              projectIds: workloads.map((w) => w.projectId),
-              secondsPastCutoffByProject,
-            },
-          );
+          logger.info(`${this.instanceName}: Processing ${workloads.length} projects`, {
+            projectIds: workloads.map((w) => w.projectId),
+            secondsPastCutoffByProject,
+          });
 
           await this.executeBatchDelete(timestampColumn, workloads);
 
@@ -213,22 +197,16 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
             projectsProcessed: workloads.length,
           });
         } else {
-          logger.info(
-            `${this.instanceName}: No projects with retention and data to delete`,
-          );
+          logger.info(`${this.instanceName}: No projects with retention and data to delete`);
         }
 
         // Record successful deletion metrics
         recordIncrement(`${METRIC_PREFIX}.delete_successes`, 1, {
           table: this.tableName,
         });
-        recordIncrement(
-          `${METRIC_PREFIX}.projects_processed`,
-          workloads.length,
-          {
-            table: this.tableName,
-          },
-        );
+        recordIncrement(`${METRIC_PREFIX}.projects_processed`, workloads.length, {
+          table: this.tableName,
+        });
       },
       () => {
         recordIncrement(`${METRIC_PREFIX}.delete_failures`, 1, {
@@ -265,15 +243,13 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
 
     // Step 2: Calculate cutoffs for all projects upfront
     const now = new Date();
-    const allProjectRetentions: ProjectWorkload[] = projectsWithRetention.map(
-      (p) => ({
-        projectId: p.id,
-        retentionDays: p.retentionDays!,
-        cutoffDate: getRetentionCutoffDate(p.retentionDays!, now),
-        expiredRowCount: 0,
-        oldestAgeSeconds: null,
-      }),
-    );
+    const allProjectRetentions: ProjectWorkload[] = projectsWithRetention.map((p) => ({
+      projectId: p.id,
+      retentionDays: p.retentionDays!,
+      cutoffDate: getRetentionCutoffDate(p.retentionDays!, now),
+      expiredRowCount: 0,
+      oldestAgeSeconds: null,
+    }));
 
     // Step 3: Chunk projects and query ClickHouse for expired row counts
     const chunkSize = env.HANZO_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE;
@@ -283,11 +259,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
     }
 
     // Query each chunk in parallel (counts only expired rows)
-    const chunkResults = await Promise.all(
-      chunks.map((chunk) =>
-        this.countExpiredRowsInChunk(timestampColumn, chunk),
-      ),
-    );
+    const chunkResults = await Promise.all(chunks.map((chunk) => this.countExpiredRowsInChunk(timestampColumn, chunk)));
 
     // Step 4: Combine results, sort by count DESC, select top N
     const allCounts = chunkResults.flat();
@@ -296,10 +268,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
     // Filter out projects with no expired rows
     const withExpiredRows = allCounts.filter((p) => p.expiredRowCount > 0);
 
-    return withExpiredRows.slice(
-      0,
-      env.HANZO_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT,
-    );
+    return withExpiredRows.slice(0, env.HANZO_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT);
   }
 
   /**
@@ -314,10 +283,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
       return [];
     }
 
-    const { conditions, params } = buildRetentionConditions(
-      timestampColumn,
-      projects,
-    );
+    const { conditions, params } = buildRetentionConditions(timestampColumn, projects);
 
     const query = `
       SELECT
@@ -332,7 +298,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
 
     const isLegacyEventsTable = this.tableName === "events";
 
-    const result = await queryClickhouse<{
+    const result = await queryDatastore<{
       project_id: string;
       count: number;
       oldest_age_seconds: number;
@@ -373,27 +339,20 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
    * Execute batch DELETE with OR conditions for selected projects.
    * Single query deletes data for all selected projects at once.
    */
-  private async executeBatchDelete(
-    timestampColumn: string,
-    workloads: ProjectWorkload[],
-  ): Promise<void> {
+  private async executeBatchDelete(timestampColumn: string, workloads: ProjectWorkload[]): Promise<void> {
     if (workloads.length === 0) {
       return;
     }
 
-    const { conditions, params } = buildRetentionConditions(
-      timestampColumn,
-      workloads,
-    );
+    const { conditions, params } = buildRetentionConditions(timestampColumn, workloads);
 
     const query = `DELETE FROM ${this.tableName} WHERE ${conditions}`;
 
-    await commandClickhouse({
+    await commandDatastore({
       query,
       params,
-      clickhouseConfigs: {
-        request_timeout:
-          env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
+      datastoreConfig: {
+        request_timeout: env.HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS,
       },
       tags: {
         feature: "batch-data-retention-cleaner",

@@ -4,7 +4,7 @@ import * as serverExports from "@hanzo/shared/src/server";
 
 import { env } from "../../env";
 import { logger } from "@hanzo/shared/src/server";
-import { ClickhouseWriter, TableName } from "../ClickhouseWriter";
+import { DatastoreWriter, TableName } from "../DatastoreWriter";
 
 // Mock recordHistogram, recordCount, recordGauge
 vi.mock("@hanzo/shared/src/server", async (importOriginal) => {
@@ -39,12 +39,12 @@ const clickhouseClientMock = {
   insert: vi.fn(),
 };
 
-describe("ClickhouseWriter", () => {
-  let writer: ClickhouseWriter;
+describe("DatastoreWriter", () => {
+  let writer: DatastoreWriter;
 
   beforeEach(() => {
     vi.useFakeTimers();
-    writer = ClickhouseWriter.getInstance(clickhouseClientMock);
+    writer = DatastoreWriter.getInstance(clickhouseClientMock);
   });
 
   afterEach(async () => {
@@ -54,20 +54,20 @@ describe("ClickhouseWriter", () => {
     // Reset singleton instance
     await writer.shutdown();
 
-    ClickhouseWriter.instance = null;
+    DatastoreWriter.instance = null;
   });
 
   it("should be a singleton", () => {
-    const instance1 = ClickhouseWriter.getInstance();
-    const instance2 = ClickhouseWriter.getInstance();
+    const instance1 = DatastoreWriter.getInstance();
+    const instance2 = DatastoreWriter.getInstance();
 
     expect(instance1).toBe(instance2);
   });
 
   it("should initialize with correct values", () => {
-    expect(writer.batchSize).toBe(env.HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE);
-    expect(writer.writeInterval).toBe(env.HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS);
-    expect(writer.maxAttempts).toBe(env.HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS);
+    expect(writer.batchSize).toBe(env.HANZO_INGESTION_DATASTORE_WRITE_BATCH_SIZE);
+    expect(writer.writeInterval).toBe(env.HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS);
+    expect(writer.maxAttempts).toBe(env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS);
   });
 
   it("should add items to the queue", () => {
@@ -144,7 +144,7 @@ describe("ClickhouseWriter", () => {
 
     expect(mockInsert).toHaveBeenCalledTimes(1);
     expect(writer["intervalId"]).toBeNull();
-    expect(logger.info).toHaveBeenCalledWith("ClickhouseWriter shutdown complete.");
+    expect(logger.info).toHaveBeenCalledWith("DatastoreWriter shutdown complete.");
   });
 
   it("should handle multiple table types", async () => {

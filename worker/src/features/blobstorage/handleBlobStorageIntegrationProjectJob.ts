@@ -14,7 +14,7 @@ import {
   getEventsForBlobStorageExport,
   getCurrentSpan,
   BlobStorageIntegrationProcessingQueue,
-  queryClickhouse,
+  queryDatastore,
   QueueJobs,
 } from "@hanzo/shared/src/server";
 import { BlobStorageIntegrationType, BlobStorageIntegrationFileType, BlobStorageExportMode } from "@hanzo/shared";
@@ -38,7 +38,7 @@ const getMinTimestampForExport = async (
     case BlobStorageExportMode.FULL_HISTORY:
       // Query ClickHouse for the actual minimum timestamp from traces, observations, and scores tables
       try {
-        const result = await queryClickhouse<{ min_timestamp: number | null }>({
+        const result = await queryDatastore<{ min_timestamp: number | null }>({
           query: `
               SELECT min(toUnixTimestamp(ts)) * 1000 as min_timestamp
               FROM (
@@ -190,11 +190,7 @@ const processBlobStorageExport = async (config: {
         dataStream = getScoresForBlobStorageExport(config.projectId, config.minTimestamp, config.maxTimestamp);
         break;
       case "observations_v2": // observations_v2 is the events table
-        dataStream = getEventsForBlobStorageExport(
-          config.projectId,
-          config.minTimestamp,
-          config.maxTimestamp,
-        );
+        dataStream = getEventsForBlobStorageExport(config.projectId, config.minTimestamp, config.maxTimestamp);
         break;
       default:
         throw new Error(`Unsupported table type: ${config.table}`);
@@ -306,10 +302,7 @@ export const handleBlobStorageIntegrationProjectJob = async (
     };
 
     // Check if this project should only export traces (legacy behavior via env var)
-    const isTraceOnlyProject =
-      env.HANZO_BLOB_STORAGE_EXPORT_TRACE_ONLY_PROJECT_IDS.includes(
-        projectId,
-      );
+    const isTraceOnlyProject = env.HANZO_BLOB_STORAGE_EXPORT_TRACE_ONLY_PROJECT_IDS.includes(projectId);
 
     if (isTraceOnlyProject) {
       // Only process traces table for projects in the trace-only list (legacy behavior)
@@ -322,9 +315,7 @@ export const handleBlobStorageIntegrationProjectJob = async (
       const processPromises: Promise<void>[] = [];
 
       // Always include scores
-      processPromises.push(
-        processBlobStorageExport({ ...executionConfig, table: "scores" }),
-      );
+      processPromises.push(processBlobStorageExport({ ...executionConfig, table: "scores" }));
 
       // Traces and observations - for TRACES_OBSERVATIONS and TRACES_OBSERVATIONS_EVENTS
       if (

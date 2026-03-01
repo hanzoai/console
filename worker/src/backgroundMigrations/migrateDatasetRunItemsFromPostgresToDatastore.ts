@@ -11,11 +11,11 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouse implements I
     valid: boolean;
     invalidReason: string | undefined;
   }> {
-    // Check if Clickhouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    // Check if Datastore credentials are configured
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
@@ -25,12 +25,12 @@ export default class MigrateDatasetRunItemsFromPostgresToClickhouse implements I
 
   async run(): Promise<void> {
     logger.info(
-      `Migration of dataset run items from postgres to clickhouse skipped as we will run the RMT migration instead`,
+      `Migration of dataset run items from postgres to datastore skipped as we will run the RMT migration instead`,
     );
   }
 
   async abort(): Promise<void> {
-    logger.info(`Aborting migration of dataset run items from Postgres to clickhouse`);
+    logger.info(`Aborting migration of dataset run items from Postgres to datastore`);
   }
 }
 

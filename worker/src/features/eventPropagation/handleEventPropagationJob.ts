@@ -1,6 +1,6 @@
 import {
-  queryClickhouse,
-  commandClickhouse,
+  queryDatastore,
+  commandDatastore,
   getCurrentSpan,
   logger,
   QueueName,
@@ -71,7 +71,7 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
 
     // Query for the next partition after the last processed one
     // Filter for partitions older than HANZO_EXPERIMENT_EVENT_PROPAGATION_PARTITION_DELAY_MINUTES minutes and order by partition ASC to get the oldest first
-    const partitions = await queryClickhouse<{ partition: string }>({
+    const partitions = await queryDatastore<{ partition: string }>({
       query: `
         SELECT DISTINCT partition
         FROM system.parts
@@ -106,7 +106,7 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
     // for the same span, this may create duplicates in the new events table. Deduplicating in this query
     // will significantly affect run-time. This may be an accepted degradation and we test the outcome
     // to check the likelihood of this happening in practice.
-    await commandClickhouse({
+    await commandDatastore({
       query: `
         with batch_stats as (
           select
@@ -275,10 +275,10 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
         partition: partitionToProcess,
         operation_name: "propagateObservationsToEvents",
       },
-      clickhouseConfigs: {
+      datastoreConfig: {
         request_timeout: 600000, // 10 minutes timeout
       },
-      clickhouseSettings: {
+      datastoreSettings: {
         type_json_skip_duplicated_paths: true,
       },
     });

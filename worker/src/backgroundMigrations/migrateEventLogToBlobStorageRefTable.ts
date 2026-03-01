@@ -1,6 +1,6 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
 import {
-  clickhouseClient,
+  datastoreClient,
   findS3RefsByPrimaryKey,
   getLastEventLogPrimaryKey,
   insertIntoS3RefsTableFromEventLog,
@@ -26,16 +26,16 @@ export default class MigrateEventLogToBlobStorageRefTable implements IBackground
     args: Record<string, unknown>,
     attempts = 5,
   ): Promise<{ valid: boolean; invalidReason: string | undefined }> {
-    // Check if Clickhouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    // Check if Datastore credentials are configured
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "Clickhouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
     // Check if ClickHouse traces table exists
-    const tables = await clickhouseClient().query({
+    const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
     const tableNames = (await tables.json()).data as { name: string }[];

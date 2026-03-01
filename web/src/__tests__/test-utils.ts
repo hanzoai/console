@@ -143,15 +143,15 @@ export const disconnectQueues = async () => {
 };
 
 export const truncateClickhouseTables = async () => {
-  if (!env.CLICKHOUSE_URL?.includes("localhost:8123")) {
+  if (!env.DATASTORE_URL?.includes("localhost:8123")) {
     throw new Error("You cannot prune datastore unless running on localhost.");
   }
 
   // Additional safety check for test database
-  if (env.CLICKHOUSE_DB === "test") {
-    console.log("Running tests against test ClickHouse database:", env.CLICKHOUSE_DB);
-  } else if (env.CLICKHOUSE_DB !== "default") {
-    console.log("Running tests against ClickHouse database:", env.CLICKHOUSE_DB);
+  if (env.DATASTORE_DB === "test") {
+    console.log("Running tests against test ClickHouse database:", env.DATASTORE_DB);
+  } else if (env.DATASTORE_DB !== "default") {
+    console.log("Running tests against ClickHouse database:", env.DATASTORE_DB);
   }
 
   await datastoreClient().command({

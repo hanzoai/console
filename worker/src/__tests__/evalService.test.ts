@@ -2,7 +2,7 @@ import { ApiError, LLMAdapter, ObservationType, variableMappingList, EvalTargetO
 import { encrypt } from "@hanzo/shared/encryption";
 import { kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import {
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   createObservation,
   createObservationsCh,
   createTrace,
@@ -567,9 +567,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await prisma.jobConfiguration.create({
@@ -620,9 +620,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await upsertObservation({
@@ -630,9 +630,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         trace_id: traceId,
         project_id: projectId,
         type: "GENERATION",
-        start_time: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        start_time: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await kyselyPrisma.$kysely
@@ -706,9 +706,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await kyselyPrisma.$kysely
@@ -867,9 +867,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const payloadTrace = {
@@ -916,9 +916,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await prisma.jobConfiguration.create({
@@ -1117,9 +1117,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await kyselyPrisma.$kysely
@@ -1277,9 +1277,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         user_id: "a",
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await kyselyPrisma.$kysely
@@ -1355,9 +1355,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         user_id: "b",
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await createEvalJobs({
@@ -1556,9 +1556,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create three datasets
@@ -1717,9 +1717,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create four datasets
@@ -1833,9 +1833,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const templateId = randomUUID();
@@ -2024,9 +2024,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const templateId = randomUUID();
@@ -2310,9 +2310,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const templateId = randomUUID();
@@ -2480,9 +2480,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         environment: "production",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const variableMapping = variableMappingList.parse([
@@ -2529,9 +2529,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await upsertObservation({
@@ -2543,9 +2543,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         environment: "production",
         input: JSON.stringify({ huhu: "This is a great prompt" }),
         output: JSON.stringify({ haha: "This is a great response" }),
-        start_time: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        start_time: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const variableMapping = variableMappingList.parse([
@@ -2627,9 +2627,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // fetching input and output for an observation which has NULL values
@@ -2639,9 +2639,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         project_id: projectId,
         name: "great-llm-name",
         type: "GENERATION",
-        start_time: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        start_time: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const variableMapping = variableMappingList.parse([
@@ -2690,9 +2690,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         user_id: "a",
         input: JSON.stringify({ input: "This is a great prompt" }),
         output: JSON.stringify({ output: "This is a great response" }),
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await upsertObservation({
@@ -2703,9 +2703,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         type: "GENERATION",
         input: JSON.stringify({ huhu: "This is a great prompt" }),
         output: JSON.stringify({ haha: "This is a great response" }),
-        start_time: convertDateToClickhouseDateTime(new Date("2022-01-01T00:00:00.000Z")),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        start_time: convertDateToDatastoreDateTime(new Date("2022-01-01T00:00:00.000Z")),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await upsertObservation({
@@ -2716,9 +2716,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         type: "GENERATION",
         input: JSON.stringify({ huhu: "This is a great prompt again" }),
         output: JSON.stringify({ haha: "This is a great response again" }),
-        start_time: convertDateToClickhouseDateTime(new Date("2022-01-02T00:00:00.000Z")),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        start_time: convertDateToDatastoreDateTime(new Date("2022-01-02T00:00:00.000Z")),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       const variableMapping = variableMappingList.parse([
@@ -2769,9 +2769,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
           user_id: "a",
           input: JSON.stringify({ input: "This is a great prompt" }),
           output: JSON.stringify({ output: "This is a great response" }),
-          timestamp: convertDateToClickhouseDateTime(new Date()),
-          created_at: convertDateToClickhouseDateTime(new Date()),
-          updated_at: convertDateToClickhouseDateTime(new Date()),
+          timestamp: convertDateToDatastoreDateTime(new Date()),
+          created_at: convertDateToDatastoreDateTime(new Date()),
+          updated_at: convertDateToDatastoreDateTime(new Date()),
         });
 
         await upsertObservation({
@@ -2783,9 +2783,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
           environment: "production",
           input: JSON.stringify({ huhu: "This is a great prompt" }),
           output: JSON.stringify({ haha: "This is a great response" }),
-          start_time: convertDateToClickhouseDateTime(new Date()),
-          created_at: convertDateToClickhouseDateTime(new Date()),
-          updated_at: convertDateToClickhouseDateTime(new Date()),
+          start_time: convertDateToDatastoreDateTime(new Date()),
+          created_at: convertDateToDatastoreDateTime(new Date()),
+          updated_at: convertDateToDatastoreDateTime(new Date()),
         });
 
         const variableMapping = variableMappingList.parse([
@@ -2866,9 +2866,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       await kyselyPrisma.$kysely
@@ -2973,9 +2973,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         environment: ConsoleInternalTraceEnvironment.LLMJudge,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active eval configuration
@@ -3025,9 +3025,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         environment: ConsoleInternalTraceEnvironment.PromptExperiments,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active eval configuration
@@ -3120,9 +3120,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         environment: ConsoleInternalTraceEnvironment.PromptExperiments,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active dataset eval configuration
@@ -3175,9 +3175,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         environment: "production",
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active eval configuration
@@ -3227,9 +3227,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
       await upsertTrace({
         id: traceId,
         project_id: projectId,
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active eval configuration
@@ -3280,9 +3280,9 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         id: traceId,
         project_id: projectId,
         environment: "hanzo",
-        timestamp: convertDateToClickhouseDateTime(new Date()),
-        created_at: convertDateToClickhouseDateTime(new Date()),
-        updated_at: convertDateToClickhouseDateTime(new Date()),
+        timestamp: convertDateToDatastoreDateTime(new Date()),
+        created_at: convertDateToDatastoreDateTime(new Date()),
+        updated_at: convertDateToDatastoreDateTime(new Date()),
       });
 
       // Create an active eval configuration

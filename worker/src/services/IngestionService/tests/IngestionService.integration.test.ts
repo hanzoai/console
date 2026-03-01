@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { uuid, z } from "zod/v4";
 import { prisma } from "@hanzo/shared/src/db";
 import {
-  clickhouseClient,
+  datastoreClient,
   ObservationEvent,
   observationRecordReadSchema,
   ObservationRecordReadType,
@@ -18,7 +18,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { pruneDatabase } from "../../../__tests__/utils";
 import waitForExpect from "wait-for-expect";
-import { ClickhouseWriter, TableName } from "../../ClickhouseWriter";
+import { DatastoreWriter, TableName } from "../../DatastoreWriter";
 import { IngestionService } from "../../IngestionService";
 import { ModelUsageUnit, ScoreSourceEnum } from "@hanzo/shared";
 import { Cluster } from "ioredis";
@@ -29,7 +29,7 @@ const environment = "default";
 
 describe("Ingestion end-to-end tests", () => {
   let ingestionService: IngestionService;
-  let clickhouseWriter: ClickhouseWriter;
+  let datastoreWriter: DatastoreWriter;
   let IngestionEventBatchSchema: z.ZodType<any>;
 
   beforeEach(async () => {
@@ -42,9 +42,9 @@ describe("Ingestion end-to-end tests", () => {
       await redis.flushall();
     }
 
-    clickhouseWriter = ClickhouseWriter.getInstance();
+    datastoreWriter = DatastoreWriter.getInstance();
 
-    ingestionService = new IngestionService(redis, prisma, clickhouseWriter, clickhouseClient());
+    ingestionService = new IngestionService(redis, prisma, datastoreWriter, datastoreClient());
 
     IngestionEventBatchSchema = z.array(createIngestionEventSchema());
   });
@@ -54,9 +54,9 @@ describe("Ingestion end-to-end tests", () => {
     vi.useRealTimers();
 
     // Reset singleton instance
-    await clickhouseWriter.shutdown();
+    await datastoreWriter.shutdown();
 
-    ClickhouseWriter.instance = null;
+    DatastoreWriter.instance = null;
   });
 
   it("should correctly ingest a trace", async () => {
@@ -85,9 +85,9 @@ describe("Ingestion end-to-end tests", () => {
       createdAtTimestamp: new Date(timestamp),
       traceEventList: eventList,
     });
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const trace = await getClickhouseRecord(TableName.Traces, traceId);
+    const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
     expect(trace.id).toBe(traceId);
     expect(trace.name).toBe(traceName);
@@ -557,9 +557,9 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const trace = await getClickhouseRecord(TableName.Traces, traceId);
+      const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
       expect(trace.name).toBe("trace-name");
       expect(trace.release).toBe("1.0.0");
@@ -567,7 +567,7 @@ describe("Ingestion end-to-end tests", () => {
       expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
       expect(trace.tags).toEqual(["tag-1", "tag-2"]);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.id).toBe(generationId);
       expect(generation.trace_id).toBe(traceId);
@@ -591,7 +591,7 @@ describe("Ingestion end-to-end tests", () => {
         }),
       );
 
-      const span = await getClickhouseRecord(TableName.Observations, spanId);
+      const span = await getDatastoreRecord(TableName.Observations, spanId);
 
       expect(span.id).toBe(spanId);
       expect(span.name).toBe("span-name");
@@ -601,7 +601,7 @@ describe("Ingestion end-to-end tests", () => {
       expect(span.metadata).toEqual({ meta: "value" });
       expect(span.version).toBe("2.0.0");
 
-      const score = await getClickhouseRecord(TableName.Scores, scoreId);
+      const score = await getDatastoreRecord(TableName.Scores, scoreId);
 
       expect(score.id).toBe(scoreId);
       expect(score.trace_id).toBe(traceId);
@@ -874,9 +874,9 @@ describe("Ingestion end-to-end tests", () => {
           observationEventList: generationEventList,
         }),
       ]);
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.id).toBe(generationId);
       expect(generation.trace_id).toBe(traceId);
@@ -1042,19 +1042,19 @@ describe("Ingestion end-to-end tests", () => {
       }),
     ]);
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const trace = await getClickhouseRecord(TableName.Traces, traceId);
+    const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
     expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
 
-    const span = await getClickhouseRecord(TableName.Observations, spanId);
+    const span = await getDatastoreRecord(TableName.Observations, spanId);
 
     expect(span.id).toBe(spanId);
     expect(span.name).toBe("span-name");
     expect(span.trace_id).toBe(traceId);
 
-    const generation = await getClickhouseRecord(TableName.Observations, generationId);
+    const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
     expect(generation?.id).toBe(generationId);
     expect(generation?.trace_id).toBe(traceId);
@@ -1066,14 +1066,14 @@ describe("Ingestion end-to-end tests", () => {
       }),
     );
 
-    const event = await getClickhouseRecord(TableName.Observations, eventId);
+    const event = await getDatastoreRecord(TableName.Observations, eventId);
 
     expect(event.id).toBe(eventId);
     expect(event.trace_id).toBe(traceId);
     expect(event.name).toBe("event-name");
     expect(event.parent_observation_id).toBe(generationId);
 
-    const score = await getClickhouseRecord(TableName.Scores, scoreId);
+    const score = await getDatastoreRecord(TableName.Scores, scoreId);
 
     expect(score.id).toBe(scoreId);
     expect(score.trace_id).toBe(traceId);
@@ -1224,19 +1224,19 @@ describe("Ingestion end-to-end tests", () => {
       }),
     ]);
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
     // Verify that valid scores were inserted
-    const validScore1 = await getClickhouseRecord(TableName.Scores, validScoreId1);
+    const validScore1 = await getDatastoreRecord(TableName.Scores, validScoreId1);
     expect(validScore1).toBeDefined();
     expect(validScore1.trace_id).toBe(traceId);
     expect(validScore1.value).toBe(85.5);
     expect(validScore1.config_id).toBe(validScoreConfigId);
 
     // Verify that invalid scores were silently rejected (not inserted)
-    await expect(getClickhouseRecord(TableName.Scores, invalidScoreId1)).rejects.toThrow();
+    await expect(getDatastoreRecord(TableName.Scores, invalidScoreId1)).rejects.toThrow();
 
-    await expect(getClickhouseRecord(TableName.Scores, invalidScoreId2)).rejects.toThrow();
+    await expect(getDatastoreRecord(TableName.Scores, invalidScoreId2)).rejects.toThrow();
   });
 
   it("should upsert traces", async () => {
@@ -1269,7 +1269,7 @@ describe("Ingestion end-to-end tests", () => {
       traceEventList: traceEventList1,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
     // Second flush
     const traceEventList2: TraceEventType[] = [
@@ -1294,10 +1294,10 @@ describe("Ingestion end-to-end tests", () => {
       traceEventList: traceEventList2,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
     await waitForExpect(async () => {
-      const trace = await getClickhouseRecord(TableName.Traces, traceId);
+      const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
       expect(trace.name).toBe("trace-name");
       expect(trace.user_id).toBe("user-2");
@@ -1349,9 +1349,9 @@ describe("Ingestion end-to-end tests", () => {
       traceEventList,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const trace = await getClickhouseRecord(TableName.Traces, traceId);
+    const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
     expect(trace.name).toBe("trace-name");
     expect(trace.user_id).toBe("user-1");
@@ -1469,9 +1469,9 @@ describe("Ingestion end-to-end tests", () => {
       observationEventList,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(TableName.Observations, observationId);
+    const observation = await getDatastoreRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("extract_location");
     expect(observation.provided_usage_details).toStrictEqual({
@@ -1600,9 +1600,9 @@ describe("Ingestion end-to-end tests", () => {
       observationEventList,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(TableName.Observations, observationId);
+    const observation = await getDatastoreRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("extract_location");
     expect(observation.provided_usage_details).toStrictEqual({
@@ -1651,7 +1651,7 @@ describe("Ingestion end-to-end tests", () => {
       createdAtTimestamp: new Date(),
       observationEventList: observationEventList1,
     });
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
     const observationEventList2: ObservationEvent[] = [
       {
@@ -1674,9 +1674,9 @@ describe("Ingestion end-to-end tests", () => {
       createdAtTimestamp: new Date(),
       observationEventList: observationEventList2,
     });
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const observation = await getClickhouseRecord(TableName.Observations, observationId);
+    const observation = await getDatastoreRecord(TableName.Observations, observationId);
 
     expect(observation.name).toBe("generation-name");
     expect(observation.output).toBe("overwritten");
@@ -1724,9 +1724,9 @@ describe("Ingestion end-to-end tests", () => {
       observationEventList: generationEventList,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const generation = await getClickhouseRecord(TableName.Observations, generationId);
+    const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
     expect(generation.output).toEqual(
       JSON.stringify({
@@ -1790,7 +1790,7 @@ describe("Ingestion end-to-end tests", () => {
       }),
     ]);
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
     const generationEventList2: ObservationEvent[] = [
       {
@@ -1831,9 +1831,9 @@ describe("Ingestion end-to-end tests", () => {
       observationEventList: generationEventList2,
     });
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const generation = await getClickhouseRecord(TableName.Observations, generationId);
+    const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
     expect(generation.usage_details.input).toEqual(1285);
     expect(generation.usage_details.output).toEqual(513);
@@ -1930,15 +1930,15 @@ describe("Ingestion end-to-end tests", () => {
       }),
     ]);
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const trace = await getClickhouseRecord(TableName.Traces, traceId);
+    const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
     expect(trace.name).toBe("trace-name");
     expect(trace.project_id).toBe("7a88fb47-b4e2-43b8-a06c-a5ce950dc53a");
     expect(trace.user_id).toBe("user-1");
 
-    const generation = await getClickhouseRecord(TableName.Observations, generationId);
+    const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
     expect(generation?.output).toEqual(
       JSON.stringify({
@@ -2030,10 +2030,10 @@ describe("Ingestion end-to-end tests", () => {
       }),
     ]);
 
-    await clickhouseWriter.flushAll(true);
+    await datastoreWriter.flushAll(true);
 
-    const trace = await getClickhouseRecord(TableName.Traces, traceId);
-    const observation = await getClickhouseRecord(TableName.Observations, generationId);
+    const trace = await getDatastoreRecord(TableName.Traces, traceId);
+    const observation = await getDatastoreRecord(TableName.Observations, generationId);
 
     expect(observation?.output).toEqual(
       JSON.stringify({
@@ -2090,9 +2090,9 @@ describe("Ingestion end-to-end tests", () => {
   //     traceEventList,
   //   });
   //
-  //   await clickhouseWriter.flushAll(true);
+  //   await datastoreWriter.flushAll(true);
   //
-  //   const trace = await getClickhouseRecord(TableName.Traces, traceId);
+  //   const trace = await getDatastoreRecord(TableName.Traces, traceId);
   //
   //   expect(trace.release).toBe(null);
   //   expect(trace.version).toBe("2.0.0");
@@ -2216,13 +2216,13 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const trace = await getClickhouseRecord(TableName.Traces, traceId);
+      const trace = await getDatastoreRecord(TableName.Traces, traceId);
 
       expect(trace.metadata).toEqual(output);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.metadata).toEqual(output);
     });
@@ -2345,9 +2345,9 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
       expect(generation.usage_details.input).toBe(100000);
@@ -2480,9 +2480,9 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
       expect(generation.usage_details.input).toBe(250000);
@@ -2604,9 +2604,9 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       expect(generation.internal_model_id).toBe(modelId);
 
@@ -2720,9 +2720,9 @@ describe("Ingestion end-to-end tests", () => {
         }),
       ]);
 
-      await clickhouseWriter.flushAll(true);
+      await datastoreWriter.flushAll(true);
 
-      const generation = await getClickhouseRecord(TableName.Observations, generationId);
+      const generation = await getDatastoreRecord(TableName.Observations, generationId);
 
       // At exactly 200K, should use default tier (operator is "gt", not "gte")
       expect(generation.usage_pricing_tier_name).toBe("Standard");
@@ -2731,15 +2731,15 @@ describe("Ingestion end-to-end tests", () => {
   });
 });
 
-async function getClickhouseRecord<T extends TableName>(tableName: T, entityId: string): Promise<RecordReadType<T>> {
-  let query = await clickhouseClient().query({
+async function getDatastoreRecord<T extends TableName>(tableName: T, entityId: string): Promise<RecordReadType<T>> {
+  let query = await datastoreClient().query({
     query: `SELECT * FROM ${tableName} FINAL WHERE project_id = '${projectId}' AND id = '${entityId}'`,
     format: "JSONEachRow",
   });
 
   if (tableName === "traces" && env.HANZO_EXPERIMENT_RETURN_NEW_RESULT === "true") {
     await new Promise((resolve) => setTimeout(resolve, 100));
-    query = await clickhouseClient().query({
+    query = await datastoreClient().query({
       query: `SELECT
                 id,
                 name as name,

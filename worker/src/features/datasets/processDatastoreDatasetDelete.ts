@@ -6,7 +6,7 @@ import {
   DatasetQueueEventType,
 } from "@hanzo/shared/src/server";
 
-export const processClickhouseDatasetDelete = async (jobPayload: DatasetQueueEventType) => {
+export const processDatastoreDatasetDelete = async (jobPayload: DatasetQueueEventType) => {
   const { deletionType, projectId, datasetId } = jobPayload;
 
   logger.info(

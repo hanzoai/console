@@ -10,7 +10,7 @@ import { env } from "../../env";
 import { datastoreClient } from "../datastore/client";
 import { getS3EventStorageClient } from "../s3";
 
-export const deleteIngestionEventsFromS3AndClickhouseForScores = async (p: {
+export const deleteIngestionEventsFromS3AndDatastoreForScores = async (p: {
   projectId: string;
   scoreIds: string[];
 }) => {
@@ -22,7 +22,7 @@ export const deleteIngestionEventsFromS3AndClickhouseForScores = async (p: {
   });
 };
 
-export const removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces = async (p: {
+export const removeIngestionEventsFromS3AndDeleteDatastoreRefsForTraces = async (p: {
   projectId: string;
   traceIds: string[];
 }) => {
@@ -34,7 +34,7 @@ export const removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces = async
   });
 };
 
-export const removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject = (
+export const removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject = (
   projectId: string,
   cutOffDate: Date | undefined,
 ) => {

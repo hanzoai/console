@@ -19,24 +19,24 @@ import {
 } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import { IngestionService } from "../../services/IngestionService";
-import * as clickhouseWriterExports from "../../services/ClickhouseWriter";
+import * as datastoreWriterExports from "../../services/DatastoreWriter";
 
-// Mock ClickhouseWriter to avoid actual database writes
-const mockAddToClickhouseWriter = vi.fn();
-vi.mock("../../services/ClickhouseWriter", async (importOriginal) => {
+// Mock DatastoreWriter to avoid actual database writes
+const mockAddToDatastoreWriter = vi.fn();
+vi.mock("../../services/DatastoreWriter", async (importOriginal) => {
   const original = (await importOriginal()) as object;
   return {
     ...original,
-    ClickhouseWriter: {
+    DatastoreWriter: {
       getInstance: () => ({
-        addToQueue: mockAddToClickhouseWriter,
+        addToQueue: mockAddToDatastoreWriter,
       }),
     },
   };
 });
 
 // Mock ClickhouseClient to return empty results (no existing records)
-const mockClickhouseClient = {
+const mockDatastoreClient = {
   query: async () => ({
     json: async () => [],
     query_id: "test-query-id",
@@ -50,8 +50,8 @@ const mockClickhouseClient = {
 const ingestionService = new IngestionService(
   null as any,
   prisma,
-  clickhouseWriterExports.ClickhouseWriter.getInstance() as any,
-  mockClickhouseClient as any,
+  datastoreWriterExports.DatastoreWriter.getInstance() as any,
+  mockDatastoreClient as any,
 );
 
 /**
@@ -91,10 +91,7 @@ async function processOtelSpanToObservationForEval(
   // Then convert to ObservationForEval
   const results: ObservationForEval[] = [];
   for (const eventInput of eventInputs) {
-    const eventRecord = await ingestionService.createEventRecord(
-      eventInput,
-      "test/otel/test.json",
-    );
+    const eventRecord = await ingestionService.createEventRecord(eventInput, "test/otel/test.json");
     const observation = convertEventRecordToObservationForEval(eventRecord);
     results.push(observation);
   }
@@ -131,9 +128,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
             scope: {
               name: "hanzo-sdk",
               version: "3.0.0",
-              attributes: [
-                { key: "public_key", value: { stringValue: "pk-lf-test" } },
-              ],
+              attributes: [{ key: "public_key", value: { stringValue: "pk-lf-test" } }],
             },
             spans: [
               {
@@ -142,12 +137,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 parentSpanId: createBufferId("dfe387fea7ef3b02"),
                 name: "test-generation",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1714488530686000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1714488530687000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1714488530686000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1714488530687000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -170,8 +161,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                   {
                     key: "hanzo.observation.output",
                     value: {
-                      stringValue:
-                        '{"role": "assistant", "content": "hi there"}',
+                      stringValue: '{"role": "assistant", "content": "hi there"}',
                     },
                   },
                   {
@@ -221,10 +211,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                     key: "hanzo.trace.tags",
                     value: {
                       arrayValue: {
-                        values: [
-                          { stringValue: "tag1" },
-                          { stringValue: "tag2" },
-                        ],
+                        values: [{ stringValue: "tag1" }, { stringValue: "tag2" }],
                       },
                     },
                   },
@@ -236,10 +223,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations = await processOtelSpanToObservationForEval(
-        hanzoOtelSpan,
-        "test-project",
-      );
+      const observations = await processOtelSpanToObservationForEval(hanzoOtelSpan, "test-project");
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -306,12 +290,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("abcdef1234567890"),
                 name: "minimal-span",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1714488530686000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1714488530687000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1714488530686000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1714488530687000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -325,10 +305,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations = await processOtelSpanToObservationForEval(
-        minimalOtelSpan,
-        "test-project",
-      );
+      const observations = await processOtelSpanToObservationForEval(minimalOtelSpan, "test-project");
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -385,12 +362,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("b904bffb20be6d7e"),
                 name: "openai.chat.completions",
                 kind: 3,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241187653000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241188827000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241187653000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241188827000000)),
                 attributes: [
                   { key: "gen_ai.system", value: { stringValue: "openai" } },
                   {
@@ -447,8 +420,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(openLitSpan);
+      const observations = await processOtelSpanToObservationForEval(openLitSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -473,9 +445,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
     it("should convert a TraceLoop span to valid ObservationForEval", async () => {
       const traceLoopSpan = {
         resource: {
-          attributes: [
-            { key: "service.name", value: { stringValue: "traceloop-app" } },
-          ],
+          attributes: [{ key: "service.name", value: { stringValue: "traceloop-app" } }],
         },
         scopeSpans: [
           {
@@ -489,12 +459,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("aabf16e416ae4952"),
                 name: "openai.chat",
                 kind: 3,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241287865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241289310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241287865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241289310000000)),
                 attributes: [
                   { key: "llm.request.type", value: { stringValue: "chat" } },
                   { key: "gen_ai.system", value: { stringValue: "OpenAI" } },
@@ -544,8 +510,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(traceLoopSpan);
+      const observations = await processOtelSpanToObservationForEval(traceLoopSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -581,12 +546,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("1122334455667788"),
                 name: "ai.generateText",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241387865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241389310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241387865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241389310000000)),
                 attributes: [
                   { key: "ai.model.id", value: { stringValue: "gpt-4-turbo" } },
                   {
@@ -631,8 +592,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(vercelAISpan);
+      const observations = await processOtelSpanToObservationForEval(vercelAISpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -679,12 +639,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 parentSpanId: createBufferId("fedcba0987654321"),
                 name: "full-test-observation",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241487865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241489310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241487865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241489310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -732,8 +688,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                   {
                     key: "hanzo.observation.usage_details",
                     value: {
-                      stringValue:
-                        '{"input": 500, "output": 200, "total": 700}',
+                      stringValue: '{"input": 500, "output": 200, "total": 700}',
                     },
                   },
                   {
@@ -783,8 +738,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(fullOtelSpan);
+      const observations = await processOtelSpanToObservationForEval(fullOtelSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -837,12 +791,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("exp1234567890123"),
                 name: "experiment-run",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241587865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241589310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241587865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241589310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -888,8 +838,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(experimentSpan);
+      const observations = await processOtelSpanToObservationForEval(experimentSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -904,9 +853,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
       expect(obs.experiment_description).toBe("Testing new prompt templates");
       expect(obs.experiment_dataset_id).toBe("dataset-test-001");
       expect(obs.experiment_item_id).toBe("item-123");
-      expect(obs.experiment_item_expected_output).toBe(
-        '{"expected": "result"}',
-      );
+      expect(obs.experiment_item_expected_output).toBe('{"expected": "result"}');
     });
   });
 
@@ -923,12 +870,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("empty123456789ab"),
                 name: "",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241687865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241689310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241687865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241689310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -950,8 +893,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(emptyStringSpan);
+      const observations = await processOtelSpanToObservationForEval(emptyStringSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -976,12 +918,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("spec123456789abc"),
                 name: "span-with-special-chars",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241787865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241789310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241787865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241789310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -990,8 +928,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                   {
                     key: "hanzo.observation.input",
                     value: {
-                      stringValue:
-                        '{"message": "Hello! <script>alert(1)</script>"}',
+                      stringValue: '{"message": "Hello! <script>alert(1)</script>"}',
                     },
                   },
                   {
@@ -1020,8 +957,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(specialCharsSpan);
+      const observations = await processOtelSpanToObservationForEval(specialCharsSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -1032,11 +968,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
 
       // Validate special characters are preserved
       expect(obs.input).toContain("<script>");
-      expect(obs.tags).toEqual([
-        "tag-with-dash",
-        "tag_with_underscore",
-        "tag.with",
-      ]);
+      expect(obs.tags).toEqual(["tag-with-dash", "tag_with_underscore", "tag.with"]);
     });
 
     it("should handle spans with very large input/output", async () => {
@@ -1052,12 +984,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("large12345678901"),
                 name: "large-io-span",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241887865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738241889310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738241887865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738241889310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1125,12 +1053,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                   spanId: createBufferId(spanIdHex),
                   name: `${obsType}-test`,
                   kind: 1,
-                  startTimeUnixNano: createNanoTimestamp(
-                    BigInt(1738241987865000000),
-                  ),
-                  endTimeUnixNano: createNanoTimestamp(
-                    BigInt(1738241989310000000),
-                  ),
+                  startTimeUnixNano: createNanoTimestamp(BigInt(1738241987865000000)),
+                  endTimeUnixNano: createNanoTimestamp(BigInt(1738241989310000000)),
                   attributes: [
                     {
                       key: "hanzo.observation.type",
@@ -1144,8 +1068,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
           ],
         };
 
-        const observations =
-          await processOtelSpanToObservationForEval(typeSpan);
+        const observations = await processOtelSpanToObservationForEval(typeSpan);
 
         expect(observations).toHaveLength(1);
         expect(observations[0].type).toBe(obsType.toUpperCase());
@@ -1168,12 +1091,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("nest123456789012"),
                 name: "nested-metadata-span",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242087865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242089310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242087865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242089310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1205,8 +1124,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(nestedMetadataSpan);
+      const observations = await processOtelSpanToObservationForEval(nestedMetadataSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];
@@ -1225,9 +1143,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
     it("should process multiple spans and all conform to schema", async () => {
       const multiSpanBatch = {
         resource: {
-          attributes: [
-            { key: "hanzo.environment", value: { stringValue: "test" } },
-          ],
+          attributes: [{ key: "hanzo.environment", value: { stringValue: "test" } }],
         },
         scopeSpans: [
           {
@@ -1238,12 +1154,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("aaaa1234567890ab"),
                 name: "span-1",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242187865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242189310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242187865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242189310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1258,12 +1170,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 parentSpanId: createBufferId("aaaa1234567890ab"),
                 name: "generation-1",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242189400000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242189500000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242189400000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242189500000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1282,12 +1190,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 parentSpanId: createBufferId("aaaa1234567890ab"),
                 name: "tool-call",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242189600000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242189700000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242189600000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242189700000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1301,8 +1205,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(multiSpanBatch);
+      const observations = await processOtelSpanToObservationForEval(multiSpanBatch);
 
       expect(observations).toHaveLength(3);
 
@@ -1338,12 +1241,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("usage12345678901"),
                 name: "usage-test",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242287865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242289310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242287865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242289310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1421,12 +1320,8 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                 spanId: createBufferId("tool1234567890ab"),
                 name: "tool-call-test",
                 kind: 1,
-                startTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242387865000000),
-                ),
-                endTimeUnixNano: createNanoTimestamp(
-                  BigInt(1738242389310000000),
-                ),
+                startTimeUnixNano: createNanoTimestamp(BigInt(1738242387865000000)),
+                endTimeUnixNano: createNanoTimestamp(BigInt(1738242389310000000)),
                 attributes: [
                   {
                     key: "hanzo.observation.type",
@@ -1440,9 +1335,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
                     key: "hanzo.observation.input",
                     value: {
                       stringValue: JSON.stringify({
-                        messages: [
-                          { role: "user", content: "What is the weather?" },
-                        ],
+                        messages: [{ role: "user", content: "What is the weather?" }],
                         tools: [
                           {
                             type: "function",
@@ -1493,8 +1386,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
         ],
       };
 
-      const observations =
-        await processOtelSpanToObservationForEval(toolCallSpan);
+      const observations = await processOtelSpanToObservationForEval(toolCallSpan);
 
       expect(observations).toHaveLength(1);
       const obs = observations[0];

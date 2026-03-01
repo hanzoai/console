@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeAll } from "vitest";
 import {
-  clickhouseClient,
+  datastoreClient,
   createOrgProjectAndApiKey,
   createTraceScore,
   createScoresCh,
@@ -11,7 +11,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 import { env } from "../env";
-import { processClickhouseScoreDelete } from "../features/scores/processClickhouseScoreDelete";
+import { processDatastoreScoreDelete } from "../features/scores/processDatastoreScoreDelete";
 
 describe("score deletion", () => {
   let eventStorageService: StorageService;
@@ -27,7 +27,7 @@ describe("score deletion", () => {
     });
   });
 
-  it("should delete all scores from Clickhouse", async () => {
+  it("should delete all scores from Datastore", async () => {
     // Setup
     const { projectId } = await createOrgProjectAndApiKey();
 
@@ -35,7 +35,7 @@ describe("score deletion", () => {
     await createScoresCh([score]);
 
     // When
-    await processClickhouseScoreDelete(projectId, [score.id]);
+    await processDatastoreScoreDelete(projectId, [score.id]);
 
     // Then
     const scores = await getScoresByIds(projectId, [score.id]);
@@ -60,7 +60,7 @@ describe("score deletion", () => {
       }),
     ]);
 
-    await clickhouseClient().insert({
+    await datastoreClient().insert({
       table: "blob_storage_file_log",
       format: "JSONEachRow",
       values: [
@@ -79,7 +79,7 @@ describe("score deletion", () => {
     });
 
     // When
-    await processClickhouseScoreDelete(projectId, [scoreId]);
+    await processDatastoreScoreDelete(projectId, [scoreId]);
 
     // Then
     const eventLog = getBlobStorageByProjectId(projectId);

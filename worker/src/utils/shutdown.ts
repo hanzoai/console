@@ -1,7 +1,7 @@
-import { ClickHouseClientManager, logger } from "@hanzo/shared/src/server";
+import { DatastoreClientManager, logger } from "@hanzo/shared/src/server";
 import { redis } from "@hanzo/shared/src/server";
 
-import { ClickhouseWriter } from "../services/ClickhouseWriter";
+import { DatastoreWriter } from "../services/DatastoreWriter";
 import { setSigtermReceived } from "../features/health";
 import { server } from "../index";
 import { freeAllTokenizers } from "../features/tokenisation/usage";
@@ -46,8 +46,8 @@ export const onShutdown: NodeJS.SignalsListener = async (signal) => {
   // Shutdown background migrations
   await BackgroundMigrationManager.close();
 
-  // Flush all pending writes to Clickhouse AFTER closing ingestion queue worker that is writing to it
-  await ClickhouseWriter.getInstance().shutdown();
+  // Flush all pending writes to Datastore AFTER closing ingestion queue worker that is writing to it
+  await DatastoreWriter.getInstance().shutdown();
   logger.info("Clickhouse writer has been shut down.");
 
   redis?.disconnect();
@@ -56,8 +56,8 @@ export const onShutdown: NodeJS.SignalsListener = async (signal) => {
   await prisma.$disconnect();
   logger.info("Prisma connection has been closed.");
 
-  // Shutdown clickhouse connections
-  await ClickHouseClientManager.getInstance().closeAllConnections();
+  // Shutdown datastore connections
+  await DatastoreClientManager.getInstance().closeAllConnections();
 
   // Shutdown tokenization worker threads
   try {

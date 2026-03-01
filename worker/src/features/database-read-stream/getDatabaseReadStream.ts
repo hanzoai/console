@@ -28,11 +28,7 @@ import {
 } from "@hanzo/shared/src/server";
 import Decimal from "decimal.js";
 import { env } from "../../env";
-import {
-  BatchExportTracesRow,
-  BatchExportSessionsRow,
-  BatchExportEventsRow,
-} from "./types";
+import { BatchExportTracesRow, BatchExportSessionsRow, BatchExportEventsRow } from "./types";
 import { fetchCommentsForExport } from "./fetchCommentsForExport";
 
 const tableNameToTimeFilterColumn: Record<BatchTableNames, string> = {
@@ -62,10 +58,7 @@ export const isTraceTimestampFilter = (filter: FilterCondition): filter is TimeF
   return filter.column === "Timestamp" && filter.type === "datetime";
 };
 export const getChunkWithFlattenedScores = <
-  T extends
-    | BatchExportTracesRow[]
-    | FullObservationsWithScores
-    | BatchExportEventsRow[],
+  T extends BatchExportTracesRow[] | FullObservationsWithScores | BatchExportEventsRow[],
 >(
   chunk: T,
   emptyScoreColumns: Record<string, null>,
@@ -124,7 +117,7 @@ export const getDatabaseReadStreamPaginated = async ({
     type: "datetime" as const,
   };
 
-  const clickhouseConfigs = {
+  const datastoreConfig = {
     request_timeout: 180_000,
     clickhouse_settings: {
       // Increase HTTP timeouts to prevent Code 209 errors during slow blob storage uploads
@@ -144,7 +137,7 @@ export const getDatabaseReadStreamPaginated = async ({
             orderBy,
             limit: pageSize,
             offset,
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           // Get author user info for scores
@@ -203,7 +196,7 @@ export const getDatabaseReadStreamPaginated = async ({
             orderBy: orderBy,
             limit: pageSize,
             page: Math.floor(offset / pageSize),
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           const prismaSessionInfo = await prisma.traceSession.findMany({
@@ -264,7 +257,7 @@ export const getDatabaseReadStreamPaginated = async ({
             cutoffCreatedAt,
             filter: filter ? [...filter, createdAtCutoffFilterCh] : [createdAtCutoffFilterCh],
             isTimestampFilter: isGenerationTimestampFilter,
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           emptyScoreColumns = distinctScoreNames.reduce(
@@ -281,12 +274,12 @@ export const getDatabaseReadStreamPaginated = async ({
             searchType: searchType ?? ["id" as const],
             orderBy,
             selectIOAndMetadata: true,
-            clickhouseConfigs,
+            datastoreConfig,
           });
           const scores = await getScoresForObservations({
             projectId,
             observationIds: generations.map((gen) => gen.id),
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           const chunk = generations.map((generation) => {
@@ -329,7 +322,7 @@ export const getDatabaseReadStreamPaginated = async ({
             cutoffCreatedAt,
             filter: filter ? [...filter, createdAtCutoffFilter] : [createdAtCutoffFilter],
             isTimestampFilter: isTraceTimestampFilter,
-            clickhouseConfigs,
+            datastoreConfig,
           });
           emptyScoreColumns = distinctScoreNames.reduce(
             (acc, name) => ({ ...acc, [name]: null }),
@@ -344,7 +337,7 @@ export const getDatabaseReadStreamPaginated = async ({
             orderBy,
             limit: pageSize,
             page: Math.floor(offset / pageSize),
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           const [metrics, fullTraces] = await Promise.all([
@@ -359,20 +352,20 @@ export const getDatabaseReadStreamPaginated = async ({
                   value: traces.map((t) => t.id),
                 },
               ],
-              clickhouseConfigs,
+              datastoreConfig,
             }),
             getTracesByIds(
               traces.map((t) => t.id),
               projectId,
               traces.reduce((min, t) => (!min || t.timestamp < min ? t.timestamp : min), undefined as Date | undefined),
-              clickhouseConfigs,
+              datastoreConfig,
             ),
           ]);
 
           const scores = await getScoresForTraces({
             projectId,
             traceIds: traces.map((t) => t.id),
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           const chunk = traces.map((t) => {
@@ -442,7 +435,7 @@ export const getDatabaseReadStreamPaginated = async ({
               order: "DESC",
             },
             offset,
-            clickhouseConfigs,
+            datastoreConfig,
           });
 
           // fetch all project dataset names
@@ -606,7 +599,7 @@ export const getTraceIdentifierStream = async (props: {
     type: "datetime",
   };
 
-  const clickhouseConfigs = {
+  const datastoreConfig = {
     request_timeout: 180_000,
     clickhouse_settings: {
       // Increase HTTP timeouts to prevent Code 209 errors during slow blob storage uploads
@@ -626,7 +619,7 @@ export const getTraceIdentifierStream = async (props: {
         orderBy,
         limit: pageSize,
         page: Math.floor(offset / pageSize),
-        clickhouseConfigs,
+        datastoreConfig,
       });
       return identifiers;
     },

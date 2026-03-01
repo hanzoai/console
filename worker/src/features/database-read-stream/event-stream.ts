@@ -16,21 +16,18 @@ import {
 } from "@hanzo/shared";
 import {
   getDistinctScoreNames,
-  queryClickhouseStream,
+  queryDatastoreStream,
   logger,
   FilterList,
   createFilterFromFilterState,
   eventsTableUiColumnDefinitions,
-  clickhouseSearchCondition,
+  datastoreSearchCondition,
   EventsQueryBuilder,
   eventsScoresAggregation,
 } from "@hanzo/shared/src/server";
 import { Readable } from "stream";
 import { env } from "../../env";
-import {
-  getChunkWithFlattenedScores,
-  prepareScoresForOutput,
-} from "./getDatabaseReadStream";
+import { getChunkWithFlattenedScores, prepareScoresForOutput } from "./getDatabaseReadStream";
 import { fetchCommentsForExport } from "./fetchCommentsForExport";
 import { BatchExportEventsRow } from "./types";
 
@@ -60,7 +57,7 @@ export const getEventsStream = async (props: {
     rowLimit = env.BATCH_EXPORT_ROW_LIMIT,
   } = props;
 
-  const clickhouseConfigs = {
+  const datastoreConfig = {
     request_timeout: 180_000, // 3 minutes
     clickhouse_settings: {
       join_algorithm: "partial_merge" as const,
@@ -77,10 +74,7 @@ export const getEventsStream = async (props: {
       (col) => col.uiTableName === f.column || col.uiTableId === f.column,
     );
     // Keep the filter if it's not a scores or comments filter
-    return (
-      columnDef?.clickhouseTableName !== "scores" &&
-      columnDef?.clickhouseTableName !== "comments"
-    );
+    return columnDef?.datastoreTableName !== "scores" && columnDef?.datastoreTableName !== "comments";
   });
 
   // Get distinct score names for empty columns
@@ -88,11 +82,9 @@ export const getEventsStream = async (props: {
     projectId,
     cutoffCreatedAt,
     filter: eventOnlyFilters,
-    isTimestampFilter: (
-      filterItem: FilterCondition,
-    ): filterItem is TimeFilter =>
+    isTimestampFilter: (filterItem: FilterCondition): filterItem is TimeFilter =>
       filterItem.column === "Start Time" && filterItem.type === "datetime",
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const emptyScoreColumns = distinctScoreNames.reduce(
@@ -118,7 +110,7 @@ export const getEventsStream = async (props: {
 
   const appliedEventsFilter = eventsFilter.apply();
 
-  const search = clickhouseSearchCondition(searchQuery, searchType, "e", [
+  const search = datastoreSearchCondition(searchQuery, searchType, "e", [
     "span_id",
     "name",
     "user_id",
@@ -131,15 +123,9 @@ export const getEventsStream = async (props: {
     .selectFieldSet("export")
     .selectIO(false) // Full I/O, no truncation
     .selectMetadataExpanded() // Full metadata values from events_full
-    .selectRaw(
-      "s.scores_avg as scores_avg",
-      "s.score_categories as score_categories",
-    )
+    .selectRaw("s.scores_avg as scores_avg", "s.score_categories as score_categories")
     .withCTE("scores_agg", eventsScoresAggregation({ projectId }))
-    .leftJoin(
-      "scores_agg s",
-      "ON s.trace_id = e.trace_id AND s.observation_id = e.span_id",
-    )
+    .leftJoin("scores_agg s", "ON s.trace_id = e.trace_id AND s.observation_id = e.span_id")
     .where(appliedEventsFilter)
     .where(search)
     .whereRaw("e.is_deleted = 0")
@@ -193,10 +179,10 @@ export const getEventsStream = async (props: {
     score_categories: string[] | undefined;
   };
 
-  const asyncGenerator = queryClickhouseStream<EventRow>({
+  const asyncGenerator = queryDatastoreStream<EventRow>({
     query,
     params: queryParams,
-    clickhouseConfigs,
+    datastoreConfig,
     tags: {
       feature: "batch-export",
       type: "event",
@@ -206,10 +192,7 @@ export const getEventsStream = async (props: {
   });
 
   // Helper function to process a single event row
-  const processEventRow = (
-    bufferedRow: EventRow,
-    commentsByEvent: Map<string, any[]>,
-  ) => {
+  const processEventRow = (bufferedRow: EventRow, commentsByEvent: Map<string, any[]>) => {
     // Process numeric/boolean scores (tuples from ClickHouse)
     const numericScores = (bufferedRow.scores_avg ?? []).map((score: any) => ({
       name: score[0],
@@ -219,20 +202,20 @@ export const getEventsStream = async (props: {
     }));
 
     // Process categorical scores (format: "name:value")
-    const categoricalScores = (bufferedRow.score_categories ?? []).map(
-      (cat: string) => {
-        const [name, ...valueParts] = cat.split(":");
-        return {
-          name,
-          value: null,
-          dataType: ScoreDataTypeEnum.CATEGORICAL,
-          stringValue: valueParts.join(":"),
-        };
-      },
-    );
+    const categoricalScores = (bufferedRow.score_categories ?? []).map((cat: string) => {
+      const [name, ...valueParts] = cat.split(":");
+      return {
+        name,
+        value: null,
+        dataType: ScoreDataTypeEnum.CATEGORICAL,
+        stringValue: valueParts.join(":"),
+      };
+    });
 
-    const outputScores: Record<string, string[] | number[]> =
-      prepareScoresForOutput([...numericScores, ...categoricalScores]);
+    const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput([
+      ...numericScores,
+      ...categoricalScores,
+    ]);
 
     // Get comments for this event (events use OBSERVATION type since they are observations)
     const eventComments = commentsByEvent.get(bufferedRow.id) ?? [];
@@ -291,19 +274,13 @@ export const getEventsStream = async (props: {
         // Process in batches
         if (rowBuffer.length >= BATCH_SIZE) {
           // Fetch comments for this batch (events are observations)
-          const commentsByEvent = await fetchCommentsForExport(
-            projectId,
-            "OBSERVATION",
-            eventIds,
-          );
+          const commentsByEvent = await fetchCommentsForExport(projectId, "OBSERVATION", eventIds);
 
           // Process each row in the buffer
           for (const bufferedRow of rowBuffer) {
             recordsProcessed++;
             if (recordsProcessed % 10000 === 0) {
-              logger.info(
-                `Streaming events for project ${projectId}: processed ${recordsProcessed} rows`,
-              );
+              logger.info(`Streaming events for project ${projectId}: processed ${recordsProcessed} rows`);
             }
 
             yield processEventRow(bufferedRow, commentsByEvent);
@@ -317,18 +294,12 @@ export const getEventsStream = async (props: {
 
       // Process remaining rows in buffer
       if (rowBuffer.length > 0) {
-        const commentsByEvent = await fetchCommentsForExport(
-          projectId,
-          "OBSERVATION",
-          eventIds,
-        );
+        const commentsByEvent = await fetchCommentsForExport(projectId, "OBSERVATION", eventIds);
 
         for (const bufferedRow of rowBuffer) {
           recordsProcessed++;
           if (recordsProcessed % 10000 === 0) {
-            logger.info(
-              `Streaming events for project ${projectId}: processed ${recordsProcessed} rows`,
-            );
+            logger.info(`Streaming events for project ${projectId}: processed ${recordsProcessed} rows`);
           }
 
           yield processEventRow(bufferedRow, commentsByEvent);
@@ -369,10 +340,7 @@ export const getEventsStreamForEval = async (props: {
       (col) => col.uiTableName === f.column || col.uiTableId === f.column,
     );
 
-    return (
-      columnDef?.clickhouseTableName !== "scores" &&
-      columnDef?.clickhouseTableName !== "comments"
-    );
+    return columnDef?.datastoreTableName !== "scores" && columnDef?.datastoreTableName !== "comments";
   });
 
   const eventsFilter = new FilterList(
@@ -392,7 +360,7 @@ export const getEventsStreamForEval = async (props: {
 
   const appliedEventsFilter = eventsFilter.apply();
 
-  const search = clickhouseSearchCondition(searchQuery, searchType, "e", [
+  const search = datastoreSearchCondition(searchQuery, searchType, "e", [
     "span_id",
     "name",
     "user_id",
@@ -447,10 +415,10 @@ export const getEventsStreamForEval = async (props: {
     metadata: Record<string, unknown> | null;
   };
 
-  const asyncGenerator = queryClickhouseStream<EvalEventRow>({
+  const asyncGenerator = queryDatastoreStream<EvalEventRow>({
     query,
     params: queryParams,
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: 180_000,
       clickhouse_settings: {
         http_send_timeout: 300,
@@ -507,10 +475,7 @@ export const getEventsStreamForDataset = async (props: {
       (col) => col.uiTableName === f.column || col.uiTableId === f.column,
     );
 
-    return (
-      columnDef?.clickhouseTableName !== "scores" &&
-      columnDef?.clickhouseTableName !== "comments"
-    );
+    return columnDef?.datastoreTableName !== "scores" && columnDef?.datastoreTableName !== "comments";
   });
 
   const eventsFilter = new FilterList(
@@ -530,7 +495,7 @@ export const getEventsStreamForDataset = async (props: {
 
   const appliedEventsFilter = eventsFilter.apply();
 
-  const search = clickhouseSearchCondition(searchQuery, searchType, "e", [
+  const search = datastoreSearchCondition(searchQuery, searchType, "e", [
     "span_id",
     "name",
     "user_id",
@@ -559,10 +524,10 @@ export const getEventsStreamForDataset = async (props: {
     metadata: Record<string, unknown> | null;
   };
 
-  const asyncGenerator = queryClickhouseStream<DatasetEventRow>({
+  const asyncGenerator = queryDatastoreStream<DatasetEventRow>({
     query,
     params: queryParams,
-    clickhouseConfigs: {
+    datastoreConfig: {
       request_timeout: 180_000,
       clickhouse_settings: {
         http_send_timeout: 300,

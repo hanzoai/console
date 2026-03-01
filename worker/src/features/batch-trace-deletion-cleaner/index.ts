@@ -1,18 +1,13 @@
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  logger,
-  recordIncrement,
-  traceException,
-} from "@hanzo/shared/src/server";
+import { logger, recordIncrement, traceException } from "@hanzo/shared/src/server";
 import { env } from "../../env";
 import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";
-import { processClickhouseTraceDelete } from "../traces/processClickhouseTraceDelete";
+import { processDatastoreTraceDelete } from "../traces/processDatastoreTraceDelete";
 import { processPostgresTraceDelete } from "../traces/processPostgresTraceDelete";
 
 const METRIC_PREFIX = "hanzo.batch_trace_deletion_cleaner";
 
-export const BATCH_TRACE_DELETION_CLEANER_LOCK_KEY =
-  "hanzo:batch-trace-deletion-cleaner";
+export const BATCH_TRACE_DELETION_CLEANER_LOCK_KEY = "hanzo:batch-trace-deletion-cleaner";
 
 interface ProjectWorkload {
   projectId: string;
@@ -38,8 +33,7 @@ export class BatchTraceDeletionCleaner extends PeriodicExclusiveRunner {
     super({
       name: "BatchTraceDeletionCleaner",
       lockKey: BATCH_TRACE_DELETION_CLEANER_LOCK_KEY,
-      lockTtlSeconds:
-        env.HANZO_BATCH_TRACE_DELETION_CLEANER_LOCK_TTL_SECONDS,
+      lockTtlSeconds: env.HANZO_BATCH_TRACE_DELETION_CLEANER_LOCK_TTL_SECONDS,
       onUnavailable: "fail",
     });
   }
@@ -48,8 +42,7 @@ export class BatchTraceDeletionCleaner extends PeriodicExclusiveRunner {
     logger.info(`Starting ${this.instanceName}`, {
       intervalMs: env.HANZO_BATCH_TRACE_DELETION_CLEANER_INTERVAL_MS,
       batchSize: env.HANZO_DELETE_BATCH_SIZE,
-      lockTtlSeconds:
-        env.HANZO_BATCH_TRACE_DELETION_CLEANER_LOCK_TTL_SECONDS,
+      lockTtlSeconds: env.HANZO_BATCH_TRACE_DELETION_CLEANER_LOCK_TTL_SECONDS,
     });
     super.start();
   }
@@ -154,7 +147,7 @@ export class BatchTraceDeletionCleaner extends PeriodicExclusiveRunner {
     // Delete from both Postgres and ClickHouse in parallel
     await Promise.all([
       processPostgresTraceDelete(projectId, traceIdsToDelete),
-      processClickhouseTraceDelete(projectId, traceIdsToDelete),
+      processDatastoreTraceDelete(projectId, traceIdsToDelete),
     ]);
 
     // Mark traces as deleted
@@ -172,11 +165,7 @@ export class BatchTraceDeletionCleaner extends PeriodicExclusiveRunner {
       },
     });
 
-    recordIncrement(
-      `${METRIC_PREFIX}.traces_deleted`,
-      traceIdsToDelete.length,
-      { projectId },
-    );
+    recordIncrement(`${METRIC_PREFIX}.traces_deleted`, traceIdsToDelete.length, { projectId });
 
     logger.info(`${this.name}: Project processed`, {
       projectId,

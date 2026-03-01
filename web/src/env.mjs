@@ -229,13 +229,22 @@ export const env = createEnv({
         s ? s.split(",").map((h) => h.toLowerCase().trim()) : [],
       ),
 
-    // clickhouse
-    CLICKHOUSE_URL: z.string().url(),
-    CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
-    CLICKHOUSE_DB: z.string().default("default"),
-    CLICKHOUSE_USER: z.string(),
-    CLICKHOUSE_PASSWORD: z.string(),
-    CLICKHOUSE_CLUSTER_ENABLED: z.enum(["true", "false"]).default("true"),
+    // datastore (primary), with CLICKHOUSE_* fallbacks for backward compat
+    DATASTORE_URL: z.string().url(),
+    CLICKHOUSE_URL: z.string().url().optional(),
+    DATASTORE_CLUSTER_NAME: z.string().default("default"),
+    CLICKHOUSE_CLUSTER_NAME: z.string().optional(),
+    DATASTORE_DB: z.string().default("default"),
+    CLICKHOUSE_DB: z.string().optional(),
+    DATASTORE_USER: z.string().default("default"),
+    CLICKHOUSE_USER: z.string().optional(),
+    DATASTORE_PASSWORD: z.string().default(""),
+    CLICKHOUSE_PASSWORD: z.string().optional(),
+    DATASTORE_CLUSTER_ENABLED: z.enum(["true", "false"]).default("true"),
+    CLICKHOUSE_CLUSTER_ENABLED: z.enum(["true", "false"]).optional(),
+    DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY: z.coerce
+      .number()
+      .optional(),
     CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY: z.coerce
       .number()
       .default(32_000_000_000), // ~32GB
@@ -427,7 +436,7 @@ export const env = createEnv({
     // Whether to propagate the toTimestamp restriction (including a server-side offset)
     // onto the observations CTE in GET /api/public/traces. Can be used to improve performance
     // for self-hosters that have a trace known trace duration of less than multiple hours.
-    HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS: z
+    HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS: z
       .enum(["true", "false"])
       .default("false"),
 
@@ -710,13 +719,21 @@ export const env = createEnv({
     PLAIN_AUTHENTICATION_SECRET: process.env.PLAIN_AUTHENTICATION_SECRET,
     PLAIN_API_KEY: process.env.PLAIN_API_KEY,
     PLAIN_CARDS_API_TOKEN: process.env.PLAIN_CARDS_API_TOKEN,
-    // clickhouse
+    // datastore (DATASTORE_* preferred, CLICKHOUSE_* fallback)
+    DATASTORE_URL: process.env.DATASTORE_URL ?? process.env.CLICKHOUSE_URL,
     CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
+    DATASTORE_CLUSTER_NAME: process.env.DATASTORE_CLUSTER_NAME ?? process.env.CLICKHOUSE_CLUSTER_NAME,
     CLICKHOUSE_CLUSTER_NAME: process.env.CLICKHOUSE_CLUSTER_NAME,
+    DATASTORE_DB: process.env.DATASTORE_DB ?? process.env.CLICKHOUSE_DB,
     CLICKHOUSE_DB: process.env.CLICKHOUSE_DB,
+    DATASTORE_USER: process.env.DATASTORE_USER ?? process.env.CLICKHOUSE_USER,
     CLICKHOUSE_USER: process.env.CLICKHOUSE_USER,
+    DATASTORE_PASSWORD: process.env.DATASTORE_PASSWORD ?? process.env.CLICKHOUSE_PASSWORD,
     CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
+    DATASTORE_CLUSTER_ENABLED: process.env.DATASTORE_CLUSTER_ENABLED ?? process.env.CLICKHOUSE_CLUSTER_ENABLED,
     CLICKHOUSE_CLUSTER_ENABLED: process.env.CLICKHOUSE_CLUSTER_ENABLED,
+    DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY:
+      process.env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
     CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY:
       process.env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
     // EE ui customization
@@ -828,8 +845,8 @@ export const env = createEnv({
     COMMERCE_API_URL: process.env.COMMERCE_API_URL,
     COMMERCE_SERVICE_TOKEN: process.env.COMMERCE_SERVICE_TOKEN,
     // Api Performance Flags
-    HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
-      process.env.HANZO_API_CLICKHOUSE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
+    HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
+      process.env.HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,
     HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS:
       process.env.HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS,
 

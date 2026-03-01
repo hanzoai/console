@@ -1,15 +1,7 @@
+import { ObservationLevel, singleFilter, EvalTargetObject } from "@hanzo/shared";
+import { JobConfiguration, kyselyPrisma, prisma } from "@hanzo/shared/src/db";
 import {
-  ObservationLevel,
-  singleFilter,
-  EvalTargetObject,
-} from "@hanzo/shared";
-import {
-  JobConfiguration,
-  kyselyPrisma,
-  prisma,
-} from "@hanzo/shared/src/db";
-import {
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   createOrgProjectAndApiKey,
   TraceRecordReadType,
   upsertObservation,
@@ -26,9 +18,7 @@ import { pruneDatabase } from "./utils";
 let OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // Check for both OPENAI_API_KEY and HANZO_LLM_CONNECTION_OPENAI_KEY
 // to avoid interfering with llmConnections tests that use the latter
-const hasActiveKey = Boolean(
-  OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY,
-);
+const hasActiveKey = Boolean(OPENAI_API_KEY || process.env.HANZO_LLM_CONNECTION_OPENAI_KEY);
 if (!hasActiveKey) {
   OPENAI_API_KEY = "sk-test_not_used_as_network_mocks_are_activated";
 }
@@ -44,22 +34,13 @@ beforeAll(async () => {
 });
 afterAll(openAIServer.teardown);
 
-type EvalJobEventPartial = Omit<
-  Parameters<typeof createEvalJobs>[0]["event"],
-  "projectId" | "traceId"
->;
+type EvalJobEventPartial = Omit<Parameters<typeof createEvalJobs>[0]["event"], "projectId" | "traceId">;
 
 type TraceRecordOmitProjectId = Partial<Omit<TraceRecordReadType, "projectId">>;
-type TraceRecordOmitProjectIdAndId = Partial<
-  Omit<TraceRecordReadType, "projectId" | "id">
->;
+type TraceRecordOmitProjectIdAndId = Partial<Omit<TraceRecordReadType, "projectId" | "id">>;
 
 const __getJobs = (projectId: string) =>
-  kyselyPrisma.$kysely
-    .selectFrom("job_executions")
-    .selectAll()
-    .where("project_id", "=", projectId)
-    .execute();
+  kyselyPrisma.$kysely.selectFrom("job_executions").selectAll().where("project_id", "=", projectId).execute();
 
 type JobExecutions = Awaited<ReturnType<typeof __getJobs>>;
 
@@ -68,22 +49,14 @@ const test = baseTest.extend<{
   traceId2: string;
   projectId: string;
   upsertTrace: (trace: TraceRecordOmitProjectId) => Promise<void>;
-  upsertTwoTraces: (
-    traces?: [TraceRecordOmitProjectIdAndId, TraceRecordOmitProjectIdAndId],
-  ) => Promise<void>;
+  upsertTwoTraces: (traces?: [TraceRecordOmitProjectIdAndId, TraceRecordOmitProjectIdAndId]) => Promise<void>;
   configureJob: (
-    job: Partial<
-      Omit<JobConfiguration, "projectId" | "evalTemplateId" | "id" | "filter">
-    > & {
+    job: Partial<Omit<JobConfiguration, "projectId" | "evalTemplateId" | "id" | "filter">> & {
       filter: z.infer<typeof singleFilter>[];
     },
   ) => Promise<void>;
-  configureDefaultJobWithSingleFilter: (
-    filter: z.infer<typeof singleFilter>,
-  ) => Promise<void>;
-  createTwoEvalJobs: (
-    events?: [EvalJobEventPartial, EvalJobEventPartial],
-  ) => Promise<void>;
+  configureDefaultJobWithSingleFilter: (filter: z.infer<typeof singleFilter>) => Promise<void>;
+  createTwoEvalJobs: (events?: [EvalJobEventPartial, EvalJobEventPartial]) => Promise<void>;
   getJobs: () => Promise<JobExecutions>;
 }>({
   projectId: async ({}, use) => {
@@ -100,7 +73,7 @@ const test = baseTest.extend<{
   upsertTrace: async ({ projectId }, use) => {
     await use(async (trace) => {
       const now = new Date();
-      const clickhouseNow = convertDateToClickhouseDateTime(now);
+      const clickhouseNow = convertDateToDatastoreDateTime(now);
       await upsertTrace({
         id: trace.id,
         project_id: projectId,
@@ -302,14 +275,14 @@ describe.concurrent("test eval filtering", () => {
     // Create two traces with different timestamps
     await upsertTwoTraces([
       {
-        timestamp: convertDateToClickhouseDateTime(now),
-        created_at: convertDateToClickhouseDateTime(now),
-        updated_at: convertDateToClickhouseDateTime(now),
+        timestamp: convertDateToDatastoreDateTime(now),
+        created_at: convertDateToDatastoreDateTime(now),
+        updated_at: convertDateToDatastoreDateTime(now),
       },
       {
-        timestamp: convertDateToClickhouseDateTime(futureDate),
-        created_at: convertDateToClickhouseDateTime(futureDate),
-        updated_at: convertDateToClickhouseDateTime(futureDate),
+        timestamp: convertDateToDatastoreDateTime(futureDate),
+        created_at: convertDateToDatastoreDateTime(futureDate),
+        updated_at: convertDateToDatastoreDateTime(futureDate),
       },
     ]);
 
@@ -554,11 +527,11 @@ describe.concurrent("test eval filtering", () => {
       project_id: projectId,
       trace_id: traceId1,
       level: ObservationLevel.DEFAULT.toString(),
-      start_time: convertDateToClickhouseDateTime(new Date()),
-      end_time: convertDateToClickhouseDateTime(new Date()),
+      start_time: convertDateToDatastoreDateTime(new Date()),
+      end_time: convertDateToDatastoreDateTime(new Date()),
       type: "SPAN",
-      created_at: convertDateToClickhouseDateTime(new Date()),
-      updated_at: convertDateToClickhouseDateTime(new Date()),
+      created_at: convertDateToDatastoreDateTime(new Date()),
+      updated_at: convertDateToDatastoreDateTime(new Date()),
     });
 
     await upsertObservation({
@@ -566,11 +539,11 @@ describe.concurrent("test eval filtering", () => {
       project_id: projectId,
       trace_id: traceId2,
       level: ObservationLevel.ERROR.toString(),
-      start_time: convertDateToClickhouseDateTime(new Date()),
-      end_time: convertDateToClickhouseDateTime(new Date()),
+      start_time: convertDateToDatastoreDateTime(new Date()),
+      end_time: convertDateToDatastoreDateTime(new Date()),
       type: "SPAN",
-      created_at: convertDateToClickhouseDateTime(new Date()),
-      updated_at: convertDateToClickhouseDateTime(new Date()),
+      created_at: convertDateToDatastoreDateTime(new Date()),
+      updated_at: convertDateToDatastoreDateTime(new Date()),
     });
 
     // Create job configuration with level filter

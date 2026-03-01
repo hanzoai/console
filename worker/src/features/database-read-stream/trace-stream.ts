@@ -1,13 +1,13 @@
 import { FilterCondition, ScoreDataTypeEnum, type ScoreDataTypeType, TracingSearchType } from "@hanzo/shared";
 import {
   getDistinctScoreNames,
-  queryClickhouseStream,
+  queryDatastoreStream,
   logger,
   FilterList,
   createFilterFromFilterState,
   tracesTableUiColumnDefinitions,
-  clickhouseSearchCondition,
-  parseClickhouseUTCDateTimeFormat,
+  datastoreSearchCondition,
+  parseDatastoreUTCDateTimeFormat,
   StringFilter,
 } from "@hanzo/shared/src/server";
 import { Readable } from "stream";
@@ -34,7 +34,7 @@ export const getTraceStream = async (props: {
     rowLimit = env.BATCH_EXPORT_ROW_LIMIT,
   } = props;
 
-  const clickhouseConfigs = {
+  const datastoreConfig = {
     request_timeout: 180_000,
     clickhouse_settings: {
       join_algorithm: "partial_merge" as const,
@@ -52,7 +52,7 @@ export const getTraceStream = async (props: {
       (col) => col.uiTableName === f.column || col.uiTableId === f.column,
     );
     // Keep the filter if it's not an observation-level filter
-    return columnDef?.clickhouseTableName !== "observations";
+    return columnDef?.datastoreTableName !== "observations";
   });
 
   // Get distinct score names for empty columns
@@ -61,7 +61,7 @@ export const getTraceStream = async (props: {
     cutoffCreatedAt,
     filter: traceOnlyFilters,
     isTimestampFilter: isTraceTimestampFilter,
-    clickhouseConfigs,
+    datastoreConfig,
   });
 
   const emptyScoreColumns = distinctScoreNames.reduce(
@@ -91,7 +91,7 @@ export const getTraceStream = async (props: {
 
   const scoresFilter = new FilterList([
     new StringFilter({
-      clickhouseTable: "scores",
+      datastoreTable: "scores",
       field: "project_id",
       operator: "=",
       value: projectId,
@@ -100,7 +100,7 @@ export const getTraceStream = async (props: {
 
   const appliedScoresFilter = scoresFilter.apply();
 
-  const search = clickhouseSearchCondition(searchQuery, searchType, "t");
+  const search = datastoreSearchCondition(searchQuery, searchType, "t");
 
   const query = `
     WITH scores_agg AS (
@@ -164,7 +164,7 @@ export const getTraceStream = async (props: {
       LIMIT {rowLimit: Int64}
     `;
 
-  const asyncGenerator = queryClickhouseStream<{
+  const asyncGenerator = queryDatastoreStream<{
     id: string;
     project_id: string;
     timestamp: Date;
@@ -198,7 +198,7 @@ export const getTraceStream = async (props: {
       ...appliedScoresFilter.params,
       ...search.params,
     },
-    clickhouseConfigs,
+    datastoreConfig,
     tags: {
       feature: "batch-export",
       type: "trace",
@@ -246,7 +246,7 @@ export const getTraceStream = async (props: {
           timestamp:
             bufferedRow.timestamp instanceof Date
               ? bufferedRow.timestamp
-              : parseClickhouseUTCDateTimeFormat(bufferedRow.timestamp),
+              : parseDatastoreUTCDateTimeFormat(bufferedRow.timestamp),
           name: bufferedRow.name ?? "",
           userId: bufferedRow.user_id,
           sessionId: bufferedRow.session_id,

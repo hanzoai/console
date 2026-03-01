@@ -4,7 +4,7 @@ import {
   deleteScoresByTraceIds,
   deleteTraces,
   logger,
-  removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces,
+  removeIngestionEventsFromS3AndDeleteDatastoreRefsForTraces,
   StorageService,
   StorageServiceFactory,
   traceException,
@@ -134,15 +134,15 @@ const deleteMediaItemsForTraces = async (projectId: string, traceIds: string[]):
   }
 };
 
-export const processClickhouseTraceDelete = async (projectId: string, traceIds: string[]) => {
-  logger.info(`Deleting traces ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`);
+export const processDatastoreTraceDelete = async (projectId: string, traceIds: string[]) => {
+  logger.info(`Deleting traces ${JSON.stringify(traceIds)} in project ${projectId} from Datastore`);
 
   await deleteMediaItemsForTraces(projectId, traceIds);
 
   try {
     await Promise.all([
       env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
-        ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForTraces({
+        ? removeIngestionEventsFromS3AndDeleteDatastoreRefsForTraces({
             projectId,
             traceIds,
           })
@@ -155,7 +155,7 @@ export const processClickhouseTraceDelete = async (projectId: string, traceIds: 
         : Promise.resolve(),
     ]);
   } catch (e) {
-    logger.error(`Error deleting trace ${JSON.stringify(traceIds)} in project ${projectId} from Clickhouse`, e);
+    logger.error(`Error deleting trace ${JSON.stringify(traceIds)} in project ${projectId} from Datastore`, e);
     traceException(e);
     throw e;
   }

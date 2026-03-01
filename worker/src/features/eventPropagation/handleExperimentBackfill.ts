@@ -1,13 +1,13 @@
 import {
   logger,
-  queryClickhouse,
+  queryDatastore,
   redis,
-  convertDateToClickhouseDateTime,
-  clickhouseClient,
+  convertDateToDatastoreDateTime,
+  datastoreClient,
   flattenJsonToPathArrays,
 } from "@hanzo/shared/src/server";
 import { env } from "../../env";
-import { ClickhouseWriter } from "../../services/ClickhouseWriter";
+import { DatastoreWriter } from "../../services/DatastoreWriter";
 import { IngestionService } from "../../services/IngestionService";
 import { prisma } from "@hanzo/shared/src/db";
 import { chunk } from "lodash";
@@ -145,11 +145,11 @@ export async function getDatasetRunItemsSinceLastRun(lastRun: Date, upperBound: 
     LIMIT 1 BY dri.project_id, dri.trace_id, coalesce(dri.observation_id, '')
   `;
 
-  const rows = await queryClickhouse<DatasetRunItem>({
+  const rows = await queryDatastore<DatasetRunItem>({
     query,
     params: {
-      lastRun: convertDateToClickhouseDateTime(lastRun),
-      upperBound: convertDateToClickhouseDateTime(upperBound),
+      lastRun: convertDateToDatastoreDateTime(lastRun),
+      upperBound: convertDateToDatastoreDateTime(upperBound),
     },
     tags: {
       feature: "experiment-backfill",
@@ -230,12 +230,12 @@ export async function getRelevantObservations(
     LIMIT 1 BY o.project_id, o.id
   `;
 
-  return queryClickhouse<SpanRecord>({
+  return queryDatastore<SpanRecord>({
     query,
     params: {
       projectIds,
       traceIds,
-      minTime: convertDateToClickhouseDateTime(minTime),
+      minTime: convertDateToDatastoreDateTime(minTime),
     },
     tags: {
       feature: "experiment-backfill",
@@ -304,12 +304,12 @@ export async function getRelevantTraces(
     LIMIT 1 BY t.project_id, t.id
   `;
 
-  return queryClickhouse<SpanRecord>({
+  return queryDatastore<SpanRecord>({
     query,
     params: {
       projectIds,
       traceIds,
-      minTime: convertDateToClickhouseDateTime(minTime),
+      minTime: convertDateToDatastoreDateTime(minTime),
     },
     tags: {
       feature: "experiment-backfill",
@@ -477,7 +477,7 @@ export async function writeEnrichedSpans(spans: EnrichedSpan[]): Promise<void> {
   if (!redis) throw new Error("Redis not available");
   if (!prisma) throw new Error("Prisma not available");
 
-  const ingestionService = new IngestionService(redis, prisma, ClickhouseWriter.getInstance(), clickhouseClient());
+  const ingestionService = new IngestionService(redis, prisma, DatastoreWriter.getInstance(), datastoreClient());
 
   for (const span of spans) {
     // Convert EnrichedSpan to EventInput format
@@ -559,10 +559,7 @@ export async function writeEnrichedSpans(spans: EnrichedSpan[]): Promise<void> {
       experimentItemMetadataValues: span.experiment_item_metadata_values,
     };
 
-    const eventRecord = await ingestionService.createEventRecord(
-      eventInput,
-      "",
-    ); // Empty fileKey since we're not storing raw events
+    const eventRecord = await ingestionService.createEventRecord(eventInput, ""); // Empty fileKey since we're not storing raw events
     ingestionService.writeEventRecord(eventRecord);
   }
 

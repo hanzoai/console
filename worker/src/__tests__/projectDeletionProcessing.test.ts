@@ -2,7 +2,7 @@ import { expect, it, describe, beforeAll, beforeEach, afterEach } from "vitest";
 import { env } from "../env";
 import { randomUUID } from "crypto";
 import {
-  convertDateToClickhouseDateTime,
+  convertDateToDatastoreDateTime,
   createObservation,
   createObservationsCh,
   createTraceScore,
@@ -187,9 +187,9 @@ describe("ProjectDeletionProcessingJob", () => {
     await upsertTrace({
       id: `${baseId}-trace`,
       project_id: projectId,
-      timestamp: convertDateToClickhouseDateTime(new Date()),
-      created_at: convertDateToClickhouseDateTime(new Date()),
-      updated_at: convertDateToClickhouseDateTime(new Date()),
+      timestamp: convertDateToDatastoreDateTime(new Date()),
+      created_at: convertDateToDatastoreDateTime(new Date()),
+      updated_at: convertDateToDatastoreDateTime(new Date()),
     });
 
     // When
@@ -370,7 +370,7 @@ describe("ProjectDeletionProcessingJob", () => {
         createTrace({
           id: traceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(now),
+          timestamp: convertDateToDatastoreDateTime(now),
         }),
       ]);
 
@@ -396,7 +396,7 @@ describe("ProjectDeletionProcessingJob", () => {
         createTrace({
           id: oldTraceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(oldDate),
+          timestamp: convertDateToDatastoreDateTime(oldDate),
         }),
       ]);
 
@@ -405,7 +405,7 @@ describe("ProjectDeletionProcessingJob", () => {
         createTrace({
           id: newTraceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(now),
+          timestamp: convertDateToDatastoreDateTime(now),
         }),
       ]);
 
@@ -435,7 +435,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: observationId,
           trace_id: traceId,
           project_id: projectId,
-          start_time: convertDateToClickhouseDateTime(now),
+          start_time: convertDateToDatastoreDateTime(now),
         }),
       ]);
 
@@ -466,7 +466,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: oldObservationId,
           trace_id: traceId,
           project_id: projectId,
-          start_time: convertDateToClickhouseDateTime(oldDate),
+          start_time: convertDateToDatastoreDateTime(oldDate),
         }),
       ]);
 
@@ -476,7 +476,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: newObservationId,
           trace_id: traceId,
           project_id: projectId,
-          start_time: convertDateToClickhouseDateTime(now),
+          start_time: convertDateToDatastoreDateTime(now),
         }),
       ]);
 
@@ -508,7 +508,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: scoreId,
           trace_id: traceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(now),
+          timestamp: convertDateToDatastoreDateTime(now),
         }),
       ]);
 
@@ -536,7 +536,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: oldScoreId,
           trace_id: traceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(oldDate),
+          timestamp: convertDateToDatastoreDateTime(oldDate),
         }),
       ]);
 
@@ -546,7 +546,7 @@ describe("ProjectDeletionProcessingJob", () => {
           id: newScoreId,
           trace_id: traceId,
           project_id: projectId,
-          timestamp: convertDateToClickhouseDateTime(now),
+          timestamp: convertDateToDatastoreDateTime(now),
         }),
       ]);
 

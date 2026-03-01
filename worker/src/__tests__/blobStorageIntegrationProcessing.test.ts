@@ -25,10 +25,7 @@ import { encrypt } from "@hanzo/shared/encryption";
 // Unfortunately, this is necessary as we don't have a good way to skip empty file uploads
 // and at least azurite doesn't handle them gracefully.
 const maybeIt = env.HANZO_USE_AZURE_BLOB === "true" ? it.skip : it;
-const maybeDescribe =
-  process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true"
-    ? describe
-    : describe.skip;
+const maybeDescribe = process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true" ? describe : describe.skip;
 
 describe("BlobStorageIntegrationProcessingJob", () => {
   let storageService: StorageService;
@@ -150,7 +147,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         start_time: (now.getTime() - 90 * 60 * 1000) * 1000, // 90 minutes before now (microseconds)
       });
 
-      // Create trace, observation, score, and event in Clickhouse
+      // Create trace, observation, score, and event in Datastore
       // Data is at 90 minutes ago, which falls within the chunked export window
       await Promise.all([
         createTracesCh([
@@ -197,13 +194,9 @@ describe("BlobStorageIntegrationProcessingJob", () => {
 
       // Check file paths follow the expected pattern
       const traceFile = projectFiles.find((f) => f.file.includes("/traces/"));
-      const observationFile = projectFiles.find((f) =>
-        f.file.includes("/observations/"),
-      );
+      const observationFile = projectFiles.find((f) => f.file.includes("/observations/"));
       const scoreFile = projectFiles.find((f) => f.file.includes("/scores/"));
-      const eventFile = projectFiles.find((f) =>
-        f.file.includes("/observations_v2/"),
-      );
+      const eventFile = projectFiles.find((f) => f.file.includes("/observations_v2/"));
 
       expect(traceFile).toBeDefined();
       expect(observationFile).toBeDefined();
@@ -237,19 +230,13 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       }
 
       // Check integration lastSyncAt and nextSyncAt are updated
-      const updatedIntegration = await prisma.blobStorageIntegration.findUnique(
-        {
-          where: { projectId },
-        },
-      );
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
       if (updatedIntegration?.lastSyncAt && updatedIntegration?.nextSyncAt) {
-        expect(updatedIntegration.lastSyncAt.getTime()).toBeGreaterThan(
-          twoHoursAgo.getTime(),
-        );
-        expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(
-          now.getTime(),
-        );
+        expect(updatedIntegration.lastSyncAt.getTime()).toBeGreaterThan(twoHoursAgo.getTime());
+        expect(updatedIntegration.nextSyncAt.getTime()).toBeGreaterThan(now.getTime());
       } else {
         expect.fail("Integration should have lastSyncAt and nextSyncAt set");
       }
@@ -272,8 +259,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region,
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "weekly",
           lastSyncAt: oneHourAgo,
@@ -296,26 +282,17 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       } as Job);
 
       // Then
-      const updatedIntegration = await prisma.blobStorageIntegration.findUnique(
-        {
-          where: { projectId },
-        },
-      );
+      const updatedIntegration = await prisma.blobStorageIntegration.findUnique({
+        where: { projectId },
+      });
 
       // Should be set to 7 days in the future from maxTimestamp (now - 30min)
-      const expectedNextSync = new Date(
-        now.getTime() - 30 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000,
-      );
+      const expectedNextSync = new Date(now.getTime() - 30 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000);
 
       if (updatedIntegration?.nextSyncAt) {
         // Use a tolerance value in milliseconds instead of numeric precision
         const tolerance = 1000; // 1 second tolerance
-        expect(
-          Math.abs(
-            updatedIntegration.nextSyncAt.getTime() -
-              expectedNextSync.getTime(),
-          ),
-        ).toBeLessThan(tolerance);
+        expect(Math.abs(updatedIntegration.nextSyncAt.getTime() - expectedNextSync.getTime())).toBeLessThan(tolerance);
       } else {
         expect.fail("Integration should have nextSyncAt set");
       }
@@ -338,8 +315,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle:
-            env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "daily",
           lastSyncAt: oneHourAgo,
@@ -447,8 +423,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
             secretAccessKey: encrypt(minioAccessKeySecret),
             region: region ? region : "auto",
             endpoint: minioEndpoint,
-            forcePathStyle:
-              env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+            forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
             enabled: true,
             exportFrequency: "hourly",
             exportSource: "TRACES_OBSERVATIONS_EVENTS",
@@ -464,18 +439,14 @@ describe("BlobStorageIntegrationProcessingJob", () => {
 
         // Get files for this file type
         const files = await s3StorageService.listFiles(prefix);
-        const projectFiles = files.filter(
-          (f) => f.file.includes(projectId) && f.file.includes(fileTypePrefix),
-        );
+        const projectFiles = files.filter((f) => f.file.includes(projectId) && f.file.includes(fileTypePrefix));
 
         // Should have 4 files (traces, observations, scores, events)
         expect(projectFiles).toHaveLength(4);
 
         // Check file extensions
         const expectedExtension = fileType.toLowerCase();
-        expect(
-          projectFiles.every((f) => f.file.endsWith(`.${expectedExtension}`)),
-        ).toBe(true);
+        expect(projectFiles.every((f) => f.file.endsWith(`.${expectedExtension}`))).toBe(true);
 
         // Check file contents for each type
         for (const file of projectFiles) {

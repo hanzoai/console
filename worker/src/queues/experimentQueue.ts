@@ -10,12 +10,12 @@ import {
 } from "@hanzo/shared/src/server";
 import { retryLLMRateLimitError } from "../features/utils";
 import { delayInMs } from "./utils/delays";
-import { createExperimentJobClickhouse } from "../features/experiments/experimentServiceClickhouse";
+import { createExperimentJobDatastore } from "../features/experiments/experimentServiceDatastore";
 import { isUnrecoverableError } from "../errors/UnrecoverableError";
 
 export const experimentCreateQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.ExperimentCreate]>) => {
   try {
-    await createExperimentJobClickhouse({
+    await createExperimentJobDatastore({
       event: job.data.payload,
     });
     return true;

@@ -18,7 +18,7 @@ const evalTraceFilterColumns = [
 
 function getColumnDefinition(column: string) {
   const columnDef = tracesTableUiColumnDefinitions.find(
-    (col) => col.uiTableId === column || col.uiTableName === column || col.clickhouseSelect === column,
+    (col) => col.uiTableId === column || col.uiTableName === column || col.datastoreSelect === column,
   );
   if (!columnDef) {
     throw new Error(`Unhandled column for trace filter: ${column}`);

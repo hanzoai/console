@@ -11,17 +11,14 @@ import {
   createTrace,
   createDatasetRunItemsCh,
   createDatasetRunItem,
-  queryClickhouse,
+  queryDatastore,
   redis,
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 
-async function getClickhouseCount(
-  table: string,
-  projectId: string,
-): Promise<number> {
-  const result = await queryClickhouse<{ count: number }>({
+async function getClickhouseCount(table: string, projectId: string): Promise<number> {
+  const result = await queryDatastore<{ count: number }>({
     query: `SELECT count() as count FROM ${table} FINAL WHERE project_id = {projectId: String}`,
     params: { projectId },
   });
@@ -53,9 +50,7 @@ describe("BatchProjectCleaner", () => {
       const cleaner = new BatchProjectCleaner(TEST_TABLE);
       const nextDelayMs = await cleaner.processBatch();
 
-      expect(nextDelayMs).toBe(
-        env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS,
-      );
+      expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS);
 
       // Verify lock was not taken
       const lockValue = await redis?.get(TEST_LOCK_KEY);
@@ -73,9 +68,7 @@ describe("BatchProjectCleaner", () => {
       const cleaner = new BatchProjectCleaner(TEST_TABLE);
       const nextDelayMs = await cleaner.processBatch();
 
-      expect(nextDelayMs).toBe(
-        env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS,
-      );
+      expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS);
 
       // Verify lock was not taken
       const lockValue = await redis?.get(TEST_LOCK_KEY);
@@ -109,9 +102,7 @@ describe("BatchProjectCleaner", () => {
       expect(countAfter).toBe(0);
 
       // Verify returned check interval (work was done)
-      expect(nextDelayMs).toBe(
-        env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS,
-      );
+      expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS);
     });
 
     it("should not affect traces from active projects", async () => {
@@ -175,9 +166,7 @@ describe("BatchProjectCleaner", () => {
       // Verify both projects' traces were deleted
       expect(await getClickhouseCount(TEST_TABLE, projectId1)).toBe(0);
       expect(await getClickhouseCount(TEST_TABLE, projectId2)).toBe(0);
-      expect(nextDelayMs).toBe(
-        env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS,
-      );
+      expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS);
     });
 
     it("should skip processing when lock is already held", async () => {
@@ -189,9 +178,7 @@ describe("BatchProjectCleaner", () => {
       });
 
       // Insert traces
-      await createTracesCh([
-        createTrace({ id: randomUUID(), project_id: projectId }),
-      ]);
+      await createTracesCh([createTrace({ id: randomUUID(), project_id: projectId })]);
 
       // Acquire the lock manually
       await redis?.set(TEST_LOCK_KEY, "locked", "EX", 3600, "NX");
@@ -202,9 +189,7 @@ describe("BatchProjectCleaner", () => {
 
       // Verify traces were NOT deleted (lock blocked processing)
       expect(await getClickhouseCount(TEST_TABLE, projectId)).toBe(1);
-      expect(nextDelayMs).toBe(
-        env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS,
-      );
+      expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS);
     });
 
     it("should release lock after processing completes", async () => {
@@ -216,9 +201,7 @@ describe("BatchProjectCleaner", () => {
       });
 
       // Insert traces
-      await createTracesCh([
-        createTrace({ id: randomUUID(), project_id: projectId }),
-      ]);
+      await createTracesCh([createTrace({ id: randomUUID(), project_id: projectId })]);
 
       // Run processBatch
       const cleaner = new BatchProjectCleaner(TEST_TABLE);

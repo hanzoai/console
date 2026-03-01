@@ -1,5 +1,5 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
-import { clickhouseClient, commandClickhouse, logger, queryClickhouse } from "@hanzo/shared/src/server";
+import { datastoreClient, commandDatastore, logger, queryDatastore } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 import { parseArgs } from "node:util";
@@ -102,7 +102,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
 
     for (const table of requiredTables) {
       try {
-        const result = await queryClickhouse<{ count: string }>({
+        const result = await queryDatastore<{ count: string }>({
           query: `SELECT count() as count FROM ${table} LIMIT 1`,
           tags: {
             feature: "background-migration",
@@ -128,10 +128,10 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
   // Load Parts from ClickHouse
   // ============================================================================
 
-  private async loadPartsFromClickhouse(): Promise<ChunkTodo[]> {
+  private async loadPartsFromDatastore(): Promise<ChunkTodo[]> {
     logger.info("[Backfill Events] Loading parts from system.parts table");
 
-    const parts = await queryClickhouse<{
+    const parts = await queryDatastore<{
       partition_id: string;
       name: string;
     }>({
@@ -145,7 +145,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
       `,
       tags: {
         feature: "background-migration",
-        operation: "loadPartsFromClickhouse",
+        operation: "loadPartsFromDatastore",
       },
     });
 
@@ -164,7 +164,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
   // ============================================================================
 
   private async verifyPartStillActive(partId: string): Promise<boolean> {
-    const result = await queryClickhouse<{ count: string }>({
+    const result = await queryDatastore<{ count: string }>({
       query: `
         SELECT count() as count
         FROM system.parts
@@ -183,7 +183,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
   }
 
   private async getActivePartIds(): Promise<Set<string>> {
-    const parts = await queryClickhouse<{ name: string }>({
+    const parts = await queryDatastore<{ name: string }>({
       query: `
         SELECT name
         FROM system.parts
@@ -363,17 +363,17 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
 
     // Fire the query with abort signal. The query will continue on the server
     // even after we abort the HTTP connection.
-    const queryPromise = commandClickhouse({
+    const queryPromise = commandDatastore({
       query,
       tags: {
         feature: "background-migration",
         operation: "fireQuery",
         queryId,
       },
-      // clickhouseConfigs: {
+      // datastoreConfig: {
       //   request_timeout: timeoutMs,
       // },
-      clickhouseSettings: {
+      datastoreSettings: {
         // send_progress_in_http_headers: 1,
         // http_headers_progress_interval_ms: "30000",
         ...retrySettings,
@@ -437,7 +437,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
     });
 
     // Check if ClickHouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
         invalidReason: "ClickHouse credentials must be configured to perform migration",
@@ -445,7 +445,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
     }
 
     // Check if ClickHouse events table exists
-    const tables = await clickhouseClient().query({
+    const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
     const tableNames = (await tables.json()).data as { name: string }[];
@@ -507,7 +507,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
         state.phase = "loading_chunks";
         await this.updateState(state);
 
-        state.todos = await this.loadPartsFromClickhouse();
+        state.todos = await this.loadPartsFromDatastore();
         state.chunksLoaded = true;
         state.phase = "backfill";
         await this.updateState(state);

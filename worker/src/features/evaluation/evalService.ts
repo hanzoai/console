@@ -243,7 +243,7 @@ export const createEvalJobs = async ({
             : "timestamp" in event
               ? new Date(event.timestamp)
               : new Date(jobTimestamp),
-        clickhouseFeatureTag: "eval-create",
+        datastoreFeatureTag: "eval-create",
         excludeInputOutput: true,
       });
 
@@ -985,7 +985,7 @@ export async function extractVariablesFromTracingData({
           traceId,
           projectId,
           timestamp: traceTimestamp,
-          clickhouseFeatureTag: "eval-execution",
+          datastoreFeatureTag: "eval-execution",
         });
         traceCache.set(traceCacheKey, trace ?? null);
       }

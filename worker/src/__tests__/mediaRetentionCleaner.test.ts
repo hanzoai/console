@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import {
   createOrgProjectAndApiKey,
   getS3MediaStorageClient,
-  removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
+  removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { MediaRetentionCleaner } from "../features/media-retention-cleaner";
@@ -14,7 +14,7 @@ vi.mock("@hanzo/shared/src/server", async () => {
   return {
     ...actual,
     getS3MediaStorageClient: vi.fn(),
-    removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject: vi.fn(),
+    removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject: vi.fn(),
   };
 });
 
@@ -67,10 +67,7 @@ async function getMediaCount(projectId: string): Promise<number> {
  * Helper to run processBatch until no more work exists for a specific project.
  * This handles test isolation when other projects might have expired media.
  */
-async function processUntilProjectComplete(
-  projectId: string,
-  maxIterations = 10,
-): Promise<void> {
+async function processUntilProjectComplete(projectId: string, maxIterations = 10): Promise<void> {
   for (let i = 0; i < maxIterations; i++) {
     const cleaner = new MediaRetentionCleaner();
     await cleaner.processBatch();
@@ -129,9 +126,7 @@ describe("MediaRetentionCleaner", () => {
       expect(await getMediaCount(projectId)).toBe(0);
 
       // Verify our media was deleted from S3
-      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap(
-        (call) => call[0] as string[],
-      );
+      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap((call) => call[0] as string[]);
       expect(allDeletedPaths).toContain(media.bucketPath);
     });
 
@@ -198,9 +193,7 @@ describe("MediaRetentionCleaner", () => {
       expect(await getMediaCount(projectB)).toBe(1);
 
       // Verify project A's media was deleted from S3
-      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap(
-        (call) => call[0] as string[],
-      );
+      const allDeletedPaths = mockDeleteFiles.mock.calls.flatMap((call) => call[0] as string[]);
       expect(allDeletedPaths).toContain(mediaA.bucketPath);
     });
 
@@ -422,10 +415,7 @@ describe("MediaRetentionCleaner", () => {
       await cleaner.processBatch();
 
       // Keep running until both our projects are processed
-      while (
-        !processedProjects.includes(projectOlder) ||
-        !processedProjects.includes(projectNewer)
-      ) {
+      while (!processedProjects.includes(projectOlder) || !processedProjects.includes(projectNewer)) {
         const cleaner = new MediaRetentionCleaner();
         await cleaner.processBatch();
         if (processedProjects.length > 10) break; // Safety limit

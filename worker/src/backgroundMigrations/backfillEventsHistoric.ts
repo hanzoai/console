@@ -1,9 +1,9 @@
 import { IBackgroundMigration } from "./IBackgroundMigration";
 import {
-  clickhouseClient,
-  commandClickhouse,
+  datastoreClient,
+  commandDatastore,
   logger,
-  queryClickhouse,
+  queryDatastore,
   pollQueryStatus,
   getQueryError,
   sleep,
@@ -218,7 +218,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
 
     for (const table of requiredTables) {
       try {
-        const result = await queryClickhouse<{ count: string }>({
+        const result = await queryDatastore<{ count: string }>({
           query: `SELECT count() as count FROM ${table} LIMIT 1`,
           tags: {
             feature: "background-migration",
@@ -238,7 +238,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     }
 
     // Verify backfill_chunks has data
-    const chunksCount = await queryClickhouse<{ count: string }>({
+    const chunksCount = await queryDatastore<{ count: string }>({
       query: `SELECT count() as count FROM backfill_chunks`,
       tags: {
         feature: "background-migration",
@@ -263,7 +263,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
   private async loadChunksFromClickhouse(): Promise<ChunkTodo[]> {
     logger.info("[Backfill Events] Loading chunks from backfill_chunks table");
 
-    const chunks = await queryClickhouse<{
+    const chunks = await queryDatastore<{
       chunk_id: string;
       partition_id: string;
       project_id: string;
@@ -341,7 +341,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
       try {
         // Only check if query is still running in system.processes
         // If not running, reset to pending - don't try to check query_log as it may timeout
-        const running = await queryClickhouse<{ query_id: string }>({
+        const running = await queryDatastore<{ query_id: string }>({
           query: `
             SELECT query_id
             FROM clusterAllReplicas('default', 'system.processes')
@@ -349,10 +349,10 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
             LIMIT 1
           `,
           params: { queryId: todo.queryId! },
-          clickhouseConfigs: {
+          datastoreConfig: {
             request_timeout: 60_000,
           },
-          clickhouseSettings: {
+          datastoreSettings: {
             skip_unavailable_shards: 1,
           },
           tags: {
@@ -512,17 +512,17 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
 
     // Fire the query with abort signal. The query will continue on the server
     // even after we abort the HTTP connection.
-    const queryPromise = commandClickhouse({
+    const queryPromise = commandDatastore({
       query,
       tags: {
         feature: "background-migration",
         operation: "fireQuery",
         queryId,
       },
-      // clickhouseConfigs: {
+      // datastoreConfig: {
       //   request_timeout: timeoutMs,
       // },
-      clickhouseSettings: {
+      datastoreSettings: {
         // send_progress_in_http_headers: 1,
         // http_headers_progress_interval_ms: "30000",
         ...retrySettings,
@@ -590,7 +590,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     });
 
     // Check if ClickHouse credentials are configured
-    if (!env.CLICKHOUSE_URL || !env.CLICKHOUSE_USER || !env.CLICKHOUSE_PASSWORD) {
+    if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
         invalidReason: "ClickHouse credentials must be configured to perform migration",
@@ -598,7 +598,7 @@ export default class BackfillEventsHistoric implements IBackgroundMigration {
     }
 
     // Check if ClickHouse events table exists
-    const tables = await clickhouseClient().query({
+    const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
     const tableNames = (await tables.json()).data as { name: string }[];
