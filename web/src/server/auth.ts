@@ -37,7 +37,7 @@ import { CloudConfigSchema } from "@hanzo/shared";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,
-  HanzoIamProvider,
+  IamProvider,
   JumpCloudProvider,
   traceException,
   sendResetPasswordVerificationRequest,
@@ -356,7 +356,7 @@ if (env.AUTH_JUMPCLOUD_CLIENT_ID && env.AUTH_JUMPCLOUD_CLIENT_SECRET && env.AUTH
 
 if (env.IAM_CLIENT_ID && env.IAM_CLIENT_SECRET && env.IAM_SERVER_URL)
   staticProviders.push(
-    HanzoIamProvider({
+    IamProvider({
       clientId: env.IAM_CLIENT_ID,
       clientSecret: env.IAM_CLIENT_SECRET,
       serverUrl: env.IAM_SERVER_URL,
@@ -639,7 +639,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async (span) => {
           // Debug logging for Hanzo IAM provider
-          if (account?.provider === "hanzo-iam") {
+          if (account?.provider === "iam") {
             logger.info("Hanzo IAM signIn callback", {
               userId: user.id,
               userName: user.name,

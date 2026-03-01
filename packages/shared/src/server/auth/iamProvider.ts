@@ -23,6 +23,7 @@ export function IamProvider<P extends IamProfile>(
     serverUrl: string;
     orgName?: string;
     appName?: string;
+    checks?: ("state" | "pkce" | "nonce" | "none")[];
   },
 ): OAuthConfig<P> {
   const issuer = options.serverUrl.replace(/\/$/, "");
@@ -32,8 +33,8 @@ export function IamProvider<P extends IamProfile>(
     name: "Hanzo IAM",
     type: "oauth",
     wellKnown: `${issuer}/.well-known/openid-configuration`,
-    idToken: true,
-    checks: ["state"],
+    idToken: false,
+    checks: options.checks ?? ["state"],
     authorization: { params: { scope: "openid profile email" } },
     profile(profile) {
       return {

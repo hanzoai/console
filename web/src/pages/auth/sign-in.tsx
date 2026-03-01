@@ -77,7 +77,7 @@ export type PageProps = {
         }
       | false;
     sso: boolean;
-    hanzoIam: boolean;
+    iam: boolean;
   };
   runningOnHuggingFaceSpaces: boolean;
   signUpDisabled: boolean;
@@ -146,13 +146,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
         ? { name: env.AUTH_CUSTOM_NAME }
         : false,
     sso,
-    hanzoIam:
-      env.IAM_CLIENT_ID !== undefined && env.IAM_CLIENT_SECRET !== undefined && env.IAM_SERVER_URL !== undefined,
+    iam: env.IAM_CLIENT_ID !== undefined && env.IAM_CLIENT_SECRET !== undefined && env.IAM_SERVER_URL !== undefined,
   } satisfies PageProps["authProviders"];
 
   // Server-side redirect: when Hanzo IAM is the only enabled provider,
   // skip the sign-in page entirely and redirect to the OAuth flow.
-  if (authProviders.hanzoIam) {
+  if (authProviders.iam) {
     const otherProviders = [
       authProviders.credentials,
       authProviders.google,
@@ -434,12 +433,8 @@ export function SSOButtons({
               showLastUsedBadge={hasMultipleAuthMethods && lastUsedMethod === "custom"}
             />
           )}
-          {authProviders.hanzoIam && (
-            <Button
-              onClick={() => handleSignIn("hanzo-iam")}
-              variant="secondary"
-              loading={providerSigningIn === "hanzo-iam"}
-            >
+          {authProviders.iam && (
+            <Button onClick={() => handleSignIn("iam")} variant="secondary" loading={providerSigningIn === "iam"}>
               <Shield className="mr-3" size={18} />
               Sign in with Hanzo
             </Button>
@@ -634,8 +629,8 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
   }
 
   // Auto-redirect to Hanzo IAM when it's the sole auth provider
-  const hanzoIamOnly =
-    authProviders.hanzoIam &&
+  const iamOnly =
+    authProviders.iam &&
     !authProviders.credentials &&
     !authProviders.google &&
     !authProviders.github &&
@@ -652,14 +647,14 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     !authProviders.wordpress &&
     !authProviders.custom;
   useEffect(() => {
-    if (hanzoIamOnly) {
-      capture("sign_in:button_click", { provider: "hanzo-iam" });
-      void signIn("hanzo-iam");
+    if (iamOnly) {
+      capture("sign_in:button_click", { provider: "iam" });
+      void signIn("iam");
     }
-  }, [capture, hanzoIamOnly]);
+  }, [capture, iamOnly]);
 
   // Show loading screen while redirecting to Hanzo IAM
-  if (hanzoIamOnly) {
+  if (iamOnly) {
     return (
       <>
         <Head>
