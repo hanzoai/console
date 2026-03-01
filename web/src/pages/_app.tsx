@@ -1,5 +1,9 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
+import { Geist, Geist_Mono } from "next/font/google";
+
+const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 import { SessionProvider } from "next-auth/react";
 import { setUser } from "@sentry/nextjs";
 import { useSession } from "next-auth/react";
@@ -116,37 +120,39 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   }, []);
 
   return (
-    <QueryParamProvider adapter={NextAdapterPages} options={{ enableBatching: true }}>
-      <TooltipProvider>
-        <CommandMenuProvider>
-          <PostHogProvider client={posthog}>
-            <SessionProvider
-              session={session}
-              refetchOnWindowFocus={true}
-              refetchInterval={5 * 60} // 5 minutes
-              basePath={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth`}
-            >
-              <DetailPageListsProvider>
-                <MarkdownContextProvider>
-                  <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-                    <ScoreCacheProvider>
-                      <CorrectionCacheProvider>
-                        <SupportDrawerProvider defaultOpen={false}>
-                          <AppLayout>
-                            <Component {...pageProps} />
-                            <UserTracking />
-                          </AppLayout>
-                        </SupportDrawerProvider>
-                      </CorrectionCacheProvider>
-                    </ScoreCacheProvider>
-                  </ThemeProvider>
-                </MarkdownContextProvider>
-              </DetailPageListsProvider>
-            </SessionProvider>
-          </PostHogProvider>
-        </CommandMenuProvider>
-      </TooltipProvider>
-    </QueryParamProvider>
+    <div className={`${geistSans.variable} ${geistMono.variable}`}>
+      <QueryParamProvider adapter={NextAdapterPages} options={{ enableBatching: true }}>
+        <TooltipProvider>
+          <CommandMenuProvider>
+            <PostHogProvider client={posthog}>
+              <SessionProvider
+                session={session}
+                refetchOnWindowFocus={true}
+                refetchInterval={5 * 60} // 5 minutes
+                basePath={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/auth`}
+              >
+                <DetailPageListsProvider>
+                  <MarkdownContextProvider>
+                    <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
+                      <ScoreCacheProvider>
+                        <CorrectionCacheProvider>
+                          <SupportDrawerProvider defaultOpen={false}>
+                            <AppLayout>
+                              <Component {...pageProps} />
+                              <UserTracking />
+                            </AppLayout>
+                          </SupportDrawerProvider>
+                        </CorrectionCacheProvider>
+                      </ScoreCacheProvider>
+                    </ThemeProvider>
+                  </MarkdownContextProvider>
+                </DetailPageListsProvider>
+              </SessionProvider>
+            </PostHogProvider>
+          </CommandMenuProvider>
+        </TooltipProvider>
+      </QueryParamProvider>
+    </div>
   );
 };
 
