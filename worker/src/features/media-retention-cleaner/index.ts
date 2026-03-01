@@ -4,7 +4,7 @@ import {
   logger,
   recordGauge,
   recordIncrement,
-  removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
+  removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
   traceException,
 } from "@hanzo/shared/src/server";
 import { env } from "../../env";
@@ -13,8 +13,7 @@ import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";
 
 const METRIC_PREFIX = "hanzo.media_retention_cleaner";
 
-export const MEDIA_RETENTION_CLEANER_LOCK_KEY =
-  "hanzo:media-retention-cleaner";
+export const MEDIA_RETENTION_CLEANER_LOCK_KEY = "hanzo:media-retention-cleaner";
 
 interface ProjectWorkload {
   projectId: string;
@@ -37,8 +36,7 @@ export class MediaRetentionCleaner extends PeriodicExclusiveRunner {
 
   constructor() {
     // TTL = interval + 5 minutes buffer (media deletion can be slow)
-    const lockTtlSeconds =
-      Math.ceil(env.HANZO_MEDIA_RETENTION_CLEANER_INTERVAL_MS / 1000) + 300;
+    const lockTtlSeconds = Math.ceil(env.HANZO_MEDIA_RETENTION_CLEANER_INTERVAL_MS / 1000) + 300;
 
     super({
       name: "MediaRetentionCleaner",
@@ -84,10 +82,7 @@ export class MediaRetentionCleaner extends PeriodicExclusiveRunner {
         }
 
         // Record gauge for how far past cutoff the oldest expired item is
-        recordGauge(
-          `${METRIC_PREFIX}.seconds_past_cutoff`,
-          Math.max(workload?.secondsPastCutoff ?? 0, 0),
-        );
+        recordGauge(`${METRIC_PREFIX}.seconds_past_cutoff`, Math.max(workload?.secondsPastCutoff ?? 0, 0));
         if (workload) {
           logger.info(`${this.instanceName}: Processing project`, {
             projectId: workload.projectId,
@@ -155,18 +150,12 @@ export class MediaRetentionCleaner extends PeriodicExclusiveRunner {
   private async processProject(workload: ProjectWorkload): Promise<void> {
     // Delete media files (S3 + PostgreSQL)
     if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
-      await this.deleteExpiredMedia(
-        workload,
-        env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-      );
+      await this.deleteExpiredMedia(workload, env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
     }
 
     // Delete blob storage entries (S3 + ClickHouse soft delete)
     if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
-      await removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(
-        workload.projectId,
-        workload.cutoffDate,
-      );
+      await removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject(workload.projectId, workload.cutoffDate);
     }
 
     logger.info(`${this.name}: Project processed`, {
@@ -175,10 +164,7 @@ export class MediaRetentionCleaner extends PeriodicExclusiveRunner {
     });
   }
 
-  private async deleteExpiredMedia(
-    workload: ProjectWorkload,
-    bucket: string,
-  ): Promise<void> {
+  private async deleteExpiredMedia(workload: ProjectWorkload, bucket: string): Promise<void> {
     const mediaFiles = await prisma.media.findMany({
       select: { id: true, bucketPath: true },
       where: {

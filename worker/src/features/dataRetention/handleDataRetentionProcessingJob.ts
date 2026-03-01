@@ -5,7 +5,7 @@ import {
   deleteTracesOlderThanDays,
   logger,
   getS3MediaStorageClient,
-  removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
+  removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
   getCurrentSpan,
 } from "@hanzo/shared/src/server";
 import { Job } from "bullmq";
@@ -89,7 +89,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
   );
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
-      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(projectId, cutoffDate)
+      ? removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject(projectId, cutoffDate)
       : Promise.resolve(),
     deleteTracesOlderThanDays(projectId, cutoffDate),
     deleteObservationsOlderThanDays(projectId, cutoffDate),

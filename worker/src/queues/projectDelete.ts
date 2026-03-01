@@ -8,7 +8,7 @@ import {
   getCurrentSpan,
   logger,
   QueueName,
-  removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject,
+  removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject,
   StorageService,
   StorageServiceFactory,
   TQueueJobTypes,
@@ -73,7 +73,7 @@ export const projectDeleteProcessor: Processor = async (
   // Delete project data from ClickHouse first
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
-      ? removeIngestionEventsFromS3AndDeleteClickhouseRefsForProject(projectId, undefined)
+      ? removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject(projectId, undefined)
       : Promise.resolve(),
     deleteTracesByProjectId(projectId),
     deleteObservationsByProjectId(projectId),
