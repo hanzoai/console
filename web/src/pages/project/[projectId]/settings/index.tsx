@@ -42,9 +42,6 @@ type ProjectSettingsPage = {
 export function useProjectSettingsPages(): ProjectSettingsPage[] {
   const router = useRouter();
   const { project, organization } = useQueryProject();
-  const showBillingSettings = useHasEntitlement("cloud-billing");
-  const showRetentionSettings = useHasEntitlement("data-retention");
-  const showProtectedLabelsSettings = useHasEntitlement("prompt-protected-labels");
 
   if (!project || !organization || !router.query.projectId) {
     return [];
@@ -53,27 +50,18 @@ export function useProjectSettingsPages(): ProjectSettingsPage[] {
   return getProjectSettingsPages({
     project,
     organization,
-    showBillingSettings,
-    showRetentionSettings,
     showLLMConnectionsSettings: true,
-    showProtectedLabelsSettings,
   });
 }
 
 export const getProjectSettingsPages = ({
   project,
   organization,
-  showBillingSettings,
-  showRetentionSettings,
   showLLMConnectionsSettings,
-  showProtectedLabelsSettings,
 }: {
   project: { id: string; name: string; metadata: Record<string, unknown> };
   organization: { id: string; name: string; metadata: Record<string, unknown> };
-  showBillingSettings: boolean;
-  showRetentionSettings: boolean;
   showLLMConnectionsSettings: boolean;
-  showProtectedLabelsSettings: boolean;
 }): ProjectSettingsPage[] => [
   {
     title: "General",
@@ -83,7 +71,7 @@ export const getProjectSettingsPages = ({
       <div className="flex flex-col gap-6">
         <HostNameProject />
         <RenameProject />
-        {showRetentionSettings && <ConfigureRetention />}
+        <ConfigureRetention />
         <div>
           <Header title="Debug Information" />
           <JSONView
@@ -155,7 +143,6 @@ export const getProjectSettingsPages = ({
     slug: "protected-prompt-labels",
     cmdKKeywords: ["prompt", "label", "protect", "lock"],
     content: <ProtectedLabelsSettings projectId={project.id} />,
-    show: showProtectedLabelsSettings,
   },
   {
     title: "Scores Configs",
@@ -210,8 +197,8 @@ export const getProjectSettingsPages = ({
   {
     title: "Billing",
     slug: "billing",
-    href: `/organization/${organization.id}/settings/billing`,
-    show: showBillingSettings,
+    href: "https://billing.hanzo.ai",
+    cmdKKeywords: ["payment", "subscription", "plan", "invoice", "usage"],
   },
   {
     title: "Organization Settings",

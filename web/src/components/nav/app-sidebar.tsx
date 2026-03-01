@@ -27,6 +27,13 @@ import { ExternalLink, Grid2X2 } from "lucide-react";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import type { Session } from "next-auth";
 
+const HANZO_APPS = [
+  { label: "Account", href: "https://hanzo.id/account" },
+  { label: "Billing", href: "https://billing.hanzo.ai" },
+  { label: "Chat", href: "https://chat.hanzo.ai" },
+  { label: "Platform", href: "https://platform.hanzo.ai" },
+];
+
 type AppSidebarProps = {
   session?: Session;
   navItems: {
@@ -51,8 +58,23 @@ export function AppSidebar({ session, navItems, secondaryNavItems, userNavProps,
   return (
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
-        <div className="flex min-h-9 items-center gap-2 py-2 pl-2 pr-0 group-data-[collapsible=icon]:p-3">
+        <div className="flex min-h-9 items-center justify-between gap-2 py-2 pl-2 pr-1 group-data-[collapsible=icon]:p-3">
           <HanzoLogo version />
+          {/* App switcher — hidden when sidebar is icon-only */}
+          <div className="hidden items-center gap-0.5 group-data-[collapsible=icon]:hidden md:flex">
+            {HANZO_APPS.map((app) => (
+              <a
+                key={app.label}
+                href={app.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/50 transition-colors hover:bg-accent hover:text-muted-foreground"
+                title={app.label}
+              >
+                {app.label}
+              </a>
+            ))}
+          </div>
         </div>
         <div className="h-1 flex-1 border-b" />
         {organizations.length > 0 && (

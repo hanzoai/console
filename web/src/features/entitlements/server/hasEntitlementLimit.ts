@@ -10,31 +10,14 @@ type HasEntitlementLimitParams = {
 
 /**
  * Get the limit for a specific entitlement based on the session user (to be used server-side).
- * @returns false if unlimited, or a number representing the limit
+ * @returns false if unlimited — all limits removed, no license gating.
  */
-export const hasEntitlementLimit = (p: HasEntitlementLimitParams): number | false => {
-  if (p.sessionUser.admin) return false; // Admins have unlimited access
-
-  const org =
-    "projectId" in p
-      ? p.sessionUser.organizations.find((org) => org.projects.some((proj) => proj.id === p.projectId))
-      : p.sessionUser.organizations.find((org) => org.id === p.orgId);
-
-  const plan = org?.plan ?? "cloud:free";
-  return hasEntitlementLimitBasedOnPlan({
-    plan,
-    entitlementLimit: p.entitlementLimit,
-  });
+export const hasEntitlementLimit = (_p: HasEntitlementLimitParams): number | false => {
+  return false;
 };
 
-export const hasEntitlementLimitBasedOnPlan = ({
-  plan,
-  entitlementLimit,
-}: {
-  plan: Plan | null;
-  entitlementLimit: EntitlementLimit;
-}) => {
-  return entitlementAccess[plan ?? "cloud:free"].entitlementLimits[entitlementLimit];
+export const hasEntitlementLimitBasedOnPlan = (_p: { plan: Plan | null; entitlementLimit: EntitlementLimit }) => {
+  return false;
 };
 
 /**

@@ -1,26 +1,7 @@
-import { env, type SharedEnv } from "../../../env";
-
 /**
- * Check if enterprise EE license is available.
- * Returns true for:
- * - Hanzo Cloud (any region)
- * - Self-hosted with enterprise license key (starts with "hanzo_ee_")
- *
- * Note: Pro tier (hanzo_pro_*) does NOT count as enterprise.
+ * Enterprise license check — always returns true.
+ * No license gating in Hanzo Console.
  */
-export function isEnterpriseLicenseAvailable(envOverride?: SharedEnv): boolean {
-  const e = envOverride ?? env;
-
-  // Hanzo Cloud always has enterprise features
-  if (e.NEXT_PUBLIC_HANZO_CLOUD_REGION !== undefined) {
-    return true;
-  }
-
-  // Self-hosted: must have enterprise license key (not pro)
-  const licenseKey = e.HANZO_EE_LICENSE_KEY;
-  if (licenseKey && licenseKey.startsWith("hanzo_ee_")) {
-    return true;
-  }
-
-  return false;
+export function isEnterpriseLicenseAvailable(): boolean {
+  return true;
 }

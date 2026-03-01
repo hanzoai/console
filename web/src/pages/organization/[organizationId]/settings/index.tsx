@@ -8,18 +8,13 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { SettingsDangerZone } from "@/src/components/SettingsDangerZone";
 import { DeleteOrganizationButton } from "@/src/features/organizations/components/DeleteOrganizationButton";
-import { BillingSettings } from "@/src/ee/features/billing/components/BillingSettings";
-import { useHasEntitlement, usePlan } from "@/src/features/entitlements/hooks";
 import ContainerPage from "@/src/components/layouts/container-page";
-import { SSOSettings } from "@/src/ee/features/sso-settings/components/SSOSettings";
-import { isCloudPlan } from "@hanzo/shared";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { ApiKeyList } from "@/src/features/public-api/components/ApiKeyList";
 import AIFeatureSwitch from "@/src/features/organizations/components/AIFeatureSwitch";
-import { useIsCloudBillingAvailable } from "@/src/ee/features/billing/utils/isCloudBilling";
-import { env } from "@/src/env.mjs";
 import { OrgAuditLogsSettingsPage } from "@/src/ee/features/audit-log-viewer/OrgAuditLogsSettingsPage";
 import { KmsOrgSettings } from "@/src/features/kms/components/KmsOrgSettings";
+import { env } from "@/src/env.mjs";
 
 type OrganizationSettingsPage = {
   title: string;
@@ -30,36 +25,16 @@ type OrganizationSettingsPage = {
 
 export function useOrganizationSettingsPages(): OrganizationSettingsPage[] {
   const { organization } = useQueryProjectOrOrganization();
-  const showBillingSettings = useHasEntitlement("cloud-billing");
-  const showOrgApiKeySettings = useHasEntitlement("admin-api");
-  const showAuditLogs = useHasEntitlement("audit-logs");
-  const plan = usePlan();
-  const isConsoleCloud = isCloudPlan(plan) ?? false;
-  const isCloudBillingAvailable = useIsCloudBillingAvailable();
 
   if (!organization) return [];
 
-  return getOrganizationSettingsPages({
-    organization,
-    showBillingSettings: showBillingSettings && isCloudBillingAvailable,
-    showOrgApiKeySettings,
-    showAuditLogs,
-    isConsoleCloud,
-  });
+  return getOrganizationSettingsPages({ organization });
 }
 
 export const getOrganizationSettingsPages = ({
   organization,
-  showBillingSettings,
-  showOrgApiKeySettings,
-  showAuditLogs,
-  isConsoleCloud,
 }: {
   organization: { id: string; name: string; metadata: Record<string, unknown> };
-  showBillingSettings: boolean;
-  showOrgApiKeySettings: boolean;
-  showAuditLogs: boolean;
-  isConsoleCloud: boolean;
 }): OrganizationSettingsPage[] => [
   {
     title: "General",
@@ -103,7 +78,6 @@ export const getOrganizationSettingsPages = ({
         <ApiKeyList entityId={organization.id} scope="organization" />
       </div>
     ),
-    show: showOrgApiKeySettings,
   },
   {
     title: "Members",
@@ -126,21 +100,12 @@ export const getOrganizationSettingsPages = ({
     slug: "audit-logs",
     cmdKKeywords: ["audit", "logs", "history", "changes"],
     content: <OrgAuditLogsSettingsPage orgId={organization.id} />,
-    show: showAuditLogs,
   },
   {
     title: "Billing",
     slug: "billing",
-    cmdKKeywords: ["payment", "subscription", "plan", "invoice"],
-    content: <BillingSettings />,
-    show: showBillingSettings,
-  },
-  {
-    title: "SSO",
-    slug: "sso",
-    cmdKKeywords: ["sso", "login", "auth", "okta", "saml", "azure"],
-    content: <SSOSettings />,
-    show: isConsoleCloud,
+    cmdKKeywords: ["payment", "subscription", "plan", "invoice", "usage"],
+    href: "https://billing.hanzo.ai",
   },
   {
     title: "KMS",
