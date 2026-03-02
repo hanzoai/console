@@ -57,6 +57,8 @@ import { botRouter } from "@/src/features/bots/server/botRouter";
 import { platformRouter } from "@/src/features/platform/server/platformRouter";
 import { explorerRouter } from "@/src/features/explorer/server/explorerRouter";
 import { infrastructureRouter } from "@/src/features/infrastructure/server/infrastructureRouter";
+import { searchRouter } from "@/src/features/search/server/router";
+import { vectorRouter } from "@/src/features/vector/server/router";
 
 /**
  * This is the primary router for your server.
@@ -122,6 +124,8 @@ export const appRouter = createTRPCRouter({
   platform: platformRouter,
   explorer: explorerRouter,
   infrastructure: infrastructureRouter,
+  search: searchRouter,
+  vector: vectorRouter,
 });
 
 // export type definition of API

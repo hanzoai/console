@@ -34,6 +34,9 @@ import {
   Workflow,
   Boxes,
   HardDrive,
+  FileText,
+  Key,
+  Layers,
 } from "lucide-react";
 import { type ReactNode } from "react";
 import { type Entitlement } from "@/src/features/entitlements/constants/entitlements";
@@ -57,6 +60,7 @@ export enum RouteGroup {
   Observability = "Observability",
   PromptManagement = "Prompt Management",
   Evaluation = "Evaluation",
+  SearchAI = "Search & AI",
   Agents = "Agents",
   Bots = "Bots",
   KMS = "KMS",
@@ -187,6 +191,49 @@ export const ROUTES: Route[] = [
     icon: Database,
     productModule: "datasets",
     group: RouteGroup.Evaluation,
+    section: RouteSection.Main,
+  },
+  // Search & AI
+  {
+    title: "Search",
+    pathname: `/project/[projectId]/search`,
+    icon: Search,
+    group: RouteGroup.SearchAI,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Indexes",
+    pathname: `/project/[projectId]/search/indexes`,
+    icon: FileText,
+    group: RouteGroup.SearchAI,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Search Keys",
+    pathname: `/project/[projectId]/search/keys`,
+    icon: Key,
+    group: RouteGroup.SearchAI,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Search Playground",
+    pathname: `/project/[projectId]/search/playground`,
+    icon: TerminalIcon,
+    group: RouteGroup.SearchAI,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Vector",
+    pathname: `/project/[projectId]/vector`,
+    icon: Layers,
+    group: RouteGroup.SearchAI,
+    section: RouteSection.Main,
+  },
+  {
+    title: "Collections",
+    pathname: `/project/[projectId]/vector/collections`,
+    icon: Database,
+    group: RouteGroup.SearchAI,
     section: RouteSection.Main,
   },
   // Agent Hub
