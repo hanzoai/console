@@ -232,6 +232,7 @@ export const projectsRouter = createTRPCRouter({
       const project = await ctx.prisma.project.findUnique({
         where: {
           id: input.projectId,
+          orgId: ctx.session.orgId,
           deletedAt: null,
         },
       });

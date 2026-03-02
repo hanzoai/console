@@ -13,7 +13,7 @@ const denyOnHanzoCloud = () => {
 };
 
 export const backgroundMigrationsRouter = createTRPCRouter({
-  all: authenticatedProcedure.query(async ({ ctx }) => {
+  all: adminProcedure.query(async ({ ctx }) => {
     denyOnHanzoCloud();
     const backgroundMigrations = await ctx.prisma.backgroundMigration.findMany({
       orderBy: {
@@ -23,7 +23,7 @@ export const backgroundMigrationsRouter = createTRPCRouter({
 
     return { migrations: backgroundMigrations };
   }),
-  status: authenticatedProcedure.query(async ({ ctx }) => {
+  status: adminProcedure.query(async ({ ctx }) => {
     denyOnHanzoCloud();
     const backgroundMigrations = await ctx.prisma.backgroundMigration.findMany({
       orderBy: {
