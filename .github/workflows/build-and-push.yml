@@ -2,122 +2,313 @@ name: Build and Push Console
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     tags:
       - 'v*'
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  # Web image: ghcr.io/hanzoai/console:latest
-  # Worker image: ghcr.io/hanzoai/console-worker:latest
   WEB_IMAGE: ${{ github.repository_owner }}/console
   WORKER_IMAGE: ${{ github.repository_owner }}/console-worker
 
 jobs:
-  build-web:
-    runs-on: ubuntu-latest
+  # ── Web image: amd64 ──────────────────────────────────────────────
+  build-web-amd64:
+    runs-on: hanzo-build
     permissions:
       contents: read
       packages: write
-
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          driver-opts: network=host
 
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
 
-    - name: Build and push Web image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./web/Dockerfile
-        platforms: linux/amd64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        build-args: |
-          NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
-          NEXT_PUBLIC_HANZO_CLOUD_REGION=US
+      - name: Build and push amd64
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./web/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}-cache:amd64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}-cache:amd64,mode=max
+          provenance: false
+          build-args: |
+            NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+            NEXT_PUBLIC_HANZO_CLOUD_REGION=US
 
-  build-worker:
-    runs-on: ubuntu-latest
+  # ── Web image: arm64 ──────────────────────────────────────────────
+  build-web-arm64:
+    runs-on: hanzo-build-arm64
     permissions:
       contents: read
       packages: write
-
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
 
-    - name: Build and push Worker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./worker/Dockerfile
-        platforms: linux/amd64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Build and push arm64
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./web/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}-cache:arm64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}-cache:arm64,mode=max
+          provenance: false
+          build-args: |
+            NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+            NEXT_PUBLIC_HANZO_CLOUD_REGION=US
 
+  # ── Web image: multi-platform manifest ────────────────────────────
+  create-web-manifest:
+    runs-on: hanzo-build
+    permissions:
+      contents: read
+      packages: write
+    needs: [build-web-amd64, build-web-arm64]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for manifest
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Create and push manifest
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            ${{ needs.build-web-amd64.outputs.image-digest }} \
+            ${{ needs.build-web-arm64.outputs.image-digest }}
+        env:
+          DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
+
+  # ── Worker image: amd64 ───────────────────────────────────────────
+  build-worker-amd64:
+    runs-on: hanzo-build
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          driver-opts: network=host
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push amd64
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./worker/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}-cache:amd64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}-cache:amd64,mode=max
+          provenance: false
+
+  # ── Worker image: arm64 ───────────────────────────────────────────
+  build-worker-arm64:
+    runs-on: hanzo-build-arm64
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push arm64
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./worker/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}-cache:arm64
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}-cache:arm64,mode=max
+          provenance: false
+
+  # ── Worker image: multi-platform manifest ─────────────────────────
+  create-worker-manifest:
+    runs-on: hanzo-build
+    permissions:
+      contents: read
+      packages: write
+    needs: [build-worker-amd64, build-worker-arm64]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for manifest
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Create and push manifest
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            ${{ needs.build-worker-amd64.outputs.image-digest }} \
+            ${{ needs.build-worker-arm64.outputs.image-digest }}
+        env:
+          DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
+
+  # ── Deploy notification ───────────────────────────────────────────
   deploy:
-    needs: [build-web, build-worker]
-    runs-on: ubuntu-latest
+    needs: [create-web-manifest, create-worker-manifest]
+    runs-on: hanzo-build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
     steps:
-    - name: Deploy notification
-      run: |
-        echo "Console images deployed:"
-        echo "- Web: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest"
-        echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest"
+      - name: Deploy notification
+        run: |
+          echo "Console multi-arch images deployed:"
+          echo "- Web:    ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest (amd64+arm64)"
+          echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest (amd64+arm64)"
