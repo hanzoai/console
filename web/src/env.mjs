@@ -378,7 +378,7 @@ export const env = createEnv({
                 const [email, orgId] = pair.trim().split(":");
                 return email && orgId ? { email: email.trim(), orgId: orgId.trim() } : null;
               })
-              .filter((x): x is { email: string; orgId: string } => x !== null)
+              .filter((x) => x !== null)
           : undefined,
       ),
     HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT: z.coerce
