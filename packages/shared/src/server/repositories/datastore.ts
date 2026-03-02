@@ -378,12 +378,12 @@ export async function queryDatastore<T>(opts: {
         return (await res.json<T>()).data.map(handleExceptionRow);
       },
       {
-        numOfAttempts: env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS,
+        numOfAttempts: env.DATASTORE_QUERY_MAX_ATTEMPTS,
         retry: (error: Error, attemptNumber: number) => {
           const shouldRetry = isRetryableError(error);
           if (shouldRetry) {
             logger.warn(
-              `Datastore query failed with retryable error (attempt ${attemptNumber}/${env.HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS}): ${error.message}`,
+              `Datastore query failed with retryable error (attempt ${attemptNumber}/${env.DATASTORE_QUERY_MAX_ATTEMPTS}): ${error.message}`,
               {
                 error: error.message,
                 attemptNumber,

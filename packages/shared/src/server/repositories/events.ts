@@ -31,12 +31,7 @@ import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
 import { eventsTableNativeUiColumnDefinitions, eventsTableUiColumnDefinitions } from "../tableMappings/mapEventsTable";
 import { tracesTableUiColumnDefinitions } from "../tableMappings/mapTracesTable";
 import { applyInputOutputRendering, DEFAULT_RENDERING_PROPS, RenderingProps } from "../utils/rendering";
-import {
-  commandDatastore,
-  parseDatastoreUTCDateTimeFormat,
-  queryDatastore,
-  queryDatastoreStream,
-} from "./datastore";
+import { commandDatastore, parseDatastoreUTCDateTimeFormat, queryDatastore, queryDatastoreStream } from "./datastore";
 import { ObservationRecordReadType, TraceRecordReadType } from "./definitions";
 import type { AnalyticsObservationEvent } from "../analytics-integrations/types";
 import { ObservationsTableQueryResult, ObservationTableQuery } from "./observations";
@@ -1289,7 +1284,7 @@ export const updateEvents = async (
     ...updates,
   };
 
-  const useLightweightUpdate = env.CLICKHOUSE_USE_LIGHTWEIGHT_UPDATE === "true";
+  const useLightweightUpdate = env.DATASTORE_USE_LIGHTWEIGHT_UPDATE === "true";
 
   const updateOpts = (table: string) => ({
     query: useLightweightUpdate
@@ -1965,7 +1960,7 @@ export const deleteEventsByTraceIds = async (projectId: string, traceIds: string
     `,
     params: { projectId, traceIds },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1998,7 +1993,7 @@ export const deleteEventsByTraceIds = async (projectId: string, traceIds: string
     query: deleteQuery(table),
     params: deleteParams,
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -2053,7 +2048,7 @@ export const deleteEventsByProjectId = async (projectId: string): Promise<boolea
     query: `DELETE FROM ${table} WHERE project_id = {projectId: String}`,
     params: { projectId },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: { feature: "tracing", type: table, kind: "delete", projectId },
     datastoreSettings: { send_logs_level: "trace" as const },
@@ -2163,7 +2158,7 @@ export const deleteEventsOlderThanDays = async (projectId: string, beforeDate: D
       cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: { feature: "tracing", type: table, kind: "delete", projectId },
   });
@@ -2500,7 +2495,7 @@ export const getEventsForBlobStorageExport = function (projectId: string, minTim
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 };
@@ -2549,7 +2544,7 @@ export const getEventsForAnalyticsIntegrations = async function* (
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 

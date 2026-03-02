@@ -12,16 +12,16 @@ then
     exit 1
 fi
 
-# Ensure CLICKHOUSE_DB is set
-if [ -z "${CLICKHOUSE_DB}" ]; then
-    export CLICKHOUSE_DB="default"
+# Ensure DATASTORE_DB is set
+if [ -z "${DATASTORE_DB}" ]; then
+    export DATASTORE_DB="default"
 fi
 
 # Construct the database URL
-if [ "$CLICKHOUSE_MIGRATION_SSL" = true ] ; then
-    DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
+if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+    DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
 else
-    DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
+    DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
 fi
 # Execute the drop command
 migrate -source file://clickhouse/migrations -database "$DATABASE_URL" drop

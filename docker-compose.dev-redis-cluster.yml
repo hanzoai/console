@@ -1,14 +1,14 @@
 services:
-  clickhouse:
+  datastore:
     image: docker.io/clickhouse/clickhouse-server:24.3
     user: "101:101"
     environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+      DATASTORE_DB: default
+      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
     volumes:
-      - hanzo_clickhouse_data:/var/lib/clickhouse
-      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/clickhouse
+      - hanzo_datastore_logs:/var/log/clickhouse-server
     ports:
       - 127.0.0.1:8123:8123
       - 127.0.0.1:9000:9000
@@ -128,9 +128,9 @@ services:
 volumes:
   hanzo_postgres_data:
     driver: local
-  hanzo_clickhouse_data:
+  hanzo_datastore_data:
     driver: local
-  hanzo_clickhouse_logs:
+  hanzo_datastore_logs:
     driver: local
   hanzo_minio_data:
     driver: local

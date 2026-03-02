@@ -12,7 +12,7 @@ services:
   #       condition: service_healthy
   #     redis:
   #       condition: service_healthy
-  #     clickhouse:
+  #     datastore:
   #       condition: service_healthy
   #   ports:
   #     - "3000:3000"
@@ -36,11 +36,11 @@ services:
   #     HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
   #     HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
   #     HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
-  #     CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
-  #     CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
-  #     CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-  #     CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
-  #     CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+  #     DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-clickhouse://datastore:9000}
+  #     DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
+  #     DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
+  #     DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+  #     DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
   #     S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
   #     S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-us-east-1}
   #     S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
@@ -77,7 +77,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      clickhouse:
+      datastore:
         condition: service_healthy
     ports:
       - "3030:3030"
@@ -102,11 +102,11 @@ services:
       HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
       HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
       HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
-      CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
-      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
-      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
-      CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+      DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-clickhouse://datastore:9000}
+      DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
+      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+      DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
       S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-us-east-1}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
@@ -130,16 +130,16 @@ services:
     networks:
       - local-dev
 
-  clickhouse:
+  datastore:
     image: clickhouse/clickhouse-server
     user: "101:101"
     environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: clickhouse
-      CLICKHOUSE_PASSWORD: clickhouse
+      DATASTORE_DB: default
+      DATASTORE_USER: clickhouse
+      DATASTORE_PASSWORD: clickhouse
     volumes:
-      - hanzo_clickhouse_data:/var/lib/clickhouse
-      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/clickhouse
+      - hanzo_datastore_logs:/var/log/clickhouse-server
     ports:
       - "8123:8123"
       - "9000:9000"
@@ -210,9 +210,9 @@ services:
 volumes:
   hanzo_postgres_data:
     driver: local
-  hanzo_clickhouse_data:
+  hanzo_datastore_data:
     driver: local
-  hanzo_clickhouse_logs:
+  hanzo_datastore_logs:
     driver: local
   hanzo_minio_data:
     driver: local

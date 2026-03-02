@@ -19,9 +19,9 @@ if [ -z "$DATABASE_URL" ]; then
     fi
 fi
 
-# Check if CLICKHOUSE_URL is not set
-if [ -z "$CLICKHOUSE_URL" ]; then
-    echo "Error: CLICKHOUSE_URL is not configured. Migrating from V2? Check out migration guide: https://hanzo.ai/self-hosting/upgrade-guides/upgrade-v2-to-v3"
+# Check if DATASTORE_URL is not set
+if [ -z "$DATASTORE_URL" ]; then
+    echo "Error: DATASTORE_URL is not configured. Set DATASTORE_URL in your environment variables."
     exit 1
 fi
 
@@ -46,9 +46,9 @@ if [ $status -ne 0 ]; then
     exit $status
 fi
 
-# Execute the Clickhouse migration, except when disabled.
-if [ "$HANZO_AUTO_CLICKHOUSE_MIGRATION_DISABLED" != "true" ]; then
-    # Apply Clickhouse migrations
+# Execute the datastore migration, except when disabled.
+if [ "$DATASTORE_AUTO_MIGRATION_DISABLED" != "true" ]; then
+    # Apply datastore migrations
     cd ./packages/shared
     sh ./clickhouse/scripts/up.sh
     status=$?
@@ -57,7 +57,7 @@ fi
 
 # If migration fails (returns non-zero exit status), exit script with that status
 if [ $status -ne 0 ]; then
-    echo "Applying clickhouse migrations failed. This is mostly caused by the database being unavailable."
+    echo "Applying datastore migrations failed. This is mostly caused by the database being unavailable."
     echo "Exiting..."
     exit $status
 fi

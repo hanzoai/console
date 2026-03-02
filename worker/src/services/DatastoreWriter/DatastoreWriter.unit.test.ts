@@ -28,9 +28,9 @@ vi.mock("../../env", async (importOriginal) => {
   return {
     ...original,
     env: {
-      HANZO_INGESTION_CLICKHOUSE_WRITE_BATCH_SIZE: 100,
-      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: 5000,
-      HANZO_INGESTION_CLICKHOUSE_MAX_ATTEMPTS: 3,
+      DATASTORE_INGESTION_WRITE_BATCH_SIZE: 100,
+      DATASTORE_INGESTION_WRITE_INTERVAL_MS: 5000,
+      DATASTORE_INGESTION_MAX_ATTEMPTS: 3,
     },
   };
 });
@@ -65,9 +65,9 @@ describe("DatastoreWriter", () => {
   });
 
   it("should initialize with correct values", () => {
-    expect(writer.batchSize).toBe(env.HANZO_INGESTION_DATASTORE_WRITE_BATCH_SIZE);
-    expect(writer.writeInterval).toBe(env.HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS);
-    expect(writer.maxAttempts).toBe(env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS);
+    expect(writer.batchSize).toBe(env.DATASTORE_INGESTION_WRITE_BATCH_SIZE);
+    expect(writer.writeInterval).toBe(env.DATASTORE_INGESTION_WRITE_INTERVAL_MS);
+    expect(writer.maxAttempts).toBe(env.DATASTORE_INGESTION_MAX_ATTEMPTS);
   });
 
   it("should add items to the queue", () => {

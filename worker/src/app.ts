@@ -132,7 +132,7 @@ if (env.QUEUE_CONSUMER_TRACE_DELETE_QUEUE_IS_ENABLED === "true") {
     limiter: {
       // Process at most `max` delete jobs per 2 min
       max: env.HANZO_TRACE_DELETE_CONCURRENCY,
-      duration: env.HANZO_DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS,
+      duration: env.DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS,
     },
   });
 }
@@ -143,7 +143,7 @@ if (env.QUEUE_CONSUMER_SCORE_DELETE_QUEUE_IS_ENABLED === "true") {
     limiter: {
       // Process at most `max` delete jobs per 15 seconds
       max: env.HANZO_SCORE_DELETE_CONCURRENCY,
-      duration: env.HANZO_DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS,
+      duration: env.DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS,
     },
   });
 }
@@ -153,7 +153,7 @@ if (env.QUEUE_CONSUMER_DATASET_DELETE_QUEUE_IS_ENABLED === "true") {
     concurrency: env.HANZO_DATASET_DELETE_CONCURRENCY,
     limiter: {
       max: env.HANZO_DATASET_DELETE_CONCURRENCY,
-      duration: env.HANZO_DATASTORE_DATASET_DELETION_CONCURRENCY_DURATION_MS,
+      duration: env.DATASTORE_DATASET_DELETION_CONCURRENCY_DURATION_MS,
     },
   });
 }
@@ -162,9 +162,9 @@ if (env.QUEUE_CONSUMER_PROJECT_DELETE_QUEUE_IS_ENABLED === "true") {
   WorkerManager.register(QueueName.ProjectDelete, projectDeleteProcessor, {
     concurrency: env.HANZO_PROJECT_DELETE_CONCURRENCY,
     limiter: {
-      // Process at most `max` delete jobs per HANZO_CLICKHOUSE_PROJECT_DELETION_CONCURRENCY_DURATION_MS (default 10 min)
+      // Process at most `max` delete jobs per DATASTORE_PROJECT_DELETION_CONCURRENCY_DURATION_MS (default 10 min)
       max: env.HANZO_PROJECT_DELETE_CONCURRENCY,
-      duration: env.HANZO_DATASTORE_PROJECT_DELETION_CONCURRENCY_DURATION_MS,
+      duration: env.DATASTORE_PROJECT_DELETION_CONCURRENCY_DURATION_MS,
     },
   });
 }

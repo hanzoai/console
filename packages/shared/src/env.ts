@@ -48,44 +48,24 @@ const EnvSchema = z.object({
   HANZO_CACHE_MODEL_MATCH_TTL_SECONDS: z.coerce.number().default(86400), // 24 hours
   HANZO_CACHE_PROMPT_ENABLED: z.enum(["true", "false"]).default("true"),
   HANZO_CACHE_PROMPT_TTL_SECONDS: z.coerce.number().default(300), // 5 minutes
-  // DATASTORE_* vars take precedence; CLICKHOUSE_* kept for backward compatibility.
+  // Datastore (analytics database) configuration
   DATASTORE_URL: z.string().url().optional(),
   DATASTORE_READ_ONLY_URL: z.string().url().optional(),
   DATASTORE_EVENTS_READ_ONLY_URL: z.string().url().optional(),
-  DATASTORE_CLUSTER_NAME: z.string().optional(),
-  DATASTORE_DB: z.string().optional(),
-  DATASTORE_USER: z.string().optional(),
-  DATASTORE_PASSWORD: z.string().optional(),
-  DATASTORE_KEEP_ALIVE_IDLE_SOCKET_TTL: z.coerce.number().int().optional(),
-  DATASTORE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().optional(),
+  DATASTORE_CLUSTER_NAME: z.string().default("default"),
+  DATASTORE_DB: z.string().default("default"),
+  DATASTORE_USER: z.string().default("default"),
+  DATASTORE_PASSWORD: z.string().default(""),
+  DATASTORE_KEEP_ALIVE_IDLE_SOCKET_TTL: z.coerce.number().int().default(9000),
+  DATASTORE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
   DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE: z.string().optional(),
   DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS: z.coerce.number().int().optional(),
   DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS: z.coerce.number().int().min(50).optional(),
   DATASTORE_LIGHTWEIGHT_DELETE_MODE: z
     .enum(["alter_update", "lightweight_update", "lightweight_update_force"])
-    .optional(),
-  DATASTORE_USE_LIGHTWEIGHT_UPDATE: z.enum(["true", "false"]).optional(),
-  DATASTORE_UPDATE_PARALLEL_MODE: z.enum(["sync", "async", "auto"]).optional(),
-
-  // Legacy CLICKHOUSE_* vars (backward compatibility — use DATASTORE_* in new deployments)
-  CLICKHOUSE_URL: z.string().url().optional(),
-  CLICKHOUSE_READ_ONLY_URL: z.string().url().optional(),
-  CLICKHOUSE_EVENTS_READ_ONLY_URL: z.string().url().optional(),
-  CLICKHOUSE_CLUSTER_NAME: z.string().default("default"),
-  CLICKHOUSE_DB: z.string().default("default"),
-  CLICKHOUSE_USER: z.string().default("default"),
-  CLICKHOUSE_PASSWORD: z.string().default(""),
-  CLICKHOUSE_KEEP_ALIVE_IDLE_SOCKET_TTL: z.coerce.number().int().default(9000),
-  CLICKHOUSE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
-  // Optional to allow for server-setting fallbacks
-  CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE: z.string().optional(),
-  CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS: z.coerce.number().int().optional(),
-  CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS: z.coerce.number().int().min(50).optional(),
-  CLICKHOUSE_LIGHTWEIGHT_DELETE_MODE: z
-    .enum(["alter_update", "lightweight_update", "lightweight_update_force"])
     .default("alter_update"),
-  CLICKHOUSE_USE_LIGHTWEIGHT_UPDATE: z.enum(["true", "false"]).default("false"),
-  CLICKHOUSE_UPDATE_PARALLEL_MODE: z.enum(["sync", "async", "auto"]).default("auto"),
+  DATASTORE_USE_LIGHTWEIGHT_UPDATE: z.enum(["true", "false"]).default("false"),
+  DATASTORE_UPDATE_PARALLEL_MODE: z.enum(["sync", "async", "auto"]).default("auto"),
 
   HANZO_INGESTION_QUEUE_DELAY_MS: z.coerce.number().nonnegative().default(15_000),
   HANZO_INGESTION_QUEUE_SHARD_COUNT: z.coerce.number().positive().default(1),
@@ -158,8 +138,8 @@ const EnvSchema = z.object({
   HANZO_CUSTOM_SSO_NAME_CLAIM: z.string().default("name"),
   HANZO_CUSTOM_SSO_SUB_CLAIM: z.string().default("sub"),
   HANZO_API_TRACE_OBSERVATIONS_SIZE_LIMIT_BYTES: z.coerce.number().default(80e6), // 80MB
-  HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS: z.coerce.number().default(600_000), // 10 minutes
-  HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().default(3), // Maximum attempts for socket hang up errors
+  DATASTORE_DELETION_TIMEOUT_MS: z.coerce.number().default(600_000), // 10 minutes
+  DATASTORE_QUERY_MAX_ATTEMPTS: z.coerce.number().default(3), // Maximum attempts for socket hang up errors
   HANZO_SKIP_S3_LIST_FOR_OBSERVATIONS_PROJECT_IDS: z.string().optional(),
   HANZO_INGESTION_PROCESSING_SAMPLED_PROJECTS: z
     .string()
@@ -214,7 +194,7 @@ const EnvSchema = z.object({
 
   HANZO_SERVER_SIDE_IO_CHAR_LIMIT: z.coerce.number().int().positive().default(1_000),
 
-  HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000), // 10 minutes
+  DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(600_000), // 10 minutes
 
   HANZO_EVENT_PROPAGATION_WORKER_GLOBAL_CONCURRENCY: z.coerce.number().positive().default(10),
 
@@ -225,7 +205,7 @@ const EnvSchema = z.object({
   // API Performance Flags
   // Whether to add a `FINAL` modifier to the observations CTE in GET /api/public/traces.
   // Can be used to improve performance for self-hosters that are fully on the new OTel SDKs.
-  HANZO_API_CLICKHOUSE_DISABLE_OBSERVATIONS_FINAL: z.enum(["true", "false"]).default("false"),
+  DATASTORE_DISABLE_OBSERVATIONS_FINAL: z.enum(["true", "false"]).default("false"),
   // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
   // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
   HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z.enum(["true", "false"]).default("false"),

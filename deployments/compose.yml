@@ -35,11 +35,11 @@ x-hanzo-env: &hanzo-env
   HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
   HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
   # ClickHouse
-  CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
-  CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
-  CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?CLICKHOUSE_PASSWORD required}
-  CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+  DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-clickhouse://datastore:9000}
+  DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
+  DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
+  DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:?DATASTORE_PASSWORD required}
+  DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
   # S3/MinIO
   S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
   S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
@@ -70,7 +70,7 @@ x-depends-on: &depends-on
     condition: service_healthy
   redis:
     condition: service_healthy
-  clickhouse:
+  datastore:
     condition: service_healthy
 
 services:
@@ -166,7 +166,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  clickhouse:
+  datastore:
     build:
       context: images
       dockerfile: Dockerfile.clickhouse
@@ -174,12 +174,12 @@ services:
     restart: always
     user: "101:101"
     environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?CLICKHOUSE_PASSWORD required}
+      DATASTORE_DB: default
+      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:?DATASTORE_PASSWORD required}
     volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
+      - datastore_data:/var/lib/clickhouse
+      - datastore_logs:/var/log/clickhouse-server
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
       interval: 5s
@@ -222,6 +222,6 @@ services:
 
 volumes:
   postgres_data:
-  clickhouse_data:
-  clickhouse_logs:
+  datastore_data:
+  datastore_logs:
   minio_data:

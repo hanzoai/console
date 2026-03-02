@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Development-only ClickHouse table creation script
+# Development-only table creation script
 # This script is for creating experimental/development tables that are not yet
 # ready to be part of the official migration system.
 #
@@ -15,42 +15,42 @@
 # Load environment variables
 [ -f ../../.env ] && source ../../.env
 
-# Check if CLICKHOUSE_MIGRATION_URL is configured
-if [ -z "${CLICKHOUSE_MIGRATION_URL}" ]; then
-  echo "Error: CLICKHOUSE_MIGRATION_URL is not configured."
-  echo "Please set CLICKHOUSE_MIGRATION_URL in your environment variables."
+# Check if DATASTORE_MIGRATION_URL is configured
+if [ -z "${DATASTORE_MIGRATION_URL}" ]; then
+  echo "Error: DATASTORE_MIGRATION_URL is not configured."
+  echo "Please set DATASTORE_MIGRATION_URL in your environment variables."
   exit 1
 fi
 
-# Check if CLICKHOUSE_USER is set
-if [ -z "${CLICKHOUSE_USER}" ]; then
-  echo "Error: CLICKHOUSE_USER is not set."
-  echo "Please set CLICKHOUSE_USER in your environment variables."
+# Check if DATASTORE_USER is set
+if [ -z "${DATASTORE_USER}" ]; then
+  echo "Error: DATASTORE_USER is not set."
+  echo "Please set DATASTORE_USER in your environment variables."
   exit 1
 fi
 
-# Check if CLICKHOUSE_PASSWORD is set
-if [ -z "${CLICKHOUSE_PASSWORD}" ]; then
-  echo "Error: CLICKHOUSE_PASSWORD is not set."
-  echo "Please set CLICKHOUSE_PASSWORD in your environment variables."
+# Check if DATASTORE_PASSWORD is set
+if [ -z "${DATASTORE_PASSWORD}" ]; then
+  echo "Error: DATASTORE_PASSWORD is not set."
+  echo "Please set DATASTORE_PASSWORD in your environment variables."
   exit 1
 fi
 
-# Ensure CLICKHOUSE_DB is set
-if [ -z "${CLICKHOUSE_DB}" ]; then
-  export CLICKHOUSE_DB="default"
+# Ensure DATASTORE_DB is set
+if [ -z "${DATASTORE_DB}" ]; then
+  export DATASTORE_DB="default"
 fi
 
-# Parse the CLICKHOUSE_MIGRATION_URL to extract host and port
+# Parse the DATASTORE_MIGRATION_URL to extract host and port
 # Expected format: clickhouse://localhost:9000
-if [[ $CLICKHOUSE_MIGRATION_URL =~ ^clickhouse://([^:]+):([0-9]+)$ ]]; then
-  CLICKHOUSE_HOST="${BASH_REMATCH[1]}"
-  CLICKHOUSE_PORT="${BASH_REMATCH[2]}"
-elif [[ $CLICKHOUSE_MIGRATION_URL =~ ^clickhouse://([^:]+)$ ]]; then
-  CLICKHOUSE_HOST="${BASH_REMATCH[1]}"
-  CLICKHOUSE_PORT="9000" # Default native protocol port
+if [[ $DATASTORE_MIGRATION_URL =~ ^clickhouse://([^:]+):([0-9]+)$ ]]; then
+  DATASTORE_HOST="${BASH_REMATCH[1]}"
+  DATASTORE_PORT="${BASH_REMATCH[2]}"
+elif [[ $DATASTORE_MIGRATION_URL =~ ^clickhouse://([^:]+)$ ]]; then
+  DATASTORE_HOST="${BASH_REMATCH[1]}"
+  DATASTORE_PORT="9000" # Default native protocol port
 else
-  echo "Error: Could not parse CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL}"
+  echo "Error: Could not parse DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL}"
   exit 1
 fi
 
@@ -59,17 +59,17 @@ if ! command -v clickhouse &>/dev/null; then
   exit 1
 fi
 
-echo "Creating development tables in ClickHouse..."
+echo "Creating development tables in datastore..."
 
 # Execute the CREATE TABLE statements
 # Add your development tables here using CREATE TABLE IF NOT EXISTS
 
 clickhouse client \
-  --host="${CLICKHOUSE_HOST}" \
-  --port="${CLICKHOUSE_PORT}" \
-  --user="${CLICKHOUSE_USER}" \
-  --password="${CLICKHOUSE_PASSWORD}" \
-  --database="${CLICKHOUSE_DB}" \
+  --host="${DATASTORE_HOST}" \
+  --port="${DATASTORE_PORT}" \
+  --user="${DATASTORE_USER}" \
+  --password="${DATASTORE_PASSWORD}" \
+  --database="${DATASTORE_DB}" \
   --multiquery <<EOF
 
 -- Create observations_batch_staging table for batch processing
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS events
       output_length UInt64 MATERIALIZED lengthUTF8(output),
 
       -- Metadata
-      -- Keep raw JSON to benefit from future ClickHouse improvements.
+      -- Keep raw JSON to benefit from future improvements.
       -- For now, store things as "German Strings" with fast prefix matches based on https://www.uber.com/en-DE/blog/logging/.
       metadata JSON(max_dynamic_paths=0),
       metadata_names Array(String),
@@ -263,21 +263,8 @@ CREATE TABLE IF NOT EXISTS events
       INDEX idx_type type TYPE set(50) GRANULARITY 1,
       INDEX idx_created_at created_at TYPE minmax GRANULARITY 1,
       INDEX idx_updated_at updated_at TYPE minmax GRANULARITY 1,
-
-      -- Full Text Search Indexes (We should try different index sizes, e.g. 2048, 4096, or 8192)
-      -- Add after backfill as they limit backfill throughput performance
-      -- INDEX idx_fts_input_1 input TYPE ngrambf_v1(1, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_2 input TYPE ngrambf_v1(2, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_4 input TYPE ngrambf_v1(4, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_8 input TYPE ngrambf_v1(8, 1024, 1, 0) GRANULARITY 1,
-
-      -- INDEX idx_fts_output_1 output TYPE ngrambf_v1(1, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_2 output TYPE ngrambf_v1(2, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_4 output TYPE ngrambf_v1(4, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_8 output TYPE ngrambf_v1(8, 1024, 1, 0) GRANULARITY 1,
   )
   ENGINE = ReplacingMergeTree(event_ts, is_deleted)
-  -- ENGINE = (Replicated)ReplacingMergeTree(event_ts, is_deleted)
   PARTITION BY toYYYYMM(start_time)
   PRIMARY KEY (project_id, start_time, xxHash32(trace_id))
   ORDER BY (project_id, start_time, xxHash32(trace_id), span_id)
@@ -291,9 +278,6 @@ CREATE TABLE IF NOT EXISTS events
     object_serialization_version='v3',
     object_shared_data_serialization_version='advanced',
     object_shared_data_serialization_version_for_zero_level_parts='map_with_buckets'
-    -- Try without, but re-enable if recent row performance is bad
-    -- min_rows_for_wide_part = 0,
-    -- min_bytes_for_wide_part = 0
   ;
 
 -- Create new events table for development setups.
@@ -404,21 +388,8 @@ CREATE TABLE IF NOT EXISTS events_full
       INDEX idx_session_id session_id TYPE bloom_filter(0.01) GRANULARITY 1,
       INDEX idx_created_at created_at TYPE minmax GRANULARITY 1,
       INDEX idx_updated_at updated_at TYPE minmax GRANULARITY 1,
-
-      -- Full Text Search Indexes (We should try different index sizes, e.g. 2048, 4096, or 8192)
-      -- Add after backfill as they limit backfill throughput performance
-      -- INDEX idx_fts_input_1 input TYPE ngrambf_v1(1, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_2 input TYPE ngrambf_v1(2, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_4 input TYPE ngrambf_v1(4, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_input_8 input TYPE ngrambf_v1(8, 1024, 1, 0) GRANULARITY 1,
-
-      -- INDEX idx_fts_output_1 output TYPE ngrambf_v1(1, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_2 output TYPE ngrambf_v1(2, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_4 output TYPE ngrambf_v1(4, 1024, 1, 0) GRANULARITY 1,
-      -- INDEX idx_fts_output_8 output TYPE ngrambf_v1(8, 1024, 1, 0) GRANULARITY 1,
   )
   ENGINE = ReplacingMergeTree(event_ts, is_deleted)
-  -- ENGINE = (Replicated)ReplacingMergeTree(event_ts, is_deleted)
   PARTITION BY toYYYYMM(start_time)
   PRIMARY KEY (project_id, toStartOfMinute(start_time), xxHash32(trace_id))
   ORDER BY (project_id, toStartOfMinute(start_time), xxHash32(trace_id), span_id, start_time)
@@ -691,11 +662,11 @@ EOF
 echo "Populating development tables with sample data..."
 
 clickhouse client \
-  --host="${CLICKHOUSE_HOST}" \
-  --port="${CLICKHOUSE_PORT}" \
-  --user="${CLICKHOUSE_USER}" \
-  --password="${CLICKHOUSE_PASSWORD}" \
-  --database="${CLICKHOUSE_DB}" \
+  --host="${DATASTORE_HOST}" \
+  --port="${DATASTORE_PORT}" \
+  --user="${DATASTORE_USER}" \
+  --password="${DATASTORE_PASSWORD}" \
+  --database="${DATASTORE_DB}" \
   --multiquery <<EOF
   SET type_json_skip_duplicated_paths = 1;
   TRUNCATE events;

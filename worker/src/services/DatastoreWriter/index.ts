@@ -32,9 +32,9 @@ export class DatastoreWriter {
   intervalId: NodeJS.Timeout | null = null;
 
   private constructor() {
-    this.batchSize = env.HANZO_INGESTION_DATASTORE_WRITE_BATCH_SIZE;
-    this.writeInterval = env.HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS;
-    this.maxAttempts = env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS;
+    this.batchSize = env.DATASTORE_INGESTION_WRITE_BATCH_SIZE;
+    this.writeInterval = env.DATASTORE_INGESTION_WRITE_INTERVAL_MS;
+    this.maxAttempts = env.DATASTORE_INGESTION_MAX_ATTEMPTS;
 
     this.isIntervalFlushInProgress = false;
 
@@ -274,7 +274,7 @@ export class DatastoreWriter {
             records: recordsToWrite,
           }),
         {
-          numOfAttempts: env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS,
+          numOfAttempts: env.DATASTORE_INGESTION_MAX_ATTEMPTS,
           retry: (error: Error, attemptNumber: number) => {
             const isRetryable = this.isRetryableError(error);
             const isSizeError = this.isSizeError(error);
@@ -282,7 +282,7 @@ export class DatastoreWriter {
 
             if (isRetryable) {
               logger.warn(
-                `ClickHouse Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): ${error.message}`,
+                `ClickHouse Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): ${error.message}`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -295,7 +295,7 @@ export class DatastoreWriter {
               return true;
             } else if (isStringLengthError) {
               logger.warn(
-                `ClickHouse Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): Splitting batch and retrying`,
+                `ClickHouse Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Splitting batch and retrying`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -323,7 +323,7 @@ export class DatastoreWriter {
               return true;
             } else if (isSizeError && !hasBeenTruncated) {
               logger.warn(
-                `ClickHouse Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
+                `ClickHouse Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
                 {
                   error: error.message,
                   attemptNumber,

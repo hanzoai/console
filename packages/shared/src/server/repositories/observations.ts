@@ -1085,7 +1085,7 @@ export const deleteObservationsByTraceIds = async (projectId: string, traceIds: 
     `,
     params: { projectId, traceIds },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1116,7 +1116,7 @@ export const deleteObservationsByTraceIds = async (projectId: string, traceIds: 
       maxTs: preflight[0].max_ts,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1170,7 +1170,7 @@ export const deleteObservationsByProjectId = async (projectId: string): Promise<
     query,
     params: { projectId },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags,
   });
@@ -1222,7 +1222,7 @@ export const deleteObservationsOlderThanDays = async (projectId: string, beforeD
       cutoffDate: convertDateToDatastoreDateTime(beforeDate),
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "tracing",
@@ -1624,7 +1624,7 @@ export const getObservationsForBlobStorageExport = function (
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 
@@ -1688,7 +1688,7 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
       clickhouse_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
