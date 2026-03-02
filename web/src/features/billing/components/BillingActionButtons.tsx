@@ -14,8 +14,7 @@ export const BillingActionButtons = () => {
   const { setOpen } = useSupportDrawer();
 
   const activeSubscriptionId =
-    organization?.cloudConfig?.billing?.activeSubscriptionId ??
-    organization?.cloudConfig?.stripe?.activeSubscriptionId;
+    organization?.cloudConfig?.billing?.activeSubscriptionId ?? organization?.cloudConfig?.stripe?.activeSubscriptionId;
 
   // Show pricing page button
   const shouldDisableChangePlan = useMemo(() => {
@@ -47,7 +46,7 @@ export const BillingActionButtons = () => {
         {/* Always show – also for people who are currently on hobby plan */}
         <BillingSwitchPlanDialog disabled={shouldDisableChangePlan} />
 
-        {activeSubscriptionId && (
+        {activeSubscriptionId && organization && (
           <>
             <BillingPortalButton orgId={organization.id} title="Update Billing Details" variant="secondary" />
             <SubscriptionCancellationButton orgId={organization.id} variant="secondary" />
