@@ -191,9 +191,7 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
       .filter((p) => org.projectIds.includes(p.projectId))
       .reduce((sum, p) => sum + p.count, 0);
     const countEvents = countScores + countTraces + countObservations;
-    logger.info(
-      `[CLOUD USAGE METERING] Job for org ${org.id} - ${customerId} customer id - ${countEvents} events`,
-    );
+    logger.info(`[CLOUD USAGE METERING] Job for org ${org.id} - ${customerId} customer id - ${countEvents} events`);
     if (countEvents > 0) {
       await backOff(
         async () =>

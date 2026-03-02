@@ -2,7 +2,6 @@ import { IBackgroundMigration } from "./IBackgroundMigration";
 import { logger } from "@hanzo/shared/src/server";
 import { parseArgs } from "node:util";
 import { prisma } from "@hanzo/shared/src/db";
-import { parseDbOrg } from "@hanzo/shared";
 import { env } from "../env";
 
 /**

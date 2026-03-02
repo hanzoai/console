@@ -1,7 +1,6 @@
 import Header from "@/src/components/layouts/header";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { AuditLogsTable } from "@/src/features/audit-log-viewer/AuditLogsTable";
-import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 
 export function OrgAuditLogsSettingsPage(props: { orgId: string }) {
@@ -9,13 +8,8 @@ export function OrgAuditLogsSettingsPage(props: { orgId: string }) {
     organizationId: props.orgId,
     scope: "auditLogs:read",
   });
-  const hasEntitlement = useHasEntitlement("audit-logs");
 
-  const body = !hasEntitlement ? (
-    <p className="text-sm text-muted-foreground">
-      Audit logs are an Enterprise feature. Upgrade your plan to track all changes made to your organization.
-    </p>
-  ) : !hasAccess ? (
+  const body = !hasAccess ? (
     <Alert>
       <AlertTitle>Access Denied</AlertTitle>
       <AlertDescription>Contact your organization administrator to request access.</AlertDescription>
