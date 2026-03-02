@@ -27,13 +27,13 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_EVENT_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_EVENT_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3StorageServiceClient;
@@ -210,8 +210,8 @@ export const processEventBatch = async (
         // That way we batch updates from the same invocation into a single file and reduce
         // write operations on S3.
         const { data, key, type, eventBodyId } = sortedBatchByEventBodyId[id];
-        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getDatastoreEntityType(type)}/${eventBodyId}/${key}.json`;
-        return getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, data);
+        const bucketPath = `${env.S3_EVENT_UPLOAD_PREFIX}${authCheck.scope.projectId}/${getDatastoreEntityType(type)}/${eventBodyId}/${key}.json`;
+        return getS3StorageServiceClient(env.S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, data);
       }),
     );
     results.forEach((result) => {

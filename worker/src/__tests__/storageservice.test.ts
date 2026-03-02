@@ -9,27 +9,27 @@ describe("StorageService", () => {
   let storageService: StorageService;
   let storageServiceWithExternalEndpoint: StorageService;
   let s3Prefix: string;
-  const baseUrl = `${env.HANZO_S3_EVENT_UPLOAD_ENDPOINT}/${env.HANZO_S3_EVENT_UPLOAD_BUCKET}`;
+  const baseUrl = `${env.S3_EVENT_UPLOAD_ENDPOINT}/${env.S3_EVENT_UPLOAD_BUCKET}`;
   const externalEndpoint = "https://external-endpoint.example.com";
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.S3_EVENT_UPLOAD_BUCKET,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
 
     storageServiceWithExternalEndpoint = StorageServiceFactory.getInstance({
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: env.S3_EVENT_UPLOAD_BUCKET,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
       externalEndpoint,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -130,7 +130,7 @@ describe("StorageService", () => {
     const signedUrl = await storageService.getSignedUrl(fileName, expiresInSeconds);
 
     // Then
-    expect(signedUrl).toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(signedUrl).toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
     expect(signedUrl).not.toContain("external-endpoint.example.com");
   });
 
@@ -152,7 +152,7 @@ describe("StorageService", () => {
     const signedUrl = await storageService.getSignedUrl(fileName, expiresInSeconds);
 
     // Then
-    expect(signedUrl).toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(signedUrl).toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
     expect(signedUrl).not.toContain("external-endpoint.example.com");
   });
 
@@ -175,7 +175,7 @@ describe("StorageService", () => {
 
     // Then
     expect(signedUrl).toContain("external-endpoint.example.com");
-    expect(signedUrl).not.toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(signedUrl).not.toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
   });
 
   test("getSignedUploadUrl should return URL with internal endpoint when no external endpoint is configured", async () => {
@@ -196,7 +196,7 @@ describe("StorageService", () => {
     });
 
     // Then
-    expect(signedUrl).toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(signedUrl).toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
     expect(signedUrl).not.toContain("external-endpoint.example.com");
   });
 
@@ -219,7 +219,7 @@ describe("StorageService", () => {
 
     // Then
     expect(signedUrl).toContain("external-endpoint.example.com");
-    expect(signedUrl).not.toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(signedUrl).not.toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
   });
 
   test("uploadWithSignedUrl should return signed URL with external endpoint when configured", async () => {
@@ -239,7 +239,7 @@ describe("StorageService", () => {
 
     // Then
     expect(result.signedUrl).toContain("external-endpoint.example.com");
-    expect(result.signedUrl).not.toContain(env.HANZO_S3_EVENT_UPLOAD_ENDPOINT);
+    expect(result.signedUrl).not.toContain(env.S3_EVENT_UPLOAD_ENDPOINT);
 
     // Verify the file was uploaded correctly
     const file = await storageService.download(fileName);

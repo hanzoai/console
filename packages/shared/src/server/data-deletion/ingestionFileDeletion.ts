@@ -57,7 +57,7 @@ async function removeIngestionEventsFromS3AndDeleteClickhouseRefs(p: {
   let batch = 0;
 
   let blobStorageRefs: BlobStorageFileRefRecordReadType[] = [];
-  const eventStorageClient = getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET);
+  const eventStorageClient = getS3EventStorageClient(env.S3_EVENT_UPLOAD_BUCKET);
   for await (const eventLog of stream) {
     blobStorageRefs.push(eventLog);
     if (blobStorageRefs.length > 500) {

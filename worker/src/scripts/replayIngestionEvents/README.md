@@ -35,7 +35,7 @@ Create a suitable .env file in your repository root with Redis connection settin
 ```
 # Relevant
 REDIS_CONNECTION_STRING=redis://:myredissecret@127.0.0.1:6379
-HANZO_S3_EVENT_UPLOAD_BUCKET=<bucket-name>
+S3_EVENT_UPLOAD_BUCKET=<bucket-name>
 
 # Necessary for parsing the file and starting the script
 CLICKHOUSE_URL=http://localhost:8123

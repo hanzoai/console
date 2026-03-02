@@ -51,7 +51,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
   const cutoffDate = new Date(Date.now() - currentRetention * 24 * 60 * 60 * 1000);
 
   // Delete media files if bucket is configured
-  if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
+  if (env.S3_MEDIA_UPLOAD_BUCKET) {
     logger.info(`[Data Retention] Deleting media files older than ${currentRetention} days for project ${projectId}`);
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
@@ -68,7 +68,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
         },
       },
     });
-    const mediaStorageClient = getS3MediaStorageClient(env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
+    const mediaStorageClient = getS3MediaStorageClient(env.S3_MEDIA_UPLOAD_BUCKET);
     // Delete from Cloud Storage
     await mediaStorageClient.deleteFiles(mediaFilesToDelete.map((f) => f.bucketPath));
     // Delete from postgres. We should automatically remove the corresponding traceMedia and observationMedia

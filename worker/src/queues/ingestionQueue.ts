@@ -56,8 +56,8 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
           entity_type: getClickhouseEntityType(job.data.payload.data.type),
           entity_id: job.data.payload.data.eventBodyId,
           event_id: job.data.payload.data.fileKey,
-          bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-          bucket_path: `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
+          bucket_name: env.S3_EVENT_UPLOAD_BUCKET,
+          bucket_path: `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),
           event_ts: new Date().getTime(),
@@ -103,7 +103,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
         }
       }
 
-      const s3Client = getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET);
+      const s3Client = getS3EventStorageClient(env.S3_EVENT_UPLOAD_BUCKET);
 
       logger.debug(`Processing ingestion event ${enableRedirectToSecondaryQueue ? "" : "secondary"}`, {
         projectId: job.data.payload.authCheck.scope.projectId,
@@ -120,7 +120,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
       const shouldSkipS3List =
         // The producer sets skipS3List to true if it's an OTel observation
         job.data.payload.data.skipS3List && job.data.payload.data.fileKey;
-      const s3Prefix = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`;
+      const s3Prefix = `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`;
 
       let totalS3DownloadSizeBytes = 0;
 
@@ -157,7 +157,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
           return Array.isArray(parsedFile) ? parsedFile : [parsedFile];
         };
 
-        const S3_CONCURRENT_READS = env.HANZO_S3_CONCURRENT_READS;
+        const S3_CONCURRENT_READS = env.S3_CONCURRENT_READS;
         const batches = chunk(eventFiles, S3_CONCURRENT_READS);
         for (const batch of batches) {
           const batchEvents = await Promise.all(batch.map(downloadAndParseFile));

@@ -24,7 +24,7 @@ vi.mock("../../env", async () => {
   return {
     env: {
       ...(actual as { env: object }).env,
-      HANZO_S3_MEDIA_UPLOAD_BUCKET: "test-bucket",
+      S3_MEDIA_UPLOAD_BUCKET: "test-bucket",
       HANZO_ENABLE_BLOB_STORAGE_FILE_LOG: "false",
     },
   };

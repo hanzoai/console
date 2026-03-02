@@ -8,13 +8,13 @@ export const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_MEDIA_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3MediaStorageClient;
@@ -24,13 +24,13 @@ export const getS3EventStorageClient = (bucketName: string): StorageService => {
   if (!s3EventStorageClient) {
     s3EventStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_EVENT_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_EVENT_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3EventStorageClient;

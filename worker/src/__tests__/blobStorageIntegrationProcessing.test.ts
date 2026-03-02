@@ -31,11 +31,11 @@ describe("BlobStorageIntegrationProcessingJob", () => {
   let storageService: StorageService;
   let s3StorageService: StorageService;
   let s3Prefix: string | null = null;
-  const bucketName = env.HANZO_S3_EVENT_UPLOAD_BUCKET || "";
-  const accessKeyId = env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID || "";
-  const secretAccessKey = env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY || "";
-  const endpoint = env.HANZO_S3_EVENT_UPLOAD_ENDPOINT || undefined;
-  const region = env.HANZO_S3_EVENT_UPLOAD_REGION || undefined;
+  const bucketName = env.S3_EVENT_UPLOAD_BUCKET || "";
+  const accessKeyId = env.S3_EVENT_UPLOAD_ACCESS_KEY_ID || "";
+  const secretAccessKey = env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY || "";
+  const endpoint = env.S3_EVENT_UPLOAD_ENDPOINT || undefined;
+  const region = env.S3_EVENT_UPLOAD_REGION || undefined;
   const minioAccessKeyId = "minio";
   const minioAccessKeySecret = "miniosecret";
   const minioEndpoint = "http://localhost:9090";
@@ -47,7 +47,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       bucketName,
       endpoint,
       region,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
     s3StorageService = StorageServiceFactory.getInstance({
       accessKeyId: minioAccessKeyId,
@@ -87,7 +87,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
         secretAccessKey: encrypt(secretAccessKey),
         region: region ? region : "auto",
         endpoint: endpoint ? endpoint : null,
-        forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+        forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
         enabled: false,
         exportFrequency: "hourly",
       },
@@ -123,7 +123,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportSource: "TRACES_OBSERVATIONS_EVENTS",
@@ -259,7 +259,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region,
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "weekly",
           lastSyncAt: oneHourAgo,
@@ -315,7 +315,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "daily",
           lastSyncAt: oneHourAgo,
@@ -423,7 +423,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
             secretAccessKey: encrypt(minioAccessKeySecret),
             region: region ? region : "auto",
             endpoint: minioEndpoint,
-            forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+            forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
             enabled: true,
             exportFrequency: "hourly",
             exportSource: "TRACES_OBSERVATIONS_EVENTS",
@@ -520,7 +520,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(secretAccessKey),
           region: region ? region : "auto",
           endpoint: endpoint ? endpoint : null,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FULL_HISTORY",
@@ -591,7 +591,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(secretAccessKey),
           region: region ? region : "auto",
           endpoint: endpoint ? endpoint : null,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FROM_TODAY" as any,
@@ -653,7 +653,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FROM_CUSTOM_DATE" as any,
@@ -707,7 +707,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(secretAccessKey),
           region: region ? region : "auto",
           endpoint: endpoint ? endpoint : null,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           exportMode: "FULL_HISTORY",
@@ -778,7 +778,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           lastSyncAt: twoDaysAgo, // Start from 2 days ago
@@ -830,7 +830,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           secretAccessKey: encrypt(minioAccessKeySecret),
           region: region ? region : "auto",
           endpoint: minioEndpoint,
-          forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+          forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
           lastSyncAt: oneHourAgo,

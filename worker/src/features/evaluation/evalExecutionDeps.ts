@@ -118,9 +118,7 @@ export interface EvalExecutionDeps {
 
   // LLM operations
   callLLM: (params: LLMCallParams) => Promise<unknown>;
-  fetchModelConfig: (
-    params: FetchModelConfigParams,
-  ) => Promise<ModelConfigResult>;
+  fetchModelConfig: (params: FetchModelConfigParams) => Promise<ModelConfigResult>;
 }
 
 /**
@@ -137,11 +135,9 @@ export function createProductionEvalExecutionDeps(): EvalExecutionDeps {
     },
 
     uploadScore: async (params) => {
-      const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${params.projectId}/score/${params.scoreId}/${params.eventId}.json`;
+      const bucketPath = `${env.S3_EVENT_UPLOAD_PREFIX}${params.projectId}/score/${params.scoreId}/${params.eventId}.json`;
 
-      await getEvalS3StorageClient().uploadJson(bucketPath, [
-        params.event as unknown as Record<string, unknown>,
-      ]);
+      await getEvalS3StorageClient().uploadJson(bucketPath, [params.event as unknown as Record<string, unknown>]);
     },
 
     enqueueScoreIngestion: async (params) => {
@@ -178,8 +174,7 @@ export function createProductionEvalExecutionDeps(): EvalExecutionDeps {
         typeof fetchLLMCompletion
       >[0]["llmConnection"];
 
-      const adapter = params.modelConfig.apiKey
-        .adapter as unknown as Parameters<
+      const adapter = params.modelConfig.apiKey.adapter as unknown as Parameters<
         typeof fetchLLMCompletion
       >[0]["modelParams"]["adapter"];
 
@@ -206,12 +201,7 @@ export function createProductionEvalExecutionDeps(): EvalExecutionDeps {
     },
 
     fetchModelConfig: async ({ projectId, provider, model, modelParams }) => {
-      const result = await DefaultEvalModelService.fetchValidModelConfig(
-        projectId,
-        provider,
-        model,
-        modelParams,
-      );
+      const result = await DefaultEvalModelService.fetchValidModelConfig(projectId, provider, model, modelParams);
 
       // Cast to our simplified ModelConfigResult type for the interface
       return result as ModelConfigResult;
@@ -224,9 +214,7 @@ export function createProductionEvalExecutionDeps(): EvalExecutionDeps {
  * All functions are no-ops or return null by default.
  * Override specific functions as needed in tests.
  */
-export function createMockEvalExecutionDeps(
-  overrides?: Partial<EvalExecutionDeps>,
-): EvalExecutionDeps {
+export function createMockEvalExecutionDeps(overrides?: Partial<EvalExecutionDeps>): EvalExecutionDeps {
   const defaultMock: EvalExecutionDeps = {
     updateJobExecution: async () => {},
     uploadScore: async () => {},

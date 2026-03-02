@@ -172,7 +172,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     // Easy change, but needs alignment.
 
     // Download file from blob storage
-    const resourceSpans = await getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).download(fileKey);
+    const resourceSpans = await getS3EventStorageClient(env.S3_EVENT_UPLOAD_BUCKET).download(fileKey);
 
     recordHistogram(
       "hanzo.ingestion.s3_file_size_bytes",

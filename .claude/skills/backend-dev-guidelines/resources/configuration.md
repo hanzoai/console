@@ -135,7 +135,7 @@ const EnvSchema = z.object({
   CLICKHOUSE_PASSWORD: z.string(),
 
   // S3 Event Upload (required)
-  HANZO_S3_EVENT_UPLOAD_BUCKET: z.string({
+  S3_EVENT_UPLOAD_BUCKET: z.string({
     error: "Hanzo requires a bucket name for S3 Event Uploads.",
   }),
 
@@ -172,7 +172,7 @@ export const env: z.infer<typeof EnvSchema> =
 import { env } from "./env";
 
 const concurrency = env.HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY;
-const s3Bucket = env.HANZO_S3_EVENT_UPLOAD_BUCKET;
+const s3Bucket = env.S3_EVENT_UPLOAD_BUCKET;
 ```
 
 ### Shared Package (`packages/shared/src/env.ts`)
@@ -204,8 +204,8 @@ const EnvSchema = z.object({
   CLICKHOUSE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
 
   // S3 Event Upload
-  HANZO_S3_EVENT_UPLOAD_BUCKET: z.string(),
-  HANZO_S3_EVENT_UPLOAD_REGION: z.string().optional(),
+  S3_EVENT_UPLOAD_BUCKET: z.string(),
+  S3_EVENT_UPLOAD_REGION: z.string().optional(),
 
   // Logging
   HANZO_LOG_LEVEL: z

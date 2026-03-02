@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
-import {
-  createOrgProjectAndApiKey,
-  StorageService,
-  StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+import { createOrgProjectAndApiKey, StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { EvalTargetObject } from "@hanzo/shared";
 import { env } from "../../../env";
@@ -25,7 +21,7 @@ import { JobExecutionStatus } from "@prisma/client";
  */
 describe("Production Dependency Factories Integration Tests", () => {
   let s3StorageService: StorageService;
-  const bucketName = env.HANZO_S3_EVENT_UPLOAD_BUCKET || "hanzo";
+  const bucketName = env.S3_EVENT_UPLOAD_BUCKET || "hanzo";
   const minioAccessKeyId = "minio";
   const minioAccessKeySecret = "miniosecret";
   const minioEndpoint = "http://localhost:9090";
@@ -143,10 +139,8 @@ describe("Production Dependency Factories Integration Tests", () => {
         createdS3Paths.push(s3Path);
 
         // Verify path format (uses env prefix, defaults to "")
-        const prefix = env.HANZO_S3_EVENT_UPLOAD_PREFIX || "";
-        expect(s3Path).toBe(
-          `${prefix}evals/${projectId}/observations/${observationId}.json`,
-        );
+        const prefix = env.S3_EVENT_UPLOAD_PREFIX || "";
+        expect(s3Path).toBe(`${prefix}evals/${projectId}/observations/${observationId}.json`);
 
         // Verify file exists in S3 by checking it was created with the correct path
         // Note: Download may fail in test environment without proper S3 setup
@@ -388,10 +382,8 @@ describe("Production Dependency Factories Integration Tests", () => {
         },
       });
 
-      const prefix = env.HANZO_S3_EVENT_UPLOAD_PREFIX || "";
-      createdS3Paths.push(
-        `${prefix}${projectId}/score/${scoreId}/${eventId}.json`,
-      );
+      const prefix = env.S3_EVENT_UPLOAD_PREFIX || "";
+      createdS3Paths.push(`${prefix}${projectId}/score/${scoreId}/${eventId}.json`);
 
       // Verify final state
       jobExecution = await prisma.jobExecution.findUnique({

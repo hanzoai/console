@@ -1,9 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  LLMAsJudgeExecutionQueue,
-  QueueJobs,
-  QueueName,
-} from "@hanzo/shared/src/server";
+import { LLMAsJudgeExecutionQueue, QueueJobs, QueueName } from "@hanzo/shared/src/server";
 import { env } from "../../../env";
 import { getEvalS3StorageClient } from "../s3StorageClient";
 import { type ObservationEvalSchedulerDeps } from "./types";
@@ -15,15 +11,8 @@ import { type ObservationEvalSchedulerDeps } from "./types";
 export function createObservationEvalSchedulerDeps(): ObservationEvalSchedulerDeps {
   return {
     upsertJobExecution: async (params) => {
-      const {
-        id,
-        projectId,
-        jobConfigurationId,
-        jobInputTraceId,
-        jobInputObservationId,
-        jobTemplateId,
-        status,
-      } = params;
+      const { id, projectId, jobConfigurationId, jobInputTraceId, jobInputObservationId, jobTemplateId, status } =
+        params;
 
       const jobExecution = await prisma.jobExecution.upsert({
         where: {
@@ -48,7 +37,7 @@ export function createObservationEvalSchedulerDeps(): ObservationEvalSchedulerDe
     },
 
     uploadObservationToS3: async (params) => {
-      const path = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}evals/${params.projectId}/observations/${params.observationId}.json`;
+      const path = `${env.S3_EVENT_UPLOAD_PREFIX}evals/${params.projectId}/observations/${params.observationId}.json`;
       const s3Client = getEvalS3StorageClient();
 
       await s3Client.uploadJson(path, params.data);

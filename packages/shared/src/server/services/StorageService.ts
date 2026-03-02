@@ -52,10 +52,7 @@ export interface StorageService {
 
   uploadWithSignedUrl(params: UploadWithSignedUrl): Promise<{ signedUrl: string }>;
 
-  uploadJson(
-    path: string,
-    body: Record<string, unknown>[] | Record<string, unknown>,
-  ): Promise<void>;
+  uploadJson(path: string, body: Record<string, unknown>[] | Record<string, unknown>): Promise<void>;
 
   download(path: string): Promise<string>;
 
@@ -289,7 +286,7 @@ class AzureBlobStorageService implements StorageService {
             file: blob.name,
             createdAt: blob?.properties?.createdOn ?? new Date(),
           });
-          if (files.length >= env.HANZO_S3_LIST_MAX_KEYS) {
+          if (files.length >= env.S3_LIST_MAX_KEYS) {
             break;
           }
         }
@@ -391,7 +388,7 @@ class S3StorageService implements StorageService {
       forcePathStyle: params.forcePathStyle,
       requestHandler: {
         httpsAgent: {
-          maxSockets: env.HANZO_S3_CONCURRENT_WRITES,
+          maxSockets: env.S3_CONCURRENT_WRITES,
         },
       },
     });
@@ -407,7 +404,7 @@ class S3StorageService implements StorageService {
           forcePathStyle: params.forcePathStyle,
           requestHandler: {
             httpsAgent: {
-              maxSockets: env.HANZO_S3_CONCURRENT_WRITES,
+              maxSockets: env.S3_CONCURRENT_WRITES,
             },
           },
         })
@@ -509,7 +506,7 @@ class S3StorageService implements StorageService {
     const listCommand = new ListObjectsV2Command({
       Bucket: this.bucketName,
       Prefix: prefix,
-      MaxKeys: env.HANZO_S3_LIST_MAX_KEYS,
+      MaxKeys: env.S3_LIST_MAX_KEYS,
     });
 
     try {
@@ -725,7 +722,7 @@ class GoogleCloudStorageService implements StorageService {
     try {
       const [files] = await this.bucket.getFiles({
         prefix,
-        maxResults: env.HANZO_S3_LIST_MAX_KEYS,
+        maxResults: env.S3_LIST_MAX_KEYS,
       });
 
       return files.map((file) => ({

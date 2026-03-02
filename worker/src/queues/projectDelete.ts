@@ -23,13 +23,13 @@ const getS3MediaStorageClient = (bucketName: string): StorageService => {
   if (!s3MediaStorageClient) {
     s3MediaStorageClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_MEDIA_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_MEDIA_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3MediaStorageClient;
@@ -50,7 +50,7 @@ export const projectDeleteProcessor: Processor = async (
   logger.info(`Deleting ${projectId} in org ${orgId}`);
 
   // Delete media data from S3 for project
-  if (env.HANZO_S3_MEDIA_UPLOAD_BUCKET) {
+  if (env.S3_MEDIA_UPLOAD_BUCKET) {
     logger.info(`Deleting media for ${projectId} in org ${orgId}`);
     const mediaFilesToDelete = await prisma.media.findMany({
       select: {
@@ -62,7 +62,7 @@ export const projectDeleteProcessor: Processor = async (
         projectId,
       },
     });
-    const mediaStorageClient = getS3MediaStorageClient(env.HANZO_S3_MEDIA_UPLOAD_BUCKET);
+    const mediaStorageClient = getS3MediaStorageClient(env.S3_MEDIA_UPLOAD_BUCKET);
     // Delete from Cloud Storage
     await mediaStorageClient.deleteFiles(mediaFilesToDelete.map((f) => f.bucketPath));
     // No need to delete from table as this will be done below via Prisma

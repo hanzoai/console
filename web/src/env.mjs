@@ -279,26 +279,26 @@ export const env = createEnv({
     HANZO_CACHE_API_KEY_TTL_SECONDS: z.coerce.number().default(300),
 
     // Multimodal media upload to S3
-    HANZO_S3_MEDIA_MAX_CONTENT_LENGTH: z.coerce
+    S3_MEDIA_MAX_CONTENT_LENGTH: z.coerce
       .number()
       .positive()
       .int()
       .default(1_000_000_000),
-    HANZO_S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
-    HANZO_S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
-    HANZO_S3_MEDIA_UPLOAD_REGION: z.string().optional(),
-    HANZO_S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
-    HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
-    HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
-    HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
+    S3_MEDIA_UPLOAD_BUCKET: z.string().optional(),
+    S3_MEDIA_UPLOAD_PREFIX: z.string().default(""),
+    S3_MEDIA_UPLOAD_REGION: z.string().optional(),
+    S3_MEDIA_UPLOAD_ENDPOINT: z.string().optional(),
+    S3_MEDIA_UPLOAD_ACCESS_KEY_ID: z.string().optional(),
+    S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: z.string().optional(),
+    S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: z
       .enum(["true", "false"])
       .default("false"),
-    HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS: z.coerce
+    S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS: z.coerce
       .number()
       .nonnegative()
       .default(3600),
-    HANZO_S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
-    HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
+    S3_MEDIA_UPLOAD_SSE: z.enum(["AES256", "aws:kms"]).optional(),
+    S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID: z.string().optional(),
 
     HANZO_ALLOWED_ORGANIZATION_CREATORS: z
       .string()
@@ -706,27 +706,27 @@ export const env = createEnv({
       process.env.HANZO_INGESTION_MASKING_PROPAGATED_HEADERS,
 
     // S3 media upload
-    HANZO_S3_MEDIA_MAX_CONTENT_LENGTH:
-      process.env.HANZO_S3_MEDIA_MAX_CONTENT_LENGTH,
-    HANZO_S3_MEDIA_UPLOAD_BUCKET:
-      process.env.HANZO_S3_MEDIA_UPLOAD_BUCKET,
-    HANZO_S3_MEDIA_UPLOAD_PREFIX:
-      process.env.HANZO_S3_MEDIA_UPLOAD_PREFIX,
-    HANZO_S3_MEDIA_UPLOAD_REGION:
-      process.env.HANZO_S3_MEDIA_UPLOAD_REGION,
-    HANZO_S3_MEDIA_UPLOAD_ENDPOINT:
-      process.env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-    HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:
-      process.env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-    HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:
-      process.env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-    HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:
-      process.env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE,
-    HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS:
-      process.env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS,
-    HANZO_S3_MEDIA_UPLOAD_SSE: process.env.HANZO_S3_MEDIA_UPLOAD_SSE,
-    HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID:
-      process.env.HANZO_S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
+    S3_MEDIA_MAX_CONTENT_LENGTH:
+      process.env.S3_MEDIA_MAX_CONTENT_LENGTH,
+    S3_MEDIA_UPLOAD_BUCKET:
+      process.env.S3_MEDIA_UPLOAD_BUCKET,
+    S3_MEDIA_UPLOAD_PREFIX:
+      process.env.S3_MEDIA_UPLOAD_PREFIX,
+    S3_MEDIA_UPLOAD_REGION:
+      process.env.S3_MEDIA_UPLOAD_REGION,
+    S3_MEDIA_UPLOAD_ENDPOINT:
+      process.env.S3_MEDIA_UPLOAD_ENDPOINT,
+    S3_MEDIA_UPLOAD_ACCESS_KEY_ID:
+      process.env.S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+    S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:
+      process.env.S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+    S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:
+      process.env.S3_MEDIA_UPLOAD_FORCE_PATH_STYLE,
+    S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS:
+      process.env.S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS,
+    S3_MEDIA_UPLOAD_SSE: process.env.S3_MEDIA_UPLOAD_SSE,
+    S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID:
+      process.env.S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     // Worker
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,

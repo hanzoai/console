@@ -1,7 +1,4 @@
-import {
-  StorageService,
-  StorageServiceFactory,
-} from "@hanzo/shared/src/server";
+import { StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
 import { env } from "../../env";
 
 /**
@@ -20,14 +17,14 @@ let s3StorageServiceClient: StorageService | null = null;
 export function getEvalS3StorageClient(): StorageService {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
-      bucketName: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_EVENT_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
+      bucketName: env.S3_EVENT_UPLOAD_BUCKET,
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_EVENT_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
 

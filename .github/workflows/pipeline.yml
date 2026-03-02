@@ -196,7 +196,7 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev.example .env
-          grep -v -e '^HANZO_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev.example > .env
+          grep -v -e '^S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev.example > .env
           echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
           echo "HANZO_CACHE_PROMPT_ENABLED=false" >> .env
           echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
@@ -305,7 +305,7 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev${{ matrix.deploy-mode }}.example .env
-          grep -v -e '^HANZO_S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev${{ matrix.deploy-mode }}.example > .env
+          grep -v -e '^S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev${{ matrix.deploy-mode }}.example > .env
           echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
           echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
           echo "HANZO_TRACE_DELETE_CONCURRENCY=100" >> .env

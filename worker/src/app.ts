@@ -115,7 +115,7 @@ if (env.QUEUE_CONSUMER_CREATE_EVAL_QUEUE_IS_ENABLED === "true") {
   });
 }
 
-if (env.HANZO_S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
+if (env.S3_CORE_DATA_EXPORT_IS_ENABLED === "true") {
   // Instantiate the queue to trigger scheduled jobs
   CoreDataS3ExportQueue.getInstance();
   WorkerManager.register(QueueName.CoreDataS3ExportQueue, coreDataS3ExportProcessor);

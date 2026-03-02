@@ -144,10 +144,10 @@ export class OtelIngestionProcessor {
    * into the otel-ingestion-queue.
    */
   async publishToOtelIngestionQueue(resourceSpans: ResourceSpan[]) {
-    const fileKey = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}otel/${this.projectId}/${this.getCurrentTimePath()}/${randomUUID()}.json`;
+    const fileKey = `${env.S3_EVENT_UPLOAD_PREFIX}otel/${this.projectId}/${this.getCurrentTimePath()}/${randomUUID()}.json`;
 
     // Upload to S3
-    await getS3EventStorageClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(
+    await getS3EventStorageClient(env.S3_EVENT_UPLOAD_BUCKET).uploadJson(
       fileKey,
       resourceSpans as Record<string, unknown>[],
     );

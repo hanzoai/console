@@ -1,9 +1,5 @@
 import { env } from "../../env";
-import {
-  datastoreClient,
-  convertDateToDatastoreDateTime,
-  PreferredDatastoreService,
-} from "../datastore/client";
+import { datastoreClient, convertDateToDatastoreDateTime, PreferredDatastoreService } from "../datastore/client";
 import { logger } from "../logger";
 import { getTracer, instrumentAsync } from "../instrumentation";
 import { randomUUID } from "crypto";
@@ -75,13 +71,13 @@ const getS3StorageServiceClient = (bucketName: string): StorageService => {
   if (!s3StorageServiceClient) {
     s3StorageServiceClient = StorageServiceFactory.getInstance({
       bucketName,
-      accessKeyId: env.HANZO_S3_EVENT_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
-      endpoint: env.HANZO_S3_EVENT_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_EVENT_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
-      awsSse: env.HANZO_S3_EVENT_UPLOAD_SSE,
-      awsSseKmsKeyId: env.HANZO_S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
+      accessKeyId: env.S3_EVENT_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY,
+      endpoint: env.S3_EVENT_UPLOAD_ENDPOINT,
+      region: env.S3_EVENT_UPLOAD_REGION,
+      forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
+      awsSse: env.S3_EVENT_UPLOAD_SSE,
+      awsSseKmsKeyId: env.S3_EVENT_UPLOAD_SSE_KMS_KEY_ID,
     });
   }
   return s3StorageServiceClient;
@@ -103,9 +99,7 @@ function assertNoLegacyEventsRead(query: string): void {
   }
 }
 
-export async function upsertDatastore<
-  T extends Record<string, unknown>,
->(opts: {
+export async function upsertDatastore<T extends Record<string, unknown>>(opts: {
   table: "scores" | "traces" | "observations" | "traces_null";
   records: T[];
   eventBodyMapper: (body: T) => Record<string, unknown>;
@@ -128,7 +122,7 @@ export async function upsertDatastore<
         }
 
         const eventId = randomUUID();
-        const bucketPath = `${env.HANZO_S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getDatastoreEntityType(eventType)}/${record.id}/${eventId}.json`;
+        const bucketPath = `${env.S3_EVENT_UPLOAD_PREFIX}${record.project_id}/${getDatastoreEntityType(eventType)}/${record.id}/${eventId}.json`;
 
         if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
           // Write new file directly to the datastore. We don't use the async writer here as we expect more limited traffic
@@ -142,7 +136,7 @@ export async function upsertDatastore<
                 entity_type: getDatastoreEntityType(eventType),
                 entity_id: record.id,
                 event_id: eventId,
-                bucket_name: env.HANZO_S3_EVENT_UPLOAD_BUCKET,
+                bucket_name: env.S3_EVENT_UPLOAD_BUCKET,
                 bucket_path: bucketPath,
                 event_ts: convertDateToDatastoreDateTime(new Date()),
                 is_deleted: 0,
@@ -155,7 +149,7 @@ export async function upsertDatastore<
           });
         }
 
-        return getS3StorageServiceClient(env.HANZO_S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, [
+        return getS3StorageServiceClient(env.S3_EVENT_UPLOAD_BUCKET).uploadJson(bucketPath, [
           {
             id: eventId,
             timestamp: new Date().toISOString(),
@@ -340,14 +334,12 @@ export async function queryDatastore<T>(opts: {
 }): Promise<T[]> {
   if (!opts.allowLegacyEventsRead) assertNoLegacyEventsRead(opts.query);
 
-  return await instrumentAsync(
-    { name: "datastore-query", spanKind: SpanKind.CLIENT },
-    async (span) => {
-      // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
-      span.setAttribute("ch.query.text", opts.query);
-      span.setAttribute("db.system", "clickhouse");
-      span.setAttribute("db.query.text", opts.query);
-      span.setAttribute("db.operation.name", "SELECT");
+  return await instrumentAsync({ name: "datastore-query", spanKind: SpanKind.CLIENT }, async (span) => {
+    // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
+    span.setAttribute("ch.query.text", opts.query);
+    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.query.text", opts.query);
+    span.setAttribute("db.operation.name", "SELECT");
 
     // Retry logic for socket hang up and other network errors
     return await backOff(
@@ -437,23 +429,21 @@ export async function commandDatastore(opts: {
     span.setAttribute("db.query.text", opts.query);
     span.setAttribute("db.operation.name", "COMMAND");
 
-      const res = await datastoreClient(opts.datastoreConfig).command({
-        query: opts.query,
-        query_params: opts.params,
-        ...(opts.session_id ? { session_id: opts.session_id } : {}),
-        ...(opts.tags?.queryId
-          ? { query_id: opts.tags.queryId as string }
-          : {}),
-        ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
-        clickhouse_settings: {
-          ...opts.datastoreSettings,
-          log_comment: JSON.stringify(opts.tags ?? {}),
-        },
-      });
-      // same logic as for prisma. we want to see queries in development
-      if (env.NODE_ENV === "development") {
-        logger.info(`datastore:query ${res.query_id} ${opts.query}`);
-      }
+    const res = await datastoreClient(opts.datastoreConfig).command({
+      query: opts.query,
+      query_params: opts.params,
+      ...(opts.session_id ? { session_id: opts.session_id } : {}),
+      ...(opts.tags?.queryId ? { query_id: opts.tags.queryId as string } : {}),
+      ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
+      clickhouse_settings: {
+        ...opts.datastoreSettings,
+        log_comment: JSON.stringify(opts.tags ?? {}),
+      },
+    });
+    // same logic as for prisma. we want to see queries in development
+    if (env.NODE_ENV === "development") {
+      logger.info(`datastore:query ${res.query_id} ${opts.query}`);
+    }
 
     span.setAttribute("ch.queryId", res.query_id);
 

@@ -37,7 +37,7 @@ export default withMiddlewares({
         );
 
       const mediaStorageClient = getMediaStorageServiceClient(media.bucketName);
-      const ttlSeconds = env.HANZO_S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
+      const ttlSeconds = env.S3_MEDIA_DOWNLOAD_URL_EXPIRY_SECONDS;
       const urlExpiry = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
       const url = await mediaStorageClient.getSignedUrl(media.bucketPath, ttlSeconds, false);

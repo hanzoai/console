@@ -38,12 +38,12 @@ describe("ProjectDeletionProcessingJob", () => {
 
   beforeAll(() => {
     storageService = StorageServiceFactory.getInstance({
-      accessKeyId: env.HANZO_S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
-      secretAccessKey: env.HANZO_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
-      bucketName: String(env.HANZO_S3_MEDIA_UPLOAD_BUCKET),
-      endpoint: env.HANZO_S3_MEDIA_UPLOAD_ENDPOINT,
-      region: env.HANZO_S3_MEDIA_UPLOAD_REGION,
-      forcePathStyle: env.HANZO_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
+      accessKeyId: env.S3_MEDIA_UPLOAD_ACCESS_KEY_ID,
+      secretAccessKey: env.S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY,
+      bucketName: String(env.S3_MEDIA_UPLOAD_BUCKET),
+      endpoint: env.S3_MEDIA_UPLOAD_ENDPOINT,
+      region: env.S3_MEDIA_UPLOAD_REGION,
+      forcePathStyle: env.S3_MEDIA_UPLOAD_FORCE_PATH_STYLE === "true",
     });
   });
 
@@ -236,7 +236,7 @@ describe("ProjectDeletionProcessingJob", () => {
         projectId,
         createdAt: new Date(),
         bucketPath: fileName,
-        bucketName: String(env.HANZO_S3_MEDIA_UPLOAD_BUCKET),
+        bucketName: String(env.S3_MEDIA_UPLOAD_BUCKET),
         contentType: fileType,
         contentLength: 0,
       },
