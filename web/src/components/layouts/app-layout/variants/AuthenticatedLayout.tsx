@@ -37,6 +37,16 @@ const PaymentBanner = dynamic(
   },
 );
 
+const FirstLoginBillingModal = dynamic(
+  () =>
+    import("@/src/features/billing/components/FirstLoginBillingModal").then((mod) => ({
+      default: mod.FirstLoginBillingModal,
+    })),
+  {
+    ssr: false,
+  },
+);
+
 /** Grouped navigation structure returned by processNavigation */
 type GroupedNavigation = {
   ungrouped: NavigationItem[];
@@ -116,6 +126,7 @@ export function AuthenticatedLayout({ children, session, navigation, metadata, o
                 <ResizableContent>{children}</ResizableContent>
                 <Toaster visibleToasts={1} />
                 <CommandMenu mainNavigation={navigation.navigation} />
+                <FirstLoginBillingModal />
               </SidebarInset>
             </div>
           </div>
