@@ -1,232 +1,32 @@
-name: Build and Push Console
+name: Docker Release
 
 on:
   push:
-    branches: [ main, develop ]
-    tags:
-      - 'v*'
-  pull_request:
-    branches: [ main ]
+    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  WEB_IMAGE: ${{ github.repository_owner }}/console
-  WORKER_IMAGE: ${{ github.repository_owner }}/console-worker
+concurrency:
+  group: docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  # Build web image on native runners (no QEMU)
-  build-web:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-24.04
-            suffix: amd64
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-            suffix: arm64
-    runs-on: ${{ matrix.runner }}
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      digest-amd64: ${{ steps.build.outputs.digest }}
-      digest-arm64: ${{ steps.build.outputs.digest }}
+  web:
+    uses: hanzoai/.github/.github/workflows/docker-build.yml@main
+    with:
+      image: ghcr.io/${{ github.repository_owner }}/console
+      dockerfile: web/Dockerfile
+      build-args: |
+        NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+        NEXT_PUBLIC_HANZO_CLOUD_REGION=US
+      deploy: true
+      deploy-deployment: console-web
+      deploy-namespace: hanzo
+    secrets: inherit
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
-        flavor: |
-          suffix=-${{ matrix.suffix }}
-
-    - name: Build and push Web image (${{ matrix.suffix }})
-      id: build
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: ./web/Dockerfile
-        platforms: ${{ matrix.platform }}
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha,scope=web-${{ matrix.suffix }}
-        cache-to: type=gha,mode=max,scope=web-${{ matrix.suffix }}
-        build-args: |
-          NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
-          NEXT_PUBLIC_HANZO_CLOUD_REGION=US
-
-  # Merge per-platform web images into multi-arch manifest
-  merge-web:
-    needs: build-web
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
-
-    - name: Create multi-arch manifest
-      run: |
-        # For each tag, create a manifest combining amd64 and arm64 images
-        for tag in $(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ' '); do
-          docker buildx imagetools create -t "${tag}" \
-            "${tag}-amd64" \
-            "${tag}-arm64"
-        done
-
-  # Build worker image on native runners (no QEMU)
-  build-worker:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-24.04
-            suffix: amd64
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-            suffix: arm64
-    runs-on: ${{ matrix.runner }}
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
-        flavor: |
-          suffix=-${{ matrix.suffix }}
-
-    - name: Build and push Worker image (${{ matrix.suffix }})
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: ./worker/Dockerfile
-        platforms: ${{ matrix.platform }}
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha,scope=worker-${{ matrix.suffix }}
-        cache-to: type=gha,mode=max,scope=worker-${{ matrix.suffix }}
-
-  # Merge per-platform worker images into multi-arch manifest
-  merge-worker:
-    needs: build-worker
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
-
-    - name: Create multi-arch manifest
-      run: |
-        for tag in $(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ' '); do
-          docker buildx imagetools create -t "${tag}" \
-            "${tag}-amd64" \
-            "${tag}-arm64"
-        done
-
-  deploy:
-    needs: [merge-web, merge-worker]
-    runs-on: ubuntu-24.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-    - name: Deploy notification
-      run: |
-        echo "Console multi-arch images deployed:"
-        echo "- Web: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest (amd64+arm64)"
-        echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest (amd64+arm64)"
+  worker:
+    uses: hanzoai/.github/.github/workflows/docker-build.yml@main
+    with:
+      image: ghcr.io/${{ github.repository_owner }}/console-worker
+      dockerfile: worker/Dockerfile
+    secrets: inherit
