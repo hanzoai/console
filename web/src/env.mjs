@@ -400,6 +400,9 @@ export const env = createEnv({
     HANZO_AI_FEATURES_SECRET_KEY: z.string().optional(),
     HANZO_AI_FEATURES_PROJECT_ID: z.string().optional(),
 
+    // Hanzo Cloud API (model routing, chat completions)
+    CLOUD_API_URL: z.string().url().optional(),
+
     // Hanzo Agents control plane
     AGENTS_API_URL: z.string().url().optional(),
     // Casvisor compute management
@@ -819,6 +822,8 @@ export const env = createEnv({
     // Hanzo Tracing AI Features
     HANZO_AI_FEATURES_HOST: process.env.HANZO_AI_FEATURES_HOST,
 
+    // Hanzo Cloud API
+    CLOUD_API_URL: process.env.CLOUD_API_URL,
     // Hanzo Agents
     AGENTS_API_URL: process.env.AGENTS_API_URL,
     // Casvisor
