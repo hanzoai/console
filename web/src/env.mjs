@@ -314,8 +314,6 @@ export const env = createEnv({
     IAM_APP_NAME: z.string().optional(),
     IAM_ALLOW_ACCOUNT_LINKING: z.string().optional(),
 
-    COMMERCE_API_URL: z.string().optional(),
-    COMMERCE_SERVICE_TOKEN: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_CSP_REPORT_URI: z.string().optional(),
     HANZO_RATE_LIMITS_ENABLED: z.enum(["true", "false"]).default("true"),
@@ -782,8 +780,6 @@ export const env = createEnv({
     IAM_ORG_NAME: process.env.IAM_ORG_NAME,
     IAM_APP_NAME: process.env.IAM_APP_NAME,
     IAM_ALLOW_ACCOUNT_LINKING: process.env.IAM_ALLOW_ACCOUNT_LINKING,
-    COMMERCE_API_URL: process.env.COMMERCE_API_URL,
-    COMMERCE_SERVICE_TOKEN: process.env.COMMERCE_SERVICE_TOKEN,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     SENTRY_CSP_REPORT_URI: process.env.SENTRY_CSP_REPORT_URI,
     HANZO_RATE_LIMITS_ENABLED: process.env.HANZO_RATE_LIMITS_ENABLED,
