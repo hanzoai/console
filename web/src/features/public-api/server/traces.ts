@@ -64,7 +64,7 @@ async function buildTracesBaseQuery(
 }> {
   // Datastore query optimizations for List Traces API
   const disableObservationsFinal = await shouldSkipObservationsFinal(props.projectId);
-  const propagateObservationsTimeBounds = env.DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
+  const propagateObservationsTimeBounds = env.HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
 
   let filter = deriveFilters(props, filterParams, advancedFilters, tracesTableUiColumnDefinitions);
   const appliedFilter = filter.apply();
