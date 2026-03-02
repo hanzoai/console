@@ -53,10 +53,27 @@ function buildQueryParams(
 }
 
 function parseJSONEachRow<T>(text: string): T[] {
-  return text
-    .split("\n")
-    .filter((line) => line.trim().length > 0)
-    .map((line) => JSON.parse(line) as T);
+  const lines = text.split("\n").filter((line) => line.trim().length > 0);
+  if (lines.length === 0) return [];
+
+  // Detect non-JSON response (e.g. ClickHouse error or TabSeparated format).
+  // JSONEachRow lines always start with '{'.
+  const firstLine = lines[0].trimStart();
+  if (firstLine.length > 0 && firstLine[0] !== "{") {
+    throw new Error(
+      `Datastore returned non-JSON response (expected JSONEachRow). First line: ${firstLine.slice(0, 200)}`,
+    );
+  }
+
+  return lines.map((line, idx) => {
+    try {
+      return JSON.parse(line) as T;
+    } catch (e) {
+      throw new Error(
+        `Failed to parse JSONEachRow at line ${idx + 1}/${lines.length}: ${(e as Error).message}. Line: ${line.slice(0, 200)}`,
+      );
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -242,6 +242,11 @@ export const env = createEnv({
     DATASTORE_USE_QUERY_CONDITION_CACHE: z
       .enum(["true", "false"])
       .default("false"),
+    LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS: z.coerce
+      .number()
+      .int()
+      .nonnegative()
+      .default(168), // 7 days
 
     // EE ui customization
     HANZO_UI_API_HOST: z.string().optional(),
@@ -744,6 +749,8 @@ export const env = createEnv({
       process.env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
     DATASTORE_USE_QUERY_CONDITION_CACHE:
       process.env.DATASTORE_USE_QUERY_CONDITION_CACHE,
+    LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS:
+      process.env.LANGFUSE_ROOT_EVENT_CONDITION_MAX_WINDOW_HOURS,
     // EE ui customization
     HANZO_UI_API_HOST: process.env.HANZO_UI_API_HOST,
     HANZO_UI_DOCUMENTATION_HREF: process.env.HANZO_UI_DOCUMENTATION_HREF,
