@@ -42,20 +42,22 @@ if [ -z "${DATASTORE_DB}" ]; then
 fi
 
 # Parse the DATASTORE_MIGRATION_URL to extract host and port
-# Accepts both datastore:// and clickhouse:// schemes (golang-migrate uses clickhouse driver)
-if [[ $DATASTORE_MIGRATION_URL =~ ^(datastore|clickhouse)://([^:]+):([0-9]+)$ ]]; then
-  DATASTORE_HOST="${BASH_REMATCH[2]}"
-  DATASTORE_PORT="${BASH_REMATCH[3]}"
-elif [[ $DATASTORE_MIGRATION_URL =~ ^(datastore|clickhouse)://([^:]+)$ ]]; then
-  DATASTORE_HOST="${BASH_REMATCH[2]}"
+# Parse the DATASTORE_MIGRATION_URL to extract host and port
+# Expected format: datastore://host:port
+MIGRATION_URL_STRIPPED="${DATASTORE_MIGRATION_URL#*://}"
+if [[ $MIGRATION_URL_STRIPPED =~ ^([^:]+):([0-9]+)$ ]]; then
+  DATASTORE_HOST="${BASH_REMATCH[1]}"
+  DATASTORE_PORT="${BASH_REMATCH[2]}"
+elif [[ $MIGRATION_URL_STRIPPED =~ ^([^:]+)$ ]]; then
+  DATASTORE_HOST="${BASH_REMATCH[1]}"
   DATASTORE_PORT="9000" # Default native protocol port
 else
   echo "Error: Could not parse DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL}"
   exit 1
 fi
 
-# The datastore client binary (ClickHouse-compatible)
-DATASTORE_CLIENT="${DATASTORE_CLIENT_BIN:-clickhouse}"
+# Datastore client binary
+DATASTORE_CLIENT="${DATASTORE_CLIENT_BIN:-datastore-client}"
 if ! command -v "$DATASTORE_CLIENT" &>/dev/null; then
   echo "Error: datastore client binary ('$DATASTORE_CLIENT') not found. Install the datastore client tools."
   exit 1

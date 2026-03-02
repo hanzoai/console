@@ -1,2 +1,5 @@
-# Hanzo Datastore — analytics database (ClickHouse-compatible), pinned by digest
-FROM clickhouse/clickhouse-server:24-alpine@sha256:82499fdb60e5bfaefb1e8f06f00a8857d61643fd6081c3f476ab6c7ff6d78766
+# Hanzo Datastore — analytics database
+# Build: docker build -t ghcr.io/hanzoai/datastore:latest -f Dockerfile.datastore .
+# Bootstrap: pass --build-arg BASE=<upstream-24-alpine-digest> for initial build
+ARG BASE=ghcr.io/hanzoai/datastore:24-alpine
+FROM ${BASE}

@@ -1,10 +1,10 @@
 /**
  * @hanzo/datastore — Native HTTP client for the Hanzo Datastore.
  *
- * Speaks the ClickHouse-compatible HTTP interface directly via native fetch.
+ * Speaks the Datastore HTTP interface directly via native fetch.
  * Zero external dependencies. ZAP binary transport is planned as next transport layer.
  *
- * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (ClickHouse HTTP protocol).
+ * Auth: X-Datastore-User / X-Datastore-Key headers.
  * Format: JSONEachRow for selects, JSON newline-delimited for inserts.
  */
 
@@ -82,9 +82,9 @@ export class DatastoreClient {
 
   private authHeaders(): Record<string, string> {
     return {
-      "X-ClickHouse-User": this.username,
-      "X-ClickHouse-Key": this.password,
-      "X-ClickHouse-Database": this.database,
+      "X-Datastore-User": this.username,
+      "X-Datastore-Key": this.password,
+      "X-Datastore-Database": this.database,
     };
   }
 
@@ -150,7 +150,7 @@ export class DatastoreClient {
       }
 
       const text = await response.text();
-      const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
+      const queryId = response.headers.get("x-datastore-query-id") ?? crypto.randomUUID();
       // Collect all headers into a plain object
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((v, k) => {
@@ -258,7 +258,7 @@ export class DatastoreClient {
         throw new Error(`Datastore insert error (${response.status}): ${msg}`);
       }
 
-      const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
+      const queryId = response.headers.get("x-datastore-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((v, k) => {
         responseHeaders[k] = v;
@@ -301,7 +301,7 @@ export class DatastoreClient {
         throw new Error(`Datastore command error (${response.status}): ${msg}`);
       }
 
-      const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
+      const queryId = response.headers.get("x-datastore-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((v, k) => {
         responseHeaders[k] = v;
