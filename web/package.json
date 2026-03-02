@@ -45,7 +45,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@ferrucc-io/emoji-picker": "^0.0.47",
     "@hanzo/console": "workspace:*",
-    "@hanzo/ee": "workspace:*",
     "@hanzo/shared": "workspace:*",
     "@hookform/resolvers": "^5.1.1",
     "@langchain/core": "^1.1.17",

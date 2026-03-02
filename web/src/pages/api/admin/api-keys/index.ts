@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 
 /* 
 This API route is used by Hanzo Cloud to delete API keys for a project.
@@ -30,11 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    if (
-      !AdminApiAuthService.handleAdminAuth(req, res, {
-        isAllowedOnHanzoCloud: true,
-      })
-    ) {
+    if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
     }
 

@@ -2,7 +2,6 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
-import { handleCreateProject } from "@/src/ee/features/admin-api/server/projects/createProject";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
@@ -91,6 +90,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    return handleCreateProject(req, res, authCheck.scope);
+    return res.status(501).json({ error: "Not implemented" });
   }
 }

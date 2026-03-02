@@ -1,7 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { logger } from "@hanzo/shared/src/server";
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
-import { handleGetOrganizations, handleCreateOrganization } from "@/src/ee/features/admin-api/server/organizations";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSelfHostedInstancePlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
@@ -12,8 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    // Verify admin API authentication, only allow on self-hosted (not on Hanzo Cloud)
-    if (!AdminApiAuthService.handleAdminAuth(req, res)) {
+    if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
     }
 
@@ -28,15 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // For GET requests, return all organizations
-    if (req.method === "GET") {
-      return await handleGetOrganizations(req, res);
-    }
-
-    // For POST requests, create a new organization
-    if (req.method === "POST") {
-      return await handleCreateOrganization(req, res);
-    }
+    res.status(501).json({ error: "Not implemented" });
   } catch (e) {
     logger.error("Failed to process organization request", e);
     res.status(500).json({ error: "Internal server error" });

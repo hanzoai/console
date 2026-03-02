@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import useSessionStorage from "@/src/components/useSessionStorage";
-import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
+import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { AnnotationQueueItemPage } from "@/src/features/annotation-queues/components/AnnotationQueueItemPage";
 import { api } from "@/src/utils/api";

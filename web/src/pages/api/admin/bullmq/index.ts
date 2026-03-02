@@ -9,7 +9,7 @@ import {
   IngestionEvent,
   OtelIngestionQueue,
 } from "@hanzo/shared/src/server";
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 
 /* 
 This API route is used by Hanzo Cloud to retry failed bullmq jobs.
@@ -42,11 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    if (
-      !AdminApiAuthService.handleAdminAuth(req, res, {
-        isAllowedOnHanzoCloud: true,
-      })
-    ) {
+    if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
     }
 

@@ -3,11 +3,6 @@ import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
-import {
-  validateQueryAndExtractId,
-  handleGetApiKeys,
-  handleCreateApiKey,
-} from "@/src/ee/features/admin-api/server/projects/projectById/apiKeys";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -46,33 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const projectId = validateQueryAndExtractId(req.query);
-    if (!projectId) {
-      return res.status(400).json({ message: "Invalid project ID" });
-    }
-
-    // Check if project exists and belongs to the organization
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        orgId: authCheck.scope.orgId,
-      },
-    });
-
-    if (!project) {
-      return res.status(404).json({ message: "Project not found or you don't have access to it" });
-    }
-
-    // Handle different HTTP methods
-    switch (req.method) {
-      case "GET":
-        return await handleGetApiKeys(req, res, projectId);
-      case "POST":
-        return await handleCreateApiKey(req, res, projectId, authCheck.scope.orgId);
-      default:
-        res.status(405).json({ message: "Method Not Allowed" });
-        return;
-    }
+    return res.status(501).json({ error: "Not implemented" });
   } catch (e) {
     logger.error("Failed to process project API key request", e);
     res.status(500).json({ message: "Internal server error" });

@@ -2,7 +2,6 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
-import { handleUpdateProject, handleDeleteProject } from "@/src/ee/features/admin-api/server/projects/projectById";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
@@ -62,12 +61,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Route to the appropriate handler based on HTTP method
-  if (req.method === "PUT") {
-    return handleUpdateProject(req, res, projectId, authCheck.scope);
-  }
-
-  if (req.method === "DELETE") {
-    return handleDeleteProject(req, res, projectId, authCheck.scope);
-  }
+  return res.status(501).json({ error: "Not implemented" });
 }

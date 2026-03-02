@@ -2,7 +2,7 @@
 
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 
-import { useBillingInformation } from "@/src/ee/features/billing/components/useBillingInformation";
+import { useBillingInformation } from "@/src/features/billing/components/useBillingInformation";
 
 export const BillingCurrentPlanLabel = () => {
   const { planLabel, cancellation } = useBillingInformation();

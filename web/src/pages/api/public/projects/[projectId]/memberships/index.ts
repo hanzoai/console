@@ -3,11 +3,6 @@ import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
-import {
-  handleGetMemberships,
-  handleUpdateMembership,
-  handleDeleteMembership,
-} from "@/src/ee/features/admin-api/server/projects/projectById/memberships";
 
 import { type NextApiRequest, type NextApiResponse } from "next";
 
@@ -85,19 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Route to the appropriate handler based on HTTP method
   try {
-    switch (req.method) {
-      case "GET":
-        return handleGetMemberships(req, res, projectId, authCheck.scope.orgId);
-      case "PUT":
-        return handleUpdateMembership(req, res, projectId, authCheck.scope.orgId);
-      case "DELETE":
-        return handleDeleteMembership(req, res, projectId, authCheck.scope.orgId);
-      default:
-        // This should never happen due to the check at the beginning
-        return res.status(405).json({
-          error: "Method not allowed",
-        });
-    }
+    return res.status(501).json({ error: "Not implemented" });
   } catch (error) {
     logger.error(`Error handling project memberships for ${req.method} on project ${projectId}`, error);
     return res.status(500).json({

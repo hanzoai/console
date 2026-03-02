@@ -26,11 +26,16 @@ import WorkOSProvider from "next-auth/providers/workos";
 import WordPressProvider from "next-auth/providers/wordpress";
 import { type Provider } from "next-auth/providers/index";
 import { getCookieName, getCookieOptions } from "./utils/cookies";
-import {
-  findMultiTenantSsoConfig,
-  getSsoAuthProviderIdForDomain,
-  loadSsoProviders,
-} from "@/src/ee/features/multi-tenant-sso/utils";
+// Multi-tenant SSO stubs — Hanzo uses IAM, not per-domain SSO
+function getSsoAuthProviderIdForDomain(_domain: string): string | null {
+  return null;
+}
+async function findMultiTenantSsoConfig(_params: { providerId?: string; domain?: string }) {
+  return { isMultiTenantSsoProvider: false, domain: "" };
+}
+async function loadSsoProviders(): Promise<[]> {
+  return [];
+}
 import { ENTERPRISE_SSO_REQUIRED_MESSAGE } from "@/src/features/auth/constants";
 import { z } from "zod/v4";
 import { CloudConfigSchema } from "@hanzo/shared";

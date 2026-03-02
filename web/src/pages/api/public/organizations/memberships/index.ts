@@ -2,12 +2,6 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
-import {
-  handleGetMemberships,
-  handleUpdateMembership,
-  handleDeleteMembership,
-} from "@/src/ee/features/admin-api/server/memberships";
-
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
@@ -50,19 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Route to the appropriate handler based on HTTP method
   try {
-    switch (req.method) {
-      case "GET":
-        return handleGetMemberships(req, res, authCheck.scope.orgId);
-      case "PUT":
-        return handleUpdateMembership(req, res, authCheck.scope.orgId);
-      case "DELETE":
-        return handleDeleteMembership(req, res, authCheck.scope.orgId);
-      default:
-        // This should never happen due to the check at the beginning
-        return res.status(405).json({
-          error: "Method not allowed",
-        });
-    }
+    return res.status(501).json({ error: "Not implemented" });
   } catch (error) {
     logger.error(`Error handling organization memberships for ${req.method}`, error);
     return res.status(500).json({

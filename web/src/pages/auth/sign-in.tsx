@@ -25,7 +25,10 @@ import { useForm } from "react-hook-form";
 import * as z from "zod/v4";
 import { CloudPrivacyNotice } from "@/src/features/auth/components/AuthCloudPrivacyNotice";
 import { PasswordInput } from "@/src/components/ui/password-input";
-import { isAnySsoConfigured } from "@/src/ee/features/multi-tenant-sso/utils";
+// Hanzo uses IAM — multi-tenant SSO not applicable
+function isAnySsoConfigured(): boolean {
+  return false;
+}
 import { Code, Key, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { captureException } from "@sentry/nextjs";

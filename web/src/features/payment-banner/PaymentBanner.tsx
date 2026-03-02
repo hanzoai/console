@@ -4,7 +4,7 @@ import { AlertCircle, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
-import { useIsCloudBillingAvailable } from "@/src/ee/features/billing/utils/isCloudBilling";
+import { useIsCloudBillingAvailable } from "@/src/features/billing/utils/isCloudBilling";
 import { usePaymentBannerHeight } from "./PaymentBannerContext";
 import { cn } from "@/src/utils/tailwind";
 import { env } from "@/src/env.mjs";

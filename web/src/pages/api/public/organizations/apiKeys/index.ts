@@ -2,8 +2,6 @@ import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger, redis } from "@hanzo/shared/src/server";
-import { handleGetApiKeys } from "@/src/ee/features/admin-api/server/organizations/apiKeys";
-
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
@@ -46,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Route to the handler
   try {
-    return handleGetApiKeys(req, res, authCheck.scope.orgId);
+    return res.status(501).json({ error: "Not implemented" });
   } catch (error) {
     logger.error(`Error handling organization API keys for ${req.method}`, error);
     return res.status(500).json({

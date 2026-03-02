@@ -2,7 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod/v4";
 import { v4 as uuidv4 } from "uuid";
 import { logger, QueueName, getQueue, QueueJobs } from "@hanzo/shared/src/server";
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { prisma } from "@hanzo/shared/src/db";
 
 const ManageEvalBody = z.discriminatedUnion("action", [
@@ -21,11 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    if (
-      !AdminApiAuthService.handleAdminAuth(req, res, {
-        isAllowedOnHanzoCloud: true,
-      })
-    ) {
+    if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
     }
 

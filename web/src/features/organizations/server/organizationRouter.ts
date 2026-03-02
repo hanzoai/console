@@ -10,9 +10,6 @@ import { TRPCError } from "@trpc/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { parseDbOrg } from "@hanzo/shared";
 import { redis } from "@hanzo/shared/src/server";
-import { createBillingServiceFromContext } from "@/src/ee/features/billing/server/billingService";
-import { isCloudBillingEnabled } from "@/src/ee/features/billing/utils/isCloudBilling";
-
 import { env } from "@/src/env.mjs";
 import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
 
@@ -151,21 +148,7 @@ export const organizationsRouter = createTRPCRouter({
         });
       }
 
-      // Attempt to cancel subscription immediately (Cloud only) before deleting org
-      if (isCloudBillingEnabled()) {
-        try {
-          const billingService = createBillingServiceFromContext(ctx);
-          if (!billingService) throw new Error("Billing service not available");
-          await (billingService as any).cancelImmediatelyAndInvoice(input.orgId);
-        } catch (e) {
-          // If billing cancellation fails for reasons other than no subscription, abort deletion
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to cancel subscription prior to organization deletion",
-            cause: e as Error,
-          });
-        }
-      }
+      // Cloud billing cancellation handled via Hanzo Commerce webhooks
 
       const organization = await ctx.prisma.organization.delete({
         where: {

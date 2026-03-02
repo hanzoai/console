@@ -5,7 +5,7 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
 import { numberFormatter, compactNumberFormatter } from "@/src/utils/numbers";
 import { type Plan } from "@hanzo/shared";
-import { MAX_EVENTS_FREE_PLAN } from "@/src/ee/features/billing/constants";
+import { MAX_EVENTS_FREE_PLAN } from "@/src/features/billing/constants";
 
 export const BillingUsageChart = () => {
   const organization = useQueryOrganization();
@@ -56,20 +56,14 @@ export const BillingUsageChart = () => {
                 <div
                   className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted"
                   role="progressbar"
-                  aria-valuenow={Math.min(
-                    (usage.data.usageCount / hobbyPlanLimit) * 100,
-                    100,
-                  )}
+                  aria-valuenow={Math.min((usage.data.usageCount / hobbyPlanLimit) * 100, 100)}
                   aria-valuemin={0}
                   aria-valuemax={100}
                 >
                   <div
                     className="h-full rounded-full bg-primary transition-all"
                     style={{
-                      width: `${Math.min(
-                        (usage.data.usageCount / hobbyPlanLimit) * 100,
-                        100,
-                      )}%`,
+                      width: `${Math.min((usage.data.usageCount / hobbyPlanLimit) * 100, 100)}%`,
                     }}
                   />
                 </div>

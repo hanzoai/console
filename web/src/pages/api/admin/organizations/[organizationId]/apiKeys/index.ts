@@ -1,12 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { logger } from "@hanzo/shared/src/server";
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
-import {
-  validateQueryAndExtractId,
-  handleGetApiKeys,
-  handleCreateApiKey,
-} from "@/src/ee/features/admin-api/server/organizations/apiKeys";
-import { prisma } from "@hanzo/shared/src/db";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSelfHostedInstancePlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
@@ -17,8 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    // Verify admin API authentication, only allow on self-hosted (not on Hanzo Cloud)
-    if (!AdminApiAuthService.handleAdminAuth(req, res)) {
+    if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
     }
 
@@ -33,30 +26,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const organizationId = validateQueryAndExtractId(req.query);
-    if (!organizationId) {
+    const { organizationId } = req.query;
+    if (!organizationId || typeof organizationId !== "string") {
       return res.status(400).json({ error: "Invalid organization ID" });
     }
 
-    // Check if organization exists
-    const organization = await prisma.organization.findUnique({
-      where: { id: organizationId },
-    });
-
-    if (!organization) {
-      return res.status(404).json({ error: "Organization not found" });
-    }
-
-    // Handle different HTTP methods
-    switch (req.method) {
-      case "GET":
-        return await handleGetApiKeys(req, res, organizationId);
-      case "POST":
-        return await handleCreateApiKey(req, res, organizationId);
-      default:
-        res.status(405).json({ error: "Method Not Allowed" });
-        return;
-    }
+    res.status(501).json({ error: "Not implemented" });
   } catch (e) {
     logger.error("Failed to process organization API key request", e);
     res.status(500).json({ error: "Internal server error" });

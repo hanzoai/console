@@ -92,7 +92,7 @@ import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 import superjson from "superjson";
 import { ZodError as _ZodError } from "zod/v4";
 
-import { AdminApiAuthService } from "@/src/ee/features/admin-api/server/adminApiAuth";
+import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { env } from "@/src/env.mjs";
 import { BaseError, parseIO } from "@hanzo/shared";
 
@@ -588,7 +588,7 @@ const enforceAdminAuth = t.middleware(async (opts) => {
     });
   }
 
-  const adminAuthResult = AdminApiAuthService.verifyAdminAuthFromAuthString(result.data.adminApiKey);
+  const adminAuthResult = AdminApiAuthService.verifyAuthString(result.data.adminApiKey);
 
   if (!adminAuthResult.isAuthorized) {
     throw new TRPCError({

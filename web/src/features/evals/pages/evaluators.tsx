@@ -8,7 +8,7 @@ import { getEvalsTabs, EVALS_TABS } from "@/src/features/navigation/utils/evals-
 import { ActionButton } from "@/src/components/ActionButton";
 import { api } from "@/src/utils/api";
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
-import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
+import { SupportOrUpgradePage } from "@/src/features/billing/components/SupportOrUpgradePage";
 import { EvaluatorsOnboarding } from "@/src/components/onboarding/EvaluatorsOnboarding";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
 
