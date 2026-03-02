@@ -10,6 +10,3 @@ export async function billingWebhookApiHandler(_req: NextRequest) {
     { status: 501 },
   );
 }
-
-/** @deprecated Use billingWebhookApiHandler instead */
-export const stripeWebhookApiHandler = billingWebhookApiHandler;

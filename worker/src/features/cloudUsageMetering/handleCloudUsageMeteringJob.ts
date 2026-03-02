@@ -1,6 +1,5 @@
-import { parseDbOrg, Prisma } from "@hanzo/shared";
+import { parseDbOrg } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
-import Stripe from "stripe";
 import { env } from "../../env";
 import {
   CloudUsageMeteringQueue,
@@ -16,10 +15,40 @@ import { backOff } from "exponential-backoff";
 
 const delayFromStartOfInterval = 3600000 + 5 * 60 * 1000; // 5 minutes after the end of the interval
 
+/**
+ * POST a usage meter event to the Hanzo Commerce service.
+ */
+async function reportUsageToCommerce(params: {
+  orgId: string;
+  eventName: string;
+  timestamp: number;
+  value: number;
+}): Promise<void> {
+  const url = new URL("/usage/meter", env.COMMERCE_API_URL!);
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.COMMERCE_SERVICE_TOKEN}`,
+      "Content-Type": "application/json",
+      "X-Org-ID": params.orgId,
+    },
+    body: JSON.stringify({
+      event_name: params.eventName,
+      timestamp: params.timestamp,
+      value: params.value,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Commerce /usage/meter returned ${res.status}: ${body}`);
+  }
+}
+
 export const handleCloudUsageMeteringJob = async (job: Job) => {
-  if (!env.STRIPE_SECRET_KEY) {
-    logger.warn("[CLOUD USAGE METERING] Stripe secret key not found");
-    throw new Error("Stripe secret key not found");
+  if (!env.COMMERCE_API_URL || !env.COMMERCE_SERVICE_TOKEN) {
+    logger.warn("[CLOUD USAGE METERING] Commerce API not configured");
+    throw new Error("Commerce API not configured (COMMERCE_API_URL / COMMERCE_SERVICE_TOKEN)");
   }
 
   // Get cron job, create if it does not exist
@@ -80,13 +109,13 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     `[CLOUD USAGE METERING] Job running for interval ${meterIntervalStart.toISOString()} - ${meterIntervalEnd.toISOString()}`,
   );
 
-  // find all organizations which have a stripe org id set up
+  // find all organizations with billing configured
   const organizations = (
     await prisma.organization.findMany({
       where: {
         cloudConfig: {
-          path: ["stripe", "customerId"],
-          not: Prisma.DbNull,
+          path: ["billing", "customerId"],
+          not: { equals: null },
         },
       },
       include: {
@@ -116,10 +145,7 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     end: meterIntervalEnd,
   });
 
-  // setup stripe client
-  const stripe = new Stripe(env.STRIPE_SECRET_KEY);
-
-  // for each org, calculate the meter and push to stripe
+  // for each org, calculate the meter and push to Commerce
   let countProcessedOrgs = 0;
   let countProcessedObservations = 0;
   let countProcessedEvents = 0;
@@ -127,11 +153,10 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
     // update progress to prevent job from being stalled
     job.updateProgress(countProcessedOrgs / organizations.length);
 
-    const stripeCustomerId = org.cloudConfig?.stripe?.customerId;
-    if (!stripeCustomerId) {
-      // should not happen
-      traceException(`[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`);
-      logger.error(`[CLOUD USAGE METERING] Stripe customer id not found for org ${org.id}`);
+    const customerId = org.cloudConfig?.billing?.customerId;
+    if (!customerId) {
+      traceException(`[CLOUD USAGE METERING] Billing customer id not found for org ${org.id}`);
+      logger.error(`[CLOUD USAGE METERING] Billing customer id not found for org ${org.id}`);
       continue;
     }
 
@@ -141,18 +166,16 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
       .reduce((sum, p) => sum + p.count, 0);
 
     logger.info(
-      `[CLOUD USAGE METERING] Job for org ${org.id} - ${stripeCustomerId} stripe customer id - ${countObservations} observations`,
+      `[CLOUD USAGE METERING] Job for org ${org.id} - ${customerId} customer id - ${countObservations} observations`,
     );
     if (countObservations > 0) {
       await backOff(
         async () =>
-          await stripe.billing.meterEvents.create({
-            event_name: "tracing_observations",
+          await reportUsageToCommerce({
+            orgId: org.id,
+            eventName: "tracing_observations",
             timestamp: meterIntervalEnd.getTime() / 1000,
-            payload: {
-              stripe_customer_id: stripeCustomerId,
-              value: countObservations.toString(), // value is a string in stripe
-            },
+            value: countObservations,
           }),
         {
           numOfAttempts: 3,
@@ -169,19 +192,16 @@ export const handleCloudUsageMeteringJob = async (job: Job) => {
       .reduce((sum, p) => sum + p.count, 0);
     const countEvents = countScores + countTraces + countObservations;
     logger.info(
-      `[CLOUD USAGE METERING] Job for org ${org.id} - ${stripeCustomerId} stripe customer id - ${countEvents} events`,
+      `[CLOUD USAGE METERING] Job for org ${org.id} - ${customerId} customer id - ${countEvents} events`,
     );
     if (countEvents > 0) {
-      // retrying the stripe call in case of an HTTP error
       await backOff(
         async () =>
-          await stripe.billing.meterEvents.create({
-            event_name: "tracing_events",
+          await reportUsageToCommerce({
+            orgId: org.id,
+            eventName: "tracing_events",
             timestamp: meterIntervalEnd.getTime() / 1000,
-            payload: {
-              stripe_customer_id: stripeCustomerId,
-              value: countEvents.toString(), // value is a string in stripe
-            },
+            value: countEvents,
           }),
         {
           numOfAttempts: 3,

@@ -27,7 +27,7 @@ export function PaymentBanner() {
       return null;
     }
 
-    return organization?.cloudConfig?.stripe?.subscriptionStatus;
+    return organization?.cloudConfig?.billing?.subscriptionStatus ?? organization?.cloudConfig?.stripe?.subscriptionStatus;
   }, [isCloudBilling, session.status, organization]);
 
   // Update banner height when component mounts/unmounts or when visibility changes

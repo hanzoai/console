@@ -13,13 +13,17 @@ export const BillingActionButtons = () => {
   const { organization, hasValidPaymentMethod, isLoading } = useBillingInformation();
   const { setOpen } = useSupportDrawer();
 
+  const activeSubscriptionId =
+    organization?.cloudConfig?.billing?.activeSubscriptionId ??
+    organization?.cloudConfig?.stripe?.activeSubscriptionId;
+
   // Show pricing page button
   const shouldDisableChangePlan = useMemo(() => {
-    if (!organization?.cloudConfig?.stripe?.activeSubscriptionId) {
+    if (!activeSubscriptionId) {
       return false; // always show for hobby plan users
     }
     return !hasValidPaymentMethod;
-  }, [organization?.cloudConfig?.stripe?.activeSubscriptionId, hasValidPaymentMethod]);
+  }, [activeSubscriptionId, hasValidPaymentMethod]);
 
   // Do not show checkout or customer portal if manual plan is set in cloud config
   if (organization?.cloudConfig?.plan) {
@@ -43,7 +47,7 @@ export const BillingActionButtons = () => {
         {/* Always show – also for people who are currently on hobby plan */}
         <BillingSwitchPlanDialog disabled={shouldDisableChangePlan} />
 
-        {organization?.cloudConfig?.stripe?.activeSubscriptionId && (
+        {activeSubscriptionId && (
           <>
             <BillingPortalButton orgId={organization.id} title="Update Billing Details" variant="secondary" />
             <SubscriptionCancellationButton orgId={organization.id} variant="secondary" />
@@ -55,7 +59,7 @@ export const BillingActionButtons = () => {
           </Link>
         </Button>
       </div>
-      {organization?.cloudConfig?.stripe?.activeSubscriptionId && !hasValidPaymentMethod && !isLoading && (
+      {activeSubscriptionId && !hasValidPaymentMethod && !isLoading && (
         <p className="text-sm text-red-600">You do not have a valid payment method. Please Update Billing Details.</p>
       )}
     </div>

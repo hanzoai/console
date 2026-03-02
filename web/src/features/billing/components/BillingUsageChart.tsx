@@ -31,7 +31,7 @@ export const BillingUsageChart = () => {
     : "Events";
 
   if (usage.data === null) {
-    // Might happen in dev mode if STRIPE_SECRET_KEY is not set
+    // Might happen in dev mode if Commerce service is not configured
     // This avoids errors for all developers not working on or testing the billing features
     return null;
   }

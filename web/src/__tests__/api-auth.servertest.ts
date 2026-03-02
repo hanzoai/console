@@ -47,7 +47,7 @@ describe("Authenticate API calls", () => {
       expect(auth2.validKey).toBe(true);
     });
 
-    it("should create new api key with stripe data and succeed with new key", async () => {
+    it("should create new api key with billing data and succeed with new key", async () => {
       await createAPIKey();
 
       await prisma.organization.update({
@@ -56,7 +56,7 @@ describe("Authenticate API calls", () => {
         },
         data: {
           cloudConfig: {
-            stripe: {
+            billing: {
               customerId: "cus_test123",
               activeSubscriptionId: "sub_test123",
               activeProductId: "prod_test123",

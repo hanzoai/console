@@ -41,7 +41,3 @@ export const billingProducts: BillingProduct[] = [
 export const mapProductIdToPlan = (productId: string): string | null =>
   billingProducts.find((product) => product.productId === productId)?.name ?? null;
 
-/** @deprecated Use billingProducts instead */
-export const stripeProducts = billingProducts;
-/** @deprecated Use mapProductIdToPlan instead */
-export const mapStripeProductIdToPlan = mapProductIdToPlan;

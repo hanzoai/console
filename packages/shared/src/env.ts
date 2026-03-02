@@ -108,7 +108,6 @@ const EnvSchema = z.object({
   HANZO_AZURE_SKIP_CONTAINER_CHECK: z.enum(["true", "false"]).default("true"),
   HANZO_USE_GOOGLE_CLOUD_STORAGE: z.enum(["true", "false"]).default("false"),
   HANZO_GOOGLE_CLOUD_STORAGE_CREDENTIALS: z.string().optional(),
-  STRIPE_SECRET_KEY: z.string().optional(),
 
   // Hanzo trial expiry (days)
   HANZO_TRIAL_EXPIRE: z.string().optional(),
@@ -225,6 +224,10 @@ const EnvSchema = z.object({
 
   // EE License
   HANZO_EE_LICENSE_KEY: z.string().optional(),
+
+  // Cloud billing (via Hanzo Commerce service)
+  COMMERCE_API_URL: z.string().optional(),
+  COMMERCE_SERVICE_TOKEN: z.string().optional(),
 
   // Ingestion Masking (EE feature)
   HANZO_INGESTION_MASKING_CALLBACK_URL: z.string().url().optional(),

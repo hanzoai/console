@@ -16,7 +16,8 @@ const EnvSchema = z.object({
 
   NEXT_PUBLIC_HANZO_CLOUD_REGION: z.enum(["US", "EU", "STAGING", "DEV", "HIPAA"]).optional(),
 
-  STRIPE_SECRET_KEY: z.string().optional(),
+  COMMERCE_API_URL: z.string().optional(),
+  COMMERCE_SERVICE_TOKEN: z.string().optional(),
 
   HANZO_CACHE_AUTOMATIONS_ENABLED: z.enum(["true", "false"]).default("true"),
   HANZO_CACHE_AUTOMATIONS_TTL_SECONDS: z.coerce.number().default(60),

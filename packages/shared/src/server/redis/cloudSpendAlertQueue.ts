@@ -8,7 +8,7 @@ export class CloudSpendAlertQueue {
   private static instance: Queue | null = null;
 
   public static getInstance(): Queue | null {
-    if (!env.STRIPE_SECRET_KEY) {
+    if (!env.COMMERCE_SERVICE_TOKEN) {
       return null;
     }
 

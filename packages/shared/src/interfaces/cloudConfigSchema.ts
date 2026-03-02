@@ -7,14 +7,29 @@ export const CloudConfigSchema = z.object({
   monthlyObservationLimit: z.number().int().positive().optional(),
   // used for table and dashboard queries
   defaultLookBackDays: z.number().int().positive().optional(),
-  // need to update stripe webhook if you change this, it fetches from db via these fields
+  // Billing configuration — managed by Hanzo Commerce service
+  billing: z
+    .object({
+      customerId: z.string().nullish(),
+      activeSubscriptionId: z.string().nullish(),
+      activeProductId: z.string().nullish(),
+      activeUsageProductId: z.string().nullish(),
+      subscriptionStatus: z.string().nullish(),
+    })
+    .transform((data) => ({
+      ...data,
+      isLegacySubscription: data?.activeProductId != null && data?.activeUsageProductId == null,
+    }))
+    .nullish(),
+
+  // Backwards compat: alias stripe → billing for orgs with old cloudConfig JSON
   stripe: z
     .object({
       customerId: z.string().nullish(),
       activeSubscriptionId: z.string().nullish(),
       activeProductId: z.string().nullish(),
       activeUsageProductId: z.string().nullish(),
-      subscriptionStatus: z.string().nullish(), // should be one of ["active","past_due", "unpaid", "canceled", "incomplete", "incomplete_expired", "paused"]; we don't enforce to have a backwards compatibility for this field
+      subscriptionStatus: z.string().nullish(),
     })
     .transform((data) => ({
       ...data,

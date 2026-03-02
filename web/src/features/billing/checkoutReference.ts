@@ -50,11 +50,3 @@ export function isCheckoutReferenceFromCurrentCloudRegion(clientReferenceId: str
   return clientReferenceId.startsWith(`${currentRegion}_`);
 }
 
-/** @deprecated Use createCheckoutReference instead */
-export const createStripeClientReference = createCheckoutReference;
-/** @deprecated Use parseCheckoutReference instead */
-export const parseStripeClientReference = parseCheckoutReference;
-/** @deprecated Use getOrgIdFromCheckoutReference instead */
-export const getOrgIdFromStripeClientReference = getOrgIdFromCheckoutReference;
-/** @deprecated Use isCheckoutReferenceFromCurrentCloudRegion instead */
-export const isStripeClientReferenceFromCurrentCloudRegion = isCheckoutReferenceFromCurrentCloudRegion;
