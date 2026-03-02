@@ -20,14 +20,7 @@ export {
  */
 export type ObservationEvalConfig = Pick<
   JobConfiguration,
-  | "id"
-  | "projectId"
-  | "filter"
-  | "sampling"
-  | "evalTemplateId"
-  | "scoreName"
-  | "targetObject"
-  | "variableMapping"
+  "id" | "projectId" | "filter" | "sampling" | "evalTemplateId" | "scoreName" | "targetObject" | "variableMapping"
 >;
 
 /**

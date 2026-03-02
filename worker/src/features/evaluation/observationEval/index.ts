@@ -6,8 +6,4 @@ export {
   createObservationEvalProcessorDeps,
   type ObservationEvalProcessorDeps,
 } from "./observationEvalProcessor";
-export type {
-  ObservationForEval,
-  ObservationEvalConfig,
-  ObservationEvalSchedulerDeps,
-} from "./types";
+export type { ObservationForEval, ObservationEvalConfig, ObservationEvalSchedulerDeps } from "./types";

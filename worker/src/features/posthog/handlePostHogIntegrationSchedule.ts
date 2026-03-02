@@ -1,9 +1,5 @@
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  PostHogIntegrationProcessingQueue,
-  QueueJobs,
-  logger,
-} from "@hanzo/shared/src/server";
+import { PostHogIntegrationProcessingQueue, QueueJobs, logger } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
 export const handlePostHogIntegrationSchedule = async () => {
@@ -22,15 +18,12 @@ export const handlePostHogIntegrationSchedule = async () => {
     return;
   }
 
-  const postHogIntegrationProcessingQueue =
-    PostHogIntegrationProcessingQueue.getInstance();
+  const postHogIntegrationProcessingQueue = PostHogIntegrationProcessingQueue.getInstance();
   if (!postHogIntegrationProcessingQueue) {
     throw new Error("PostHogIntegrationProcessingQueue not initialized");
   }
 
-  logger.info(
-    `[POSTHOG] Scheduling ${postHogIntegrationProjects.length} PostHog integrations for sync`,
-  );
+  logger.info(`[POSTHOG] Scheduling ${postHogIntegrationProjects.length} PostHog integrations for sync`);
 
   await postHogIntegrationProcessingQueue.addBulk(
     postHogIntegrationProjects.map((integration) => ({

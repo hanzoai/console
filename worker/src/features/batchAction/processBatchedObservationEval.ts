@@ -64,13 +64,8 @@ export async function processBatchedObservationEval(params: {
         traceException(result.reason);
 
         if (errors.length < MAX_ERROR_LOG_LINES) {
-          const errorMessage =
-            result.reason instanceof Error
-              ? result.reason.message
-              : "Unknown error";
-          errors.push(
-            `Row ${totalCount - batch.length + i + 1}: ${errorMessage}`,
-          );
+          const errorMessage = result.reason instanceof Error ? result.reason.message : "Unknown error";
+          errors.push(`Row ${totalCount - batch.length + i + 1}: ${errorMessage}`);
         }
       }
     }
@@ -120,13 +115,10 @@ export async function processBatchedObservationEval(params: {
     },
   });
 
-  logger.info(
-    `Completed observation-run-batched-evaluation action ${batchActionId}`,
-    {
-      totalCount,
-      processedCount,
-      failedCount,
-      finalStatus,
-    },
-  );
+  logger.info(`Completed observation-run-batched-evaluation action ${batchActionId}`, {
+    totalCount,
+    processedCount,
+    failedCount,
+    finalStatus,
+  });
 }

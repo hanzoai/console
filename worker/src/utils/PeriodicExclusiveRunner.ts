@@ -70,9 +70,7 @@ export abstract class PeriodicExclusiveRunner extends PeriodicRunner {
     span?.setAttribute("lock.key", this.lock.key);
 
     if (result === null) {
-      logger.debug(
-        `${this.instanceName}: Lock not acquired, another worker is processing`,
-      );
+      logger.debug(`${this.instanceName}: Lock not acquired, another worker is processing`);
     }
 
     return result ?? undefined;

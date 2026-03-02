@@ -1,9 +1,5 @@
 import { z } from "zod/v4";
-import {
-  DEFAULT_TRACE_ENVIRONMENT,
-  LLMAsJudgeExecutionEventSchema,
-  logger,
-} from "@hanzo/shared/src/server";
+import { DEFAULT_TRACE_ENVIRONMENT, LLMAsJudgeExecutionEventSchema, logger } from "@hanzo/shared/src/server";
 import {
   observationForEvalSchema,
   observationVariableMappingList,
@@ -53,9 +49,7 @@ export async function processObservationEval({
   event: z.infer<typeof LLMAsJudgeExecutionEventSchema>;
   deps?: ObservationEvalProcessorDeps;
 }): Promise<void> {
-  logger.debug(
-    `Processing observation eval job ${event.jobExecutionId} for project ${event.projectId}`,
-  );
+  logger.debug(`Processing observation eval job ${event.jobExecutionId} for project ${event.projectId}`);
 
   // Fetch job execution
   const job = await prisma.jobExecution.findFirst({
@@ -66,9 +60,7 @@ export async function processObservationEval({
   });
 
   if (!job) {
-    logger.info(
-      `Job execution ${event.jobExecutionId} not found. It may have been deleted.`,
-    );
+    logger.info(`Job execution ${event.jobExecutionId} not found. It may have been deleted.`);
 
     return;
   }
@@ -85,9 +77,7 @@ export async function processObservationEval({
   });
 
   if (!evalJobConfig || !evalJobConfig.evalTemplate) {
-    throw new UnrecoverableError(
-      `Job configuration or template not found for job ${job.id}`,
-    );
+    throw new UnrecoverableError(`Job configuration or template not found for job ${job.id}`);
   }
 
   // Download observation data from S3
@@ -95,14 +85,10 @@ export async function processObservationEval({
   let downloadedString: string;
 
   try {
-    downloadedString = await deps.downloadObservationFromS3(
-      event.observationS3Path,
-    );
+    downloadedString = await deps.downloadObservationFromS3(event.observationS3Path);
   } catch (e) {
     // S3 download failures are retryable (network issues, temporary unavailability)
-    throw new Error(
-      `Failed to download observation from S3 at ${event.observationS3Path}: ${e}`,
-    );
+    throw new Error(`Failed to download observation from S3 at ${event.observationS3Path}: ${e}`);
   }
 
   // Parse and validate the downloaded data - these are permanent failures
@@ -111,14 +97,10 @@ export async function processObservationEval({
     observationData = observationForEvalSchema.parse(parsedJson);
   } catch (e) {
     // JSON parse errors are permanent - the data won't change on retry
-    throw new UnrecoverableError(
-      `Invalid observation data from S3 at ${event.observationS3Path}: invalid JSON - ${e}`,
-    );
+    throw new UnrecoverableError(`Invalid observation data from S3 at ${event.observationS3Path}: invalid JSON - ${e}`);
   }
 
-  logger.debug(
-    `Downloaded observation data for job ${job.id}: span_id=${observationData.span_id}`,
-  );
+  logger.debug(`Downloaded observation data for job ${job.id}: span_id=${observationData.span_id}`);
 
   // Extract variables from observation
   const parsedVariableMapping = observationVariableMappingList.parse(
@@ -130,9 +112,7 @@ export async function processObservationEval({
     variableMapping: parsedVariableMapping,
   });
 
-  logger.debug(
-    `Extracted ${extractedVariables.length} variables for job ${job.id}`,
-  );
+  logger.debug(`Extracted ${extractedVariables.length} variables for job ${job.id}`);
 
   // Execute the shared LLM-as-a-judge evaluation
   await executeLLMAsJudgeEvaluation({

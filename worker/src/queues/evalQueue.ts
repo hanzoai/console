@@ -191,27 +191,16 @@ export const evalJobExecutorQueueProcessor = async (job: Job<TQueueJobTypes[Queu
  * Processor for observation-level LLM-as-a-judge evaluation jobs.
  * This handles evals triggered during OTEL ingestion for single observations.
  */
-export const llmAsJudgeExecutionQueueProcessor = async (
-  job: Job<TQueueJobTypes[QueueName.LLMAsJudgeExecution]>,
-) => {
+export const llmAsJudgeExecutionQueueProcessor = async (job: Job<TQueueJobTypes[QueueName.LLMAsJudgeExecution]>) => {
   try {
     logger.debug("Executing LLM-as-Judge Observation Evaluation Job", job.data);
 
     const span = getCurrentSpan();
 
     if (span) {
-      span.setAttribute(
-        "messaging.bullmq.job.input.jobExecutionId",
-        job.data.payload.jobExecutionId,
-      );
-      span.setAttribute(
-        "messaging.bullmq.job.input.projectId",
-        job.data.payload.projectId,
-      );
-      span.setAttribute(
-        "messaging.bullmq.job.input.retryBaggage.attempt",
-        job.data.retryBaggage?.attempt ?? 0,
-      );
+      span.setAttribute("messaging.bullmq.job.input.jobExecutionId", job.data.payload.jobExecutionId);
+      span.setAttribute("messaging.bullmq.job.input.projectId", job.data.payload.projectId);
+      span.setAttribute("messaging.bullmq.job.input.retryBaggage.attempt", job.data.retryBaggage?.attempt ?? 0);
     }
 
     await processObservationEval({ event: job.data.payload });
@@ -251,10 +240,7 @@ export const llmAsJudgeExecutionQueueProcessor = async (
       data: {
         status: JobExecutionStatus.ERROR,
         endTime: new Date(),
-        error:
-          isLLMCompletionError(e) || isUnrecoverableError(e)
-            ? e.message
-            : "An internal error occurred",
+        error: isLLMCompletionError(e) || isUnrecoverableError(e) ? e.message : "An internal error occurred",
         executionTraceId,
       },
     });
@@ -262,10 +248,7 @@ export const llmAsJudgeExecutionQueueProcessor = async (
     if (isLLMCompletionError(e) || isUnrecoverableError(e)) return;
 
     traceException(e);
-    logger.error(
-      `Failed LLM-as-Judge execution job for id ${job.data.payload.jobExecutionId}`,
-      e,
-    );
+    logger.error(`Failed LLM-as-Judge execution job for id ${job.data.payload.jobExecutionId}`, e);
 
     throw e;
   }

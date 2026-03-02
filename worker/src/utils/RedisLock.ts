@@ -88,9 +88,7 @@ export class RedisLock {
     const lockResult = await this.acquire();
 
     // Determine if we should proceed based on result and configuration
-    const shouldProceed =
-      lockResult === "acquired" ||
-      (lockResult === "skipped" && this.onUnavailable === "proceed");
+    const shouldProceed = lockResult === "acquired" || (lockResult === "skipped" && this.onUnavailable === "proceed");
 
     if (!shouldProceed) {
       return null;
@@ -124,28 +122,17 @@ export class RedisLock {
     await new Promise((resolve) => setTimeout(resolve, Math.random() * 10));
 
     try {
-      const result = await redis.set(
-        this.lockKey,
-        this.lockValue,
-        "EX",
-        this.ttlSeconds,
-        "NX",
-      );
+      const result = await redis.set(this.lockKey, this.lockValue, "EX", this.ttlSeconds, "NX");
       const acquired = result === "OK";
 
       if (acquired) {
-        logger.debug(
-          `[${this.name}] Acquired lock with TTL ${this.ttlSeconds}s`,
-        );
+        logger.debug(`[${this.name}] Acquired lock with TTL ${this.ttlSeconds}s`);
         return "acquired";
       }
 
       return "held_by_other";
     } catch (error) {
-      logger.error(
-        `[${this.name}] Failed to acquire lock due to an error`,
-        error,
-      );
+      logger.error(`[${this.name}] Failed to acquire lock due to an error`, error);
       // On error, allow processing but don't claim to hold the lock
       return "skipped";
     }
@@ -162,19 +149,12 @@ export class RedisLock {
     }
 
     try {
-      const result = await redis.eval(
-        RedisLock.RELEASE_LOCK_SCRIPT,
-        1,
-        this.lockKey,
-        this.lockValue,
-      );
+      const result = await redis.eval(RedisLock.RELEASE_LOCK_SCRIPT, 1, this.lockKey, this.lockValue);
       if (result === 1) {
         logger.debug(`[${this.name}] Released lock`);
         return true;
       } else {
-        logger.warn(
-          `[${this.name}] Lock was not released (not owned or already expired)`,
-        );
+        logger.warn(`[${this.name}] Lock was not released (not owned or already expired)`);
         return false;
       }
     } catch (error) {

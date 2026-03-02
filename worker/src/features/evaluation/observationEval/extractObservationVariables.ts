@@ -1,8 +1,5 @@
 import { type ObservationForEval } from "./types";
-import {
-  observationEvalVariableColumns,
-  type ObservationVariableMapping,
-} from "@hanzo/shared";
+import { observationEvalVariableColumns, type ObservationVariableMapping } from "@hanzo/shared";
 import { JSONPath } from "jsonpath-plus";
 import { logger } from "@hanzo/shared/src/server";
 
@@ -43,9 +40,7 @@ export function extractObservationVariables(
 
   for (const mapping of variableMapping) {
     // Direct property access - columnId is typed as keyof ObservationForEval
-    const internal = columns.find(
-      (col) => col.id === mapping.selectedColumnId,
-    )?.internal;
+    const internal = columns.find((col) => col.id === mapping.selectedColumnId)?.internal;
 
     if (!internal) {
       logger.info(
@@ -97,10 +92,7 @@ function applyJsonSelector(params: ApplyJsonSelectorParams): unknown {
       json: jsonValue,
     });
   } catch (error) {
-    logger.debug(
-      `Error applying JSON selector "${selector}". Falling back to original value.`,
-      { error },
-    );
+    logger.debug(`Error applying JSON selector "${selector}". Falling back to original value.`, { error });
     return value;
   }
 }
@@ -113,11 +105,7 @@ function parseUnknownToString(value: unknown): string {
     return "";
   }
 
-  if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
-  ) {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return value.toString();
   }
 

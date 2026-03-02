@@ -22,10 +22,7 @@ type ObservationForMapping = {
   metadata: unknown;
 };
 
-function formatMappingErrors(
-  observationId: string,
-  errors: MappingError[],
-): string {
+function formatMappingErrors(observationId: string, errors: MappingError[]): string {
   const details = errors.map((e) => e.message).join("; ");
   return `Observation ${observationId}: Mapping failed - ${details}`;
 }
@@ -101,8 +98,7 @@ async function processChunk(params: {
         errors: [
           ...mappingErrors,
           ...result.validationErrors.map(
-            (e) =>
-              `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
+            (e) => `Item ${e.itemIndex}: ${e.field} - ${e.errors.map((err) => err.message).join(", ")}`,
           ),
         ],
       };
@@ -126,10 +122,7 @@ async function processChunk(params: {
     return {
       processed: 0,
       failed: items.length + mappingFailedCount,
-      errors: [
-        ...mappingErrors,
-        `Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`,
-      ],
+      errors: [...mappingErrors, `Failed to create chunk: ${error instanceof Error ? error.message : "Unknown error"}`],
     };
   }
 }

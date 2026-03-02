@@ -1,11 +1,7 @@
 import { z } from "zod/v4";
 import { z as zodV3 } from "zod/v3";
 import { ScoreSourceEnum, ChatMessageRole } from "@hanzo/shared";
-import {
-  ChatMessageType,
-  eventTypes,
-  ScoreEventType,
-} from "@hanzo/shared/src/server";
+import { ChatMessageType, eventTypes, ScoreEventType } from "@hanzo/shared/src/server";
 import { compileTemplateString } from "../utils";
 import { ExtractedVariable } from "./observationEval/extractObservationVariables";
 
@@ -34,9 +30,7 @@ export interface CompileEvalPromptParams {
  * @returns The compiled prompt string
  */
 export function compileEvalPrompt(params: CompileEvalPromptParams): string {
-  const variableMap = Object.fromEntries(
-    params.variables.map(({ var: key, value }) => [key, value]),
-  );
+  const variableMap = Object.fromEntries(params.variables.map(({ var: key, value }) => [key, value]));
 
   return compileTemplateString(params.templatePrompt, variableMap);
 }
@@ -145,9 +139,7 @@ export function buildScoreEvent(params: BuildScoreEventParams): ScoreEventType {
  * @param variables - Array of extracted variables
  * @returns The environment string or undefined
  */
-export function getEnvironmentFromVariables(
-  variables: ExtractedVariable[],
-): string | undefined {
+export function getEnvironmentFromVariables(variables: ExtractedVariable[]): string | undefined {
   return variables.find((v) => v.environment)?.environment;
 }
 
@@ -167,9 +159,7 @@ export interface ValidateLLMResponseParams {
  */
 export function validateLLMResponse(
   params: ValidateLLMResponseParams,
-):
-  | { success: true; data: { score: number; reasoning: string } }
-  | { success: false; error: string } {
+): { success: true; data: { score: number; reasoning: string } } | { success: false; error: string } {
   const result = params.schema.safeParse(params.response);
 
   if (result.success) {

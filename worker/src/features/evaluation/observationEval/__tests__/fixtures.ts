@@ -2,24 +2,16 @@ import { vi } from "vitest";
 import { randomUUID } from "crypto";
 import { type Prisma } from "@hanzo/shared/src/db";
 import { type ObservationForEval, EvalTargetObject } from "@hanzo/shared";
-import {
-  type ObservationEvalConfig,
-  type ObservationEvalSchedulerDeps,
-} from "../types";
+import { type ObservationEvalConfig, type ObservationEvalSchedulerDeps } from "../types";
 import { type ObservationEvalProcessorDeps } from "../observationEvalProcessor";
-import {
-  type EvalExecutionDeps,
-  createMockEvalExecutionDeps,
-} from "../../evalExecutionDeps";
+import { type EvalExecutionDeps, createMockEvalExecutionDeps } from "../../evalExecutionDeps";
 
 /**
  * Creates a test ObservationForEval with sensible defaults.
  * All fields can be overridden.
  * Note: Uses snake_case field names matching eventRecordBaseSchema.
  */
-export function createTestObservation(
-  overrides: Partial<ObservationForEval> = {},
-): ObservationForEval {
+export function createTestObservation(overrides: Partial<ObservationForEval> = {}): ObservationForEval {
   return {
     // Core identifiers
     span_id: `obs-${randomUUID()}`,
@@ -83,9 +75,7 @@ export function createTestObservation(
 /**
  * Creates a test ObservationEvalConfig with sensible defaults.
  */
-export function createTestEvalConfig(
-  overrides: Partial<ObservationEvalConfig> = {},
-): ObservationEvalConfig {
+export function createTestEvalConfig(overrides: Partial<ObservationEvalConfig> = {}): ObservationEvalConfig {
   return {
     id: `config-${randomUUID()}`,
     projectId: "test-project-123",
@@ -94,9 +84,7 @@ export function createTestEvalConfig(
     evalTemplateId: `template-${randomUUID()}`,
     scoreName: "test-score",
     targetObject: EvalTargetObject.EVENT,
-    variableMapping: [
-      { templateVariable: "output", selectedColumnId: "output" },
-    ],
+    variableMapping: [{ templateVariable: "output", selectedColumnId: "output" }],
     ...overrides,
   };
 }
@@ -113,14 +101,10 @@ export function createMockSchedulerDeps(
   }> = {},
 ): ObservationEvalSchedulerDeps {
   return {
-    upsertJobExecution:
-      overrides.createJobExecution ??
-      vi.fn().mockResolvedValue({ id: `job-exec-${randomUUID()}` }),
+    upsertJobExecution: overrides.createJobExecution ?? vi.fn().mockResolvedValue({ id: `job-exec-${randomUUID()}` }),
     uploadObservationToS3:
-      overrides.uploadObservationToS3 ??
-      vi.fn().mockResolvedValue(`observations/test/obs-123.json`),
-    enqueueEvalJob:
-      overrides.enqueueEvalJob ?? vi.fn().mockResolvedValue(undefined),
+      overrides.uploadObservationToS3 ?? vi.fn().mockResolvedValue(`observations/test/obs-123.json`),
+    enqueueEvalJob: overrides.enqueueEvalJob ?? vi.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -136,8 +120,7 @@ export function createMockProcessorDeps(
 
   return {
     downloadObservationFromS3:
-      overrides.downloadObservationFromS3 ??
-      vi.fn().mockResolvedValue(JSON.stringify(defaultObservation)),
+      overrides.downloadObservationFromS3 ?? vi.fn().mockResolvedValue(JSON.stringify(defaultObservation)),
   };
 }
 
@@ -168,11 +151,9 @@ export function createMockJobExecution(
     id: overrides.id ?? `job-exec-${randomUUID()}`,
     projectId: overrides.projectId ?? "test-project-123",
     status: overrides.status ?? "PENDING",
-    jobConfigurationId:
-      overrides.jobConfigurationId ?? `config-${randomUUID()}`,
+    jobConfigurationId: overrides.jobConfigurationId ?? `config-${randomUUID()}`,
     jobInputTraceId: overrides.jobInputTraceId ?? `trace-${randomUUID()}`,
-    jobInputObservationId:
-      overrides.jobInputObservationId ?? `obs-${randomUUID()}`,
+    jobInputObservationId: overrides.jobInputObservationId ?? `obs-${randomUUID()}`,
     jobInputDatasetItemId: overrides.jobInputDatasetItemId ?? null,
     error: overrides.error ?? null,
     createdAt: overrides.createdAt ?? new Date(),
@@ -220,9 +201,7 @@ export function createMockJobConfiguration(
     scoreName: overrides.scoreName ?? "test-score",
     targetObject: overrides.targetObject ?? EvalTargetObject.EVENT,
     filter: overrides.filter ?? [],
-    variableMapping: overrides.variableMapping ?? [
-      { templateVariable: "output", selectedColumnId: "output" },
-    ],
+    variableMapping: overrides.variableMapping ?? [{ templateVariable: "output", selectedColumnId: "output" }],
     sampling: overrides.sampling ?? "1.0",
     delay: overrides.delay ?? 0,
     status: overrides.status ?? "ACTIVE",
@@ -261,9 +240,7 @@ export function createMockEvalTemplate(
     projectId: overrides.projectId ?? "test-project-123",
     name: overrides.name ?? "Test Evaluator",
     version: overrides.version ?? 1,
-    prompt:
-      overrides.prompt ??
-      "Evaluate the following output: {{output}}. Score 0-1.",
+    prompt: overrides.prompt ?? "Evaluate the following output: {{output}}. Score 0-1.",
     model: overrides.model ?? "gpt-4",
     provider: overrides.provider ?? "openai",
     modelParams: overrides.modelParams ?? {},
@@ -292,13 +269,9 @@ export function createFullyMockedEvalPipeline(
   const observation = config.observation ?? createTestObservation();
 
   const schedulerDeps: ObservationEvalSchedulerDeps = {
-    upsertJobExecution: vi
-      .fn()
-      .mockResolvedValue({ id: `job-exec-${randomUUID()}` }),
+    upsertJobExecution: vi.fn().mockResolvedValue({ id: `job-exec-${randomUUID()}` }),
     uploadObservationToS3: vi.fn().mockImplementation(async (params) => {
-      const path =
-        config.s3UploadPath ??
-        `evals/${params.projectId}/observations/${params.observationId}.json`;
+      const path = config.s3UploadPath ?? `evals/${params.projectId}/observations/${params.observationId}.json`;
       uploadedData.set(path, params.data);
       return path;
     }),
@@ -316,11 +289,7 @@ export function createFullyMockedEvalPipeline(
   };
 
   const executionDeps: EvalExecutionDeps = createMockEvalExecutionDeps({
-    callLLM: vi
-      .fn()
-      .mockResolvedValue(
-        config.llmResponse ?? { score: 0.85, reasoning: "Good response" },
-      ),
+    callLLM: vi.fn().mockResolvedValue(config.llmResponse ?? { score: 0.85, reasoning: "Good response" }),
     fetchModelConfig: vi.fn().mockResolvedValue({
       valid: true,
       config: {

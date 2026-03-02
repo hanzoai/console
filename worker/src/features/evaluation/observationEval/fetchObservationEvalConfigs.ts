@@ -1,10 +1,6 @@
 import { EvalTargetObject } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
-import {
-  logger,
-  hasNoEvalConfigsCache,
-  setNoEvalConfigsCache,
-} from "@hanzo/shared/src/server";
+import { logger, hasNoEvalConfigsCache, setNoEvalConfigsCache } from "@hanzo/shared/src/server";
 import { type ObservationEvalConfig } from "./types";
 
 /**
@@ -17,15 +13,11 @@ import { type ObservationEvalConfig } from "./types";
  * @param projectId - The project ID to fetch configs for
  * @returns Array of observation eval configs (empty if none exist)
  */
-export async function fetchObservationEvalConfigs(
-  projectId: string,
-): Promise<ObservationEvalConfig[]> {
+export async function fetchObservationEvalConfigs(projectId: string): Promise<ObservationEvalConfig[]> {
   // Check cache first
   const hasNoConfigs = await hasNoEvalConfigsCache(projectId, "eventBased");
   if (hasNoConfigs) {
-    logger.debug(
-      `Skipping observation eval config fetch - no configs cached for project ${projectId}`,
-    );
+    logger.debug(`Skipping observation eval config fetch - no configs cached for project ${projectId}`);
 
     return [];
   }
@@ -53,17 +45,13 @@ export async function fetchObservationEvalConfigs(
 
   // Cache if no configs found
   if (configs.length === 0) {
-    logger.debug(
-      `No observation eval configs found for project ${projectId}, caching`,
-    );
+    logger.debug(`No observation eval configs found for project ${projectId}, caching`);
     await setNoEvalConfigsCache(projectId, "eventBased");
 
     return [];
   }
 
-  logger.debug(
-    `Found ${configs.length} observation eval configs for project ${projectId}`,
-  );
+  logger.debug(`Found ${configs.length} observation eval configs for project ${projectId}`);
 
   return configs as ObservationEvalConfig[];
 }
