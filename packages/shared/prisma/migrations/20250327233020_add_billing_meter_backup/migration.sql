@@ -18,8 +18,11 @@
   - You are about to drop the `subscriptions` table. If the table is not empty, all the data it contains will be lost.
 
 */
--- CreateEnum
-CREATE TYPE "BlobStorageIntegrationType" AS ENUM ('S3', 'S3_COMPATIBLE', 'AZURE_BLOB_STORAGE');
+-- CreateEnum (idempotent - type may already exist from 20250324110557_add_blobstorage_integration_table)
+DO $$ BEGIN
+  CREATE TYPE "BlobStorageIntegrationType" AS ENUM ('S3', 'S3_COMPATIBLE', 'AZURE_BLOB_STORAGE');
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
 
 -- DropForeignKey
 ALTER TABLE "StripeCheckoutSession" DROP CONSTRAINT "StripeCheckoutSession_customerId_fkey";
