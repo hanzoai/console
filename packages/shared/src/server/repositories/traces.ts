@@ -860,7 +860,7 @@ export const deleteTraces = async (projectId: string, traceIds: string[]) => {
         `,
         params: input.params,
         datastoreConfig: {
-          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
         },
         tags: { ...input.tags, kind: "delete-preflight" },
       });
@@ -885,7 +885,7 @@ export const deleteTraces = async (projectId: string, traceIds: string[]) => {
           maxTs: preflight[0].max_ts,
         },
         datastoreConfig: {
-          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -950,7 +950,7 @@ export const deleteTracesOlderThanDays = async (projectId: string, beforeDate: D
         query: query,
         params: input.params,
         datastoreConfig: {
-          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -990,7 +990,7 @@ export const deleteTracesByProjectId = async (projectId: string): Promise<boolea
         query,
         params: input.params,
         datastoreConfig: {
-          request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+          request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
         },
         tags: input.tags,
       });
@@ -1264,7 +1264,7 @@ export const getTracesForBlobStorageExport = function (projectId: string, minTim
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
     },
   });
 };
@@ -1327,7 +1327,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
       projectId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
       clickhouse_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",

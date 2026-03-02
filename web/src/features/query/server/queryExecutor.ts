@@ -142,9 +142,7 @@ export async function executeQuery(
   // Route events_core queries to the dedicated events read replica.
   // Checked via the view declaration's baseCte rather than scanning the compiled SQL.
   const view = getViewDeclaration(query.view, version);
-  const preferredService = view.baseCte.includes("events_")
-    ? ("EventsReadOnly" as const)
-    : undefined;
+  const preferredService = view.baseCte.includes("events_") ? ("EventsReadOnly" as const) : undefined;
 
   const tags = {
     feature: "custom-queries",
@@ -161,9 +159,7 @@ export async function executeQuery(
       datastoreConfig: {
         clickhouse_settings: {
           date_time_output_format: "iso",
-          max_bytes_before_external_group_by: String(
-            env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
-          ),
+          max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
         },
       },
       tags,
@@ -191,9 +187,7 @@ export async function executeQuery(
         datastoreConfig: {
           clickhouse_settings: {
             date_time_output_format: "iso",
-            max_bytes_before_external_group_by: String(
-              env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
-            ),
+            max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
           },
         },
         tags: input.tags,

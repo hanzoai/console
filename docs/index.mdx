@@ -283,12 +283,12 @@ curl -X POST https://api.hanzo.ai/v1/console/prompts \
 | `REDIS_URL` | Redis connection string |
 | `NEXTAUTH_URL` | Console public URL (`https://console.hanzo.ai`) |
 | `NEXTAUTH_SECRET` | NextAuth session encryption key |
-| `HANZO_IAM_CLIENT_ID` | IAM app client ID (`hanzo-console-client-id`) |
-| `HANZO_IAM_CLIENT_SECRET` | IAM app client secret |
-| `HANZO_IAM_ISSUER` | IAM OIDC issuer URL (default: `https://hanzo.id`) |
+| `IAM_CLIENT_ID` | IAM app client ID (`hanzo-console-client-id`) |
+| `IAM_CLIENT_SECRET` | IAM app client secret |
+| `IAM_SERVER_URL` | IAM OIDC issuer URL (default: `https://hanzo.id`) |
 | `SALT` | API key hashing salt |
 
-Optional: `S3_EVENT_UPLOAD_ENDPOINT`, `S3_EVENT_UPLOAD_BUCKET` (`hanzo-events`), `S3_MEDIA_UPLOAD_BUCKET` (`hanzo-media`), `HANZO_INIT_ORG_IDS`, `HANZO_INIT_USER_EMAIL`, `HANZO_INIT_PROJECT_ORG_ID`, `AGENTS_API_URL`.
+Optional: `S3_EVENT_UPLOAD_ENDPOINT`, `S3_EVENT_UPLOAD_BUCKET` (`hanzo-events`), `S3_MEDIA_UPLOAD_BUCKET` (`hanzo-media`), `INIT_ORG_IDS`, `INIT_USER_EMAIL`, `INIT_PROJECT_ORG_ID`, `AGENTS_API_URL`.
 
 ### ClickHouse Migrations
 

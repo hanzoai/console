@@ -39,7 +39,8 @@ COPY --chown=nextjs:nodejs packages/ee/package.json ./packages/ee/
 COPY --chown=nextjs:nodejs packages/config-eslint/package.json ./packages/config-eslint/
 COPY --chown=nextjs:nodejs packages/config-typescript/package.json ./packages/config-typescript/
 COPY --chown=nextjs:nodejs packages/console-js/package.json ./packages/console-js/
-COPY --chown=nextjs:nodejs packages/hanzo-langchain/package.json ./packages/hanzo-langchain/
+COPY --chown=nextjs:nodejs packages/datastore/package.json ./packages/datastore/
+COPY --chown=nextjs:nodejs packages/langchain/package.json ./packages/langchain/
 
 # Switch to nextjs user for security
 USER nextjs

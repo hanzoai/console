@@ -247,16 +247,16 @@ jobs:
       - name: Start Hanzo
         run: (pnpm run start&)
         env:
-          HANZO_INIT_ORG_ID: "seed-org-id"
-          HANZO_INIT_ORG_NAME: "Seed Org"
-          HANZO_INIT_ORG_CLOUD_PLAN: "Team"
-          HANZO_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
-          HANZO_INIT_PROJECT_NAME: "Seed Project"
-          HANZO_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
-          HANZO_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
-          HANZO_INIT_USER_EMAIL: "demo@hanzo.com"
-          HANZO_INIT_USER_NAME: "Demo User"
-          HANZO_INIT_USER_PASSWORD: "password"
+          INIT_ORG_ID: "seed-org-id"
+          INIT_ORG_NAME: "Seed Org"
+          INIT_ORG_CLOUD_PLAN: "Team"
+          INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
+          INIT_PROJECT_NAME: "Seed Project"
+          INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
+          INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
+          INIT_USER_EMAIL: "demo@hanzo.com"
+          INIT_USER_NAME: "Demo User"
+          INIT_USER_PASSWORD: "password"
       - name: run test-sync
         working-directory: web
         run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --selectProjects sync-server
@@ -360,16 +360,16 @@ jobs:
       - name: Start Hanzo
         run: (pnpm run start&)
         env:
-          HANZO_INIT_ORG_ID: "seed-org-id"
-          HANZO_INIT_ORG_NAME: "Seed Org"
-          HANZO_INIT_ORG_CLOUD_PLAN: "Team"
-          HANZO_INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
-          HANZO_INIT_PROJECT_NAME: "Seed Project"
-          HANZO_INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
-          HANZO_INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
-          HANZO_INIT_USER_EMAIL: "demo@hanzo.com"
-          HANZO_INIT_USER_NAME: "Demo User"
-          HANZO_INIT_USER_PASSWORD: "password"
+          INIT_ORG_ID: "seed-org-id"
+          INIT_ORG_NAME: "Seed Org"
+          INIT_ORG_CLOUD_PLAN: "Team"
+          INIT_PROJECT_ID: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a"
+          INIT_PROJECT_NAME: "Seed Project"
+          INIT_PROJECT_PUBLIC_KEY: "pk-lf-1234567890"
+          INIT_PROJECT_SECRET_KEY: "sk-lf-1234567890"
+          INIT_USER_EMAIL: "demo@hanzo.com"
+          INIT_USER_NAME: "Demo User"
+          INIT_USER_PASSWORD: "password"
       - name: run tests
         working-directory: web
         run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --selectProjects async-server --shard=${{ matrix.shard }}/3

@@ -1,6 +1,6 @@
 /**
  * DatastoreLogger — bridges Hanzo Datastore log events to Winston.
- * No @clickhouse/client dependency — all types defined here.
+ * No @datastore/client dependency — all types defined here.
  */
 
 import { logger as winstonLogger } from "../logger";
@@ -39,16 +39,19 @@ export class DatastoreLogger {
   }
 }
 
-/** @deprecated Use DatastoreLogger */
-export const ClickHouseLogger = DatastoreLogger;
-
 export const mapLogLevel = (level: string): DatastoreLogLevel => {
   switch (level.toLowerCase()) {
-    case "error": return DatastoreLogLevel.ERROR;
-    case "warn":  return DatastoreLogLevel.WARN;
-    case "info":  return DatastoreLogLevel.INFO;
-    case "debug": return DatastoreLogLevel.DEBUG;
-    case "trace": return DatastoreLogLevel.TRACE;
-    default:      return DatastoreLogLevel.OFF;
+    case "error":
+      return DatastoreLogLevel.ERROR;
+    case "warn":
+      return DatastoreLogLevel.WARN;
+    case "info":
+      return DatastoreLogLevel.INFO;
+    case "debug":
+      return DatastoreLogLevel.DEBUG;
+    case "trace":
+      return DatastoreLogLevel.TRACE;
+    default:
+      return DatastoreLogLevel.OFF;
   }
 };

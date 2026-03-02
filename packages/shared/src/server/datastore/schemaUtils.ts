@@ -39,6 +39,3 @@ export const getDatastoreEntityType = (eventType: string): IngestionEntityTypes 
       throw new ConsoleNotFoundError(`Unknown event type: ${eventType}`);
   }
 };
-
-// Backward-compat alias
-export const getClickhouseEntityType = getDatastoreEntityType;

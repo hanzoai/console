@@ -5,16 +5,11 @@
  * Zero external dependencies beyond optional @opentelemetry/api.
  * ZAP binary transport is planned as next transport layer.
  *
- * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (standard datastore auth).
+ * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (ClickHouse HTTP protocol).
  * Format: JSONEachRow for selects, JSON newline-delimited for inserts.
  */
 
-import type {
-  DatastoreClientConfig,
-  DatastoreSettings,
-  InsertResult,
-  CommandResult,
-} from "./types";
+import type { DatastoreClientConfig, DatastoreSettings, InsertResult, CommandResult } from "./types";
 
 export type { DatastoreClientConfig, DatastoreSettings, InsertResult, CommandResult };
 export { DatastoreLogLevel } from "./types";
@@ -70,7 +65,7 @@ export class DatastoreClient {
     this.database = config.database ?? "default";
     this.requestTimeout = config.request_timeout ?? 30_000;
     this.httpHeaders = config.http_headers ?? {};
-    this.settings = config.clickhouse_settings ?? {};
+    this.settings = config.datastore_settings ?? {};
   }
 
   private authHeaders(): Record<string, string> {
@@ -113,7 +108,7 @@ export class DatastoreClient {
   async query<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     abort_signal?: AbortSignal;
     http_headers?: Record<string, string>;
     format?: string; // accepted for compat, always uses JSONEachRow
@@ -124,7 +119,7 @@ export class DatastoreClient {
     text: () => Promise<string>;
     stream: <R = T>() => AsyncIterable<{ json: () => R }[]>;
   }> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -153,7 +148,9 @@ export class DatastoreClient {
       const text = await response.text();
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       const rows = parseJSONEachRow<T>(text);
 
       return {
@@ -177,9 +174,9 @@ export class DatastoreClient {
   async *stream<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
   }): AsyncGenerator<T> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -223,14 +220,14 @@ export class DatastoreClient {
   async insert<T extends Record<string, unknown>>(opts: {
     table: string;
     values: T[];
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     format?: string; // accepted for compat, always uses JSONEachRow
   }): Promise<InsertResult & { response_headers: Record<string, string> }> {
     const mergedSettings: DatastoreSettings = {
       async_insert: 1,
       wait_for_async_insert: 1,
       ...this.settings,
-      ...opts.clickhouse_settings,
+      ...opts.datastore_settings,
     };
     const qs = buildQueryParams(undefined, mergedSettings, this.database);
     qs.set("query", `INSERT INTO ${opts.table} FORMAT JSONEachRow`);
@@ -256,7 +253,9 @@ export class DatastoreClient {
 
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       return { query_id: queryId, executed: true, response_headers: responseHeaders };
     } catch (err) {
       clearTimeout(timeoutId);
@@ -270,10 +269,10 @@ export class DatastoreClient {
   async command(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     session_id?: string;
   }): Promise<CommandResult & { response_headers: Record<string, string> }> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     if (opts.session_id) qs.set("session_id", opts.session_id);
     const url = `${this.url}/?${qs.toString()}`;
@@ -297,7 +296,9 @@ export class DatastoreClient {
 
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       return { query_id: queryId, response_headers: responseHeaders };
     } catch (err) {
       clearTimeout(timeoutId);
@@ -331,8 +332,7 @@ export class DatastoreClient {
  * For connection pooling, manage instances yourself or use DatastoreClientManager
  * from @hanzo/shared (which adds env-var-based configuration).
  */
-export const createDatastoreClient = (config?: DatastoreClientConfig): DatastoreClient =>
-  new DatastoreClient(config);
+export const createDatastoreClient = (config?: DatastoreClientConfig): DatastoreClient => new DatastoreClient(config);
 
 /**
  * Format a JS Date as a datastore DateTime string.

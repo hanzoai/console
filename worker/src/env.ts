@@ -57,9 +57,9 @@ const EnvSchema = z.object({
   HANZO_INGESTION_QUEUE_PROCESSING_CONCURRENCY: z.coerce.number().positive().default(20),
   HANZO_INGESTION_SECONDARY_QUEUE_PROCESSING_CONCURRENCY: z.coerce.number().positive().default(5),
   HANZO_SECONDARY_INGESTION_QUEUE_ENABLED_PROJECT_IDS: z.string().optional(),
-  HANZO_INGESTION_DATASTORE_WRITE_BATCH_SIZE: z.coerce.number().positive().default(1000),
-  HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS: z.coerce.number().positive().default(1000),
-  HANZO_INGESTION_DATASTORE_MAX_ATTEMPTS: z.coerce.number().positive().default(3),
+  DATASTORE_INGESTION_WRITE_BATCH_SIZE: z.coerce.number().positive().default(1000),
+  DATASTORE_INGESTION_WRITE_INTERVAL_MS: z.coerce.number().positive().default(1000),
+  DATASTORE_INGESTION_MAX_ATTEMPTS: z.coerce.number().positive().default(3),
 
   HANZO_USE_AZURE_BLOB: z.enum(["true", "false"]).default("false"),
 
@@ -169,9 +169,9 @@ const EnvSchema = z.object({
   HANZO_FREE_TIER_USAGE_THRESHOLD_ENFORCEMENT_ENABLED: z.enum(["true", "false"]).default("false"),
 
   S3_CONCURRENT_READS: z.coerce.number().positive().default(50),
-  HANZO_DATASTORE_PROJECT_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(600_000), // 10 minutes
-  HANZO_DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(120_000), // 2 minutes
-  HANZO_DATASTORE_DATASET_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(120_000), // 2 minutes
+  DATASTORE_PROJECT_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(600_000), // 10 minutes
+  DATASTORE_TRACE_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(120_000), // 2 minutes
+  DATASTORE_DATASET_DELETION_CONCURRENCY_DURATION_MS: z.coerce.number().positive().default(120_000), // 2 minutes
 
   // Batch Project Cleaner configuration
   HANZO_BATCH_PROJECT_CLEANER_ENABLED: z.enum(["true", "false"]).default("false"),

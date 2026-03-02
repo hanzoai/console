@@ -3,9 +3,9 @@
 # Load environment variables
 [ -f ../../.env ] && source ../../.env
 
-# Check if CLICKHOUSE_URL is configured
-if [ -z "${CLICKHOUSE_URL}" ]; then
-  echo "Info: CLICKHOUSE_URL not configured, skipping migration."
+# Check if DATASTORE_URL is configured
+if [ -z "${DATASTORE_URL}" ]; then
+  echo "Info: DATASTORE_URL not configured, skipping migration."
   exit 0
 fi
 
@@ -18,22 +18,22 @@ then
     exit 1
 fi
 
-# Ensure CLICKHOUSE_DB is set
-if [ -z "${CLICKHOUSE_DB}" ]; then
-    export CLICKHOUSE_DB="default"
+# Ensure DATASTORE_DB is set
+if [ -z "${DATASTORE_DB}" ]; then
+    export DATASTORE_DB="default"
 fi
 
-# Ensure CLICKHOUSE_CLUSTER_NAME is set
-if [ -z "${CLICKHOUSE_CLUSTER_NAME}" ]; then
-    export CLICKHOUSE_CLUSTER_NAME="default"
+# Ensure DATASTORE_CLUSTER_NAME is set
+if [ -z "${DATASTORE_CLUSTER_NAME}" ]; then
+    export DATASTORE_CLUSTER_NAME="default"
 fi
 
 # Construct the database URL
-if [ "$CLICKHOUSE_CLUSTER_ENABLED" == "false" ] ; then
-  if [ "$CLICKHOUSE_MIGRATION_SSL" = true ] ; then
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
+if [ "$DATASTORE_CLUSTER_ENABLED" == "false" ] ; then
+  if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
   else
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
   fi
 
   # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.
@@ -43,10 +43,10 @@ if [ "$CLICKHOUSE_CLUSTER_ENABLED" == "false" ] ; then
     migrate -source file://clickhouse/migrations/unclustered -database "$DATABASE_URL" down
   fi
 else
-  if [ "$CLICKHOUSE_MIGRATION_SSL" = true ] ; then
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${CLICKHOUSE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+  if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   else
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&x-cluster-name=${CLICKHOUSE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   fi
 
   # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.

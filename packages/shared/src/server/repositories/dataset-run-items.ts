@@ -1031,7 +1031,7 @@ export const deleteDatasetRunItemsByProjectId = async (projectId: string): Promi
     query,
     params: { projectId },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",
@@ -1064,7 +1064,7 @@ export const deleteDatasetRunItemsByDatasetId = async ({
       datasetId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",
@@ -1099,7 +1099,7 @@ export const deleteDatasetRunItemsByDatasetRunIds = async ({
       datasetId,
     },
     datastoreConfig: {
-      request_timeout: env.HANZO_CLICKHOUSE_DELETION_TIMEOUT_MS,
+      request_timeout: env.DATASTORE_DELETION_TIMEOUT_MS,
     },
     tags: {
       feature: "datasets",

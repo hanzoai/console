@@ -4,7 +4,7 @@
  * Speaks the ClickHouse-compatible HTTP interface directly via native fetch.
  * Zero external dependencies. ZAP binary transport is planned as next transport layer.
  *
- * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (standard datastore auth).
+ * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (ClickHouse HTTP protocol).
  * Format: JSONEachRow for selects, JSON newline-delimited for inserts.
  */
 
@@ -12,23 +12,15 @@ import { env } from "../../env";
 import { getCurrentSpan } from "../instrumentation";
 import { propagation, context } from "@opentelemetry/api";
 import { DatastoreLogger } from "./datastore-logger";
-import type {
-  DatastoreClientConfig,
-  DatastoreSettings,
-  InsertResult,
-  CommandResult,
-} from "./types";
+import type { DatastoreClientConfig, DatastoreSettings, InsertResult, CommandResult } from "./types";
 
 export type { DatastoreClientConfig, DatastoreSettings, InsertResult, CommandResult };
 export { DatastoreLogLevel } from "./types";
 
 // ---------------------------------------------------------------------------
-// Compat type aliases — replaces @clickhouse/client types for existing callers
+// Type aliases for API compatibility
 // ---------------------------------------------------------------------------
-/** @deprecated Use DatastoreClientConfig */
-export type NodeClickHouseClientConfigOptions = DatastoreClientConfig;
-/** @deprecated Use DatastoreSettings */
-export type ClickHouseSettings = DatastoreSettings;
+export type NodeDatastoreClientConfigOptions = DatastoreClientConfig;
 
 export type PreferredDatastoreService = "ReadWrite" | "ReadOnly" | "EventsReadOnly";
 
@@ -85,7 +77,7 @@ export class DatastoreClient {
     this.database = config.database ?? "default";
     this.requestTimeout = config.request_timeout ?? 30_000;
     this.httpHeaders = config.http_headers ?? {};
-    this.settings = config.clickhouse_settings ?? {};
+    this.settings = config.datastore_settings ?? {};
   }
 
   private authHeaders(): Record<string, string> {
@@ -120,7 +112,7 @@ export class DatastoreClient {
   async query<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     abort_signal?: AbortSignal;
     http_headers?: Record<string, string>;
     format?: string; // accepted for compat, always uses JSONEachRow
@@ -131,7 +123,7 @@ export class DatastoreClient {
     text: () => Promise<string>;
     stream: <R = T>() => AsyncIterable<{ json: () => R }[]>;
   }> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -161,7 +153,9 @@ export class DatastoreClient {
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       // Collect all headers into a plain object
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       const rows = parseJSONEachRow<T>(text);
 
       return {
@@ -187,9 +181,9 @@ export class DatastoreClient {
   async *stream<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
   }): AsyncGenerator<T> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -233,14 +227,14 @@ export class DatastoreClient {
   async insert<T extends Record<string, unknown>>(opts: {
     table: string;
     values: T[];
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     format?: string; // accepted for compat, always uses JSONEachRow
   }): Promise<InsertResult & { response_headers: Record<string, string> }> {
     const mergedSettings: DatastoreSettings = {
       async_insert: 1,
       wait_for_async_insert: 1,
       ...this.settings,
-      ...opts.clickhouse_settings,
+      ...opts.datastore_settings,
     };
     const qs = buildQueryParams(undefined, mergedSettings, this.database);
     qs.set("query", `INSERT INTO ${opts.table} FORMAT JSONEachRow`);
@@ -266,7 +260,9 @@ export class DatastoreClient {
 
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       return { query_id: queryId, executed: true, response_headers: responseHeaders };
     } catch (err) {
       clearTimeout(timeoutId);
@@ -280,10 +276,10 @@ export class DatastoreClient {
   async command(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     session_id?: string;
   }): Promise<CommandResult> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     if (opts.session_id) qs.set("session_id", opts.session_id);
     const url = `${this.url}/?${qs.toString()}`;
@@ -307,7 +303,9 @@ export class DatastoreClient {
 
       const queryId = response.headers.get("x-clickhouse-query-id") ?? crypto.randomUUID();
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((v, k) => { responseHeaders[k] = v; });
+      response.headers.forEach((v, k) => {
+        responseHeaders[k] = v;
+      });
       return { query_id: queryId, response_headers: responseHeaders };
     } catch (err) {
       clearTimeout(timeoutId);
@@ -352,49 +350,34 @@ export class DatastoreClientManager {
   private getUrl(tier: PreferredDatastoreService): string | undefined {
     switch (tier) {
       case "ReadWrite":
-        return env.DATASTORE_URL ?? env.CLICKHOUSE_URL;
+        return env.DATASTORE_URL;
       case "EventsReadOnly":
-        return (
-          env.DATASTORE_EVENTS_READ_ONLY_URL ??
-          env.CLICKHOUSE_EVENTS_READ_ONLY_URL ??
-          env.DATASTORE_READ_ONLY_URL ??
-          env.CLICKHOUSE_READ_ONLY_URL ??
-          env.DATASTORE_URL ??
-          env.CLICKHOUSE_URL
-        );
+        return env.DATASTORE_EVENTS_READ_ONLY_URL ?? env.DATASTORE_READ_ONLY_URL ?? env.DATASTORE_URL;
       case "ReadOnly":
       default:
-        return (
-          env.DATASTORE_READ_ONLY_URL ??
-          env.CLICKHOUSE_READ_ONLY_URL ??
-          env.DATASTORE_URL ??
-          env.CLICKHOUSE_URL
-        );
+        return env.DATASTORE_READ_ONLY_URL ?? env.DATASTORE_URL;
     }
   }
 
-  getClient(
-    opts: DatastoreClientConfig = {},
-    tier: PreferredDatastoreService = "ReadWrite",
-  ): DatastoreClient {
+  getClient(opts: DatastoreClientConfig = {}, tier: PreferredDatastoreService = "ReadWrite"): DatastoreClient {
     const config: DatastoreClientConfig = {
       url: this.getUrl(tier),
-      username: env.DATASTORE_USER ?? env.CLICKHOUSE_USER,
-      password: env.DATASTORE_PASSWORD ?? env.CLICKHOUSE_PASSWORD,
-      database: env.DATASTORE_DB ?? env.CLICKHOUSE_DB ?? "default",
+      username: env.DATASTORE_USER,
+      password: env.DATASTORE_PASSWORD,
+      database: env.DATASTORE_DB ?? "default",
       request_timeout: opts.request_timeout,
       http_headers: opts.http_headers ?? {},
-      clickhouse_settings: {
-        ...(env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE ?? env.CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE
-          ? { async_insert_max_data_size: env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE ?? env.CLICKHOUSE_ASYNC_INSERT_MAX_DATA_SIZE }
+      datastore_settings: {
+        ...(env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE
+          ? { async_insert_max_data_size: env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE }
           : {}),
-        ...(env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS ?? env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS
-          ? { async_insert_busy_timeout_ms: env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS ?? env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MS }
+        ...(env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS
+          ? { async_insert_busy_timeout_ms: env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MS }
           : {}),
-        ...(env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS ?? env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS
-          ? { async_insert_busy_timeout_min_ms: env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS ?? env.CLICKHOUSE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS }
+        ...(env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS
+          ? { async_insert_busy_timeout_min_ms: env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS }
           : {}),
-        ...opts.clickhouse_settings,
+        ...opts.datastore_settings,
         async_insert: 1,
         wait_for_async_insert: 1,
       },

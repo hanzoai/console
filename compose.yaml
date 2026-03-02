@@ -13,7 +13,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      clickhouse:
+      datastore:
         condition: service_healthy
     ports:
       - "3030:3030"
@@ -23,11 +23,11 @@ services:
       ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
       TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
       HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
-      CLICKHOUSE_MIGRATION_URL: "clickhouse://clickhouse:9000"
-      CLICKHOUSE_URL: "http://clickhouse:8123"
-      CLICKHOUSE_USER: "clickhouse"
-      CLICKHOUSE_PASSWORD: "clickhouse"
-      CLICKHOUSE_CLUSTER_ENABLED: "false"
+      DATASTORE_MIGRATION_URL: "clickhouse://datastore:9000"
+      DATASTORE_URL: "http://datastore:8123"
+      DATASTORE_USER: "clickhouse"
+      DATASTORE_PASSWORD: "clickhouse"
+      DATASTORE_CLUSTER_ENABLED: "false"
       S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
@@ -43,7 +43,7 @@ services:
       S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
-      HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+      HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS: ${HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS:-}
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
@@ -76,33 +76,33 @@ services:
       STRIPE_WEBHOOK_SIGNING_SECRET: "${STRIPE_WEBHOOK_SIGNING_SECRET}"
       NEXTAUTH_URL: https://cloud.hanzo.ai
       NEXTAUTH_SECRET: mysecret
-      HANZO_INIT_ORG_ID: ${HANZO_INIT_ORG_ID:-}
-      HANZO_INIT_ORG_NAME: ${HANZO_INIT_ORG_NAME:-}
-      HANZO_INIT_ORG_IDS: ${HANZO_INIT_ORG_IDS:-}
-      HANZO_INIT_ORG_NAMES: ${HANZO_INIT_ORG_NAMES:-}
-      HANZO_INIT_PROJECT_ID: ${HANZO_INIT_PROJECT_ID:-}
-      HANZO_INIT_PROJECT_ORG_ID: ${HANZO_INIT_PROJECT_ORG_ID:-}
-      HANZO_INIT_PROJECT_NAME: ${HANZO_INIT_PROJECT_NAME:-}
-      HANZO_INIT_PROJECT_PUBLIC_KEY: ${HANZO_INIT_PROJECT_PUBLIC_KEY:-}
-      HANZO_INIT_PROJECT_SECRET_KEY: ${HANZO_INIT_PROJECT_SECRET_KEY:-}
-      HANZO_INIT_USER_EMAIL: ${HANZO_INIT_USER_EMAIL:-}
-      HANZO_INIT_USER_NAME: ${HANZO_INIT_USER_NAME:-}
-      HANZO_INIT_USER_PASSWORD: ${HANZO_INIT_USER_PASSWORD:-}
+      INIT_ORG_ID: ${INIT_ORG_ID:-}
+      INIT_ORG_NAME: ${INIT_ORG_NAME:-}
+      INIT_ORG_IDS: ${INIT_ORG_IDS:-}
+      INIT_ORG_NAMES: ${INIT_ORG_NAMES:-}
+      INIT_PROJECT_ID: ${INIT_PROJECT_ID:-}
+      INIT_PROJECT_ORG_ID: ${INIT_PROJECT_ORG_ID:-}
+      INIT_PROJECT_NAME: ${INIT_PROJECT_NAME:-}
+      INIT_PROJECT_PUBLIC_KEY: ${INIT_PROJECT_PUBLIC_KEY:-}
+      INIT_PROJECT_SECRET_KEY: ${INIT_PROJECT_SECRET_KEY:-}
+      INIT_USER_EMAIL: ${INIT_USER_EMAIL:-}
+      INIT_USER_NAME: ${INIT_USER_NAME:-}
+      INIT_USER_PASSWORD: ${INIT_USER_PASSWORD:-}
     networks:
       - ai-platform_default
 
-  clickhouse:
+  datastore:
     image: clickhouse/clickhouse-server
     restart: always
     user: "101:101"
     environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: clickhouse
-      CLICKHOUSE_PASSWORD: clickhouse
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      DATASTORE_DB: default
+      DATASTORE_USER: clickhouse
+      DATASTORE_PASSWORD: clickhouse
+      DATASTORE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - hanzo_clickhouse_data:/var/lib/clickhouse
-      - hanzo_clickhouse_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/clickhouse
+      - hanzo_datastore_logs:/var/log/clickhouse-server
     ports:
       - "8123:8123"
       - "9000:9000"
@@ -173,9 +173,9 @@ services:
 volumes:
   hanzo_postgres_data:
     driver: local
-  hanzo_clickhouse_data:
+  hanzo_datastore_data:
     driver: local
-  hanzo_clickhouse_logs:
+  hanzo_datastore_logs:
     driver: local
   hanzo_minio_data:
     driver: local

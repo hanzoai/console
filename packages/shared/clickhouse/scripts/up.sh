@@ -3,31 +3,31 @@
 # Load environment variables
 [ -f ../../.env ] && source ../../.env
 
-# Check if CLICKHOUSE_URL is configured
-if [ -z "${CLICKHOUSE_URL}" ]; then
-  echo "Error: CLICKHOUSE_URL is not configured."
-  echo "Please set CLICKHOUSE_URL in your environment variables."
+# Check if DATASTORE_URL is configured
+if [ -z "${DATASTORE_URL}" ]; then
+  echo "Error: DATASTORE_URL is not configured."
+  echo "Please set DATASTORE_URL in your environment variables."
   exit 1
 fi
 
-# Check if CLICKHOUSE_MIGRATION_URL is configured
-if [ -z "${CLICKHOUSE_MIGRATION_URL}" ]; then
-  echo "Error: CLICKHOUSE_MIGRATION_URL is not configured."
-  echo "Please set CLICKHOUSE_MIGRATION_URL in your environment variables."
+# Check if DATASTORE_MIGRATION_URL is configured
+if [ -z "${DATASTORE_MIGRATION_URL}" ]; then
+  echo "Error: DATASTORE_MIGRATION_URL is not configured."
+  echo "Please set DATASTORE_MIGRATION_URL in your environment variables."
   exit 1
 fi
 
-# Check if CLICKHOUSE_USER is set
-if [ -z "${CLICKHOUSE_USER}" ]; then
-  echo "Error: CLICKHOUSE_USER is not set."
-  echo "Please set CLICKHOUSE_USER in your environment variables."
+# Check if DATASTORE_USER is set
+if [ -z "${DATASTORE_USER}" ]; then
+  echo "Error: DATASTORE_USER is not set."
+  echo "Please set DATASTORE_USER in your environment variables."
   exit 1
 fi
 
-# Check if CLICKHOUSE_PASSWORD is set
-if [ -z "${CLICKHOUSE_PASSWORD}" ]; then
-  echo "Error: CLICKHOUSE_PASSWORD is not set."
-  echo "Please set CLICKHOUSE_PASSWORD in your environment variables."
+# Check if DATASTORE_PASSWORD is set
+if [ -z "${DATASTORE_PASSWORD}" ]; then
+  echo "Error: DATASTORE_PASSWORD is not set."
+  echo "Please set DATASTORE_PASSWORD in your environment variables."
   exit 1
 fi
 
@@ -40,31 +40,31 @@ then
     exit 1
 fi
 
-# Ensure CLICKHOUSE_DB is set
-if [ -z "${CLICKHOUSE_DB}" ]; then
-    export CLICKHOUSE_DB="default"
+# Ensure DATASTORE_DB is set
+if [ -z "${DATASTORE_DB}" ]; then
+    export DATASTORE_DB="default"
 fi
 
-# Ensure CLICKHOUSE_CLUSTER_NAME is set
-if [ -z "${CLICKHOUSE_CLUSTER_NAME}" ]; then
-    export CLICKHOUSE_CLUSTER_NAME="default"
+# Ensure DATASTORE_CLUSTER_NAME is set
+if [ -z "${DATASTORE_CLUSTER_NAME}" ]; then
+    export DATASTORE_CLUSTER_NAME="default"
 fi
 
 # Construct the database URL
-if [ "$CLICKHOUSE_CLUSTER_ENABLED" == "false" ] ; then
-  if [ "$CLICKHOUSE_MIGRATION_SSL" = true ] ; then
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
+if [ "$DATASTORE_CLUSTER_ENABLED" == "false" ] ; then
+  if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
   else
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
   fi
 
   # Execute the up command
   migrate -source file://clickhouse/migrations/unclustered -database "$DATABASE_URL" up
 else
-if [ "$CLICKHOUSE_MIGRATION_SSL" = true ] ; then
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${CLICKHOUSE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   else
-      DATABASE_URL="${CLICKHOUSE_MIGRATION_URL}?username=${CLICKHOUSE_USER}&password=${CLICKHOUSE_PASSWORD}&database=${CLICKHOUSE_DB}&x-multi-statement=true&x-cluster-name=${CLICKHOUSE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   fi
 
   # Execute the up command
