@@ -329,9 +329,9 @@ export const env = createEnv({
     SENTRY_CSP_REPORT_URI: z.string().optional(),
     HANZO_RATE_LIMITS_ENABLED: z.enum(["true", "false"]).default("true"),
 
-    HANZO_INIT_ORG_ID: z.string().optional(),
-    HANZO_INIT_ORG_NAME: z.string().optional(),
-    HANZO_INIT_ORG_IDS: z
+    INIT_ORG_ID: z.string().optional(),
+    INIT_ORG_NAME: z.string().optional(),
+    INIT_ORG_IDS: z
       .string()
       .optional()
       .transform((val) =>
@@ -342,7 +342,7 @@ export const env = createEnv({
               .filter(Boolean)
           : undefined,
       ),
-    HANZO_INIT_ORG_NAMES: z
+    INIT_ORG_NAMES: z
       .string()
       .optional()
       .transform((val) =>
@@ -353,21 +353,21 @@ export const env = createEnv({
               .filter(Boolean)
           : undefined,
       ),
-    HANZO_INIT_ORG_CLOUD_PLAN: z.string().optional(), // for use in CI
-    HANZO_INIT_PROJECT_ID: z.string().optional(),
-    HANZO_INIT_PROJECT_ORG_ID: z.string().optional(),
-    HANZO_INIT_PROJECT_NAME: z.string().optional(),
-    HANZO_INIT_PROJECT_RETENTION: z.coerce.number().int().gte(3).optional(),
-    HANZO_INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
-    HANZO_INIT_PROJECT_SECRET_KEY: z.string().optional(),
-    HANZO_INIT_USER_EMAIL: z
+    INIT_ORG_CLOUD_PLAN: z.string().optional(), // for use in CI
+    INIT_PROJECT_ID: z.string().optional(),
+    INIT_PROJECT_ORG_ID: z.string().optional(),
+    INIT_PROJECT_NAME: z.string().optional(),
+    INIT_PROJECT_RETENTION: z.coerce.number().int().gte(3).optional(),
+    INIT_PROJECT_PUBLIC_KEY: z.string().optional(),
+    INIT_PROJECT_SECRET_KEY: z.string().optional(),
+    INIT_USER_EMAIL: z
       .union([z.string().email(), z.string().length(0)])
       .optional(),
-    HANZO_INIT_USER_NAME: z.string().optional(),
-    HANZO_INIT_USER_PASSWORD: z.string().optional(),
+    INIT_USER_NAME: z.string().optional(),
+    INIT_USER_PASSWORD: z.string().optional(),
     // CSV of "email:orgId" pairs — grants OWNER of specific org. Use "email:*" to grant all orgs.
     // Example: "z@lux.network:lux,z@zoo.ngo:zoo,z@pars.network:pars"
-    HANZO_INIT_ORG_OWNERS: z
+    INIT_ORG_OWNERS: z
       .string()
       .optional()
       .transform((val) =>
@@ -799,24 +799,24 @@ export const env = createEnv({
     SENTRY_CSP_REPORT_URI: process.env.SENTRY_CSP_REPORT_URI,
     HANZO_RATE_LIMITS_ENABLED: process.env.HANZO_RATE_LIMITS_ENABLED,
     // provisioning
-    HANZO_INIT_ORG_ID: process.env.HANZO_INIT_ORG_ID,
-    HANZO_INIT_ORG_NAME: process.env.HANZO_INIT_ORG_NAME,
-    HANZO_INIT_ORG_IDS: process.env.HANZO_INIT_ORG_IDS,
-    HANZO_INIT_ORG_NAMES: process.env.HANZO_INIT_ORG_NAMES,
-    HANZO_INIT_ORG_CLOUD_PLAN: process.env.HANZO_INIT_ORG_CLOUD_PLAN,
-    HANZO_INIT_PROJECT_ID: process.env.HANZO_INIT_PROJECT_ID,
-    HANZO_INIT_PROJECT_ORG_ID: process.env.HANZO_INIT_PROJECT_ORG_ID,
-    HANZO_INIT_PROJECT_NAME: process.env.HANZO_INIT_PROJECT_NAME,
-    HANZO_INIT_PROJECT_RETENTION:
-      process.env.HANZO_INIT_PROJECT_RETENTION,
-    HANZO_INIT_PROJECT_PUBLIC_KEY:
-      process.env.HANZO_INIT_PROJECT_PUBLIC_KEY,
-    HANZO_INIT_PROJECT_SECRET_KEY:
-      process.env.HANZO_INIT_PROJECT_SECRET_KEY,
-    HANZO_INIT_USER_EMAIL: process.env.HANZO_INIT_USER_EMAIL,
-    HANZO_INIT_USER_NAME: process.env.HANZO_INIT_USER_NAME,
-    HANZO_INIT_USER_PASSWORD: process.env.HANZO_INIT_USER_PASSWORD,
-    HANZO_INIT_ORG_OWNERS: process.env.HANZO_INIT_ORG_OWNERS,
+    INIT_ORG_ID: process.env.INIT_ORG_ID,
+    INIT_ORG_NAME: process.env.INIT_ORG_NAME,
+    INIT_ORG_IDS: process.env.INIT_ORG_IDS,
+    INIT_ORG_NAMES: process.env.INIT_ORG_NAMES,
+    INIT_ORG_CLOUD_PLAN: process.env.INIT_ORG_CLOUD_PLAN,
+    INIT_PROJECT_ID: process.env.INIT_PROJECT_ID,
+    INIT_PROJECT_ORG_ID: process.env.INIT_PROJECT_ORG_ID,
+    INIT_PROJECT_NAME: process.env.INIT_PROJECT_NAME,
+    INIT_PROJECT_RETENTION:
+      process.env.INIT_PROJECT_RETENTION,
+    INIT_PROJECT_PUBLIC_KEY:
+      process.env.INIT_PROJECT_PUBLIC_KEY,
+    INIT_PROJECT_SECRET_KEY:
+      process.env.INIT_PROJECT_SECRET_KEY,
+    INIT_USER_EMAIL: process.env.INIT_USER_EMAIL,
+    INIT_USER_NAME: process.env.INIT_USER_NAME,
+    INIT_USER_PASSWORD: process.env.INIT_USER_PASSWORD,
+    INIT_ORG_OWNERS: process.env.INIT_ORG_OWNERS,
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_COOKIE_PREFIX: process.env.NEXT_PUBLIC_COOKIE_PREFIX,
     NEXT_PUBLIC_BOT_GATEWAY_URL: process.env.NEXT_PUBLIC_BOT_GATEWAY_URL,
