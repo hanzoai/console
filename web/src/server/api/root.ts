@@ -59,6 +59,7 @@ import { explorerRouter } from "@/src/features/explorer/server/explorerRouter";
 import { infrastructureRouter } from "@/src/features/infrastructure/server/infrastructureRouter";
 import { searchRouter } from "@/src/features/search/server/router";
 import { vectorRouter } from "@/src/features/vector/server/router";
+import { cloudModelsRouter } from "@/src/features/cloud-models/server/router";
 
 /**
  * This is the primary router for your server.
@@ -126,6 +127,7 @@ export const appRouter = createTRPCRouter({
   infrastructure: infrastructureRouter,
   search: searchRouter,
   vector: vectorRouter,
+  cloudModels: cloudModelsRouter,
 });
 
 // export type definition of API
