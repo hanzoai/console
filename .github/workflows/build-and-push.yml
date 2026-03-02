@@ -11,17 +11,29 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Web image: ghcr.io/hanzoai/console:latest
-  # Worker image: ghcr.io/hanzoai/console-worker:latest
   WEB_IMAGE: ${{ github.repository_owner }}/console
   WORKER_IMAGE: ${{ github.repository_owner }}/console-worker
 
 jobs:
+  # Build web image on native runners (no QEMU)
   build-web:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+            suffix: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest-amd64: ${{ steps.build.outputs.digest }}
+      digest-arm64: ${{ steps.build.outputs.digest }}
 
     steps:
     - name: Checkout repository
@@ -49,24 +61,79 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
+        flavor: |
+          suffix=-${{ matrix.suffix }}
 
-    - name: Build and push Web image
-      uses: docker/build-push-action@v5
+    - name: Build and push Web image (${{ matrix.suffix }})
+      id: build
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: ./web/Dockerfile
-        platforms: linux/amd64
+        platforms: ${{ matrix.platform }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=web-${{ matrix.suffix }}
+        cache-to: type=gha,mode=max,scope=web-${{ matrix.suffix }}
         build-args: |
           NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
           NEXT_PUBLIC_HANZO_CLOUD_REGION=US
 
+  # Merge per-platform web images into multi-arch manifest
+  merge-web:
+    needs: build-web
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Create multi-arch manifest
+      run: |
+        # For each tag, create a manifest combining amd64 and arm64 images
+        for tag in $(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ' '); do
+          docker buildx imagetools create -t "${tag}" \
+            "${tag}-amd64" \
+            "${tag}-arm64"
+        done
+
+  # Build worker image on native runners (no QEMU)
   build-worker:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+            suffix: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
@@ -97,27 +164,69 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
+        flavor: |
+          suffix=-${{ matrix.suffix }}
 
-    - name: Build and push Worker image
-      uses: docker/build-push-action@v5
+    - name: Build and push Worker image (${{ matrix.suffix }})
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: ./worker/Dockerfile
-        platforms: linux/amd64
+        platforms: ${{ matrix.platform }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=worker-${{ matrix.suffix }}
+        cache-to: type=gha,mode=max,scope=worker-${{ matrix.suffix }}
+
+  # Merge per-platform worker images into multi-arch manifest
+  merge-worker:
+    needs: build-worker
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Create multi-arch manifest
+      run: |
+        for tag in $(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ' '); do
+          docker buildx imagetools create -t "${tag}" \
+            "${tag}-amd64" \
+            "${tag}-arm64"
+        done
 
   deploy:
-    needs: [build-web, build-worker]
-    runs-on: ubuntu-latest
+    needs: [merge-web, merge-worker]
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
     - name: Deploy notification
       run: |
-        echo "Console images deployed:"
-        echo "- Web: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest"
-        echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest"
+        echo "Console multi-arch images deployed:"
+        echo "- Web: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE }}:latest (amd64+arm64)"
+        echo "- Worker: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE }}:latest (amd64+arm64)"

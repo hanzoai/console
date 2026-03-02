@@ -1,5 +1,5 @@
 # The node alpine image is available here: https://github.com/nodejs/docker-node
-FROM --platform=${TARGETPLATFORM:-linux/amd64} node:24-alpine@sha256:cd6fb7efa6490f039f3471a189214d5f548c11df1ff9e5b181aa49e22c14383e AS alpine
+FROM node:24-alpine@sha256:cd6fb7efa6490f039f3471a189214d5f548c11df1ff9e5b181aa49e22c14383e AS alpine
 
 # It's important to update the index before installing packages to ensure you're getting the latest versions.
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -7,41 +7,33 @@ RUN apk update && apk upgrade --no-cache libcrypto3 libssl3 libc6-compat busybox
 
 
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine AS base
+FROM alpine AS base
 RUN npm install turbo@^2.8.10 --global
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN corepack prepare pnpm@9.5.0 --activate
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} base AS pruner
+FROM base AS pruner
 
 WORKDIR /app
 
 COPY . .
 RUN turbo prune --scope=web --docker
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} base AS builder
+FROM base AS builder
 
 WORKDIR /app
 
-# Add build arguments for Stripe and other required variables
+# Public build arguments (non-secret)
 ARG NEXT_PUBLIC_HANZO_CLOUD_REGION
-ARG STRIPE_SECRET_KEY
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
-# Set them as environment variables during build
 ENV NEXT_PUBLIC_HANZO_CLOUD_REGION=$NEXT_PUBLIC_HANZO_CLOUD_REGION
-ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
-# Add build arguments
-ARG SMTP_CONNECTION_URL
-ARG EMAIL_FROM_ADDRESS
-
-# Set them as environment variables
-ENV SMTP_CONNECTION_URL=$SMTP_CONNECTION_URL
-ENV EMAIL_FROM_ADDRESS=$EMAIL_FROM_ADDRESS
+# Secrets (STRIPE_SECRET_KEY, SMTP_CONNECTION_URL, EMAIL_FROM_ADDRESS)
+# are provided at runtime via env vars, not baked into the image
 
 # First install the dependencies (as they change less often)
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
@@ -53,8 +45,8 @@ COPY ./.env.build ./.env
 
 RUN pnpm install --frozen-lockfile
 
-ENV DOCKER_BUILD 1
-ENV NEXT_MANUAL_SIG_HANDLE true
+ENV DOCKER_BUILD=1
+ENV NEXT_MANUAL_SIG_HANDLE=true
 
 # pass public variables in build step
 ARG NEXT_PUBLIC_PLAIN_APP_ID
@@ -79,10 +71,8 @@ ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ARG NEXT_PUBLIC_BASE_PATH
 ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 
-# Sentry already needs to be set on build time to upload sourcemaps
-# This must not be set for OSS releases as we would share our Sentry secret.
-ARG SENTRY_AUTH_TOKEN
-ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+# Sentry config for sourcemap uploads at build time
+# SENTRY_AUTH_TOKEN is passed via --secret, not ARG (do not bake secrets into layers)
 ARG SENTRY_ORG
 ENV SENTRY_ORG=$SENTRY_ORG
 ARG SENTRY_PROJECT
@@ -102,15 +92,15 @@ RUN rm -f ./web/src/middleware.ts
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NEXT_MANUAL_SIG_HANDLE true
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_MANUAL_SIG_HANDLE=true
 # set the CI flag to true to get CI specific logs
-ENV CI true
+ENV CI=true
 
 RUN NODE_OPTIONS='--max-old-space-size-percentage=75' turbo run build --filter=web...
 
 # Production image, copy all the files and run next
-FROM --platform=${TARGETPLATFORM:-linux/amd64} base AS runner
+FROM base AS runner
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -122,13 +112,13 @@ ENV BUILD_ID=$NEXT_PUBLIC_BUILD_ID
 ARG NEXT_PUBLIC_HANZO_CLOUD_REGION
 ENV NEXT_PUBLIC_HANZO_CLOUD_REGION=$NEXT_PUBLIC_HANZO_CLOUD_REGION
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 # Needed to re-enable validation of environment variables during runtime
-ENV DOCKER_BUILD 0
+ENV DOCKER_BUILD=0
 # Set NEXT_MANUAL_SIG_HANDLE for runtime
-ENV NEXT_MANUAL_SIG_HANDLE true
+ENV NEXT_MANUAL_SIG_HANDLE=true
 
 RUN apk add --no-cache dumb-init tzdata
 
@@ -171,15 +161,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.env /app/.env
 USER nextjs
 
 # Default port to 3000
-ENV PORT 3000
+ENV PORT=3000
 
 # Docker ENTRYPOINT (dumb-init) is covered by semantic versioning, not the entrypoint.sh itself
 # Reasoning: ENTRYPOINT is overridden by some self-hosted deployments, thus changing this is breaking
 ENTRYPOINT ["dumb-init", "--", "./web/entrypoint.sh"]
 
 # startup command - use dd-trace only if it was installed at build time
-CMD if [ -f "/app/node_modules/dd-trace/initialize.mjs" ]; then \
-    node --import dd-trace/initialize.mjs ./web/server.js --keepAliveTimeout 110000; \
-    else \
-    node ./web/server.js --keepAliveTimeout 110000; \
-    fi
+CMD ["/bin/sh", "-c", "if [ -f /app/node_modules/dd-trace/initialize.mjs ]; then exec node --import dd-trace/initialize.mjs ./web/server.js --keepAliveTimeout 110000; else exec node ./web/server.js --keepAliveTimeout 110000; fi"]
