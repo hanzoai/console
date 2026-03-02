@@ -4,7 +4,7 @@
  * Speaks the ClickHouse-compatible HTTP interface directly via native fetch.
  * Zero external dependencies. ZAP binary transport is planned as next transport layer.
  *
- * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (standard datastore auth).
+ * Auth: X-ClickHouse-User / X-ClickHouse-Key headers (ClickHouse HTTP protocol).
  * Format: JSONEachRow for selects, JSON newline-delimited for inserts.
  */
 
@@ -20,8 +20,7 @@ export { DatastoreLogLevel } from "./types";
 // ---------------------------------------------------------------------------
 // Type aliases for API compatibility
 // ---------------------------------------------------------------------------
-export type NodeClickHouseClientConfigOptions = DatastoreClientConfig;
-export type ClickHouseSettings = DatastoreSettings;
+export type NodeDatastoreClientConfigOptions = DatastoreClientConfig;
 
 export type PreferredDatastoreService = "ReadWrite" | "ReadOnly" | "EventsReadOnly";
 
@@ -78,7 +77,7 @@ export class DatastoreClient {
     this.database = config.database ?? "default";
     this.requestTimeout = config.request_timeout ?? 30_000;
     this.httpHeaders = config.http_headers ?? {};
-    this.settings = config.clickhouse_settings ?? {};
+    this.settings = config.datastore_settings ?? {};
   }
 
   private authHeaders(): Record<string, string> {
@@ -113,7 +112,7 @@ export class DatastoreClient {
   async query<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     abort_signal?: AbortSignal;
     http_headers?: Record<string, string>;
     format?: string; // accepted for compat, always uses JSONEachRow
@@ -124,7 +123,7 @@ export class DatastoreClient {
     text: () => Promise<string>;
     stream: <R = T>() => AsyncIterable<{ json: () => R }[]>;
   }> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -182,9 +181,9 @@ export class DatastoreClient {
   async *stream<T = Record<string, unknown>>(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
   }): AsyncGenerator<T> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
@@ -228,14 +227,14 @@ export class DatastoreClient {
   async insert<T extends Record<string, unknown>>(opts: {
     table: string;
     values: T[];
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     format?: string; // accepted for compat, always uses JSONEachRow
   }): Promise<InsertResult & { response_headers: Record<string, string> }> {
     const mergedSettings: DatastoreSettings = {
       async_insert: 1,
       wait_for_async_insert: 1,
       ...this.settings,
-      ...opts.clickhouse_settings,
+      ...opts.datastore_settings,
     };
     const qs = buildQueryParams(undefined, mergedSettings, this.database);
     qs.set("query", `INSERT INTO ${opts.table} FORMAT JSONEachRow`);
@@ -277,10 +276,10 @@ export class DatastoreClient {
   async command(opts: {
     query: string;
     query_params?: Record<string, unknown>;
-    clickhouse_settings?: DatastoreSettings;
+    datastore_settings?: DatastoreSettings;
     session_id?: string;
   }): Promise<CommandResult> {
-    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.clickhouse_settings };
+    const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     if (opts.session_id) qs.set("session_id", opts.session_id);
     const url = `${this.url}/?${qs.toString()}`;
@@ -368,7 +367,7 @@ export class DatastoreClientManager {
       database: env.DATASTORE_DB ?? "default",
       request_timeout: opts.request_timeout,
       http_headers: opts.http_headers ?? {},
-      clickhouse_settings: {
+      datastore_settings: {
         ...(env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE
           ? { async_insert_max_data_size: env.DATASTORE_ASYNC_INSERT_MAX_DATA_SIZE }
           : {}),
@@ -378,7 +377,7 @@ export class DatastoreClientManager {
         ...(env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS
           ? { async_insert_busy_timeout_min_ms: env.DATASTORE_ASYNC_INSERT_BUSY_TIMEOUT_MIN_MS }
           : {}),
-        ...opts.clickhouse_settings,
+        ...opts.datastore_settings,
         async_insert: 1,
         wait_for_async_insert: 1,
       },
