@@ -17,7 +17,7 @@ import { TRPCClientError } from "@trpc/client";
 import { isEmailVerifiedWithinCutoff } from "@/src/features/auth-credentials/lib/credentialsUtils";
 import Link from "next/link";
 import { ErrorPage } from "@/src/components/error-page";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { passwordSchema } from "@/src/features/auth/lib/signupSchema";
 
 const resetPasswordSchema = z

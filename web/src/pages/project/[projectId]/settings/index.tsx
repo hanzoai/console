@@ -11,7 +11,7 @@ import { useQueryProject } from "@/src/features/projects/hooks";
 import { MembershipInvitesPage } from "@/src/features/rbac/components/MembershipInvitesPage";
 import { MembersTable } from "@/src/features/rbac/components/MembersTable";
 import { JSONView } from "@/src/components/ui/CodeJsonViewer";
-import { PostHogLogo } from "@/src/components/PosthogLogo";
+import { InsightsLogo } from "@/src/components/InsightsLogo";
 import { MixpanelLogo } from "@/src/components/MixpanelLogo";
 import { Card } from "@/src/components/ui/card";
 import { TransferProjectButton } from "@/src/features/projects/components/TransferProjectButton";
@@ -239,16 +239,16 @@ const Integrations = (props: { projectId: string }) => {
       <div className="space-y-6">
         <Card className="p-3">
           {}
-          <PostHogLogo className="mb-4 w-40 text-foreground" />
+          <InsightsLogo className="mb-4 w-40 text-foreground" />
           <p className="mb-4 text-sm text-primary">
-            We have teamed up with PostHog (OSS product analytics) to make Hanzo Events/Metrics available in your
-            Posthog Dashboards.
+            We have teamed up with Hanzo Insights (OSS product analytics) to make Hanzo Events/Metrics available in your
+            Hanzo Insights Dashboards.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton
               variant="secondary"
               hasAccess={hasAccess}
-              href={`/project/${props.projectId}/settings/integrations/posthog`}
+              href={`/project/${props.projectId}/settings/integrations/insights`}
             >
               Configure
             </ActionButton>

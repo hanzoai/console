@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/compo
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { isReservedPromptLabel } from "@/src/features/prompts/utils";
 import { PromptLabelSchema } from "@hanzo/shared";
 

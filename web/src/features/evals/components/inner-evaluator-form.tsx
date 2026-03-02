@@ -33,7 +33,7 @@ import { type EvalTemplate, variableMapping, observationVariableMapping } from "
 import { useRouter } from "next/router";
 import { Slider } from "@/src/components/ui/slider";
 import { Card } from "@/src/components/ui/card";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Switch } from "@/src/components/ui/switch";
 import {

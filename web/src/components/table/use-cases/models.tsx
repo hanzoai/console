@@ -25,7 +25,7 @@ import { usePriceUnitMultiplier } from "@/src/features/models/hooks/usePriceUnit
 import { UpsertModelFormDialog } from "@/src/features/models/components/UpsertModelFormDialog";
 import { TestModelMatchButton } from "@/src/features/models/components/test-match/TestModelMatchButton";
 import { ActionButton } from "@/src/components/ActionButton";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { SettingsTableCard } from "@/src/components/layouts/settings-table-card";
 

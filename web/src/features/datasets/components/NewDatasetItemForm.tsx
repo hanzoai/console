@@ -8,7 +8,7 @@ import { useState, useMemo, useEffect } from "react";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { type Prisma } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DatasetSchemaHoverCard } from "./DatasetSchemaHoverCard";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
 import { DatasetItemFieldSchemaErrors } from "./DatasetItemFieldSchemaErrors";

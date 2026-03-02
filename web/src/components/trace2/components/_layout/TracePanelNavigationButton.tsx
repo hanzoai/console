@@ -1,7 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 interface TracePanelNavigationButtonProps {
   isPanelCollapsed: boolean;

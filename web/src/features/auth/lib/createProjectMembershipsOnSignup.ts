@@ -1,12 +1,9 @@
 import { env } from "@/src/env.mjs";
 import { prisma, Role } from "@hanzo/shared/src/db";
 import { logger } from "@hanzo/shared/src/server";
-import { ServerPosthog } from "@/src/features/posthog-analytics/ServerPosthog";
+import { ServerPosthog } from "@/src/features/insights-analytics/ServerInsights";
 
-export async function createProjectMembershipsOnSignup(user: {
-  id: string;
-  email: string | null;
-}) {
+export async function createProjectMembershipsOnSignup(user: { id: string; email: string | null }) {
   try {
     // in no case do we want to send duplicate sign up events to posthog
     const isNewUser = !(await prisma.organizationMembership.findFirst({
@@ -50,10 +47,7 @@ export async function createProjectMembershipsOnSignup(user: {
         : [];
 
     // Create org memberships for all default orgs, store mapping of orgId -> membership
-    const orgMembershipMap = new Map<
-      string,
-      { id: string; orgId: string; userId: string }
-    >();
+    const orgMembershipMap = new Map<string, { id: string; orgId: string; userId: string }>();
     for (const org of defaultOrgs) {
       const membership = await prisma.organizationMembership.upsert({
         where: {
@@ -137,11 +131,7 @@ export async function createProjectMembershipsOnSignup(user: {
     if (user.email) await processMembershipInvitations(user.email, user.id);
 
     // for conversion metric tracking in posthog: did a new user sign up?
-    if (
-      isNewUser &&
-      env.NEXT_PUBLIC_HANZO_CLOUD_REGION &&
-      ["EU", "US"].includes(env.NEXT_PUBLIC_HANZO_CLOUD_REGION)
-    ) {
+    if (isNewUser && env.NEXT_PUBLIC_HANZO_CLOUD_REGION && ["EU", "US"].includes(env.NEXT_PUBLIC_HANZO_CLOUD_REGION)) {
       try {
         const posthog = new ServerPosthog();
         posthog.capture({
@@ -190,8 +180,8 @@ async function processMembershipInvitations(email: string, userId: string) {
       : {}),
   }));
 
-  const createOrgMembershipsPromises = createOrgMembershipData.map(
-    (inviteData) => prisma.organizationMembership.create({ data: inviteData }),
+  const createOrgMembershipsPromises = createOrgMembershipData.map((inviteData) =>
+    prisma.organizationMembership.create({ data: inviteData }),
   );
 
   await prisma.$transaction([

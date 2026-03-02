@@ -26,7 +26,7 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { type FormUpsertModel, FormUpsertModelSchema, type GetModelResult } from "@/src/features/models/validation";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
@@ -360,11 +360,7 @@ export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialog
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tokenizer Config</FormLabel>
-                      <CodeMirrorEditor
-                        mode="json"
-                        value={field.value ?? "{}"}
-                        onChange={field.onChange}
-                      />
+                      <CodeMirrorEditor mode="json" value={field.value ?? "{}"} onChange={field.onChange} />
                       <FormDescription>
                         The config for the tokenizer. Required for openai. See the{" "}
                         <Link href="https://hanzo.com/docs/model-usage-and-cost" className="underline" target="_blank">

@@ -17,7 +17,7 @@ import { showSuccessToast } from "@/src/features/notifications/showSuccessToast"
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
 import { DatasetAnalytics } from "@/src/features/datasets/components/DatasetAnalytics";
 import { RESOURCE_METRICS } from "@/src/features/dashboard/lib/score-analytics-utils";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import { getDatasetTabs, DATASET_TABS } from "@/src/features/navigation/utils/dataset-tabs";
 import { TemplateSelector } from "@/src/features/evals/components/template-selector";

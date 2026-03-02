@@ -9,15 +9,12 @@ import { CreateExperimentsForm } from "@/src/features/experiments/components/Cre
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { DatasetAnalytics } from "@/src/features/datasets/components/DatasetAnalytics";
 import { CompareViewAdapter } from "@/src/features/scores/adapters";
-import {
-  RESOURCE_METRICS,
-  isEmptyChart,
-} from "@/src/features/dashboard/lib/score-analytics-utils";
+import { RESOURCE_METRICS, isEmptyChart } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { compareViewChartDataToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { compactNumberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { formatIntervalSeconds } from "@/src/utils/dates";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
 import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
@@ -189,8 +186,7 @@ export default function DatasetCompare() {
                   const scoreData = scoreKeyToData.get(key);
                   const title = scoreData
                     ? `${getScoreDataTypeIcon(scoreData.dataType)} ${scoreData.name} (${scoreData.source.toLowerCase()})`
-                    : (RESOURCE_METRICS.find((metric) => metric.key === key)
-                        ?.label ?? key);
+                    : (RESOURCE_METRICS.find((metric) => metric.key === key)?.label ?? key);
 
                   // TODO: remove when revamping the datasets api for it to directly return ms
                   const valueFormatter =
@@ -199,25 +195,13 @@ export default function DatasetCompare() {
                       : key === "cost"
                         ? usdFormatter
                         : (v: number) =>
-                            compactNumberFormatter(
-                              v,
-                              RESOURCE_METRICS.find((m) => m.key === key)
-                                ?.maxFractionDigits,
-                            );
+                            compactNumberFormatter(v, RESOURCE_METRICS.find((m) => m.key === key)?.maxFractionDigits);
 
                   if (isEmptyChart({ data: chartData })) {
                     return (
-                      <div
-                        key={key}
-                        className="flex min-h-[200px] min-w-0 max-w-full flex-col gap-2"
-                      >
-                        <span className="shrink-0 text-sm font-medium">
-                          {title}
-                        </span>
-                        <NoDataOrLoading
-                          isLoading={false}
-                          className="min-h-32 flex-1"
-                        />
+                      <div key={key} className="flex min-h-[200px] min-w-0 max-w-full flex-col gap-2">
+                        <span className="shrink-0 text-sm font-medium">{title}</span>
+                        <NoDataOrLoading isLoading={false} className="min-h-32 flex-1" />
                       </div>
                     );
                   }
@@ -229,23 +213,12 @@ export default function DatasetCompare() {
                           dimension: chartLabels[0]!,
                           metric: (d[chartLabels[0]!] as number) ?? 0,
                         }))
-                      : compareViewChartDataToDataPoints(
-                          chartData,
-                          chartLabels,
-                        );
-                  const chartType =
-                    chartLabels.length === 1
-                      ? "LINE_TIME_SERIES"
-                      : "BAR_TIME_SERIES";
+                      : compareViewChartDataToDataPoints(chartData, chartLabels);
+                  const chartType = chartLabels.length === 1 ? "LINE_TIME_SERIES" : "BAR_TIME_SERIES";
 
                   return (
-                    <div
-                      key={key}
-                      className="flex min-h-[200px] min-w-0 max-w-full flex-col gap-2"
-                    >
-                      <span className="shrink-0 text-sm font-medium">
-                        {title}
-                      </span>
+                    <div key={key} className="flex min-h-[200px] min-w-0 max-w-full flex-col gap-2">
+                      <span className="shrink-0 text-sm font-medium">{title}</span>
                       <div className="min-h-[200px] min-w-0 flex-1">
                         <Chart
                           chartType={chartType}
@@ -253,9 +226,7 @@ export default function DatasetCompare() {
                           rowLimit={Math.max(dataPoints.length, 1)}
                           chartConfig={{ type: chartType }}
                           valueFormatter={valueFormatter}
-                          legendPosition={
-                            chartLabels.length > 1 ? "above" : "none"
-                          }
+                          legendPosition={chartLabels.length > 1 ? "above" : "none"}
                         />
                       </div>
                     </div>

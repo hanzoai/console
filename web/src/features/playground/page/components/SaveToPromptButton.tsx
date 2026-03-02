@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/pop
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { usePlaygroundContext } from "@/src/features/playground/page/context";
 import usePlaygroundCache from "@/src/features/playground/page/hooks/usePlaygroundCache";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";

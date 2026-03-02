@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import {
   DATASET_RUN_COMPARE_TABS,

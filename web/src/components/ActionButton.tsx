@@ -4,7 +4,7 @@ import { Button, type ButtonProps } from "@/src/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/src/components/ui/hover-card";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import Link from "next/link";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 const BUTTON_STATE_MESSAGES = {
   limitReached: (current: number, max: number) =>

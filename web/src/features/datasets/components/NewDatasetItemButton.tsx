@@ -4,7 +4,7 @@ import { useState } from "react";
 import { NewDatasetItemForm } from "@/src/features/datasets/components/NewDatasetItemForm";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ActionButton } from "@/src/components/ActionButton";
 
 export const NewDatasetItemButton = (props: { projectId: string; datasetId?: string; className?: string }) => {

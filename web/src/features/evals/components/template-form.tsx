@@ -20,7 +20,7 @@ import { type EvalTemplate } from "@hanzo/shared";
 import { ModelParameters } from "@/src/components/ModelParameters";
 import { OutputSchema, type ModelParams, ZodModelConfig } from "@hanzo/shared";
 import { PromptVariableListPreview } from "@/src/features/prompts/components/PromptVariableListPreview";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { useModelParams } from "@/src/features/playground/page/hooks/useModelParams";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";

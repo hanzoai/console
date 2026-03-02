@@ -5,7 +5,7 @@ import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type RouterInput } from "@/src/utils/types";
 import { useState } from "react";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 // import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
 // import { AnyColumnWithTable } from "kysely";
 

@@ -6,7 +6,7 @@ import { useTagManager } from "@/src/features/tag/hooks/useTagManager";
 import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
 import { Command, CommandList, CommandGroup } from "cmdk";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Label } from "@/src/components/ui/label";
 
 type TagManagerProps = {

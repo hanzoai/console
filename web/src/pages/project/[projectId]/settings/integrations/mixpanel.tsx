@@ -16,7 +16,7 @@ import { PasswordInput } from "@/src/components/ui/password-input";
 import { Switch } from "@/src/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/src/components/ui/tooltip";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   mixpanelIntegrationFormSchema,
   MIXPANEL_REGIONS,

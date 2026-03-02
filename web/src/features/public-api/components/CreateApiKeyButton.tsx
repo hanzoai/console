@@ -14,7 +14,7 @@ import {
 import { CodeView } from "@/src/components/ui/CodeJsonViewer";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Input } from "@/src/components/ui/input";
 import { useConsoleEnvCode } from "@/src/features/public-api/hooks/useConsoleEnvCode";
 import { Label } from "@/src/components/ui/label";
@@ -162,8 +162,8 @@ export const ApiKeyRender = ({
       <div>
         <SubHeader title="Secret Key" />
         <div className="text-sm text-muted-foreground">
-          Server-side only. Required for completions, embeddings, and management.
-          This key can only be viewed once. You can always create new keys in the {scope} settings.
+          Server-side only. Required for completions, embeddings, and management. This key can only be viewed once. You
+          can always create new keys in the {scope} settings.
         </div>
         <CodeView content={generatedKeys?.secretKey ?? "Loading ..."} className="mt-2" />
       </div>

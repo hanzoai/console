@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import { CodeBlock } from "@/src/components/ui/Codeblock";
 import { useTheme } from "next-themes";
 import { ImageOff, Info } from "lucide-react";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useMarkdownContext } from "@/src/features/theming/useMarkdownContext";
 import { MentionBadge } from "@/src/features/comments/components/MentionBadge";
 import { type ExtraProps as ReactMarkdownExtraProps } from "react-markdown";

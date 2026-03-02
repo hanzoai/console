@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { InputCommandShortcut } from "@/src/components/ui/input-command";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { type ListEntry, useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";

@@ -1,5 +1,5 @@
 import { VERSION } from "@/src/constants";
-import { ServerPosthog } from "@/src/features/posthog-analytics/ServerPosthog";
+import { ServerPosthog } from "@/src/features/insights-analytics/ServerInsights";
 import { Prisma, prisma } from "@hanzo/shared/src/db";
 import { v4 as uuidv4 } from "uuid";
 import {

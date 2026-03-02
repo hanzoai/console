@@ -1,16 +1,11 @@
 import { CsvColumnsCard } from "./CsvColumnsCard";
 import { MappingCard } from "./MappingCard";
-import {
-  DndContext,
-  closestCenter,
-  MeasuringStrategy,
-  DragOverlay,
-} from "@dnd-kit/core";
+import { DndContext, closestCenter, MeasuringStrategy, DragOverlay } from "@dnd-kit/core";
 import { useState, useEffect } from "react";
 import { Button } from "@/src/components/ui/button";
 import { api } from "@/src/utils/api";
 import { Progress } from "@/src/components/ui/progress";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
 import { CsvImportValidationError } from "./CsvImportValidationError";
 import { Checkbox } from "@/src/components/ui/checkbox";
@@ -61,17 +56,11 @@ export function PreviewCsvImport({
   const expectedOutputSchemaKeys = extractSchemaKeys(dataset?.expectedOutputSchema);
 
   // Toggle states for direct mapping mode (per field)
-  const [useDirectMappingForInput, setUseDirectMappingForInput] =
-    useState(false);
-  const [
-    useDirectMappingForExpectedOutput,
-    setUseDirectMappingForExpectedOutput,
-  ] = useState(false);
+  const [useDirectMappingForInput, setUseDirectMappingForInput] = useState(false);
+  const [useDirectMappingForExpectedOutput, setUseDirectMappingForExpectedOutput] = useState(false);
 
   // Compute effective schema keys - pass undefined when in direct mapping mode
-  const effectiveInputSchemaKeys = useDirectMappingForInput
-    ? undefined
-    : (inputSchemaKeys ?? undefined);
+  const effectiveInputSchemaKeys = useDirectMappingForInput ? undefined : (inputSchemaKeys ?? undefined);
   const effectiveExpectedOutputSchemaKeys = useDirectMappingForExpectedOutput
     ? undefined
     : (expectedOutputSchemaKeys ?? undefined);
@@ -172,13 +161,9 @@ export function PreviewCsvImport({
                 inputSchemaKeys={inputSchemaKeys}
                 expectedOutputSchemaKeys={expectedOutputSchemaKeys}
                 useDirectMappingForInput={useDirectMappingForInput}
-                useDirectMappingForExpectedOutput={
-                  useDirectMappingForExpectedOutput
-                }
+                useDirectMappingForExpectedOutput={useDirectMappingForExpectedOutput}
                 onToggleDirectMappingForInput={setUseDirectMappingForInput}
-                onToggleDirectMappingForExpectedOutput={
-                  setUseDirectMappingForExpectedOutput
-                }
+                onToggleDirectMappingForExpectedOutput={setUseDirectMappingForExpectedOutput}
               />
             </div>
             {createPortal(
@@ -209,9 +194,7 @@ export function PreviewCsvImport({
       </DialogBody>
       <DialogFooter>
         {/* Show checkbox in freeform mode OR when using direct mapping for any field */}
-        {(useDirectMappingForInput ||
-          useDirectMappingForExpectedOutput ||
-          !isSchemaMode) && (
+        {(useDirectMappingForInput || useDirectMappingForExpectedOutput || !isSchemaMode) && (
           <div className="flex items-center gap-2">
             <Checkbox
               id="wrapSingleColumn"

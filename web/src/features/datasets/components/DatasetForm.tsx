@@ -16,7 +16,7 @@ import { useMemo, useState, useEffect, useRef, forwardRef, useImperativeHandle }
 import { Input } from "@/src/components/ui/input";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { DatasetNameSchema, isValidJSONSchema, type Prisma } from "@hanzo/shared";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Label } from "@/src/components/ui/label";
 import { useRouter } from "next/router";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";

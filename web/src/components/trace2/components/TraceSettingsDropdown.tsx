@@ -29,7 +29,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Switch } from "@/src/components/ui/switch";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useViewPreferences } from "../contexts/ViewPreferencesContext";
 
 export interface TraceSettingsDropdownProps {

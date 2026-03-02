@@ -15,7 +15,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { usePersistedWindowIds } from "@/src/features/playground/page/hooks/usePersistedWindowIds";
 import { type PlaygroundCache, type PlaygroundSchema, type PlaygroundTool } from "@/src/features/playground/page/types";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import {
   ChatMessageRole,

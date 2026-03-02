@@ -20,7 +20,7 @@ import { api } from "@/src/utils/api";
 import { Textarea } from "@/src/components/ui/textarea";
 import { isBooleanDataType, isCategoricalDataType, isNumericDataType } from "@/src/features/scores/lib/helpers";
 import DocPopup from "@/src/components/layouts/doc-popup";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   createConfigSchema,
   updateConfigSchema,

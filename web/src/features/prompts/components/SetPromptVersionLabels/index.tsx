@@ -14,7 +14,7 @@ import { api } from "@/src/utils/api";
 import { PRODUCTION_LABEL, type Prompt } from "@hanzo/shared";
 import { AddLabelForm } from "./AddLabelForm";
 import { LabelCommandItem } from "./LabelCommandItem";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { isReservedPromptLabel } from "@/src/features/prompts/utils";
 import { TruncatedLabels } from "@/src/components/TruncatedLabels";
 import { cn } from "@/src/utils/tailwind";

@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { api } from "@/src/utils/api";
 import React, { useState } from "react";
 import { useRouter } from "next/router";

@@ -7,7 +7,7 @@ import "react18-json-view/src/dark.css";
 import { deepParseJson } from "@hanzo/shared";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useTheme } from "next-themes";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useMarkdownContext } from "@/src/features/theming/useMarkdownContext";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";

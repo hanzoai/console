@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { useRouter } from "next/router";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 export function DeletePromptVersion({
   promptVersionId,

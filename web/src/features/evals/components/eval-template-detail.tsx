@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useState } from "react";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import { Switch } from "@/src/components/ui/switch";
 import { Command } from "@/src/components/ui/command";

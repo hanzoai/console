@@ -1,5 +1,5 @@
 import type { ValidatedChatCompletionBody } from "@/src/features/playground/server/validateChatCompletionBody";
-import { ServerPosthog } from "@/src/features/posthog-analytics/ServerPosthog";
+import { ServerPosthog } from "@/src/features/insights-analytics/ServerInsights";
 import type { LLMResult } from "@langchain/core/outputs";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 

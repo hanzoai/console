@@ -11,7 +11,7 @@ import {
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { type ModelTableRow } from "@/src/components/table/use-cases/models";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { cn } from "@/src/utils/tailwind";
 import {
   type ColumnOrderState,

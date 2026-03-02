@@ -14,7 +14,7 @@ import { SelectWidgetDialog, type WidgetItem } from "@/src/features/widgets/comp
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { v4 as uuidv4 } from "uuid";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DashboardGrid } from "@/src/features/widgets/components/DashboardGrid";
 import { useDashboardDateRange } from "@/src/hooks/useDashboardDateRange";
 import { DASHBOARD_AGGREGATION_OPTIONS, toAbsoluteTimeRange } from "@/src/utils/date-range-utils";

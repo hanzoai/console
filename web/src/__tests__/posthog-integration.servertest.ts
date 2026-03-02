@@ -70,6 +70,6 @@ describe("PostHog Integration SSRF Protection", () => {
         posthogProjectApiKey: "phc_test_key_12345",
         enabled: true,
       }),
-    ).rejects.toThrow(/Invalid PostHog hostname.*Blocked/);
+    ).rejects.toThrow(/Invalid Hanzo Insights hostname.*Blocked/);
   });
 });

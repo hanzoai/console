@@ -1,13 +1,5 @@
-import { AnalyticsIntegrationExportSource } from "@hanzo/shared";
-import { z } from "zod/v4";
-
-export const posthogIntegrationFormSchema = z.object({
-  posthogHostname: z.string().url(),
-  posthogProjectApiKey: z.string().refine((v) => v.startsWith("phc_"), {
-    message: "PostHog 'Project API Key' must start with 'phc_'. You can find it in the PostHog project settings.",
-  }),
-  enabled: z.boolean(),
-  exportSource: z
-    .enum(AnalyticsIntegrationExportSource)
-    .default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
-});
+// Redirects to renamed module. Use insights-integration/types instead.
+export {
+  insightsIntegrationFormSchema,
+  insightsIntegrationFormSchema as posthogIntegrationFormSchema,
+} from "@/src/features/insights-integration/types";

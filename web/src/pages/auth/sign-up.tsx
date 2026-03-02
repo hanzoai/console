@@ -18,7 +18,7 @@ import { PasswordInput } from "@/src/components/ui/password-input";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 
 // Use the same getServerSideProps function as src/pages/auth/sign-in.tsx

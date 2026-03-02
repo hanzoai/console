@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { organizationFormSchema } from "@/src/features/organizations/utils/organizationNameSchema";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { SurveyName } from "@prisma/client";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 

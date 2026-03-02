@@ -3,7 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { type ColumnOrderState, type VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Component, Menu, X } from "lucide-react";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import {
   closestCenter,

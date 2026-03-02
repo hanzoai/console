@@ -39,7 +39,7 @@ import {
 import { compareViewChartDataToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { CompareViewAdapter } from "@/src/features/scores/adapters";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import {
   Dialog,

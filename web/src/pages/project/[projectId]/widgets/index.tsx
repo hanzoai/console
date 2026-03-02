@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import Page from "@/src/components/layouts/page";
 import { ActionButton } from "@/src/components/ActionButton";

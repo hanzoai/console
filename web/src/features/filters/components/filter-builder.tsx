@@ -21,7 +21,7 @@ import {
 } from "@hanzo/shared";
 import { NonEmptyString } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   InputCommand,
   InputCommandEmpty,

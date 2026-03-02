@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { ActionButton } from "@/src/components/ActionButton";
 import Page from "@/src/components/layouts/page";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { PromptTable } from "@/src/features/prompts/components/prompts-table";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { PlusIcon } from "lucide-react";

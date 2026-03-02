@@ -6,10 +6,7 @@ import { IOPreview } from "@/src/components/trace2/components/IOPreview/IOPrevie
 import { JsonSkeleton } from "@/src/components/ui/CodeJsonViewer";
 import { Badge } from "@/src/components/ui/badge";
 import { DetailPageNav } from "@/src/features/navigate-detail-pages/DetailPageNav";
-import {
-  type ListEntry,
-  useDetailPageLists,
-} from "@/src/features/navigate-detail-pages/context";
+import { type ListEntry, useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
 import { api } from "@/src/utils/api";
 import { usdFormatter } from "@/src/utils/numbers";
 import { getNumberFromMap } from "@/src/utils/map-utils";
@@ -22,13 +19,9 @@ import { Button } from "@/src/components/ui/button";
 import { CommentDrawerButton } from "@/src/features/comments/CommentDrawerButton";
 import { useSession } from "next-auth/react";
 import { Download, ExternalLinkIcon } from "lucide-react";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { ScrollArea } from "@/src/components/ui/scroll-area";
 import { Label } from "@/src/components/ui/label";
 import {
@@ -50,10 +43,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { LazyTraceEventsRow } from "@/src/components/session/TraceEventsRow";
 import { observationEventsFilterConfig } from "@/src/features/events/config/filter-config";
 import { useEventsFilterOptions } from "@/src/features/events/hooks/useEventsFilterOptions";
-import {
-  decodeAndNormalizeFilters,
-  useSidebarFilterState,
-} from "@/src/features/filters/hooks/useSidebarFilterState";
+import { decodeAndNormalizeFilters, useSidebarFilterState } from "@/src/features/filters/hooks/useSidebarFilterState";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { PopoverFilterBuilder } from "@/src/features/filters/components/filter-builder";
 import { useTableViewManager } from "@/src/components/table/table-view-presets/hooks/useTableViewManager";
@@ -63,10 +53,7 @@ import {
   SYSTEM_PRESET_ID_PREFIX,
 } from "@/src/components/table/table-view-presets/components/data-table-view-presets-drawer";
 import { Separator } from "@/src/components/ui/separator";
-import {
-  type VisibilityState,
-  type ColumnOrderState,
-} from "@tanstack/react-table";
+import { type VisibilityState, type ColumnOrderState } from "@tanstack/react-table";
 
 // some projects have thousands of users in a session, paginate to avoid rendering all at once
 const INITIAL_USERS_DISPLAY_COUNT = 10;
@@ -107,10 +94,7 @@ const SESSION_DETAIL_SYSTEM_PRESETS: SystemFilterPreset[] = [
   },
 ];
 
-const areDetailPageListsEqual = (
-  left: ListEntry[] | undefined,
-  right: ListEntry[] | undefined,
-) => {
+const areDetailPageListsEqual = (left: ListEntry[] | undefined, right: ListEntry[] | undefined) => {
   if (left === right) return true;
   if (!left || !right || left.length !== right.length) return false;
   return left.every((entry, index) => {
@@ -121,13 +105,7 @@ const areDetailPageListsEqual = (
   });
 };
 
-export function SessionUsers({
-  projectId,
-  users,
-}: {
-  projectId: string;
-  users?: string[];
-}) {
+export function SessionUsers({ projectId, users }: { projectId: string; users?: string[] }) {
   const [page, setPage] = useState(0);
 
   if (!users) return null;
@@ -163,10 +141,7 @@ export function SessionUsers({
             <ScrollArea className="h-[300px]">
               <div className="flex flex-col gap-2 p-2">
                 {remainingUsers
-                  .slice(
-                    page * USERS_PER_PAGE_IN_POPOVER,
-                    (page + 1) * USERS_PER_PAGE_IN_POPOVER,
-                  )
+                  .slice(page * USERS_PER_PAGE_IN_POPOVER, (page + 1) * USERS_PER_PAGE_IN_POPOVER)
                   .map((userId: string) => (
                     <Link
                       key={userId}
@@ -194,17 +169,13 @@ export function SessionUsers({
                   Previous
                 </Button>
                 <span className="text-sm text-muted-foreground">
-                  Page {page + 1} of{" "}
-                  {Math.ceil(remainingUsers.length / USERS_PER_PAGE_IN_POPOVER)}
+                  Page {page + 1} of {Math.ceil(remainingUsers.length / USERS_PER_PAGE_IN_POPOVER)}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setPage((p) => p + 1)}
-                  disabled={
-                    (page + 1) * USERS_PER_PAGE_IN_POPOVER >=
-                    remainingUsers.length
-                  }
+                  disabled={(page + 1) * USERS_PER_PAGE_IN_POPOVER >= remainingUsers.length}
                 >
                   Next
                 </Button>
@@ -217,11 +188,7 @@ export function SessionUsers({
   );
 }
 
-const SessionScores = ({
-  scores,
-}: {
-  scores: WithStringifiedMetadata<ScoreDomain>[];
-}) => {
+const SessionScores = ({ scores }: { scores: WithStringifiedMetadata<ScoreDomain>[] }) => {
   return (
     <div className="flex flex-wrap gap-1">
       <GroupedScoreBadges scores={scores} />
@@ -245,20 +212,13 @@ export const SessionPage: React.FC<{
     },
     {
       retry(failureCount, error) {
-        if (
-          error.data?.code === "UNAUTHORIZED" ||
-          error.data?.code === "NOT_FOUND"
-        )
-          return false;
+        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
         return failureCount < 3;
       },
     },
   );
 
-  const [showCorrections, setShowCorrections] = useLocalStorage(
-    "showCorrections",
-    false,
-  );
+  const [showCorrections, setShowCorrections] = useLocalStorage("showCorrections", false);
 
   const sessionComments = api.comments.getByObjectId.useQuery({
     projectId,
@@ -309,17 +269,16 @@ export const SessionPage: React.FC<{
     capture("session_detail:download_button_click");
   }, [session.data, sessionId, projectId, capture, sessionComments, utils]);
 
-  const { openPeek, closePeek, resolveDetailNavigationPath, expandPeek } =
-    usePeekNavigation({
-      expandConfig: {
-        // Expand peeked traces to the trace detail route; sessions list traces
-        basePath: `/project/${projectId}/traces`,
-      },
-      queryParams: ["observation", "display", "timestamp"],
-      extractParamsValuesFromRow: (row: any) => ({
-        timestamp: row.timestamp.toISOString(),
-      }),
-    });
+  const { openPeek, closePeek, resolveDetailNavigationPath, expandPeek } = usePeekNavigation({
+    expandConfig: {
+      // Expand peeked traces to the trace detail route; sessions list traces
+      basePath: `/project/${projectId}/traces`,
+    },
+    queryParams: ["observation", "display", "timestamp"],
+    extractParamsValuesFromRow: (row: any) => ({
+      timestamp: row.timestamp.toISOString(),
+    }),
+  });
 
   useEffect(() => {
     if (!session.isSuccess) return;
@@ -341,14 +300,13 @@ export const SessionPage: React.FC<{
     { enabled: session.isSuccess && userSession.status === "authenticated" },
   );
 
-  const traceCommentCounts =
-    api.comments.getTraceCommentCountsBySessionId.useQuery(
-      {
-        projectId,
-        sessionId,
-      },
-      { enabled: session.isSuccess && userSession.status === "authenticated" },
-    );
+  const traceCommentCounts = api.comments.getTraceCommentCountsBySessionId.useQuery(
+    {
+      projectId,
+      sessionId,
+    },
+    { enabled: session.isSuccess && userSession.status === "authenticated" },
+  );
 
   // Virtualizer measures cheap skeleton, then updates once when hydrated
   const virtualizer = useVirtualizer({
@@ -357,10 +315,7 @@ export const SessionPage: React.FC<{
     estimateSize: () => 300,
     overscan: 1, // Render 1 item above/below viewport
     getItemKey: (index) => session.data?.traces[index]?.id ?? index,
-    measureElement:
-      typeof window !== "undefined"
-        ? (element) => element.getBoundingClientRect().height
-        : undefined,
+    measureElement: typeof window !== "undefined" ? (element) => element.getBoundingClientRect().height : undefined,
   });
 
   if (session.error?.data?.code === "UNAUTHORIZED")
@@ -413,18 +368,11 @@ export const SessionPage: React.FC<{
               <DetailPageNav
                 key="nav"
                 currentId={encodeURIComponent(sessionId)}
-                path={(entry) =>
-                  `/project/${projectId}/sessions/${encodeURIComponent(entry.id)}`
-                }
+                path={(entry) => `/project/${projectId}/sessions/${encodeURIComponent(entry.id)}`}
                 listKey="sessions"
               />
             )}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={downloadSessionAsJson}
-              title="Download session as JSON"
-            >
+            <Button variant="outline" size="icon" onClick={downloadSessionAsJson} title="Download session as JSON">
               <Download className="h-4 w-4" />
             </Button>
             <CommentDrawerButton
@@ -457,14 +405,8 @@ export const SessionPage: React.FC<{
               />
             </div>
             <div className="flex items-center">
-              <Switch
-                checked={showCorrections}
-                onCheckedChange={setShowCorrections}
-                className="scale-75"
-              />
-              <span className="text-xs text-muted-foreground">
-                Show corrections
-              </span>
+              <Switch checked={showCorrections} onCheckedChange={setShowCorrections} className="scale-75" />
+              <span className="text-xs text-muted-foreground">Show corrections</span>
             </div>
           </>
         ),
@@ -472,17 +414,9 @@ export const SessionPage: React.FC<{
     >
       <div className="flex h-full flex-col overflow-auto">
         <div className="sticky top-0 z-40 flex flex-wrap gap-2 border-b bg-background p-4">
-          {session.data?.users?.length ? (
-            <SessionUsers projectId={projectId} users={session.data.users} />
-          ) : null}
-          <Badge variant="outline">
-            Total traces: {session.data?.traces.length}
-          </Badge>
-          {session.data && (
-            <Badge variant="outline">
-              Total cost: {usdFormatter(session.data.totalCost, 2)}
-            </Badge>
-          )}
+          {session.data?.users?.length ? <SessionUsers projectId={projectId} users={session.data.users} /> : null}
+          <Badge variant="outline">Total traces: {session.data?.traces.length}</Badge>
+          {session.data && <Badge variant="outline">Total cost: {usdFormatter(session.data.totalCost, 2)}</Badge>}
           <SessionScores scores={session.data?.scores ?? []} />
         </div>
         <div ref={parentRef} className="flex-1 overflow-auto p-4">
@@ -520,9 +454,7 @@ export const SessionPage: React.FC<{
                     onLoad={() => {
                       // Force virtualizer to remeasure this specific item
                       virtualizer.measureElement(
-                        document.querySelector(
-                          `[data-index="${virtualItem.index}"]`,
-                        ) as HTMLElement,
+                        document.querySelector(`[data-index="${virtualItem.index}"]`) as HTMLElement,
                       );
                     }}
                   />
@@ -570,20 +502,13 @@ export const SessionEventsPage: React.FC<{
     },
     {
       retry(failureCount, error) {
-        if (
-          error.data?.code === "UNAUTHORIZED" ||
-          error.data?.code === "NOT_FOUND"
-        )
-          return false;
+        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
         return failureCount < 3;
       },
     },
   );
 
-  const [showCorrections, setShowCorrections] = useLocalStorage(
-    "showCorrections",
-    false,
-  );
+  const [showCorrections, setShowCorrections] = useLocalStorage("showCorrections", false);
 
   const sessionCommentCounts = api.comments.getCountByObjectId.useQuery(
     {
@@ -594,40 +519,34 @@ export const SessionEventsPage: React.FC<{
     { enabled: session.isSuccess && userSession.status === "authenticated" },
   );
 
-  const traceCommentCounts =
-    api.comments.getTraceCommentCountsBySessionId.useQuery(
-      {
-        projectId,
-        sessionId,
-      },
-      { enabled: session.isSuccess && userSession.status === "authenticated" },
-    );
+  const traceCommentCounts = api.comments.getTraceCommentCountsBySessionId.useQuery(
+    {
+      projectId,
+      sessionId,
+    },
+    { enabled: session.isSuccess && userSession.status === "authenticated" },
+  );
 
   const tracesQuery = api.sessions.tracesFromEvents.useQuery(
     { projectId, sessionId },
     {
       enabled: !!projectId && !!sessionId,
       retry(failureCount, error) {
-        if (
-          error.data?.code === "UNAUTHORIZED" ||
-          error.data?.code === "NOT_FOUND"
-        )
-          return false;
+        if (error.data?.code === "UNAUTHORIZED" || error.data?.code === "NOT_FOUND") return false;
         return failureCount < 3;
       },
     },
   );
 
-  const { openPeek, closePeek, resolveDetailNavigationPath, expandPeek } =
-    usePeekNavigation({
-      expandConfig: {
-        basePath: `/project/${projectId}/traces`,
-      },
-      queryParams: ["observation", "display", "timestamp"],
-      extractParamsValuesFromRow: (row: any) => ({
-        timestamp: row.timestamp.toISOString(),
-      }),
-    });
+  const { openPeek, closePeek, resolveDetailNavigationPath, expandPeek } = usePeekNavigation({
+    expandConfig: {
+      basePath: `/project/${projectId}/traces`,
+    },
+    queryParams: ["observation", "display", "timestamp"],
+    extractParamsValuesFromRow: (row: any) => ({
+      timestamp: row.timestamp.toISOString(),
+    }),
+  });
 
   useEffect(() => {
     if (!tracesQuery.isSuccess) return;
@@ -637,25 +556,13 @@ export const SessionEventsPage: React.FC<{
     }));
     if (areDetailPageListsEqual(detailPagelists.traces, nextList)) return;
     setDetailPageList("traces", nextList);
-  }, [
-    tracesQuery.isSuccess,
-    tracesQuery.data,
-    setDetailPageList,
-    detailPagelists.traces,
-  ]);
+  }, [tracesQuery.isSuccess, tracesQuery.data, setDetailPageList, detailPagelists.traces]);
 
   // Decode time filters from URL for scoping filter options
   const [filtersQuery] = useQueryParam("filter", withDefault(StringParam, ""));
   const timeFiltersForOptions = React.useMemo(() => {
-    const allFilters = decodeAndNormalizeFilters(
-      filtersQuery,
-      observationEventsFilterConfig.columnDefinitions,
-    );
-    return allFilters.filter(
-      (f) =>
-        (f.column === "Start Time" || f.column === "startTime") &&
-        f.type === "datetime",
-    );
+    const allFilters = decodeAndNormalizeFilters(filtersQuery, observationEventsFilterConfig.columnDefinitions);
+    return allFilters.filter((f) => (f.column === "Start Time" || f.column === "startTime") && f.type === "datetime");
   }, [filtersQuery]);
 
   const { filterOptions, isFilterOptionsPending } = useEventsFilterOptions({
@@ -669,10 +576,7 @@ export const SessionEventsPage: React.FC<{
       tableName: "session-events",
       columnDefinitions: observationEventsFilterConfig.columnDefinitions,
       facets: observationEventsFilterConfig.facets
-        .filter(
-          (facet) =>
-            facet.column !== "sessionId" && facet.column !== "environment",
-        )
+        .filter((facet) => facet.column !== "sessionId" && facet.column !== "environment")
         .map((facet) => ({
           ...facet,
           // Session detail uses a different query path and should not inherit
@@ -684,12 +588,10 @@ export const SessionEventsPage: React.FC<{
 
   const filterColumns = React.useMemo<ColumnDefinition[]>(() => {
     const scoreCategoryOptions = filterOptions.score_categories
-      ? Object.entries(filterOptions.score_categories).map(
-          ([label, values]) => ({
-            label,
-            values,
-          }),
-        )
+      ? Object.entries(filterOptions.score_categories).map(([label, values]) => ({
+          label,
+          values,
+        }))
       : [];
 
     return sessionEventsFilterConfig.columnDefinitions
@@ -722,17 +624,12 @@ export const SessionEventsPage: React.FC<{
           return options ? { ...column, options } : column;
         }
 
-        if (
-          column.type === "categoryOptions" &&
-          column.id === "score_categories"
-        ) {
+        if (column.type === "categoryOptions" && column.id === "score_categories") {
           return { ...column, options: scoreCategoryOptions };
         }
 
         if (column.type === "numberObject" && column.id === "scores_avg") {
-          return filterOptions.scores_avg
-            ? { ...column, keyOptions: filterOptions.scores_avg }
-            : column;
+          return filterOptions.scores_avg ? { ...column, keyOptions: filterOptions.scores_avg } : column;
         }
 
         return column;
@@ -742,10 +639,7 @@ export const SessionEventsPage: React.FC<{
   const filterColumnsWithCustomSelect = React.useMemo(
     () =>
       filterColumns
-        .filter(
-          (column) =>
-            column.type === "stringOptions" || column.type === "arrayOptions",
-        )
+        .filter((column) => column.type === "stringOptions" || column.type === "arrayOptions")
         .map((column) => column.id),
     [filterColumns],
   );
@@ -778,10 +672,7 @@ export const SessionEventsPage: React.FC<{
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const setFiltersWrapper = useCallback(
-    (filters: FilterState) => queryFilter.setFilterState(filters),
-    [queryFilter],
-  );
+  const setFiltersWrapper = useCallback((filters: FilterState) => queryFilter.setFilterState(filters), [queryFilter]);
 
   const { isLoading: isViewLoading, ...viewControllers } = useTableViewManager({
     tableName: TableViewPresetTableName.SessionDetail,
@@ -811,9 +702,7 @@ export const SessionEventsPage: React.FC<{
     if (isViewLoading) return; // Wait for view manager to initialize
 
     // Check if selectedViewId is a system preset
-    const systemPreset = SESSION_DETAIL_SYSTEM_PRESETS.find(
-      (p) => p.id === viewControllers.selectedViewId,
-    );
+    const systemPreset = SESSION_DETAIL_SYSTEM_PRESETS.find((p) => p.id === viewControllers.selectedViewId);
 
     // If it's a non-system saved view, let the view manager handle it
     if (viewControllers.selectedViewId && !systemPreset) return;
@@ -826,12 +715,7 @@ export const SessionEventsPage: React.FC<{
     // Apply the stored system preset or default to first one
     const presetToApply = systemPreset ?? SESSION_DETAIL_SYSTEM_PRESETS[0];
     applySystemPreset(presetToApply);
-  }, [
-    applySystemPreset,
-    queryFilter.filterState.length,
-    isViewLoading,
-    viewControllers.selectedViewId,
-  ]);
+  }, [applySystemPreset, queryFilter.filterState.length, isViewLoading, viewControllers.selectedViewId]);
 
   const virtualizer = useVirtualizer({
     count: tracesQuery.data?.length ?? 0,
@@ -839,10 +723,7 @@ export const SessionEventsPage: React.FC<{
     estimateSize: () => 320,
     overscan: 1,
     getItemKey: (index) => tracesQuery.data?.[index]?.id ?? index,
-    measureElement:
-      typeof window !== "undefined"
-        ? (element) => element.getBoundingClientRect().height
-        : undefined,
+    measureElement: typeof window !== "undefined" ? (element) => element.getBoundingClientRect().height : undefined,
   });
 
   if (session.error?.data?.code === "UNAUTHORIZED")
@@ -895,9 +776,7 @@ export const SessionEventsPage: React.FC<{
               <DetailPageNav
                 key="nav"
                 currentId={encodeURIComponent(sessionId)}
-                path={(entry) =>
-                  `/project/${projectId}/sessions/${encodeURIComponent(entry.id)}`
-                }
+                path={(entry) => `/project/${projectId}/sessions/${encodeURIComponent(entry.id)}`}
                 listKey="sessions"
               />
             )}
@@ -931,14 +810,8 @@ export const SessionEventsPage: React.FC<{
               />
             </div>
             <div className="flex items-center">
-              <Switch
-                checked={showCorrections}
-                onCheckedChange={setShowCorrections}
-                className="scale-75"
-              />
-              <span className="text-xs text-muted-foreground">
-                Show corrections
-              </span>
+              <Switch checked={showCorrections} onCheckedChange={setShowCorrections} className="scale-75" />
+              <span className="text-xs text-muted-foreground">Show corrections</span>
             </div>
           </>
         ),
@@ -975,19 +848,11 @@ export const SessionEventsPage: React.FC<{
           <Separator orientation="vertical" className="h-6" />
 
           {/* Stats */}
-          <Badge variant="outline">
-            Total traces: {session.data?.countTraces ?? 0}
-          </Badge>
-          {session.data && (
-            <Badge variant="outline">
-              Total cost: {usdFormatter(session.data.totalCost ?? 0, 2)}
-            </Badge>
-          )}
+          <Badge variant="outline">Total traces: {session.data?.countTraces ?? 0}</Badge>
+          {session.data && <Badge variant="outline">Total cost: {usdFormatter(session.data.totalCost ?? 0, 2)}</Badge>}
 
           {/* Users */}
-          {session.data?.users?.length ? (
-            <SessionUsers projectId={projectId} users={session.data.users} />
-          ) : null}
+          {session.data?.users?.length ? <SessionUsers projectId={projectId} users={session.data.users} /> : null}
 
           {/* Scores */}
           <SessionScores scores={session.data?.scores ?? []} />
@@ -1028,9 +893,7 @@ export const SessionEventsPage: React.FC<{
                     filterState={visibleFilterState}
                     onLoad={() => {
                       virtualizer.measureElement(
-                        document.querySelector(
-                          `[data-index="${virtualItem.index}"]`,
-                        ) as HTMLElement,
+                        document.querySelector(`[data-index="${virtualItem.index}"]`) as HTMLElement,
                       );
                     }}
                   />
@@ -1090,10 +953,7 @@ export const SessionIO = ({
   return (
     <div className="flex w-full flex-col gap-2 overflow-hidden p-0">
       {!trace.data ? (
-        <JsonSkeleton
-          className="h-full w-full overflow-hidden px-2 py-1"
-          numRows={4}
-        />
+        <JsonSkeleton className="h-full w-full overflow-hidden px-2 py-1" numRows={4} />
       ) : trace.data.input || trace.data.output ? (
         <IOPreview
           key={traceId}
@@ -1109,9 +969,7 @@ export const SessionIO = ({
           showCorrections={showCorrections}
         />
       ) : (
-        <div className="p-2 text-xs text-muted-foreground">
-          This trace has no input or output.
-        </div>
+        <div className="p-2 text-xs text-muted-foreground">This trace has no input or output.</div>
       )}
     </div>
   );

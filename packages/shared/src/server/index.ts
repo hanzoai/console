@@ -64,6 +64,8 @@ export * from "./redis/otelIngestionQueue";
 export * from "./redis/batchExport";
 export * from "./redis/batchActionQueue";
 export * from "./redis/ingestionQueue";
+export * from "./redis/insightsIntegrationQueue";
+export * from "./redis/insightsIntegrationProcessingQueue";
 export * from "./redis/postHogIntegrationQueue";
 export * from "./redis/postHogIntegrationProcessingQueue";
 export * from "./redis/mixpanelIntegrationQueue";

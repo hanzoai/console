@@ -22,7 +22,7 @@ import { type CreateQueueWithAssignments, CreateQueueWithAssignmentsData, type S
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { ActionButton } from "@/src/components/ActionButton";
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";

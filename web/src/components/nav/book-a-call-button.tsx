@@ -1,6 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useEffect } from "react";
 
 declare global {
@@ -38,11 +38,7 @@ export const BookACallButton = () => {
             config: { layout: "month_view", theme: "dark" },
           });
         } else {
-          window.open(
-            "https://cal.com/hanzo/welcome-to-hanzo",
-            "_blank",
-            "noopener,noreferrer",
-          );
+          window.open("https://cal.com/hanzo/welcome-to-hanzo", "_blank", "noopener,noreferrer");
         }
       }}
     >

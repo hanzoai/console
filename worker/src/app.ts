@@ -40,7 +40,10 @@ import { DatastoreReadSkipCache } from "./utils/datastoreReadSkipCache";
 import { experimentCreateQueueProcessor } from "./queues/experimentQueue";
 import { traceDeleteProcessor } from "./queues/traceDelete";
 import { projectDeleteProcessor } from "./queues/projectDelete";
-import { postHogIntegrationProcessingProcessor, postHogIntegrationProcessor } from "./queues/postHogIntegrationQueue";
+import {
+  insightsIntegrationProcessingProcessor as postHogIntegrationProcessingProcessor,
+  insightsIntegrationProcessor as postHogIntegrationProcessor,
+} from "./queues/insightsIntegrationQueue";
 import {
   mixpanelIntegrationProcessingProcessor,
   mixpanelIntegrationProcessor,

@@ -14,7 +14,7 @@ import Link from "next/link";
 import { NewDatasetItemForm } from "@/src/features/datasets/components/NewDatasetItemForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Button } from "@/src/components/ui/button";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useIsAuthenticatedAndProjectMember } from "@/src/features/auth/hooks";
 import { parseJsonPrioritised } from "@hanzo/shared";
 import { ActionButton } from "@/src/components/ActionButton";

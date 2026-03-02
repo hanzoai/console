@@ -48,7 +48,7 @@ import { BookACallButton } from "@/src/components/nav/book-a-call-button";
 import { V4BetaSidebarToggle } from "@/src/features/events/components/V4BetaSidebarToggle";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useInsightsCapture as usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { CloudStatusMenu } from "@/src/features/cloud-status-notification/components/CloudStatusMenu";
 import { type ProductModule } from "@/src/features/ui-customization/productModuleSchema";
 

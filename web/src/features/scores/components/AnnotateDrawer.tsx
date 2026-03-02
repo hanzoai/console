@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/src/components/ui/button";
 import { LockIcon, SquarePen } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/src/components/ui/drawer";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type AnnotateDrawerProps } from "@/src/features/scores/types";
 import { type ScoreTarget } from "@/src/features/scores/types";

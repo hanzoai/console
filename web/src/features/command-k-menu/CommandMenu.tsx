@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { useEffect, memo } from "react";
 import { useSession } from "next-auth/react";
 import { env } from "@/src/env.mjs";
-import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
 import { useProjectSettingsPages } from "@/src/pages/project/[projectId]/settings";
@@ -123,11 +123,7 @@ function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
           <CommandItem
             key={dashboard.id}
             value={`Dashboard > ${dashboard.name}`}
-            keywords={[
-              "dashboard",
-              dashboard.name.toLowerCase(),
-              (dashboard.description ?? "").toLowerCase(),
-            ]}
+            keywords={["dashboard", dashboard.name.toLowerCase(), (dashboard.description ?? "").toLowerCase()]}
             disabled={router.query.dashboardId === dashboard.id}
             onSelect={() => {
               const url = `/project/${project?.id}/dashboards/${dashboard.id}`;
@@ -274,11 +270,7 @@ function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-function CommandMenuComponent({
-  mainNavigation,
-}: {
-  mainNavigation: NavigationItem[];
-}) {
+function CommandMenuComponent({ mainNavigation }: { mainNavigation: NavigationItem[] }) {
   const { open, setOpen } = useCommandMenu();
   const capture = usePostHogClientCapture();
 
@@ -338,11 +330,7 @@ function CommandMenuComponent({
       filter={(value, search, keywords) => {
         const extendValue = value + " " + keywords?.join(" ");
         const searchTerms = search.toLowerCase().split(" ");
-        return searchTerms.every((term) =>
-          extendValue.toLowerCase().includes(term),
-        )
-          ? 1
-          : 0;
+        return searchTerms.every((term) => extendValue.toLowerCase().includes(term)) ? 1 : 0;
       }}
     >
       <CommandInput
@@ -363,47 +351,42 @@ function CommandMenuComponent({
   );
 }
 
-export const CommandMenu = memo(
-  CommandMenuComponent,
-  (prevProps, nextProps) => {
-    // Only re-render if mainNavigation titles or urls change
-    if (prevProps.mainNavigation.length !== nextProps.mainNavigation.length) {
+export const CommandMenu = memo(CommandMenuComponent, (prevProps, nextProps) => {
+  // Only re-render if mainNavigation titles or urls change
+  if (prevProps.mainNavigation.length !== nextProps.mainNavigation.length) {
+    return false;
+  }
+
+  const isSame = prevProps.mainNavigation.every((item, idx) => {
+    const nextItem = nextProps.mainNavigation[idx];
+    const itemTitleUrl = item.title === nextItem.title && item.url === nextItem.url;
+
+    if (!itemTitleUrl) {
       return false;
     }
 
-    const isSame = prevProps.mainNavigation.every((item, idx) => {
-      const nextItem = nextProps.mainNavigation[idx];
-      const itemTitleUrl =
-        item.title === nextItem.title && item.url === nextItem.url;
-
-      if (!itemTitleUrl) {
+    // Check children if they exist
+    if (item.items && nextItem.items) {
+      if (item.items.length !== nextItem.items.length) {
         return false;
       }
+      const childrenMatch = item.items.every((child, childIdx) => {
+        const nextChild = nextItem.items![childIdx];
+        const match = child.title === nextChild.title && child.url === nextChild.url;
+        return match;
+      });
+      return itemTitleUrl && childrenMatch;
+    }
 
-      // Check children if they exist
-      if (item.items && nextItem.items) {
-        if (item.items.length !== nextItem.items.length) {
-          return false;
-        }
-        const childrenMatch = item.items.every((child, childIdx) => {
-          const nextChild = nextItem.items![childIdx];
-          const match =
-            child.title === nextChild.title && child.url === nextChild.url;
-          return match;
-        });
-        return itemTitleUrl && childrenMatch;
-      }
+    if ((item.items || nextItem.items) && !(item.items && nextItem.items)) {
+      return false;
+    }
 
-      if ((item.items || nextItem.items) && !(item.items && nextItem.items)) {
-        return false;
-      }
+    return itemTitleUrl && !item.items && !nextItem.items;
+  });
 
-      return itemTitleUrl && !item.items && !nextItem.items;
-    });
-
-    return isSame;
-  },
-);
+  return isSame;
+});
 
 export const useNavigationItems = () => {
   const router = useRouter();
@@ -414,9 +397,7 @@ export const useNavigationItems = () => {
   const truncatePathBeforeDynamicSegments = (path: string) => {
     const allowlistedIds = ["[projectId]", "[organizationId]", "[page]"];
     const segments = router.route.split("/");
-    const idSegments = segments.filter(
-      (segment) => segment.startsWith("[") && segment.endsWith("]"),
-    );
+    const idSegments = segments.filter((segment) => segment.startsWith("[") && segment.endsWith("]"));
     const stopSegment = idSegments.filter((id) => !allowlistedIds.includes(id));
     if (stopSegment.length === 0) return path;
     const stopIndex = segments.indexOf(stopSegment[0]);
@@ -426,10 +407,7 @@ export const useNavigationItems = () => {
 
   const getProjectPath = (projectId: string) =>
     router.query.projectId
-      ? truncatePathBeforeDynamicSegments(router.asPath).replace(
-          router.query.projectId as string,
-          projectId,
-        )
+      ? truncatePathBeforeDynamicSegments(router.asPath).replace(router.query.projectId as string, projectId)
       : `/project/${projectId}`;
 
   const allProjectItems = organizations
@@ -447,11 +425,7 @@ export const useNavigationItems = () => {
             title: `${org.name} > ${proj.name}`,
             url: getProjectPath(proj.id),
             active: router.query.projectId === proj.id,
-            keywords: [
-              "project",
-              org.name.toLowerCase(),
-              proj.name.toLowerCase(),
-            ],
+            keywords: ["project", org.name.toLowerCase(), proj.name.toLowerCase()],
           })),
         )
     : [];
