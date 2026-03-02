@@ -1,5 +1,5 @@
 import { OBSERVATIONS_TO_TRACE_INTERVAL } from "../../repositories/constants";
-import { FilterList, StringFilter } from "./clickhouse-filter";
+import { FilterList, StringFilter } from "./datastore-filter";
 
 /**
  * Extract the output column alias from a field expression (unquoted).
@@ -277,7 +277,7 @@ export type FieldSetName = keyof typeof FIELD_SETS;
 
 /**
  * Aggregation fields for trace-level queries
- * These fields use ClickHouse aggregation functions and require GROUP BY
+ * These fields use Datastore aggregation functions and require GROUP BY
  */
 const EVENTS_AGGREGATION_FIELDS = {
   // Grouping keys (must be in GROUP BY)
@@ -295,8 +295,7 @@ const EVENTS_AGGREGATION_FIELDS = {
   output: "argMaxIf(output, event_ts, parent_span_id = '') AS output",
   // Note: events_core/events_full tables don't have input_truncated/output_truncated columns.
   // Truncation is handled by the materialized view for events_core, or by leftUTF8() at query time.
-  metadata:
-    "argMaxIf(mapFromArrays(e.metadata_names, e.metadata_values), event_ts, parent_span_id = '') AS metadata",
+  metadata: "argMaxIf(mapFromArrays(e.metadata_names, e.metadata_values), event_ts, parent_span_id = '') AS metadata",
   created_at: "min(created_at) AS created_at",
   updated_at: "max(updated_at) AS updated_at",
   total_cost: "sum(total_cost) AS total_cost",
@@ -351,7 +350,7 @@ abstract class AbstractQueryBuilder {
 
   /**
    * Add raw WHERE condition with optional parameters
-   * Use ClickHouse parameter syntax: {paramName: Type}
+   * Use Datastore parameter syntax: {paramName: Type}
    *
    * Example:
    *   .whereRaw("span_id = {id: String}", { id: "abc123" })
@@ -419,7 +418,7 @@ abstract class AbstractQueryBuilder {
   }
 
   /**
-   * Add LIMIT 1 BY for ClickHouse deduplication
+   * Add LIMIT 1 BY for Datastore deduplication
    * This is applied before the regular LIMIT clause
    *
    * @param columns - Columns to deduplicate by
@@ -498,10 +497,7 @@ abstract class AbstractCTEQueryBuilder extends AbstractQueryBuilder {
   /**
    * Add a recursive CTE. Sets the RECURSIVE flag on the WITH clause.
    */
-  withRecursiveCTE(
-    name: string,
-    queryWithParams: { query: string; params: Record<string, any> },
-  ): this {
+  withRecursiveCTE(name: string, queryWithParams: { query: string; params: Record<string, any> }): this {
     this.hasRecursiveCTE = true;
     return this.withCTE(name, queryWithParams);
   }
@@ -556,7 +552,7 @@ abstract class BaseEventsQueryBuilder<TFields extends Record<string, string>> ex
   }
 
   /**
-   * Set ORDER BY clause with automatic project_id prepending for optimal ClickHouse performance.
+   * Set ORDER BY clause with automatic project_id prepending for optimal Datastore performance.
    * The events table has ORDER BY (project_id, start_time, ...) so queries should match.
    *
    * @example
@@ -573,9 +569,7 @@ abstract class BaseEventsQueryBuilder<TFields extends Record<string, string>> ex
 
     // When ordering by start_time, prepend project_id and toStartOfMinute(e.start_time)
     // to match the table PRIMARY KEY: (project_id, toStartOfMinute(start_time), xxHash32(trace_id))
-    const startTimeEntry = entries.find((e) =>
-      e.column.replace(/"/g, "").endsWith("start_time"),
-    );
+    const startTimeEntry = entries.find((e) => e.column.replace(/"/g, "").endsWith("start_time"));
 
     const columns: string[] = [];
     if (startTimeEntry) {
@@ -761,15 +755,13 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
   /**
    * Apply filters from a FilterList with automatic query optimizations.
    * When a trace_id equality filter is detected, adds xxHash32 optimization
-   * for efficient ClickHouse partition pruning.
+   * for efficient Datastore partition pruning.
    */
   applyFilters(filterList: FilterList): this {
     const traceIdFilter = filterList.find(
       (f) =>
         // events_full / events_core proof
-        f.datastoreTable.startsWith("events") &&
-        f.field === 'e."trace_id"' &&
-        f.operator === "=",
+        f.datastoreTable.startsWith("events") && f.field === 'e."trace_id"' && f.operator === "=",
     );
     if (traceIdFilter instanceof StringFilter) {
       this.whereRaw("xxHash32(trace_id) = xxHash32({traceIdXxHash: String})", {
@@ -799,10 +791,7 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
       fieldsToExclude.push("input", "output");
     }
     // Exclude default metadata when specific expansion keys are provided (custom SELECT expression is added below)
-    if (
-      this.metadataExpansionKeys !== null &&
-      this.metadataExpansionKeys.length > 0
-    ) {
+    if (this.metadataExpansionKeys !== null && this.metadataExpansionKeys.length > 0) {
       fieldsToExclude.push("metadata");
     }
 
@@ -835,9 +824,7 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
     ) {
       // For events_core/events_full, just use mapFromArrays with metadata_values directly
       // The caller should use events_full table if full metadata is needed
-      fieldExpressions.push(
-        `mapFromArrays(e.metadata_names, e.metadata_values) as metadata`,
-      );
+      fieldExpressions.push(`mapFromArrays(e.metadata_names, e.metadata_values) as metadata`);
     }
 
     // Add raw SELECT expressions (e.g., from CTE joins)
@@ -865,8 +852,7 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
     const needsFullIO = this.ioFields !== null && !this.ioFields.truncated;
 
     // Need full metadata? (any expansion requested — specific keys or all)
-    const needsFullMetadata =
-      this.metadataExpansionKeys !== null && this.selectFields.has("metadata");
+    const needsFullMetadata = this.metadataExpansionKeys !== null && this.selectFields.has("metadata");
 
     return needsFullIO || needsFullMetadata;
   }
@@ -874,7 +860,7 @@ export class EventsQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_FIE
   /**
    * Get the output column aliases for the currently selected fields.
    * Used by buildEventsFullTableSplitQuery to construct explicit column
-   * references instead of b.* (which breaks in ClickHouse JOINs when
+   * references instead of b.* (which breaks in Datastore JOINs when
    * joined CTEs have overlapping column names).
    */
   getSelectedAliases(): string[] {
@@ -939,9 +925,7 @@ type AliasedColumns<
  *
  * const { query, params } = builder.buildWithParams();
  */
-export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<
-  typeof EVENTS_AGGREGATION_FIELDS
-> {
+export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<typeof EVENTS_AGGREGATION_FIELDS> {
   private truncated: boolean = true;
 
   constructor(options: { projectId: string }) {
@@ -1028,7 +1012,7 @@ export class EventsAggregationQueryBuilder extends BaseEventsQueryBuilder<
 }
 
 /**
- * ClickHouse row type for session-level metrics queries from the events table.
+ * Datastore row type for session-level metrics queries from the events table.
  * Matches the columns produced by EVENTS_SESSION_AGGREGATION_FIELDS below.
  */
 export type SessionEventsMetricsRow = {
@@ -1054,23 +1038,19 @@ export type SessionEventsMetricsRow = {
 
 /**
  * Aggregation fields for session-level queries.
- * These fields use ClickHouse aggregation functions and require GROUP BY session_id.
+ * These fields use Datastore aggregation functions and require GROUP BY session_id.
  */
 const EVENTS_SESSION_AGGREGATION_FIELDS = {
   session_id: "session_id",
   max_timestamp: "max(start_time) AS max_timestamp",
   min_timestamp: "min(start_time) AS min_timestamp",
   trace_ids: "groupUniqArray(trace_id) AS trace_ids",
-  user_ids:
-    "groupUniqArrayIf(user_id, user_id IS NOT NULL AND user_id != '') AS user_ids",
+  user_ids: "groupUniqArrayIf(user_id, user_id IS NOT NULL AND user_id != '') AS user_ids",
   trace_count: "uniq(trace_id) AS trace_count",
   trace_tags: "groupUniqArrayArrayIf(tags, notEmpty(tags)) AS trace_tags",
-  environment:
-    "argMaxIf(environment, event_ts, environment <> '') AS environment",
-  total_observations:
-    "uniqIf(span_id, parent_span_id != '') AS total_observations",
-  duration:
-    "date_diff('second', min(start_time), max(if(isNull(end_time), start_time, end_time))) AS duration",
+  environment: "argMaxIf(environment, event_ts, environment <> '') AS environment",
+  total_observations: "uniqIf(span_id, parent_span_id != '') AS total_observations",
+  duration: "date_diff('second', min(start_time), max(if(isNull(end_time), start_time, end_time))) AS duration",
   session_usage_details: "sumMap(usage_details) AS session_usage_details",
   session_cost_details: "sumMap(cost_details) AS session_cost_details",
   session_input_cost:
@@ -1089,9 +1069,7 @@ const EVENTS_SESSION_AGGREGATION_FIELDS = {
  * Field sets for session aggregation queries
  */
 const SESSION_AGGREGATION_FIELD_SETS = {
-  all: Object.keys(EVENTS_SESSION_AGGREGATION_FIELDS) as Array<
-    keyof typeof EVENTS_SESSION_AGGREGATION_FIELDS
-  >,
+  all: Object.keys(EVENTS_SESSION_AGGREGATION_FIELDS) as Array<keyof typeof EVENTS_SESSION_AGGREGATION_FIELDS>,
 } as const;
 
 /**
@@ -1119,12 +1097,8 @@ export class EventsSessionAggregationQueryBuilder extends BaseEventsQueryBuilder
   /**
    * Add SELECT fields from predefined session aggregation field sets
    */
-  selectFieldSet(
-    ...setNames: Array<keyof typeof SESSION_AGGREGATION_FIELD_SETS>
-  ): this {
-    setNames
-      .flatMap((s) => SESSION_AGGREGATION_FIELD_SETS[s])
-      .forEach((field) => this.selectFields.add(field));
+  selectFieldSet(...setNames: Array<keyof typeof SESSION_AGGREGATION_FIELD_SETS>): this {
+    setNames.flatMap((s) => SESSION_AGGREGATION_FIELD_SETS[s]).forEach((field) => this.selectFields.add(field));
     return this;
   }
 
@@ -1142,10 +1116,7 @@ export class EventsSessionAggregationQueryBuilder extends BaseEventsQueryBuilder
    */
   withStartTimeFrom(startTimeFrom?: string | null): this {
     return this.when(Boolean(startTimeFrom), (b) =>
-      b.whereRaw(
-        `start_time >= {startTimeFrom: DateTime64(3)} - ${OBSERVATIONS_TO_TRACE_INTERVAL}`,
-        { startTimeFrom },
-      ),
+      b.whereRaw(`start_time >= {startTimeFrom: DateTime64(3)} - ${OBSERVATIONS_TO_TRACE_INTERVAL}`, { startTimeFrom }),
     );
   }
 
@@ -1155,9 +1126,7 @@ export class EventsSessionAggregationQueryBuilder extends BaseEventsQueryBuilder
   protected buildSelectClause(): string {
     const fieldExpressions = [...this.selectFields]
       .map((key) => {
-        return this.fields[
-          key as keyof typeof EVENTS_SESSION_AGGREGATION_FIELDS
-        ];
+        return this.fields[key as keyof typeof EVENTS_SESSION_AGGREGATION_FIELDS];
       })
       .filter(Boolean);
     return `SELECT\n  ${fieldExpressions.join(",\n  ")}`;
@@ -1448,24 +1417,17 @@ export function buildEventsFullTableSplitQuery(opts: {
     queryWithParams: { query: string; params: Record<string, any> };
   }>;
 }): SplitQueryBuilder {
-  const { query: baseQuery, params: baseParams } =
-    opts.baseBuilder.buildWithParams();
+  const { query: baseQuery, params: baseParams } = opts.baseBuilder.buildWithParams();
 
   // Build IO CTE: fetch full IO/metadata from events_full for matched rows.
   // Join key columns use _io_ prefix to avoid name clashes with base CTE
-  // (ClickHouse excludes duplicate column names from b.* in JOINs).
-  const ioSelectParts = [
-    "e.span_id as _io_id",
-    'e.trace_id as "_io_trace_id"',
-    'e.start_time as "_io_start_time"',
-  ];
+  // (Datastore excludes duplicate column names from b.* in JOINs).
+  const ioSelectParts = ["e.span_id as _io_id", 'e.trace_id as "_io_trace_id"', 'e.start_time as "_io_start_time"'];
   if (opts.includeIO) {
     ioSelectParts.push("e.input", "e.output");
   }
   if (opts.includeMetadata) {
-    ioSelectParts.push(
-      "mapFromArrays(e.metadata_names, e.metadata_values) as metadata",
-    );
+    ioSelectParts.push("mapFromArrays(e.metadata_names, e.metadata_values) as metadata");
   }
   const ioQuery = [
     `SELECT ${ioSelectParts.join(", ")}`,
@@ -1504,13 +1466,12 @@ export function buildEventsFullTableSplitQuery(opts: {
       'ON b."start_time" = i."_io_start_time" AND b."trace_id" = i."_io_trace_id" AND b.id = i._io_id',
     );
 
-  // SELECT: explicit base columns (not b.* — ClickHouse excludes columns
+  // SELECT: explicit base columns (not b.* — Datastore excludes columns
   // from b.* that share names with joined CTEs, and b.col produces JSON
   // keys with the table prefix). Use "b.col as col" for clean JSON keys.
   const baseAliases = opts.baseBuilder.getSelectedAliases();
   cteBuilder.select(...baseAliases.map((a) => `b.${a} as ${a}`));
-  if (opts.includeIO)
-    cteBuilder.select("i.input as input", "i.output as output");
+  if (opts.includeIO) cteBuilder.select("i.input as input", "i.output as output");
   if (opts.includeMetadata) cteBuilder.select("i.metadata as metadata");
 
   return cteBuilder as unknown as SplitQueryBuilder;

@@ -140,7 +140,7 @@ export const handleEventPropagationJob = async (job: Job<TQueueJobTypes[QueueNam
           where t.project_id in (select arrayJoin(project_ids) from batch_stats)
             and t.id in (select arrayJoin(trace_ids) from batch_stats)
             and (
-              -- For some reason clickhouse detects any "date >= '1969-12-31'" as false.
+              -- For some reason datastore detects any "date >= '1969-12-31'" as false.
               -- Therefore, we add a fallback condition that limits actively to last 7 days.
               -- This means that 7 days becomes the maximum trace data propagation interval.
               t.timestamp >= (select min(min_start_time) - interval 1 day from batch_stats) OR

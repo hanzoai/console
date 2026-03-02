@@ -1,7 +1,7 @@
 import { queryDatastore, queryDatastoreStream, DatastoreResourceError } from "@hanzo/shared/src/server";
 import { fail } from "assert";
 
-describe("ClickHouse Resource Error Handling", () => {
+describe("Datastore Resource Error Handling", () => {
   describe("queryDatastore", () => {
     describe("Error transformation with throwIf", () => {
       // It is enough to test different block sizes on one error type only

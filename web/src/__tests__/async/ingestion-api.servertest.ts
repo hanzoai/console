@@ -106,8 +106,8 @@ describe("/api/public/ingestion API Endpoint", () => {
     });
   });
 
-  // Disabled within test sequence as we're using a clickhouse version which doesn't support this
-  // it("should replace bad escape sequences on clickhouse", async () => {
+  // Disabled within test sequence as we're using a datastore version which doesn't support this
+  // it("should replace bad escape sequences on datastore", async () => {
   //   const entity = {
   //     id: randomUUID(),
   //     type: "trace-create",

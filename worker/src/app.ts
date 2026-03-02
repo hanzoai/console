@@ -362,7 +362,7 @@ if (env.QUEUE_CONSUMER_NOTIFICATION_QUEUE_IS_ENABLED === "true") {
   });
 }
 
-// Batch project cleaners for bulk deletion of ClickHouse data
+// Batch project cleaners for bulk deletion of Datastore data
 export const batchProjectCleaners: BatchProjectCleaner[] = [];
 
 if (env.HANZO_BATCH_PROJECT_CLEANER_ENABLED === "true") {
@@ -379,7 +379,7 @@ if (env.HANZO_BATCH_PROJECT_CLEANER_ENABLED === "true") {
   }
 }
 
-// Batch data retention cleaners for bulk deletion of expired ClickHouse data
+// Batch data retention cleaners for bulk deletion of expired Datastore data
 export const batchDataRetentionCleaners: BatchDataRetentionCleaner[] = [];
 
 if (env.HANZO_BATCH_DATA_RETENTION_CLEANER_ENABLED === "true") {

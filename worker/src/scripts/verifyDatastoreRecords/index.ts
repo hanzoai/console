@@ -12,7 +12,7 @@ const getErrorMessage = (params: {
   pgValue: any;
   chValue: any;
 }) => {
-  const delta = `[${params.projectId}-${params.type}-${params.id}] Mismatch between Postgres and Clickhouse:\n${JSON.stringify(params, null, 2)}`;
+  const delta = `[${params.projectId}-${params.type}-${params.id}] Mismatch between Postgres and Datastore:\n${JSON.stringify(params, null, 2)}`;
   return delta;
 };
 
@@ -103,7 +103,7 @@ async function main(params: MainParams) {
           totalObservationCount += 1;
           checkedObservationSet.add(id);
 
-          await verifyClickhouseObservation(obs);
+          await verifyDatastoreObservation(obs);
         }),
       );
 
@@ -157,7 +157,7 @@ async function main(params: MainParams) {
           totalTraceCount += 1;
           checkedTraceSet.add(id);
 
-          await verifyClickhouseTrace(trace);
+          await verifyDatastoreTrace(trace);
         }),
       );
 
@@ -213,7 +213,7 @@ async function main(params: MainParams) {
 
           checkedScoreSet.add(id);
 
-          await verifyClickhouseScore(score);
+          await verifyDatastoreScore(score);
         }),
       );
 
@@ -262,15 +262,15 @@ async function main(params: MainParams) {
   }
 }
 
-async function verifyClickhouseObservation(postgresObservation: any) {
+async function verifyDatastoreObservation(postgresObservation: any) {
   const { id: observationId, project_id: projectId } = postgresObservation;
-  const clickhouseResult = await datastoreClient().query({
+  const datastoreResult = await datastoreClient().query({
     query: `SELECT * FROM observations WHERE project_id = '${projectId}' AND id = '${observationId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseRecord = (await clickhouseResult.json()).data.shift();
-  if (!clickhouseRecord) {
+  const datastoreRecord = (await datastoreResult.json()).data.shift();
+  if (!datastoreRecord) {
     throw new Error(`Observation ${observationId} not found in Datastore for project ${projectId}`);
   }
 
@@ -278,7 +278,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
 
   for (const key in postgresObservation) {
     const pgValue = postgresObservation[key];
-    const chValue = (clickhouseRecord as any)[key];
+    const chValue = (datastoreRecord as any)[key];
 
     switch (key) {
       // Different by nature
@@ -389,7 +389,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "model":
-        if (pgValue !== (clickhouseRecord as any)["provided_model_name"]) {
+        if (pgValue !== (datastoreRecord as any)["provided_model_name"]) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -431,7 +431,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
 
       case "modelParameters": {
         const parsedPgValue = pgValue;
-        const parsedChValue = JSON.parse((clickhouseRecord as any)["model_parameters"]);
+        const parsedChValue = JSON.parse((datastoreRecord as any)["model_parameters"]);
 
         if (
           parsedPgValue &&
@@ -454,7 +454,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "completion_tokens": {
-        if (pgValue !== 0 && pgValue.toString() !== (clickhouseRecord as any)["usage_details"]["output"]) {
+        if (pgValue !== 0 && pgValue.toString() !== (datastoreRecord as any)["usage_details"]["output"]) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -462,7 +462,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["usage_details"]["output"],
+              chValue: (datastoreRecord as any)["usage_details"]["output"],
             }),
           );
         }
@@ -471,7 +471,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "prompt_tokens": {
-        if (pgValue !== 0 && pgValue.toString() !== (clickhouseRecord as any)["usage_details"]["input"]) {
+        if (pgValue !== 0 && pgValue.toString() !== (datastoreRecord as any)["usage_details"]["input"]) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -479,7 +479,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["usage_details"]["input"],
+              chValue: (datastoreRecord as any)["usage_details"]["input"],
             }),
           );
         }
@@ -488,7 +488,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "total_tokens": {
-        if (pgValue !== 0 && pgValue.toString() !== (clickhouseRecord as any)["usage_details"]["total"]) {
+        if (pgValue !== 0 && pgValue.toString() !== (datastoreRecord as any)["usage_details"]["total"]) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -496,7 +496,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["usage_details"]["total"],
+              chValue: (datastoreRecord as any)["usage_details"]["total"],
             }),
           );
         }
@@ -505,7 +505,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "calculated_input_cost": {
-        if (pgValue !== null && Math.abs(Number(pgValue) - (clickhouseRecord as any)["cost_details"]["input"]) > 1e-9) {
+        if (pgValue !== null && Math.abs(Number(pgValue) - (datastoreRecord as any)["cost_details"]["input"]) > 1e-9) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -513,7 +513,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["cost_details"]["input"],
+              chValue: (datastoreRecord as any)["cost_details"]["input"],
             }),
           );
         }
@@ -522,10 +522,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "calculated_output_cost": {
-        if (
-          pgValue !== null &&
-          Math.abs(Number(pgValue) - (clickhouseRecord as any)["cost_details"]["output"]) > 1e-9
-        ) {
+        if (pgValue !== null && Math.abs(Number(pgValue) - (datastoreRecord as any)["cost_details"]["output"]) > 1e-9) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -533,7 +530,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["cost_details"]["output"],
+              chValue: (datastoreRecord as any)["cost_details"]["output"],
             }),
           );
         }
@@ -542,7 +539,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       }
 
       case "calculated_total_cost": {
-        if (pgValue !== null && Math.abs(Number(pgValue) - (clickhouseRecord as any)["cost_details"]["total"]) > 1e-9) {
+        if (pgValue !== null && Math.abs(Number(pgValue) - (datastoreRecord as any)["cost_details"]["total"]) > 1e-9) {
           throw new Error(
             getErrorMessage({
               projectId,
@@ -550,7 +547,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["cost_details"]["total"],
+              chValue: (datastoreRecord as any)["cost_details"]["total"],
             }),
           );
         }
@@ -561,7 +558,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       case "input_cost": {
         if (
           pgValue !== null &&
-          Math.abs(Number(pgValue) - (clickhouseRecord as any)["provided_cost_details"]["input"]) > 1e-9
+          Math.abs(Number(pgValue) - (datastoreRecord as any)["provided_cost_details"]["input"]) > 1e-9
         ) {
           throw new Error(
             getErrorMessage({
@@ -570,7 +567,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["provided_cost_details"]["input"],
+              chValue: (datastoreRecord as any)["provided_cost_details"]["input"],
             }),
           );
         }
@@ -581,7 +578,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       case "output_cost": {
         if (
           pgValue !== null &&
-          Math.abs(Number(pgValue) - (clickhouseRecord as any)["provided_cost_details"]["output"]) > 1e-9
+          Math.abs(Number(pgValue) - (datastoreRecord as any)["provided_cost_details"]["output"]) > 1e-9
         ) {
           throw new Error(
             getErrorMessage({
@@ -590,7 +587,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue,
-              chValue: (clickhouseRecord as any)["provided_cost_details"]["output"],
+              chValue: (datastoreRecord as any)["provided_cost_details"]["output"],
             }),
           );
         }
@@ -601,7 +598,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
       case "total_cost": {
         if (
           pgValue !== null &&
-          Math.abs(Number(pgValue) - (clickhouseRecord as any)["provided_cost_details"]["total"]) > 1e-9
+          Math.abs(Number(pgValue) - (datastoreRecord as any)["provided_cost_details"]["total"]) > 1e-9
         ) {
           throw new Error(
             getErrorMessage({
@@ -610,7 +607,7 @@ async function verifyClickhouseObservation(postgresObservation: any) {
               type: "observation",
               key,
               pgValue: Number(pgValue),
-              chValue: (clickhouseRecord as any)["provided_cost_details"]["total"],
+              chValue: (datastoreRecord as any)["provided_cost_details"]["total"],
             }),
           );
         }
@@ -624,22 +621,22 @@ async function verifyClickhouseObservation(postgresObservation: any) {
   }
 }
 
-async function verifyClickhouseTrace(postgresTrace: any) {
+async function verifyDatastoreTrace(postgresTrace: any) {
   const { id: traceId, project_id: projectId } = postgresTrace;
 
-  const clickhouseResult = await datastoreClient().query({
+  const datastoreResult = await datastoreClient().query({
     query: `SELECT * FROM traces WHERE project_id = '${projectId}' AND id = '${traceId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseTrace = (await clickhouseResult.json()).data[0];
-  if (!clickhouseTrace) {
+  const datastoreTrace = (await datastoreResult.json()).data[0];
+  if (!datastoreTrace) {
     throw new Error(`Trace ${traceId} not found in Datastore for project ${projectId}`);
   }
 
   for (const key of Object.keys(postgresTrace)) {
     const pgValue = postgresTrace[key];
-    const chValue = (clickhouseTrace as any)[key];
+    const chValue = (datastoreTrace as any)[key];
 
     switch (key) {
       // Different by nature
@@ -775,22 +772,22 @@ async function verifyClickhouseTrace(postgresTrace: any) {
   }
 }
 
-async function verifyClickhouseScore(postgresScore: any) {
+async function verifyDatastoreScore(postgresScore: any) {
   const { id: scoreId, project_id: projectId } = postgresScore;
 
-  const clickhouseResult = await datastoreClient().query({
+  const datastoreResult = await datastoreClient().query({
     query: `SELECT * FROM scores WHERE project_id = '${projectId}' AND id = '${scoreId}' ORDER BY updated_at DESC LIMIT 1`,
     format: "JSONEachRow",
   });
 
-  const clickhouseScore = (await clickhouseResult.json()).data[0];
-  if (!clickhouseScore) {
+  const datastoreScore = (await datastoreResult.json()).data[0];
+  if (!datastoreScore) {
     throw new Error(`Score ${scoreId} not found in Datastore for project ${projectId}`);
   }
 
   for (const key of Object.keys(postgresScore)) {
     const pgValue = postgresScore[key];
-    const chValue = (clickhouseScore as any)[key];
+    const chValue = (datastoreScore as any)[key];
 
     switch (key) {
       // Different by nature

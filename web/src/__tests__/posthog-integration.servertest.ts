@@ -51,7 +51,7 @@ describe("PostHog Integration SSRF Protection", () => {
       ],
       featureFlags: {
         templateFlag: true,
-        excludeClickhouseRead: false,
+        excludeDatastoreRead: false,
         v4BetaToggleVisible: false,
       },
       admin: true,

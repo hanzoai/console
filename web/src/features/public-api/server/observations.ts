@@ -31,11 +31,11 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
   const appliedFilter = chFilter.apply();
   const traceFilter = chFilter.find((f) => f.datastoreTable === "traces");
 
-  // ClickHouse query optimizations for List Observations API
+  // Datastore query optimizations for List Observations API
   const disableObservationsFinal = await shouldSkipObservationsFinal(props.projectId);
 
   const query = `
-    with clickhouse_keys as (
+    with datastore_keys as (
       SELECT DISTINCT
         id,
         trace_id,
@@ -83,7 +83,7 @@ export const generateObservationsForPublicApi = async (props: QueryType) => {
       event_ts
     FROM observations o ${disableObservationsFinal ? "" : "FINAL"}
     WHERE o.project_id = {projectId: String}
-      AND (id, trace_id, project_id, type, toDate(start_time)) in (select * from clickhouse_keys)
+      AND (id, trace_id, project_id, type, toDate(start_time)) in (select * from datastore_keys)
     ORDER BY start_time DESC
   `;
 

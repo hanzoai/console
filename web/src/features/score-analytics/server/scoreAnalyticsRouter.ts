@@ -37,7 +37,7 @@ export const scoreAnalyticsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { projectId } = input;
 
-      // Query ClickHouse for distinct score names, data types, and sources
+      // Query Datastore for distinct score names, data types, and sources
       const groupedScores = await getScoresGroupedByNameSourceType({
         projectId,
         filter: [],

@@ -68,9 +68,9 @@ export const projectDeleteProcessor: Processor = async (
     // No need to delete from table as this will be done below via Prisma
   }
 
-  logger.info(`Deleting ClickHouse and S3 data for ${projectId} in org ${orgId}`);
+  logger.info(`Deleting Datastore and S3 data for ${projectId} in org ${orgId}`);
 
-  // Delete project data from ClickHouse first
+  // Delete project data from Datastore first
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
       ? removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject(projectId, undefined)

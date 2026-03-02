@@ -23,7 +23,7 @@ export default class MigrateDatasetRunItemsFromPostgresToDatastoreRmt implements
       };
     }
 
-    // Check if ClickHouse dataset_run_items_rmt table exists
+    // Check if Datastore dataset_run_items_rmt table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -31,7 +31,7 @@ export default class MigrateDatasetRunItemsFromPostgresToDatastoreRmt implements
     if (!tableNames.some((r) => r.name === "dataset_run_items_rmt")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse dataset_run_items_rmt table does not exist. Retrying in 10s...`);
+        logger.info(`Datastore dataset_run_items_rmt table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -40,7 +40,7 @@ export default class MigrateDatasetRunItemsFromPostgresToDatastoreRmt implements
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason: "ClickHouse dataset_run_items_rmt table does not exist",
+        invalidReason: "Datastore dataset_run_items_rmt table does not exist",
       };
     }
 

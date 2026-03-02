@@ -2,7 +2,7 @@ import { Job, Processor } from "bullmq";
 import {
   datastoreClient,
   createIngestionEventSchema,
-  getClickhouseEntityType,
+  getDatastoreEntityType,
   getCurrentSpan,
   getS3EventStorageClient,
   type IngestionEventType,
@@ -194,11 +194,11 @@ export const otelIngestionQueueProcessor: Processor = async (
     const events: IngestionEventType[] = await processor.processToIngestionEvents(parsedSpans);
     // Here, we split the events into observations and non-observations.
     // Observations go into the IngestionService directly whereas the non-observations make another run through the processEventBatch method.
-    const traces = events.filter((e) => getClickhouseEntityType(e.type) !== "observation");
+    const traces = events.filter((e) => getDatastoreEntityType(e.type) !== "observation");
     // We need to parse each incoming observation through our ingestion schema to make use of its included transformations.
     const ingestionSchema = createIngestionEventSchema();
     const observations = events
-      .filter((e) => getClickhouseEntityType(e.type) === "observation")
+      .filter((e) => getDatastoreEntityType(e.type) === "observation")
       .map((o) => ingestionSchema.safeParse(o))
       .flatMap((o) => {
         if (!o.success) {
@@ -278,7 +278,7 @@ export const otelIngestionQueueProcessor: Processor = async (
     const observationWritePromise = Promise.all(
       observations.map((observation) =>
         ingestionService.mergeAndWrite(
-          getClickhouseEntityType(observation.type),
+          getDatastoreEntityType(observation.type),
           auth.scope.projectId,
           observation.body.id || "", // id is always defined for observations
           new Date(), // Use the current timestamp as event time

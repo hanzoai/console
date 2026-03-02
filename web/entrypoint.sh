@@ -50,7 +50,7 @@ fi
 if [ "$DATASTORE_AUTO_MIGRATION_DISABLED" != "true" ]; then
     # Apply datastore migrations
     cd ./packages/shared
-    sh ./clickhouse/scripts/up.sh
+    sh ./datastore/scripts/up.sh
     status=$?
     cd ../../
 fi

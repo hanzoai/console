@@ -31,7 +31,7 @@ Hanzo uses a **three-layer architecture** with two primary entry points (tRPC an
 │      ↓                      │   │      ↓                      │
 │  Service (business logic)   │   │  Service (business logic)   │
 │      ↓                      │   │      ↓                      │
-│  Prisma / ClickHouse        │   │  Prisma / ClickHouse        │
+│  Prisma / Datastore        │   │  Prisma / Datastore        │
 │                             │   │                             │
 └─────────────────────────────┘   └─────────────────────────────┘
                  ↓
@@ -45,7 +45,7 @@ Hanzo uses a **three-layer architecture** with two primary entry points (tRPC an
 │      ↓                                                      │
 │  Service (business logic)                                   │
 │      ↓                                                      │
-│  Prisma / ClickHouse                                        │
+│  Prisma / Datastore                                        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -79,7 +79,7 @@ Two types of entry points:
 - **Repositories** for complex data access patterns (traces, observations, scores, events)
 - **Direct Prisma** for simple CRUD operations in services
 - PostgreSQL for transactional data
-- ClickHouse for analytics/traces (accessed via repositories)
+- Datastore for analytics/traces (accessed via repositories)
 - Redis for caching/queues
 
 **Async Processing Layer: Worker**
@@ -148,11 +148,11 @@ Two types of entry points:
 6. Service executes business logic:
    - Validate business rules
    - Use repositories for complex queries or Prisma directly
-   - ClickHouse queries via repositories if needed
+   - Datastore queries via repositories if needed
    ↓
 7. Database operations:
    - prisma.dataset.create({ data })
-   - clickhouse queries via getTracesTable()
+   - datastore queries via getTracesTable()
    ↓
 8. Response flows back:
    Database → Service → Procedure → tRPC → Client
@@ -208,7 +208,7 @@ Two types of entry points:
    ↓
 5. Service performs operations:
    - Prisma transactions
-   - ClickHouse queries
+   - Datastore queries
    - External API calls (LLMs)
    ↓
 6. Job completes or fails:
@@ -300,7 +300,7 @@ The shared package provides types, utilities, and server code used by both web a
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
 | `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
 | `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
+| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
 | `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
 | `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
@@ -310,7 +310,7 @@ The shared package provides types, utilities, and server code used by both web a
 packages/shared/src/
 ├── server/                  # 🔒 All server-only code
 │   ├── auth/                # Authentication & authorization
-│   ├── clickhouse/          # ClickHouse client & queries
+│   ├── datastore/          # Datastore client & queries
 │   ├── redis/               # Redis client & 30+ queue types
 │   ├── repositories/        # Data access (traces, observations, scores, events)
 │   ├── services/            # Business services (Storage, Email, Slack, etc.)
@@ -347,7 +347,7 @@ import {
   instrumentAsync,
   traceException,
   redis,
-  clickhouseClient,
+  datastoreClient,
   StorageService,
   fetchLLMCompletion,
   filterToPrisma,
@@ -465,7 +465,7 @@ src/server/api/routers/
 - ✅ Transaction orchestration
 - ✅ Repository calls for complex queries
 - ✅ Direct Prisma operations for simple CRUD
-- ✅ ClickHouse queries (via repositories)
+- ✅ Datastore queries (via repositories)
 - ✅ Redis cache access
 - ✅ External API calls (LLMs, etc.)
 - ❌ HTTP concerns (Request/Response)
@@ -647,7 +647,7 @@ Hanzo uses two databases with different purposes:
 │                       Application                           │
 │                                                             │
 │  ┌──────────────┐              ┌──────────────┐           │
-│  │  PostgreSQL  │              │  ClickHouse  │           │
+│  │  PostgreSQL  │              │  Datastore  │           │
 │  │              │              │              │           │
 │  │ Transactional│              │  Analytics   │           │
 │  │    Data      │              │    Data      │           │
@@ -667,13 +667,13 @@ Hanzo uses two databases with different purposes:
 - Schema managed via `prisma migrate`
 - Located in `packages/shared/prisma/`
 
-**ClickHouse (Analytics Database):**
+**Datastore (Analytics Database):**
 
 - Accessed via direct SQL queries
 - High-volume trace/observation data
 - Columnar storage for analytics
 - Optimized for aggregations
-- Schema in `packages/shared/src/server/clickhouse/`
+- Schema in `packages/shared/src/server/datastore/`
 - Schema managed via `golang-migrate`
 
 **Redis (Cache & Queues):**
@@ -693,7 +693,7 @@ import { prisma } from "@hanzo/shared/src/db";
 
 const dataset = await prisma.dataset.create({ data });
 
-// ClickHouse via helper functions
+// Datastore via helper functions
 import { getTracesTable } from "@hanzo/shared/src/server";
 
 const traces = await getTracesTable({
@@ -714,7 +714,7 @@ Hanzo uses repositories in `packages/shared/src/server/repositories/` for comple
 
 - Abstraction over complex queries (traces, observations, scores, events)
 - Data converters for transforming database models to application models
-- ClickHouse query builders and stream processing
+- Datastore query builders and stream processing
 - Reusable query logic across services
 
 Services can use repositories for complex operations OR Prisma directly for simple CRUD operations.

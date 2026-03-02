@@ -18,10 +18,10 @@ x-cloud-environment: &cloud-worker-env
   ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000} # generate via `openssl rand -hex 32`
   TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
   HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-true}
-  DATASTORE_MIGRATION_URL: "clickhouse://datastore:9000"
+  DATASTORE_MIGRATION_URL: "datastore://datastore:9000"
   DATASTORE_URL: "http://datastore:8123"
-  DATASTORE_USER: "clickhouse"
-  DATASTORE_PASSWORD: "clickhouse"
+  DATASTORE_USER: "hanzo"
+  DATASTORE_PASSWORD: "hanzo"
   DATASTORE_CLUSTER_ENABLED: "false"
   S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
   S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
@@ -120,17 +120,17 @@ services:
       - cloud-hanzo-network
 
   datastore:
-    image: clickhouse/clickhouse-server
+    image: ghcr.io/hanzoai/datastore:latest
     restart: always
     user: "101:101"
     environment:
       DATASTORE_DB: default
-      DATASTORE_USER: clickhouse
-      DATASTORE_PASSWORD: clickhouse
+      DATASTORE_USER: hanzo
+      DATASTORE_PASSWORD: hanzo
       DATASTORE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - cloud-clickhouse-data:/var/lib/clickhouse
-      - cloud-clickhouse-logs:/var/log/clickhouse-server
+      - cloud-datastore-data:/var/lib/datastore
+      - cloud-datastore-logs:/var/log/datastore
     #ports:
     #  - "8123:8123"
     #  - "9000:9000"
@@ -232,9 +232,9 @@ volumes:
   cloud-postgres-data:
     name: cloud-postgres-data-prod
     driver: local
-  cloud-clickhouse-data:
+  cloud-datastore-data:
     driver: local
-  cloud-clickhouse-logs:
+  cloud-datastore-logs:
     driver: local
   cloud-minio-data:
     driver: local

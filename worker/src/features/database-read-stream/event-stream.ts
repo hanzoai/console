@@ -1,6 +1,6 @@
 /**
  * Event stream for batch exports.
- * Queries the ClickHouse events table with filters and streams results
+ * Queries the Datastore events table with filters and streams results
  * for efficient batch export processing.
  *
  * The events table is denormalized with trace data already included,
@@ -34,7 +34,7 @@ import { BatchExportEventsRow } from "./types";
 const BATCH_SIZE = 1000; // Fetch comments in batches for efficiency
 
 /**
- * Creates a stream of events from ClickHouse for batch export.
+ * Creates a stream of events from Datastore for batch export.
  * Includes comments fetched in batches and flattened scores.
  *
  * @param props - Query parameters including projectId, filters, and limits
@@ -59,10 +59,10 @@ export const getEventsStream = async (props: {
 
   const datastoreConfig = {
     request_timeout: 180_000, // 3 minutes
-    clickhouse_settings: {
+    datastore_settings: {
       join_algorithm: "partial_merge" as const,
       // Increase HTTP timeouts to prevent Code 209 errors during slow blob storage uploads
-      // See: https://github.com/ClickHouse/ClickHouse/issues/64731
+      // See: https://github.com/Datastore/Datastore/issues/64731
       http_send_timeout: 300,
       http_receive_timeout: 300,
     },
@@ -193,7 +193,7 @@ export const getEventsStream = async (props: {
 
   // Helper function to process a single event row
   const processEventRow = (bufferedRow: EventRow, commentsByEvent: Map<string, any[]>) => {
-    // Process numeric/boolean scores (tuples from ClickHouse)
+    // Process numeric/boolean scores (tuples from Datastore)
     const numericScores = (bufferedRow.scores_avg ?? []).map((score: any) => ({
       name: score[0],
       value: score[1],
@@ -315,7 +315,7 @@ export const getEventsStream = async (props: {
  * - Uses the "eval" field set (no time/latency/modelId columns)
  * - Skips scores CTE and JOIN
  * - Skips comment fetching
- * - Maps ClickHouse rows to ObservationForEval at the stream boundary
+ * - Maps Datastore rows to ObservationForEval at the stream boundary
  */
 export const getEventsStreamForEval = async (props: {
   projectId: string;
@@ -420,7 +420,7 @@ export const getEventsStreamForEval = async (props: {
     params: queryParams,
     datastoreConfig: {
       request_timeout: 180_000,
-      clickhouse_settings: {
+      datastore_settings: {
         http_send_timeout: 300,
         http_receive_timeout: 300,
       },
@@ -433,7 +433,7 @@ export const getEventsStreamForEval = async (props: {
     },
   });
 
-  // Remap ClickHouse aliases to schema field names.
+  // Remap Datastore aliases to schema field names.
   // Schema validation is left to the consumer so per-row errors can be handled gracefully.
   return Readable.from(
     (async function* () {
@@ -529,7 +529,7 @@ export const getEventsStreamForDataset = async (props: {
     params: queryParams,
     datastoreConfig: {
       request_timeout: 180_000,
-      clickhouse_settings: {
+      datastore_settings: {
         http_send_timeout: 300,
         http_receive_timeout: 300,
       },

@@ -28,7 +28,7 @@ describe("organization API keys trpc", () => {
         },
       ],
       featureFlags: {
-        excludeClickhouseRead: false,
+        excludeDatastoreRead: false,
         templateFlag: true,
         v4BetaToggleVisible: false,
       },
@@ -56,7 +56,7 @@ describe("organization API keys trpc", () => {
         },
       ],
       featureFlags: {
-        excludeClickhouseRead: false,
+        excludeDatastoreRead: false,
         templateFlag: true,
         v4BetaToggleVisible: false,
       },

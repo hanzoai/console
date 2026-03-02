@@ -15,7 +15,7 @@ describe("hasAnyTrace", () => {
   });
 
   it("should return true immediately when PG hasTraces flag is set", async () => {
-    // Set the PG flag directly — no ClickHouse data needed
+    // Set the PG flag directly — no Datastore data needed
     await prisma.project.update({
       where: { id: projectId },
       data: { hasTraces: true },
@@ -25,7 +25,7 @@ describe("hasAnyTrace", () => {
     expect(result).toBe(true);
   });
 
-  it("should return true and persist PG flag when ClickHouse has traces", async () => {
+  it("should return true and persist PG flag when Datastore has traces", async () => {
     // Ensure PG flag is false
     const projectBefore = await prisma.project.findUniqueOrThrow({
       where: { id: projectId },
@@ -33,7 +33,7 @@ describe("hasAnyTrace", () => {
     });
     expect(projectBefore.hasTraces).toBe(false);
 
-    // Insert a trace into ClickHouse
+    // Insert a trace into Datastore
     const trace = createTrace({
       id: v4(),
       project_id: projectId,
@@ -45,7 +45,7 @@ describe("hasAnyTrace", () => {
     });
     await createTracesCh([trace]);
 
-    // hasAnyTrace should find the trace via ClickHouse and persist to PG
+    // hasAnyTrace should find the trace via Datastore and persist to PG
     const result = await hasAnyTrace(projectId);
     expect(result).toBe(true);
 
@@ -58,7 +58,7 @@ describe("hasAnyTrace", () => {
   });
 
   it("should return false when no traces exist", async () => {
-    // Use a random projectId that has no traces in either PG or ClickHouse
+    // Use a random projectId that has no traces in either PG or Datastore
     const emptyProjectId = v4();
     const result = await hasAnyTrace(emptyProjectId);
     expect(result).toBe(false);

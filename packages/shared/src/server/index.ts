@@ -92,7 +92,7 @@ export * from "./instrumentation";
 export * from "./logger";
 export * from "./headerPropagation";
 export * from "./queries";
-export * from "./queries/clickhouse-sql/query-options";
+export * from "./queries/datastore-sql/query-options";
 export * from "./repositories";
 export * from "./repositories/traces";
 export * from "./repositories/dataset-items";

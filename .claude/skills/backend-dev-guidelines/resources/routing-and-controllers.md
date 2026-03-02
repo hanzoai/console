@@ -41,7 +41,7 @@ Hanzo uses a **layered architecture** with clear separation of concerns:
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATABASE LAYER                          │
-│       PostgreSQL (Prisma) + ClickHouse (Direct Client)      │
+│       PostgreSQL (Prisma) + Datastore (Direct Client)      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -63,14 +63,14 @@ Hanzo uses a **layered architecture** with clear separation of concerns:
 **Services:**
 - ✅ Contain business logic
 - ✅ Orchestrate multiple operations
-- ✅ Call repositories or Prisma/ClickHouse
+- ✅ Call repositories or Prisma/Datastore
 - ✅ Handle complex workflows
 - ❌ Should NOT know about HTTP, tRPC, or request/response objects
 
 **Repositories:**
 - ✅ Complex database queries
 - ✅ Data transformation (DB → domain models)
-- ✅ ClickHouse query builders
+- ✅ Datastore query builders
 - ✅ Reusable query logic
 - ❌ Should NOT contain business logic
 
@@ -111,7 +111,7 @@ export const scoresRouter = createTRPCRouter({
     .input(ScoreAllOptions)
     .query(async ({ input, ctx }) => {
       // Delegate to repository for data fetching
-      const clickhouseScoreData = await getScoresUiTable({
+      const datastoreScoreData = await getScoresUiTable({
         projectId: input.projectId,
         filter: input.filter ?? [],
         orderBy: input.orderBy,
@@ -124,14 +124,14 @@ export const scoresRouter = createTRPCRouter({
         ctx.prisma.jobExecution.findMany({
           where: {
             jobOutputScoreId: {
-              in: clickhouseScoreData.map((score) => score.id),
+              in: datastoreScoreData.map((score) => score.id),
             },
           },
         }),
         ctx.prisma.user.findMany({
           where: {
             id: {
-              in: clickhouseScoreData
+              in: datastoreScoreData
                 .map((s) => s.authorUserId)
                 .filter((id): id is string => id !== null),
             },
@@ -140,7 +140,7 @@ export const scoresRouter = createTRPCRouter({
       ]);
 
       // Transform and combine data
-      return clickhouseScoreData.map((score) => ({
+      return datastoreScoreData.map((score) => ({
         ...score,
         jobConfigurationId:
           jobExecutions.find((j) => j.jobOutputScoreId === score.id)
@@ -406,7 +406,7 @@ export class ScoresApiService {
       scoreId,
       source,
       scoreScope: this.apiVersion === "v1" ? "traces_only" : "all",
-      preferredClickhouseService: "ReadOnly",
+      preferredDatastoreService: "ReadOnly",
     });
   }
 
@@ -435,7 +435,7 @@ export class ScoresApiService {
 **Key Points:**
 - Services contain business logic, not routing logic
 - Services should NOT import tRPC or Next.js types
-- Services can call repositories, Prisma, ClickHouse directly
+- Services can call repositories, Prisma, Datastore directly
 - Services orchestrate multiple operations
 - Services are reusable across tRPC and public API
 
@@ -476,10 +476,10 @@ Repositories handle complex database queries, data transformation, and provide r
 
 ```
 packages/shared/src/server/repositories/
-├── traces.ts              # Trace queries (ClickHouse)
-├── observations.ts        # Observation queries (ClickHouse)
-├── scores.ts              # Score queries (ClickHouse)
-├── clickhouse.ts          # Core ClickHouse helpers
+├── traces.ts              # Trace queries (Datastore)
+├── observations.ts        # Observation queries (Datastore)
+├── scores.ts              # Score queries (Datastore)
+├── datastore.ts          # Core Datastore helpers
 └── definitions.ts         # Type definitions
 ```
 
@@ -488,9 +488,9 @@ packages/shared/src/server/repositories/
 **File:** `packages/shared/src/server/repositories/traces.ts`
 
 ```typescript
-import { queryClickhouse, upsertClickhouse } from "./clickhouse";
+import { queryDatastore, upsertDatastore } from "./datastore";
 import { TraceRecordReadType } from "./definitions";
-import { convertClickhouseToDomain } from "./traces_converters";
+import { convertDatastoreToDomain } from "./traces_converters";
 
 /**
  * Get traces by IDs
@@ -499,7 +499,7 @@ export const getTracesByIds = async (
   projectId: string,
   traceIds: string[]
 ): Promise<TraceRecordReadType[]> => {
-  const rows = await queryClickhouse<TraceRecordReadType>({
+  const rows = await queryDatastore<TraceRecordReadType>({
     query: `
       SELECT *
       FROM traces
@@ -512,16 +512,16 @@ export const getTracesByIds = async (
     tags: { feature: "tracing", type: "trace" },
   });
 
-  return rows.map(convertClickhouseToDomain);
+  return rows.map(convertDatastoreToDomain);
 };
 
 /**
- * Upsert trace to ClickHouse
+ * Upsert trace to Datastore
  */
 export const upsertTrace = async (
   trace: TraceRecordInsertType
 ): Promise<void> => {
-  await upsertClickhouse({
+  await upsertDatastore({
     table: "traces",
     records: [trace],
     eventBodyMapper: (body) => ({
@@ -536,22 +536,22 @@ export const upsertTrace = async (
 ```
 
 **Key Points:**
-- Use `queryClickhouse` for SELECT queries
-- Use `upsertClickhouse` for INSERT/UPDATE
-- Use `commandClickhouse` for DDL (ALTER TABLE, etc.)
-- Include data converters (`convertClickhouseToDomain`)
+- Use `queryDatastore` for SELECT queries
+- Use `upsertDatastore` for INSERT/UPDATE
+- Use `commandDatastore` for DDL (ALTER TABLE, etc.)
+- Include data converters (`convertDatastoreToDomain`)
 - Add OpenTelemetry tags for observability
 - Repositories should NOT contain business logic
 
 ### When to Use Repositories
 
 ✅ **Use repositories for:**
-- Complex ClickHouse queries with CTEs, joins, aggregations
+- Complex Datastore queries with CTEs, joins, aggregations
 - Queries used in multiple places (DRY principle)
 - Data transformation from DB types to domain models
 - Streaming large result sets
 
-❌ **Use direct Prisma/ClickHouse for:**
+❌ **Use direct Prisma/Datastore for:**
 - Simple CRUD operations
 - One-off queries
 - Prototyping (can refactor to repository later)
@@ -619,7 +619,7 @@ export async function createScoreWithValidation({
   const scoreId = randomUUID();
 
   await Promise.all([
-    // Create score in ClickHouse
+    // Create score in Datastore
     upsertScore({
       id: scoreId,
       projectId,
@@ -649,7 +649,7 @@ export const upsertScore = async (
   score: ScoreInsertType
 ): Promise<void> => {
   // ✅ Pure data access - no business logic
-  await upsertClickhouse({
+  await upsertDatastore({
     table: "scores",
     records: [score],
     eventBodyMapper: (body) => ({
@@ -751,8 +751,8 @@ export default withMiddlewares({
   GET: createAuthedProjectAPIRoute({
     name: "Get Scores",
     fn: async ({ auth }) => {
-      // ❌ Direct ClickHouse query in route
-      const scores = await queryClickhouse({
+      // ❌ Direct Datastore query in route
+      const scores = await queryDatastore({
         query: "SELECT * FROM scores WHERE project_id = {projectId: String}",
         params: { projectId: auth.scope.projectId },
       });
@@ -809,7 +809,7 @@ export const upsertScore = async (
   // ❌ Side effects in repository
   await auditLog({ ... });
 
-  await upsertClickhouse({ ... });
+  await upsertDatastore({ ... });
 };
 ```
 
@@ -820,7 +820,7 @@ export const upsertScore = async (
 export const upsertScore = async (
   score: ScoreInsertType
 ): Promise<void> => {
-  await upsertClickhouse({
+  await upsertDatastore({
     table: "scores",
     records: [score],
     eventBodyMapper: (body) => ({

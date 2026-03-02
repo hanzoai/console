@@ -156,7 +156,7 @@ export function calculateModeMetrics(params: {
   }
 
   // Extract unique categories and create mapping
-  // This matches the ORDER BY in the ClickHouse query
+  // This matches the ORDER BY in the Datastore query
   const uniqueCategories = Array.from(new Set(params.timeSeries.map((item) => item.category))).sort();
 
   const binIndexToCategory = new Map(uniqueCategories.map((cat, idx) => [idx, cat]));

@@ -153,7 +153,7 @@ export class MediaRetentionCleaner extends PeriodicExclusiveRunner {
       await this.deleteExpiredMedia(workload, env.S3_MEDIA_UPLOAD_BUCKET);
     }
 
-    // Delete blob storage entries (S3 + ClickHouse soft delete)
+    // Delete blob storage entries (S3 + Datastore soft delete)
     if (env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true") {
       await removeIngestionEventsFromS3AndDeleteDatastoreRefsForProject(workload.projectId, workload.cutoffDate);
     }

@@ -1,6 +1,6 @@
 /**
  * Data preprocessing utilities for heatmap visualization
- * Transforms ClickHouse query results into heatmap cell data
+ * Transforms Datastore query results into heatmap cell data
  */
 
 /**
@@ -15,7 +15,7 @@ export interface HeatmapCell {
 }
 
 /**
- * Input data from ClickHouse for numeric heatmap (binned data)
+ * Input data from Datastore for numeric heatmap (binned data)
  */
 export interface NumericHeatmapInput {
   data: Array<{
@@ -110,7 +110,7 @@ export function generateNumericHeatmapData({
 }
 
 /**
- * Input data from ClickHouse for confusion matrix (categorical data)
+ * Input data from Datastore for confusion matrix (categorical data)
  */
 export interface ConfusionMatrixInput {
   data: Array<{
@@ -231,7 +231,7 @@ function formatDivisionPoint(value: number, range: number): string {
 
 /**
  * Fill missing bins with zero counts
- * Useful when ClickHouse doesn't return bins with count=0
+ * Useful when Datastore doesn't return bins with count=0
  */
 export function fillMissingBins(
   data: Array<{ bin_x: number; bin_y: number; count: number }>,

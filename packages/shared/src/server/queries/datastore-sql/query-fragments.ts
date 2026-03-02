@@ -1,5 +1,5 @@
 /**
- * Reusable ClickHouse query fragments and CTEs
+ * Reusable Datastore query fragments and CTEs
  */
 
 import {
@@ -31,7 +31,7 @@ export const eventsTracesAggregation = (params: EventsTracesAggregationParams): 
   return (
     new EventsAggregationQueryBuilder({ projectId: params.projectId })
       // we always use this as CTE, no need to be smart here.
-      // ClickHouse will optimize unused columns away.
+      // Datastore will optimize unused columns away.
       .selectFieldSet("all")
       .withTraceIds(params.traceIds)
       .withStartTimeFrom(params.startTimeFrom)
@@ -211,9 +211,7 @@ export const eventsSessionsAggregation = (params: {
  *
  * Returns a query and params object suitable for CTEQueryBuilder.withCTE().
  */
-export const eventsSessionScoresAggregation = (params: {
-  projectId: string;
-}): CTEWithSchema => {
+export const eventsSessionScoresAggregation = (params: { projectId: string }): CTEWithSchema => {
   const query = `
     SELECT
       project_id,
@@ -251,11 +249,6 @@ export const eventsSessionScoresAggregation = (params: {
   return {
     query,
     params: { projectId: params.projectId },
-    schema: [
-      "project_id",
-      "score_session_id",
-      "scores_avg",
-      "score_categories",
-    ],
+    schema: ["project_id", "score_session_id", "scores_avg", "score_categories"],
   };
 };

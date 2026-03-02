@@ -6,7 +6,7 @@ import { createObservationsCh } from "@hanzo/shared/src/server";
 
 const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
-describe("Clickhouse Traces Repository Test", () => {
+describe("Datastore Traces Repository Test", () => {
   it("should throw if no traces are found", async () => {
     expect(await getTraceById({ traceId: v4(), projectId: v4() })).toBeUndefined();
   });

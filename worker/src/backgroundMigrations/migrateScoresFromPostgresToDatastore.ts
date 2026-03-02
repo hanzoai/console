@@ -23,7 +23,7 @@ export default class MigrateScoresFromPostgresToDatastore implements IBackground
       };
     }
 
-    // Check if ClickHouse scores table exists
+    // Check if Datastore scores table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -31,7 +31,7 @@ export default class MigrateScoresFromPostgresToDatastore implements IBackground
     if (!tableNames.some((r) => r.name === "scores")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse scores table does not exist. Retrying in 10s...`);
+        logger.info(`Datastore scores table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -40,7 +40,7 @@ export default class MigrateScoresFromPostgresToDatastore implements IBackground
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason: "ClickHouse scores table does not exist",
+        invalidReason: "Datastore scores table does not exist",
       };
     }
 

@@ -1,15 +1,15 @@
 import { filterOperators } from "../../../interfaces/filters";
 import { datastoreCompliantRandomCharacters } from "../../repositories";
 
-export type ClickhouseOperator = (typeof filterOperators)[keyof typeof filterOperators][number] | "!=";
+export type DatastoreOperator = (typeof filterOperators)[keyof typeof filterOperators][number] | "!=";
 export interface Filter {
-  apply(): ClickhouseFilter;
+  apply(): DatastoreFilter;
   datastoreTable: string;
   tablePrefix?: string;
-  operator: ClickhouseOperator;
+  operator: DatastoreOperator;
   field: string;
 }
-type ClickhouseFilter = {
+type DatastoreFilter = {
   query: string;
   params: { [x: string]: any } | {};
 };
@@ -35,7 +35,7 @@ export class StringFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const varName = `stringFilter${datastoreCompliantRandomCharacters()}`;
 
     const fieldWithPrefix = `${this.tablePrefix ? this.tablePrefix + "." : ""}${this.field}`;
@@ -91,7 +91,7 @@ export class NumberFilter implements Filter {
     this.datastoreTypeOverwrite = opts.datastoreTypeOverwrite;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `numberFilter${uid}`;
     const type = this.datastoreTypeOverwrite ?? "Decimal64(12)";
@@ -123,7 +123,7 @@ export class DateTimeFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `dateTimeFilter${uid}`;
     return {
@@ -154,7 +154,7 @@ export class StringOptionsFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `stringOptionsFilter${uid}`;
     return {
@@ -191,7 +191,7 @@ export class CategoryOptionsFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `categoryOptionsFilter${uid}`;
 
@@ -248,18 +248,14 @@ export class StringObjectFilter implements Filter {
     this.key = opts.key;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const varKeyName = `stringObjectKeyFilter${datastoreCompliantRandomCharacters()}`;
     const varValueName = `stringObjectValueFilter${datastoreCompliantRandomCharacters()}`;
     const prefix = this.tablePrefix ? this.tablePrefix + "." : "";
 
     // Events tables use array columns (metadata_names/metadata_values)
     // Observations/traces tables use Map column (metadata)
-    const isEventsTable = [
-      "events_proto",
-      "events_core",
-      "events_full",
-    ].includes(this.datastoreTable);
+    const isEventsTable = ["events_proto", "events_core", "events_full"].includes(this.datastoreTable);
 
     let query: string;
     if (isEventsTable) {
@@ -319,7 +315,7 @@ export class StringObjectFilter implements Filter {
   }
 }
 
-// this is used when we want to filter multiple values on a clickhouse column which is also an array
+// this is used when we want to filter multiple values on a datastore column which is also an array
 export class ArrayOptionsFilter implements Filter {
   public datastoreTable: string;
   public field: string;
@@ -341,7 +337,7 @@ export class ArrayOptionsFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `arrayOptionsFilter${uid}`;
     let query: string;
@@ -385,7 +381,7 @@ export class NullFilter implements Filter {
     this.tablePrefix = opts.tablePrefix;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     return {
       query: `${this.tablePrefix ? this.tablePrefix + "." : ""}${this.field} ${this.operator}`,
       params: {},
@@ -417,7 +413,7 @@ export class NumberObjectFilter implements Filter {
     this.key = opts.key;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const varKeyName = `numberObjectKeyFilter${datastoreCompliantRandomCharacters()}`;
     const varValueName = `numberObjectValueFilter${datastoreCompliantRandomCharacters()}`;
     const column = `${this.tablePrefix ? this.tablePrefix + "." : ""}${this.field}`;
@@ -449,7 +445,7 @@ export class BooleanFilter implements Filter {
     this.operator = opts.operator;
   }
 
-  apply(): ClickhouseFilter {
+  apply(): DatastoreFilter {
     const uid = datastoreCompliantRandomCharacters();
     const varName = `booleanFilter${uid}`;
     return {
@@ -494,7 +490,7 @@ export class FilterList {
     return this.filters.length;
   }
 
-  public apply(): ClickhouseFilter {
+  public apply(): DatastoreFilter {
     if (this.filters.length === 0) {
       return {
         query: "",

@@ -235,7 +235,7 @@ export const processEventBatch = async (
     });
   });
 
-  // Send each event individually to IngestionQueue for ClickHouse processing
+  // Send each event individually to IngestionQueue for Datastore processing
   if (s3UploadErrored) {
     throw new Error("Failed to upload events to blob storage, aborting event processing");
   }

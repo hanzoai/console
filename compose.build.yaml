@@ -36,10 +36,10 @@ services:
   #     INIT_USER_EMAIL: ${INIT_USER_EMAIL:-}
   #     INIT_USER_NAME: ${INIT_USER_NAME:-}
   #     INIT_USER_PASSWORD: ${INIT_USER_PASSWORD:-}
-  #     DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-clickhouse://datastore:9000}
+  #     DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-datastore://datastore:9000}
   #     DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
-  #     DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
-  #     DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+  #     DATASTORE_USER: ${DATASTORE_USER:-hanzo}
+  #     DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
   #     DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
   #     S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
   #     S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-us-east-1}
@@ -102,10 +102,10 @@ services:
       INIT_USER_EMAIL: ${INIT_USER_EMAIL:-}
       INIT_USER_NAME: ${INIT_USER_NAME:-}
       INIT_USER_PASSWORD: ${INIT_USER_PASSWORD:-}
-      DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-clickhouse://datastore:9000}
+      DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-datastore://datastore:9000}
       DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
-      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
-      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+      DATASTORE_USER: ${DATASTORE_USER:-hanzo}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
       DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
       S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-us-east-1}
@@ -131,15 +131,15 @@ services:
       - local-dev
 
   datastore:
-    image: clickhouse/clickhouse-server
+    image: ghcr.io/hanzoai/datastore:latest
     user: "101:101"
     environment:
       DATASTORE_DB: default
-      DATASTORE_USER: clickhouse
-      DATASTORE_PASSWORD: clickhouse
+      DATASTORE_USER: hanzo
+      DATASTORE_PASSWORD: hanzo
     volumes:
-      - hanzo_datastore_data:/var/lib/clickhouse
-      - hanzo_datastore_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/datastore
+      - hanzo_datastore_logs:/var/log/datastore
     ports:
       - "8123:8123"
       - "9000:9000"

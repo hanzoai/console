@@ -38,7 +38,7 @@ describe("Sessions Comment Filtering", () => {
         },
       ],
       featureFlags: {
-        excludeClickhouseRead: false,
+        excludeDatastoreRead: false,
         templateFlag: true,
         v4BetaToggleVisible: false,
       },
@@ -72,7 +72,7 @@ describe("Sessions Comment Filtering", () => {
         ],
       });
 
-      // Create traces with session IDs in ClickHouse
+      // Create traces with session IDs in Datastore
       const trace1 = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -154,7 +154,7 @@ describe("Sessions Comment Filtering", () => {
         ],
       });
 
-      // Create traces with session IDs in ClickHouse
+      // Create traces with session IDs in Datastore
       const trace1 = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -223,7 +223,7 @@ describe("Sessions Comment Filtering", () => {
         },
       });
 
-      // Create trace with session ID in ClickHouse
+      // Create trace with session ID in Datastore
       const trace = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -291,7 +291,7 @@ describe("Sessions Comment Filtering", () => {
         },
       });
 
-      // Create trace with session ID in ClickHouse
+      // Create trace with session ID in Datastore
       const trace = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -342,7 +342,7 @@ describe("Sessions Comment Filtering", () => {
         },
       });
 
-      // Create trace with session ID in ClickHouse
+      // Create trace with session ID in Datastore
       const trace = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -399,7 +399,7 @@ describe("Sessions Comment Filtering", () => {
         },
       });
 
-      // Create trace with session ID in ClickHouse
+      // Create trace with session ID in Datastore
       const trace = createTrace({
         project_id: projectId,
         id: randomUUID(),
@@ -443,7 +443,7 @@ describe("Sessions Comment Filtering", () => {
         },
       });
 
-      // Create trace with session ID in ClickHouse
+      // Create trace with session ID in Datastore
       const trace = createTrace({
         project_id: projectId,
         id: randomUUID(),

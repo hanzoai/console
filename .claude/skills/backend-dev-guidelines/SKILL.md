@@ -1,6 +1,6 @@
 ---
 name: backend-dev-guidelines
-description: Comprehensive backend development guide for Hanzo's Next.js 14/tRPC/Express/TypeScript monorepo. Use when creating tRPC routers, public API endpoints, BullMQ queue processors, services, or working with tRPC procedures, Next.js API routes, Prisma database access, ClickHouse analytics queries, Redis queues, OpenTelemetry instrumentation, Zod v4 validation, env.mjs configuration, tenant isolation patterns, or async patterns. Covers layered architecture (tRPC procedures → services, queue processors → services), dual database system (PostgreSQL + ClickHouse), projectId filtering for multi-tenant isolation, traceException error handling, observability patterns, and testing strategies (Jest for web, vitest for worker).
+description: Comprehensive backend development guide for Hanzo's Next.js 14/tRPC/Express/TypeScript monorepo. Use when creating tRPC routers, public API endpoints, BullMQ queue processors, services, or working with tRPC procedures, Next.js API routes, Prisma database access, Datastore analytics queries, Redis queues, OpenTelemetry instrumentation, Zod v4 validation, env.mjs configuration, tenant isolation patterns, or async patterns. Covers layered architecture (tRPC procedures → services, queue processors → services), dual database system (PostgreSQL + Datastore), projectId filtering for multi-tenant isolation, traceException error handling, observability patterns, and testing strategies (Jest for web, vitest for worker).
 ---
 
 # Backend Development Guidelines
@@ -20,7 +20,7 @@ Automatically activates when working on:
 - Authenticating API requests
 - Accessing resources based on entitlements
 - Implementing middleware (tRPC, NextAuth, public API)
-- Database operations with Prisma (PostgreSQL) or ClickHouse
+- Database operations with Prisma (PostgreSQL) or Datastore
 - Observability with OpenTelemetry, DataDog, logger, and traceException
 - Input validation with Zod v4
 - Environment configuration from env variables
@@ -80,7 +80,7 @@ Automatically activates when working on:
 │      ↓                      │   │      ↓                      │
 │  Service (business logic)   │   │  Service (business logic)   │
 │      ↓                      │   │      ↓                      │
-│  Prisma / ClickHouse        │   │  Prisma / ClickHouse        │
+│  Prisma / Datastore        │   │  Prisma / Datastore        │
 │                             │   │                             │
 └─────────────────────────────┘   └─────────────────────────────┘
                  ↓
@@ -94,7 +94,7 @@ Automatically activates when working on:
 │      ↓                                                      │
 │  Service (business logic)                                   │
 │      ↓                                                      │
-│  Prisma / ClickHouse                                        │
+│  Prisma / Datastore                                        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -163,7 +163,7 @@ worker/src/
 shared/src/
 ├── server/                  # Server utilities
 │   ├── auth/                # Authentication helpers
-│   ├── clickhouse/          # ClickHouse client & schema
+│   ├── datastore/          # Datastore client & schema
 │   ├── instrumentation/     # OpenTelemetry helpers
 │   ├── llm/                 # LLM integration utilities
 │   ├── redis/               # Redis queues & cache
@@ -240,7 +240,7 @@ The shared package provides types, utilities, and server code used by both web a
 | ------------------------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
 | `@hanzo/shared`                         | ✅ Frontend + Backend | Prisma types, Zod schemas, constants, table definitions, domain models, utilities  |
 | `@hanzo/shared/src/db`                  | 🔒 Backend only       | Prisma client instance                                                             |
-| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, ClickHouse, LLM integration, instrumentation |
+| `@hanzo/shared/src/server`              | 🔒 Backend only       | Services, repositories, queues, auth, Datastore, LLM integration, instrumentation |
 | `@hanzo/shared/src/server/auth/apiKeys` | 🔒 Backend only       | API key management (separated to avoid circular deps)                              |
 | `@hanzo/shared/encryption`              | 🔒 Backend only       | Database field encryption/decryption                                               |
 
@@ -413,8 +413,8 @@ const trace = await prisma.trace.findUnique({
   where: { id: traceId, projectId }, // Required for multi-tenant data isolation
 });
 
-// ✅ CORRECT: ClickHouse queries also require projectId
-const traces = await queryClickhouse({
+// ✅ CORRECT: Datastore queries also require projectId
+const traces = await queryDatastore({
   query: `
     SELECT * FROM traces
     WHERE project_id = {projectId: String}
@@ -467,11 +467,11 @@ import { TRPCError } from "@trpc/server";
 import { prisma } from "@hanzo/shared/src/db";
 import type { Prisma } from "@prisma/client";
 
-// ClickHouse
+// Datastore
 import {
-  queryClickhouse,
-  queryClickhouseStream,
-  upsertClickhouse,
+  queryDatastore,
+  queryDatastoreStream,
+  upsertDatastore,
 } from "@hanzo/shared/src/server";
 
 // Observability - OpenTelemetry + DataDog (NOT Sentry for backend)
@@ -550,7 +550,7 @@ Reference existing Hanzo features for implementation patterns:
 
 ### [architecture-overview.md](resources/architecture-overview.md)
 
-Three-layer architecture (tRPC/Public API → Services → Data Access), request lifecycle for tRPC/Public API/Worker, Next.js 14 directory structure, dual database system (PostgreSQL + ClickHouse), separation of concerns, repository pattern for complex queries
+Three-layer architecture (tRPC/Public API → Services → Data Access), request lifecycle for tRPC/Public API/Worker, Next.js 14 directory structure, dual database system (PostgreSQL + Datastore), separation of concerns, repository pattern for complex queries
 
 ### [routing-and-controllers.md](resources/routing-and-controllers.md)
 
@@ -566,7 +566,7 @@ tRPC middleware (withErrorHandling, withOtelInstrumentation, enforceUserIsAuthed
 
 ### [database-patterns.md](resources/database-patterns.md)
 
-Dual database architecture (PostgreSQL via Prisma + ClickHouse via direct client), PostgreSQL CRUD operations, ClickHouse query patterns (queryClickhouse, queryClickhouseStream, upsertClickhouse), repository pattern for complex queries, tenant isolation with projectId filtering, when to use which database
+Dual database architecture (PostgreSQL via Prisma + Datastore via direct client), PostgreSQL CRUD operations, Datastore query patterns (queryDatastore, queryDatastoreStream, upsertDatastore), repository pattern for complex queries, tenant isolation with projectId filtering, when to use which database
 
 ### [configuration.md](resources/configuration.md)
 

@@ -1,7 +1,7 @@
 {
   "name": "@hanzo/datastore",
   "version": "1.0.0",
-  "description": "Native Hanzo Datastore HTTP client — zero dependencies, ClickHouse-compatible HTTP API via fetch",
+  "description": "Native Hanzo Datastore HTTP client — zero dependencies, compatible HTTP API via fetch",
   "license": "MIT",
   "author": "Hanzo AI Inc.",
   "homepage": "https://hanzo.ai",
@@ -13,7 +13,7 @@
   "keywords": [
     "hanzo",
     "datastore",
-    "clickhouse",
+    "analytics",
     "database",
     "client",
     "http"

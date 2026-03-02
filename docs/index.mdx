@@ -32,18 +32,18 @@ Hanzo Console is the LLM engineering platform at the center of the Hanzo AI stac
 |                          |                                        |
 |                    Console API                                    |
 |            +-------------+-------------+                          |
-|      PostgreSQL     ClickHouse      Redis --> Worker              |
+|      PostgreSQL     Datastore      Redis --> Worker              |
 |      (metadata)     (analytics)     (queues)  (MQ 27+)           |
 +------------------------------------------------------------------+
 
-Ingestion:  Your App --> SDK/HTTP --> api.hanzo.ai/v1/console/* --> ClickHouse
+Ingestion:  Your App --> SDK/HTTP --> api.hanzo.ai/v1/console/* --> Datastore
 ```
 
 | Component | Image | Port | Purpose |
 |-----------|-------|------|---------|
 | **Web** | `hanzoai/console:latest` | 3001 | Next.js 15 dashboard and API |
 | **Worker** | `ghcr.io/hanzoai/console-worker:latest` | -- | Hanzo MQ processor (27+ queues) |
-| **ClickHouse** | In-cluster | 9000 | Analytics storage (traces, scores, costs) |
+| **Datastore** | In-cluster | 9000 | Analytics storage (traces, scores, costs) |
 | **PostgreSQL** | In-cluster | 5432 | Metadata (prompts, datasets, projects, users) |
 | **Redis** | In-cluster | 6379 | Job queues, caching, pub/sub |
 
@@ -279,7 +279,7 @@ curl -X POST https://api.hanzo.ai/v1/console/prompts \
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `CLICKHOUSE_URL` | ClickHouse connection string |
+| `DATASTORE_URL` | Datastore connection string |
 | `REDIS_URL` | Redis connection string |
 | `NEXTAUTH_URL` | Console public URL (`https://console.hanzo.ai`) |
 | `NEXTAUTH_SECRET` | NextAuth session encryption key |
@@ -290,13 +290,13 @@ curl -X POST https://api.hanzo.ai/v1/console/prompts \
 
 Optional: `S3_EVENT_UPLOAD_ENDPOINT`, `S3_EVENT_UPLOAD_BUCKET` (`hanzo-events`), `S3_MEDIA_UPLOAD_BUCKET` (`hanzo-media`), `INIT_ORG_IDS`, `INIT_USER_EMAIL`, `INIT_PROJECT_ORG_ID`, `AGENTS_API_URL`.
 
-### ClickHouse Migrations
+### Datastore Migrations
 
 34 migrations managed by `golang-migrate`. Database must be named `console` (not `hanzo`).
 
 ```bash
-kubectl port-forward svc/clickhouse 9000:9000 -n hanzo
-migrate -path ./migrations -database "clickhouse://localhost:9000/console" up
+kubectl port-forward svc/datastore 9000:9000 -n hanzo
+migrate -path ./migrations -database "datastore://localhost:9000/console" up
 ```
 
 ### Kubernetes

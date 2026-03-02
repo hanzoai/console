@@ -527,7 +527,7 @@ describe("Filter Flow: URL → Decode → Normalize → Transform", () => {
   });
 
   it("should handle backend column remapping from URL", () => {
-    // Observations/traces table: "tags" (frontend) → "traceTags" (ClickHouse backend)
+    // Observations/traces table: "tags" (frontend) → "traceTags" (Datastore backend)
     const urlFilter = "tags;arrayOptions;;any of;tag1";
 
     const normalized = decodeAndNormalizeFilters(urlFilter, traceFilterConfig.columnDefinitions);

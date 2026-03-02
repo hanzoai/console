@@ -72,7 +72,7 @@
 </p>
 
 <p align="center">
-   <a href="https://github.com/ClickHouse/ClickHouse"><strong>Proudly made with ClickHouse open source database</strong></a>
+   <a href="https://github.com/Datastore/Datastore"><strong>Proudly made with Datastore open source database</strong></a>
 </p>
 
 

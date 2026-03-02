@@ -1,22 +1,9 @@
 import { type z } from "zod/v4";
-import {
-  convertDateToDatastoreDateTime,
-  shouldSkipObservationsFinal,
-} from "@hanzo/shared/src/server";
-import type {
-  QueryType,
-  ViewDeclarationType,
-  metricAggregations,
-  granularities,
-  ViewVersion,
-  views,
-} from "../types";
+import { convertDateToDatastoreDateTime, shouldSkipObservationsFinal } from "@hanzo/shared/src/server";
+import type { QueryType, ViewDeclarationType, metricAggregations, granularities, ViewVersion, views } from "../types";
 import { query as queryModel } from "../types";
 import { getViewDeclaration } from "@/src/features/query/dataModel";
-import {
-  FilterList,
-  createFilterFromFilterState,
-} from "@hanzo/shared/src/server";
+import { FilterList, createFilterFromFilterState } from "@hanzo/shared/src/server";
 import { InvalidRequestError } from "@hanzo/shared";
 
 type AppliedDimensionType = {
@@ -43,10 +30,7 @@ export class QueryBuilder {
   private chartConfig?: { bins?: number; row_limit?: number };
   private version: ViewVersion;
 
-  constructor(
-    chartConfig?: { bins?: number; row_limit?: number },
-    version: ViewVersion = "v1",
-  ) {
+  constructor(chartConfig?: { bins?: number; row_limit?: number }, version: ViewVersion = "v1") {
     this.chartConfig = chartConfig;
     this.version = version;
   }
@@ -82,22 +66,15 @@ export class QueryBuilder {
       default:
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const exhaustiveCheck: never = metric.aggregation;
-        throw new InvalidRequestError(
-          `Invalid aggregation: ${metric.aggregation}`,
-        );
+        throw new InvalidRequestError(`Invalid aggregation: ${metric.aggregation}`);
     }
   }
 
-  private getViewDeclaration(
-    viewName: z.infer<typeof views>,
-  ): ViewDeclarationType {
+  private getViewDeclaration(viewName: z.infer<typeof views>): ViewDeclarationType {
     return getViewDeclaration(viewName, this.version);
   }
 
-  private mapDimensions(
-    dimensions: Array<{ field: string }>,
-    view: ViewDeclarationType,
-  ): AppliedDimensionType[] {
+  private mapDimensions(dimensions: Array<{ field: string }>, view: ViewDeclarationType): AppliedDimensionType[] {
     return dimensions.map((dimension) => {
       if (!(dimension.field in view.dimensions)) {
         throw new InvalidRequestError(
@@ -123,9 +100,7 @@ export class QueryBuilder {
   ): AppliedMetricType[] {
     return metrics.map((metric) => {
       if (!(metric.measure in view.measures)) {
-        throw new InvalidRequestError(
-          `Invalid metric ${metric.measure}. Must be one of ${Object.keys(view.measures)}`,
-        );
+        throw new InvalidRequestError(`Invalid metric ${metric.measure}. Must be one of ${Object.keys(view.measures)}`);
       }
       return {
         ...view.measures[metric.measure],
@@ -136,10 +111,7 @@ export class QueryBuilder {
     });
   }
 
-  private validateFilters(
-    filters: z.infer<typeof queryModel>["filters"],
-    view: ViewDeclarationType,
-  ) {
+  private validateFilters(filters: z.infer<typeof queryModel>["filters"], view: ViewDeclarationType) {
     for (const filter of filters) {
       // Validate filters on dimension fields
       if (filter.column in view.dimensions) {
@@ -181,10 +153,7 @@ export class QueryBuilder {
         }
 
         // Validate stringObject value type
-        if (
-          filter.type === "stringObject" &&
-          typeof filter.value !== "string"
-        ) {
+        if (filter.type === "stringObject" && typeof filter.value !== "string") {
           throw new InvalidRequestError(
             // @ts-ignore
             `Invalid filter for field 'metadata': stringObject type requires a string value, not '${typeof filter.value}'.`,
@@ -211,10 +180,7 @@ export class QueryBuilder {
     return parts[0];
   }
 
-  private mapFilters(
-    filters: z.infer<typeof queryModel>["filters"],
-    view: ViewDeclarationType,
-  ) {
+  private mapFilters(filters: z.infer<typeof queryModel>["filters"], view: ViewDeclarationType) {
     // Validate all filters before processing
     this.validateFilters(filters, view);
 
@@ -273,7 +239,7 @@ export class QueryBuilder {
       };
     });
 
-    // Use the createFilterFromFilterState function to create proper Clickhouse filters
+    // Use the createFilterFromFilterState function to create proper Datastore filters
     return createFilterFromFilterState(filters, columnMappings);
   }
 
@@ -359,10 +325,7 @@ export class QueryBuilder {
         type: segment.type,
       }));
 
-      const segmentFilters = createFilterFromFilterState(
-        view.segments,
-        segmentsMappings,
-      );
+      const segmentFilters = createFilterFromFilterState(view.segments, segmentsMappings);
       filterList.push(...segmentFilters);
     }
 
@@ -390,10 +353,7 @@ export class QueryBuilder {
     });
     filters.forEach((filter) => {
       // Only add as relation table if it's not the base table
-      if (
-        filter.datastoreTable !== view.name &&
-        filter.datastoreTable !== actualTableName
-      ) {
+      if (filter.datastoreTable !== view.name && filter.datastoreTable !== actualTableName) {
         relationTables.add(filter.datastoreTable);
       }
     });
@@ -415,22 +375,15 @@ export class QueryBuilder {
     // Measures without either (like uniq(scores.id)) must use the two-level approach.
     const allMetricsHaveAggs =
       appliedMetrics.length === 0 ||
-      appliedMetrics.every(
-        (m) => m.aggs !== undefined || m.requiresDimension !== undefined,
-      );
+      appliedMetrics.every((m) => m.aggs !== undefined || m.requiresDimension !== undefined);
 
     // Check if any dimension has custom aggregation
-    const hasCustomDimensionAgg = appliedDimensions.some(
-      (d) => d.aggregationFunction !== undefined,
-    );
+    const hasCustomDimensionAgg = appliedDimensions.some((d) => d.aggregationFunction !== undefined);
 
     return allMetricsHaveAggs && !hasCustomDimensionAgg;
   }
 
-  private substituteAggTemplates(
-    sql: string,
-    aggs: Record<string, string>,
-  ): string {
+  private substituteAggTemplates(sql: string, aggs: Record<string, string>): string {
     let result = sql;
     // Replace each @@AGGN@@ placeholder with its corresponding value
     for (const [placeholder, replacement] of Object.entries(aggs)) {
@@ -457,11 +410,8 @@ export class QueryBuilder {
 
       const relation = view.tableRelations[relationTableName];
       // Conditionally add FINAL - skip for observations if flag is set
-      const shouldUseFinal = !(
-        relation.name === "observations" && skipObservationsFinal
-      );
-      const alias =
-        relation.name !== relationTableName ? ` AS ${relationTableName}` : "";
+      const shouldUseFinal = !(relation.name === "observations" && skipObservationsFinal);
+      const alias = relation.name !== relationTableName ? ` AS ${relationTableName}` : "";
       let joinStatement = `LEFT JOIN ${relation.name}${alias}${shouldUseFinal ? " FINAL" : ""} ${relation.joinConditionSql}`;
 
       // Create time dimension mapping for the relation table
@@ -507,13 +457,11 @@ export class QueryBuilder {
     return relationJoins;
   }
 
-  private buildArrayJoinClause(
-    appliedDimensions: AppliedDimensionType[],
-  ): string {
+  private buildArrayJoinClause(appliedDimensions: AppliedDimensionType[]): string {
     const pairs = appliedDimensions.filter((d) => d.pairExpand);
     if (pairs.length === 0) return "";
     // Multiple pairExpand dimensions would produce separate ARRAY JOIN clauses
-    // which ClickHouse executes as a cartesian product — almost certainly wrong.
+    // which Datastore executes as a cartesian product — almost certainly wrong.
     if (pairs.length > 1) {
       throw new InvalidRequestError(
         `Only one pairExpand dimension is supported per query. Found: ${pairs.map((d) => d.alias ?? d.sql).join(", ")}`,
@@ -523,10 +471,7 @@ export class QueryBuilder {
     return `ARRAY JOIN\n  ${d.sql} AS ${d.alias ?? d.sql},\n  ${d.pairExpand!.valuesSql} AS ${d.pairExpand!.valueAlias}`;
   }
 
-  private buildWhereClause(
-    filterList: FilterList,
-    parameters: Record<string, unknown>,
-  ) {
+  private buildWhereClause(filterList: FilterList, parameters: Record<string, unknown>) {
     if (filterList.length() === 0) return "";
 
     // Use the FilterList's apply method to get the query and parameters
@@ -539,10 +484,7 @@ export class QueryBuilder {
     return ` WHERE ${query}`;
   }
 
-  private determineTimeGranularity(
-    fromTimestamp: string,
-    toTimestamp: string,
-  ): z.infer<typeof granularities> {
+  private determineTimeGranularity(fromTimestamp: string, toTimestamp: string): z.infer<typeof granularities> {
     const from = new Date(fromTimestamp);
     const to = new Date(toTimestamp);
     const diffMs = to.getTime() - from.getTime();
@@ -562,10 +504,7 @@ export class QueryBuilder {
     }
   }
 
-  private getTimeDimensionSql(
-    sql: string,
-    granularity: z.infer<typeof granularities>,
-  ): string {
+  private getTimeDimensionSql(sql: string, granularity: z.infer<typeof granularities>): string {
     switch (granularity) {
       case "minute":
         return `toStartOfMinute(${sql})`;
@@ -578,9 +517,7 @@ export class QueryBuilder {
       case "month":
         return `toStartOfMonth(${sql})`;
       case "auto":
-        throw new Error(
-          `Granularity 'auto' is not supported for getTimeDimensionSql`,
-        );
+        throw new Error(`Granularity 'auto' is not supported for getTimeDimensionSql`);
       default:
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const exhaustiveCheck: never = granularity;
@@ -590,11 +527,7 @@ export class QueryBuilder {
     }
   }
 
-  private buildTimeDimensionSql(
-    view: ViewDeclarationType,
-    query: QueryType,
-    wrapInAgg?: string,
-  ): string {
+  private buildTimeDimensionSql(view: ViewDeclarationType, query: QueryType, wrapInAgg?: string): string {
     if (!query.timeDimension) {
       return "";
     }
@@ -605,10 +538,7 @@ export class QueryBuilder {
         ? this.determineTimeGranularity(query.fromTimestamp, query.toTimestamp)
         : query.timeDimension.granularity;
 
-    const timeDimensionSql = this.getTimeDimensionSql(
-      `${actualTableName}.${view.timeDimension}`,
-      granularity,
-    );
+    const timeDimensionSql = this.getTimeDimensionSql(`${actualTableName}.${view.timeDimension}`, granularity);
 
     // Optionally wrap in aggregation function (e.g., "any" for two-level inner SELECT).
     // When the view has a rootEventCondition, use anyIf with that condition so that
@@ -646,7 +576,7 @@ export class QueryBuilder {
           // pairExpand key columns (e.g. costType) are added to the inner GROUP BY in
           // buildInnerSelect, so they are already deterministic grouping keys here.
           // Unlike regular dimensions (which are not in GROUP BY and need any() to satisfy
-          // ClickHouse's aggregation rules), wrapping in any() would be wrong: it implies
+          // Datastore's aggregation rules), wrapping in any() would be wrong: it implies
           // the value is non-deterministic within the group when it's actually the axis
           // being grouped on. Use a bare reference instead.
           // Note: the paired value column (e.g. cost_value) is NOT in GROUP BY and IS
@@ -689,7 +619,7 @@ export class QueryBuilder {
 
         // pairExpand value-alias measures (e.g. costByType, usageByType) reference a raw
         // column brought into scope by the ARRAY JOIN clause. That column is not in the
-        // inner GROUP BY, so wrap it in any() to satisfy ClickHouse. The outer query then
+        // inner GROUP BY, so wrap it in any() to satisfy Datastore. The outer query then
         // applies the real aggregation. We scope this to requiresDimension metrics only —
         // other measures use @@AGGN@@ templates that resolve to function calls, so they
         // never need this treatment.
@@ -733,19 +663,13 @@ export class QueryBuilder {
       GROUP BY ${groupByParts.join(", ")}`;
   }
 
-  private buildOuterDimensionsPart(
-    appliedDimensions: AppliedDimensionType[],
-    hasTimeDimension: boolean,
-  ) {
+  private buildOuterDimensionsPart(appliedDimensions: AppliedDimensionType[], hasTimeDimension: boolean) {
     let dimensions = "";
 
     // Add regular dimensions
     if (appliedDimensions.length > 0) {
       dimensions += `${appliedDimensions
-        .map(
-          (dimension) =>
-            `${dimension.alias ?? dimension.sql} as ${dimension.alias || dimension.sql}`,
-        )
+        .map((dimension) => `${dimension.alias ?? dimension.sql} as ${dimension.alias || dimension.sql}`)
         .join(",\n")},`;
     }
 
@@ -763,19 +687,12 @@ export class QueryBuilder {
       : "count(*) as count";
   }
 
-  private buildGroupByClause(
-    appliedDimensions: AppliedDimensionType[],
-    hasTimeDimension: boolean,
-  ) {
+  private buildGroupByClause(appliedDimensions: AppliedDimensionType[], hasTimeDimension: boolean) {
     const dimensions = [];
 
     // Add regular dimensions
     if (appliedDimensions.length > 0) {
-      dimensions.push(
-        ...appliedDimensions.map(
-          (dimension) => dimension.alias ?? dimension.sql,
-        ),
-      );
+      dimensions.push(...appliedDimensions.map((dimension) => dimension.alias ?? dimension.sql));
     }
 
     // Add time dimension if it exists
@@ -836,12 +753,8 @@ export class QueryBuilder {
         step = "INTERVAL 1 DAY"; // Default to day if granularity is unknown
     }
 
-    parameters["fillFromDate"] = convertDateToDatastoreDateTime(
-      new Date(fromTimestamp),
-    );
-    parameters["fillToDate"] = convertDateToDatastoreDateTime(
-      new Date(toTimestamp),
-    );
+    parameters["fillFromDate"] = convertDateToDatastoreDateTime(new Date(fromTimestamp));
+    parameters["fillToDate"] = convertDateToDatastoreDateTime(new Date(toTimestamp));
 
     return ` WITH FILL FROM ${this.getTimeDimensionSql("{fillFromDate: DateTime64(3)}", granularity)} TO ${this.getTimeDimensionSql("{fillToDate: DateTime64(3)}", granularity)} STEP ${step}`;
   }
@@ -875,9 +788,7 @@ export class QueryBuilder {
       ${limitClause}`;
   }
 
-  private buildSingleLevelMetricsPart(
-    appliedMetrics: AppliedMetricType[],
-  ): string {
+  private buildSingleLevelMetricsPart(appliedMetrics: AppliedMetricType[]): string {
     if (appliedMetrics.length === 0) {
       return "count(*) as count";
     }
@@ -947,11 +858,7 @@ export class QueryBuilder {
     limitClause: string,
   ): string {
     // Build dimensions using dedicated helper
-    const dimensionsPart = this.buildSingleLevelDimensionsPart(
-      appliedDimensions,
-      query,
-      view,
-    );
+    const dimensionsPart = this.buildSingleLevelDimensionsPart(appliedDimensions, query, view);
 
     // Build optimized metrics (strip templates, apply user aggregation)
     const metricsPart = this.buildSingleLevelMetricsPart(appliedMetrics);
@@ -1008,9 +915,7 @@ export class QueryBuilder {
       }
 
       // Check if the field is a dimension
-      const matchingDimension = appliedDimensions.find(
-        (dim) => dim.alias === item.field || dim.sql === item.field,
-      );
+      const matchingDimension = appliedDimensions.find((dim) => dim.alias === item.field || dim.sql === item.field);
       if (matchingDimension) {
         return {
           field: matchingDimension.alias || matchingDimension.sql,
@@ -1019,16 +924,14 @@ export class QueryBuilder {
       }
 
       // Check if the field is a metric (with aggregation prefix)
-      const metricNamePattern =
-        /^(sum|avg|count|max|min|p50|p75|p90|p95|p99|uniq)_(.+)$/;
+      const metricNamePattern = /^(sum|avg|count|max|min|p50|p75|p90|p95|p99|uniq)_(.+)$/;
       const metricMatch = item.field.match(metricNamePattern);
 
       if (metricMatch) {
         const [, aggregation, measureName] = metricMatch;
         const matchingMetric = appliedMetrics.find(
           (metric) =>
-            (metric.alias === measureName || metric.sql === measureName) &&
-            metric.aggregation === aggregation,
+            (metric.alias === measureName || metric.sql === measureName) && metric.aggregation === aggregation,
         );
 
         if (matchingMetric) {
@@ -1045,20 +948,16 @@ export class QueryBuilder {
   /**
    * Builds the ORDER BY clause for the query.
    */
-  private buildOrderByClause(
-    processedOrderBy: Array<{ field: string; direction: string }>,
-  ): string {
+  private buildOrderByClause(processedOrderBy: Array<{ field: string; direction: string }>): string {
     if (processedOrderBy.length === 0) {
       return "";
     }
 
-    return `ORDER BY ${processedOrderBy
-      .map((item) => `${item.field} ${item.direction}`)
-      .join(", ")}`;
+    return `ORDER BY ${processedOrderBy.map((item) => `${item.field} ${item.direction}`).join(", ")}`;
   }
 
   /**
-   * We want to build a ClickHouse query based on the query provided and the viewDeclaration that was selected.
+   * We want to build a Datastore query based on the query provided and the viewDeclaration that was selected.
    *
    * When enableSingleLevelOptimization is false (default), the query follows a two-level pattern:
    * ```
@@ -1105,9 +1004,7 @@ export class QueryBuilder {
     // Run zod validation
     const parseResult = queryModel.safeParse(query);
     if (!parseResult.success) {
-      throw new InvalidRequestError(
-        `Invalid query: ${JSON.stringify(parseResult.error.issues)}`,
-      );
+      throw new InvalidRequestError(`Invalid query: ${JSON.stringify(parseResult.error.issues)}`);
     }
 
     // Initialize parameters object
@@ -1136,12 +1033,9 @@ export class QueryBuilder {
 
     // Auto-include dimensions required by pairExpand-dependent measures.
     // e.g. costByType.requiresDimension = "costType": without that dimension the
-    // ARRAY JOIN is never emitted and ClickHouse errors with "unknown column cost_value".
+    // ARRAY JOIN is never emitted and Datastore errors with "unknown column cost_value".
     for (const metric of appliedMetrics) {
-      if (
-        metric.requiresDimension &&
-        !appliedDimensions.some((d) => d.alias === metric.requiresDimension)
-      ) {
+      if (metric.requiresDimension && !appliedDimensions.some((d) => d.alias === metric.requiresDimension)) {
         const requiredDimDef = view.dimensions[metric.requiresDimension];
         if (requiredDimDef) {
           appliedDimensions.push({
@@ -1157,32 +1051,15 @@ export class QueryBuilder {
     let filterList = new FilterList(this.mapFilters(query.filters, view));
 
     // Add standard filters (project_id, timestamps)
-    filterList = this.addStandardFilters(
-      filterList,
-      view,
-      projectId,
-      query.fromTimestamp,
-      query.toTimestamp,
-    );
+    filterList = this.addStandardFilters(filterList, view, projectId, query.fromTimestamp, query.toTimestamp);
 
     // Build the FROM clause with necessary JOINs
     let fromClause = `FROM ${view.baseCte}`;
 
     // Handle relation tables
-    const relationTables = this.collectRelationTables(
-      view,
-      appliedDimensions,
-      appliedMetrics,
-      filterList,
-    );
+    const relationTables = this.collectRelationTables(view, appliedDimensions, appliedMetrics, filterList);
     if (relationTables.size > 0) {
-      const relationJoins = this.buildJoins(
-        relationTables,
-        view,
-        filterList,
-        query,
-        skipObservationsFinal,
-      );
+      const relationJoins = this.buildJoins(relationTables, view, filterList, query, skipObservationsFinal);
       fromClause += ` ${relationJoins.join(" ")}`;
     }
 
@@ -1197,7 +1074,7 @@ export class QueryBuilder {
 
     // When rootEventCondition is set, add a subquery filter to restrict rows
     // to traces whose root event has timeDimension in the query window.
-    // The existing start_time filter above is kept for ClickHouse partition pruning.
+    // The existing start_time filter above is kept for Datastore partition pruning.
     if (view.rootEventCondition) {
       const uid = crypto.randomUUID().replace(/-/g, "").slice(0, 8);
       const fromP = `subFrom${uid}`;
@@ -1219,15 +1096,10 @@ export class QueryBuilder {
 
     // Check if single-level optimization is applicable
     // Note: Relation tables are OK as long as measures have aggs configuration
-    const canOptimize =
-      enableSingleLevelOptimization &&
-      this.canUseSingleLevelQuery(appliedDimensions, appliedMetrics);
+    const canOptimize = enableSingleLevelOptimization && this.canUseSingleLevelQuery(appliedDimensions, appliedMetrics);
 
     // Build GROUP BY clause (used by both single-level and two-level queries)
-    const groupByClause = this.buildGroupByClause(
-      appliedDimensions,
-      !!query.timeDimension,
-    );
+    const groupByClause = this.buildGroupByClause(appliedDimensions, !!query.timeDimension);
 
     // Process and validate orderBy fields
     const processedOrderBy = this.validateAndProcessOrderBy(
@@ -1270,11 +1142,7 @@ export class QueryBuilder {
     } else {
       // Two-level query: Original approach
       // Build inner SELECT parts
-      const innerDimensionsPart = this.buildInnerDimensionsPart(
-        appliedDimensions,
-        query,
-        view,
-      );
+      const innerDimensionsPart = this.buildInnerDimensionsPart(appliedDimensions, query, view);
       const innerMetricsPart = this.buildInnerMetricsPart(appliedMetrics);
 
       // Build inner SELECT
@@ -1287,10 +1155,7 @@ export class QueryBuilder {
       );
 
       // Build outer SELECT parts
-      const outerDimensionsPart = this.buildOuterDimensionsPart(
-        appliedDimensions,
-        !!query.timeDimension,
-      );
+      const outerDimensionsPart = this.buildOuterDimensionsPart(appliedDimensions, !!query.timeDimension);
       const outerMetricsPart = this.buildOuterMetricsPart(appliedMetrics);
 
       sql = this.buildOuterSelect(

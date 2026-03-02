@@ -20,7 +20,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { v4 } from "uuid";
 
-describe("Clickhouse Scores Repository Test", () => {
+describe("Datastore Scores Repository Test", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
   it("should return null if no scores are found", async () => {
     const result = await getScoreById({

@@ -1,7 +1,7 @@
 import { type ColumnDefinition } from "./tableDefinitions";
 
-// Column definitions for the ClickHouse events table
-// Used for filtering, sorting, and mapping UI columns to ClickHouse columns
+// Column definitions for the Datastore events table
+// Used for filtering, sorting, and mapping UI columns to Datastore columns
 export const eventsTableCols: ColumnDefinition[] = [
   {
     name: "ID",

@@ -10,15 +10,15 @@ import { InternalServerError, ConsoleNotFoundError } from "../../errors";
 import { prisma } from "../../db";
 import { ObservationRecordReadType } from "./definitions";
 import { FilterState } from "../../types";
-import { DateTimeFilter, FilterList, StringFilter, FullObservations, orderByToClickhouseSql } from "../queries";
-import { createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { DateTimeFilter, FilterList, StringFilter, FullObservations, orderByToDatastoreSql } from "../queries";
+import { createFilterFromFilterState } from "../queries/datastore-sql/factory";
 import { observationsTableTraceUiColumnDefinitions, observationsTableUiColumnDefinitions } from "../tableMappings";
 import { OrderByState } from "../../interfaces/orderBy";
 import { getTracesByIds } from "./traces";
 import { measureAndReturn } from "../datastore/measureAndReturn";
 import { convertDateToDatastoreDateTime, PreferredDatastoreService } from "../datastore/client";
 import { convertObservation, enrichObservationWithModelData } from "./observations_converters";
-import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
+import { datastoreSearchCondition } from "../queries/datastore-sql/search";
 import { OBSERVATIONS_TO_TRACE_INTERVAL, TRACE_TO_OBSERVATIONS_INTERVAL } from "./constants";
 import { env } from "../../env";
 import { TracingSearchType } from "../../interfaces/search";
@@ -27,7 +27,7 @@ import type { AnalyticsGenerationEvent } from "../analytics-integrations/types";
 import { ObservationType } from "../../domain";
 import { recordDistribution } from "../instrumentation";
 import { DEFAULT_RENDERING_PROPS, RenderingProps } from "../utils/rendering";
-import { shouldSkipObservationsFinal } from "../queries/clickhouse-sql/query-options";
+import { shouldSkipObservationsFinal } from "../queries/datastore-sql/query-options";
 
 /**
  * Checks if observation exists in datastore.
@@ -75,7 +75,7 @@ export const checkObservationExists = async (
 };
 
 /**
- * Accepts a trace in a Clickhouse-ready format.
+ * Accepts a trace in a Datastore-ready format.
  * id, project_id, and timestamp must always be provided.
  */
 export const upsertObservation = async (observation: Partial<ObservationRecordReadType>) => {
@@ -481,7 +481,7 @@ export type ObservationsTableQueryResult = ObservationRecordReadType & {
   trace_tags?: string[];
   trace_name?: string;
   trace_user_id?: string;
-  // Tool counts for list view performance (ClickHouse numbers as strings)
+  // Tool counts for list view performance (Datastore numbers as strings)
   tool_definitions_count?: string;
   tool_calls_count?: string;
 };
@@ -694,11 +694,11 @@ const getObservationsTableInternal = async <T>(
   )`;
 
   // if we have default ordering by time, we order by toDate(o.start_time) first and then by
-  // o.start_time. This way, clickhouse is able to read more efficiently directly from disk without ordering
+  // o.start_time. This way, datastore is able to read more efficiently directly from disk without ordering
   const newDefaultOrder =
     orderBy?.column === "startTime" ? [{ column: "order_by_date", order: orderBy.order }, orderBy] : [orderBy ?? null];
 
-  const chOrderBy = orderByToClickhouseSql(newDefaultOrder, [
+  const chOrderBy = orderByToDatastoreSql(newDefaultOrder, [
     ...observationsTableUiColumnDefinitions,
     {
       uiTableName: "order_by_date",
@@ -1036,7 +1036,7 @@ export const getObservationsGroupedByPromptName = async (projectId: string, filt
 };
 
 export const getCostForTraces = async (projectId: string, timestamp: Date, traceIds: string[]) => {
-  // Wrapping the query in a CTE allows us to skip FINAL which allows Clickhouse to use skip indexes.
+  // Wrapping the query in a CTE allows us to skip FINAL which allows Datastore to use skip indexes.
   const query = `
     WITH selected_observations AS (
       SELECT o.total_cost as total_cost
@@ -1420,7 +1420,7 @@ export const getLatencyAndTotalCostForObservationsByTraces = async (
 };
 
 /**
- * Tuple type for observation data from ClickHouse groupArray
+ * Tuple type for observation data from Datastore groupArray
  */
 export type ObservationTuple = [
   id: string,
@@ -1689,7 +1689,7 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
     },
     datastoreConfig: {
       request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
-      clickhouse_settings: {
+      datastore_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
       },

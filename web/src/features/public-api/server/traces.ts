@@ -2,7 +2,7 @@ import {
   convertDateToDatastoreDateTime,
   queryDatastore,
   TRACE_TO_OBSERVATIONS_INTERVAL,
-  orderByToClickhouseSql,
+  orderByToDatastoreSql,
   type DateTimeFilter,
   convertDatastoreTracesListToDomain,
   type TraceRecordReadType,
@@ -62,7 +62,7 @@ async function buildTracesBaseQuery(
   params: Record<string, any>;
   fromTimeFilter?: DateTimeFilter | undefined;
 }> {
-  // ClickHouse query optimizations for List Traces API
+  // Datastore query optimizations for List Traces API
   const disableObservationsFinal = await shouldSkipObservationsFinal(props.projectId);
   const propagateObservationsTimeBounds = env.DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS === "true";
 
@@ -204,7 +204,7 @@ async function buildTracesBaseQuery(
   // This may still return stale information if the orderBy key was updated between traces or if a filter
   // applies only to a stale value.
   const chOrderBy =
-    (orderByToClickhouseSql(orderBy || [], orderByColumns) || "ORDER BY t.timestamp desc") +
+    (orderByToDatastoreSql(orderBy || [], orderByColumns) || "ORDER BY t.timestamp desc") +
     (shouldUseSkipIndexes ? ", t.event_ts desc" : "");
 
   const queryMiddle = `

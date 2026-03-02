@@ -34,7 +34,7 @@ export default class MigrateEventLogToBlobStorageRefTable implements IBackground
       };
     }
 
-    // Check if ClickHouse traces table exists
+    // Check if Datastore traces table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -45,7 +45,7 @@ export default class MigrateEventLogToBlobStorageRefTable implements IBackground
     ) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse event_log or blob_storage_file_log tables do not exist. Retrying in 10s...`);
+        logger.info(`Datastore event_log or blob_storage_file_log tables do not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -54,7 +54,7 @@ export default class MigrateEventLogToBlobStorageRefTable implements IBackground
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason: "ClickHouse event_log or blob_storage_file_log tables do not exist",
+        invalidReason: "Datastore event_log or blob_storage_file_log tables do not exist",
       };
     }
 

@@ -1,5 +1,5 @@
 import {
-  convertApiProvidedFilterToClickhouseFilter,
+  convertApiProvidedFilterToDatastoreFilter,
   deriveFilters,
   convertDatastoreScoreToDomain,
   StringFilter,
@@ -403,10 +403,7 @@ const determineTraceJoinRequirement = (fields: string[] | null | undefined, trac
   return { includeTrace, needsTraceJoin };
 };
 
-const generateScoreFilter = (
-  filter: ScoreQueryType,
-  scoreDataTypes?: readonly ScoreDataTypeType[],
-) => {
+const generateScoreFilter = (filter: ScoreQueryType, scoreDataTypes?: readonly ScoreDataTypeType[]) => {
   const scoresFilter = deriveFilters(
     filter,
     secureScoreFilterOptions,
@@ -436,7 +433,7 @@ const generateScoreFilter = (
     );
   }
 
-  const tracesFilter = convertApiProvidedFilterToClickhouseFilter(filter, secureTraceFilterOptions);
+  const tracesFilter = convertApiProvidedFilterToDatastoreFilter(filter, secureTraceFilterOptions);
 
   // If environment is specified AND there are other trace filters (userId, traceTags),
   // also apply the environment filter to traces. This ensures that when filtering by

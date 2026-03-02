@@ -174,7 +174,7 @@ export const scoresRouter = createTRPCRouter({
       if (!score) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: `No score with id ${input.scoreId} in project ${input.projectId} in Clickhouse`,
+          message: `No score with id ${input.scoreId} in project ${input.projectId} in Datastore`,
         });
       }
       return toDomainWithStringifiedMetadata(score);
@@ -455,9 +455,9 @@ export const scoresRouter = createTRPCRouter({
       });
 
       if (!datastoreTrace) {
-        logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
+        logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Datastore`);
         throw new ConsoleNotFoundError(
-          `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
+          `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Datastore`,
         );
       }
     } else if (inflatedParams.sessionId) {
@@ -465,10 +465,10 @@ export const scoresRouter = createTRPCRouter({
       const traceIdentifiers = await getTracesIdentifierForSession(input.projectId, inflatedParams.sessionId);
       if (traceIdentifiers.length === 0) {
         logger.error(
-          `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
+          `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Datastore`,
         );
         throw new ConsoleNotFoundError(
-          `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
+          `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Datastore`,
         );
       }
     }
@@ -560,7 +560,7 @@ export const scoresRouter = createTRPCRouter({
 
     let updatedScore: ScoreDomain | null | undefined = null;
 
-    // Fetch the current score from Clickhouse
+    // Fetch the current score from Datastore
     const score = await getScoreById({
       projectId: input.projectId,
       scoreId: input.id,
@@ -568,18 +568,18 @@ export const scoresRouter = createTRPCRouter({
     });
 
     if (!score) {
-      // Clickhouse is eventually consistent; if client provided timestamp, we can upsert along the ordering key
+      // Datastore is eventually consistent; if client provided timestamp, we can upsert along the ordering key
       if (!input.timestamp) {
         logger.warn(
-          `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse, and no timestamp provided`,
+          `No annotation score with id ${input.id} in project ${input.projectId} in Datastore, and no timestamp provided`,
         );
         throw new ConsoleNotFoundError(
-          `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
+          `No annotation score with id ${input.id} in project ${input.projectId} in Datastore`,
         );
       }
 
       logger.info(
-        `Score ${input.id} not found in ClickHouse for project ${input.projectId}, upserting with provided timestamp`,
+        `Score ${input.id} not found in Datastore for project ${input.projectId}, upserting with provided timestamp`,
       );
 
       // Validate config if provided
@@ -614,9 +614,9 @@ export const scoresRouter = createTRPCRouter({
         });
 
         if (!datastoreTrace) {
-          logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`);
+          logger.error(`No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Datastore`);
           throw new ConsoleNotFoundError(
-            `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Clickhouse`,
+            `No trace with id ${inflatedParams.traceId} in project ${input.projectId} in Datastore`,
           );
         }
       } else if (inflatedParams.sessionId) {
@@ -624,10 +624,10 @@ export const scoresRouter = createTRPCRouter({
         const traceIdentifiers = await getTracesIdentifierForSession(input.projectId, inflatedParams.sessionId);
         if (traceIdentifiers.length === 0) {
           logger.error(
-            `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
+            `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Datastore`,
           );
           throw new ConsoleNotFoundError(
-            `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Clickhouse`,
+            `No trace referencing session with id ${inflatedParams.sessionId} in project ${input.projectId} in Datastore`,
           );
         }
       }
@@ -803,16 +803,16 @@ export const scoresRouter = createTRPCRouter({
         scope: "scores:CUD",
       });
 
-      // Fetch the current score from Clickhouse
+      // Fetch the current score from Datastore
       const datastoreScore = await getScoreById({
         projectId: input.projectId,
         scoreId: input.id,
         source: ScoreSourceEnum.ANNOTATION,
       });
       if (!datastoreScore) {
-        logger.warn(`No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`);
+        logger.warn(`No annotation score with id ${input.id} in project ${input.projectId} in Datastore`);
         throw new ConsoleNotFoundError(
-          `No annotation score with id ${input.id} in project ${input.projectId} in Clickhouse`,
+          `No annotation score with id ${input.id} in project ${input.projectId} in Datastore`,
         );
       }
 
@@ -855,8 +855,8 @@ export const scoresRouter = createTRPCRouter({
       });
 
       if (!datastoreTrace) {
-        logger.error(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
-        throw new ConsoleNotFoundError(`No trace with id ${input.traceId} in project ${input.projectId} in Clickhouse`);
+        logger.error(`No trace with id ${input.traceId} in project ${input.projectId} in Datastore`);
+        throw new ConsoleNotFoundError(`No trace with id ${input.traceId} in project ${input.projectId} in Datastore`);
       }
 
       const datastoreScore = await searchExistingAnnotationScore(

@@ -444,7 +444,7 @@ export const env = createEnv({
     COMMERCE_SERVICE_TOKEN: z.string().optional(),
 
     // API Performance Flags
-    // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
+    // Enable Redis-based tracking of projects using OTEL API to optimize Datastore queries.
     // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
     HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z
       .enum(["true", "false"])

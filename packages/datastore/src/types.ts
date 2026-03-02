@@ -1,6 +1,6 @@
 /**
  * @hanzo/datastore — Native Hanzo Datastore types.
- * No external ClickHouse client dependencies. Uses HTTP API directly via fetch.
+ * No external dependencies. Uses HTTP API directly via fetch.
  * ZAP binary protocol support is planned as a future transport layer.
  */
 
@@ -18,7 +18,7 @@ export enum DatastoreLogLevel {
 }
 
 // ---------------------------------------------------------------------------
-// Settings passed per-query (maps to ClickHouse HTTP query params)
+// Settings passed per-query (maps to Datastore HTTP query params)
 // ---------------------------------------------------------------------------
 
 export interface DatastoreSettings {
@@ -55,7 +55,7 @@ export interface DatastoreClientConfig {
   /** Per-request HTTP headers */
   http_headers?: Record<string, string>;
   /** Default query settings */
-  clickhouse_settings?: DatastoreSettings;
+  datastore_settings?: DatastoreSettings;
   /** Keep-alive configuration */
   keep_alive?: { idle_socket_ttl?: number };
   max_open_connections?: number;

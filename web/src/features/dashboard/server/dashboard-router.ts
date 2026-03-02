@@ -1,12 +1,6 @@
 import { z } from "zod/v4";
-import {
-  createTRPCRouter,
-  protectedProjectProcedure,
-} from "@/src/server/api/trpc";
-import {
-  filterInterface,
-  sqlInterface,
-} from "@/src/server/api/services/sqlInterface";
+import { createTRPCRouter, protectedProjectProcedure } from "@/src/server/api/trpc";
+import { filterInterface, sqlInterface } from "@/src/server/api/services/sqlInterface";
 import { createHistogramData } from "@/src/features/dashboard/lib/score-analytics-utils";
 import { TRPCError } from "@trpc/server";
 import {
@@ -20,11 +14,7 @@ import {
   DashboardDefinitionSchema,
 } from "@hanzo/shared/src/server";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
-import {
-  type QueryType,
-  query as customQuery,
-  viewVersions,
-} from "@/src/features/query/types";
+import { type QueryType, query as customQuery, viewVersions } from "@/src/features/query/types";
 import { mapLegacyUiTableFilterToView } from "@/src/features/query/dashboardUiTableToViewMapping";
 import {
   paginationZod,
@@ -100,42 +90,33 @@ const LEGACY_CAMEL_CASE_MAP: Record<string, string> = {
  */
 function prepareScoresNumericV2Params(filter: FilterState) {
   const [from, to] = extractFromAndToTimestampsFromFilter(filter);
-  // Fallback to 2000-01-01 instead of epoch 0 — ClickHouse DateTimeFilter
+  // Fallback to 2000-01-01 instead of epoch 0 — Datastore DateTimeFilter
   // passes new Date(value).getTime() as the parameter, and the value 0
-  // (epoch) is rejected by ClickHouse's DateTime64(3) parameter parser.
+  // (epoch) is rejected by Datastore's DateTime64(3) parameter parser.
   const fromIso = from?.value
     ? new Date(from.value as Date).toISOString()
     : new Date("2000-01-01T00:00:00.000Z").toISOString();
-  const toIso = to?.value
-    ? new Date(to.value as Date).toISOString()
-    : new Date().toISOString();
-  const nonTimeFilters = filter.filter(
-    (f) => f.column !== "scoreTimestamp" && f.column !== "startTime",
-  );
+  const toIso = to?.value ? new Date(to.value as Date).toISOString() : new Date().toISOString();
+  const nonTimeFilters = filter.filter((f) => f.column !== "scoreTimestamp" && f.column !== "startTime");
   const normalizedFilters = nonTimeFilters.map((f) => {
     const mapped = LEGACY_CAMEL_CASE_MAP[f.column];
     return mapped ? { ...f, column: mapped } : f;
   });
 
-  const mappedFilters = mapLegacyUiTableFilterToView(
-    "scores-numeric",
-    normalizedFilters,
-  );
+  const mappedFilters = mapLegacyUiTableFilterToView("scores-numeric", normalizedFilters);
   return { fromIso, toIso, mappedFilters };
 }
 
 /**
- * Converts ClickHouse histogram(N)(...) output to the { chartData, chartLabels }
+ * Converts Datastore histogram(N)(...) output to the { chartData, chartLabels }
  * shape returned by createHistogramData (used by the NumericScoreHistogram component).
  *
- * ClickHouse histogram() returns an Array(Tuple(Float64, Float64, Float64))
+ * Datastore histogram() returns an Array(Tuple(Float64, Float64, Float64))
  * where each tuple is (lower_bound, upper_bound, count).
  * The result column is named "histogram_value" by QueryBuilder
  * (pattern: `${aggregation}_${alias}`).
  */
-function datastoreHistogramToChartData(
-  result: Array<Record<string, unknown>>,
-): {
+function datastoreHistogramToChartData(result: Array<Record<string, unknown>>): {
   chartData: Array<{ binLabel: string; count: number }>;
   chartLabels: string[];
 } {
@@ -144,9 +125,7 @@ function datastoreHistogramToChartData(
       `Expected histogram_value column in QueryBuilder result, got: ${Object.keys(result[0]).join(", ")}`,
     );
   }
-  const histogramBins = result[0]?.histogram_value as
-    | Array<[number, number, number]>
-    | undefined;
+  const histogramBins = result[0]?.histogram_value as Array<[number, number, number]> | undefined;
   if (!histogramBins?.length) return { chartData: [], chartLabels: [] };
 
   const round = (v: number) => parseFloat(v.toFixed(2));
@@ -170,14 +149,11 @@ async function getScoreAggregateV2({
   // scoreHistogram callers. For score-aggregate calls, the only camelCase
   // column is "scoreTimestamp" which is stripped as a time filter before
   // LEGACY_CAMEL_CASE_MAP runs, making the normalization step a no-op here.
-  const { fromIso, toIso, mappedFilters } =
-    prepareScoresNumericV2Params(filter);
+  const { fromIso, toIso, mappedFilters } = prepareScoresNumericV2Params(filter);
 
   // Non-time filters in their original form — used for categorical query
   // filter mapping and value filter detection below.
-  const nonTimeFilters = filter.filter(
-    (f) => f.column !== "scoreTimestamp" && f.column !== "startTime",
-  );
+  const nonTimeFilters = filter.filter((f) => f.column !== "scoreTimestamp" && f.column !== "startTime");
 
   const baseQuery = {
     dimensions: [{ field: "name" }, { field: "source" }, { field: "dataType" }],
@@ -198,30 +174,24 @@ async function getScoreAggregateV2({
   };
 
   // The scores-categorical view has no "value" dimension, so we handle value
-  // filters manually: categorical scores always have value=0 in ClickHouse, so
+  // filters manually: categorical scores always have value=0 in Datastore, so
   // value=0 should include all categoricals, while any other value filter
   // (e.g. value=1) should exclude them. This matches v1 behavior where numeric
   // and categorical scores are queried together in a single SQL statement.
   const valueFilter = nonTimeFilters.find((f) => f.column === "value");
-  const skipCategorical =
-    valueFilter && "value" in valueFilter && valueFilter.value !== 0;
+  const skipCategorical = valueFilter && "value" in valueFilter && valueFilter.value !== 0;
   const categoricalFilters = nonTimeFilters.filter((f) => f.column !== "value");
 
   const categoricalQuery: QueryType = {
     ...baseQuery,
     view: "scores-categorical",
     metrics: [{ measure: "count", aggregation: "sum" }],
-    filters: mapLegacyUiTableFilterToView(
-      "scores-categorical",
-      categoricalFilters,
-    ),
+    filters: mapLegacyUiTableFilterToView("scores-categorical", categoricalFilters),
   };
 
   const [numericResults, categoricalResults] = await Promise.all([
     executeQuery(projectId, numericQuery, "v2"),
-    skipCategorical
-      ? Promise.resolve([])
-      : executeQuery(projectId, categoricalQuery, "v2"),
+    skipCategorical ? Promise.resolve([]) : executeQuery(projectId, categoricalQuery, "v2"),
   ]);
 
   const merged = [
@@ -279,10 +249,7 @@ async function getObservationsByTypeV2(params: {
 
   const nonDatetimeFilters = filter.filter((f) => f.type !== "datetime");
   // Apply standard uiTableName → view field mapping first.
-  const standardMapped = mapLegacyUiTableFilterToView(
-    "observations",
-    nonDatetimeFilters,
-  );
+  const standardMapped = mapLegacyUiTableFilterToView("observations", nonDatetimeFilters);
   // Then patch any remaining uiTableId-format columns.
   const viewFilters = standardMapped.map((f) => {
     const viewField = CHART_FILTER_ID_TO_VIEW_FIELD[f.column];
@@ -332,9 +299,7 @@ export const dashboardRouter = createTRPCRouter({
       const [from, to] = extractFromAndToTimestampsFromFilter(input.filter);
 
       if (from.value && to.value && from.value > to.value) {
-        logger.error(
-          `from > to, returning empty result: from=${from}, to=${to}`,
-        );
+        logger.error(`from > to, returning empty result: from=${from}, to=${to}`);
         return [];
       }
 
@@ -346,10 +311,7 @@ export const dashboardRouter = createTRPCRouter({
               filter: input.filter ?? [],
             });
           }
-          const scores = await getScoreAggregate(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const scores = await getScoreAggregate(input.projectId, input.filter ?? []);
           return scores.map((row) => ({
             scoreName: row.name,
             scoreSource: row.source,
@@ -366,10 +328,7 @@ export const dashboardRouter = createTRPCRouter({
               metricMeasure: "usageByType",
             });
           }
-          const rowsObsType = await getObservationUsageByTypeByTime(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const rowsObsType = await getObservationUsageByTypeByTime(input.projectId, input.filter ?? []);
           return rowsObsType as DatabaseRow[];
         case "observations-cost-by-type-timeseries":
           if (input.version === "v2") {
@@ -380,10 +339,7 @@ export const dashboardRouter = createTRPCRouter({
               metricMeasure: "costByType",
             });
           }
-          const rowsObsCostByType = await getObservationCostByTypeByTime(
-            input.projectId,
-            input.filter ?? [],
-          );
+          const rowsObsCostByType = await getObservationCostByTypeByTime(input.projectId, input.filter ?? []);
           return rowsObsCostByType as DatabaseRow[];
         default:
           throw new TRPCError({
@@ -402,11 +358,9 @@ export const dashboardRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       if (input.version === "v2") {
-        // v2: ClickHouse histogram() aggregates all matching rows server-side.
+        // v2: Datastore histogram() aggregates all matching rows server-side.
         // `input.limit` is ignored — no row-level cap is needed.
-        const { fromIso, toIso, mappedFilters } = prepareScoresNumericV2Params(
-          input.filter ?? [],
-        );
+        const { fromIso, toIso, mappedFilters } = prepareScoresNumericV2Params(input.filter ?? []);
         const histogramQuery: QueryType = {
           view: "scores-numeric",
           dimensions: [],
@@ -418,19 +372,11 @@ export const dashboardRouter = createTRPCRouter({
           orderBy: null,
           chartConfig: { type: "HISTOGRAM", bins: 10 },
         };
-        const result = await executeQuery(
-          input.projectId,
-          histogramQuery,
-          "v2",
-        );
+        const result = await executeQuery(input.projectId, histogramQuery, "v2");
         return datastoreHistogramToChartData(result);
       }
 
-      const data = await getNumericScoreHistogram(
-        input.projectId,
-        input.filter ?? [],
-        input.limit ?? 10000,
-      );
+      const data = await getNumericScoreHistogram(input.projectId, input.filter ?? [], input.limit ?? 10000);
       return createHistogramData(data);
     }),
   executeQuery: protectedProjectProcedure
@@ -443,12 +389,7 @@ export const dashboardRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       try {
-        return executeQuery(
-          input.projectId,
-          input.query as QueryType,
-          input.version,
-          input.version === "v2",
-        );
+        return executeQuery(input.projectId, input.query as QueryType, input.version, input.version === "v2");
       } catch (error) {
         if (error instanceof InvalidRequestError) {
           logger.warn("Bad request in query execution", error, {
@@ -465,67 +406,58 @@ export const dashboardRouter = createTRPCRouter({
       }
     }),
 
-  allDashboards: protectedProjectProcedure
-    .input(ListDashboardsInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
+  allDashboards: protectedProjectProcedure.input(ListDashboardsInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const result = await DashboardService.listDashboards({
+      projectId: input.projectId,
+      limit: input.limit,
+      page: input.page,
+      orderBy: input.orderBy,
+    });
+
+    return result;
+  }),
+
+  getDashboard: protectedProjectProcedure.input(GetDashboardInput).query(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:read",
+    });
+
+    const dashboard = await DashboardService.getDashboard(input.dashboardId, input.projectId);
+
+    if (!dashboard) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Dashboard not found",
       });
+    }
 
-      const result = await DashboardService.listDashboards({
-        projectId: input.projectId,
-        limit: input.limit,
-        page: input.page,
-        orderBy: input.orderBy,
-      });
+    return dashboard;
+  }),
 
-      return result;
-    }),
+  createDashboard: protectedProjectProcedure.input(CreateDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
 
-  getDashboard: protectedProjectProcedure
-    .input(GetDashboardInput)
-    .query(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:read",
-      });
+    const dashboard = await DashboardService.createDashboard(
+      input.projectId,
+      input.name,
+      input.description,
+      ctx.session.user.id,
+    );
 
-      const dashboard = await DashboardService.getDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
-
-      if (!dashboard) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Dashboard not found",
-        });
-      }
-
-      return dashboard;
-    }),
-
-  createDashboard: protectedProjectProcedure
-    .input(CreateDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
-      });
-
-      const dashboard = await DashboardService.createDashboard(
-        input.projectId,
-        input.name,
-        input.description,
-        ctx.session.user.id,
-      );
-
-      return dashboard;
-    }),
+    return dashboard;
+  }),
 
   updateDashboardDefinition: protectedProjectProcedure
     .input(UpdateDashboardDefinitionInput)
@@ -546,59 +478,52 @@ export const dashboardRouter = createTRPCRouter({
       return dashboard;
     }),
 
-  updateDashboardMetadata: protectedProjectProcedure
-    .input(UpdateDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
+  updateDashboardMetadata: protectedProjectProcedure.input(UpdateDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
+
+    const dashboard = await DashboardService.updateDashboard(
+      input.dashboardId,
+      input.projectId,
+      input.name,
+      input.description,
+      ctx.session.user.id,
+    );
+
+    return dashboard;
+  }),
+
+  cloneDashboard: protectedProjectProcedure.input(CloneDashboardInput).mutation(async ({ ctx, input }) => {
+    throwIfNoProjectAccess({
+      session: ctx.session,
+      projectId: input.projectId,
+      scope: "dashboards:CUD",
+    });
+
+    // Get the source dashboard
+    const sourceDashboard = await DashboardService.getDashboard(input.dashboardId, input.projectId);
+
+    if (!sourceDashboard) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Source dashboard not found",
       });
+    }
 
-      const dashboard = await DashboardService.updateDashboard(
-        input.dashboardId,
-        input.projectId,
-        input.name,
-        input.description,
-        ctx.session.user.id,
-      );
+    // Create a new dashboard with the same data but modified name
+    const clonedDashboard = await DashboardService.createDashboard(
+      input.projectId,
+      `${sourceDashboard.name} (Clone)`,
+      sourceDashboard.description,
+      ctx.session.user.id,
+      sourceDashboard.definition,
+    );
 
-      return dashboard;
-    }),
-
-  cloneDashboard: protectedProjectProcedure
-    .input(CloneDashboardInput)
-    .mutation(async ({ ctx, input }) => {
-      throwIfNoProjectAccess({
-        session: ctx.session,
-        projectId: input.projectId,
-        scope: "dashboards:CUD",
-      });
-
-      // Get the source dashboard
-      const sourceDashboard = await DashboardService.getDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
-
-      if (!sourceDashboard) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Source dashboard not found",
-        });
-      }
-
-      // Create a new dashboard with the same data but modified name
-      const clonedDashboard = await DashboardService.createDashboard(
-        input.projectId,
-        `${sourceDashboard.name} (Clone)`,
-        sourceDashboard.description,
-        ctx.session.user.id,
-        sourceDashboard.definition,
-      );
-
-      return clonedDashboard;
-    }),
+    return clonedDashboard;
+  }),
 
   updateDashboardFilters: protectedProjectProcedure
     .input(UpdateDashboardFiltersInput)
@@ -634,10 +559,7 @@ export const dashboardRouter = createTRPCRouter({
         scope: "dashboards:CUD",
       });
 
-      await DashboardService.deleteDashboard(
-        input.dashboardId,
-        input.projectId,
-      );
+      await DashboardService.deleteDashboard(input.dashboardId, input.projectId);
 
       return { success: true };
     }),

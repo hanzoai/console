@@ -4,8 +4,8 @@ import { sessionCols } from "../tableMappings/mapSessionTable";
 import { FilterState } from "../../types";
 import { convertDateToDatastoreDateTime } from "../datastore/client";
 import { measureAndReturn } from "../datastore/measureAndReturn";
-import { DateTimeFilter, FilterList, orderByToClickhouseSql } from "../queries";
-import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { DateTimeFilter, FilterList, orderByToDatastoreSql } from "../queries";
+import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/datastore-sql/factory";
 import { TRACE_TO_OBSERVATIONS_INTERVAL, queryDatastore } from "../repositories";
 
 export type SessionDataReturnType = {
@@ -264,7 +264,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
       project_id, session_id
   )`;
 
-  // We use deduplicated traces and observations CTEs instead of final to be able to use Skip indices in Clickhouse.
+  // We use deduplicated traces and observations CTEs instead of final to be able to use Skip indices in Datastore.
   const query = `
         WITH ${select === "metrics" || requiresScoresJoin ? `${scoresCte},` : ""}
         deduplicated_traces AS (
@@ -316,7 +316,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
                   selectMetrics
                     ? `,
                       sum(o.obs_count) as total_observations,
-                      -- Use minIf, because ClickHouse fills 1970-01-01 on left joins. We assume that no
+                      -- Use minIf, because Datastore fills 1970-01-01 on left joins. We assume that no
                       -- LLM session started on that date so this behaviour should yield better results.
                       date_diff('second', minIf(min_start_time, min_start_time > '1970-01-01'), max(max_end_time)) as duration,
                       sumMap(o.sum_usage_details) as session_usage_details,
@@ -351,7 +351,7 @@ const getSessionsTableGeneric = async <T>(props: FetchSessionsTableProps) => {
         SELECT ${sqlSelect}
         FROM session_data s
         WHERE ${tracesFilterRes.query ? tracesFilterRes.query : ""}
-        ${orderByToClickhouseSql(orderBy ?? null, sessionCols)}
+        ${orderByToDatastoreSql(orderBy ?? null, sessionCols)}
         ${limit !== undefined && page !== undefined ? `LIMIT {limit: Int32} OFFSET {offset: Int32}` : ""}
         `;
 

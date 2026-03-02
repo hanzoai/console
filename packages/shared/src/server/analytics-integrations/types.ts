@@ -1,5 +1,5 @@
 // Standard analytics event types for analytics integrations (PostHog, Mixpanel, etc.)
-// These represent the raw data structure from ClickHouse queries
+// These represent the raw data structure from Datastore queries
 
 export type AnalyticsTraceEvent = {
   console_id: unknown;

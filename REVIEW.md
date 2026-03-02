@@ -2,14 +2,14 @@
 
 ## Database Migrations
 
-### ClickHouse
+### Datastore
 
-- ClickHouse migrations in the `packages/shared/clickhouse/migrations/clustered` directory should include `ON CLUSTER default` and should use `Replicated` merge tree table types.
+- Datastore migrations in the `packages/shared/datastore/migrations/clustered` directory should include `ON CLUSTER default` and should use `Replicated` merge tree table types.
   - E.g. `ReplacingMergeTree` is likely an error while `ReplicatedReplacingMergeTree` would be correct in most cases.
-- ClickHouse migrations in the `packages/shared/clickhouse/migrations/unclustered` directory must not include `ON CLUSTER` statements and must not use `Replicated` merge tree table types.
-- Migrations in `packages/shared/clickhouse/migrations/clustered` should match their counterparts in `packages/shared/clickhouse/migrations/unclustered` aside from the restrictions listed above.
-- When adding new indexes on ClickHouse, ensure that there is a corresponding `MATERIALIZE INDEX` statement in the same migration. The materialization can use `SETTINGS mutations_sync = 2` if they operate on smaller tables, but may timeout otherwise.
-- All ClickHouse queries on project-scoped tables (traces, observations, scores, events, sessions, etc.) must include `WHERE project_id = {projectId: String}` filter to ensure proper tenant isolation and that queries only access data from the intended project.
+- Datastore migrations in the `packages/shared/datastore/migrations/unclustered` directory must not include `ON CLUSTER` statements and must not use `Replicated` merge tree table types.
+- Migrations in `packages/shared/datastore/migrations/clustered` should match their counterparts in `packages/shared/datastore/migrations/unclustered` aside from the restrictions listed above.
+- When adding new indexes on Datastore, ensure that there is a corresponding `MATERIALIZE INDEX` statement in the same migration. The materialization can use `SETTINGS mutations_sync = 2` if they operate on smaller tables, but may timeout otherwise.
+- All Datastore queries on project-scoped tables (traces, observations, scores, events, sessions, etc.) must include `WHERE project_id = {projectId: String}` filter to ensure proper tenant isolation and that queries only access data from the intended project.
 - For operations on the `events` table, you must never use the `FINAL` keyword as it kills performance. `events` is built so that `FINAL` is never required.
 
 ### Postgres

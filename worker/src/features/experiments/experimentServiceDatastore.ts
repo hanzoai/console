@@ -66,7 +66,7 @@ async function processItem(
   datasetItem: DatasetItemDomain & { input: Prisma.JsonObject },
   config: PromptExperimentConfig,
 ): Promise<{ success: boolean }> {
-  // Use unified trace ID to avoid creating duplicate traces between PostgreSQL and ClickHouse
+  // Use unified trace ID to avoid creating duplicate traces between PostgreSQL and Datastore
   const newTraceId = createW3CTraceId(`${config.runId}-${datasetItem.id}`);
   const runItemId = v4();
   const timestamp = new Date().toISOString();
@@ -264,7 +264,7 @@ export const createExperimentJobDatastore = async ({
   event: z.infer<typeof ExperimentCreateEventSchema>;
 }) => {
   const startTime = Date.now();
-  logger.info("Processing experiment create job with ClickHouse batching", event);
+  logger.info("Processing experiment create job with Datastore batching", event);
 
   const { datasetId, projectId, runId } = event;
 
@@ -317,7 +317,7 @@ export const createExperimentJobDatastore = async ({
   return { success: true };
 };
 
-// In error cases (config errors), we always create traces in ClickHouse execution path since PostgreSQL execution
+// In error cases (config errors), we always create traces in Datastore execution path since PostgreSQL execution
 // simply updates dataset run metadata and has never created error-level traces. This is new behavior we have introduced.
 // We accept this inconsistency in writes until the DRI migration had been completed.
 async function createAllDatasetRunItemsWithConfigError(

@@ -13,7 +13,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 
-async function getClickhouseCount(table: string, projectId: string): Promise<number> {
+async function getDatastoreCount(table: string, projectId: string): Promise<number> {
   const result = await queryDatastore<{ count: number }>({
     query: `SELECT count() as count FROM ${table} FINAL WHERE project_id = {projectId: String}`,
     params: { projectId },
@@ -46,14 +46,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify trace exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify trace was deleted (10 days > 7 days retention)
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(0);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(0);
     });
 
     it("should NOT delete traces within retention period", async () => {
@@ -77,14 +77,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify trace exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify trace was NOT deleted (5 days < 7 days retention)
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
     });
 
     it("should handle projects with different retention times independently", async () => {
@@ -131,17 +131,17 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify both have data before deletion
-      expect(await getClickhouseCount(TABLE, projectA)).toBe(2);
-      expect(await getClickhouseCount(TABLE, projectB)).toBe(2);
+      expect(await getDatastoreCount(TABLE, projectA)).toBe(2);
+      expect(await getDatastoreCount(TABLE, projectB)).toBe(2);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Only now trace should remain in A
-      expect(await getClickhouseCount(TABLE, projectA)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectA)).toBe(1);
       // Only tenDaysAgo trace should remain in B
-      expect(await getClickhouseCount(TABLE, projectB)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectB)).toBe(1);
     });
 
     it("should not affect projects with retention disabled (null)", async () => {
@@ -162,14 +162,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify trace exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify trace was NOT deleted (no retention policy)
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
     });
 
     it("should not affect projects with retention set to 0", async () => {
@@ -193,14 +193,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify trace exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify trace was NOT deleted (retention disabled)
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
     });
 
     it("should not affect soft-deleted projects", async () => {
@@ -231,7 +231,7 @@ describe("BatchDataRetentionCleaner", () => {
       await cleaner.processBatch();
 
       // Verify trace was NOT deleted (project is soft-deleted, handled by BatchProjectCleaner)
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
     });
   });
 
@@ -259,14 +259,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify observation exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify observation was deleted
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(0);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(0);
     });
   });
 
@@ -294,14 +294,14 @@ describe("BatchDataRetentionCleaner", () => {
       ]);
 
       // Verify score exists before deletion
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(1);
 
       // Run processBatch
       const cleaner = new BatchDataRetentionCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify score was deleted
-      expect(await getClickhouseCount(TABLE, projectId)).toBe(0);
+      expect(await getDatastoreCount(TABLE, projectId)).toBe(0);
     });
   });
 });

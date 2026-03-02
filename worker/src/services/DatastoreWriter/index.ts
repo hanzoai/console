@@ -26,7 +26,7 @@ export class DatastoreWriter {
   batchSize: number;
   writeInterval: number;
   maxAttempts: number;
-  queue: ClickhouseQueue;
+  queue: DatastoreQueue;
 
   isIntervalFlushInProgress: boolean;
   intervalId: NodeJS.Timeout | null = null;
@@ -100,10 +100,10 @@ export class DatastoreWriter {
   private async flushAll(fullQueue = false) {
     return instrumentAsync(
       {
-        name: "write-to-clickhouse",
+        name: "write-to-datastore",
       },
       async () => {
-        recordIncrement("hanzo.queue.clickhouse_writer.request");
+        recordIncrement("hanzo.queue.datastore_writer.request");
         await Promise.all([
           this.flush(TableName.Traces, fullQueue),
           this.flush(TableName.TracesNull, fullQueue),
@@ -135,7 +135,7 @@ export class DatastoreWriter {
     const errorMessage = (error as Error).message?.toLowerCase() || "";
 
     return (
-      // Check for ClickHouse size errors
+      // Check for Datastore size errors
       errorMessage.includes("size of json object") &&
       errorMessage.includes("extremely large") &&
       errorMessage.includes("expected not greater than")
@@ -249,7 +249,7 @@ export class DatastoreWriter {
     // Log wait time
     queueItems.forEach((item) => {
       const waitTime = Date.now() - item.createdAt;
-      recordHistogram("hanzo.queue.clickhouse_writer.wait_time", waitTime, {
+      recordHistogram("hanzo.queue.datastore_writer.wait_time", waitTime, {
         unit: "milliseconds",
       });
     });
@@ -269,7 +269,7 @@ export class DatastoreWriter {
 
       await backOff(
         async () =>
-          this.writeToClickhouse({
+          this.writeToDatastore({
             table: tableName,
             records: recordsToWrite,
           }),
@@ -282,20 +282,20 @@ export class DatastoreWriter {
 
             if (isRetryable) {
               logger.warn(
-                `ClickHouse Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): ${error.message}`,
+                `Datastore Writer failed with retryable error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): ${error.message}`,
                 {
                   error: error.message,
                   attemptNumber,
                 },
               );
-              currentSpan?.addEvent("clickhouse-query-retry", {
+              currentSpan?.addEvent("datastore-query-retry", {
                 "retry.attempt": attemptNumber,
                 "retry.error": error.message,
               });
               return true;
             } else if (isStringLengthError) {
               logger.warn(
-                `ClickHouse Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Splitting batch and retrying`,
+                `Datastore Writer failed with string length error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Splitting batch and retrying`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -314,7 +314,7 @@ export class DatastoreWriter {
                 entityQueue.unshift(...requeueItems);
               }
 
-              currentSpan?.addEvent("clickhouse-query-split-retry", {
+              currentSpan?.addEvent("datastore-query-split-retry", {
                 "retry.attempt": attemptNumber,
                 "retry.error": error.message,
                 "split.retry_count": retryItems.length,
@@ -323,7 +323,7 @@ export class DatastoreWriter {
               return true;
             } else if (isSizeError && !hasBeenTruncated) {
               logger.warn(
-                `ClickHouse Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
+                `Datastore Writer failed with size error for ${tableName} (attempt ${attemptNumber}/${env.DATASTORE_INGESTION_MAX_ATTEMPTS}): Truncating oversized records and retrying`,
                 {
                   error: error.message,
                   attemptNumber,
@@ -334,14 +334,14 @@ export class DatastoreWriter {
               recordsToWrite = recordsToWrite.map((record) => this.truncateOversizedRecord(tableName, record));
               hasBeenTruncated = true;
 
-              currentSpan?.addEvent("clickhouse-query-truncate-retry", {
+              currentSpan?.addEvent("datastore-query-truncate-retry", {
                 "retry.attempt": attemptNumber,
                 "retry.error": error.message,
                 truncated: true,
               });
               return true;
             } else {
-              logger.error(`ClickHouse query failed with non-retryable error: ${error.message}`, {
+              logger.error(`Datastore query failed with non-retryable error: ${error.message}`, {
                 error: error.message,
               });
               return false;
@@ -354,7 +354,7 @@ export class DatastoreWriter {
       );
 
       // Log processing time
-      recordHistogram("hanzo.queue.clickhouse_writer.processing_time", Date.now() - processingStartTime, {
+      recordHistogram("hanzo.queue.datastore_writer.processing_time", Date.now() - processingStartTime, {
         unit: "milliseconds",
       });
 
@@ -362,7 +362,7 @@ export class DatastoreWriter {
         `Flushed ${queueItems.length} records to Datastore ${tableName}. New queue length: ${entityQueue.length}`,
       );
 
-      recordGauge("ingestion_clickhouse_insert_queue_length", entityQueue.length, {
+      recordGauge("ingestion_datastore_insert_queue_length", entityQueue.length, {
         unit: "records",
         entityType: tableName,
       });
@@ -379,7 +379,7 @@ export class DatastoreWriter {
           });
         } else {
           // TODO - Add to a dead letter queue in Redis rather than dropping
-          recordIncrement("hanzo.queue.clickhouse_writer.error");
+          recordIncrement("hanzo.queue.datastore_writer.error");
           droppedCount++;
         }
       });
@@ -407,7 +407,7 @@ export class DatastoreWriter {
     }
   }
 
-  private async writeToClickhouse<T extends TableName>(params: {
+  private async writeToDatastore<T extends TableName>(params: {
     table: T;
     records: RecordInsertType<T>[];
   }): Promise<void> {
@@ -418,24 +418,24 @@ export class DatastoreWriter {
         table: params.table,
         format: "JSONEachRow",
         values: params.records,
-        clickhouse_settings: {
+        datastore_settings: {
           log_comment: JSON.stringify({
             feature: "ingestion",
             type: params.table,
-            operation_name: "writeToClickhouse",
+            operation_name: "writeToDatastore",
             projectId: params.records.length > 0 ? params.records[0].project_id : undefined,
           }),
         },
       })
       .catch((err) => {
-        logger.error(`DatastoreWriter.writeToClickhouse ${err}`);
+        logger.error(`DatastoreWriter.writeToDatastore ${err}`);
 
         throw err;
       });
 
-    logger.debug(`DatastoreWriter.writeToClickhouse: ${Date.now() - startTime} ms`);
+    logger.debug(`DatastoreWriter.writeToDatastore: ${Date.now() - startTime} ms`);
 
-    recordGauge("ingestion_clickhouse_insert", params.records.length);
+    recordGauge("ingestion_datastore_insert", params.records.length);
   }
 }
 
@@ -468,7 +468,7 @@ type RecordInsertType<T extends TableName> = T extends TableName.Scores
                 ? EventRecordInsertType
                 : never;
 
-type ClickhouseQueue = {
+type DatastoreQueue = {
   [T in TableName]: DatastoreWriterQueueItem<T>[];
 };
 

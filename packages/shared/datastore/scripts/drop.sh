@@ -24,4 +24,4 @@ else
     DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
 fi
 # Execute the drop command
-migrate -source file://clickhouse/migrations -database "$DATABASE_URL" drop
+migrate -source file://datastore/migrations -database "$DATABASE_URL" drop

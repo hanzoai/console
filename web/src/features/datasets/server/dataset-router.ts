@@ -13,7 +13,7 @@ import {
   isPresent,
   TracingSearchType,
   timeFilter,
-  isClickhouseFilterColumn,
+  isDatastoreFilterColumn,
   optionalPaginationZod,
   ConsoleConflictError,
   ConsoleNotFoundError,
@@ -94,18 +94,18 @@ const buildPathPrefixFilter = (pathPrefix?: string): Prisma.Sql => {
 };
 
 /**
- * Determines whether the given filters require Dataset Run Items (DRI) metrics from ClickHouse.
+ * Determines whether the given filters require Dataset Run Items (DRI) metrics from Datastore.
  *
  * @param filters - Array of filter conditions to evaluate
  * @returns true if any filter requires DRI metrics, false if using basic dataset run data is sufficient
  */
-export const requiresClickhouseLookups = (filters: FilterState): boolean => {
+export const requiresDatastoreLookups = (filters: FilterState): boolean => {
   if (filters.length === 0) {
     return false;
   }
 
   return filters.some((filter) => {
-    return isClickhouseFilterColumn(filter.column);
+    return isDatastoreFilterColumn(filter.column);
   });
 };
 
@@ -485,7 +485,7 @@ export const datasetRouter = createTRPCRouter({
     }),
   runsByDatasetId: protectedProjectProcedure.input(datasetRunsTableSchema).query(async ({ input, ctx }) => {
     // Use helper function to determine if we need DRI metrics
-    if (!requiresClickhouseLookups(input.filter ?? [])) {
+    if (!requiresDatastoreLookups(input.filter ?? [])) {
       const [runs, totalRuns] = await Promise.all([
         await ctx.prisma.datasetRuns.findMany({
           where: {
@@ -560,7 +560,7 @@ export const datasetRouter = createTRPCRouter({
       return {
         id: run.id,
         name: run.name,
-        // Use ClickHouse metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
+        // Use Datastore metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
         countRunItems: run.countRunItems ?? 0,
         avgTotalCost: run.avgTotalCost ?? null,
         totalCost: run.totalCost ?? null,
@@ -1413,7 +1413,7 @@ export const datasetRouter = createTRPCRouter({
         offset: page * limit,
       });
 
-      // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+      // Step 2: Given dataset item ids, lookup dataset run items in datastore
       // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
       const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
         projectId: input.projectId,
@@ -1457,7 +1457,7 @@ export const datasetRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { filterByRun, datasetId, projectId, runIds } = input;
 
-      // Rely on clickhouse to return only dataset item count that match the filters
+      // Rely on datastore to return only dataset item count that match the filters
       const datasetItemCount = await getDatasetItemsWithRunDataCount({
         projectId,
         datasetId,

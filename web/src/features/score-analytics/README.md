@@ -49,7 +49,7 @@ Score Analytics provides a comprehensive dashboard for analyzing score data with
 ├── /lib/                                # Utility functions and transformers
 │   ├── scoreAnalyticsTransformers.ts   # Pure transformation functions
 │   ├── analytics-url-state.ts          # URL state management hook
-│   ├── clickhouse-time-utils.ts        # ClickHouse time interval utilities
+│   ├── datastore-time-utils.ts        # Datastore time interval utilities
 │   ├── color-scales.ts                 # Color scheme generation
 │   ├── heatmap-utils.ts                # Heatmap data processing
 │   ├── score-formatter.ts              # Score value formatting
@@ -215,7 +215,7 @@ export function ExampleChart({ data, dataType, score1Name, score2Name }: ChartPr
 **Purpose**: Helper functions for specific domains:
 
 - **`analytics-url-state.ts`**: Manages URL query parameters for filters and selections
-- **`clickhouse-time-utils.ts`**: ClickHouse interval normalization and time bucketing
+- **`datastore-time-utils.ts`**: Datastore interval normalization and time bucketing
 - **`color-scales.ts`**: Generates consistent color schemes for charts
 - **`heatmap-utils.ts`**: Heatmap-specific data processing and calculations
 - **`score-formatter.ts`**: Formats score values for display
@@ -235,7 +235,7 @@ export function ExampleChart({ data, dataType, score1Name, score2Name }: ChartPr
   - Adaptive FINAL optimization (skipped for >70k scores)
   - Returns: statistics, distributions, time series, heatmap data
 
-**ClickHouse Optimizations**:
+**Datastore Optimizations**:
 - Uses `cityHash64` for consistent sampling
 - Dynamic FINAL application based on dataset size
 - Proper time interval alignment (ISO 8601 weeks, calendar months)
@@ -365,7 +365,7 @@ if (isSingleScoreColors(colors)) {
 - All utilities: `/web/src/features/score-analytics/lib/`
   - `scoreAnalyticsTransformers.ts` - Pure transformation functions
   - `analytics-url-state.ts` - URL state management
-  - `clickhouse-time-utils.ts` - ClickHouse time utilities
+  - `datastore-time-utils.ts` - Datastore time utilities
   - `color-scales.ts` - Color scheme generation
   - `heatmap-utils.ts` - Heatmap processing
   - `score-formatter.ts` - Score formatting

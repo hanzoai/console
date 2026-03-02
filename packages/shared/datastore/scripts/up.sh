@@ -5,8 +5,30 @@
 
 # Check if DATASTORE_URL is configured
 if [ -z "${DATASTORE_URL}" ]; then
-  echo "Info: DATASTORE_URL not configured, skipping migration."
-  exit 0
+  echo "Error: DATASTORE_URL is not configured."
+  echo "Please set DATASTORE_URL in your environment variables."
+  exit 1
+fi
+
+# Check if DATASTORE_MIGRATION_URL is configured
+if [ -z "${DATASTORE_MIGRATION_URL}" ]; then
+  echo "Error: DATASTORE_MIGRATION_URL is not configured."
+  echo "Please set DATASTORE_MIGRATION_URL in your environment variables."
+  exit 1
+fi
+
+# Check if DATASTORE_USER is set
+if [ -z "${DATASTORE_USER}" ]; then
+  echo "Error: DATASTORE_USER is not set."
+  echo "Please set DATASTORE_USER in your environment variables."
+  exit 1
+fi
+
+# Check if DATASTORE_PASSWORD is set
+if [ -z "${DATASTORE_PASSWORD}" ]; then
+  echo "Error: DATASTORE_PASSWORD is not set."
+  echo "Please set DATASTORE_PASSWORD in your environment variables."
+  exit 1
 fi
 
 # Check if golang-migrate is installed
@@ -36,23 +58,15 @@ if [ "$DATASTORE_CLUSTER_ENABLED" == "false" ] ; then
       DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
   fi
 
-  # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.
-  if [ "$SKIP_CONFIRM" = "1" ] || [ "$SKIP_CONFIRM" = "true" ]; then
-    printf 'y\n' | migrate -source file://clickhouse/migrations/unclustered -database "$DATABASE_URL" down
-  else
-    migrate -source file://clickhouse/migrations/unclustered -database "$DATABASE_URL" down
-  fi
+  # Execute the up command
+  migrate -source file://datastore/migrations/unclustered -database "$DATABASE_URL" up
 else
-  if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
+if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
       DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   else
       DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   fi
 
-  # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.
-  if [ "$SKIP_CONFIRM" = "1" ] || [ "$SKIP_CONFIRM" = "true" ]; then
-    printf 'y\n' | migrate -source file://clickhouse/migrations/clustered -database "$DATABASE_URL" down
-  else
-    migrate -source file://clickhouse/migrations/clustered -database "$DATABASE_URL" down
-  fi
+  # Execute the up command
+  migrate -source file://datastore/migrations/clustered -database "$DATABASE_URL" up
 fi

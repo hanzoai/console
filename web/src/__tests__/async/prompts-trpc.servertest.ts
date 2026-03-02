@@ -38,7 +38,7 @@ async function prepare() {
         },
       ],
       featureFlags: {
-        excludeClickhouseRead: false,
+        excludeDatastoreRead: false,
         templateFlag: true,
         v4BetaToggleVisible: false,
       },

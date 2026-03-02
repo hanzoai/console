@@ -1,4 +1,4 @@
-CREATE TABLE dataset_run_items ON CLUSTER default (
+CREATE TABLE dataset_run_items_rmt (
     -- primary identifiers
     `id` String,
     `project_id` String,
@@ -26,7 +26,7 @@ CREATE TABLE dataset_run_items ON CLUSTER default (
     `dataset_item_expected_output` Nullable(String) CODEC(ZSTD(3)), -- json
     `dataset_item_metadata` Map(LowCardinality(String), String),
 
-    -- clickhouse engine fields
+    -- datastore engine fields
     `event_ts` DateTime64(3),
     `is_deleted` UInt8,
 

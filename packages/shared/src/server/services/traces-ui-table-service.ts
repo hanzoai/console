@@ -1,10 +1,10 @@
 import { OrderByState } from "../../interfaces/orderBy";
 import { tracesTableUiColumnDefinitions } from "../tableMappings";
 import { FilterState } from "../../types";
-import { StringFilter, StringOptionsFilter, DateTimeFilter } from "../queries/clickhouse-sql/clickhouse-filter";
-import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
-import { orderByToClickhouseSql } from "../queries/clickhouse-sql/orderby-factory";
-import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
+import { StringFilter, StringOptionsFilter, DateTimeFilter } from "../queries/datastore-sql/datastore-filter";
+import { getProjectIdDefaultFilter, createFilterFromFilterState } from "../queries/datastore-sql/factory";
+import { orderByToDatastoreSql } from "../queries/datastore-sql/orderby-factory";
+import { datastoreSearchCondition } from "../queries/datastore-sql/search";
 import { TraceRecordReadType } from "../repositories/definitions";
 import Decimal from "decimal.js";
 import { ScoreAggregate } from "../../features/scores";
@@ -19,7 +19,7 @@ import { measureAndReturn } from "../datastore/measureAndReturn";
 import { TracingSearchType } from "../../interfaces/search";
 import { ObservationLevelType, TraceDomain } from "../../domain";
 import type { DatastoreClientConfig } from "../datastore/types";
-import { shouldSkipObservationsFinal } from "../queries/clickhouse-sql/query-options";
+import { shouldSkipObservationsFinal } from "../queries/datastore-sql/query-options";
 
 export type TracesTableReturnType = Pick<
   TraceRecordReadType,
@@ -92,7 +92,7 @@ export const convertToUiTableRows = (row: TracesTableReturnType): TracesTableUiR
 };
 
 export const convertToUITableMetrics = (
-  row: TracesTableMetricsClickhouseReturnType,
+  row: TracesTableMetricsDatastoreReturnType,
 ): Omit<TracesMetricsUiReturnType, "scores"> => {
   const usageDetails = reduceUsageOrCostDetails(row.usage_details);
 
@@ -117,7 +117,7 @@ export const convertToUITableMetrics = (
   };
 };
 
-export type TracesTableMetricsClickhouseReturnType = {
+export type TracesTableMetricsDatastoreReturnType = {
   id: string;
   project_id: string;
   timestamp: Date;
@@ -149,7 +149,7 @@ export type FetchTracesTableProps = {
 // Define return type mapping for better type safety
 type SelectReturnTypeMap = {
   count: { count: string };
-  metrics: TracesTableMetricsClickhouseReturnType;
+  metrics: TracesTableMetricsDatastoreReturnType;
   rows: TracesTableReturnType;
   identifiers: { id: string; projectId: string; timestamp: string };
 };
@@ -370,7 +370,7 @@ async function getTracesTableGeneric(props: FetchTracesTableProps) {
           datastoreTableName: "traces",
         },
       ];
-      const chOrderBy = orderByToClickhouseSql(
+      const chOrderBy = orderByToDatastoreSql(
         [
           defaultOrder
             ? [

@@ -157,7 +157,7 @@ export async function executeQuery(
       query: compiledQuery,
       params: parameters,
       datastoreConfig: {
-        clickhouse_settings: {
+        datastore_settings: {
           date_time_output_format: "iso",
           max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
         },
@@ -185,7 +185,7 @@ export async function executeQuery(
         query: input.query,
         params: input.params,
         datastoreConfig: {
-          clickhouse_settings: {
+          datastore_settings: {
             date_time_output_format: "iso",
             max_bytes_before_external_group_by: String(env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY),
           },

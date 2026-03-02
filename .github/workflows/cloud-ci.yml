@@ -38,8 +38,8 @@ jobs:
         ports:
           - 5432:5432
           
-      clickhouse:
-        image: clickhouse/clickhouse-server:latest
+      datastore:
+        image: ghcr.io/hanzoai/datastore:latest
         ports:
           - 8123:8123
           - 9000:9000
@@ -94,9 +94,9 @@ jobs:
         cat > .env.test << EOF
         DATABASE_URL=postgresql://hanzo:hanzo123@localhost:5432/cloud_test
         DIRECT_URL=postgresql://hanzo:hanzo123@localhost:5432/cloud_test
-        CLICKHOUSE_URL=http://localhost:8123
-        CLICKHOUSE_USER=default
-        CLICKHOUSE_PASSWORD=
+        DATASTORE_URL=http://localhost:8123
+        DATASTORE_USER=hanzo
+        DATASTORE_PASSWORD=hanzo
         REDIS_HOST=localhost
         REDIS_PORT=6379
         NEXTAUTH_URL=http://localhost:3000
@@ -199,7 +199,7 @@ jobs:
       run: |
         cd ..
         docker compose -f services/docker-compose.mothership.yml up -d \
-          postgres clickhouse redis
+          postgres datastore redis
           
         # Wait for services
         sleep 10
@@ -210,7 +210,7 @@ jobs:
           --name hanzo-cloud-test \
           --network host \
           -e DATABASE_URL="postgresql://hanzo:hanzo123@localhost:5432/cloud" \
-          -e CLICKHOUSE_URL="http://localhost:8123" \
+          -e DATASTORE_URL="http://localhost:8123" \
           -e REDIS_HOST="localhost" \
           -e NEXTAUTH_URL="http://localhost:3000" \
           -e NEXTAUTH_SECRET="test-secret" \

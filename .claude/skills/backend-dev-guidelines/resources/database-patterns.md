@@ -1,12 +1,12 @@
-# Database Patterns - PostgreSQL & ClickHouse
+# Database Patterns - PostgreSQL & Datastore
 
-Complete guide to database access patterns in Hanzo using PostgreSQL (Prisma ORM) and ClickHouse (direct client).
+Complete guide to database access patterns in Hanzo using PostgreSQL (Prisma ORM) and Datastore (direct client).
 
 ## Table of Contents
 
 - [Database Architecture Overview](#database-architecture-overview)
 - [PostgreSQL with Prisma](#postgresql-with-prisma)
-- [ClickHouse with Direct Client](#clickhouse-with-direct-client)
+- [Datastore with Direct Client](#datastore-with-direct-client)
 - [Repository Pattern](#repository-pattern)
 - [When to Use Which Database](#when-to-use-which-database)
 - [Error Handling](#error-handling)
@@ -20,10 +20,10 @@ Hanzo uses a **dual database architecture**:
 | Database       | Technology        | Purpose                                                       | Access Pattern                         |
 | -------------- | ----------------- | ------------------------------------------------------------- | -------------------------------------- |
 | **PostgreSQL** | Prisma ORM        | Transactional data, relational data, CRUD operations          | Type-safe ORM with migrations          |
-| **ClickHouse** | Direct SQL client | Analytics data, high-volume traces/observations, aggregations | Raw SQL queries with streaming support |
+| **Datastore** | Direct SQL client | Analytics data, high-volume traces/observations, aggregations | Raw SQL queries with streaming support |
 | **Redis**      | ioredis           | Queues (BullMQ), caching, rate limiting                       | Direct client access                   |
 
-**Key Principle**: Use PostgreSQL for transactional data and relationships. Use ClickHouse for high-volume analytics and time-series data.
+**Key Principle**: Use PostgreSQL for transactional data and relationships. Use Datastore for high-volume analytics and time-series data.
 
 **⚠️ Important**: All queries must filter by `project_id` (or `projectId`) to ensure proper data isolation between tenants. This is essential for the multi-tenant architecture.
 
@@ -180,42 +180,42 @@ const traces = await prisma.trace.findMany({
 });
 ```
 
-## ClickHouse with Direct Client
+## Datastore with Direct Client
 
 ### Import Pattern
 
 ```typescript
-import { queryClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
-import { clickhouseClient } from "@hanzo/shared/src/server/clickhouse/client";
+import { queryDatastore } from "@hanzo/shared/src/server/repositories/datastore";
+import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
 ```
 
-### ClickHouse Client Singleton
+### Datastore Client Singleton
 
-ClickHouse uses a singleton client manager that reuses connections:
+Datastore uses a singleton client manager that reuses connections:
 
 ```typescript
-import { clickhouseClient } from "@hanzo/shared/src/server/clickhouse/client";
+import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
 
 // Get client (automatically reuses existing connection)
-const client = clickhouseClient();
+const client = datastoreClient();
 
 // For read-only queries (uses read replica if configured)
-const client = clickhouseClient(undefined, "ReadOnly");
+const client = datastoreClient(undefined, "ReadOnly");
 ```
 
 ### Query Patterns
 
-ClickHouse queries use **raw SQL** with parameterized queries. Parameters use `{paramName: Type}` syntax:
+Datastore queries use **raw SQL** with parameterized queries. Parameters use `{paramName: Type}` syntax:
 
-**⚠️ Important**: All ClickHouse queries must include `project_id` filter to ensure proper tenant isolation.
+**⚠️ Important**: All Datastore queries must include `project_id` filter to ensure proper tenant isolation.
 
 **Simple query:**
 
 ```typescript
-import { queryClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
+import { queryDatastore } from "@hanzo/shared/src/server/repositories/datastore";
 
 // ✅ GOOD: Always filter by project_id
-const rows = await queryClickhouse<{ id: string; name: string }>({
+const rows = await queryDatastore<{ id: string; name: string }>({
   query: `
     SELECT id, name, timestamp
     FROM traces
@@ -226,14 +226,14 @@ const rows = await queryClickhouse<{ id: string; name: string }>({
   `,
   params: {
     projectId,  // ← Required for tenant isolation
-    startTime: convertDateToClickhouseDateTime(startDate),
+    startTime: convertDateToDatastoreDateTime(startDate),
     limit: 100,
   },
   tags: { feature: "tracing", type: "trace" },
 });
 
 // ❌ BAD: Missing project_id filter
-// const rows = await queryClickhouse({
+// const rows = await queryDatastore({
 //   query: `SELECT * FROM traces WHERE timestamp >= {startTime: DateTime64(3)}`,
 //   params: { startTime },
 // });
@@ -242,10 +242,10 @@ const rows = await queryClickhouse<{ id: string; name: string }>({
 **Streaming query (for large result sets):**
 
 ```typescript
-import { queryClickhouseStream } from "@hanzo/shared/src/server/repositories/clickhouse";
+import { queryDatastoreStream } from "@hanzo/shared/src/server/repositories/datastore";
 
 // Stream results to avoid loading all rows in memory
-for await (const row of queryClickhouseStream<ObservationRecordReadType>({
+for await (const row of queryDatastoreStream<ObservationRecordReadType>({
   query: `
     SELECT *
     FROM observations
@@ -262,9 +262,9 @@ for await (const row of queryClickhouseStream<ObservationRecordReadType>({
 **Upsert (insert) operation:**
 
 ```typescript
-import { upsertClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
+import { upsertDatastore } from "@hanzo/shared/src/server/repositories/datastore";
 
-await upsertClickhouse({
+await upsertDatastore({
   table: "traces",
   records: [
     {
@@ -289,10 +289,10 @@ await upsertClickhouse({
 **DDL/Administrative commands:**
 
 ```typescript
-import { commandClickhouse } from "@hanzo/shared/src/server/repositories/clickhouse";
+import { commandDatastore } from "@hanzo/shared/src/server/repositories/datastore";
 
 // Create table, alter schema, etc.
-await commandClickhouse({
+await commandDatastore({
   query: `
     ALTER TABLE traces
     ADD COLUMN IF NOT EXISTS new_field String
@@ -301,27 +301,27 @@ await commandClickhouse({
 });
 ```
 
-### ClickHouse Type Mapping
+### Datastore Type Mapping
 
-| JavaScript Type | ClickHouse Param Type                                     |
+| JavaScript Type | Datastore Param Type                                     |
 | --------------- | --------------------------------------------------------- |
 | `string`        | `String`                                                  |
 | `number`        | `UInt32`, `Int64`, `Float64`                              |
-| `Date`          | `DateTime64(3)` (use `convertDateToClickhouseDateTime()`) |
+| `Date`          | `DateTime64(3)` (use `convertDateToDatastoreDateTime()`) |
 | `boolean`       | `UInt8` (0 or 1)                                          |
 | `string[]`      | `Array(String)`                                           |
 
 **Date handling:**
 
 ```typescript
-import { convertDateToClickhouseDateTime } from "@hanzo/shared/src/server/clickhouse/client";
+import { convertDateToDatastoreDateTime } from "@hanzo/shared/src/server/datastore/client";
 
 const params = {
-  startTime: convertDateToClickhouseDateTime(new Date()),
+  startTime: convertDateToDatastoreDateTime(new Date()),
 };
 ```
 
-### ClickHouse Query Best Practices
+### Datastore Query Best Practices
 
 **1. Always filter by `project_id` for tenant isolation:**
 
@@ -399,20 +399,20 @@ const query = `
 
 **Error handling with retries:**
 
-ClickHouse queries automatically retry on network errors (socket hang up). Custom error handling for resource limits:
+Datastore queries automatically retry on network errors (socket hang up). Custom error handling for resource limits:
 
 ```typescript
 import {
-  queryClickhouse,
-  ClickHouseResourceError,
-} from "@hanzo/shared/src/server/repositories/clickhouse";
+  queryDatastore,
+  DatastoreResourceError,
+} from "@hanzo/shared/src/server/repositories/datastore";
 
 try {
-  const rows = await queryClickhouse({ query, params });
+  const rows = await queryDatastore({ query, params });
 } catch (error) {
-  if (error instanceof ClickHouseResourceError) {
+  if (error instanceof DatastoreResourceError) {
     // Memory limit, timeout, or overcommit error
-    throw new Error(ClickHouseResourceError.ERROR_ADVICE_MESSAGE);
+    throw new Error(DatastoreResourceError.ERROR_ADVICE_MESSAGE);
   }
   throw error;
 }
@@ -428,12 +428,12 @@ Hanzo uses repositories in `packages/shared/src/server/repositories/` for comple
 
 ✅ **Use repositories when:**
 
-- Complex ClickHouse queries with CTEs, aggregations, or joins
+- Complex Datastore queries with CTEs, aggregations, or joins
 - Query used in multiple places (DRY principle)
 - Need data transformation/converters (DB → domain models)
 - Building reusable query logic with filters
 
-❌ **Use direct Prisma/ClickHouse for:**
+❌ **Use direct Prisma/Datastore for:**
 
 - Simple CRUD operations
 - One-off queries
@@ -441,7 +441,7 @@ Hanzo uses repositories in `packages/shared/src/server/repositories/` for comple
 
 ### Repository Examples
 
-**Trace repository (ClickHouse):**
+**Trace repository (Datastore):**
 
 ```typescript
 // packages/shared/src/server/repositories/traces.ts
@@ -449,7 +449,7 @@ export const getTracesByIds = async (
   projectId: string,
   traceIds: string[],
 ): Promise<TraceRecordReadType[]> => {
-  const rows = await queryClickhouse<TraceRecordReadType>({
+  const rows = await queryDatastore<TraceRecordReadType>({
     query: `
       SELECT *
       FROM traces
@@ -462,11 +462,11 @@ export const getTracesByIds = async (
     tags: { feature: "tracing", type: "trace" },
   });
 
-  return rows.map(convertClickhouseToDomain);
+  return rows.map(convertDatastoreToDomain);
 };
 ```
 
-**Score repository (PostgreSQL + ClickHouse):**
+**Score repository (PostgreSQL + Datastore):**
 
 ```typescript
 // Repositories can query both databases
@@ -474,8 +474,8 @@ export const getScoresByTraceId = async (
   projectId: string,
   traceId: string,
 ) => {
-  // Use ClickHouse for analytics
-  const clickhouseScores = await queryClickhouse<ScoreRecordReadType>({
+  // Use Datastore for analytics
+  const datastoreScores = await queryDatastore<ScoreRecordReadType>({
     query: `
       SELECT *
       FROM scores
@@ -490,7 +490,7 @@ export const getScoresByTraceId = async (
     where: { projectId },
   });
 
-  return enrichScoresWithConfigs(clickhouseScores, scoreConfigs);
+  return enrichScoresWithConfigs(datastoreScores, scoreConfigs);
 };
 ```
 
@@ -503,19 +503,19 @@ export const getScoresByTraceId = async (
 | User accounts, projects, API keys      | PostgreSQL | Transactional data with strong consistency |
 | Prompt management, dataset definitions | PostgreSQL | Configuration data with relations          |
 | Project settings, RBAC permissions     | PostgreSQL | Small, frequently updated data             |
-| Traces, observations, events           | ClickHouse | High-volume time-series data               |
-| Score aggregations, analytics queries  | ClickHouse | Fast aggregations over millions of rows    |
-| Usage metrics, cost calculations       | ClickHouse | Analytical queries with GROUP BY           |
-| Exports, large dataset queries         | ClickHouse | Streaming support for large result sets    |
+| Traces, observations, events           | Datastore | High-volume time-series data               |
+| Score aggregations, analytics queries  | Datastore | Fast aggregations over millions of rows    |
+| Usage metrics, cost calculations       | Datastore | Analytical queries with GROUP BY           |
+| Exports, large dataset queries         | Datastore | Streaming support for large result sets    |
 
 **Decision flow:**
 
-1. Is it high-volume time-series data? → **ClickHouse**
-2. Does it need aggregation over millions of rows? → **ClickHouse**
+1. Is it high-volume time-series data? → **Datastore**
+2. Does it need aggregation over millions of rows? → **Datastore**
 3. Is it transactional data with relationships? → **PostgreSQL**
 4. Is it configuration or user data? → **PostgreSQL**
 5. Is it frequently updated? → **PostgreSQL**
-6. Is it append-only analytics data? → **ClickHouse**
+6. Is it append-only analytics data? → **Datastore**
 
 ### Project-Scoped vs Global Tables
 
@@ -535,7 +535,7 @@ export const getScoresByTraceId = async (
 
 ```typescript
 // ✅ CORRECT: Project-scoped query
-const traces = await queryClickhouse({
+const traces = await queryDatastore({
   query: `
     SELECT * FROM traces
     WHERE project_id = {projectId: String}
@@ -550,7 +550,7 @@ const user = await prisma.user.findUnique({
 });
 
 // ❌ WRONG: Project-scoped query without project_id filter
-// const traces = await queryClickhouse({
+// const traces = await queryDatastore({
 //   query: `SELECT * FROM traces WHERE timestamp >= {startTime: DateTime64(3)}`,
 // });
 ```
@@ -606,35 +606,35 @@ try {
 | `P2025`  | Record not found             | Update/delete of non-existent record  |
 | `P2018`  | Required relation not found  | Connect to non-existent related record |
 
-### ClickHouse Errors
+### Datastore Errors
 
 ```typescript
 import {
-  queryClickhouse,
-  ClickHouseResourceError,
-} from "@hanzo/shared/src/server/repositories/clickhouse";
+  queryDatastore,
+  DatastoreResourceError,
+} from "@hanzo/shared/src/server/repositories/datastore";
 
 try {
-  const rows = await queryClickhouse({ query, params });
+  const rows = await queryDatastore({ query, params });
 } catch (error) {
-  // ClickHouse resource errors (memory limit, timeout, overcommit)
-  if (error instanceof ClickHouseResourceError) {
-    logger.warn("ClickHouse resource error", {
+  // Datastore resource errors (memory limit, timeout, overcommit)
+  if (error instanceof DatastoreResourceError) {
+    logger.warn("Datastore resource error", {
       errorType: error.errorType, // "MEMORY_LIMIT" | "OVERCOMMIT" | "TIMEOUT"
       message: error.message,
     });
 
     // User-friendly error message
-    throw new BadRequestError(ClickHouseResourceError.ERROR_ADVICE_MESSAGE);
+    throw new BadRequestError(DatastoreResourceError.ERROR_ADVICE_MESSAGE);
   }
 
   // Network/connection errors are automatically retried
-  logger.error("ClickHouse error", { error });
+  logger.error("Datastore error", { error });
   throw error;
 }
 ```
 
-**ClickHouse error types:**
+**Datastore error types:**
 
 | Error Type      | Discriminator           | Meaning                      | Solution                                           |
 | --------------- | ----------------------- | ---------------------------- | -------------------------------------------------- |
@@ -642,13 +642,13 @@ try {
 | `OVERCOMMIT`    | "OvercommitTracker"     | Memory overcommit limit hit  | Reduce query complexity or result set size         |
 | `TIMEOUT`       | "Timeout", "timed out"  | Query took too long          | Add filters, reduce time range, or optimize query  |
 
-**ClickHouse retries:**
+**Datastore retries:**
 
-ClickHouse queries automatically retry network errors (socket hang up) with exponential backoff. Configure retry behavior:
+Datastore queries automatically retry network errors (socket hang up) with exponential backoff. Configure retry behavior:
 
 ```typescript
 // In packages/shared/src/env.ts
-HANZO_CLICKHOUSE_QUERY_MAX_ATTEMPTS: z.coerce.number().positive().default(3)
+HANZO_DATASTORE_QUERY_MAX_ATTEMPTS: z.coerce.number().positive().default(3)
 ```
 
 ---

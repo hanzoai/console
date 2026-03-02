@@ -73,13 +73,13 @@ const test = baseTest.extend<{
   upsertTrace: async ({ projectId }, use) => {
     await use(async (trace) => {
       const now = new Date();
-      const clickhouseNow = convertDateToDatastoreDateTime(now);
+      const datastoreNow = convertDateToDatastoreDateTime(now);
       await upsertTrace({
         id: trace.id,
         project_id: projectId,
-        timestamp: clickhouseNow,
-        created_at: clickhouseNow,
-        updated_at: clickhouseNow,
+        timestamp: datastoreNow,
+        created_at: datastoreNow,
+        updated_at: datastoreNow,
         ...trace,
       });
     });

@@ -321,7 +321,7 @@ export type IntervalUnit = "second" | "minute" | "hour" | "day" | "month" | "yea
 
 /**
  * Interval configuration with count and unit
- * Used for ClickHouse INTERVAL N UNIT queries
+ * Used for Datastore INTERVAL N UNIT queries
  */
 export type IntervalConfig = {
   count: number;
@@ -475,7 +475,7 @@ export function getOptimalInterval(
 
 /**
  * Determines the optimal interval for score analytics based on time range.
- * Maps time ranges to appropriate intervals for ClickHouse aggregation.
+ * Maps time ranges to appropriate intervals for Datastore aggregation.
  *
  * Target: 20-50 data points for optimal visualization
  *

@@ -15,12 +15,12 @@ describe("QueryBuilder SQL Injection Tests", () => {
   const now = new Date();
   const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 3600000);
 
-  // Time ranges for queries - converted to ClickHouse DateTime format
+  // Time ranges for queries - converted to Datastore DateTime format
   const defaultFromTime = threeDaysAgo.toISOString();
   const defaultToTime = now.toISOString();
 
-  // Create a mock ClickHouse client for testing
-  const mockClickhouseClient = {
+  // Create a mock Datastore client for testing
+  const mockDatastoreClient = {
     query: jest.fn().mockImplementation(({ query, query_params }) => {
       // Return the query and params for inspection in tests
       return Promise.resolve({
@@ -35,7 +35,7 @@ describe("QueryBuilder SQL Injection Tests", () => {
 
   // Helper function to build a query without executing it
   const buildQueryWithoutExecuting = (query: any, projectId: string) => {
-    const queryBuilder = new QueryBuilder(mockClickhouseClient as any);
+    const queryBuilder = new QueryBuilder(mockDatastoreClient as any);
     return queryBuilder.build(query, projectId);
   };
 

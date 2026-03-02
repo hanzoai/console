@@ -124,10 +124,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
     it("should return 400 when parseIoAsJson=true", async () => {
       const { makeAPICall } = await import("@/src/__tests__/test-utils");
-      const response = await makeAPICall(
-        "GET",
-        `/api/public/v2/observations?fields=io&parseIoAsJson=true`,
-      );
+      const response = await makeAPICall("GET", `/api/public/v2/observations?fields=io&parseIoAsJson=true`);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
@@ -232,7 +229,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh([observation1, observation2]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -416,7 +413,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh([observation1, observation2]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -486,7 +483,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh([observation]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -544,7 +541,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh([observation]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -602,7 +599,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh([observation]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -661,7 +658,7 @@ describe("/api/public/v2/observations API Endpoint", () => {
 
       await createEventsCh(observations);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({

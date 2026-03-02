@@ -1,6 +1,6 @@
 import { prisma } from "../../src/db";
 import { redis } from "../../src/server";
-import { prepareClickhouse } from "./prepare-clickhouse";
+import { prepareDatastore } from "./prepare-datastore";
 
 async function main() {
   try {
@@ -12,18 +12,18 @@ async function main() {
     ) {
       projectIds.push("239ad00f-562f-411d-af14-831c75ddd875");
     }
-    await prepareClickhouse(projectIds, {
+    await prepareDatastore(projectIds, {
       numberOfDays: 3,
       numberOfRuns: 3,
     });
 
-    console.log("Clickhouse preparation completed successfully.");
+    console.log("Datastore preparation completed successfully.");
   } catch (error) {
-    console.error("Error during Clickhouse preparation:", error);
+    console.error("Error during Datastore preparation:", error);
   } finally {
     await prisma.$disconnect();
     redis?.disconnect();
-    console.log("Disconnected from Clickhouse.");
+    console.log("Disconnected from Datastore.");
   }
 }
 

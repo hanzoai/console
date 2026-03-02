@@ -35,12 +35,12 @@ vi.mock("../../services/DatastoreWriter", async (importOriginal) => {
   };
 });
 
-// Mock ClickhouseClient to return empty results (no existing records)
+// Mock DatastoreClient to return empty results (no existing records)
 const mockDatastoreClient = {
   query: async () => ({
     json: async () => [],
     query_id: "test-query-id",
-    response_headers: { "x-clickhouse-summary": "[]" },
+    response_headers: { "x-datastore-summary": "[]" },
   }),
 };
 

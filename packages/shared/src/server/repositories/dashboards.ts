@@ -1,5 +1,5 @@
 import { parseDatastoreUTCDateTimeFormat, queryDatastore } from "./datastore";
-import { createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { createFilterFromFilterState } from "../queries/datastore-sql/factory";
 import { FilterState } from "../../types";
 import { DateTimeFilter, FilterList } from "../queries";
 import { dashboardColumnDefinitions } from "../tableMappings";
@@ -17,7 +17,7 @@ const extractEnvironmentFilterFromFilters = (
   };
 };
 
-const convertEnvFilterToClickhouseFilter = (filter: FilterState) => {
+const convertEnvFilterToDatastoreFilter = (filter: FilterState) => {
   return createFilterFromFilterState(filter, [
     {
       datastoreSelect: "environment",
@@ -30,7 +30,7 @@ const convertEnvFilterToClickhouseFilter = (filter: FilterState) => {
 
 export const getScoreAggregate = async (projectId: string, filter: FilterState) => {
   const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const environmentFilter = new FilterList(convertEnvFilterToDatastoreFilter(envFilter)).apply();
   const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
   const timeFilter = chFilter.find((f) => f.field === "timestamp" && (f.operator === ">=" || f.operator === ">")) as
@@ -86,7 +86,7 @@ export const getScoreAggregate = async (projectId: string, filter: FilterState) 
 
 export const getObservationCostByTypeByTime = async (projectId: string, filter: FilterState) => {
   const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const environmentFilter = new FilterList(convertEnvFilterToDatastoreFilter(envFilter)).apply();
   const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
   const appliedFilter = chFilter.apply();
@@ -171,7 +171,7 @@ export const getObservationCostByTypeByTime = async (projectId: string, filter: 
 
 export const getObservationUsageByTypeByTime = async (projectId: string, filter: FilterState) => {
   const { envFilter, remainingFilters } = extractEnvironmentFilterFromFilters(filter);
-  const environmentFilter = new FilterList(convertEnvFilterToClickhouseFilter(envFilter)).apply();
+  const environmentFilter = new FilterList(convertEnvFilterToDatastoreFilter(envFilter)).apply();
   const chFilter = new FilterList(createFilterFromFilterState(remainingFilters, dashboardColumnDefinitions));
 
   const appliedFilter = chFilter.apply();

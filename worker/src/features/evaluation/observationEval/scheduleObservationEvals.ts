@@ -1,8 +1,4 @@
-import {
-  type ObservationForEval,
-  type ObservationEvalConfig,
-  type ObservationEvalSchedulerDeps,
-} from "./types";
+import { type ObservationForEval, type ObservationEvalConfig, type ObservationEvalSchedulerDeps } from "./types";
 import { shouldSampleObservation } from "./shouldSampleObservation";
 import { InMemoryFilterService, logger } from "@hanzo/shared/src/server";
 import {
@@ -28,13 +24,11 @@ interface ScheduleObservationEvalsParams {
  *
  * The observation is uploaded to S3 once (not per config) for efficiency.
  *
- * @param params.observation - The ObservationForEval (converted from processToEvent() or ClickHouse)
+ * @param params.observation - The ObservationForEval (converted from processToEvent() or Datastore)
  * @param params.configs - Pre-fetched observation eval configs for this project
  * @param params.schedulerDeps - Dependencies for scheduling (S3, job execution, queue)
  */
-export async function scheduleObservationEvals(
-  params: ScheduleObservationEvalsParams,
-): Promise<void> {
+export async function scheduleObservationEvals(params: ScheduleObservationEvalsParams): Promise<void> {
   const { observation, configs, schedulerDeps } = params;
 
   // Early return if no configs
@@ -108,15 +102,10 @@ interface ProcessConfigParams {
   schedulerDeps: ObservationEvalSchedulerDeps;
 }
 
-async function processMatchingConfig(
-  params: ProcessConfigParams,
-): Promise<void> {
-  const { observation, matchingConfig, observationS3Path, schedulerDeps } =
-    params;
+async function processMatchingConfig(params: ProcessConfigParams): Promise<void> {
+  const { observation, matchingConfig, observationS3Path, schedulerDeps } = params;
 
-  const jobExecutionId = createW3CTraceId(
-    `${matchingConfig.id}:${observation.span_id}`,
-  );
+  const jobExecutionId = createW3CTraceId(`${matchingConfig.id}:${observation.span_id}`);
 
   // Create job execution
   await schedulerDeps.upsertJobExecution({
@@ -148,34 +137,21 @@ async function processMatchingConfig(
  * Evaluate filter conditions against observation.
  * Returns true if observation matches all filter conditions (or filter is empty).
  */
-function evaluateFilter(
-  observation: ObservationForEval,
-  config: ObservationEvalConfig,
-): boolean {
+function evaluateFilter(observation: ObservationForEval, config: ObservationEvalConfig): boolean {
   const filterConditions = config.filter as FilterState;
-  const isExperimentConfig =
-    config.targetObject === EvalTargetObject.EXPERIMENT;
-  const isExperimentRoot =
-    observation.span_id === observation.experiment_item_root_span_id;
+  const isExperimentConfig = config.targetObject === EvalTargetObject.EXPERIMENT;
+  const isExperimentRoot = observation.span_id === observation.experiment_item_root_span_id;
 
   // Empty filter matches all (for filter purposes)
-  const isEmptyFilter =
-    !filterConditions ||
-    !Array.isArray(filterConditions) ||
-    filterConditions.length === 0;
+  const isEmptyFilter = !filterConditions || !Array.isArray(filterConditions) || filterConditions.length === 0;
 
   // Map filter column IDs to observation field values for in-memory filtering
-  const fieldMapper = (obs: ObservationForEval, column: string) =>
-    mapEventEvalFilterColumnIdToField(obs, column);
+  const fieldMapper = (obs: ObservationForEval, column: string) => mapEventEvalFilterColumnIdToField(obs, column);
 
   // Use InMemoryFilterService to evaluate filter if there are conditions
   const isFilterMatch = isEmptyFilter
     ? true
-    : InMemoryFilterService.evaluateFilter(
-        observation,
-        filterConditions,
-        fieldMapper,
-      );
+    : InMemoryFilterService.evaluateFilter(observation, filterConditions, fieldMapper);
 
   // For experiment configs, must also match experiment root span
   return isExperimentConfig ? isFilterMatch && isExperimentRoot : isFilterMatch;

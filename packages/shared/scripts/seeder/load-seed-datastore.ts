@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { prisma } from "../../src/db";
 import { getDisplaySecretKey, hashSecretKey, logger } from "../../src/server";
-import { prepareClickhouse } from "./prepare-clickhouse";
+import { prepareDatastore } from "./prepare-datastore";
 import { redis } from "../../src/server";
 
 const createRandomProjectId = () => randomUUID().toString();
@@ -75,7 +75,7 @@ async function main() {
 
   logger.info(process.argv);
   logger.info(
-    `Preparing Clickhouse for ${numOfProjects} projects and ${numberOfDays} days with max Observations ${totalObservations}.`,
+    `Preparing Datastore for ${numOfProjects} projects and ${numberOfDays} days with max Observations ${totalObservations}.`,
   );
 
   if (isNaN(totalObservations)) {
@@ -100,18 +100,18 @@ async function main() {
       requiredProjectIds: projectIds,
     });
 
-    await prepareClickhouse(createdProjectIds, {
+    await prepareDatastore(createdProjectIds, {
       numberOfDays,
       numberOfRuns: 3,
     });
 
-    logger.info("Clickhouse preparation completed successfully.");
+    logger.info("Datastore preparation completed successfully.");
   } catch (error) {
-    logger.error("Error during Clickhouse preparation:", error);
+    logger.error("Error during Datastore preparation:", error);
   } finally {
     await prisma.$disconnect();
     redis?.disconnect();
-    logger.info("Disconnected from Clickhouse.");
+    logger.info("Disconnected from Datastore.");
   }
 }
 

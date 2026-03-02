@@ -1,6 +1,6 @@
 # Replay failed ingestion events from S3
 
-In case the Hanzo or ClickHouse processing fails in any way, we can replay messages from S3 using the access logs or similar.
+In case the Hanzo or Datastore processing fails in any way, we can replay messages from S3 using the access logs or similar.
 
 ## 1. Retrieve events to be replayed
 
@@ -38,9 +38,9 @@ REDIS_CONNECTION_STRING=redis://:myredissecret@127.0.0.1:6379
 S3_EVENT_UPLOAD_BUCKET=<bucket-name>
 
 # Necessary for parsing the file and starting the script
-CLICKHOUSE_URL=http://localhost:8123
-CLICKHOUSE_USER=clickhouse
-CLICKHOUSE_PASSWORD=clickhouse
+DATASTORE_URL=http://localhost:8123
+DATASTORE_USER=datastore
+DATASTORE_PASSWORD=datastore
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 ```
 

@@ -108,7 +108,7 @@ export async function upsertDatastore<T extends Record<string, unknown>>(opts: {
   return await instrumentAsync({ name: "datastore-upsert", spanKind: SpanKind.CLIENT }, async (span) => {
     // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
     span.setAttribute("ch.query.table", opts.table);
-    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.system", "datastore");
     span.setAttribute("db.operation.name", "UPSERT");
 
     await Promise.all(
@@ -143,7 +143,7 @@ export async function upsertDatastore<T extends Record<string, unknown>>(opts: {
               },
             ],
             format: "JSONEachRow",
-            clickhouse_settings: {
+            datastore_settings: {
               log_comment: JSON.stringify(opts.tags ?? {}),
             },
           });
@@ -167,7 +167,7 @@ export async function upsertDatastore<T extends Record<string, unknown>>(opts: {
         event_ts: convertDateToDatastoreDateTime(new Date()),
       })),
       format: "JSONEachRow",
-      clickhouse_settings: {
+      datastore_settings: {
         log_comment: JSON.stringify(opts.tags ?? {}),
       },
     });
@@ -179,7 +179,7 @@ export async function upsertDatastore<T extends Record<string, unknown>>(opts: {
     span.setAttribute("ch.queryId", res.query_id);
 
     // add summary headers to the span. Helps to tune performance
-    const summaryHeader = res.response_headers?.["x-clickhouse-summary"];
+    const summaryHeader = res.response_headers?.["x-datastore-summary"];
     if (summaryHeader) {
       try {
         const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
@@ -214,7 +214,7 @@ export async function* queryDatastoreStream<T>(opts: {
       .with(trace.setSpan(context.active(), span), async () => {
         // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
         span.setAttribute("ch.query.text", opts.query);
-        span.setAttribute("db.system", "clickhouse");
+        span.setAttribute("db.system", "datastore");
         span.setAttribute("db.query.text", opts.query);
         span.setAttribute("db.operation.name", "SELECT");
 
@@ -222,7 +222,7 @@ export async function* queryDatastoreStream<T>(opts: {
           query: opts.query,
           format: "JSONEachRow",
           query_params: opts.params,
-          clickhouse_settings: {
+          datastore_settings: {
             ...opts.datastoreSettings,
             log_comment: JSON.stringify(opts.tags ?? {}),
           },
@@ -236,7 +236,7 @@ export async function* queryDatastoreStream<T>(opts: {
         span.setAttribute("ch.queryId", res.query_id);
 
         // add summary headers to the span. Helps to tune performance
-        const summaryHeader = res.response_headers["x-clickhouse-summary"];
+        const summaryHeader = res.response_headers["x-datastore-summary"];
         if (summaryHeader) {
           try {
             const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
@@ -268,7 +268,7 @@ export async function* queryDatastoreStream<T>(opts: {
 }
 
 /**
- * The datastore (ClickHouse) has a quirk when it comes to handling exceptions mid response.
+ * The datastore (Datastore) has a quirk when it comes to handling exceptions mid response.
  * It will simply output a row with "exception" key inside, which is indistinguishable from
  * a query like `SELECT "my lovely string" AS exception;` may return.
  *
@@ -280,10 +280,10 @@ export async function* queryDatastoreStream<T>(opts: {
  * This function makes the best effort to convert such rows into errors and throws them.
  *
  * See:
- * - https://github.com/ClickHouse/clickhouse-js/issues/332 (historical reference)
- * - https://github.com/ClickHouse/ClickHouse/issues/75175
+ * - https://github.com/Datastore/datastore-js/issues/332 (historical reference)
+ * - https://github.com/Datastore/Datastore/issues/75175
  *
- * Ideally this should get fixed in the future versions of ClickHouse.
+ * Ideally this should get fixed in the future versions of Datastore.
  */
 function handleExceptionRow<T>(parsedRow: T): T {
   if (
@@ -337,7 +337,7 @@ export async function queryDatastore<T>(opts: {
   return await instrumentAsync({ name: "datastore-query", spanKind: SpanKind.CLIENT }, async (span) => {
     // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
     span.setAttribute("ch.query.text", opts.query);
-    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.system", "datastore");
     span.setAttribute("db.query.text", opts.query);
     span.setAttribute("db.operation.name", "SELECT");
 
@@ -352,7 +352,7 @@ export async function queryDatastore<T>(opts: {
           query: opts.query,
           format: "JSONEachRow",
           query_params: opts.params,
-          clickhouse_settings: {
+          datastore_settings: {
             asterisk_include_alias_columns: 1,
             asterisk_include_materialized_columns: 1,
             ...opts.datastoreSettings,
@@ -363,7 +363,7 @@ export async function queryDatastore<T>(opts: {
         span.setAttribute("ch.queryId", res.query_id);
 
         // add summary headers to the span. Helps to tune performance
-        const summaryHeader = res.response_headers["x-clickhouse-summary"];
+        const summaryHeader = res.response_headers["x-datastore-summary"];
         if (summaryHeader) {
           try {
             const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
@@ -425,7 +425,7 @@ export async function commandDatastore(opts: {
   return await instrumentAsync({ name: "datastore-command", spanKind: SpanKind.CLIENT }, async (span) => {
     // https://opentelemetry.io/docs/specs/semconv/database/database-spans/
     span.setAttribute("ch.query.text", opts.query);
-    span.setAttribute("db.system", "clickhouse");
+    span.setAttribute("db.system", "datastore");
     span.setAttribute("db.query.text", opts.query);
     span.setAttribute("db.operation.name", "COMMAND");
 
@@ -435,7 +435,7 @@ export async function commandDatastore(opts: {
       ...(opts.session_id ? { session_id: opts.session_id } : {}),
       ...(opts.tags?.queryId ? { query_id: opts.tags.queryId as string } : {}),
       ...(opts.abortSignal ? { abort_signal: opts.abortSignal } : {}),
-      clickhouse_settings: {
+      datastore_settings: {
         ...opts.datastoreSettings,
         log_comment: JSON.stringify(opts.tags ?? {}),
       },
@@ -448,7 +448,7 @@ export async function commandDatastore(opts: {
     span.setAttribute("ch.queryId", res.query_id);
 
     // add summary headers to the span. Helps to tune performance
-    const summaryHeader = res.response_headers?.["x-clickhouse-summary"];
+    const summaryHeader = res.response_headers?.["x-datastore-summary"];
     if (summaryHeader) {
       try {
         const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);

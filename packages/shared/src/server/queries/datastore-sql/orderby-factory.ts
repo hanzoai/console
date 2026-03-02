@@ -6,7 +6,7 @@ import type { OrderByDirection, OrderByEntry } from "./event-query-builder";
 
 type OrderByStateNotNull = Exclude<OrderByState, null>;
 
-export function orderByToClickhouseSql(
+export function orderByToDatastoreSql(
   orderBy: OrderByState | OrderByState[] = [],
   tableColumns: UiColumnMappings,
   usedInAggregation = false,
@@ -57,10 +57,7 @@ export function orderByToEntries(
   orderBy: OrderByState | OrderByState[] = [],
   tableColumns: UiColumnMappings,
 ): OrderByEntry[] {
-  if (
-    !orderBy ||
-    (Array.isArray(orderBy) && orderBy.filter(Boolean).length === 0)
-  ) {
+  if (!orderBy || (Array.isArray(orderBy) && orderBy.filter(Boolean).length === 0)) {
     return [];
   }
 
@@ -70,12 +67,8 @@ export function orderByToEntries(
 
   const entries: OrderByEntry[] = [];
 
-  for (const ob of orderBy.filter((o): o is OrderByStateNotNull =>
-    Boolean(o),
-  )) {
-    const col = tableColumns.find(
-      (c) => c.uiTableName === ob.column || c.uiTableId === ob.column,
-    );
+  for (const ob of orderBy.filter((o): o is OrderByStateNotNull => Boolean(o))) {
+    const col = tableColumns.find((c) => c.uiTableName === ob.column || c.uiTableId === ob.column);
 
     if (!col) {
       logger.warn(`Invalid order by column: ${ob.column}`);

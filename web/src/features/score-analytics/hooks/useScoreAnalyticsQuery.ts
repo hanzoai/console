@@ -265,7 +265,7 @@ export function useScoreAnalyticsQuery(
     // 2. Fill distribution bins (categorical/boolean only)
     // Note: Sort all distributions by binIndex to ensure deterministic ordering
     // fillDistributionBins() already returns sorted data for categorical/boolean
-    // For numeric, we sort to handle non-deterministic ClickHouse row ordering
+    // For numeric, we sort to handle non-deterministic Datastore row ordering
     // ========================================================================
     const distribution1 = categories
       ? fillDistributionBins(apiData.distribution1, categories)

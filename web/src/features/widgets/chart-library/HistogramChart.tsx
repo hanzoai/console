@@ -1,11 +1,7 @@
 import React from "react";
 import { type DataPoint } from "@/src/features/widgets/chart-library/chart-props";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/src/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/src/components/ui/chart";
 import { compactSmallNumberFormatter } from "@/src/utils/numbers";
 
 interface HistogramDataPoint {
@@ -16,20 +12,14 @@ interface HistogramDataPoint {
   height?: number;
 }
 
-const HistogramChart = ({
-  data,
-  subtleFill = false,
-}: {
-  data: DataPoint[];
-  subtleFill?: boolean;
-}) => {
+const HistogramChart = ({ data, subtleFill = false }: { data: DataPoint[]; subtleFill?: boolean }) => {
   const transformHistogramData = (data: DataPoint[]): HistogramDataPoint[] => {
     if (!data.length) return [];
 
-    // Check if this is ClickHouse histogram format (array of tuples)
+    // Check if this is Datastore histogram format (array of tuples)
     const firstDataPoint = data[0];
     if (firstDataPoint?.metric && Array.isArray(firstDataPoint.metric)) {
-      // ClickHouse histogram format: [(lower, upper, height), ...]
+      // Datastore histogram format: [(lower, upper, height), ...]
       return (firstDataPoint.metric as [number, number, number][]).map(([lower, upper, height]) => ({
         binLabel: `[${compactSmallNumberFormatter(lower)}, ${compactSmallNumberFormatter(upper)}]`,
         count: height,
@@ -77,18 +67,8 @@ const HistogramChart = ({
             textAnchor="end"
             height={90}
           />
-          <YAxis
-            stroke="hsl(var(--chart-grid))"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Bar
-            dataKey="count"
-            fill="hsl(var(--chart-1))"
-            radius={[2, 2, 0, 0]}
-            fillOpacity={subtleFill ? 0.3 : 1}
-          />
+          <YAxis stroke="hsl(var(--chart-grid))" fontSize={12} tickLine={false} axisLine={false} />
+          <Bar dataKey="count" fill="hsl(var(--chart-1))" radius={[2, 2, 0, 0]} fillOpacity={subtleFill ? 0.3 : 1} />
           <ChartTooltip
             cursor={false}
             contentStyle={{ backgroundColor: "hsl(var(--background))" }}

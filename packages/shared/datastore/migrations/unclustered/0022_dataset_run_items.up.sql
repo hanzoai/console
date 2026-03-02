@@ -26,7 +26,7 @@ CREATE TABLE dataset_run_items (
     `dataset_item_expected_output` Nullable(String) CODEC(ZSTD(3)), -- json
     `dataset_item_metadata` Map(LowCardinality(String), String),
 
-    -- clickhouse engine fields
+    -- datastore engine fields
     `event_ts` DateTime64(3),
     `is_deleted` UInt8,
 

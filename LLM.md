@@ -41,7 +41,7 @@ This is a monorepo managed with pnpm and Turbo, containing:
 
 ### Data Storage
 - PostgreSQL with Prisma ORM
-- ClickHouse for analytics and trace data
+- Datastore for analytics and trace data
 - Redis for caching and queuing
 - MinIO for S3-compatible object storage
 
@@ -104,7 +104,7 @@ The application uses two primary databases:
    - Traces and observations
    - Prompts and evaluations
 
-2. **ClickHouse**
+2. **Datastore**
    - Analytics data
    - High-performance trace querying
 
@@ -179,7 +179,7 @@ Five cross-tenant data leakage risks identified and fixed:
 Architecture notes:
 - tRPC routers are well-protected: `protectedProjectProcedure` and `protectedOrganizationProcedure` enforce membership checks via middleware in `trpc.ts`
 - All Prisma queries in routers filter by `projectId` or `orgId` from verified session context
-- ClickHouse queries consistently use `projectId` for tenant isolation
+- Datastore queries consistently use `projectId` for tenant isolation
 - The main risk surface was the proxy layer (tenant-headers + proxy routes) and `authenticatedProcedure` routes that accept orgId in input without validating membership
 
 ### Known Bloat (future optimization)

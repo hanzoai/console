@@ -235,7 +235,7 @@ export const observationsTableCols: ColumnDefinition[] = [
     name: "Available Tool Names",
     id: "toolNames",
     type: "arrayOptions",
-    internal: "", // ClickHouse only - uses mapKeys(tool_definitions)
+    internal: "", // Datastore only - uses mapKeys(tool_definitions)
     options: [], // to be added at runtime
     nullable: true,
   },
@@ -243,7 +243,7 @@ export const observationsTableCols: ColumnDefinition[] = [
     name: "Called Tool Names",
     id: "calledToolNames",
     type: "arrayOptions",
-    internal: "", // ClickHouse only - uses tool_call_names
+    internal: "", // Datastore only - uses tool_call_names
     options: [], // to be added at runtime
     nullable: true,
   },
@@ -251,14 +251,14 @@ export const observationsTableCols: ColumnDefinition[] = [
     name: "Available Tools",
     id: "toolDefinitions",
     type: "number",
-    internal: "", // ClickHouse only
+    internal: "", // Datastore only
     nullable: true,
   },
   {
     name: "Tool Calls",
     id: "toolCalls",
     type: "number",
-    internal: "", // ClickHouse only
+    internal: "", // Datastore only
     nullable: true,
   },
 ];

@@ -13,7 +13,7 @@ describe("selfServeDashboards", () => {
   const twoHoursAgo = new Date(now.getTime() - 7200000);
   const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 3600000);
 
-  // Time ranges for queries - converted to ClickHouse DateTime format (YYYY-MM-DD HH:MM:SS.SSS)
+  // Time ranges for queries - converted to Datastore DateTime format (YYYY-MM-DD HH:MM:SS.SSS)
   const defaultFromTime = threeDaysAgo.toISOString();
   const defaultToTime = new Date(now.getTime() + 3600000).toISOString(); // 1 hour in future
 
@@ -106,7 +106,7 @@ describe("selfServeDashboards", () => {
         ),
     ];
 
-    // Insert traces into ClickHouse
+    // Insert traces into Datastore
     await createTracesCh(traces);
 
     // Create observations for some of these traces
@@ -166,7 +166,7 @@ describe("selfServeDashboards", () => {
       );
     }
 
-    // Insert observations into ClickHouse
+    // Insert observations into Datastore
     await createObservationsCh(observations);
 
     // Calculate statistics for verification

@@ -61,9 +61,9 @@ function MinioCompletionHandler() {
   });
 }
 
-function ClickHouseCompletionHandler() {
+function DatastoreCompletionHandler() {
   return http.all("http://localhost:8123*", async () => {
-    logger.info("clickhouse handler");
+    logger.info("datastore handler");
     return passthrough();
   });
 }
@@ -126,7 +126,7 @@ export class OpenAIServer {
     this.internalServer.use(
       JsonCompletionHandler(data),
       MinioCompletionHandler(),
-      ClickHouseCompletionHandler(),
+      DatastoreCompletionHandler(),
       AzuriteCompletionHandler(),
     );
   }

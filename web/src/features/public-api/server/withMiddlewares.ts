@@ -65,11 +65,11 @@ export function withMiddlewares(handlers: Handlers) {
           });
         }
 
-        // Handle ClickHouse resource errors
+        // Handle Datastore resource errors
         if (error instanceof DatastoreResourceError) {
           const resourceError = error as DatastoreResourceError;
 
-          logger.warn("ClickHouse resource limit exceeded", {
+          logger.warn("Datastore resource limit exceeded", {
             errorType: resourceError.errorType,
             message: resourceError.message,
             suggestion: CH_ERROR_ADVICE_FULL,

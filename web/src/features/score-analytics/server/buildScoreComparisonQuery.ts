@@ -1,5 +1,5 @@
 /**
- * ClickHouse Query Builder for Score Comparison Analytics
+ * Datastore Query Builder for Score Comparison Analytics
  *
  * This module contains the comprehensive query logic for score comparison analytics.
  * The query uses a WITH (CTE) chain to compute multiple analytics in a single query:
@@ -25,8 +25,8 @@
  */
 
 import {
-  normalizeIntervalForClickHouse,
-  getClickHouseTimeBucketFunction,
+  normalizeIntervalForDatastore,
+  getDatastoreTimeBucketFunction,
 } from "@/src/features/score-analytics/lib/datastore-time-utils";
 import { type IntervalConfig } from "@/src/utils/date-range-utils";
 import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
@@ -45,7 +45,7 @@ import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
  * - Categorical time series (category counts over time)
  *
  * @param params - Query configuration parameters
- * @returns ClickHouse SQL query string
+ * @returns Datastore SQL query string
  */
 export function buildScoreComparisonQuery(params: {
   projectId: string;
@@ -75,8 +75,8 @@ export function buildScoreComparisonQuery(params: {
     isCategoricalComparison,
   } = params;
 
-  // Normalize the interval for ClickHouse (always single-unit except 7-day weeks)
-  const normalizedInterval = normalizeIntervalForClickHouse(params.interval);
+  // Normalize the interval for Datastore (always single-unit except 7-day weeks)
+  const normalizedInterval = normalizeIntervalForDatastore(params.interval);
 
   // Build object type filter based on selection
   const objectTypeFilter = buildObjectTypeFilter(objectType);
@@ -138,7 +138,7 @@ export function buildScoreComparisonQuery(params: {
     ? `-- CTE 8: Time series (single score)
       timeseries AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
           avg(value) as avg1,
           CAST(NULL AS Nullable(Float64)) as avg2,
           count() as count
@@ -152,7 +152,7 @@ export function buildScoreComparisonQuery(params: {
         WITH
           score1_time_agg AS (
             SELECT
-              ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+              ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
               avg(value) as avg1,
               count() as count1
             FROM score1_filtered
@@ -161,7 +161,7 @@ export function buildScoreComparisonQuery(params: {
           ),
           score2_time_agg AS (
             SELECT
-              ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+              ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
               avg(value) as avg2,
               count() as count2
             FROM score2_filtered
@@ -265,7 +265,7 @@ export function buildScoreComparisonQuery(params: {
     ? `-- CTE 15: Time series (single score, matched only)
       timeseries_matched AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
           avg(value1) as avg1,
           CAST(NULL AS Nullable(Float64)) as avg2,
           count() as count
@@ -277,7 +277,7 @@ export function buildScoreComparisonQuery(params: {
     : `-- CTE 15: Time series (two scores, matched only - re-query matched_scores)
       timeseries_matched AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
           avg(value1) as avg1,
           avg(value2) as avg2,
           count() as count
@@ -292,7 +292,7 @@ export function buildScoreComparisonQuery(params: {
     ? `-- CTE 16: Categorical time series for score1 (single score mode)
       timeseries_categorical1 AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
           COALESCE(string_value, toString(value)) as category,
           count() as count
         FROM score1_filtered
@@ -303,7 +303,7 @@ export function buildScoreComparisonQuery(params: {
     : `-- CTE 16: Categorical time series for score1 (two score mode)
       timeseries_categorical1 AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
           COALESCE(string_value, toString(value)) as category,
           count() as count
         FROM score1_filtered
@@ -324,7 +324,7 @@ export function buildScoreComparisonQuery(params: {
     : `-- CTE 17: Categorical time series for score2 (two score mode)
       timeseries_categorical2 AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp", normalizedInterval)} as ts,
           COALESCE(string_value, toString(value)) as category,
           count() as count
         FROM score2_filtered
@@ -337,7 +337,7 @@ export function buildScoreComparisonQuery(params: {
     ? `-- CTE 18: Categorical time series for score1 (single score, matched only)
       timeseries_categorical1_matched AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
           COALESCE(string_value1, toString(value1)) as category,
           count() as count
         FROM matched_scores
@@ -348,7 +348,7 @@ export function buildScoreComparisonQuery(params: {
     : `-- CTE 18: Categorical time series for score1 (two scores, matched only)
       timeseries_categorical1_matched AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
           COALESCE(string_value1, toString(value1)) as category,
           count() as count
         FROM matched_scores
@@ -369,7 +369,7 @@ export function buildScoreComparisonQuery(params: {
     : `-- CTE 19: Categorical time series for score2 (two scores, matched only)
       timeseries_categorical2_matched AS (
         SELECT
-          ${getClickHouseTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
+          ${getDatastoreTimeBucketFunction("timestamp1", normalizedInterval)} as ts,
           COALESCE(string_value2, toString(value2)) as category,
           count() as count
         FROM matched_scores

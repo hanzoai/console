@@ -16,10 +16,10 @@ The most important domain objects are in [observations.ts](mdc:packages/shared/s
 
 ## Database schema
 
-We use Postgres and Clickhouse.
+We use Postgres and Datastore.
 
 - The postgres schema is in [schema.prisma](mdc:packages/shared/prisma/schema.prisma)
-- The clickhouse schema is in [0001_traces.up.sql](mdc:packages/shared/clickhouse/migrations/clustered/0001_traces.up.sql), [0002_observations.up.sql](mdc:packages/shared/clickhouse/migrations/clustered/0002_observations.up.sql), [0003_scores.up.sql](mdc:packages/shared/clickhouse/migrations/clustered/0003_scores.up.sql)
+- The datastore schema is in [0001_traces.up.sql](mdc:packages/shared/datastore/migrations/clustered/0001_traces.up.sql), [0002_observations.up.sql](mdc:packages/shared/datastore/migrations/clustered/0002_observations.up.sql), [0003_scores.up.sql](mdc:packages/shared/datastore/migrations/clustered/0003_scores.up.sql)
 
 ## Cursor Background/Cloud Agent
 

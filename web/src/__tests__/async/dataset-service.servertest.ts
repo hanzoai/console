@@ -235,7 +235,7 @@ describe("Fetch datasets for UI presentation", () => {
       return {
         id: run.id,
         name: run.name,
-        // Use ClickHouse metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
+        // Use Datastore metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
         countRunItems: run.countRunItems ?? 0,
         avgTotalCost: run.avgTotalCost ?? null,
         totalCost: run.totalCost ?? null,
@@ -407,7 +407,7 @@ describe("Fetch datasets for UI presentation", () => {
       return {
         id: run.id,
         name: run.name,
-        // Use ClickHouse metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
+        // Use Datastore metrics if available, otherwise use defaults for runs without dataset_run_items_rmt
         countRunItems: run.countRunItems ?? 0,
         avgTotalCost: run.avgTotalCost ?? null,
         totalCost: run.totalCost ?? null,
@@ -1514,7 +1514,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1562,7 +1562,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1612,7 +1612,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1653,7 +1653,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1694,7 +1694,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1731,7 +1731,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -1767,7 +1767,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2139,7 +2139,7 @@ describe("Fetch datasets for UI presentation", () => {
           offset: 0,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2219,7 +2219,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2277,7 +2277,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2327,7 +2327,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2377,7 +2377,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItemsFirstPage = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2386,7 +2386,7 @@ describe("Fetch datasets for UI presentation", () => {
           datasetItemIds: firstPageDatasetItemIds,
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItemsSecondPage = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2426,7 +2426,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2486,7 +2486,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2547,7 +2547,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2616,7 +2616,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2658,7 +2658,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2704,7 +2704,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2741,7 +2741,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2770,7 +2770,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,
@@ -2831,7 +2831,7 @@ describe("Fetch datasets for UI presentation", () => {
           ],
         });
 
-        // Step 2: Given dataset item ids, lookup dataset run items in clickhouse
+        // Step 2: Given dataset item ids, lookup dataset run items in datastore
         // Note: for each unique dataset item id and dataset run id combination, we will retrieve a dataset run item
         const datasetRunItems = await getDatasetRunItemsWithoutIOByItemIds({
           projectId: projectId,

@@ -1,14 +1,14 @@
 services:
   datastore:
-    image: docker.io/clickhouse/clickhouse-server:24.3
+    image: docker.io/ghcr.io/hanzoai/datastore:latest
     user: "101:101"
     environment:
       DATASTORE_DB: default
-      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
-      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+      DATASTORE_USER: ${DATASTORE_USER:-hanzo}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
     volumes:
-      - hanzo_datastore_data:/var/lib/clickhouse
-      - hanzo_datastore_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/datastore
+      - hanzo_datastore_logs:/var/log/datastore
     ports:
       - "8123:8123"
       - "9000:9000"

@@ -125,7 +125,7 @@ export async function getEventFilterOptions(params: GetObservationsFilterOptions
         }))
       : [];
 
-  const getClickhouseTraceTags = async (): Promise<Array<{ tag: string }>> => {
+  const getDatastoreTraceTags = async (): Promise<Array<{ tag: string }>> => {
     const traces = await getTracesGroupedByTags({
       projectId,
       filter: traceTimestampFilters,
@@ -160,7 +160,7 @@ export async function getEventFilterOptions(params: GetObservationsFilterOptions
     getEventsGroupedByModel(projectId, eventsFilter),
     getEventsGroupedByName(projectId, eventsFilter),
     getEventsGroupedByPromptName(projectId, eventsFilter),
-    getClickhouseTraceTags(),
+    getDatastoreTraceTags(),
     getEventsGroupedByTraceName(projectId, eventsFilter),
     getEventsGroupedByModelId(projectId, eventsFilter),
     getEventsGroupedByType(projectId, eventsFilter),
@@ -262,13 +262,11 @@ export async function getEventFilterOptions(params: GetObservationsFilterOptions
         count: i.count,
       })),
     hasParentObservation: hasParentObservationResults.map((i) => ({
-      // ClickHouse returns UInt8 (0/1) for computed boolean; normalize to "true"/"false"
+      // Datastore returns UInt8 (0/1) for computed boolean; normalize to "true"/"false"
       value: i.hasParentObservation ? "true" : "false",
       count: i.count,
     })),
-    toolNames: toolNames
-      .filter((i) => i.toolName !== null)
-      .map((i) => ({ value: i.toolName as string })),
+    toolNames: toolNames.filter((i) => i.toolName !== null).map((i) => ({ value: i.toolName as string })),
     calledToolNames: calledToolNames
       .filter((i) => i.calledToolName !== null)
       .map((i) => ({ value: i.calledToolName as string })),

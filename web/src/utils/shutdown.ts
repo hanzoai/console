@@ -32,7 +32,7 @@ export const shutdown = async (signal: PrexitSignal) => {
       setTimeout(async () => {
         RateLimitService.shutdown();
 
-        // Shutdown clickhouse connections
+        // Shutdown datastore connections
         await DatastoreClientManager.getInstance().closeAllConnections();
 
         logger.info(`Redis status ${redis?.status}`);

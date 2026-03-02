@@ -438,7 +438,7 @@ export const traceRouter = createTRPCRouter({
           }
           await Promise.all(promises);
         } else {
-          logger.error(`Trace not found in Clickhouse: ${input.traceId}. Skipping bookmark.`);
+          logger.error(`Trace not found in Datastore: ${input.traceId}. Skipping bookmark.`);
         }
 
         return trace;
@@ -478,7 +478,7 @@ export const traceRouter = createTRPCRouter({
           datastoreFeatureTag: "tracing-trpc",
         });
         if (!datastoreTrace) {
-          logger.error(`Trace not found in Clickhouse: ${input.traceId}. Skipping publishing.`);
+          logger.error(`Trace not found in Datastore: ${input.traceId}. Skipping publishing.`);
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Trace not found",
@@ -527,7 +527,7 @@ export const traceRouter = createTRPCRouter({
           datastoreFeatureTag: "tracing-trpc",
         });
         if (!datastoreTrace) {
-          logger.error(`Trace not found in Clickhouse: ${input.traceId}. Skipping tag update.`);
+          logger.error(`Trace not found in Datastore: ${input.traceId}. Skipping tag update.`);
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Trace not found",

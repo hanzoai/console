@@ -11,7 +11,7 @@ import {
   DateTimeFilter,
   FilterList,
   FullEventsObservations,
-  orderByToClickhouseSql,
+  orderByToDatastoreSql,
   orderByToEntries,
   createPublicApiObservationsColumnMapping,
   createPublicApiTracesColumnMapping,
@@ -19,15 +19,15 @@ import {
   type ApiColumnMapping,
   ObservationPriceFields,
 } from "../queries";
-import { createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { createFilterFromFilterState } from "../queries/datastore-sql/factory";
 import type { FilterState } from "../../types";
 import {
   eventsScoresAggregation,
   eventsSessionsAggregation,
   eventsTracesAggregation,
   eventsTracesScoresAggregation,
-} from "../queries/clickhouse-sql/query-fragments";
-import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
+} from "../queries/datastore-sql/query-fragments";
+import { datastoreSearchCondition } from "../queries/datastore-sql/search";
 import { eventsTableNativeUiColumnDefinitions, eventsTableUiColumnDefinitions } from "../tableMappings/mapEventsTable";
 import { tracesTableUiColumnDefinitions } from "../tableMappings/mapTracesTable";
 import { applyInputOutputRendering, DEFAULT_RENDERING_PROPS, RenderingProps } from "../utils/rendering";
@@ -44,7 +44,7 @@ import {
   type QueryWithParams,
   type SessionEventsMetricsRow,
   OrderByEntry,
-} from "../queries/clickhouse-sql/event-query-builder";
+} from "../queries/datastore-sql/event-query-builder";
 import { type EventsObservationPublic } from "../queries/createGenerationsQuery";
 import { UiColumnMappings } from "../../tableDefinitions";
 import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
@@ -72,7 +72,7 @@ type ObservationsTableQueryResultWitouhtTraceFields = Omit<
  * Uses events-specific converter to include userId and sessionId
  * Supports both V1 (complete observations) and V2 (partial observations with field groups)
  *
- * @param observationRecords - Raw observation records from ClickHouse
+ * @param observationRecords - Raw observation records from Datastore
  * @param projectId - Project ID for model lookup
  * @param parseIoAsJson - Whether to parse input/output as JSON
  * @param requestedFields - Field groups for V2 API (null = V1 API, returns complete observations)
@@ -141,7 +141,7 @@ async function enrichObservationsWithModelData(
 
     const enriched = {
       ...converted,
-      // Use ClickHouse-calculated latency/timeToFirstToken if available, otherwise use what converter calculated
+      // Use Datastore-calculated latency/timeToFirstToken if available, otherwise use what converter calculated
       latency: o.latency !== undefined ? (o.latency ? Number(o.latency) / 1000 : null) : (converted.latency ?? null),
       timeToFirstToken:
         o.time_to_first_token !== undefined
@@ -179,7 +179,7 @@ async function enrichObservationsWithTraceFields(
 
 /**
  * Internal helper: extract and convert time filter from FilterList
- * Common pattern: find time filter and convert to ClickHouse DateTime format
+ * Common pattern: find time filter and convert to Datastore DateTime format
  */
 function extractTimeFilter(
   filter: FilterList,
@@ -967,7 +967,7 @@ export const getObservationsFromEventsTableForPublicApi = async (
 /**
  * V2 API: Get observations list from events table for public API
  * Returns partial observations based on requested field groups
- * Field filtering happens at query time in ClickHouse
+ * Field filtering happens at query time in Datastore
  *
  * When IO or expanded metadata is requested, uses a CTE-based split query:
  * - base CTE: filters/orders/limits on events_core (fast, truncated)
@@ -1169,7 +1169,7 @@ async function getTracesFromEventsTableForPublicApiInternal<T>(
     }
 
     const chOrderBy =
-      orderByToClickhouseSql(orderBy ? [orderBy] : [], TRACES_ORDER_BY_COLUMNS) ||
+      orderByToDatastoreSql(orderBy ? [orderBy] : [], TRACES_ORDER_BY_COLUMNS) ||
       "ORDER BY t.project_id DESC, t.timestamp DESC";
 
     queryBuilder.orderBy(chOrderBy).limit(limit, (page - 1) * limit);
@@ -1217,7 +1217,7 @@ export const getTracesFromEventsTableForPublicApi = async (opts: PublicApiTraces
     select: "rows",
   });
 
-  // Convert ClickHouse format to domain format and handle field groups
+  // Convert Datastore format to domain format and handle field groups
   return convertDatastoreTracesListToDomain(result, {
     scores: includeScores,
     observations: includeObservations,
@@ -1246,7 +1246,7 @@ type UpdateableEventFields = {
 };
 
 /**
- * Update events in ClickHouse based on selector and updates provided.
+ * Update events in Datastore based on selector and updates provided.
  * Selector can filter by spanIds, traceIds, and rootOnly flag.
  * Both spanIds / traceIds are used only when defined and non-empty.
  * E.g. `{ traceIds: [...] }` will only filter by traceIds, while
@@ -2468,7 +2468,7 @@ export const hasAnyUserFromEventsTable = async (projectId: string): Promise<bool
 };
 
 /**
- * Streams events from ClickHouse for blob storage export.
+ * Streams events from Datastore for blob storage export.
  * Uses EventsQueryBuilder for consistent query construction.
  */
 export const getEventsForBlobStorageExport = function (projectId: string, minTimestamp: Date, maxTimestamp: Date) {
@@ -2501,7 +2501,7 @@ export const getEventsForBlobStorageExport = function (projectId: string, minTim
 };
 
 /**
- * Streams events from ClickHouse for analytics integrations (PostHog, Mixpanel).
+ * Streams events from Datastore for analytics integrations (PostHog, Mixpanel).
  * Uses EventsQueryBuilder for consistent query construction.
  * All fields come directly from the events table (which has denormalized trace-level data).
  */

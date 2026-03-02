@@ -32,7 +32,7 @@ export const validateCommentReferenceObject = async ({
     return !!datastoreObject
       ? {}
       : {
-          errorMessage: `Reference object, ${objectType}: ${objectId} not found in Clickhouse. Skipping creating comment.`,
+          errorMessage: `Reference object, ${objectType}: ${objectId} not found in Datastore. Skipping creating comment.`,
         };
   } else {
     const prismaModel =

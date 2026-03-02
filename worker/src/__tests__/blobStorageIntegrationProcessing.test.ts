@@ -499,7 +499,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       s3Prefix = projectId;
 
       // Create trace with old timestamp that's far enough in the past
-      // but not so old that it might not be found by ClickHouse
+      // but not so old that it might not be found by Datastore
       const now = new Date();
       const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
       const oldTrace = createTrace({
@@ -537,7 +537,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       const files = await storageService.listFiles(s3Prefix);
       const projectFiles = files.filter((f) => f.file.includes(projectId));
 
-      // With FULL_HISTORY mode, if the ClickHouse query finds the old data,
+      // With FULL_HISTORY mode, if the Datastore query finds the old data,
       // it should export starting from that timestamp
       if (projectFiles.length > 0) {
         const traceFile = projectFiles.find((f) => f.file.includes("/traces/"));
@@ -734,7 +734,7 @@ describe("BlobStorageIntegrationProcessingJob", () => {
 
       // If data was found and exported, verify chunking behavior
       if (projectFiles.length > 0 && updatedIntegration?.lastSyncAt) {
-        // When ClickHouse finds the old data, it should start from that timestamp
+        // When Datastore finds the old data, it should start from that timestamp
         // and cap the export to 1 hour (frequency interval)
         // lastSyncAt should be capped to 1 hour after the found timestamp
         const minExpectedTime = veryOldTimestamp.getTime();

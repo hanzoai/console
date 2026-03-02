@@ -58,7 +58,7 @@ function openAiTokenCount(p: { model: Model; text: unknown }) {
   }
 
   let result = undefined;
-  const parsedText = typeof p.text === "string" ? parseJsonPrioritised(p.text) : p.text; // Clickhouse stores ChatMessage array as string
+  const parsedText = typeof p.text === "string" ? parseJsonPrioritised(p.text) : p.text; // Datastore stores ChatMessage array as string
 
   if (isChatMessageArray(parsedText) && isChatModel(config.data.tokenizerModel)) {
     // check if the tokenizerConfig is a valid chat config

@@ -49,16 +49,16 @@ describe("trace deletion queue processor", () => {
   };
 
   it("should process traces not in pending_deletions table", async () => {
-    // Setup: Create traces in ClickHouse that don't exist in pending_deletions
+    // Setup: Create traces in Datastore that don't exist in pending_deletions
     const eventTraceIds = [randomUUID(), randomUUID()];
 
-    // Create traces in ClickHouse
+    // Create traces in Datastore
     await createTracesCh([
       createTrace({ id: eventTraceIds[0], project_id: projectId }),
       createTrace({ id: eventTraceIds[1], project_id: projectId }),
     ]);
 
-    // Verify traces exist in ClickHouse before deletion
+    // Verify traces exist in Datastore before deletion
     const tracesBeforeDeletion = await getTracesByIds(eventTraceIds, projectId);
     expect(tracesBeforeDeletion).toHaveLength(2);
 
@@ -67,7 +67,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: Traces should be deleted from ClickHouse
+    // Then: Traces should be deleted from Datastore
     const tracesAfterDeletion = await getTracesByIds(eventTraceIds, projectId);
     expect(tracesAfterDeletion).toHaveLength(0);
 
@@ -84,7 +84,7 @@ describe("trace deletion queue processor", () => {
     const notDeletedTrace = randomUUID();
     const newEventTrace = randomUUID();
 
-    // Create all traces in ClickHouse
+    // Create all traces in Datastore
     await createTracesCh([
       createTrace({ id: alreadyDeletedTrace, project_id: projectId }),
       createTrace({ id: notDeletedTrace, project_id: projectId }),
@@ -147,7 +147,7 @@ describe("trace deletion queue processor", () => {
     const eventTrace1 = randomUUID();
     const eventTrace2 = randomUUID();
 
-    // Create all traces in ClickHouse
+    // Create all traces in Datastore
     await createTracesCh([
       createTrace({ id: pendingTrace1, project_id: projectId }),
       createTrace({ id: pendingTrace2, project_id: projectId }),
@@ -184,7 +184,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: All traces should be deleted from ClickHouse
+    // Then: All traces should be deleted from Datastore
     const tracesAfterDeletion = await getTracesByIds(
       [pendingTrace1, pendingTrace2, eventTrace1, eventTrace2],
       projectId,
@@ -204,7 +204,7 @@ describe("trace deletion queue processor", () => {
     // Setup: Only pending deletions, no event traces
     const pendingTrace = randomUUID();
 
-    // Create trace in ClickHouse
+    // Create trace in Datastore
     await createTracesCh([createTrace({ id: pendingTrace, project_id: projectId })]);
 
     // Verify trace exists before processing
@@ -225,7 +225,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: Trace should be deleted from ClickHouse
+    // Then: Trace should be deleted from Datastore
     const tracesAfterDeletion = await getTracesByIds([pendingTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(0);
 
@@ -243,7 +243,7 @@ describe("trace deletion queue processor", () => {
     const eventOnlyTrace = randomUUID();
     const pendingOnlyTrace = randomUUID();
 
-    // Create all traces in ClickHouse
+    // Create all traces in Datastore
     await createTracesCh([
       createTrace({ id: overlappingTrace, project_id: projectId }),
       createTrace({ id: eventOnlyTrace, project_id: projectId }),
@@ -276,7 +276,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: All traces should be deleted from ClickHouse
+    // Then: All traces should be deleted from Datastore
     const tracesAfterDeletion = await getTracesByIds([overlappingTrace, eventOnlyTrace, pendingOnlyTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(0);
 
@@ -293,7 +293,7 @@ describe("trace deletion queue processor", () => {
     // Setup: Event with traces that are all already deleted
     const alreadyDeletedTrace = randomUUID();
 
-    // Create trace in ClickHouse (this represents a trace that was already deleted previously)
+    // Create trace in Datastore (this represents a trace that was already deleted previously)
     await createTracesCh([createTrace({ id: alreadyDeletedTrace, project_id: projectId })]);
 
     // Verify trace exists before processing
@@ -314,7 +314,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: Trace should still exist in ClickHouse since it was filtered out
+    // Then: Trace should still exist in Datastore since it was filtered out
     const tracesAfterDeletion = await getTracesByIds([alreadyDeletedTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(1); // Trace should remain since it was filtered out
 
@@ -331,7 +331,7 @@ describe("trace deletion queue processor", () => {
     const alreadyDeletedTrace = randomUUID();
     const validEventTrace = randomUUID();
 
-    // Create both traces in ClickHouse
+    // Create both traces in Datastore
     await createTracesCh([
       createTrace({ id: alreadyDeletedTrace, project_id: projectId }),
       createTrace({ id: validEventTrace, project_id: projectId }),
@@ -357,7 +357,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: Only the valid event trace should be deleted from ClickHouse
+    // Then: Only the valid event trace should be deleted from Datastore
     // The already deleted trace should remain untouched
     const tracesAfterDeletion = await getTracesByIds([alreadyDeletedTrace, validEventTrace], projectId);
     expect(tracesAfterDeletion).toHaveLength(1); // Only alreadyDeletedTrace should remain
@@ -377,7 +377,7 @@ describe("trace deletion queue processor", () => {
     const newEventTrace = randomUUID();
     const overlappingTrace = randomUUID();
 
-    // Create all traces in ClickHouse
+    // Create all traces in Datastore
     await createTracesCh([
       createTrace({ id: alreadyDeletedTrace, project_id: projectId }),
       createTrace({ id: pendingTrace, project_id: projectId }),
@@ -421,7 +421,7 @@ describe("trace deletion queue processor", () => {
     // When
     await traceDeleteProcessor(job);
 
-    // Then: Only pending, new event, and overlapping traces should be deleted from ClickHouse
+    // Then: Only pending, new event, and overlapping traces should be deleted from Datastore
     // (already deleted trace should be skipped)
     const tracesAfterDeletion = await getTracesByIds(
       [alreadyDeletedTrace, pendingTrace, newEventTrace, overlappingTrace],

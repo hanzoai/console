@@ -2,16 +2,16 @@ services:
   datastore:
     # Upgrade from 24.3 to check behaviour on new events table.
     # Unit tests still verify 24.3 behaviour using -azure and -redis-cluster configs.
-    image: docker.io/clickhouse/clickhouse-server:25.8
+    image: docker.io/ghcr.io/hanzoai/datastore:latest:25.8
     user: "101:101"
     container_name: ${DATASTORE_CONTAINER_NAME:-hanzo-datastore}
     environment:
       DATASTORE_DB: default
-      DATASTORE_USER: ${DATASTORE_USER:-clickhouse}
-      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-clickhouse}
+      DATASTORE_USER: ${DATASTORE_USER:-hanzo}
+      DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
     volumes:
-      - hanzo_datastore_data:/var/lib/clickhouse
-      - hanzo_datastore_logs:/var/log/clickhouse-server
+      - hanzo_datastore_data:/var/lib/datastore
+      - hanzo_datastore_logs:/var/log/datastore
     ports:
       - ${HOST_IP:-127.0.0.1}:${DATASTORE_HTTP_PORT:-8123}:8123
       - ${HOST_IP:-127.0.0.1}:${DATASTORE_NATIVE_PORT:-9000}:9000

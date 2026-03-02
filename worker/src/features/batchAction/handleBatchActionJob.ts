@@ -206,7 +206,7 @@ export const handleBatchActionJob = async (batchActionJob: Job<TQueueJobTypes[Qu
             searchQuery: query.searchQuery ?? undefined,
             searchType: query.searchType,
             rowLimit: env.HANZO_MAX_HISTORIC_EVAL_CREATION_LIMIT,
-          }) // when reading from clickhouse, we only want to read the necessary identifiers.
+          }) // when reading from datastore, we only want to read the necessary identifiers.
         : await getDatabaseReadStreamPaginated({
             projectId: projectId,
             cutoffCreatedAt: new Date(cutoffCreatedAt),

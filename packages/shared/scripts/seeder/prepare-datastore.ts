@@ -3,16 +3,16 @@ import { SeederOptions } from "./utils/types";
 import { logger } from "../../src/server";
 
 /**
- * ClickHouse data preparation using the seeder abstraction.
+ * Datastore data preparation using the seeder abstraction.
  */
-export const prepareClickhouse = async (
+export const prepareDatastore = async (
   projectIds: string[],
   opts: {
     numberOfDays: number;
     numberOfRuns?: number;
   },
 ) => {
-  logger.info(`Preparing ClickHouse for ${projectIds.length} projects and ${opts.numberOfDays} days.`);
+  logger.info(`Preparing Datastore for ${projectIds.length} projects and ${opts.numberOfDays} days.`);
 
   const formattedOpts: SeederOptions = {
     mode: "bulk",
@@ -24,9 +24,9 @@ export const prepareClickhouse = async (
 
   try {
     await orchestrator.executeFullSeed(projectIds, formattedOpts);
-    logger.info("ClickHouse preparation completed successfully");
+    logger.info("Datastore preparation completed successfully");
   } catch (error) {
-    logger.error("ClickHouse preparation failed:", error);
+    logger.error("Datastore preparation failed:", error);
     throw error;
   }
 };

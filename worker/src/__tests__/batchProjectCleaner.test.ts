@@ -17,7 +17,7 @@ import {
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";
 
-async function getClickhouseCount(table: string, projectId: string): Promise<number> {
+async function getDatastoreCount(table: string, projectId: string): Promise<number> {
   const result = await queryDatastore<{ count: number }>({
     query: `SELECT count() as count FROM ${table} FINAL WHERE project_id = {projectId: String}`,
     params: { projectId },
@@ -57,7 +57,7 @@ describe("BatchProjectCleaner", () => {
       expect(lockValue).toBeNull();
     });
 
-    it("should return sleep interval when deleted project has no ClickHouse data", async () => {
+    it("should return sleep interval when deleted project has no Datastore data", async () => {
       // Create and soft-delete a project
       const { projectId } = await createOrgProjectAndApiKey();
       await prisma.project.update({
@@ -83,14 +83,14 @@ describe("BatchProjectCleaner", () => {
         data: { deletedAt: new Date() },
       });
 
-      // Insert test traces into ClickHouse
+      // Insert test traces into Datastore
       await createTracesCh([
         createTrace({ id: randomUUID(), project_id: projectId }),
         createTrace({ id: randomUUID(), project_id: projectId }),
       ]);
 
       // Verify traces exist before deletion
-      const countBefore = await getClickhouseCount(TEST_TABLE, projectId);
+      const countBefore = await getDatastoreCount(TEST_TABLE, projectId);
       expect(countBefore).toBe(2);
 
       // Run processBatch
@@ -98,7 +98,7 @@ describe("BatchProjectCleaner", () => {
       const nextDelayMs = await cleaner.processBatch();
 
       // Verify traces were deleted
-      const countAfter = await getClickhouseCount(TEST_TABLE, projectId);
+      const countAfter = await getDatastoreCount(TEST_TABLE, projectId);
       expect(countAfter).toBe(0);
 
       // Verify returned check interval (work was done)
@@ -126,16 +126,16 @@ describe("BatchProjectCleaner", () => {
       ]);
 
       // Verify traces exist before deletion
-      expect(await getClickhouseCount(TEST_TABLE, deletedProjectId)).toBe(2);
-      expect(await getClickhouseCount(TEST_TABLE, activeProjectId)).toBe(3);
+      expect(await getDatastoreCount(TEST_TABLE, deletedProjectId)).toBe(2);
+      expect(await getDatastoreCount(TEST_TABLE, activeProjectId)).toBe(3);
 
       // Run processBatch
       const cleaner = new BatchProjectCleaner(TEST_TABLE);
       await cleaner.processBatch();
 
       // Verify only deleted project's traces were removed
-      expect(await getClickhouseCount(TEST_TABLE, deletedProjectId)).toBe(0);
-      expect(await getClickhouseCount(TEST_TABLE, activeProjectId)).toBe(3);
+      expect(await getDatastoreCount(TEST_TABLE, deletedProjectId)).toBe(0);
+      expect(await getDatastoreCount(TEST_TABLE, activeProjectId)).toBe(3);
     });
 
     it("should delete traces from multiple soft-deleted projects", async () => {
@@ -164,8 +164,8 @@ describe("BatchProjectCleaner", () => {
       const nextDelayMs = await cleaner.processBatch();
 
       // Verify both projects' traces were deleted
-      expect(await getClickhouseCount(TEST_TABLE, projectId1)).toBe(0);
-      expect(await getClickhouseCount(TEST_TABLE, projectId2)).toBe(0);
+      expect(await getDatastoreCount(TEST_TABLE, projectId1)).toBe(0);
+      expect(await getDatastoreCount(TEST_TABLE, projectId2)).toBe(0);
       expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_CHECK_INTERVAL_MS);
     });
 
@@ -188,7 +188,7 @@ describe("BatchProjectCleaner", () => {
       const nextDelayMs = await cleaner.processBatch();
 
       // Verify traces were NOT deleted (lock blocked processing)
-      expect(await getClickhouseCount(TEST_TABLE, projectId)).toBe(1);
+      expect(await getDatastoreCount(TEST_TABLE, projectId)).toBe(1);
       expect(nextDelayMs).toBe(env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS);
     });
 
@@ -208,7 +208,7 @@ describe("BatchProjectCleaner", () => {
       await cleaner.processBatch();
 
       // Verify that traces were deleted, therefore processing occurred
-      expect(await getClickhouseCount(TEST_TABLE, projectId)).toBe(0);
+      expect(await getDatastoreCount(TEST_TABLE, projectId)).toBe(0);
 
       // Verify lock was released
       const lockValue = await redis?.get(TEST_LOCK_KEY);
@@ -253,16 +253,16 @@ describe("BatchProjectCleaner", () => {
       ]);
 
       // Verify items exist before deletion
-      expect(await getClickhouseCount(TABLE, deletedProjectId)).toBe(2);
-      expect(await getClickhouseCount(TABLE, activeProjectId)).toBe(3);
+      expect(await getDatastoreCount(TABLE, deletedProjectId)).toBe(2);
+      expect(await getDatastoreCount(TABLE, activeProjectId)).toBe(3);
 
       // Run processBatch
       const cleaner = new BatchProjectCleaner(TABLE);
       await cleaner.processBatch();
 
       // Verify only deleted project's items were removed
-      expect(await getClickhouseCount(TABLE, deletedProjectId)).toBe(0);
-      expect(await getClickhouseCount(TABLE, activeProjectId)).toBe(3);
+      expect(await getDatastoreCount(TABLE, deletedProjectId)).toBe(0);
+      expect(await getDatastoreCount(TABLE, activeProjectId)).toBe(3);
     });
   });
 });

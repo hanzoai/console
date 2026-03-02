@@ -170,7 +170,7 @@ jobs:
         postgres-version: [12, 15]
     steps:
       - uses: actions/checkout@v4
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
@@ -199,7 +199,7 @@ jobs:
           grep -v -e '^S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev.example > .env
           echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
           echo "HANZO_CACHE_PROMPT_ENABLED=false" >> .env
-          echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
+          echo "HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS=1" >> .env
       - name: Setup Turbo cache
         uses: actions/cache@v4
         with:
@@ -228,13 +228,13 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ch:up
-      - name: Download and extract ClickHouse client for dev-tables setup
+      - name: Download and extract Datastore client for dev-tables setup
         run: |
           CH_VERSION="24.9.3.128"
           ARCH="amd64"
           wget "https://packages.clickhouse.com/deb/pool/main/c/clickhouse/clickhouse-common-static_${CH_VERSION}_${ARCH}.deb" -O clickhouse-client.deb
 
-          # The binary is usually located in ./usr/bin/clickhouse in the archive
+          # The binary is usually located in ./usr/bin/clickhouse in the archive (datastore-compatible)
           dpkg-deb -x clickhouse-client.deb ch_client_dir
           sudo cp ch_client_dir/usr/bin/clickhouse /usr/local/bin/
       - name: Setup Dev Tables
@@ -279,7 +279,7 @@ jobs:
         shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
@@ -307,7 +307,7 @@ jobs:
           cp .env.dev${{ matrix.deploy-mode }}.example .env
           grep -v -e '^S3_BATCH_EXPORT_ENABLED=' -e '^NEXT_PUBLIC_HANZO_RUN_NEXT_INIT=' .env.dev${{ matrix.deploy-mode }}.example > .env
           echo "HANZO_INGESTION_QUEUE_DELAY_MS=1" >> .env
-          echo "HANZO_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS=1" >> .env
+          echo "HANZO_INGESTION_DATASTORE_WRITE_INTERVAL_MS=1" >> .env
           echo "HANZO_TRACE_DELETE_CONCURRENCY=100" >> .env
           echo "ADMIN_API_KEY=admin-api-key" >> .env
           echo "HANZO_EE_LICENSE_KEY=hanzo_ee_test" >> .env
@@ -339,14 +339,14 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ch:up
-      - name: Download and extract ClickHouse client for dev-tables setup
+      - name: Download and extract Datastore client for dev-tables setup
         if: matrix.deploy-mode == ''
         run: |
           CH_VERSION="24.9.3.128"
           ARCH="amd64"
           wget "https://packages.clickhouse.com/deb/pool/main/c/clickhouse/clickhouse-common-static_${CH_VERSION}_${ARCH}.deb" -O clickhouse-client.deb
 
-          # The binary is usually located in ./usr/bin/clickhouse in the archive
+          # The binary is usually located in ./usr/bin/clickhouse in the archive (datastore-compatible)
           dpkg-deb -x clickhouse-client.deb ch_client_dir
           sudo cp ch_client_dir/usr/bin/clickhouse /usr/local/bin/
       - name: Setup Dev Tables
@@ -406,7 +406,7 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
@@ -434,7 +434,7 @@ jobs:
           pnpm run db:migrate
           pnpm run db:seed
           pnpm run --filter=shared ch:up
-      - name: Download and extract ClickHouse client for dev-tables setup
+      - name: Download and extract Datastore client for dev-tables setup
         if: matrix.deploy-mode == ''
         run: |
           CH_VERSION="24.9.3.128"
@@ -478,7 +478,7 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
@@ -570,7 +570,7 @@ jobs:
         run: |
           cp .env.dev.example .env
           cp .env.dev.example web/.env
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
@@ -626,7 +626,7 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Clickhouse migrations
+      - name: Install golang-migrate for Datastore migrations
         run: |
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate

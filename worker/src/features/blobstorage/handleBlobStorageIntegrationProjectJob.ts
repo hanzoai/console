@@ -36,7 +36,7 @@ const getMinTimestampForExport = async (
   // For first export, use the export mode to determine start date
   switch (exportMode) {
     case BlobStorageExportMode.FULL_HISTORY:
-      // Query ClickHouse for the actual minimum timestamp from traces, observations, and scores tables
+      // Query Datastore for the actual minimum timestamp from traces, observations, and scores tables
       try {
         const result = await queryDatastore<{ min_timestamp: number | null }>({
           query: `
@@ -65,7 +65,7 @@ const getMinTimestampForExport = async (
 
         // Extract the minimum timestamp
         logger.info(
-          `[BLOB INTEGRATION] ClickHouse min_timestamp for project ${projectId}: ${result[0]?.min_timestamp}, type: ${typeof result[0]?.min_timestamp}`,
+          `[BLOB INTEGRATION] Datastore min_timestamp for project ${projectId}: ${result[0]?.min_timestamp}, type: ${typeof result[0]?.min_timestamp}`,
         );
         const minTimestampValue = Number(result[0]?.min_timestamp);
 
@@ -82,7 +82,7 @@ const getMinTimestampForExport = async (
         return new Date(0);
       } catch (error) {
         logger.error(
-          `[BLOB INTEGRATION] Error querying ClickHouse for minimum timestamp for project ${projectId}`,
+          `[BLOB INTEGRATION] Error querying Datastore for minimum timestamp for project ${projectId}`,
           error,
         );
         throw new Error(`Failed to fetch minimum timestamp: ${error}`);

@@ -29,7 +29,7 @@ import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 // Skip when events table is not enabled (v2 queries require events_core).
 const maybe = env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true" ? describe : describe.skip;
 
-// ── Constants mirroring packages/shared/scripts/seeder/utils/clickhouse-seed-constants.ts ──
+// ── Constants mirroring packages/shared/scripts/seeder/utils/datastore-seed-constants.ts ──
 
 const TRACE_NAMES = [
   "LangGraph",
@@ -459,7 +459,7 @@ describe("dashboard v1 vs v2 consistency", () => {
           },
         ],
         featureFlags: {
-          excludeClickhouseRead: false,
+          excludeDatastoreRead: false,
           templateFlag: true,
           v4BetaToggleVisible: false,
           observationEvals: false,
@@ -756,7 +756,7 @@ describe("dashboard v1 vs v2 consistency", () => {
 
   // Synthetic data seeds environments "default" and "staging" explicitly.
   // Seeder data uses "default" and "console-prompt-experiment" for scores
-  // (see data-generators.ts lines 240, 268, 600 and clickhouse-builder.ts).
+  // (see data-generators.ts lines 240, 268, 600 and datastore-builder.ts).
   const SCORE_ENVIRONMENTS = DATA_MODE === "seeder" ? ["default", "console-prompt-experiment"] : ["default", "staging"];
 
   maybe("score-aggregate tRPC endpoint v2", () => {
@@ -849,7 +849,7 @@ describe("dashboard v1 vs v2 consistency", () => {
         expect(Number(v2Row!.countScoreId)).toBe(Number(v1Row.countScoreId));
         // avgValue must match (both should be numeric)
         expect(Number(v2Row!.avgValue)).toBeCloseTo(Number(v1Row.avgValue), 5);
-        // avgValue type: v2 returns number, v1 returns string from ClickHouse.
+        // avgValue type: v2 returns number, v1 returns string from Datastore.
         // Component uses: metric.avgValue ? (metric.avgValue as number) : 0
         // Verify v2 avgValue behaves correctly with the truthiness guard
         const v2Avg = v2Row!.avgValue;
@@ -1117,7 +1117,7 @@ describe("dashboard v1 vs v2 consistency", () => {
       const v1Total = v1Bins.reduce((s, b) => s + b.count, 0);
       const v2Total = v2Bins.reduce((s, b) => s + b.count, 0);
 
-      // Total count: allow ±1. ClickHouse histogram() returns float counts
+      // Total count: allow ±1. Datastore histogram() returns float counts
       // per bin (it distributes points across bins using an adaptive algorithm).
       // Math.round() on each bin independently can shift the sum by ±1.
       expect(Math.abs(v2Total - v1Total)).toBeLessThanOrEqual(1);
@@ -1258,7 +1258,7 @@ describe("dashboard v1 vs v2 consistency", () => {
         }
 
         // Per-key totals must agree within 5%
-        // (ClickHouse eventual consistency between observations FINAL and events_core)
+        // (Datastore eventual consistency between observations FINAL and events_core)
         for (const [key, v1Sum] of v1Totals) {
           const v2Sum = v2Totals.get(key) ?? 0;
           if (v1Sum === 0) {

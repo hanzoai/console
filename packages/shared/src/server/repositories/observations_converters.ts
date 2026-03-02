@@ -1,8 +1,5 @@
 import { parseDatastoreUTCDateTimeFormat } from "./datastore";
-import {
-  ObservationRecordReadType,
-  EventsObservationRecordReadType,
-} from "./definitions";
+import { ObservationRecordReadType, EventsObservationRecordReadType } from "./definitions";
 import {
   Observation,
   EventsObservation,
@@ -13,11 +10,7 @@ import {
   ObservationCoreFields,
 } from "../../domain";
 import { parseMetadataDatastoreRecordToDomain } from "../utils/metadata_conversion";
-import {
-  RenderingProps,
-  DEFAULT_RENDERING_PROPS,
-  applyInputOutputRendering,
-} from "../utils/rendering";
+import { RenderingProps, DEFAULT_RENDERING_PROPS, applyInputOutputRendering } from "../utils/rendering";
 import { logger } from "../logger";
 import type { Model, Price } from "@prisma/client";
 
@@ -29,9 +22,7 @@ type ModelWithPrice = Model & { Price: Price[] };
  * @param record - The record to convert (can be null/undefined)
  * @returns A new object with all values converted to numbers, or empty object if input is null/undefined
  */
-function convertNumericRecord(
-  record: Record<string, number> | null | undefined,
-): Record<string, number> {
+function convertNumericRecord(record: Record<string, number> | null | undefined): Record<string, number> {
   if (!record) return {};
   const result: Record<string, number> = {};
   for (const key in record) {
@@ -43,16 +34,14 @@ function convertNumericRecord(
 }
 
 /**
- * Validates that all ObservationCoreFields are present and not undefined in a ClickHouse record.
+ * Validates that all ObservationCoreFields are present and not undefined in a Datastore record.
  * Throws an error if any required core field is missing.
  *
- * @param record - The partial observation record from ClickHouse to validate
+ * @param record - The partial observation record from Datastore to validate
  * @throws Error if any core field is undefined
  * @returns The validated core fields in domain format
  */
-function ensureObservationCoreFields(
-  record: Partial<ObservationRecordReadType>,
-): ObservationCoreFields {
+function ensureObservationCoreFields(record: Partial<ObservationRecordReadType>): ObservationCoreFields {
   const missingFields: string[] = [];
 
   if (record.id === undefined) missingFields.push("id");
@@ -80,25 +69,20 @@ function ensureObservationCoreFields(
  * @param model - The model with price data (can be null)
  * @returns Object with modelId and pricing fields
  */
-export const enrichObservationWithModelData = (
-  model: ModelWithPrice | null | undefined,
-) => {
+export const enrichObservationWithModelData = (model: ModelWithPrice | null | undefined) => {
   return {
     modelId: model?.id ?? null,
-    inputPrice:
-      model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
-    outputPrice:
-      model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
-    totalPrice:
-      model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
+    inputPrice: model?.Price?.find((m) => m.usageType === "input")?.price ?? null,
+    outputPrice: model?.Price?.find((m) => m.usageType === "output")?.price ?? null,
+    totalPrice: model?.Price?.find((m) => m.usageType === "total")?.price ?? null,
   };
 };
 
 /**
- * Convert observation record from ClickHouse to domain model
+ * Convert observation record from Datastore to domain model
  * Return type depends on input parameters: either complete Observation or Partial<Observation>
  *
- * @param record - Raw observation record from ClickHouse
+ * @param record - Raw observation record from Datastore
  * @param renderingProps - Rendering options for input/output
  * @param complete - If true, fills missing fields with defaults (V1 API). If false/undefined, returns only present fields (V2 API)
  *
@@ -151,9 +135,7 @@ export function convertObservationPartial(
     ...coreFields,
     ...(record.type !== undefined && { type: record.type as ObservationType }),
     ...(record.end_time !== undefined && {
-      endTime: record.end_time
-        ? parseDatastoreUTCDateTimeFormat(record.end_time)
-        : null,
+      endTime: record.end_time ? parseDatastoreUTCDateTimeFormat(record.end_time) : null,
     }),
 
     // Basic fields
@@ -235,9 +217,7 @@ export function convertObservationPartial(
       promptName: record.prompt_name ?? null,
     }),
     ...(record.prompt_version !== undefined && {
-      promptVersion: record.prompt_version
-        ? Number(record.prompt_version)
-        : null,
+      promptVersion: record.prompt_version ? Number(record.prompt_version) : null,
     }),
 
     // Pricing tier fields
@@ -268,13 +248,10 @@ export function convertObservationPartial(
             1000
           : null,
     }),
-    ...((record.completion_start_time !== undefined ||
-      record.start_time !== undefined) && {
+    ...((record.completion_start_time !== undefined || record.start_time !== undefined) && {
       timeToFirstToken:
         record.completion_start_time && record.start_time
-          ? (parseDatastoreUTCDateTimeFormat(
-              record.completion_start_time,
-            ).getTime() -
+          ? (parseDatastoreUTCDateTimeFormat(record.completion_start_time).getTime() -
               parseDatastoreUTCDateTimeFormat(record.start_time).getTime()) /
             1000
           : null,
@@ -300,7 +277,7 @@ export function convertObservationPartial(
     createdAt: partial.createdAt!,
     updatedAt: partial.updatedAt!,
 
-    // Fields that may not be selected from ClickHouse (default to null)
+    // Fields that may not be selected from Datastore (default to null)
     input: partial.input ?? null,
     output: partial.output ?? null,
     metadata: partial.metadata ?? {},
@@ -358,11 +335,7 @@ export function convertEventsObservation(
 ): EventsObservation | PartialEventsObservation {
   // Branch based on complete flag to use correct overload
   const baseObservation = complete
-    ? convertObservationPartial(
-        record as ObservationRecordReadType,
-        renderingProps,
-        true,
-      )
+    ? convertObservationPartial(record as ObservationRecordReadType, renderingProps, true)
     : convertObservationPartial(record, renderingProps, false);
 
   return {

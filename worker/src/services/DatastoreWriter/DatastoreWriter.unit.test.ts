@@ -35,7 +35,7 @@ vi.mock("../../env", async (importOriginal) => {
   };
 });
 
-const clickhouseClientMock = {
+const datastoreClientMock = {
   insert: vi.fn(),
 };
 
@@ -44,7 +44,7 @@ describe("DatastoreWriter", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    writer = DatastoreWriter.getInstance(clickhouseClientMock);
+    writer = DatastoreWriter.getInstance(datastoreClientMock);
   });
 
   afterEach(async () => {
@@ -79,7 +79,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should flush when queue reaches batch size", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
 
     for (let i = 0; i < writer.batchSize; i++) {
       writer.addToQueue(TableName.Traces, { id: `${i}`, name: "test" } as any);
@@ -92,7 +92,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should flush at regular intervals", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
@@ -102,7 +102,7 @@ describe("DatastoreWriter", () => {
 
   it("should handle errors and retry", async () => {
     const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
+      .spyOn(datastoreClientMock, "insert")
       .mockRejectedValueOnce(new Error("DB Error"))
       .mockResolvedValueOnce();
 
@@ -121,7 +121,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should drop records after max attempts", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockRejectedValue(new Error("DB Error"));
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockRejectedValue(new Error("DB Error"));
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
@@ -138,7 +138,7 @@ describe("DatastoreWriter", () => {
 
   it("should shutdown gracefully", async () => {
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
 
     await writer.shutdown();
 
@@ -148,7 +148,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should handle multiple table types", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "trace" });
     writer.addToQueue(TableName.Scores, { id: "2", name: "score" });
@@ -163,7 +163,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should not flush when isIntervalFlushInProgress is true", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
     writer["isIntervalFlushInProgress"] = true;
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
@@ -181,7 +181,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should flush all queues when flushAll is called directly", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
     writer.addToQueue(TableName.Traces, { id: "1", name: "trace" });
     writer.addToQueue(TableName.Scores, { id: "2", name: "score" });
 
@@ -193,7 +193,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should handle adding items to queue while flush is in progress", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockImplementation(() => {
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockImplementation(() => {
       writer.addToQueue(TableName.Traces, { id: "2", name: "test2" });
       return Promise.resolve();
     });
@@ -208,7 +208,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should handle concurrent writes during high load", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
     const concurrentWrites = 1000;
 
     const writes = Array.from({ length: concurrentWrites }, (_, i) =>
@@ -224,26 +224,26 @@ describe("DatastoreWriter", () => {
 
   it("should report wait time and processing time metrics correctly", async () => {
     const metricsDistributionSpy = vi.spyOn(serverExports, "recordHistogram");
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
 
     writer.addToQueue(TableName.Traces, { id: "1", name: "test" });
 
     await vi.advanceTimersByTimeAsync(writer.writeInterval);
 
-    expect(metricsDistributionSpy).toHaveBeenCalledWith("hanzo.queue.clickhouse_writer.wait_time", expect.any(Number), {
+    expect(metricsDistributionSpy).toHaveBeenCalledWith("hanzo.queue.datastore_writer.wait_time", expect.any(Number), {
       unit: "milliseconds",
     });
 
     expect(metricsDistributionSpy).toHaveBeenCalledWith(
-      "hanzo.queue.clickhouse_writer.processing_time",
+      "hanzo.queue.datastore_writer.processing_time",
       expect.any(Number),
       { unit: "milliseconds" },
     );
   });
 
-  it("should handle different types of Clickhouse client errors", async () => {
+  it("should handle different types of Datastore client errors", async () => {
     const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
+      .spyOn(datastoreClientMock, "insert")
       .mockRejectedValueOnce(new Error("Network error"))
       .mockRejectedValueOnce(new Error("Timeout"))
       .mockResolvedValueOnce();
@@ -261,7 +261,7 @@ describe("DatastoreWriter", () => {
   });
 
   it("should handle partial queue flush correctly", async () => {
-    const mockInsert = vi.spyOn(clickhouseClientMock, "insert").mockResolvedValue();
+    const mockInsert = vi.spyOn(datastoreClientMock, "insert").mockResolvedValue();
     const partialQueueSize = Math.floor(writer.batchSize / 2);
 
     for (let i = 0; i < partialQueueSize; i++) {
@@ -281,7 +281,7 @@ describe("DatastoreWriter", () => {
 
   it("should continue functioning after encountering an error", async () => {
     const mockInsert = vi
-      .spyOn(clickhouseClientMock, "insert")
+      .spyOn(datastoreClientMock, "insert")
       .mockRejectedValueOnce(new Error("DB Error"))
       .mockResolvedValue();
 
@@ -381,7 +381,7 @@ describe("DatastoreWriter", () => {
       } as any;
 
       const mockInsert = vi
-        .spyOn(clickhouseClientMock, "insert")
+        .spyOn(datastoreClientMock, "insert")
         .mockRejectedValueOnce(new Error("size of json object is extremely large and expected not greater than 1MB"))
         .mockResolvedValueOnce();
 
@@ -412,7 +412,7 @@ describe("DatastoreWriter", () => {
 
     it("should handle string length errors with batch splitting", async () => {
       const mockInsert = vi
-        .spyOn(clickhouseClientMock, "insert")
+        .spyOn(datastoreClientMock, "insert")
         .mockRejectedValueOnce(new Error("invalid string length"))
         .mockResolvedValue();
 

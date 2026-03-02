@@ -846,7 +846,7 @@ describe("Playground Jump Full Pipeline", () => {
   });
 
   it("should handle double-stringified messages array", () => {
-    // ClickHouse can store messages as double-stringified:
+    // Datastore can store messages as double-stringified:
     // { "messages": "[{\"role\":\"user\",\"content\":\"...\"}]" }
     // instead of: { "messages": [{role: "user", ...}] }
     //

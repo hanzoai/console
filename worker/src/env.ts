@@ -79,12 +79,12 @@ const EnvSchema = z.object({
   HANZO_EVAL_EXECUTION_WORKER_CONCURRENCY: z.coerce.number().positive().default(5),
   HANZO_EXPERIMENT_CREATOR_WORKER_CONCURRENCY: z.coerce.number().positive().default(5),
 
-  // Skip the read from ClickHouse within the Ingestion pipeline for the given
+  // Skip the read from Datastore within the Ingestion pipeline for the given
   // project ids. Applicable for projects that were created after the S3 write
   // was activated and which don't rely on historic updates.
   HANZO_SKIP_INGESTION_DATASTORE_READ_PROJECT_IDS: z.string().default(""),
   // Set a date after which S3 was active. Projects created after this date do
-  // perform a ClickHouse read as part of the ingestion pipeline.
+  // perform a Datastore read as part of the ingestion pipeline.
   HANZO_SKIP_INGESTION_DATASTORE_READ_MIN_PROJECT_CREATE_DATE: z.string().date().optional(),
 
   // Otel
@@ -180,12 +180,12 @@ const EnvSchema = z.object({
   HANZO_BATCH_PROJECT_CLEANER_PROJECT_LIMIT: z.coerce.number().positive().default(1000), // Max projects per batch
   HANZO_BATCH_PROJECT_CLEANER_DELETE_TIMEOUT_MS: z.coerce.number().positive().default(3_600_000), // 1 hour for DELETE operations
 
-  // Batch Data Retention Cleaner configuration (ClickHouse)
+  // Batch Data Retention Cleaner configuration (Datastore)
   HANZO_BATCH_DATA_RETENTION_CLEANER_ENABLED: z.enum(["true", "false"]).default("false"),
   HANZO_BATCH_DATA_RETENTION_CLEANER_INTERVAL_MS: z.coerce.number().positive().default(3_600_000), // 1 hour between runs
   HANZO_MEDIA_RETENTION_CLEANER_INTERVAL_MS: z.coerce.number().positive().default(600_000), // 10 minutes between runs
   HANZO_BATCH_DATA_RETENTION_CLEANER_PROJECT_LIMIT: z.coerce.number().positive().default(100), // Max projects per batch DELETE
-  HANZO_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE: z.coerce.number().positive().default(100), // Chunk size for counting projects in ClickHouse
+  HANZO_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE: z.coerce.number().positive().default(100), // Chunk size for counting projects in Datastore
   HANZO_BATCH_DATA_RETENTION_CLEANER_DELETE_TIMEOUT_MS: z.coerce.number().positive().default(3_600_000), // 1 hour for DELETE operations
 
   // Media Retention Cleaner configuration (S3/PostgreSQL)

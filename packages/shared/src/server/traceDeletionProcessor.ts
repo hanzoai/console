@@ -54,7 +54,7 @@ export async function shouldSkipTraceDeletionFor(projectId: string, traceIds: st
  * This function:
  * 1. Creates a record in the pending_deletions table for each trace
  * 2. Sends a deletion event to the queue with a configurable delay
- * 3. The worker will batch delete all pending traces from ClickHouse
+ * 3. The worker will batch delete all pending traces from Datastore
  * 4. Sets the is_deleted flag to true after successful deletion
  *
  * @param projectId - The project ID

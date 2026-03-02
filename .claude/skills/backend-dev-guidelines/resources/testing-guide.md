@@ -176,7 +176,7 @@ describe("Event Repository Tests", () => {
 
 **Key Points:**
 - Tests service/repository functions directly
-- Uses ClickHouse and Prisma test data
+- Uses Datastore and Prisma test data
 - Always cleanup test data after tests
 - Use unique IDs to avoid test interference
 

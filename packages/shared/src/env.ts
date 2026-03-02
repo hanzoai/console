@@ -206,7 +206,7 @@ const EnvSchema = z.object({
   // Whether to add a `FINAL` modifier to the observations CTE in GET /api/public/traces.
   // Can be used to improve performance for self-hosters that are fully on the new OTel SDKs.
   DATASTORE_DISABLE_OBSERVATIONS_FINAL: z.enum(["true", "false"]).default("false"),
-  // Enable Redis-based tracking of projects using OTEL API to optimize ClickHouse queries.
+  // Enable Redis-based tracking of projects using OTEL API to optimize Datastore queries.
   // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
   HANZO_SKIP_FINAL_FOR_OTEL_PROJECTS: z.enum(["true", "false"]).default("false"),
 

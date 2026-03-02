@@ -3,13 +3,13 @@ import { DEFAULT_TRACE_ENVIRONMENT } from "../ingestion/types";
 
 export const datastoreStringDateSchema = z
   .string()
-  // clickhouse stores UTC like '2024-05-23 18:33:41.602000'
+  // datastore stores UTC like '2024-05-23 18:33:41.602000'
   // we need to convert it to '2024-05-23T18:33:41.602000Z'
   .transform((str) => str.replace(" ", "T") + "Z")
   .pipe(z.string().datetime());
 
-//https://clickhouse.com/docs/en/integrations/javascript#integral-types-int64-int128-int256-uint64-uint128-uint256
-// clickhouse returns int64 as string
+//https://datastore.com/docs/en/integrations/javascript#integral-types-int64-int128-int256-uint64-uint128-uint256
+// datastore returns int64 as string
 export const UsageCostSchema = z.record(z.string(), z.coerce.string().nullable()).transform((val, ctx) => {
   const result: Record<string, number> = {};
   for (const key in val) {
@@ -98,15 +98,12 @@ export const eventsObservationRecordBaseSchema = observationRecordBaseSchema.ext
   session_id: z.string().nullish(),
 });
 
-export const eventsObservationRecordReadSchema =
-  observationRecordReadSchema.extend({
-    user_id: z.string().nullish(),
-    session_id: z.string().nullish(),
-    trace_name: z.string().nullish(),
-  });
-export type EventsObservationRecordReadType = z.infer<
-  typeof eventsObservationRecordReadSchema
->;
+export const eventsObservationRecordReadSchema = observationRecordReadSchema.extend({
+  user_id: z.string().nullish(),
+  session_id: z.string().nullish(),
+  trace_name: z.string().nullish(),
+});
+export type EventsObservationRecordReadType = z.infer<typeof eventsObservationRecordReadSchema>;
 
 export const traceRecordBaseSchema = z.object({
   id: z.string(),

@@ -30,10 +30,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { Decimal } from "decimal.js";
 import waitForExpect from "wait-for-expect";
 
-const maybeDescribe =
-  process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true"
-    ? describe
-    : describe.skip;
+const maybeDescribe = process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true" ? describe : describe.skip;
 
 describe("select all test suite", () => {
   it("should schedule trace deletions via pending_deletions table", async () => {
@@ -424,7 +421,7 @@ describe("select all test suite", () => {
 
     await createDatasetRunItemsCh([datasetRunItem1, datasetRunItem2]);
 
-    // Create clickhouse run items
+    // Create datastore run items
     await createDatasetRunItemsCh([
       createDatasetRunItem({
         project_id: projectId,
@@ -524,9 +521,7 @@ describe("select all test suite", () => {
         expect(jobTraceIds).toContain(traceId1);
         expect(jobTraceIds).toContain(traceId2);
 
-        const jobDatasetIds = jobs?.map(
-          (job) => job.data.payload.datasetItemId,
-        );
+        const jobDatasetIds = jobs?.map((job) => job.data.payload.datasetItemId);
         expect(jobDatasetIds).toContain(datasetItem1.id);
         expect(jobDatasetIds).toContain(datasetItem2.id);
         const configIds = jobs?.map((job) => job.data.payload.configId);
@@ -681,12 +676,8 @@ maybeDescribe("events table batch actions", () => {
     }
 
     // Verify each item's input/output matches the corresponding event
-    const item1 = datasetItems.find(
-      (i) => i.sourceObservationId === event1.span_id,
-    );
-    const item2 = datasetItems.find(
-      (i) => i.sourceObservationId === event2.span_id,
-    );
+    const item1 = datasetItems.find((i) => i.sourceObservationId === event1.span_id);
+    const item2 = datasetItems.find((i) => i.sourceObservationId === event2.span_id);
 
     expect(item1?.input).toEqual(eventInput1);
     expect(item1?.expectedOutput).toEqual(eventOutput1);

@@ -1575,7 +1575,7 @@ export async function getDatasetVersionForRun(params: {
       return null;
     },
     [Implementation.VERSIONED]: async () => {
-      // Step 1: Get the latest creation timestamp from dataset run items (ClickHouse)
+      // Step 1: Get the latest creation timestamp from dataset run items (Datastore)
       const maxCreatedAtResult = await queryDatastore<{
         max_created_at: string | null;
         max_dataset_item_version: string | null;

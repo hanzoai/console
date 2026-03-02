@@ -23,7 +23,7 @@ interface ProjectCount {
 }
 
 /**
- * BatchProjectCleaner handles bulk deletion of ClickHouse data for soft-deleted projects.
+ * BatchProjectCleaner handles bulk deletion of Datastore data for soft-deleted projects.
  *
  * Each instance processes one table (traces, observations, scores, events_full, events_core).
  * Multiple workers coordinate via Redis distributed locking to ensure only one
@@ -31,7 +31,7 @@ interface ProjectCount {
  *
  * Flow:
  * 1. Query PG for projects with deleted_at set (no lock needed)
- * 2. Query ClickHouse for counts per project (no lock needed)
+ * 2. Query Datastore for counts per project (no lock needed)
  * 3. Acquire Redis lock for DELETE only
  * 4. Execute DELETE
  * 5. On failure: re-run count query to determine partial success
@@ -91,12 +91,12 @@ export class BatchProjectCleaner extends PeriodicExclusiveRunner {
       return env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS;
     }
 
-    // Step 2: Query ClickHouse for counts per project (no lock needed)
+    // Step 2: Query Datastore for counts per project (no lock needed)
     let initialCounts: Map<string, number>;
     try {
       initialCounts = await this.getProjectCounts(deletedProjects.map((p) => p.id));
     } catch (error) {
-      logger.error(`${this.instanceName}: Failed to query ClickHouse counts`, error);
+      logger.error(`${this.instanceName}: Failed to query Datastore counts`, error);
       traceException(error);
       return env.HANZO_BATCH_PROJECT_CLEANER_SLEEP_ON_EMPTY_MS;
     }

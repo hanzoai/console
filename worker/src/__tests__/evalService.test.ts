@@ -816,7 +816,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         })
         .execute();
 
-      // Create a clickhouse run item
+      // Create a datastore run item
       await createDatasetRunItemsCh([
         createDatasetRunItem({
           project_id: projectId,
@@ -1594,7 +1594,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         })
         .execute();
 
-      // Used if ClickHouse reads are disabled.
+      // Used if Datastore reads are disabled.
       await kyselyPrisma.$kysely
         .insertInto("dataset_runs")
         .values({
@@ -1605,7 +1605,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         })
         .execute();
 
-      // Create a clickhouse run item that references dataset 2 and the new trace.
+      // Create a datastore run item that references dataset 2 and the new trace.
       await createDatasetRunItemsCh([
         createDatasetRunItem({
           project_id: projectId,
@@ -1750,7 +1750,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         })
         .execute();
 
-      // Create a clickhouse run item that references a non-existing dataset and the new trace.
+      // Create a datastore run item that references a non-existing dataset and the new trace.
       await createDatasetRunItemsCh([
         createDatasetRunItem({
           dataset_id: randomUUID(),
@@ -3104,7 +3104,7 @@ Respond with JSON: {"score": <number>, "reasoning": "<explanation>"}`;
         })
         .execute();
 
-      // Create clickhouse run item
+      // Create datastore run item
       await createDatasetRunItemsCh([
         createDatasetRunItem({
           project_id: projectId,

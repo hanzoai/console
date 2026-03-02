@@ -12,7 +12,7 @@ export const processDatastoreDatasetDelete = async (jobPayload: DatasetQueueEven
   logger.info(
     `Deleting dataset run items for dataset ${datasetId} ${
       deletionType === "dataset-runs" ? `runs ${jobPayload.datasetRunIds}` : ""
-    } in project ${projectId} from ClickHouse`,
+    } in project ${projectId} from Datastore`,
   );
 
   try {
@@ -36,7 +36,7 @@ export const processDatastoreDatasetDelete = async (jobPayload: DatasetQueueEven
     logger.error(
       `Error deleting dataset run items for dataset ${datasetId} ${
         deletionType === "dataset-runs" ? `runs ${jobPayload.datasetRunIds}` : ""
-      } in project ${projectId} from ClickHouse`,
+      } in project ${projectId} from Datastore`,
       e,
     );
     traceException(e);

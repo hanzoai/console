@@ -1,34 +1,34 @@
 import { z } from "zod/v4";
 
 /**
- * ClickHouse storage schema for tool definitions.
+ * Datastore storage schema for tool definitions.
  *
  * Based on ToolDefinitionSchema from packages/shared/src/utils/IORepresentation/chatML/types.ts
  * `parameters` stored as JSON string instead of z.record
  */
-export const ClickhouseToolDefinitionSchema = z.object({
+export const DatastoreToolDefinitionSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   parameters: z.string().optional(), // JSON string of parameters schema
 });
-export type ClickhouseToolDefinition = z.infer<typeof ClickhouseToolDefinitionSchema>;
+export type DatastoreToolDefinition = z.infer<typeof DatastoreToolDefinitionSchema>;
 
 /**
- * ClickHouse storage schema for tool calls (invocations).
+ * Datastore storage schema for tool calls (invocations).
  *
  * Based on ToolCallSchema from packages/shared/src/utils/IORepresentation/chatML/types.ts
- * Adapted for ClickHouse Array(JSON) storage:
+ * Adapted for Datastore Array(JSON) storage:
  * - `arguments` stored as JSON string (base may have parsed object)
  * - `index` optional field included for parallel tool call ordering
  */
-export const ClickhouseToolArgumentSchema = z.object({
+export const DatastoreToolArgumentSchema = z.object({
   id: z.string(),
   name: z.string(),
   arguments: z.string(), // JSON string of call arguments
   type: z.string().optional(),
   index: z.number().optional(),
 });
-export type ClickhouseToolArgument = z.infer<typeof ClickhouseToolArgumentSchema>;
+export type DatastoreToolArgument = z.infer<typeof DatastoreToolArgumentSchema>;
 
 /**
  * Flatten tool definition from nested or flat format.
@@ -84,11 +84,11 @@ function flattenToolCall(call: unknown): {
 /**
  * Helper to add a tool definition, deduplicating by name.
  */
-function addToolDefinition(definitions: ClickhouseToolDefinition[], tool: unknown): void {
+function addToolDefinition(definitions: DatastoreToolDefinition[], tool: unknown): void {
   const flattened = flattenToolDefinition(tool);
   if (!flattened.name) return; // Skip invalid tools
 
-  const normalized: ClickhouseToolDefinition = {
+  const normalized: DatastoreToolDefinition = {
     name: flattened.name,
     description: flattened.description,
     parameters: flattened.parameters ? JSON.stringify(flattened.parameters) : undefined,
@@ -103,7 +103,7 @@ function addToolDefinition(definitions: ClickhouseToolDefinition[], tool: unknow
 /**
  * Helper to add a tool call/argument.
  */
-function addToolArgument(args: ClickhouseToolArgument[], call: unknown): void {
+function addToolArgument(args: DatastoreToolArgument[], call: unknown): void {
   const flattened = flattenToolCall(call);
   if (!flattened.name) return; // Skip invalid calls
 
@@ -119,7 +119,7 @@ function addToolArgument(args: ClickhouseToolArgument[], call: unknown): void {
 /**
  * Extract tool definitions from raw input data (top-level tools array).
  */
-function extractToolsFromRawInput(input: unknown, definitions: ClickhouseToolDefinition[]): void {
+function extractToolsFromRawInput(input: unknown, definitions: DatastoreToolDefinition[]): void {
   if (!input || typeof input !== "object") return;
 
   const obj = Array.isArray(input) ? { messages: input } : (input as Record<string, unknown>);
@@ -159,7 +159,7 @@ function extractToolsFromRawInput(input: unknown, definitions: ClickhouseToolDef
 /**
  * Extract tool calls from raw output data.
  */
-function extractToolCallsFromRawOutput(output: unknown, args: ClickhouseToolArgument[]): void {
+function extractToolCallsFromRawOutput(output: unknown, args: DatastoreToolArgument[]): void {
   if (!output) return;
 
   // Array of messages
@@ -224,7 +224,7 @@ function extractToolCallsFromRawOutput(output: unknown, args: ClickhouseToolArgu
 /**
  * Extract tool calls from a single message object.
  */
-function extractToolCallsFromMessage(msg: Record<string, unknown>, args: ClickhouseToolArgument[]): void {
+function extractToolCallsFromMessage(msg: Record<string, unknown>, args: DatastoreToolArgument[]): void {
   if (Array.isArray(msg.tool_calls)) {
     for (const call of msg.tool_calls) {
       addToolArgument(args, call);
@@ -273,12 +273,12 @@ export function extractToolsFromObservation(
   input: unknown,
   output: unknown,
 ): {
-  toolDefinitions: ClickhouseToolDefinition[];
-  toolArguments: ClickhouseToolArgument[];
+  toolDefinitions: DatastoreToolDefinition[];
+  toolArguments: DatastoreToolArgument[];
 } {
   try {
-    const toolDefinitions: ClickhouseToolDefinition[] = [];
-    const toolArguments: ClickhouseToolArgument[] = [];
+    const toolDefinitions: DatastoreToolDefinition[] = [];
+    const toolArguments: DatastoreToolArgument[] = [];
 
     const parsedInput = parseIfString(input);
     const parsedOutput = parseIfString(output);
@@ -303,10 +303,10 @@ export function extractToolsFromObservation(
 }
 
 /**
- * Convert array of tool definitions to Map format for ClickHouse.
+ * Convert array of tool definitions to Map format for Datastore.
  * Key: tool name, Value: JSON string of {description, parameters}
  */
-export function convertDefinitionsToMap(definitions: ClickhouseToolDefinition[]): Record<string, string> {
+export function convertDefinitionsToMap(definitions: DatastoreToolDefinition[]): Record<string, string> {
   const map: Record<string, string> = {};
   for (const def of definitions) {
     // Last definition wins if duplicate names (shouldn't happen after dedup)
@@ -319,7 +319,7 @@ export function convertDefinitionsToMap(definitions: ClickhouseToolDefinition[])
 }
 
 /**
- * Convert array of tool calls to parallel arrays for ClickHouse.
+ * Convert array of tool calls to parallel arrays for Datastore.
  *
  * Returns:
  * - tool_calls: Array of JSON strings containing {id, arguments, type, index} (NO name)
@@ -328,7 +328,7 @@ export function convertDefinitionsToMap(definitions: ClickhouseToolDefinition[])
  * This structure enables efficient filtering by name using has(tool_call_names, 'name')
  * without needing to parse JSON.
  */
-export function convertCallsToArrays(args: ClickhouseToolArgument[]): {
+export function convertCallsToArrays(args: DatastoreToolArgument[]): {
   tool_calls: string[];
   tool_call_names: string[];
 } {

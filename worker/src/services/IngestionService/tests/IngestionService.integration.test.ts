@@ -1624,7 +1624,7 @@ describe("Ingestion end-to-end tests", () => {
     expect(observation.total_cost).toBe(0.00020505);
   });
 
-  it("should merge observations from clickhouse and event list", async () => {
+  it("should merge observations from datastore and event list", async () => {
     const traceId = randomUUID();
     const observationId = randomUUID();
 

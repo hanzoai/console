@@ -68,7 +68,7 @@ pnpm run db:seed           # Seed with example data
 
 ### Infrastructure
 ```sh
-pnpm run infra:dev:up      # Start Docker services (PostgreSQL, ClickHouse, Redis, MinIO)
+pnpm run infra:dev:up      # Start Docker services (PostgreSQL, Datastore, Redis, MinIO)
 pnpm run infra:dev:down    # Stop Docker services
 ```
 
@@ -110,7 +110,7 @@ pnpm run nuke              # Remove all node_modules, build files, wipe database
 - **APIs**: tRPC (type-safe client-server communication) + REST APIs for public access
 - **Authentication**: NextAuth.js/Auth.js
 - **Database**: Prisma ORM with PostgreSQL
-- **Analytics Database**: ClickHouse (high-volume trace data)
+- **Analytics Database**: Datastore (high-volume trace data)
 - **Validation**: Zod schemas, we use zodv4 (always import from `zod/v4`)
 - **Styling**: Tailwind CSS with CSS variables for theming
 - **Components**: shadcn/ui (Radix UI primitives)
@@ -124,7 +124,7 @@ pnpm run nuke              # Remove all node_modules, build files, wipe database
 
 ### Infrastructure
 - **Primary Database**: PostgreSQL (via Prisma ORM)
-- **Analytics Database**: ClickHouse
+- **Analytics Database**: Datastore
 - **Cache/Queues**: Redis
 - **Blob Storage**: MinIO/S3
 
@@ -149,7 +149,7 @@ pnpm run nuke              # Remove all node_modules, build files, wipe database
 - Implement proper entitlements checking (see `/web/src/features/entitlements/README.md`)
 
 ### Database
-- **Dual database system**: PostgreSQL (primary) + ClickHouse (analytics)
+- **Dual database system**: PostgreSQL (primary) + Datastore (analytics)
 - Use `golang-migrate` CLI for database migrations
 - All database operations go through Prisma ORM for PostgreSQL
 - Foreign key relationships may not be enforced in schema to allow unordered ingestion
@@ -172,7 +172,7 @@ pnpm run nuke              # Remove all node_modules, build files, wipe database
 
 - **Node.js**: Version 24 (specified in `.nvmrc`)
 - **Package Manager**: pnpm v9.5.0
-- **Database Dependencies**: Docker for local PostgreSQL, ClickHouse, Redis, MinIO
+- **Database Dependencies**: Docker for local PostgreSQL, Datastore, Redis, MinIO
 - **Environment**: Copy `.env.dev.example` to `.env`
 
 ## Login for Development

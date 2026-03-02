@@ -1,10 +1,6 @@
 import { z } from "zod/v4";
 
-import {
-  ObservationType,
-  timeFilter,
-  type ObservationOptions,
-} from "@hanzo/shared";
+import { ObservationType, timeFilter, type ObservationOptions } from "@hanzo/shared";
 import { protectedProjectProcedure } from "@/src/server/api/trpc";
 import {
   getCategoricalScoresGroupedByName,
@@ -25,9 +21,7 @@ export const filterOptionsQuery = protectedProjectProcedure
     z.object({
       projectId: z.string(),
       startTimeFilter: z.array(timeFilter).optional(),
-      observationType: z
-        .union([z.enum(ObservationType), z.literal("ALL")])
-        .default("GENERATION"),
+      observationType: z.union([z.enum(ObservationType), z.literal("ALL")]).default("GENERATION"),
     }),
   )
   .query(async ({ input }) => {
@@ -44,7 +38,7 @@ export const filterOptionsQuery = protectedProjectProcedure
           }))
         : [];
 
-    const getClickhouseTraceName = async (): Promise<Array<{ traceName: string }>> => {
+    const getDatastoreTraceName = async (): Promise<Array<{ traceName: string }>> => {
       const traces = await getTracesGroupedByName(
         input.projectId,
         tracesTableUiColumnDefinitions,
@@ -53,7 +47,7 @@ export const filterOptionsQuery = protectedProjectProcedure
       return traces.map((i) => ({ traceName: i.name }));
     };
 
-    const getClickhouseTraceTags = async (): Promise<Array<{ tag: string }>> => {
+    const getDatastoreTraceTags = async (): Promise<Array<{ tag: string }>> => {
       const traces = await getTracesGroupedByTags({
         projectId: input.projectId,
         filter: traceTimestampFilters,
@@ -88,9 +82,9 @@ export const filterOptionsQuery = protectedProjectProcedure
       //prompt name
       getObservationsGroupedByPromptName(input.projectId, startTimeFilter ?? []),
       //trace name
-      getClickhouseTraceName(),
+      getDatastoreTraceName(),
       // trace tags
-      getClickhouseTraceTags(),
+      getDatastoreTraceTags(),
       // modelId
       getObservationsGroupedByModelId(input.projectId, startTimeFilter ?? []),
       // available tool names (from tool_definitions)

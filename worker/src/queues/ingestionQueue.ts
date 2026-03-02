@@ -1,7 +1,7 @@
 import { Job, Processor } from "bullmq";
 import {
   datastoreClient,
-  getClickhouseEntityType,
+  getDatastoreEntityType,
   getCurrentSpan,
   getQueue,
   getS3EventStorageClient,
@@ -41,7 +41,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
         span.setAttribute("messaging.bullmq.job.input.fileKey", job.data.payload.data.fileKey ?? "");
       }
 
-      // We write the new file into the ClickHouse event log to keep track for retention and deletions
+      // We write the new file into the Datastore event log to keep track for retention and deletions
       const datastoreWriter = DatastoreWriter.getInstance();
 
       if (
@@ -53,11 +53,11 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
         datastoreWriter.addToQueue(TableName.BlobStorageFileLog, {
           id: randomUUID(),
           project_id: job.data.payload.authCheck.scope.projectId,
-          entity_type: getClickhouseEntityType(job.data.payload.data.type),
+          entity_type: getDatastoreEntityType(job.data.payload.data.type),
           entity_id: job.data.payload.data.eventBodyId,
           event_id: job.data.payload.data.fileKey,
           bucket_name: env.S3_EVENT_UPLOAD_BUCKET,
-          bucket_path: `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getClickhouseEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
+          bucket_path: `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${getDatastoreEntityType(job.data.payload.data.type)}/${job.data.payload.data.eventBodyId}/${fileName}`,
           created_at: new Date().getTime(),
           updated_at: new Date().getTime(),
           event_ts: new Date().getTime(),
@@ -111,7 +111,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
       });
 
       // Download all events from folder into a local array
-      const clickhouseEntityType = getClickhouseEntityType(job.data.payload.data.type);
+      const datastoreEntityType = getDatastoreEntityType(job.data.payload.data.type);
 
       let eventFiles: { file: string; createdAt: Date }[] = [];
       const events: IngestionEventType[] = [];
@@ -120,7 +120,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
       const shouldSkipS3List =
         // The producer sets skipS3List to true if it's an OTel observation
         job.data.payload.data.skipS3List && job.data.payload.data.fileKey;
-      const s3Prefix = `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${clickhouseEntityType}/${job.data.payload.data.eventBodyId}/`;
+      const s3Prefix = `${env.S3_EVENT_UPLOAD_PREFIX}${job.data.payload.authCheck.scope.projectId}/${datastoreEntityType}/${job.data.payload.data.eventBodyId}/`;
 
       let totalS3DownloadSizeBytes = 0;
 
@@ -166,10 +166,10 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
       }
 
       recordDistribution("hanzo.ingestion.count_files_distribution", eventFiles.length, {
-        kind: clickhouseEntityType,
+        kind: datastoreEntityType,
       });
       span?.setAttribute("hanzo.ingestion.event.count_files", eventFiles.length);
-      span?.setAttribute("hanzo.ingestion.event.kind", clickhouseEntityType);
+      span?.setAttribute("hanzo.ingestion.event.kind", datastoreEntityType);
       span?.setAttribute("hanzo.ingestion.s3_all_files_size_bytes", totalS3DownloadSizeBytes);
 
       const firstS3WriteTime =
@@ -220,7 +220,7 @@ export const ingestionQueueProcessorBuilder = (enableRedirectToSecondaryQueue: b
           env.HANZO_EXPERIMENT_EARLY_EXIT_EVENT_BATCH_JOB !== "true");
 
       await new IngestionService(redis, prisma, datastoreWriter, datastoreClient()).mergeAndWrite(
-        getClickhouseEntityType(events[0].type),
+        getDatastoreEntityType(events[0].type),
         job.data.payload.authCheck.scope.projectId,
         job.data.payload.data.eventBodyId,
         firstS3WriteTime,

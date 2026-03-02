@@ -1,32 +1,32 @@
-# Verify Clickhouse Records
+# Verify Datastore Records
 
-This script is used to compare Clickhouse records to our Postgres records.
+This script is used to compare Datastore records to our Postgres records.
 Per default, it draws a sample of observations, traces, and scores from the Postgres
-tables and executes single queries on Clickhouse to compare the individual fields.
+tables and executes single queries on Datastore to compare the individual fields.
 It is possible to overwrite the selection process using the overwriteIds per type.
 
 ## Usage
 
 To compare the records configure the database environment variables and afterward
 execute the script.
-Modify the `DATE_START` setting in the script to a date after the clickhouse sync was in place.
+Modify the `DATE_START` setting in the script to a date after the datastore sync was in place.
 Set `ITERATIONS` based on the number of records that you want to validate. We sample 100 records per kind
 in each iteration.
 
 ```bash
 # Insert postgres database URL
 export DATABASE_URL=
-export CLICKHOUSE_URL=
-export CLICKHOUSE_USER=
-export CLICKHOUSE_PASSWORD=
+export DATASTORE_URL=
+export DATASTORE_USER=
+export DATASTORE_PASSWORD=
 
-cd worker/src/scripts/verifyClickhouseRecords
+cd worker/src/scripts/verifyDatastoreRecords
 
 npx ts-node index.ts
 ```
 
 The script writes the objects and deltas into the `output` folder within the current working directory.
-Use it to validate whether Clickhouse and Postgres produce equal results.
+Use it to validate whether Datastore and Postgres produce equal results.
 
 ## Known Issues
 

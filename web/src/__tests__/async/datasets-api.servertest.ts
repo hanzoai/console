@@ -1429,7 +1429,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     }
 
     // Wrapping the GET run response verification inside a waitForExpect block ensures
-    // the test waits for eventual consistency (from asynchronous writes to ClickHouse for dataset run items)
+    // the test waits for eventual consistency (from asynchronous writes to Datastore for dataset run items)
     await waitForExpect(async () => {
       const runItems = await getDatasetRunItemsByDatasetIdCh({
         projectId,
@@ -1692,9 +1692,7 @@ describe("/api/public/datasets and /api/public/dataset-items API Endpoints", () 
     );
     expect(itemsLatest.status).toBe(200);
     expect(itemsLatest.body.data).toHaveLength(2);
-    const updatedItem = itemsLatest.body.data.find(
-      (i) => i.id === "versioned-item-1",
-    );
+    const updatedItem = itemsLatest.body.data.find((i) => i.id === "versioned-item-1");
     expect(updatedItem?.input).toEqual({ value: "version 2" });
     expect(updatedItem?.expectedOutput).toEqual({ result: "v2" });
 

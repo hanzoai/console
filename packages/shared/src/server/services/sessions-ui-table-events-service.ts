@@ -3,19 +3,13 @@ import { OrderByState } from "../../interfaces/orderBy";
 import { FilterState } from "../../types";
 import { convertDateToDatastoreDateTime } from "../datastore/client";
 import { measureAndReturn } from "../datastore/measureAndReturn";
-import {
-  CTEQueryBuilder,
-  DateTimeFilter,
-  FilterList,
-  StringOptionsFilter,
-  orderByToClickhouseSql,
-} from "../queries";
-import { createFilterFromFilterState } from "../queries/clickhouse-sql/factory";
+import { CTEQueryBuilder, DateTimeFilter, FilterList, StringOptionsFilter, orderByToDatastoreSql } from "../queries";
+import { createFilterFromFilterState } from "../queries/datastore-sql/factory";
 import {
   eventsSessionsAggregation,
   eventsSessionScoresAggregation,
   eventsTracesAggregation,
-} from "../queries/clickhouse-sql/query-fragments";
+} from "../queries/datastore-sql/query-fragments";
 import { queryDatastore } from "../repositories";
 import { sessionCols } from "../tableMappings/mapSessionTable";
 import { parseDatastoreUTCDateTimeFormat } from "../repositories/datastore";
@@ -36,8 +30,7 @@ type SessionScoreFields = {
   score_categories?: Array<Array<string>>;
 };
 
-export type SessionEventsDataReturnType = SessionEventsBaseReturnType &
-  SessionScoreFields;
+export type SessionEventsDataReturnType = SessionEventsBaseReturnType & SessionScoreFields;
 
 export type SessionTraceFromEvents = {
   id: string;
@@ -47,10 +40,7 @@ export type SessionTraceFromEvents = {
   userId: string | null;
 };
 
-export const getSessionTracesFromEvents = async (props: {
-  projectId: string;
-  sessionId: string;
-}) => {
+export const getSessionTracesFromEvents = async (props: { projectId: string; sessionId: string }) => {
   const tracesBuilder = eventsTracesAggregation({
     projectId: props.projectId,
   })
@@ -133,16 +123,15 @@ export const getSessionsTableFromEvents = async (props: {
   limit?: number;
   page?: number;
 }) => {
-  const rows =
-    await getSessionsTableFromEventsGeneric<SessionEventsDataReturnType>({
-      select: "rows",
-      projectId: props.projectId,
-      filter: props.filter,
-      orderBy: props.orderBy,
-      limit: props.limit,
-      page: props.page,
-      tags: { kind: "list" },
-    });
+  const rows = await getSessionsTableFromEventsGeneric<SessionEventsDataReturnType>({
+    select: "rows",
+    projectId: props.projectId,
+    filter: props.filter,
+    orderBy: props.orderBy,
+    limit: props.limit,
+    page: props.page,
+    tags: { kind: "list" },
+  });
 
   return rows.map((row) => ({
     ...row,
@@ -162,41 +151,30 @@ export type FetchSessionsTableFromEventsProps = {
   datastoreConfig?: DatastoreClientConfig | undefined;
 };
 
-const getSessionsTableFromEventsGeneric = async <T>(
-  props: FetchSessionsTableFromEventsProps,
-) => {
-  const { select, projectId, filter, orderBy, limit, page, datastoreConfig } =
-    props;
+const getSessionsTableFromEventsGeneric = async <T>(props: FetchSessionsTableFromEventsProps) => {
+  const { select, projectId, filter, orderBy, limit, page, datastoreConfig } = props;
 
-  const sessionFilters = new FilterList(
-    createFilterFromFilterState(filter, sessionCols),
-  );
+  const sessionFilters = new FilterList(createFilterFromFilterState(filter, sessionCols));
   const sessionsFilterRes = sessionFilters.apply();
 
   const traceTimestampFilter = sessionFilters.find(
-    (f) =>
-      f.field === "min_timestamp" &&
-      (f.operator === ">=" || f.operator === ">"),
+    (f) => f.field === "min_timestamp" && (f.operator === ">=" || f.operator === ">"),
   ) as DateTimeFilter | undefined;
 
-  const sessionIdFilter = sessionFilters.find(
-    (f) => f instanceof StringOptionsFilter && f.field === "session_id",
-  ) as StringOptionsFilter | undefined;
+  const sessionIdFilter = sessionFilters.find((f) => f instanceof StringOptionsFilter && f.field === "session_id") as
+    | StringOptionsFilter
+    | undefined;
 
   const requiresScoresJoin =
     sessionFilters.some((f) => f.datastoreTable === "scores") ||
-    sessionCols.find(
-      (c) =>
-        c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column,
-    )?.datastoreTableName === "scores";
+    sessionCols.find((c) => c.uiTableName === orderBy?.column || c.uiTableId === orderBy?.column)
+      ?.datastoreTableName === "scores";
 
   // Build session_data CTE
   const sessionsBuilder = eventsSessionsAggregation({
     projectId,
     sessionIds: sessionIdFilter?.values,
-    startTimeFrom: traceTimestampFilter
-      ? convertDateToDatastoreDateTime(traceTimestampFilter.value)
-      : null,
+    startTimeFrom: traceTimestampFilter ? convertDateToDatastoreDateTime(traceTimestampFilter.value) : null,
   });
 
   // Compose query using CTEQueryBuilder
@@ -208,11 +186,7 @@ const getSessionsTableFromEventsGeneric = async <T>(
   if (select === "metrics" || requiresScoresJoin) {
     queryBuilder = queryBuilder
       .withCTE("scores_agg", eventsSessionScoresAggregation({ projectId }))
-      .leftJoin(
-        "scores_agg",
-        "sc",
-        "ON sc.project_id = {projectId: String} AND sc.score_session_id = s.session_id",
-      );
+      .leftJoin("scores_agg", "sc", "ON sc.project_id = {projectId: String} AND sc.score_session_id = s.session_id");
   }
 
   // Select fields based on query type
@@ -267,7 +241,7 @@ const getSessionsTableFromEventsGeneric = async <T>(
     queryBuilder.whereRaw(sessionsFilterRes.query, sessionsFilterRes.params);
   }
 
-  const orderBySql = orderByToClickhouseSql(orderBy ?? null, sessionCols);
+  const orderBySql = orderByToDatastoreSql(orderBy ?? null, sessionCols);
   if (orderBySql) {
     queryBuilder.orderBy(orderBySql);
   }

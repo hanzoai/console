@@ -68,7 +68,7 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     NEXTAUTH_SECRET: z.string().min(1),
     SALT: z.string(),
-    CLICKHOUSE_URL: z.string().url(),
+    DATASTORE_URL: z.string().url(),
     // ... 100+ server variables
   },
 
@@ -129,10 +129,10 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string(),
   PORT: z.coerce.number().positive().max(65536).default(3030),
 
-  // ClickHouse
-  CLICKHOUSE_URL: z.string().url(),
-  CLICKHOUSE_USER: z.string(),
-  CLICKHOUSE_PASSWORD: z.string(),
+  // Datastore
+  DATASTORE_URL: z.string().url(),
+  DATASTORE_USER: z.string(),
+  DATASTORE_PASSWORD: z.string(),
 
   // S3 Event Upload (required)
   S3_EVENT_UPLOAD_BUCKET: z.string({
@@ -197,11 +197,11 @@ const EnvSchema = z.object({
   REDIS_CONNECTION_STRING: z.string().nullish(),
   REDIS_CLUSTER_ENABLED: z.enum(["true", "false"]).default("false"),
 
-  // ClickHouse
-  CLICKHOUSE_URL: z.string().url(),
-  CLICKHOUSE_USER: z.string(),
-  CLICKHOUSE_PASSWORD: z.string(),
-  CLICKHOUSE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
+  // Datastore
+  DATASTORE_URL: z.string().url(),
+  DATASTORE_USER: z.string(),
+  DATASTORE_PASSWORD: z.string(),
+  DATASTORE_MAX_OPEN_CONNECTIONS: z.coerce.number().int().default(25),
 
   // S3 Event Upload
   S3_EVENT_UPLOAD_BUCKET: z.string(),
@@ -237,7 +237,7 @@ export const env: z.infer<typeof EnvSchema> =
 import { env } from "@hanzo/shared/src/env";
 
 const redisHost = env.REDIS_HOST;
-const clickhouseUrl = env.CLICKHOUSE_URL;
+const datastoreUrl = env.DATASTORE_URL;
 ```
 
 ### Enterprise Edition Package (`ee/src/env.ts`)
@@ -502,7 +502,7 @@ All environment variables are validated when the application starts. Invalid con
 ```bash
 ❌ Validation error:
   - SALT: Required
-  - CLICKHOUSE_URL: Invalid url
+  - DATASTORE_URL: Invalid url
   - PORT: Number must be less than or equal to 65536
 ```
 

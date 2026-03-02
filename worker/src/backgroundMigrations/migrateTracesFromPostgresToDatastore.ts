@@ -23,7 +23,7 @@ export default class MigrateTracesFromPostgresToDatastore implements IBackground
       };
     }
 
-    // Check if ClickHouse traces table exists
+    // Check if Datastore traces table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -31,7 +31,7 @@ export default class MigrateTracesFromPostgresToDatastore implements IBackground
     if (!tableNames.some((r) => r.name === "traces")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse traces table does not exist. Retrying in 10s...`);
+        logger.info(`Datastore traces table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -40,7 +40,7 @@ export default class MigrateTracesFromPostgresToDatastore implements IBackground
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason: "ClickHouse traces table does not exist",
+        invalidReason: "Datastore traces table does not exist",
       };
     }
 

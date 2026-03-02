@@ -1,6 +1,6 @@
 # Hanzo Seeder System
 
-System for generating test data in ClickHouse and PostgreSQL for Hanzo development and testing.
+System for generating test data in Datastore and PostgreSQL for Hanzo development and testing.
 
 ## Architecture Overview
 
@@ -8,10 +8,10 @@ System for generating test data in ClickHouse and PostgreSQL for Hanzo developme
 seeder/
 ├── types.ts                 # Core interfaces and types
 ├── data-generators.ts       # Data generation logic
-├── clickhouse-builder.ts    # ClickHouse query building
+├── datastore-builder.ts    # Datastore query building
 ├── seeder-orchestrator.ts   # Main orchestration logic
 ├── postgres-seed-constants.ts  # PostgreSQL data constants
-├── clickhouse-seed-constants.ts  # ClickHouse data constants
+├── datastore-seed-constants.ts  # Datastore data constants
 └── seed-helpers.ts          # Utility functions
 ```
 
@@ -62,15 +62,15 @@ await orchestrator.createSyntheticData(projectIds, config);
 
 ### DataGenerator
 
-Generates realistic data for all three types. If you need to change any clickhouse data, you should modify this class. Key methods:
+Generates realistic data for all three types. If you need to change any datastore data, you should modify this class. Key methods:
 
 - `generateDatasetTrace()` - Creates traces from dataset items
 - `generateSyntheticTraces()` - Creates realistic synthetic traces
 - `generateEvaluationTraces()` - Creates evaluation-focused traces
 
-### ClickHouseQueryBuilder
+### DatastoreQueryBuilder
 
-Builds optimized ClickHouse insert queries. No need to edit this file. Handles proper escaping and type handling.
+Builds optimized Datastore insert queries. No need to edit this file. Handles proper escaping and type handling.
 
 ### SeederOrchestrator
 
@@ -99,7 +99,7 @@ interface SeederConfig {
 
 1. Add interface to `types.ts`
 2. Add generator method to `DataGenerator`
-3. Add query builder method to `ClickHouseQueryBuilder`
+3. Add query builder method to `DatastoreQueryBuilder`
 4. Add orchestration method to `SeederOrchestrator`
 5. Update interdependency documentation
 
@@ -112,26 +112,26 @@ interface SeederConfig {
 #### Changing Data Distribution
 
 1. Modify generator methods in `DataGenerator`
-2. Update constants in `clickhouse-seed-constants.ts`
+2. Update constants in `datastore-seed-constants.ts`
 3. Test with small datasets first
 
 #### Changing ID Generation
 
-1. **Check**: All places that query ClickHouse by ID
+1. **Check**: All places that query Datastore by ID
 2. **Check**: PostgreSQL foreign key references
 3. **Check**: Dataset run item and evaluation trace creation logic
 4. **Action**: Update `seed-helpers.ts` functions consistently
 
 #### Changing Environment Names
 
-1. **Check**: All ClickHouse queries that filter by environment
+1. **Check**: All Datastore queries that filter by environment
 2. **Check**: PostgreSQL dataset and prompt environment fields
 3. **Check**: UI environment filtering logic
 4. **Action**: Update constants in both systems
 
 #### Changing Data Structure
 
-1. **Check**: ClickHouse table schema compatibility
+1. **Check**: Datastore table schema compatibility
 2. **Check**: PostgreSQL table relationships
 3. **Check**: API response serialization
 4. **Action**: Update both schemas before changing data generation
@@ -148,7 +148,7 @@ interface SeederConfig {
 ### Required Files
 
 ```
-packages/shared/clickhouse/
+packages/shared/datastore/
 ├── nested_json.json      # Large JSON for realistic inputs
 ├── markdown.txt          # Markdown content for document analysis
 └── chat_ml_json.json     # Chat ML format examples
@@ -157,4 +157,4 @@ packages/shared/clickhouse/
 ### Constants Files
 
 - `postgres-seed-constants.ts` - Datasets, prompts, and PostgreSQL data
-- `clickhouse-seed-constants.ts` - ClickHouse-specific constants (models, names)
+- `datastore-seed-constants.ts` - Datastore-specific constants (models, names)

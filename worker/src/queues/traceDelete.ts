@@ -75,7 +75,7 @@ export const traceDeleteProcessor: Processor = async (
       return;
     }
 
-    // Delete from both Postgres and ClickHouse
+    // Delete from both Postgres and Datastore
     await Promise.all([
       processPostgresTraceDelete(projectId, traceIdsToDelete),
       processDatastoreTraceDelete(projectId, traceIdsToDelete),

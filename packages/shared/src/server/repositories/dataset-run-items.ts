@@ -6,7 +6,7 @@ import { FilterState } from "../../types";
 import {
   createFilterFromFilterState,
   FilterList,
-  orderByToClickhouseSql,
+  orderByToDatastoreSql,
   StringFilter,
   StringOptionsFilter,
 } from "../queries";
@@ -293,7 +293,7 @@ const getDatasetRunsTableInternal = async <T>(
     orderByArray.push(orderBy);
   }
 
-  const orderByClause = orderByToClickhouseSql(orderByArray, datasetRunsTableUiColumnDefinitions);
+  const orderByClause = orderByToDatastoreSql(orderByArray, datasetRunsTableUiColumnDefinitions);
 
   const scoresCte = `
    WITH scores_aggregated AS (
@@ -753,7 +753,7 @@ const getDatasetRunItemsTableInternal = async <T, IncludeIO extends boolean = tr
     });
   }
 
-  const orderByClause = orderByToClickhouseSql(orderByArray, datasetRunItemsTableUiColumnDefinitions);
+  const orderByClause = orderByToDatastoreSql(orderByArray, datasetRunItemsTableUiColumnDefinitions);
 
   const scoresCte = `
   WITH scores_aggregated AS (

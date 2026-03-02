@@ -1,4 +1,4 @@
-import { convertApiProvidedFilterToClickhouseFilter } from "@hanzo/shared/src/server";
+import { convertApiProvidedFilterToDatastoreFilter } from "@hanzo/shared/src/server";
 import {
   convertDateToDatastoreDateTime,
   queryDatastore,
@@ -19,7 +19,7 @@ type QueryType = {
 };
 
 export const generateDailyMetrics = async (props: QueryType) => {
-  const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
+  const filter = convertApiProvidedFilterToDatastoreFilter(props, filterParams);
   const hasTracesFilter = filter.some((f) => f.datastoreTable === "traces");
   const tracesFilter = filter.filter((f) => f.datastoreTable === "traces");
   const appliedFilter = filter.apply();
@@ -150,7 +150,7 @@ export const generateDailyMetrics = async (props: QueryType) => {
 };
 
 export const getDailyMetricsCount = async (props: QueryType) => {
-  const filter = convertApiProvidedFilterToClickhouseFilter(props, filterParams);
+  const filter = convertApiProvidedFilterToDatastoreFilter(props, filterParams);
   const appliedFilter = filter.filter((f) => f.datastoreTable === "traces").apply();
 
   const query = `

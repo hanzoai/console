@@ -6,9 +6,9 @@ import {
   AggregatableScoreDataType,
 } from "../../domain/scores";
 import { commandDatastore, queryDatastore, queryDatastoreStream, upsertDatastore } from "./datastore";
-import { FilterList, orderByToClickhouseSql } from "../queries";
+import { FilterList, orderByToDatastoreSql } from "../queries";
 import { FilterCondition, FilterState, TimeFilter } from "../../types";
-import { createFilterFromFilterState, getProjectIdDefaultFilter } from "../queries/clickhouse-sql/factory";
+import { createFilterFromFilterState, getProjectIdDefaultFilter } from "../queries/datastore-sql/factory";
 import { OrderByState } from "../../interfaces/orderBy";
 import {
   dashboardColumnDefinitions,
@@ -114,7 +114,7 @@ export const getScoresByIds = async (
 };
 
 /**
- * Accepts a score in a Clickhouse-ready format.
+ * Accepts a score in a Datastore-ready format.
  * id, project_id, name, and timestamp must always be provided.
  */
 export const upsertScore = async (score: Partial<ScoreRecordReadType>) => {
@@ -386,7 +386,7 @@ const getScoresForTracesInternal = async <
   const rows = await queryDatastore<
     ScoreRecordReadType & {
       metadata: ExcludeMetadata extends true ? never : ScoreRecordReadType["metadata"];
-      // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
+      // has_metadata is 0 or 1 from Datastore, later converted to a boolean
       has_metadata: IncludeHasMetadata extends true ? 0 | 1 : never;
     }
   >({
@@ -498,7 +498,7 @@ export const getScoresForObservations = async <ExcludeMetadata extends boolean, 
   const rows = await queryDatastore<
     ScoreRecordReadType & {
       metadata: ExcludeMetadata extends true ? never : ScoreRecordReadType["metadata"];
-      // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
+      // has_metadata is 0 or 1 from Datastore, later converted to a boolean
       has_metadata: IncludeHasMetadata extends true ? 0 | 1 : never;
     }
   >({
@@ -691,7 +691,7 @@ export const getCategoricalScoresGroupedByName = async (projectId: string, times
     },
   });
 
-  // Get score names from ClickHouse results to query score configs
+  // Get score names from Datastore results to query score configs
   const scoreNames = rows.map((row) => row.label);
 
   // Query score_configs table for categorical configurations
@@ -726,7 +726,7 @@ export const getCategoricalScoresGroupedByName = async (projectId: string, times
         (category) => category.label,
       );
 
-      // Merge actual values from ClickHouse with all possible values from config
+      // Merge actual values from Datastore with all possible values from config
       // Use Set to ensure uniqueness
       const mergedValues = Array.from(new Set([...row.values, ...allPossibleValues]));
 
@@ -806,7 +806,7 @@ export async function getScoresUiTable<ExcludeMetadata extends boolean, IncludeH
     event_ts: string;
     created_at: string;
     updated_at: string;
-    // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
+    // has_metadata is 0 or 1 from Datastore, later converted to a boolean
     has_metadata: IncludeHasMetadata extends true ? 0 | 1 : never;
   }>({
     select: "rows",
@@ -916,7 +916,7 @@ const getScoresUiGeneric = async <T>(props: {
       WHERE s.project_id = {projectId: String}
       AND s.data_type IN ({dataTypes: Array(String)})
       ${scoresFilterRes?.query ? `AND ${scoresFilterRes.query}` : ""}
-      ${orderByToClickhouseSql(orderBy ?? null, scoresTableUiColumnDefinitions)}
+      ${orderByToDatastoreSql(orderBy ?? null, scoresTableUiColumnDefinitions)}
       ${limit !== undefined && offset !== undefined ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
@@ -1072,7 +1072,7 @@ const getScoresUiGenericFromEvents = async <T>(props: {
       AND s.data_type IN ({dataTypes: Array(String)})
       ${scoreOnlyFilterRes?.query ? `AND ${scoreOnlyFilterRes.query}` : ""}
       ${traceFilterSubqueries.map((sq) => `AND ${sq}`).join("\n")}
-      ${orderByToClickhouseSql(orderBy ?? null, scoresTableUiColumnDefinitionsFromEvents)}
+      ${orderByToDatastoreSql(orderBy ?? null, scoresTableUiColumnDefinitionsFromEvents)}
       ${limit !== undefined && offset !== undefined ? `limit {limit: Int32} offset {offset: Int32}` : ""}
     `;
 
@@ -1484,7 +1484,7 @@ export const getAggregatedScoresForPrompts = async (
   const rows = await queryDatastore<
     ScoreAggregation & {
       prompt_id: string;
-      // has_metadata is 0 or 1 from ClickHouse, later converted to a boolean
+      // has_metadata is 0 or 1 from Datastore, later converted to a boolean
       has_metadata: 0 | 1;
     }
   >({
@@ -1726,7 +1726,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
     },
     datastoreConfig: {
       request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
-      clickhouse_settings: {
+      datastore_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
       },

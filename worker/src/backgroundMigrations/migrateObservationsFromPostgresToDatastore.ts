@@ -57,7 +57,7 @@ export default class MigrateObservationsFromPostgresToDatastore implements IBack
       };
     }
 
-    // Check if ClickHouse observations table exists
+    // Check if Datastore observations table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -65,7 +65,7 @@ export default class MigrateObservationsFromPostgresToDatastore implements IBack
     if (!tableNames.some((r) => r.name === "observations")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse observations table does not exist. Retrying in 10s...`);
+        logger.info(`Datastore observations table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -74,7 +74,7 @@ export default class MigrateObservationsFromPostgresToDatastore implements IBack
       // If all retries are exhausted, return as invalid
       return {
         valid: false,
-        invalidReason: "ClickHouse observations table does not exist",
+        invalidReason: "Datastore observations table does not exist",
       };
     }
 

@@ -83,9 +83,9 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
     logger.info(`[Data Retention] Deleted ${mediaFilesToDelete.length} media files for project ${projectId}`);
   }
 
-  // Delete ClickHouse (TTL / Delete Queries)
+  // Delete Datastore (TTL / Delete Queries)
   logger.info(
-    `[Data Retention] Deleting ClickHouse and S3 data older than ${currentRetention} days for project ${projectId}`,
+    `[Data Retention] Deleting Datastore and S3 data older than ${currentRetention} days for project ${projectId}`,
   );
   await Promise.all([
     env.HANZO_ENABLE_BLOB_STORAGE_FILE_LOG === "true"
@@ -99,7 +99,7 @@ export const handleDataRetentionProcessingJob = async (job: Job) => {
       : Promise.resolve(),
   ]);
   logger.info(
-    `[Data Retention] Deleted ClickHouse and S3 data older than ${currentRetention} days for project ${projectId}`,
+    `[Data Retention] Deleted Datastore and S3 data older than ${currentRetention} days for project ${projectId}`,
   );
 
   // Set S3 Lifecycle for deletion (Future)

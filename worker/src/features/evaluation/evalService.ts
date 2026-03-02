@@ -267,7 +267,7 @@ export const createEvalJobs = async ({
   }
 
   // Note: We could parallelize this cache fetch with the getTraceById call above.
-  // This should increase throughput, but will also put more pressure on ClickHouse.
+  // This should increase throughput, but will also put more pressure on Datastore.
   // Will keep it as-is for now, but that might be a useful change.
   const datasetConfigs = configs.filter((c) => c.target_object === EvalTargetObject.DATASET);
   let cachedDatasetItemIds: { id: string; datasetId: string }[] | null = null;
@@ -897,7 +897,7 @@ export async function extractVariablesFromTracingData({
   datasetItemValidFrom?: Date;
 }): Promise<{ var: string; value: string; environment?: string }[]> {
   // Internal cache for this function call to avoid duplicate database lookups.
-  // We do not cache dataset items as Postgres is cheaper than ClickHouse.
+  // We do not cache dataset items as Postgres is cheaper than Datastore.
   const traceCache = new Map<string, TraceDomain | null>();
   const observationCache = new Map<string, Observation | null>();
 
@@ -995,7 +995,7 @@ export async function extractVariablesFromTracingData({
         logger.warn(
           `Trace ${traceId} for project ${projectId} not found. Please ensure the mapped data on the trace exists and consider extending the job delay.`,
         );
-        // this should only happen for deleted data or replication lags across clickhouse nodes.
+        // this should only happen for deleted data or replication lags across datastore nodes.
         throw Error(
           `Trace ${traceId} for project ${projectId} not found. Please ensure the mapped data on the trace exists and consider extending the job delay.`,
         );
@@ -1049,7 +1049,7 @@ export async function extractVariablesFromTracingData({
         logger.warn(
           `Observation ${mapping.objectName} for trace ${traceId} not found. Please ensure the mapped data exists and consider extending the job delay.`,
         );
-        // this should only happen for deleted data or data replication lags across clickhouse nodes.
+        // this should only happen for deleted data or data replication lags across datastore nodes.
         throw new UnrecoverableError(
           `Observation ${mapping.objectName} for trace ${traceId} not found. Please ensure the mapped data exists and consider extending the job delay.`,
         );

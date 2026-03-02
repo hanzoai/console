@@ -1009,11 +1009,11 @@ model JobExecution {
   endTime   DateTime?          @map("end_time")
   error     String?
 
-  jobInputTraceId String? @map("job_input_trace_id") // no fk constraint - traces in ClickHouse, deletion handled via project cascade
+  jobInputTraceId String? @map("job_input_trace_id") // no fk constraint - traces in Datastore, deletion handled via project cascade
 
   jobInputTraceTimestamp DateTime? @map("job_input_trace_timestamp")
 
-  jobInputObservationId String? @map("job_input_observation_id") // no fk constraint - observations in ClickHouse, deletion handled via project cascade
+  jobInputObservationId String? @map("job_input_observation_id") // no fk constraint - observations in Datastore, deletion handled via project cascade
 
   jobInputDatasetItemId String? @map("job_input_dataset_item_id") // no fk constraint - job execution sensible standalone
 

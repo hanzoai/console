@@ -1,5 +1,5 @@
 /**
- * Shared ClickHouse query building utilities for score analytics
+ * Shared Datastore query building utilities for score analytics
  *
  * These helpers are used by both buildEstimateQuery and buildScoreComparisonQuery
  * to construct SQL fragments for filtering and sampling.

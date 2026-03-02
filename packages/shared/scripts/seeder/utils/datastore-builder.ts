@@ -10,7 +10,7 @@ import { createTracesCh, createObservationsCh, createScoresCh } from "../../../s
 import type { InsertResult } from "../../../src/server/datastore/types";
 
 /**
- * Builds or executes ClickHouse SQL INSERT queries for seeding test data.
+ * Builds or executes Datastore SQL INSERT queries for seeding test data.
  *
  * Use executeXxxInsert() for custom curated data with detailed control.
  * Use buildBulkXxxInsert() for large datasets (>1000 items) for random distribution of data.
@@ -53,7 +53,7 @@ export class DatastoreQueryBuilder {
   }
 
   /**
-   * Creates INSERT using ClickHouse numbers() function.
+   * Creates INSERT using Datastore numbers() function.
    * Use for: Large datasets (>1000 traces), realistic timestamps, bulk generation.
    */
   buildBulkTracesInsert(

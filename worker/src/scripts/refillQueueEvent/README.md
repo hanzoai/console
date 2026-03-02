@@ -27,9 +27,9 @@ REDIS_CONNECTION_STRING=redis://:myredissecret@127.0.0.1:6379
 
 # Required: Supporting services for worker initialization
 S3_EVENT_UPLOAD_BUCKET=hanzo
-CLICKHOUSE_URL=http://localhost:8123
-CLICKHOUSE_USER=clickhouse
-CLICKHOUSE_PASSWORD=clickhouse
+DATASTORE_URL=http://localhost:8123
+DATASTORE_USER=datastore
+DATASTORE_PASSWORD=datastore
 ```
 
 ### 3. Ensure Connectivity

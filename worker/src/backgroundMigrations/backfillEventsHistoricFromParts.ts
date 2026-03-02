@@ -15,7 +15,7 @@ const backgroundMigrationId = "d08146bd-3841-4ed3-a42c-5f43ff94b14e";
 // ============================================================================
 
 interface ChunkTodo extends BaseChunkTodo {
-  partId: string; // Unique part identifier from ClickHouse
+  partId: string; // Unique part identifier from Datastore
 }
 
 interface MigrationArgs {
@@ -125,7 +125,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
   }
 
   // ============================================================================
-  // Load Parts from ClickHouse
+  // Load Parts from Datastore
   // ============================================================================
 
   private async loadPartsFromDatastore(): Promise<ChunkTodo[]> {
@@ -149,7 +149,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
       },
     });
 
-    logger.info(`[Backfill Events] Loaded ${parts.length} parts from clickhouse system table`);
+    logger.info(`[Backfill Events] Loaded ${parts.length} parts from datastore system table`);
 
     return parts.map((part) => ({
       id: part.name,
@@ -231,7 +231,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
         const error = await getQueryError(todo.queryId!);
         logger.warn(`[Backfill Events] Recovered part ${todo.partId} as failed, will retry: ${error}`);
       } else if (status === "running") {
-        // Query is still running on ClickHouse - track it in the manager
+        // Query is still running on Datastore - track it in the manager
         logger.info(
           `[Backfill Events] Recovered part ${todo.partId} as still running (query ${todo.queryId}), will continue tracking`,
         );
@@ -329,8 +329,8 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
     logger.info(`[Backfill Events] Firing query ${queryId}`);
 
     // Create AbortController to abort HTTP connection after query starts on server.
-    // This follows ClickHouse best practices for long-running queries:
-    // https://github.com/ClickHouse/clickhouse-js/blob/main/examples/long_running_queries_timeouts.ts
+    // This follows Datastore best practices for long-running queries:
+    // https://github.com/Datastore/datastore-js/blob/main/examples/long_running_queries_timeouts.ts
     const abortController = new AbortController();
 
     // Apply memory-reducing settings on retries
@@ -399,7 +399,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
 
     // Abort the HTTP connection now that the query is confirmed running on the server.
     // This prevents "Broken pipe" errors from the connection timing out.
-    // The query continues executing on ClickHouse - we track completion via polling.
+    // The query continues executing on Datastore - we track completion via polling.
     logger.info(`[Backfill Events] Query ${queryId} confirmed running, aborting HTTP connection`);
     abortController.abort();
 
@@ -436,15 +436,15 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
       update: {},
     });
 
-    // Check if ClickHouse credentials are configured
+    // Check if Datastore credentials are configured
     if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "ClickHouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
-    // Check if ClickHouse events table exists
+    // Check if Datastore events table exists
     const tables = await datastoreClient().query({
       query: "SHOW TABLES",
     });
@@ -453,7 +453,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
     if (!tableNames.some((r) => r.name === "events")) {
       // Retry if the table does not exist as this may mean migrations are still pending
       if (attempts > 0) {
-        logger.info(`ClickHouse events table does not exist. Retrying in 10s...`);
+        logger.info(`Datastore events table does not exist. Retrying in 10s...`);
         return new Promise((resolve) => {
           setTimeout(() => resolve(this.validate(args, attempts - 1)), 10_000);
         });
@@ -461,7 +461,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
 
       return {
         valid: false,
-        invalidReason: "ClickHouse events table does not exist",
+        invalidReason: "Datastore events table does not exist",
       };
     }
 
@@ -515,7 +515,7 @@ export default class BackfillEventsHistoricFromParts implements IBackgroundMigra
     }
 
     // Phase 2: Recover any in-progress queries from previous run
-    // Returns queries that are still running on ClickHouse so we can track them
+    // Returns queries that are still running on Datastore so we can track them
     const stillRunningTodos = await this.recoverInProgressTodos(state);
 
     // Phase 2.5: Reset failed chunks to pending if --retry-failed flag is set

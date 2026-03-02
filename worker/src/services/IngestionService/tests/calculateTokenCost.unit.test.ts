@@ -14,7 +14,7 @@ const mockDatastoreClient = {
   query: async () => ({
     json: async () => [],
     query_id: "1",
-    response_headers: { "x-clickhouse-summary": [] },
+    response_headers: { "x-datastore-summary": [] },
   }),
 };
 
@@ -1181,20 +1181,20 @@ describe("Token Cost Calculation", () => {
 
   describe("string to number conversion in getUsageUnits", () => {
     // These tests verify that usage_details values are correctly converted to numbers
-    // even when they come in as strings (which can happen when reading from ClickHouse,
-    // as the ClickHouse JS client may return UInt64 values as strings).
+    // even when they come in as strings (which can happen when reading from Datastore,
+    // as the Datastore JS client may return UInt64 values as strings).
     // This prevents string concatenation bugs like "100" + "200" = "100200" instead of 300.
 
     it("should correctly convert string usage values to numbers and compute total", async () => {
       const generationId = uuidv4();
 
-      // Simulate usageDetails coming from ClickHouse as strings
+      // Simulate usageDetails coming from Datastore as strings
       const events = [
         {
           id: generationId,
           startTime: new Date().toISOString(),
           modelName,
-          // These string values simulate what ClickHouse might return for UInt64
+          // These string values simulate what Datastore might return for UInt64
           providedUsageDetails: {
             input: "100" as unknown as number,
             output: "200" as unknown as number,
@@ -1228,7 +1228,7 @@ describe("Token Cost Calculation", () => {
           id: generationId,
           startTime: new Date().toISOString(),
           modelName,
-          // These string values simulate what ClickHouse might return for UInt64
+          // These string values simulate what Datastore might return for UInt64
           providedUsageDetails: {
             input: "100" as unknown as number,
             output: "non_a_number" as unknown as number,

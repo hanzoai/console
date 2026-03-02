@@ -16,16 +16,13 @@ export {
   NumberObjectFilter,
   StringObjectFilter,
   NullFilter,
-  type ClickhouseOperator,
-} from "./clickhouse-sql/clickhouse-filter";
+  type DatastoreOperator,
+} from "./datastore-sql/datastore-filter";
+export { orderByToDatastoreSql, orderByToEntries } from "./datastore-sql/orderby-factory";
+export { createFilterFromFilterState } from "./datastore-sql/factory";
+export { datastoreSearchCondition } from "./datastore-sql/search";
 export {
-  orderByToClickhouseSql,
-  orderByToEntries,
-} from "./clickhouse-sql/orderby-factory";
-export { createFilterFromFilterState } from "./clickhouse-sql/factory";
-export { datastoreSearchCondition } from "./clickhouse-sql/search";
-export {
-  convertApiProvidedFilterToClickhouseFilter,
+  convertApiProvidedFilterToDatastoreFilter,
   createPublicApiObservationsColumnMapping,
   createPublicApiTracesColumnMapping,
   deriveFilters,
@@ -42,11 +39,11 @@ export {
   type CTEWithSchema,
   type SessionEventsMetricsRow,
   type SplitQueryBuilder,
-} from "./clickhouse-sql/event-query-builder";
+} from "./datastore-sql/event-query-builder";
 export {
   eventsScoresAggregation,
   eventsSessionsAggregation,
   eventsSessionScoresAggregation,
   eventsTracesAggregation,
   eventsTracesScoresAggregation,
-} from "./clickhouse-sql/query-fragments";
+} from "./datastore-sql/query-fragments";

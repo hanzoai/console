@@ -22,7 +22,7 @@ export const convertToDatasetRunMetrics = (row: any) => {
   };
 };
 
-export const convertDatasetRunItemDomainToClickhouse = (
+export const convertDatasetRunItemDomainToDatastore = (
   datasetRunItem: DatasetRunItemDomain,
 ): DatasetRunItemRecordReadType => {
   return {
@@ -64,9 +64,7 @@ export function convertDatasetRunItemDatastoreToDomain<WithIO extends boolean = 
     datasetRunDescription: row.dataset_run_description ?? null,
     datasetRunCreatedAt: parseDatastoreUTCDateTimeFormat(row.dataset_run_created_at),
     datasetItemId: row.dataset_item_id,
-    datasetItemVersion: row.dataset_item_version
-      ? parseDatastoreUTCDateTimeFormat(row.dataset_item_version)
-      : null,
+    datasetItemVersion: row.dataset_item_version ? parseDatastoreUTCDateTimeFormat(row.dataset_item_version) : null,
     createdAt: parseDatastoreUTCDateTimeFormat(row.created_at),
     updatedAt: parseDatastoreUTCDateTimeFormat(row.updated_at),
     datasetId: row.dataset_id,

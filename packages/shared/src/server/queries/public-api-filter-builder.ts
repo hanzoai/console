@@ -7,19 +7,19 @@ import {
   CategoryOptionsFilter,
   StringFilter,
   NumberFilter,
-  type ClickhouseOperator,
-} from "./clickhouse-sql/clickhouse-filter";
+  type DatastoreOperator,
+} from "./datastore-sql/datastore-filter";
 import { z } from "zod/v4";
 import type { FilterState } from "../../types";
 import type { UiColumnMappings } from "../../tableDefinitions";
-import { createFilterFromFilterState } from "./clickhouse-sql/factory";
+import { createFilterFromFilterState } from "./datastore-sql/factory";
 
 export type ApiColumnMapping = {
   id: string;
   datastoreSelect: string;
   datastoreTable: string;
   filterType: string;
-  operator?: ClickhouseOperator;
+  operator?: DatastoreOperator;
   datastorePrefix?: string;
 };
 
@@ -82,10 +82,7 @@ const TRACES_COLUMN_DEFINITIONS = [
 /**
  * Convenience function: Get just the simple filter mappings for public API
  */
-export function createPublicApiTracesColumnMapping(
-  tableName: "traces",
-  tablePrefix: "t",
-): ApiColumnMapping[] {
+export function createPublicApiTracesColumnMapping(tableName: "traces", tablePrefix: "t"): ApiColumnMapping[] {
   const timestampColumn = "timestamp";
   const simpleFilters: ApiColumnMapping[] = [];
   for (const def of TRACES_COLUMN_DEFINITIONS) {
@@ -214,7 +211,7 @@ type BaseQueryType = {
   projectId: string;
 } & Record<string, unknown>;
 
-export function convertApiProvidedFilterToClickhouseFilter(filter: BaseQueryType, columnMapping: ApiColumnMapping[]) {
+export function convertApiProvidedFilterToDatastoreFilter(filter: BaseQueryType, columnMapping: ApiColumnMapping[]) {
   const filterList = new FilterList();
 
   columnMapping.forEach((columnMapping) => {
@@ -339,7 +336,7 @@ export function deriveFilters<T extends BaseQueryType>(
   const filterList = new FilterList(createFilterFromFilterState(advancedFilters ?? [], uiColumnDefinitions));
 
   // Convert simple parameters to filters
-  const simpleFilters = convertApiProvidedFilterToClickhouseFilter(simpleFilterProps, filterParamsMapping);
+  const simpleFilters = convertApiProvidedFilterToDatastoreFilter(simpleFilterProps, filterParamsMapping);
 
   // Advanced filter takes precedence. Remove all simple filters that are also in advanced filter
   const advancedFilterColumns = new Set<string>();

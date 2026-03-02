@@ -117,7 +117,7 @@ describe("ProjectDeletionProcessingJob", () => {
     expect(datasets).toHaveLength(0);
   });
 
-  it("should delete clickhouse event data on project delete", async () => {
+  it("should delete datastore event data on project delete", async () => {
     // Setup
     const projectId = randomUUID();
     await prisma.project.create({

@@ -200,7 +200,7 @@ export class IngestionService {
   constructor(
     private redis: Redis | Cluster,
     private prisma: PrismaClient,
-    private clickHouseWriter: DatastoreWriter,
+    private datastoreWriter: DatastoreWriter,
     private datastoreClient: DatastoreClient,
   ) {
     this.promptService = new PromptService(prisma, redis);
@@ -431,7 +431,7 @@ export class IngestionService {
    * @param eventRecord - The event record to write
    */
   public writeEventRecord(eventRecord: EventRecordInsertType): void {
-    this.clickHouseWriter.addToQueue(TableName.Events, eventRecord);
+    this.datastoreWriter.addToQueue(TableName.Events, eventRecord);
   }
 
   private async processDatasetRunItemEventList(params: {
@@ -509,7 +509,7 @@ export class IngestionService {
 
     finalDatasetRunItemRecords.forEach((record) => {
       if (record) {
-        this.clickHouseWriter.addToQueue(TableName.DatasetRunItems, record);
+        this.datastoreWriter.addToQueue(TableName.DatasetRunItems, record);
       }
     });
   }
@@ -529,7 +529,7 @@ export class IngestionService {
       ...timeSortedEvents.flatMap((e) => (e.timestamp ? [new Date(e.timestamp).getTime()] : [])),
     );
     const timestamp = minTimestamp === Infinity ? undefined : convertDateToDatastoreDateTime(new Date(minTimestamp));
-    const [clickhouseScoreRecord, scoreRecords] = await Promise.all([
+    const [datastoreScoreRecord, scoreRecords] = await Promise.all([
       this.getDatastoreRecord({
         projectId,
         entityId,
@@ -585,20 +585,20 @@ export class IngestionService {
       ).then((results) => results.filter((record): record is NonNullable<typeof record> => record !== null)),
     ]);
 
-    if (clickhouseScoreRecord) {
+    if (datastoreScoreRecord) {
       recordIncrement("hanzo.ingestion.lookup.hit", 1, {
-        store: "clickhouse",
+        store: "datastore",
         object: "score",
       });
     }
 
     const finalScoreRecord: ScoreRecordInsertType = await this.mergeScoreRecords({
-      clickhouseScoreRecord,
+      datastoreScoreRecord,
       scoreRecords,
     });
-    finalScoreRecord.created_at = clickhouseScoreRecord?.created_at ?? createdAtTimestamp.getTime();
+    finalScoreRecord.created_at = datastoreScoreRecord?.created_at ?? createdAtTimestamp.getTime();
 
-    this.clickHouseWriter.addToQueue(TableName.Scores, finalScoreRecord);
+    this.datastoreWriter.addToQueue(TableName.Scores, finalScoreRecord);
   }
 
   private async processTraceEventList(params: {
@@ -620,7 +620,7 @@ export class IngestionService {
     });
 
     // Search for the first non-null input and output in the trace events and set them on the merged result.
-    // Fallback to the ClickHouse input/output if none are found within the events list.
+    // Fallback to the Datastore input/output if none are found within the events list.
     const reversedRawRecords = timeSortedEvents.slice().reverse();
     const finalIO = {
       input: this.stringify(reversedRawRecords.find((record) => record?.body?.input)?.body?.input),
@@ -631,7 +631,7 @@ export class IngestionService {
       ...timeSortedEvents.flatMap((e) => (e.body?.timestamp ? [new Date(e.body.timestamp).getTime()] : [])),
     );
     const timestamp = minTimestamp === Infinity ? undefined : convertDateToDatastoreDateTime(new Date(minTimestamp));
-    const clickhouseTraceRecord = await this.getDatastoreRecord({
+    const datastoreTraceRecord = await this.getDatastoreRecord({
       projectId,
       entityId,
       table: TableName.Traces,
@@ -641,23 +641,23 @@ export class IngestionService {
       },
     });
 
-    if (clickhouseTraceRecord) {
+    if (datastoreTraceRecord) {
       recordIncrement("hanzo.ingestion.lookup.hit", 1, {
-        store: "clickhouse",
+        store: "datastore",
         object: "trace",
       });
     }
 
     const finalTraceRecord = await this.mergeTraceRecords({
-      clickhouseTraceRecord,
+      datastoreTraceRecord,
       traceRecords,
     });
-    finalTraceRecord.created_at = clickhouseTraceRecord?.created_at ?? createdAtTimestamp.getTime();
+    finalTraceRecord.created_at = datastoreTraceRecord?.created_at ?? createdAtTimestamp.getTime();
 
-    finalTraceRecord.input = finalIO.input ?? clickhouseTraceRecord?.input;
-    finalTraceRecord.output = finalIO.output ?? clickhouseTraceRecord?.output;
+    finalTraceRecord.input = finalIO.input ?? datastoreTraceRecord?.input;
+    finalTraceRecord.output = finalIO.output ?? datastoreTraceRecord?.output;
 
-    this.clickHouseWriter.addToQueue(TableName.Traces, finalTraceRecord);
+    this.datastoreWriter.addToQueue(TableName.Traces, finalTraceRecord);
 
     // If the trace has a sessionId, we upsert the corresponding session into Postgres.
     const traceRecordWithSession = traceRecords
@@ -685,7 +685,7 @@ export class IngestionService {
         finalTraceRecord,
         this.getPartitionAwareTimestamp(createdAtTimestamp),
       );
-      this.clickHouseWriter.addToQueue(TableName.ObservationsBatchStaging, traceAsStagingObservation);
+      this.datastoreWriter.addToQueue(TableName.ObservationsBatchStaging, traceAsStagingObservation);
     }
 
     // Add trace into trace upsert queue for eval processing
@@ -734,7 +734,7 @@ export class IngestionService {
     );
     const startTime = minStartTime === Infinity ? undefined : convertDateToDatastoreDateTime(new Date(minStartTime));
 
-    const [clickhouseObservationRecord, prompt] = await Promise.all([
+    const [datastoreObservationRecord, prompt] = await Promise.all([
       this.getDatastoreRecord({
         projectId,
         entityId,
@@ -750,9 +750,9 @@ export class IngestionService {
       this.getPrompt(projectId, observationEventList),
     ]);
 
-    if (clickhouseObservationRecord) {
+    if (datastoreObservationRecord) {
       recordIncrement("hanzo.ingestion.lookup.hit", 1, {
-        store: "clickhouse",
+        store: "datastore",
         object: "observation",
       });
     }
@@ -767,19 +767,19 @@ export class IngestionService {
     const mergedObservationRecord = await this.mergeObservationRecords({
       projectId,
       observationRecords,
-      clickhouseObservationRecord,
+      datastoreObservationRecord,
     });
-    mergedObservationRecord.created_at = clickhouseObservationRecord?.created_at ?? createdAtTimestamp.getTime();
+    mergedObservationRecord.created_at = datastoreObservationRecord?.created_at ?? createdAtTimestamp.getTime();
     mergedObservationRecord.level = mergedObservationRecord.level ?? "DEFAULT";
 
     // Search for the first non-null input and output in the observation events and set them on the merged result.
-    // Fallback to the ClickHouse input/output if none are found within the events list.
+    // Fallback to the Datastore input/output if none are found within the events list.
     const reversedRawRecords = timeSortedEvents.slice().reverse();
     mergedObservationRecord.input = this.stringify(
-      reversedRawRecords.find((record) => record?.body?.input)?.body?.input ?? clickhouseObservationRecord?.input,
+      reversedRawRecords.find((record) => record?.body?.input)?.body?.input ?? datastoreObservationRecord?.input,
     );
     mergedObservationRecord.output = this.stringify(
-      reversedRawRecords.find((record) => record?.body?.output)?.body?.output ?? clickhouseObservationRecord?.output,
+      reversedRawRecords.find((record) => record?.body?.output)?.body?.output ?? datastoreObservationRecord?.output,
     );
 
     // Extract tool definitions and calls from raw input/output
@@ -829,11 +829,11 @@ export class IngestionService {
         is_deleted: 0,
       };
 
-      this.clickHouseWriter.addToQueue(TableName.Traces, wrapperTraceRecord);
+      this.datastoreWriter.addToQueue(TableName.Traces, wrapperTraceRecord);
       finalObservationRecord.trace_id = finalObservationRecord.id;
     }
 
-    this.clickHouseWriter.addToQueue(TableName.Observations, finalObservationRecord);
+    this.datastoreWriter.addToQueue(TableName.Observations, finalObservationRecord);
 
     // Dual-write to staging table for batch propagation to events table
     // Here, we add some additional logic around the first seen timestamp.
@@ -847,18 +847,18 @@ export class IngestionService {
         ...finalObservationRecord,
         s3_first_seen_timestamp: this.getPartitionAwareTimestamp(createdAtTimestamp),
       };
-      this.clickHouseWriter.addToQueue(TableName.ObservationsBatchStaging, stagingRecord);
+      this.datastoreWriter.addToQueue(TableName.ObservationsBatchStaging, stagingRecord);
     }
   }
 
   private async mergeScoreRecords(params: {
     scoreRecords: ScoreRecordInsertType[];
-    clickhouseScoreRecord?: ScoreRecordInsertType | null;
+    datastoreScoreRecord?: ScoreRecordInsertType | null;
   }): Promise<ScoreRecordInsertType> {
-    const { scoreRecords, clickhouseScoreRecord } = params;
+    const { scoreRecords, datastoreScoreRecord } = params;
 
-    // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [clickhouseScoreRecord, ...scoreRecords].filter(Boolean) as ScoreRecordInsertType[];
+    // Set datastore first as this is the baseline for immutable fields
+    const recordsToMerge = [datastoreScoreRecord, ...scoreRecords].filter(Boolean) as ScoreRecordInsertType[];
 
     const mergedRecord = this.mergeRecords(recordsToMerge, immutableEntityKeys[TableName.Scores]);
 
@@ -870,12 +870,12 @@ export class IngestionService {
 
   private async mergeTraceRecords(params: {
     traceRecords: TraceRecordInsertType[];
-    clickhouseTraceRecord?: TraceRecordInsertType | null;
+    datastoreTraceRecord?: TraceRecordInsertType | null;
   }): Promise<TraceRecordInsertType> {
-    const { traceRecords, clickhouseTraceRecord } = params;
+    const { traceRecords, datastoreTraceRecord } = params;
 
-    // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [clickhouseTraceRecord, ...traceRecords].filter(Boolean) as TraceRecordInsertType[];
+    // Set datastore first as this is the baseline for immutable fields
+    const recordsToMerge = [datastoreTraceRecord, ...traceRecords].filter(Boolean) as TraceRecordInsertType[];
 
     const mergedRecord = this.mergeRecords(recordsToMerge, immutableEntityKeys[TableName.Traces]);
 
@@ -888,12 +888,12 @@ export class IngestionService {
   private async mergeObservationRecords(params: {
     projectId: string;
     observationRecords: ObservationRecordInsertType[];
-    clickhouseObservationRecord?: ObservationRecordInsertType | null;
+    datastoreObservationRecord?: ObservationRecordInsertType | null;
   }): Promise<ObservationRecordInsertType> {
-    const { observationRecords, clickhouseObservationRecord } = params;
+    const { observationRecords, datastoreObservationRecord } = params;
 
-    // Set clickhouse first as this is the baseline for immutable fields
-    const recordsToMerge = [clickhouseObservationRecord, ...observationRecords].filter(
+    // Set datastore first as this is the baseline for immutable fields
+    const recordsToMerge = [datastoreObservationRecord, ...observationRecords].filter(
       Boolean,
     ) as ObservationRecordInsertType[];
 
@@ -1059,7 +1059,7 @@ export class IngestionService {
     >,
     model: Model | null | undefined,
   ): Promise<Pick<ObservationRecordInsertType, "usage_details" | "provided_usage_details">> {
-    // Convert all values to numbers to handle cases where ClickHouse returns UInt64 as strings.
+    // Convert all values to numbers to handle cases where Datastore returns UInt64 as strings.
     // This prevents string concatenation bugs like "100" + "200" = "100200" instead of 300.
     const providedUsageDetails: Record<string, number> = {};
     for (const [key, value] of Object.entries(observationRecord.provided_usage_details)) {
@@ -1255,14 +1255,14 @@ export class IngestionService {
       params: Record<string, unknown>;
     };
   }) {
-    if (await DatastoreReadSkipCache.getInstance(this.prisma).shouldSkipClickHouseRead(params.projectId)) {
-      recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
+    if (await DatastoreReadSkipCache.getInstance(this.prisma).shouldSkipDatastoreRead(params.projectId)) {
+      recordIncrement("hanzo.ingestion.datastore_read_for_update", 1, {
         skipped: "true",
         table: params.table,
       });
       return null;
     }
-    recordIncrement("hanzo.ingestion.clickhouse_read_for_update", 1, {
+    recordIncrement("hanzo.ingestion.datastore_read_for_update", 1, {
       skipped: "false",
       table: params.table,
     });
@@ -1274,9 +1274,9 @@ export class IngestionService {
     };
     const { projectId, entityId, table, additionalFilters } = params;
 
-    return await instrumentAsync({ name: `get-clickhouse-${table}`, spanKind: SpanKind.CLIENT }, async (span) => {
+    return await instrumentAsync({ name: `get-datastore-${table}`, spanKind: SpanKind.CLIENT }, async (span) => {
       span.setAttribute("ch.query.table", table);
-      span.setAttribute("db.system", "clickhouse");
+      span.setAttribute("db.system", "datastore");
       span.setAttribute("db.operation.name", "SELECT");
       span.setAttribute("projectId", projectId);
       const queryResult = await this.datastoreClient.query({
@@ -1291,7 +1291,7 @@ export class IngestionService {
           `,
         format: "JSONEachRow",
         query_params: { projectId, entityId, ...additionalFilters.params },
-        clickhouse_settings: {
+        datastore_settings: {
           log_comment: JSON.stringify({
             feature: "ingestion",
             projectId,
@@ -1300,7 +1300,7 @@ export class IngestionService {
       });
 
       span.setAttribute("ch.queryId", queryResult.query_id);
-      const summaryHeader = queryResult.response_headers["x-clickhouse-summary"];
+      const summaryHeader = queryResult.response_headers["x-datastore-summary"];
       if (summaryHeader) {
         try {
           const summary = Array.isArray(summaryHeader) ? JSON.parse(summaryHeader[0]) : JSON.parse(summaryHeader);
@@ -1308,7 +1308,7 @@ export class IngestionService {
             span.setAttribute(`ch.${key}`, summary[key]);
           }
         } catch (error) {
-          logger.debug(`Failed to parse clickhouse summary header ${summaryHeader}`, error);
+          logger.debug(`Failed to parse datastore summary header ${summaryHeader}`, error);
         }
       }
 

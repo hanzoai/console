@@ -164,7 +164,7 @@ const MOCK_SESSION = {
       },
     ],
     featureFlags: {
-      excludeClickhouseRead: false,
+      excludeDatastoreRead: false,
       templateFlag: true,
     },
   },
@@ -247,10 +247,7 @@ const BOT_HANDLERS: Record<string, (input: any) => unknown> = {
   "bots.listSecrets": () => ({ secrets: [] }),
 };
 
-async function setupAllTrpcMocks(
-  page: Page,
-  overrides?: Record<string, (input: any) => unknown>,
-) {
+async function setupAllTrpcMocks(page: Page, overrides?: Record<string, (input: any) => unknown>) {
   const handlers = { ...BOT_HANDLERS, ...overrides };
 
   await page.route("**/api/trpc/**", async (route) => {
@@ -264,7 +261,9 @@ async function setupAllTrpcMocks(
     const inputParam = url.searchParams.get("input");
     let parsedInputs: Record<string, any> = {};
     if (inputParam) {
-      try { parsedInputs = JSON.parse(inputParam); } catch {}
+      try {
+        parsedInputs = JSON.parse(inputParam);
+      } catch {}
     }
 
     const results = procedures.map((proc, idx) => {
@@ -304,10 +303,7 @@ const BOTS_URL = `/project/${PROJECT_ID}/bots`;
 /**
  * Navigate to the bots page, bypassing auth and mocking all API calls.
  */
-async function gotoBots(
-  page: Page,
-  trpcOverrides?: Record<string, (input: any) => unknown>,
-) {
+async function gotoBots(page: Page, trpcOverrides?: Record<string, (input: any) => unknown>) {
   await bypassAuth(page);
   await setupAllTrpcMocks(page, trpcOverrides);
 
@@ -418,9 +414,7 @@ test.describe("Bot Detail View", () => {
     await expect(page.locator('[data-testid="bot-detail-view"]')).toBeVisible();
 
     // Verify bot name and status
-    await expect(
-      page.locator('[data-testid="bot-detail-view"]').getByText("Support Agent"),
-    ).toBeVisible();
+    await expect(page.locator('[data-testid="bot-detail-view"]').getByText("Support Agent")).toBeVisible();
 
     // Verify overview tab content
     await expect(page.getByText("Memory Usage")).toBeVisible();

@@ -76,7 +76,7 @@ export const ensureTestDatabaseExists = async () => {
     }
   }
 
-  // ClickHouse uses default database (no setup needed)
+  // Datastore uses default database (no setup needed)
 };
 
 export const pruneDatabase = async () => {
@@ -96,7 +96,7 @@ export const pruneDatabase = async () => {
   await prisma.comment.deleteMany();
   await prisma.media.deleteMany();
 
-  await truncateClickhouseTables();
+  await truncateDatastoreTables();
 };
 export const getQueues = () => {
   const queues: string[] = Object.values(QueueName);
@@ -142,16 +142,16 @@ export const disconnectQueues = async () => {
   );
 };
 
-export const truncateClickhouseTables = async () => {
+export const truncateDatastoreTables = async () => {
   if (!env.DATASTORE_URL?.includes("localhost:8123")) {
     throw new Error("You cannot prune datastore unless running on localhost.");
   }
 
   // Additional safety check for test database
   if (env.DATASTORE_DB === "test") {
-    console.log("Running tests against test ClickHouse database:", env.DATASTORE_DB);
+    console.log("Running tests against test Datastore database:", env.DATASTORE_DB);
   } else if (env.DATASTORE_DB !== "default") {
-    console.log("Running tests against ClickHouse database:", env.DATASTORE_DB);
+    console.log("Running tests against Datastore database:", env.DATASTORE_DB);
   }
 
   await datastoreClient().command({

@@ -5,15 +5,15 @@ import {
   queryDatastoreStream,
   upsertDatastore,
 } from "./datastore";
-import { createFilterFromFilterState, getProjectIdDefaultFilter } from "../queries/clickhouse-sql/factory";
+import { createFilterFromFilterState, getProjectIdDefaultFilter } from "../queries/datastore-sql/factory";
 import { FilterState } from "../../types";
-import { DateTimeFilter, FilterList, StringFilter } from "../queries/clickhouse-sql/clickhouse-filter";
+import { DateTimeFilter, FilterList, StringFilter } from "../queries/datastore-sql/datastore-filter";
 import { TraceRecordReadType } from "./definitions";
 import { tracesTableUiColumnDefinitions } from "../tableMappings/mapTracesTable";
 import { UiColumnMappings } from "../../tableDefinitions";
 import { convertDateToDatastoreDateTime, PreferredDatastoreService } from "../datastore/client";
 import { convertDatastoreToDomain } from "./traces_converters";
-import { datastoreSearchCondition } from "../queries/clickhouse-sql/search";
+import { datastoreSearchCondition } from "../queries/datastore-sql/search";
 import { OBSERVATIONS_TO_TRACE_INTERVAL, TRACE_TO_OBSERVATIONS_INTERVAL } from "./constants";
 import { env } from "../../env";
 import type { DatastoreClientConfig } from "../datastore/types";
@@ -159,7 +159,7 @@ export const checkTraceExistsAndGetTimestamp = async ({
 };
 
 /**
- * Accepts a trace in a Clickhouse-ready format.
+ * Accepts a trace in a Datastore-ready format.
  * id, project_id, and timestamp must always be provided.
  */
 export const upsertTrace = async (trace: Partial<TraceRecordReadType>) => {
@@ -1328,7 +1328,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
     },
     datastoreConfig: {
       request_timeout: env.DATASTORE_DATA_EXPORT_REQUEST_TIMEOUT_MS,
-      clickhouse_settings: {
+      datastore_settings: {
         join_algorithm: "grace_hash",
         grace_hash_join_initial_buckets: "32",
       },

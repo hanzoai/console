@@ -29,7 +29,7 @@ function idFilter(id: string): FilterCondition {
   };
 }
 
-describe("Clickhouse Events Repository Test", () => {
+describe("Datastore Events Repository Test", () => {
   it("should kill redis connection", () => {
     // we need at least one test case to avoid hanging
     // redis connection when everything else is skipped.
@@ -1568,10 +1568,7 @@ describe("Clickhouse Events Repository Test", () => {
       expect(result).toBeDefined();
       expect(result?.bookmarked).toBe(false);
 
-      async function checkTraceIdsBookmarked(
-        traceId: string,
-        bookmarkedExp: boolean,
-      ) {
+      async function checkTraceIdsBookmarked(traceId: string, bookmarkedExp: boolean) {
         await waitForExpect(async () => {
           // Verify events_core
           const eventTrace = await getTraceByIdFromEventsTable({

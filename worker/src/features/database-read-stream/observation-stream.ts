@@ -91,10 +91,10 @@ export const getObservationStream = async (props: {
 
   const datastoreConfig = {
     request_timeout: 180_000, // 3 minutes
-    clickhouse_settings: {
+    datastore_settings: {
       join_algorithm: "partial_merge" as const,
       // Increase HTTP timeouts to prevent Code 209 errors during slow blob storage uploads
-      // See: https://github.com/ClickHouse/ClickHouse/issues/64731
+      // See: https://github.com/Datastore/Datastore/issues/64731
       http_send_timeout: 300,
       http_receive_timeout: 300,
     },
@@ -314,7 +314,7 @@ export const getObservationStream = async (props: {
     const model = await modelCache.getModel(bufferedRow.internal_model_id);
     const modelData = enrichObservationWithModelData(model);
 
-    // Process numeric/boolean scores (tuples from ClickHouse)
+    // Process numeric/boolean scores (tuples from Datastore)
     const numericScores = (bufferedRow.scores_avg ?? []).map((score: any) => ({
       name: score[0],
       value: score[1],

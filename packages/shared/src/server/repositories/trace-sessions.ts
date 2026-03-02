@@ -4,7 +4,7 @@ import { singleFilter } from "../../interfaces/filters";
 
 export const getPublicSessionsFilter = async (projectId: string, filter: z.infer<typeof singleFilter>[]) => {
   // Theoretically we should also filter the sessions by environment here. As this would return a huge list that's probably not feasible.
-  // I.e. we only perform the environment check on the ClickHouse queries.
+  // I.e. we only perform the environment check on the Datastore queries.
 
   const sessionsBookmarkedFilter = filter?.find((f) => f.column === "⭐️" || f.column === "bookmarked");
 

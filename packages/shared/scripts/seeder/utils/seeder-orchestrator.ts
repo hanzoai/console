@@ -1,6 +1,6 @@
 import { FileContent, SeederOptions, getTotalObservationsForMode } from "./types";
 import { DataGenerator } from "./data-generators";
-import { DatastoreQueryBuilder } from "./clickhouse-builder";
+import { DatastoreQueryBuilder } from "./datastore-builder";
 import { FrameworkTraceLoader } from "./framework-traces/framework-trace-loader";
 import { EVAL_TRACE_COUNT, SEED_DATASETS } from "./postgres-seed-constants";
 import { MEDIA_TEST_TRACE_IDS } from "../seed-media";
@@ -20,7 +20,7 @@ const DATASET_SCORE_NAMES = ["score-1", "score-2", "score-3"];
 const DATASET_RUN_SCORE_NAMES = ["dataset-run-score-1", "dataset-run-score-2", "dataset-run-score-3"];
 
 /**
- * Orchestrates seeding operations across ClickHouse and PostgreSQL.
+ * Orchestrates seeding operations across Datastore and PostgreSQL.
  *
  * Use createXxxData() for specific data types:
  * - createDatasetExperimentData(): Dataset runs in console-prompt-experiment env
@@ -310,7 +310,7 @@ export class SeederOrchestrator {
     try {
       await datastoreClient().command({
         query,
-        clickhouse_settings: {
+        datastore_settings: {
           wait_end_of_query: 1,
         },
       });

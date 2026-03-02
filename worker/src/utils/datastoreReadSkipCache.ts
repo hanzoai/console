@@ -93,7 +93,7 @@ export class DatastoreReadSkipCache {
     }
   }
 
-  public async shouldSkipClickHouseRead(projectId: string, minProjectCreateDate?: string): Promise<boolean> {
+  public async shouldSkipDatastoreRead(projectId: string, minProjectCreateDate?: string): Promise<boolean> {
     // Check explicit project ID list first
     if (
       env.HANZO_SKIP_INGESTION_DATASTORE_READ_PROJECT_IDS &&
@@ -147,7 +147,7 @@ export class DatastoreReadSkipCache {
 
       return shouldSkip;
     } catch (error) {
-      logger.error(`Failed to fetch project ${projectId} for ClickHouse skip check`, error);
+      logger.error(`Failed to fetch project ${projectId} for Datastore skip check`, error);
       throw error;
     }
   }

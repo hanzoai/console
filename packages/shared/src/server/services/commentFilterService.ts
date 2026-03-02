@@ -11,7 +11,7 @@ import type { z } from "zod/v4";
 
 /**
  * Maximum number of object IDs that can be returned from comment filters.
- * This protects ClickHouse from processing excessively large IN clauses.
+ * This protects Datastore from processing excessively large IN clauses.
  * Typical scenarios: 10K comments → 1K-5K distinct object IDs (well under limit)
  */
 export const COMMENT_FILTER_THRESHOLD = 50000;

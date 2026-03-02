@@ -106,7 +106,7 @@ describe("create experiment jobs", () => {
 
     // Verify that processing info was logged
     expect(mockLogger.info).toHaveBeenCalledWith(
-      "Processing experiment create job with ClickHouse batching",
+      "Processing experiment create job with Datastore batching",
       expect.objectContaining({
         projectId,
         datasetId,

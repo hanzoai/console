@@ -19,16 +19,16 @@ import { type IntervalConfig } from "./date-range-utils";
 /**
  * Fills gaps in time series data and aggregates single-unit data into multi-unit buckets.
  *
- * IMPORTANT: Due to ClickHouse's epoch-aligned toStartOfInterval behavior for multi-unit intervals,
+ * IMPORTANT: Due to Datastore's epoch-aligned toStartOfInterval behavior for multi-unit intervals,
  * the backend ALWAYS queries with SINGLE-UNIT intervals (1 second, 1 minute, 1 hour, 1 day, 1 month, 1 year).
- * This function receives single-unit data from ClickHouse and aggregates it into the requested
+ * This function receives single-unit data from Datastore and aggregates it into the requested
  * multi-unit buckets, working backwards from toTimestamp to ensure "today's" data appears in the
  * rightmost bucket.
  *
  * For single-unit intervals (count=1), this function just fills gaps in the data.
  * For multi-unit intervals (count>1), it groups single-unit data points into buckets.
  *
- * @param data - Array of SINGLE-UNIT time series data points from ClickHouse
+ * @param data - Array of SINGLE-UNIT time series data points from Datastore
  * @param fromDate - Start of the time range
  * @param toDate - End of the time range
  * @param interval - The REQUESTED interval (may be multi-unit like {count: 2, unit: "day"})
@@ -42,7 +42,7 @@ export function fillTimeSeriesGaps<T extends { timestamp: Date; [key: string]: u
 ): T[] {
   const { count, unit } = interval;
 
-  // If single-unit interval (or 7-day weeks), ClickHouse already returned the correct buckets
+  // If single-unit interval (or 7-day weeks), Datastore already returned the correct buckets
   // Just fill gaps in the data
   if (count === 1 || (count === 7 && unit === "day")) {
     return fillGapsInSingleUnitData(data, fromDate, toDate, interval);
@@ -53,7 +53,7 @@ export function fillTimeSeriesGaps<T extends { timestamp: Date; [key: string]: u
 }
 
 /**
- * Fill gaps in single-unit data (ClickHouse already returned correct bucket timestamps)
+ * Fill gaps in single-unit data (Datastore already returned correct bucket timestamps)
  */
 function fillGapsInSingleUnitData<T extends { timestamp: Date; [key: string]: unknown }>(
   data: T[],
@@ -163,7 +163,7 @@ function fillGapsInSingleUnitData<T extends { timestamp: Date; [key: string]: un
 }
 
 /**
- * Aggregate single-unit data from ClickHouse into multi-unit buckets.
+ * Aggregate single-unit data from Datastore into multi-unit buckets.
  * Works backwards from toTimestamp to ensure "today's" data appears in the rightmost bucket.
  */
 function aggregateIntoMultiUnitBuckets<T extends { timestamp: Date; [key: string]: unknown }>(

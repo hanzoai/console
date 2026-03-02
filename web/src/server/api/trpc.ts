@@ -159,7 +159,7 @@ const withErrorHandling = t.middleware(async ({ ctx, next }) => {
 
   if (!res.ok) {
     if (res.error.cause instanceof DatastoreResourceError) {
-      // Surface ClickHouse errors using an advice message
+      // Surface Datastore errors using an advice message
       // which is supposed to provide a bit of guidance to the user.
       logErrorByCode("UNPROCESSABLE_CONTENT", res.error);
       res.error = new TRPCError({
@@ -528,7 +528,7 @@ const enforceSessionAccess = t.middleware(async (opts) => {
 
   const { sessionId, projectId } = result.data;
 
-  // trace sessions are stored in postgres. No need to check for clickhouse eligibility.
+  // trace sessions are stored in postgres. No need to check for datastore eligibility.
   const session = await prisma.traceSession.findFirst({
     where: {
       id: sessionId,

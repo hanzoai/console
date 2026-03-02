@@ -54,13 +54,13 @@
     "db:generate": "dotenv -e ../../.env -- npx prisma generate",
     "db:seed:examples": "dotenv -e ../../.env -- npx prisma db seed -- --environment examples",
     "db:seed:load": "dotenv -e ../../.env -- npx prisma db seed -- --environment load",
-    "ch:up": "bash clickhouse/scripts/up.sh",
-    "ch:down": "bash clickhouse/scripts/down.sh",
-    "ch:drop": "bash clickhouse/scripts/drop.sh",
-    "ch:dev-tables": "bash clickhouse/scripts/dev-tables.sh",
-    "ch:reset": "pnpm run ch:down && pnpm run ch:up && pnpm run ch:seed && pnpm run ch:dev-tables",
-    "ch:seed": "dotenv -e ../../.env -- ts-node -r tsconfig-paths/register -r dotenv/config --compiler-options '{\"module\":\"CommonJS\"}' scripts/seeder/seed-clickhouse.ts",
-    "load:setup": "dotenv -e ../../.env -- tsx scripts/seeder/load-seed-clickhouse.ts"
+    "ds:up": "bash datastore/scripts/up.sh",
+    "ds:down": "bash datastore/scripts/down.sh",
+    "ds:drop": "bash datastore/scripts/drop.sh",
+    "ds:dev-tables": "bash datastore/scripts/dev-tables.sh",
+    "ds:reset": "pnpm run ds:down && pnpm run ds:up && pnpm run ds:seed && pnpm run ds:dev-tables",
+    "ds:seed": "dotenv -e ../../.env -- ts-node -r tsconfig-paths/register -r dotenv/config --compiler-options '{\"module\":\"CommonJS\"}' scripts/seeder/seed-datastore.ts",
+    "load:setup": "dotenv -e ../../.env -- tsx scripts/seeder/load-seed-datastore.ts"
   },
   "prisma": {
     "seed": "ts-node -r tsconfig-paths/register -r dotenv/config --compiler-options {\"module\":\"CommonJS\"} scripts/seeder/seed-postgres.ts"

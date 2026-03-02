@@ -71,7 +71,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
 
     await createEventsCh(observations);
 
-    // Wait for ClickHouse to process
+    // Wait for Datastore to process
     await waitForExpect(
       async () => {
         const result = await queryDatastore<{ count: string }>({
@@ -781,7 +781,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
 
       await createScoresCh(scores);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -938,7 +938,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
         }),
       ]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({
@@ -1030,7 +1030,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
         }),
       ]);
 
-      // Wait for ClickHouse to process
+      // Wait for Datastore to process
       await waitForExpect(
         async () => {
           const result = await queryDatastore<{ count: string }>({

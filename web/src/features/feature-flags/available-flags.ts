@@ -1,6 +1,6 @@
 export const availableFlags = [
   "templateFlag",
-  "excludeClickhouseRead",
+  "excludeDatastoreRead",
   "v4BetaToggleVisible",
   "observationEvals",
 ] as const;

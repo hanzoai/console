@@ -48,7 +48,7 @@ export const onShutdown: NodeJS.SignalsListener = async (signal) => {
 
   // Flush all pending writes to Datastore AFTER closing ingestion queue worker that is writing to it
   await DatastoreWriter.getInstance().shutdown();
-  logger.info("Clickhouse writer has been shut down.");
+  logger.info("Datastore writer has been shut down.");
 
   redis?.disconnect();
   logger.info("Redis connection has been closed.");

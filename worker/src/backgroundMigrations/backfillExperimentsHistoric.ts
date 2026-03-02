@@ -337,11 +337,11 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
       update: {},
     });
 
-    // Check ClickHouse credentials
+    // Check Datastore credentials
     if (!env.DATASTORE_URL || !env.DATASTORE_USER || !env.DATASTORE_PASSWORD) {
       return {
         valid: false,
-        invalidReason: "ClickHouse credentials must be configured to perform migration",
+        invalidReason: "Datastore credentials must be configured to perform migration",
       };
     }
 
@@ -362,7 +362,7 @@ export default class BackfillExperimentsHistoric implements IBackgroundMigration
 
         return {
           valid: false,
-          invalidReason: `Required ClickHouse table '${tableName}' does not exist`,
+          invalidReason: `Required Datastore table '${tableName}' does not exist`,
         };
       }
     }

@@ -5,7 +5,7 @@
  * - Query generation and execution through executeQuery function
  * - SQL generation by QueryBuilder for various pivot table configurations
  * - Data transformation from raw query results to pivot table structure
- * - Integration with ClickHouse database and error handling
+ * - Integration with Datastore database and error handling
  *
  * Test Coverage:
  * - Zero dimension pivot tables (grand total only)
@@ -88,7 +88,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
         ),
     ];
 
-    // Insert traces into ClickHouse
+    // Insert traces into Datastore
     await createTracesCh(traces);
 
     // Create observations with different models for each trace
@@ -148,7 +148,7 @@ describe("Dashboard Router - Pivot Table Integration", () => {
       );
     }
 
-    // Insert observations into ClickHouse
+    // Insert observations into Datastore
     await createObservationsCh(observations);
 
     // Calculate test data statistics for verification

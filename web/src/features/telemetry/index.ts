@@ -161,25 +161,25 @@ async function posthogTelemetry({
     });
 
     // Count traces
-    const countTracesClickhouse = await getTraceCountsByProjectInCreationInterval({
+    const countTracesDatastore = await getTraceCountsByProjectInCreationInterval({
       start: startTimeframe ?? new Date(0),
       end: endTimeframe,
     });
-    const countTraces = countTracesClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countTraces = countTracesDatastore.reduce((acc, curr) => acc + curr.count, 0);
 
     // Count scores
-    const countScoresClickhouse = await getScoreCountsByProjectInCreationInterval({
+    const countScoresDatastore = await getScoreCountsByProjectInCreationInterval({
       start: startTimeframe ?? new Date(0),
       end: endTimeframe,
     });
-    const countScores = countScoresClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countScores = countScoresDatastore.reduce((acc, curr) => acc + curr.count, 0);
 
     // Count observations
-    const countObservationsClickhouse = await getObservationCountsByProjectInCreationInterval({
+    const countObservationsDatastore = await getObservationCountsByProjectInCreationInterval({
       start: startTimeframe ?? new Date(0),
       end: endTimeframe,
     });
-    const countObservations = countObservationsClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countObservations = countObservationsDatastore.reduce((acc, curr) => acc + curr.count, 0);
 
     // Count datasets
     const countDatasets = await prisma.dataset.count({
@@ -211,11 +211,11 @@ async function posthogTelemetry({
       },
     });
 
-    const countDatasetRunItemsClickhouse = await getDatasetRunItemCountsByProjectInCreationInterval({
+    const countDatasetRunItemsDatastore = await getDatasetRunItemCountsByProjectInCreationInterval({
       start: startTimeframe ?? new Date(0),
       end: endTimeframe,
     });
-    const countDatasetRunItems = countDatasetRunItemsClickhouse.reduce((acc, curr) => acc + curr.count, 0);
+    const countDatasetRunItems = countDatasetRunItemsDatastore.reduce((acc, curr) => acc + curr.count, 0);
 
     // Domains (no PII)
     const domains = await prisma.$queryRaw<Array<{ domain: string }>>`

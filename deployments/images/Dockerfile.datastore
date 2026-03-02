@@ -1,0 +1,2 @@
+# Hanzo Datastore — analytics database (ClickHouse-compatible), pinned by digest
+FROM clickhouse/clickhouse-server:24-alpine@sha256:82499fdb60e5bfaefb1e8f06f00a8857d61643fd6081c3f476ab6c7ff6d78766

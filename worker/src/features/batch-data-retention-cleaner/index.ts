@@ -14,7 +14,7 @@ import { env } from "../../env";
 import { getRetentionCutoffDate } from "../utils";
 import { PeriodicExclusiveRunner } from "../../utils/PeriodicExclusiveRunner";
 
-// Tables for batch data retention cleaning (ClickHouse only; also no dataset_run_items)
+// Tables for batch data retention cleaning (Datastore only; also no dataset_run_items)
 export const BATCH_DATA_RETENTION_TABLES = [
   "traces",
   "observations",
@@ -48,7 +48,7 @@ interface ProjectWorkload {
 }
 
 /**
- * Hash projectId to a short key for ClickHouse parameter names.
+ * Hash projectId to a short key for Datastore parameter names.
  */
 function toParamKey(projectId: string): string {
   return createHash("md5").update(projectId).digest("hex").slice(0, 8);
@@ -94,7 +94,7 @@ function buildRetentionConditions(
 }
 
 /**
- * BatchDataRetentionCleaner handles bulk deletion of ClickHouse data based on
+ * BatchDataRetentionCleaner handles bulk deletion of Datastore data based on
  * project retention settings.
  *
  * Each instance processes one table (traces, observations, scores, events_full, events_core).
@@ -220,7 +220,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
    * Get project workloads using chunked queries:
    * 1. PostgreSQL: Get all projects with retention enabled
    * 2. Calculate cutoffs for all projects
-   * 3. Chunk projects and query ClickHouse for expired row counts
+   * 3. Chunk projects and query Datastore for expired row counts
    * 4. Combine results, sort by count, select top N
    *
    * Chunking prevents running into CH query and param size limits.
@@ -251,7 +251,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
       oldestAgeSeconds: null,
     }));
 
-    // Step 3: Chunk projects and query ClickHouse for expired row counts
+    // Step 3: Chunk projects and query Datastore for expired row counts
     const chunkSize = env.HANZO_BATCH_DATA_RETENTION_CLEANER_CHUNK_SIZE;
     const chunks: (typeof allProjectRetentions)[] = [];
     for (let i = 0; i < allProjectRetentions.length; i += chunkSize) {
@@ -272,7 +272,7 @@ export class BatchDataRetentionCleaner extends PeriodicExclusiveRunner {
   }
 
   /**
-   * Count expired rows for a chunk of projects in ClickHouse.
+   * Count expired rows for a chunk of projects in Datastore.
    * Uses the same retention conditions as delete to count only rows that will be deleted.
    */
   private async countExpiredRowsInChunk(

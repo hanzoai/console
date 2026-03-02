@@ -11,21 +11,21 @@ type DatasetRunFilterColumnLiterals = ExtractLiterals<typeof datasetRunsTableUiC
 
 /**
  * Columns that can be filtered using basic PostgreSQL dataset run data
- * (don't require aggregated metrics from ClickHouse)
+ * (don't require aggregated metrics from Datastore)
  */
 const DATASTORE_FILTER_COLUMNS: DatasetRunFilterColumnLiterals[] = ["Scores (categorical)", "Scores (numeric)"];
 const DATASTORE_FILTER_COLUMNS_SET = new Set(DATASTORE_FILTER_COLUMNS);
 
 /**
- * Returns true if the dataset run filter column requires DRI metrics from ClickHouse.
+ * Returns true if the dataset run filter column requires DRI metrics from Datastore.
  *
  * This function determines data source requirements by checking if the column
- * needs aggregated metrics that are only available in ClickHouse dataset_run_items_rmt.
+ * needs aggregated metrics that are only available in Datastore dataset_run_items_rmt.
  *
  * @param column - The dataset run filter column ID to check
- * @returns true if requires ClickHouse DRI metrics, false if PostgreSQL data is sufficient
+ * @returns true if requires Datastore DRI metrics, false if PostgreSQL data is sufficient
  */
-export function isClickhouseFilterColumn(column: string): boolean {
+export function isDatastoreFilterColumn(column: string): boolean {
   return DATASTORE_FILTER_COLUMNS_SET.has(column);
 }
 
