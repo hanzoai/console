@@ -229,23 +229,14 @@ export const env = createEnv({
         s ? s.split(",").map((h) => h.toLowerCase().trim()) : [],
       ),
 
-    // datastore (primary), with CLICKHOUSE_* fallbacks for backward compat
+    // Datastore (analytics database) configuration
     DATASTORE_URL: z.string().url(),
-    CLICKHOUSE_URL: z.string().url().optional(),
     DATASTORE_CLUSTER_NAME: z.string().default("default"),
-    CLICKHOUSE_CLUSTER_NAME: z.string().optional(),
     DATASTORE_DB: z.string().default("default"),
-    CLICKHOUSE_DB: z.string().optional(),
     DATASTORE_USER: z.string().default("default"),
-    CLICKHOUSE_USER: z.string().optional(),
     DATASTORE_PASSWORD: z.string().default(""),
-    CLICKHOUSE_PASSWORD: z.string().optional(),
     DATASTORE_CLUSTER_ENABLED: z.enum(["true", "false"]).default("true"),
-    CLICKHOUSE_CLUSTER_ENABLED: z.enum(["true", "false"]).optional(),
     DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY: z.coerce
-      .number()
-      .optional(),
-    CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY: z.coerce
       .number()
       .default(32_000_000_000), // ~32GB
 
@@ -735,23 +726,15 @@ export const env = createEnv({
     PLAIN_AUTHENTICATION_SECRET: process.env.PLAIN_AUTHENTICATION_SECRET,
     PLAIN_API_KEY: process.env.PLAIN_API_KEY,
     PLAIN_CARDS_API_TOKEN: process.env.PLAIN_CARDS_API_TOKEN,
-    // datastore (DATASTORE_* preferred, CLICKHOUSE_* fallback)
-    DATASTORE_URL: process.env.DATASTORE_URL ?? process.env.CLICKHOUSE_URL,
-    CLICKHOUSE_URL: process.env.CLICKHOUSE_URL,
-    DATASTORE_CLUSTER_NAME: process.env.DATASTORE_CLUSTER_NAME ?? process.env.CLICKHOUSE_CLUSTER_NAME,
-    CLICKHOUSE_CLUSTER_NAME: process.env.CLICKHOUSE_CLUSTER_NAME,
-    DATASTORE_DB: process.env.DATASTORE_DB ?? process.env.CLICKHOUSE_DB,
-    CLICKHOUSE_DB: process.env.CLICKHOUSE_DB,
-    DATASTORE_USER: process.env.DATASTORE_USER ?? process.env.CLICKHOUSE_USER,
-    CLICKHOUSE_USER: process.env.CLICKHOUSE_USER,
-    DATASTORE_PASSWORD: process.env.DATASTORE_PASSWORD ?? process.env.CLICKHOUSE_PASSWORD,
-    CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
-    DATASTORE_CLUSTER_ENABLED: process.env.DATASTORE_CLUSTER_ENABLED ?? process.env.CLICKHOUSE_CLUSTER_ENABLED,
-    CLICKHOUSE_CLUSTER_ENABLED: process.env.CLICKHOUSE_CLUSTER_ENABLED,
+    // Datastore (analytics database)
+    DATASTORE_URL: process.env.DATASTORE_URL,
+    DATASTORE_CLUSTER_NAME: process.env.DATASTORE_CLUSTER_NAME,
+    DATASTORE_DB: process.env.DATASTORE_DB,
+    DATASTORE_USER: process.env.DATASTORE_USER,
+    DATASTORE_PASSWORD: process.env.DATASTORE_PASSWORD,
+    DATASTORE_CLUSTER_ENABLED: process.env.DATASTORE_CLUSTER_ENABLED,
     DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY:
       process.env.DATASTORE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
-    CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY:
-      process.env.CLICKHOUSE_MAX_BYTES_BEFORE_EXTERNAL_GROUP_BY,
     // EE ui customization
     HANZO_UI_API_HOST: process.env.HANZO_UI_API_HOST,
     HANZO_UI_DOCUMENTATION_HREF: process.env.HANZO_UI_DOCUMENTATION_HREF,
