@@ -14,8 +14,8 @@ on:
 
 env:
   # Upstream datastore binary package (used in CI for dev-tables setup)
-  DS_UPSTREAM_VERSION: "24.9.3.128"
-  DS_UPSTREAM_PKG_BASE: "https://packages.clickhouse.com/deb/pool/main/c/clickhouse"
+  DS_VERSION: "24.9.3.128"
+  DS_PKG_BASE: "https://pkg.hanzo.ai/datastore/deb/pool/main"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -236,7 +236,7 @@ jobs:
       - name: Download and extract Datastore client for dev-tables setup
         run: |
           ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_UPSTREAM_PKG_BASE}/clickhouse-common-static_${DS_UPSTREAM_VERSION}_${ARCH}.deb"
+          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
@@ -346,7 +346,7 @@ jobs:
         if: matrix.deploy-mode == ''
         run: |
           ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_UPSTREAM_PKG_BASE}/clickhouse-common-static_${DS_UPSTREAM_VERSION}_${ARCH}.deb"
+          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
@@ -439,7 +439,7 @@ jobs:
         if: matrix.deploy-mode == ''
         run: |
           ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_UPSTREAM_PKG_BASE}/clickhouse-common-static_${DS_UPSTREAM_VERSION}_${ARCH}.deb"
+          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
