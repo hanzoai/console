@@ -126,7 +126,7 @@ export class DatastoreClient {
     const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
-    const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
+    const sql = `${opts.query.trimEnd().replace(/;+$/, "")} FORMAT JSONEachRow`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
@@ -186,7 +186,7 @@ export class DatastoreClient {
     const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
     const url = `${this.url}/?${qs.toString()}`;
-    const sql = `${opts.query.trimEnd()} FORMAT JSONEachRow`;
+    const sql = `${opts.query.trimEnd().replace(/;+$/, "")} FORMAT JSONEachRow`;
 
     const response = await fetch(url, {
       method: "POST",

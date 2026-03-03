@@ -35,7 +35,6 @@ COPY --chown=nextjs:nodejs patches/ ./patches/
 COPY --chown=nextjs:nodejs web/package.json ./web/
 COPY --chown=nextjs:nodejs worker/package.json ./worker/
 COPY --chown=nextjs:nodejs packages/shared/package.json ./packages/shared/
-COPY --chown=nextjs:nodejs packages/ee/package.json ./packages/ee/
 COPY --chown=nextjs:nodejs packages/config-eslint/package.json ./packages/config-eslint/
 COPY --chown=nextjs:nodejs packages/config-typescript/package.json ./packages/config-typescript/
 COPY --chown=nextjs:nodejs packages/console-js/package.json ./packages/console-js/
