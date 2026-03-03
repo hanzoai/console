@@ -62,7 +62,7 @@ const nextConfig = {
     "dd-trace",
     "@opentelemetry/api",
     "@appsignal/opentelemetry-instrumentation-bullmq",
-    "bullmq",
+    "@hanzo/mq",
     "@opentelemetry/sdk-node",
     "@opentelemetry/instrumentation-winston",
     "kysely",

@@ -1,4 +1,4 @@
-import { Processor } from "bullmq";
+import { Processor } from "@hanzo/mq";
 import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { handleInsightsIntegrationSchedule } from "../features/insights/handlePostHogIntegrationSchedule";
 import { handleInsightsIntegrationProjectJob } from "../features/insights/handlePostHogIntegrationProjectJob";

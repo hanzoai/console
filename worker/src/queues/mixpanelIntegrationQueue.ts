@@ -1,4 +1,4 @@
-import { Processor } from "bullmq";
+import { Processor } from "@hanzo/mq";
 import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
 import { handleMixpanelIntegrationSchedule } from "../features/mixpanel/handleMixpanelIntegrationSchedule";
 import { handleMixpanelIntegrationProjectJob } from "../features/mixpanel/handleMixpanelIntegrationProjectJob";

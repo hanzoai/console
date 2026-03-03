@@ -11,7 +11,7 @@ import {
   createTracesCh,
   getTracesByIds,
 } from "@hanzo/shared/src/server";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 
 describe("trace deletion queue processor", () => {
   let projectId: string;

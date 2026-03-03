@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 
 import { BaseError, BatchExportStatus, ConsoleNotFoundError } from "@hanzo/shared";
 import { kyselyPrisma } from "@hanzo/shared/src/db";

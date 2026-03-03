@@ -1,5 +1,5 @@
 import { pipeline } from "stream";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { prisma } from "@hanzo/shared/src/db";
 import {
   QueueName,

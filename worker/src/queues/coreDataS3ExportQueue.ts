@@ -1,4 +1,4 @@
-import { Processor } from "bullmq";
+import { Processor } from "@hanzo/mq";
 import { logger, StorageService, StorageServiceFactory } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
 import { env } from "../env";

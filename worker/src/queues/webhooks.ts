@@ -25,7 +25,7 @@ import {
   SlackService,
   logger,
 } from "@hanzo/shared/src/server";
-import { Processor, Job } from "bullmq";
+import { Processor, Job } from "@hanzo/mq";
 import { backOff } from "exponential-backoff";
 import { env } from "../env";
 import { SlackMessageBuilder } from "../features/slack/slackMessageBuilder";

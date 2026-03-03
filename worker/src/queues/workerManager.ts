@@ -1,4 +1,4 @@
-import { Job, Processor, Worker, WorkerOptions } from "bullmq";
+import { Job, Processor, Worker, WorkerOptions } from "@hanzo/mq";
 import {
   getQueue,
   convertQueueNameToMetricName,

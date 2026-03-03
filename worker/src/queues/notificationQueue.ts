@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 
 import { logger, QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { handleCommentMentionNotification } from "../features/notifications/commentMentionHandler";

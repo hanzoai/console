@@ -1,4 +1,4 @@
-import { Processor } from "bullmq";
+import { Processor } from "@hanzo/mq";
 import { QueueJobs, logger, instrumentAsync } from "@hanzo/shared/src/server";
 import { handleBlobStorageIntegrationSchedule } from "../features/blobstorage/handleBlobStorageIntegrationSchedule";
 import { handleBlobStorageIntegrationProjectJob } from "../features/blobstorage/handleBlobStorageIntegrationProjectJob";

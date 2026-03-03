@@ -9,7 +9,7 @@ import {
   redis,
   recordGauge,
 } from "@hanzo/shared/src/server";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { env } from "../../env";
 
 const LAST_PROCESSED_PARTITION_KEY = "hanzo:event-propagation:last-processed-partition";

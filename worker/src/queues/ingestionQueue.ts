@@ -1,4 +1,4 @@
-import { Job, Processor } from "bullmq";
+import { Job, Processor } from "@hanzo/mq";
 import {
   datastoreClient,
   getDatastoreEntityType,

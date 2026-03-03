@@ -1,5 +1,5 @@
 import { QueueName, TQueueJobTypes } from "../queues";
-import { Queue } from "bullmq";
+import { Queue } from "@hanzo/mq";
 import { createNewRedisInstance, getQueuePrefix, redisQueueRetryOptions } from "./redis";
 import { logger } from "../logger";
 

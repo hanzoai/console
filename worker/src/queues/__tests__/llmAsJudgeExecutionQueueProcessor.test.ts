@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { JobExecutionStatus } from "@prisma/client";
 import { llmAsJudgeExecutionQueueProcessor } from "../evalQueue";
 import { QueueName, type TQueueJobTypes } from "@hanzo/shared/src/server";
@@ -60,10 +60,7 @@ vi.mock("../../errors/UnrecoverableError", async () => {
 
 import { prisma } from "@hanzo/shared/src/db";
 import { processObservationEval } from "../../features/evaluation/observationEval";
-import {
-  isLLMCompletionError,
-  traceException,
-} from "@hanzo/shared/src/server";
+import { isLLMCompletionError, traceException } from "@hanzo/shared/src/server";
 import { retryLLMRateLimitError } from "../../features/utils";
 import { isUnrecoverableError } from "../../errors/UnrecoverableError";
 
@@ -123,14 +120,8 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       const job = createMockJob();
       await llmAsJudgeExecutionQueueProcessor(job);
 
-      expect(mockSpan.setAttribute).toHaveBeenCalledWith(
-        "messaging.bullmq.job.input.jobExecutionId",
-        jobExecutionId,
-      );
-      expect(mockSpan.setAttribute).toHaveBeenCalledWith(
-        "messaging.bullmq.job.input.projectId",
-        projectId,
-      );
+      expect(mockSpan.setAttribute).toHaveBeenCalledWith("messaging.bullmq.job.input.jobExecutionId", jobExecutionId);
+      expect(mockSpan.setAttribute).toHaveBeenCalledWith("messaging.bullmq.job.input.projectId", projectId);
     });
   });
 
@@ -140,8 +131,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       (processObservationEval as Mock).mockRejectedValue(rateLimitError);
       (isLLMCompletionError as Mock).mockReturnValue(true);
       // Mark as retryable
-      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable =
-        true;
+      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable = true;
 
       const job = createMockJob();
       await llmAsJudgeExecutionQueueProcessor(job);
@@ -168,17 +158,14 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
     it("should not rethrow error after scheduling retry", async () => {
       const rateLimitError = new Error("Rate limit exceeded");
-      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable =
-        true;
+      (rateLimitError as unknown as { isRetryable: boolean }).isRetryable = true;
       (processObservationEval as Mock).mockRejectedValue(rateLimitError);
       (isLLMCompletionError as Mock).mockReturnValue(true);
 
       const job = createMockJob();
 
       // Should not throw
-      await expect(
-        llmAsJudgeExecutionQueueProcessor(job),
-      ).resolves.not.toThrow();
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).resolves.not.toThrow();
     });
   });
 
@@ -215,17 +202,13 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       const job = createMockJob();
 
       // Should not throw - error is handled gracefully
-      await expect(
-        llmAsJudgeExecutionQueueProcessor(job),
-      ).resolves.not.toThrow();
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).resolves.not.toThrow();
     });
   });
 
   describe("UnrecoverableError handling", () => {
     it("should set ERROR status with user-facing message for UnrecoverableError", async () => {
-      const unrecoverableError = new UnrecoverableError(
-        "Job configuration not found",
-      );
+      const unrecoverableError = new UnrecoverableError("Job configuration not found");
       (processObservationEval as Mock).mockRejectedValue(unrecoverableError);
       (isUnrecoverableError as Mock).mockReturnValue(true);
 
@@ -254,9 +237,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       const job = createMockJob();
 
       // Should not throw
-      await expect(
-        llmAsJudgeExecutionQueueProcessor(job),
-      ).resolves.not.toThrow();
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).resolves.not.toThrow();
     });
 
     it("should not call traceException for UnrecoverableError", async () => {
@@ -279,9 +260,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       const job = createMockJob();
 
       // Should rethrow for BullMQ retry
-      await expect(llmAsJudgeExecutionQueueProcessor(job)).rejects.toThrow(
-        "Database connection failed",
-      );
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).rejects.toThrow("Database connection failed");
 
       expect(prisma.jobExecution.update).toHaveBeenCalledWith({
         where: {
@@ -317,9 +296,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
       const job = createMockJob();
 
-      await expect(llmAsJudgeExecutionQueueProcessor(job)).rejects.toThrow(
-        "Network timeout",
-      );
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).rejects.toThrow("Network timeout");
     });
   });
 
@@ -350,10 +327,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       });
       await llmAsJudgeExecutionQueueProcessor(job);
 
-      expect(mockSpan.setAttribute).toHaveBeenCalledWith(
-        "messaging.bullmq.job.input.retryBaggage.attempt",
-        3,
-      );
+      expect(mockSpan.setAttribute).toHaveBeenCalledWith("messaging.bullmq.job.input.retryBaggage.attempt", 3);
     });
 
     it("should default to 0 when retry baggage is missing", async () => {
@@ -367,10 +341,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
 
       await llmAsJudgeExecutionQueueProcessor(job);
 
-      expect(mockSpan.setAttribute).toHaveBeenCalledWith(
-        "messaging.bullmq.job.input.retryBaggage.attempt",
-        0,
-      );
+      expect(mockSpan.setAttribute).toHaveBeenCalledWith("messaging.bullmq.job.input.retryBaggage.attempt", 0);
     });
   });
 
@@ -383,9 +354,7 @@ describe("llmAsJudgeExecutionQueueProcessor", () => {
       const job = createMockJob();
 
       // Should not throw
-      await expect(
-        llmAsJudgeExecutionQueueProcessor(job),
-      ).resolves.not.toThrow();
+      await expect(llmAsJudgeExecutionQueueProcessor(job)).resolves.not.toThrow();
       expect(processObservationEval).toHaveBeenCalled();
     });
   });

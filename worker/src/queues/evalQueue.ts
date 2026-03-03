@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { JobExecutionStatus } from "@hanzo/shared";
 import { prisma } from "@hanzo/shared/src/db";
 import {

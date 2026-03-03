@@ -1,4 +1,4 @@
-import { Queue } from "bullmq";
+import { Queue } from "@hanzo/mq";
 import { QueueName } from "../queues";
 import { BatchExportQueue } from "./batchExport";
 import { CloudUsageMeteringQueue } from "./cloudUsageMeteringQueue";

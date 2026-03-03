@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import {
   ExperimentCreateQueue,
   QueueJobs,

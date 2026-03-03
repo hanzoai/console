@@ -10,7 +10,7 @@ import {
 } from "@hanzo/shared/src/server";
 import { cloudUsageMeteringDbCronJobName, CloudUsageMeteringDbCronJobStates } from "./constants";
 import { QueueJobs, recordGauge, traceException } from "@hanzo/shared/src/server";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { backOff } from "exponential-backoff";
 
 const delayFromStartOfInterval = 3600000 + 5 * 60 * 1000; // 5 minutes after the end of the interval

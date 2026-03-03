@@ -15,7 +15,7 @@ import {
   getTraceIdentifierStream,
 } from "../database-read-stream/getDatabaseReadStream";
 import { env } from "../../env";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { processAddObservationsToQueue, processAddSessionsToQueue, processAddTracesToQueue } from "./processAddToQueue";
 import { prisma } from "@hanzo/shared/src/db";
 import { randomUUID } from "node:crypto";

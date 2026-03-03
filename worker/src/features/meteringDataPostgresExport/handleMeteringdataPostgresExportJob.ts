@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { prisma } from "@hanzo/shared/src/db";
 import { PostHogIntegrationProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";

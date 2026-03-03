@@ -26,7 +26,7 @@ import {
   deleteEventsOlderThanDays,
 } from "@hanzo/shared/src/server";
 import { prisma } from "@hanzo/shared/src/db";
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { projectDeleteProcessor } from "../queues/projectDelete";
 
 describe("ProjectDeletionProcessingJob", () => {

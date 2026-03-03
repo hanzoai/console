@@ -1,4 +1,4 @@
-import { Job } from "bullmq";
+import { Job } from "@hanzo/mq";
 import { traceException, logger } from "@hanzo/shared/src/server";
 import { QueueName, TQueueJobTypes } from "@hanzo/shared/src/server";
 import { handleBatchActionJob } from "../features/batchAction/handleBatchActionJob";
