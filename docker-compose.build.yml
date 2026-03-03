@@ -81,7 +81,7 @@ services:
       retries: 3
 
   datastore:
-    image: docker.io/ghcr.io/hanzoai/datastore:latest
+    image: ghcr.io/hanzoai/datastore:latest
     user: "101:101"
     environment:
       DATASTORE_DB: default

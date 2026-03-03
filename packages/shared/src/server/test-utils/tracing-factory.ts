@@ -262,8 +262,7 @@ export const createEvent = (
     // metadata_values alias maps to metadata_raw_values (events table column name)
     metadata: finalMetadata,
     metadata_names: metadataNamesOverride ?? metadataNames,
-    metadata_raw_values:
-      metadataValuesAlias ?? metadataRawValuesOverride ?? metadataValues,
+    metadata_raw_values: metadataValuesAlias ?? metadataRawValuesOverride ?? metadataValues,
 
     // Experiment properties
     experiment_id: null,

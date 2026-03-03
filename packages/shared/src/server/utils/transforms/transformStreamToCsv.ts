@@ -17,11 +17,7 @@ export function transformStreamToCsv(): Transform {
 
   return new Transform({
     objectMode: true,
-    transform(
-      row: Record<string, any>,
-      encoding: BufferEncoding,
-      callback: TransformCallback,
-    ): void {
+    transform(row: Record<string, any>, encoding: BufferEncoding, callback: TransformCallback): void {
       const startTime = Date.now();
 
       if (isFirstChunk) {

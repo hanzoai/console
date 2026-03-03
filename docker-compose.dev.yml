@@ -2,7 +2,7 @@ services:
   datastore:
     # Upgrade from 24.3 to check behaviour on new events table.
     # Unit tests still verify 24.3 behaviour using -azure and -redis-cluster configs.
-    image: docker.io/ghcr.io/hanzoai/datastore:latest:25.8
+    image: ghcr.io/hanzoai/datastore:latest
     user: "101:101"
     container_name: ${DATASTORE_CONTAINER_NAME:-hanzo-datastore}
     environment:

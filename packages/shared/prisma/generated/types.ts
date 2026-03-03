@@ -122,8 +122,7 @@ export const BlobStorageExportMode = {
   FROM_TODAY: "FROM_TODAY",
   FROM_CUSTOM_DATE: "FROM_CUSTOM_DATE",
 } as const;
-export type BlobStorageExportMode =
-  (typeof BlobStorageExportMode)[keyof typeof BlobStorageExportMode];
+export type BlobStorageExportMode = (typeof BlobStorageExportMode)[keyof typeof BlobStorageExportMode];
 export const AnalyticsIntegrationExportSource = {
   TRACES_OBSERVATIONS: "TRACES_OBSERVATIONS",
   TRACES_OBSERVATIONS_EVENTS: "TRACES_OBSERVATIONS_EVENTS",

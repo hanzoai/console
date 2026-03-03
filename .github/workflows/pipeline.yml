@@ -133,6 +133,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Login to Docker Hub
         if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: docker/login-action@v3
@@ -222,6 +232,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-${{ matrix.node-version }}-
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Run dev containers
         run: |
           docker compose -f docker-compose.dev.yml up -d
@@ -331,6 +351,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-async-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-async-${{ matrix.node-version }}-
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Run dev containers
         run: |
           docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d
@@ -417,6 +447,16 @@ jobs:
           cp .env.dev${{ matrix.deploy-mode }}.example .env
           cp .env.dev${{ matrix.deploy-mode }}.example web/.env
           cp .env.dev${{ matrix.deploy-mode }}.example worker/.env
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d
@@ -576,6 +616,16 @@ jobs:
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev.yml up -d
@@ -635,6 +685,16 @@ jobs:
       - name: Load default env
         run: |
           cp .env.dev.example .env
+      - name: Ensure Docker Compose plugin
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+            mkdir -p "$DOCKER_CONFIG/cli-plugins"
+            curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+              -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+            chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+          fi
+          docker compose version
       - name: Run + migrate
         run: |
           docker compose -f docker-compose.dev.yml up -d

@@ -689,9 +689,7 @@ export async function createDatasets(
           },
         });
 
-        logger.info(
-          `Created 4 versions for test-dataset-versioning in project ${projectId}`,
-        );
+        logger.info(`Created 4 versions for test-dataset-versioning in project ${projectId}`);
       }
     }
   }

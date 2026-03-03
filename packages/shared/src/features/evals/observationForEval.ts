@@ -6,10 +6,7 @@ import { SingleValueOption } from "../../tableDefinitions";
 import { ColumnDefinition } from "../../tableDefinitions";
 import { formatColumnOptions } from "../../tableDefinitions/typeHelpers";
 
-const flexibleUsageCostSchema = z.record(
-  z.string(),
-  z.coerce.number().nullable(),
-);
+const flexibleUsageCostSchema = z.record(z.string(), z.coerce.number().nullable());
 
 export const observationForEvalSchema = z.object({
   // Identifiers
@@ -71,9 +68,7 @@ export const observationForEvalSchema = z.object({
 
 export type ObservationForEval = z.infer<typeof observationForEvalSchema>;
 
-export function convertEventRecordToObservationForEval(
-  record: EventRecordBaseType,
-): ObservationForEval {
+export function convertEventRecordToObservationForEval(record: EventRecordBaseType): ObservationForEval {
   return observationForEvalSchema.parse(record);
 }
 
@@ -352,10 +347,7 @@ export function experimentEvalFilterColsWithOptions(
  * @param column - The camelCase column ID from filter definitions
  * @returns The value from the observation object
  */
-export function mapEventEvalFilterColumnIdToField(
-  observation: ObservationForEval,
-  column: string,
-) {
+export function mapEventEvalFilterColumnIdToField(observation: ObservationForEval, column: string) {
   const columnMapping = eventsEvalFilterColumns.find((c) => c.id === column);
   if (!columnMapping) {
     return undefined;

@@ -62,13 +62,7 @@ export class DefaultViewService {
    * Set a view as the default for user or project level.
    * Upserts the default view record using serializable transaction to prevent races.
    */
-  public static async setAsDefault({
-    projectId,
-    viewId,
-    viewName,
-    scope,
-    userId,
-  }: SetAsDefaultParams): Promise<void> {
+  public static async setAsDefault({ projectId, viewId, viewName, scope, userId }: SetAsDefaultParams): Promise<void> {
     const userIdToUse = scope === "user" ? userId : null;
 
     if (scope === "user" && !userId) {
@@ -107,12 +101,7 @@ export class DefaultViewService {
     );
   }
 
-  public static async clearDefault({
-    projectId,
-    viewName,
-    scope,
-    userId,
-  }: ClearDefaultParams): Promise<void> {
+  public static async clearDefault({ projectId, viewName, scope, userId }: ClearDefaultParams): Promise<void> {
     const userIdToUse = scope === "user" ? userId : null;
 
     if (scope === "user" && !userId) {

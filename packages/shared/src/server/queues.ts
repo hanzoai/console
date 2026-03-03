@@ -1,10 +1,6 @@
 import { z } from "zod/v4";
 import { eventTypes } from "./ingestion/types";
-import {
-  ActionId,
-  BatchActionQuerySchema,
-  BatchActionType,
-} from "../features/batchAction/types";
+import { ActionId, BatchActionQuerySchema, BatchActionType } from "../features/batchAction/types";
 import { BatchTableNames } from "../interfaces/tableNames";
 import { EventActionSchema } from "../domain";
 import { PromptDomainSchema } from "../domain/prompts";
@@ -124,82 +120,79 @@ export const DataRetentionProcessingEventSchema = z.object({
   projectId: z.string(),
   retention: z.number(),
 });
-export const BatchActionProcessingEventSchema = z.discriminatedUnion(
-  "actionId",
-  [
-    z.object({
-      actionId: z.literal("score-delete"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      targetId: z.string().optional(),
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal("trace-delete"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      targetId: z.string().optional(),
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal("trace-add-to-annotation-queue"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      targetId: z.string().optional(),
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal("session-add-to-annotation-queue"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      targetId: z.string().optional(),
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal("observation-add-to-annotation-queue"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      targetId: z.string().optional(),
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal("eval-create"),
-      targetObject: EvalTargetObjectSchema,
-      configId: z.string(),
-      projectId: z.string(),
-      cutoffCreatedAt: z.date(),
-      query: BatchActionQuerySchema,
-    }),
-    z.object({
-      actionId: z.literal("observation-add-to-dataset"),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      tableName: z.enum(BatchTableNames),
-      cutoffCreatedAt: z.date(),
-      batchActionId: z.string(),
-      config: ObservationAddToDatasetConfigSchema,
-      type: z.enum(BatchActionType),
-    }),
-    z.object({
-      actionId: z.literal(ActionId.ObservationBatchEvaluation),
-      projectId: z.string(),
-      query: BatchActionQuerySchema,
-      cutoffCreatedAt: z.date(),
-      batchActionId: z.string(),
-      evaluatorIds: z.array(z.string()),
-    }),
-  ],
-);
+export const BatchActionProcessingEventSchema = z.discriminatedUnion("actionId", [
+  z.object({
+    actionId: z.literal("score-delete"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    targetId: z.string().optional(),
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal("trace-delete"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    targetId: z.string().optional(),
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal("trace-add-to-annotation-queue"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    targetId: z.string().optional(),
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal("session-add-to-annotation-queue"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    targetId: z.string().optional(),
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal("observation-add-to-annotation-queue"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    targetId: z.string().optional(),
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal("eval-create"),
+    targetObject: EvalTargetObjectSchema,
+    configId: z.string(),
+    projectId: z.string(),
+    cutoffCreatedAt: z.date(),
+    query: BatchActionQuerySchema,
+  }),
+  z.object({
+    actionId: z.literal("observation-add-to-dataset"),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    tableName: z.enum(BatchTableNames),
+    cutoffCreatedAt: z.date(),
+    batchActionId: z.string(),
+    config: ObservationAddToDatasetConfigSchema,
+    type: z.enum(BatchActionType),
+  }),
+  z.object({
+    actionId: z.literal(ActionId.ObservationBatchEvaluation),
+    projectId: z.string(),
+    query: BatchActionQuerySchema,
+    cutoffCreatedAt: z.date(),
+    batchActionId: z.string(),
+    evaluatorIds: z.array(z.string()),
+  }),
+]);
 
 export const CreateEvalQueueEventSchema = DatasetRunItemUpsertEventSchema.and(
   z.object({
@@ -256,9 +249,7 @@ export const EntityChangeEventSchema = z.discriminatedUnion("entityType", [
 ]);
 export type EntityChangeEventType = z.infer<typeof EntityChangeEventSchema>;
 
-export type CreateEvalQueueEventType = z.infer<
-  typeof CreateEvalQueueEventSchema
->;
+export type CreateEvalQueueEventType = z.infer<typeof CreateEvalQueueEventSchema>;
 export type BatchExportJobType = z.infer<typeof BatchExportJobSchema>;
 export type CloudSpendAlertJobType = z.infer<typeof CloudSpendAlertJobSchema>;
 export type TraceQueueEventType = z.infer<typeof TraceQueueEventSchema>;
@@ -266,36 +257,18 @@ export type TracesQueueEventType = z.infer<typeof TracesQueueEventSchema>;
 export type ScoresQueueEventType = z.infer<typeof ScoresQueueEventSchema>;
 export type DatasetQueueEventType = z.infer<typeof DatasetQueueEventSchema>;
 export type ProjectQueueEventType = z.infer<typeof ProjectQueueEventSchema>;
-export type DatasetRunItemUpsertEventType = z.infer<
-  typeof DatasetRunItemUpsertEventSchema
->;
+export type DatasetRunItemUpsertEventType = z.infer<typeof DatasetRunItemUpsertEventSchema>;
 export type EvalExecutionEventType = z.infer<typeof EvalExecutionEvent>;
-export type LLMAsJudgeExecutionEventType = z.infer<
-  typeof LLMAsJudgeExecutionEventSchema
->;
+export type LLMAsJudgeExecutionEventType = z.infer<typeof LLMAsJudgeExecutionEventSchema>;
 export type IngestionEventQueueType = z.infer<typeof IngestionEvent>;
 export type OtelIngestionEventQueueType = z.infer<typeof OtelIngestionEvent>;
-export type ExperimentCreateEventType = z.infer<
-  typeof ExperimentCreateEventSchema
->;
-export type PostHogIntegrationProcessingEventType = z.infer<
-  typeof PostHogIntegrationProcessingEventSchema
->;
-export type MixpanelIntegrationProcessingEventType = z.infer<
-  typeof MixpanelIntegrationProcessingEventSchema
->;
-export type DataRetentionProcessingEventType = z.infer<
-  typeof DataRetentionProcessingEventSchema
->;
-export type BatchActionProcessingEventType = z.infer<
-  typeof BatchActionProcessingEventSchema
->;
-export type BlobStorageIntegrationProcessingEventType = z.infer<
-  typeof BlobStorageIntegrationProcessingEventSchema
->;
-export type DeadLetterRetryQueueEventType = z.infer<
-  typeof DeadLetterRetryQueueEventSchema
->;
+export type ExperimentCreateEventType = z.infer<typeof ExperimentCreateEventSchema>;
+export type PostHogIntegrationProcessingEventType = z.infer<typeof PostHogIntegrationProcessingEventSchema>;
+export type MixpanelIntegrationProcessingEventType = z.infer<typeof MixpanelIntegrationProcessingEventSchema>;
+export type DataRetentionProcessingEventType = z.infer<typeof DataRetentionProcessingEventSchema>;
+export type BatchActionProcessingEventType = z.infer<typeof BatchActionProcessingEventSchema>;
+export type BlobStorageIntegrationProcessingEventType = z.infer<typeof BlobStorageIntegrationProcessingEventSchema>;
+export type DeadLetterRetryQueueEventType = z.infer<typeof DeadLetterRetryQueueEventSchema>;
 export type NotificationEventType = z.infer<typeof NotificationEventSchema>;
 
 export const RetryBaggage = z.object({

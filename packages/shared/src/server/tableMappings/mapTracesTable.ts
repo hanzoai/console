@@ -138,8 +138,7 @@ export const tracesTableUiColumnDefinitions: UiColumnMappings = [
     uiTableName: "Output Tokens",
     uiTableId: "outputTokens",
     datastoreTableName: "observations",
-    datastoreSelect:
-      "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, o.usage_details)))",
+    datastoreSelect: "arraySum(mapValues(mapFilter(x -> positionCaseInsensitive(x.1, 'output') > 0, o.usage_details)))",
     datastoreTypeOverwrite: "Decimal64(3)",
   },
   {

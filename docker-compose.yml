@@ -89,7 +89,7 @@ services:
       INIT_USER_PASSWORD: ${INIT_USER_PASSWORD:-}
 
   datastore:
-    image: docker.io/ghcr.io/hanzoai/datastore:latest
+    image: ghcr.io/hanzoai/datastore:latest
     restart: always
     user: "101:101"
     environment:

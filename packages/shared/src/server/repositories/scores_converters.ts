@@ -44,7 +44,9 @@ export const convertDatastoreScoreToDomain = <
     updatedAt: record.updated_at ? parseDatastoreUTCDateTimeFormat(record.updated_at) : new Date(),
     metadata: (includeMetadataPayload
       ? (parseMetadataDatastoreRecordToDomain(record.metadata ?? {}) ?? {})
-      : {}) as ExcludeMetadata extends true ? never : NonNullable<ReturnType<typeof parseMetadataDatastoreRecordToDomain>>,
+      : {}) as ExcludeMetadata extends true
+      ? never
+      : NonNullable<ReturnType<typeof parseMetadataDatastoreRecordToDomain>>,
   };
 
   if (record.data_type === "NUMERIC") {

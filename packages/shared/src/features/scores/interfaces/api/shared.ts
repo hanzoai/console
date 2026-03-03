@@ -3,10 +3,7 @@ import { publicApiPaginationZod } from "../../../../utils/zod";
 import { stringDateTime } from "../../../../utils/typeChecks";
 import { applyScoreValidation } from "../../../../utils/scores";
 import { PostScoreBodyFoundationSchema } from "../shared";
-import {
-  ScoreDataTypeDomain,
-  ScoreSourceDomain,
-} from "../../../../domain/scores";
+import { ScoreDataTypeDomain, ScoreSourceDomain } from "../../../../domain/scores";
 import { singleFilter } from "../../../../interfaces/filters";
 import { InvalidRequestError } from "../../../../errors";
 

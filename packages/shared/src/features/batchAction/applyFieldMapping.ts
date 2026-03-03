@@ -78,11 +78,7 @@ export function applyFieldMappingConfig(props: {
   observation: ObservationData;
   config: FieldMappingConfig;
   defaultSourceField: SourceField;
-  onJsonPathMiss?: (info: {
-    sourceField: SourceField;
-    jsonPath: string;
-    mappingKey: string | null;
-  }) => void;
+  onJsonPathMiss?: (info: { sourceField: SourceField; jsonPath: string; mappingKey: string | null }) => void;
 }): unknown {
   const { observation, config, defaultSourceField, onJsonPathMiss } = props;
 
@@ -201,11 +197,7 @@ export function applyFullMapping(props: { observation: ObservationData; mapping:
   const results: Record<string, unknown> = {};
 
   for (const field of fields) {
-    const onJsonPathMiss = (info: {
-      sourceField: SourceField;
-      jsonPath: string;
-      mappingKey: string | null;
-    }) => {
+    const onJsonPathMiss = (info: { sourceField: SourceField; jsonPath: string; mappingKey: string | null }) => {
       errors.push({
         type: "json_path_miss",
         targetField: field.key,
@@ -227,8 +219,7 @@ export function applyFullMapping(props: { observation: ObservationData; mapping:
       // Capture rare JSONPath evaluation errors (e.g. malformed filter expressions)
       const sourceField =
         field.config.mode === "custom" && field.config.custom?.type === "root"
-          ? (field.config.custom.rootConfig?.sourceField ??
-            field.defaultSourceField)
+          ? (field.config.custom.rootConfig?.sourceField ?? field.defaultSourceField)
           : field.defaultSourceField;
       const jsonPath =
         field.config.mode === "custom" && field.config.custom?.type === "root"

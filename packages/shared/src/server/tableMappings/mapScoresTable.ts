@@ -111,9 +111,7 @@ export const scoresTableUiColumnDefinitions: UiColumnMappings = [
  */
 export const scoresTableUiColumnDefinitionsFromEvents: UiColumnMappings = [
   // All scores-native columns are identical to v3
-  ...scoresTableUiColumnDefinitions.filter(
-    (c) => c.datastoreTableName === "scores",
-  ),
+  ...scoresTableUiColumnDefinitions.filter((c) => c.datastoreTableName === "scores"),
   {
     uiTableName: "Trace Name",
     uiTableId: "traceName",
