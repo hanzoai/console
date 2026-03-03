@@ -1,23 +1,39 @@
 name: Docker Release
 
 on:
-  push:
+  # Only deploy after CI/CD pipeline passes on main
+  workflow_run:
+    workflows: ["CI/CD"]
+    types: [completed]
     branches: [main]
+  # Tags deploy directly (release cuts)
+  push:
     tags: ["v*"]
+  # Manual override
   workflow_dispatch:
 
 concurrency:
-  group: docker-${{ github.workflow }}-${{ github.ref }}
+  group: docker-${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: false
 
 jobs:
+  # Gate: only proceed if CI passed (skip check for tags/manual)
+  gate:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - run: echo "CI passed — proceeding with Docker build and deploy"
+
   web:
+    needs: gate
     uses: hanzoai/.github/.github/workflows/docker-build.yml@main
     with:
       image: ghcr.io/${{ github.repository_owner }}/console
       dockerfile: web/Dockerfile
       build-args: |
-        NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+        NEXT_PUBLIC_BUILD_ID=${{ github.event.workflow_run.head_sha || github.sha }}
         NEXT_PUBLIC_HANZO_CLOUD_REGION=US
       deploy: true
       deploy-deployment: console
@@ -25,8 +41,12 @@ jobs:
     secrets: inherit
 
   worker:
+    needs: gate
     uses: hanzoai/.github/.github/workflows/docker-build.yml@main
     with:
       image: ghcr.io/${{ github.repository_owner }}/console-worker
       dockerfile: worker/Dockerfile
+      deploy: true
+      deploy-deployment: console-worker
+      deploy-namespace: hanzo
     secrets: inherit

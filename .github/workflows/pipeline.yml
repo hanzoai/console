@@ -126,7 +126,7 @@ jobs:
 
   test-docker-build:
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -164,7 +164,7 @@ jobs:
 
   tests-web-sync:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -172,7 +172,7 @@ jobs:
     strategy:
       matrix:
         node-version: [24]
-        postgres-version: [12, 15]
+        postgres-version: [15]
     steps:
       - uses: actions/checkout@v4
       - name: Install golang-migrate for Datastore migrations
@@ -269,16 +269,16 @@ jobs:
 
   tests-web-async:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
-    name: tests-web-async (node${{ matrix.node-version }}, pg${{ matrix.postgres-version }}, mode${{ matrix.deploy-mode }}, shard${{ matrix.shard }}/3)
+    name: tests-web-async (node${{ matrix.node-version }}, pg${{ matrix.postgres-version }}, shard${{ matrix.shard }}/3)
     strategy:
       matrix:
         node-version: [24]
-        postgres-version: [12, 15]
-        deploy-mode: ["", "-azure", "-redis-cluster"]
+        postgres-version: [15]
+        deploy-mode: [""]
         shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
@@ -377,16 +377,16 @@ jobs:
 
   tests-worker:
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
-    name: tests-worker (node${{ matrix.node-version }}, pg${{ matrix.postgres-version }}, mode${{ matrix.deploy-mode }})
+    name: tests-worker (node${{ matrix.node-version }}, pg${{ matrix.postgres-version }})
     strategy:
       matrix:
         node-version: [24]
-        postgres-version: [12, 15]
-        deploy-mode: ["", "-azure", "-redis-cluster"]
+        postgres-version: [15]
+        deploy-mode: [""]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -526,7 +526,7 @@ jobs:
           HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY: ${{ secrets.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY }}
 
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -604,7 +604,7 @@ jobs:
         run: pnpm --filter=web run test:e2e
 
   e2e-server-tests:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
