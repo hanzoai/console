@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Plus } from "lucide-react";
 import EvaluatorTable from "@/src/features/evals/components/evaluator-table";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { getEvalsTabs, EVALS_TABS } from "@/src/features/navigation/utils/evals-tabs";
 import { ActionButton } from "@/src/components/ActionButton";
 import { api } from "@/src/utils/api";
@@ -15,7 +15,7 @@ import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-d
 export default function EvaluatorsPage() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const evaluatorLimit = useEntitlementLimit("model-based-evaluations-count-evaluators");
   const hasWriteAccess = useHasProjectAccess({

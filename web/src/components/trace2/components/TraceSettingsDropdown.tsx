@@ -29,7 +29,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Switch } from "@/src/components/ui/switch";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useViewPreferences } from "../contexts/ViewPreferencesContext";
 
 export interface TraceSettingsDropdownProps {
@@ -37,7 +37,7 @@ export interface TraceSettingsDropdownProps {
 }
 
 export function TraceSettingsDropdown({ isGraphViewAvailable }: TraceSettingsDropdownProps) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   // Get all preferences directly from context
   const {

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { DatasetStatus } from "@hanzo/shared";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +39,7 @@ export const DatasetItemDetailPage = ({
   const datasetId = router.query.datasetId as string;
   const itemId = router.query.itemId as string;
   const hasAccess = useHasProjectAccess({ projectId, scope: "datasets:CUD" });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const utils = api.useUtils();
   const [isArchivePopoverOpen, setIsArchivePopoverOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);

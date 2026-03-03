@@ -2,5 +2,5 @@
 export {
   events,
   useInsightsCapture,
-  useInsightsCapture as usePostHogClientCapture,
+  useInsightsCapture as useInsightsCapture,
 } from "@/src/features/insights-analytics/useInsightsCapture";

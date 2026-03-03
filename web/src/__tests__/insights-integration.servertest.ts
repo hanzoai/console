@@ -6,7 +6,7 @@ import { prisma } from "@hanzo/shared/src/db";
 import { appRouter } from "@/src/server/api/root";
 import { createInnerTRPCContext } from "@/src/server/api/trpc";
 
-describe("PostHog Integration SSRF Protection", () => {
+describe("Insights Integration SSRF Protection", () => {
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
   const originalEncryptionKey = process.env.ENCRYPTION_KEY;
 
@@ -62,12 +62,12 @@ describe("PostHog Integration SSRF Protection", () => {
   const ctx = createInnerTRPCContext({ session, headers: {} });
   const caller = appRouter.createCaller({ ...ctx, prisma });
 
-  it("should reject private IPs and localhost in PostHog hostname", async () => {
+  it("should reject private IPs and localhost in Insights hostname", async () => {
     await expect(
-      caller.posthogIntegration.update({
+      caller.insightsIntegration.update({
         projectId,
-        posthogHostname: "http://localhost",
-        posthogProjectApiKey: "phc_test_key_12345",
+        insightsHostname: "http://localhost",
+        insightsProjectApiKey: "phc_test_key_12345",
         enabled: true,
       }),
     ).rejects.toThrow(/Invalid Hanzo Insights hostname.*Blocked/);

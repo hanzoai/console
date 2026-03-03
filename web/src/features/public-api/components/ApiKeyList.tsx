@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { CreateApiKeyButton } from "@/src/features/public-api/components/CreateApiKeyButton";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
@@ -131,7 +131,7 @@ export function ApiKeyList(props: { entityId: string; scope: ApiKeyScope }) {
 // show dialog to let user confirm that this is a destructive action
 function DeleteApiKeyButton(props: { entityId: string; apiKeyId: string; scope: ApiKeyScope }) {
   const { entityId, apiKeyId, scope } = props;
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const hasProjectAccess = useHasProjectAccess({
     projectId: props.entityId,

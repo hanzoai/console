@@ -12,6 +12,7 @@ import { parseDbOrg } from "@hanzo/shared";
 import { redis } from "@hanzo/shared/src/server";
 import { env } from "@/src/env.mjs";
 import { addDaysAndRoundToNextDay } from "@/src/features/organizations/utils/converTime";
+import { provisionOrgObservability } from "@/src/features/observability/server/provisionOrgObservability";
 
 export const organizationsRouter = createTRPCRouter({
   create: authenticatedProcedure.input(organizationNameSchema).mutation(async ({ input, ctx }) => {
@@ -47,6 +48,27 @@ export const organizationsRouter = createTRPCRouter({
       orgRole: "OWNER",
       userId: ctx.session.user.id,
       after: organization,
+    });
+
+    // Provision observability resources (non-blocking)
+    void provisionOrgObservability({
+      orgId: organization.id,
+      orgName: input.name,
+    }).then(async (observabilityConfig) => {
+      if (Object.keys(observabilityConfig).length > 0) {
+        const existingConfig = organization.cloudConfig
+          ? (JSON.parse(organization.cloudConfig as string) as Record<string, unknown>)
+          : {};
+        await ctx.prisma.organization.update({
+          where: { id: organization.id },
+          data: {
+            cloudConfig: JSON.stringify({
+              ...existingConfig,
+              ...observabilityConfig,
+            }),
+          },
+        });
+      }
     });
 
     return {

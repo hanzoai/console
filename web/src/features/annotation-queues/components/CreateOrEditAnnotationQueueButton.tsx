@@ -22,7 +22,7 @@ import { type CreateQueueWithAssignments, CreateQueueWithAssignmentsData, type S
 import { api } from "@/src/utils/api";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 import { useRouter } from "next/router";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { ActionButton } from "@/src/components/ActionButton";
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
@@ -56,7 +56,7 @@ export const CreateOrEditAnnotationQueueButton = ({
   });
   const queueLimit = useEntitlementLimit("annotation-queue-count");
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const queueQuery = api.annotationQueues.byId.useQuery(
     { projectId, queueId: queueId as string },
@@ -159,7 +159,7 @@ export const CreateOrEditAnnotationQueueButton = ({
       form.reset();
       setIsOpen(false);
 
-      // capture posthog event
+      // capture insights event
     } catch {
       showErrorToast("Operation failed", "Failed to create or update queue or assign users. Please try again.");
     }

@@ -17,7 +17,7 @@ export const insightsIntegrationRouter = createTRPCRouter({
       scope: "integrations:CRUD",
     });
     try {
-      const dbConfig = await ctx.prisma.posthogIntegration.findFirst({
+      const dbConfig = await ctx.prisma.insightsIntegration.findFirst({
         where: {
           projectId: input.projectId,
         },
@@ -27,12 +27,12 @@ export const insightsIntegrationRouter = createTRPCRouter({
         return null;
       }
 
-      const { encryptedPosthogApiKey, exportSource, ...config } = dbConfig;
+      const { encryptedInsightsApiKey, exportSource, ...config } = dbConfig;
 
       return {
         ...config,
         exportSource,
-        posthogApiKey: decrypt(encryptedPosthogApiKey),
+        insightsApiKey: decrypt(encryptedInsightsApiKey),
       };
     } catch (e) {
       console.error("insights integration get", e);
@@ -67,7 +67,7 @@ export const insightsIntegrationRouter = createTRPCRouter({
 
       // Validate Hanzo Insights hostname to prevent SSRF attacks
       try {
-        await validateWebhookURL(input.posthogHostname);
+        await validateWebhookURL(input.insightsHostname);
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -81,27 +81,27 @@ export const insightsIntegrationRouter = createTRPCRouter({
       await auditLog({
         session: ctx.session,
         action: "update",
-        resourceType: "posthogIntegration",
+        resourceType: "insightsIntegration",
         resourceId: input.projectId,
       });
-      const { posthogProjectApiKey, ...config } = input;
+      const { insightsProjectApiKey, ...config } = input;
 
-      const encryptedPosthogApiKey = encrypt(posthogProjectApiKey);
+      const encryptedInsightsApiKey = encrypt(insightsProjectApiKey);
 
-      await ctx.prisma.posthogIntegration.upsert({
+      await ctx.prisma.insightsIntegration.upsert({
         where: {
           projectId: input.projectId,
         },
         create: {
           projectId: input.projectId,
-          posthogHostName: config.posthogHostname,
-          encryptedPosthogApiKey,
+          insightsHostName: config.insightsHostname,
+          encryptedInsightsApiKey,
           enabled: config.enabled,
           exportSource: config.exportSource,
         },
         update: {
-          encryptedPosthogApiKey,
-          posthogHostName: config.posthogHostname,
+          encryptedInsightsApiKey,
+          insightsHostName: config.insightsHostname,
           enabled: config.enabled,
           exportSource: config.exportSource,
         },
@@ -117,11 +117,11 @@ export const insightsIntegrationRouter = createTRPCRouter({
       await auditLog({
         session: ctx.session,
         action: "delete",
-        resourceType: "posthogIntegration",
+        resourceType: "insightsIntegration",
         resourceId: input.projectId,
       });
 
-      await ctx.prisma.posthogIntegration.delete({
+      await ctx.prisma.insightsIntegration.delete({
         where: {
           projectId: input.projectId,
         },
@@ -135,5 +135,5 @@ export const insightsIntegrationRouter = createTRPCRouter({
   }),
 });
 
-// Backward-compat alias so existing imports of posthogIntegrationRouter still compile
-export { insightsIntegrationRouter as posthogIntegrationRouter };
+// Backward-compat alias so existing imports of insightsIntegrationRouter still compile
+export { insightsIntegrationRouter as insightsIntegrationRouter };

@@ -31,7 +31,7 @@ import { ItemBadge } from "@/src/components/ItemBadge";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Switch } from "@/src/components/ui/switch";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useRouter } from "next/router";
 import { CopyIdsPopover } from "@/src/components/trace2/components/_shared/CopyIdsPopover";
 import { useJsonExpansion } from "@/src/components/trace2/contexts/JsonExpansionContext";
@@ -94,7 +94,7 @@ export const TracePreview = ({
 
   const [isPrettyViewAvailable, setIsPrettyViewAvailable] = useState(false);
   const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(trace.projectId);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const router = useRouter();
   const { peek } = router.query;
   const showScoresTab = isAuthenticatedAndProjectMember && peek === undefined;

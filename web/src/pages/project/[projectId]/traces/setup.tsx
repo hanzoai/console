@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/src/utils/api";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import ContainerPage from "@/src/components/layouts/container-page";
 import { ActionButton } from "@/src/components/ActionButton";
 import { SubHeader } from "@/src/components/layouts/header";
@@ -94,7 +94,7 @@ export default function TracesSetupPage() {
     },
   );
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   useEffect(() => {
     if (hasTracingConfigured !== undefined) {
       capture("onboarding:tracing_check_active", {

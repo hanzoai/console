@@ -9,7 +9,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/src/components/ui/dropdown-menu";
 import useLocalStorage from "@/src/components/useLocalStorage";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Rows3, Rows2, Rows4 } from "lucide-react";
 
 const heightOptions = [
@@ -45,7 +45,7 @@ export const DataTableRowHeightSwitch = ({
   rowHeight: RowHeight;
   setRowHeight: (e: RowHeight) => void;
 }) => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

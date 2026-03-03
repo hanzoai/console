@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { useEffect, memo } from "react";
 import { useSession } from "next-auth/react";
 import { env } from "@/src/env.mjs";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
 import { useProjectSettingsPages } from "@/src/pages/project/[projectId]/settings";
@@ -29,7 +29,7 @@ function MainNavigationGroup({
   onNavigate: (item: { title: string; url: string }) => void;
 }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   return (
     <CommandGroup heading="Main Navigation">
@@ -57,7 +57,7 @@ function MainNavigationGroup({
 
 function ProjectsGroup({ onNavigate }: { onNavigate: () => void }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const { allProjectItems } = useNavigationItems();
 
   if (allProjectItems.length === 0) return null;
@@ -92,7 +92,7 @@ function ProjectsGroup({ onNavigate }: { onNavigate: () => void }) {
 
 function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const { project } = useQueryProjectOrOrganization();
   const { open } = useCommandMenu();
 
@@ -146,7 +146,7 @@ function DashboardsGroup({ onNavigate }: { onNavigate: () => void }) {
 
 function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const settingsPages = useProjectSettingsPages();
   const { project } = useQueryProjectOrOrganization();
 
@@ -189,7 +189,7 @@ function ProjectSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
 
 function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const orgSettingsPages = useOrganizationSettingsPages();
   const { organization } = useQueryProjectOrOrganization();
 
@@ -232,7 +232,7 @@ function OrganizationSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
 
 function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const accountSettingsPages = useAccountSettingsPages();
 
   const accountSettingsItems = accountSettingsPages.map((page) => ({
@@ -272,7 +272,7 @@ function AccountSettingsGroup({ onNavigate }: { onNavigate: () => void }) {
 
 function CommandMenuComponent({ mainNavigation }: { mainNavigation: NavigationItem[] }) {
   const { open, setOpen } = useCommandMenu();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const debouncedSearchChange = useDebounce(
     (value: string) => {

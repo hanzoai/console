@@ -1,4 +1,4 @@
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useState, useMemo } from "react";
 
 type UseTagManagerProps = {
@@ -13,7 +13,7 @@ export function useTagManager({ initialTags, allTags }: UseTagManagerProps) {
     () => allTags.filter((value) => !selectedTags.includes(value)),
     [allTags, selectedTags],
   );
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const handleItemCreate = () => {
     setSelectedTags((prevSelectedTags) => [
       // dedupe

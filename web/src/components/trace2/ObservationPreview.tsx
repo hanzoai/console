@@ -29,7 +29,7 @@ import { ExternalLinkIcon, InfoIcon, PlusCircle } from "lucide-react";
 import { UpsertModelFormDialog } from "@/src/features/models/components/UpsertModelFormDialog";
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { ItemBadge } from "@/src/components/ItemBadge";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import { Switch } from "@/src/components/ui/switch";
 import { useRouter } from "next/router";
@@ -76,7 +76,7 @@ export const ObservationPreview = ({
     setCurrentView,
   );
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [isPrettyViewAvailable, setIsPrettyViewAvailable] = useState(false);
 
   const isAuthenticatedAndProjectMember = useIsAuthenticatedAndProjectMember(projectId);

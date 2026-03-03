@@ -11,8 +11,8 @@ import { ExperimentCreateQueue } from "./experimentCreateQueue";
 import { SecondaryIngestionQueue } from "./ingestionQueue";
 import { TraceDeleteQueue } from "./traceDelete";
 import { ProjectDeleteQueue } from "./projectDelete";
-import { PostHogIntegrationQueue } from "./postHogIntegrationQueue";
-import { PostHogIntegrationProcessingQueue } from "./postHogIntegrationProcessingQueue";
+import { InsightsIntegrationQueue } from "./insightsIntegrationQueue";
+import { InsightsIntegrationProcessingQueue } from "./insightsIntegrationProcessingQueue";
 import { MixpanelIntegrationQueue } from "./mixpanelIntegrationQueue";
 import { MixpanelIntegrationProcessingQueue } from "./mixpanelIntegrationProcessingQueue";
 import { BlobStorageIntegrationQueue } from "./blobStorageIntegrationQueue";
@@ -59,10 +59,10 @@ export function getQueue(
       return TraceDeleteQueue.getInstance();
     case QueueName.ProjectDelete:
       return ProjectDeleteQueue.getInstance();
-    case QueueName.PostHogIntegrationQueue:
-      return PostHogIntegrationQueue.getInstance();
-    case QueueName.PostHogIntegrationProcessingQueue:
-      return PostHogIntegrationProcessingQueue.getInstance();
+    case QueueName.InsightsIntegrationQueue:
+      return InsightsIntegrationQueue.getInstance();
+    case QueueName.InsightsIntegrationProcessingQueue:
+      return InsightsIntegrationProcessingQueue.getInstance();
     case QueueName.MixpanelIntegrationQueue:
       return MixpanelIntegrationQueue.getInstance();
     case QueueName.MixpanelIntegrationProcessingQueue:

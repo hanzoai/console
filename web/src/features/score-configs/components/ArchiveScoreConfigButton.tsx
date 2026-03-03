@@ -2,7 +2,7 @@ import { Archive } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import React from "react";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
 import { useEmptyScoreConfigs } from "@/src/features/scores/hooks/useEmptyConfigs";
@@ -18,7 +18,7 @@ export const ArchiveScoreConfigButton = ({
   isArchived: boolean;
   name: string;
 }) => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const { emptySelectedConfigIds, setEmptySelectedConfigIds } = useEmptyScoreConfigs();
 
   const hasAccess = useHasProjectAccess({

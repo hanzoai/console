@@ -14,7 +14,7 @@ import {
 import { CodeView } from "@/src/components/ui/CodeJsonViewer";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Input } from "@/src/components/ui/input";
 import { useConsoleEnvCode } from "@/src/features/public-api/hooks/useConsoleEnvCode";
 import { Label } from "@/src/components/ui/label";
@@ -25,7 +25,7 @@ type ApiKeyScope = "project" | "organization";
 
 export function CreateApiKeyButton(props: { entityId: string; scope: ApiKeyScope }) {
   const utils = api.useUtils();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const hasProjectAccess = useHasProjectAccess({
     projectId: props.entityId,

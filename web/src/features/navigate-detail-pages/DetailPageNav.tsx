@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { InputCommandShortcut } from "@/src/components/ui/input-command";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/src/components/ui/tooltip";
 import { type ListEntry, useDetailPageLists } from "@/src/features/navigate-detail-pages/context";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -11,7 +11,7 @@ export const DetailPageNav = (props: { currentId: string; path: (entry: ListEntr
   const { detailPagelists } = useDetailPageLists();
   const entries = detailPagelists[props.listKey] ?? [];
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const router = useRouter();
   const currentIndex = entries.findIndex((entry) => entry.id === props.currentId);
   const previousPageEntry = currentIndex > 0 ? entries[currentIndex - 1] : undefined;

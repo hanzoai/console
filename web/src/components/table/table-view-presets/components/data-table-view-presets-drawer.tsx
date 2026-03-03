@@ -46,7 +46,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import isEqual from "lodash/isEqual";
 import { useDefaultViewMutations } from "../hooks/useDefaultViewMutations";
@@ -131,7 +131,7 @@ export function TableViewPresetsDrawer({ viewConfig, currentState, systemFilterP
   const { createMutation, updateConfigMutation, updateNameMutation, deleteMutation, generatePermalinkMutation } =
     useViewMutations({ handleSetViewId });
   const utils = api.useUtils();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const form = useForm({
     resolver: zodResolver(z.object({ name: z.string().min(1) })),

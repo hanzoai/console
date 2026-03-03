@@ -446,6 +446,14 @@ export const env = createEnv({
     COMMERCE_API_URL: z.string().url().optional().default("http://commerce.hanzo.svc.cluster.local:8001"),
     COMMERCE_SERVICE_TOKEN: z.string().optional(),
 
+    // Analytics (Umami) - auto-provisioned per org
+    ANALYTICS_API_URL: z.string().url().optional(),
+    ANALYTICS_SERVICE_TOKEN: z.string().optional(),
+
+    // Insights (Insights) - auto-provisioned per org
+    INSIGHTS_API_URL: z.string().url().optional(),
+    INSIGHTS_SERVICE_TOKEN: z.string().optional(),
+
     // API Performance Flags
     // Enable Redis-based tracking of projects using OTEL API to optimize Datastore queries.
     // When enabled, projects ingesting via OTEL API skip the FINAL modifier on some observations queries for better performance.
@@ -518,8 +526,8 @@ export const env = createEnv({
     NEXT_PUBLIC_DEMO_PROJECT_ID: z.string().optional(),
     NEXT_PUBLIC_DEMO_ORG_ID: z.string().optional(),
     NEXT_PUBLIC_SIGN_UP_DISABLED: z.enum(["true", "false"]).default("false"),
-    NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
-    NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
+    NEXT_PUBLIC_INSIGHTS_KEY: z.string().optional(),
+    NEXT_PUBLIC_INSIGHTS_HOST: z.string().optional(),
     NEXT_PUBLIC_PLAIN_APP_ID: z.string().optional(),
     NEXT_PUBLIC_BUILD_ID: z.string().optional(),
     NEXT_PUBLIC_BASE_PATH: z.string().optional(),
@@ -731,8 +739,8 @@ export const env = createEnv({
     S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID:
       process.env.S3_MEDIA_UPLOAD_SSE_KMS_KEY_ID,
     // Worker
-    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    NEXT_PUBLIC_INSIGHTS_KEY: process.env.NEXT_PUBLIC_INSIGHTS_KEY,
+    NEXT_PUBLIC_INSIGHTS_HOST: process.env.NEXT_PUBLIC_INSIGHTS_HOST,
     // Other
     NEXT_PUBLIC_PLAIN_APP_ID: process.env.NEXT_PUBLIC_PLAIN_APP_ID,
     PLAIN_AUTHENTICATION_SECRET: process.env.PLAIN_AUTHENTICATION_SECRET,
@@ -862,6 +870,12 @@ export const env = createEnv({
     // Commerce
     COMMERCE_API_URL: process.env.COMMERCE_API_URL,
     COMMERCE_SERVICE_TOKEN: process.env.COMMERCE_SERVICE_TOKEN,
+    // Analytics (Umami)
+    ANALYTICS_API_URL: process.env.ANALYTICS_API_URL,
+    ANALYTICS_SERVICE_TOKEN: process.env.ANALYTICS_SERVICE_TOKEN,
+    // Insights (Insights)
+    INSIGHTS_API_URL: process.env.INSIGHTS_API_URL,
+    INSIGHTS_SERVICE_TOKEN: process.env.INSIGHTS_SERVICE_TOKEN,
     // Api Performance Flags
     HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS:
       process.env.HANZO_API_DATASTORE_PROPAGATE_OBSERVATIONS_TIME_BOUNDS,

@@ -6,7 +6,7 @@ import { LockIcon, TrashIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type ProjectScope } from "@/src/features/rbac/constants/projectAccessRights";
 import { api } from "@/src/utils/api";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
@@ -28,8 +28,8 @@ type BaseDeleteButtonProps = Omit<DeleteButtonProps, "itemId"> & {
   variant?: "outline" | "ghost";
   scope: NonNullable<DeleteButtonProps["scope"]>;
   invalidateFunc: NonNullable<DeleteButtonProps["invalidateFunc"]>;
-  captureDeleteOpen: (capture: ReturnType<typeof usePostHogClientCapture>, isTableAction: boolean) => void;
-  captureDeleteSuccess: (capture: ReturnType<typeof usePostHogClientCapture>, isTableAction: boolean) => void;
+  captureDeleteOpen: (capture: ReturnType<typeof useInsightsCapture>, isTableAction: boolean) => void;
+  captureDeleteSuccess: (capture: ReturnType<typeof useInsightsCapture>, isTableAction: boolean) => void;
   entityToDeleteName: string;
   customDeletePrompt?: string;
   executeDeleteMutation: (onSuccess: () => void) => Promise<void>;
@@ -57,7 +57,7 @@ export function DeleteButton({
 }: BaseDeleteButtonProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
 
   const hasAccess = useHasProjectAccess({ projectId, scope: scope });

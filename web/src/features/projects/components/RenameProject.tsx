@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/src/components/ui/form";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
 import Header from "@/src/components/layouts/header";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { LockIcon } from "lucide-react";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import { useSession } from "next-auth/react";
@@ -17,7 +17,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 export default function RenameProject() {
   const { update: updateSession } = useSession();
   const { project } = useQueryProject();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const hasAccess = useHasProjectAccess({
     projectId: project?.id,
     scope: "project:update",

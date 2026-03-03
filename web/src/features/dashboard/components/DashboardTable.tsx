@@ -13,7 +13,7 @@ import { useDetailPageLists } from "@/src/features/navigate-detail-pages/context
 import { Button } from "@/src/components/ui/button";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Copy, Edit } from "lucide-react";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { MoreVertical } from "lucide-react";
@@ -40,7 +40,7 @@ type DashboardTableRow = {
 function CloneDashboardButton({ dashboardId, projectId }: { dashboardId: string; projectId: string }) {
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const mutCloneDashboard = api.dashboard.cloneDashboard.useMutation({
     onSuccess: () => {

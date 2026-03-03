@@ -7,7 +7,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { LockIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 const SetupTracingButton = () => {
   const { project } = useQueryProjectOrOrganization();
@@ -29,7 +29,7 @@ const SetupTracingButton = () => {
 
   // dedupe result via useRef, otherwise we'll capture the event multiple times on session refresh
   const capturedEventAlready = useRef<boolean | undefined>(undefined);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   useEffect(() => {
     if (hasTracingConfigured !== undefined && !capturedEventAlready.current) {
       capture("onboarding:tracing_check_active", {

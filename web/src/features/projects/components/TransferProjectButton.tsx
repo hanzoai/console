@@ -22,7 +22,7 @@ import { api } from "@/src/utils/api";
 import * as z from "zod/v4";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { hasOrganizationAccess, useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import { useSession } from "next-auth/react";
@@ -32,7 +32,7 @@ import { TriangleAlert } from "lucide-react";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 
 export function TransferProjectButton() {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const session = useSession();
   const { project, organization } = useQueryProject();
   const hasAccess = useHasOrganizationAccess({

@@ -21,7 +21,7 @@ import helmet from "helmet";
 import { WorkerManager } from "./queues/workerManager";
 import {
   CoreDataS3ExportQueue,
-  PostHogIntegrationQueue,
+  InsightsIntegrationQueue,
   MixpanelIntegrationQueue,
   QueueName,
   logger,
@@ -41,8 +41,8 @@ import { experimentCreateQueueProcessor } from "./queues/experimentQueue";
 import { traceDeleteProcessor } from "./queues/traceDelete";
 import { projectDeleteProcessor } from "./queues/projectDelete";
 import {
-  insightsIntegrationProcessingProcessor as postHogIntegrationProcessingProcessor,
-  insightsIntegrationProcessor as postHogIntegrationProcessor,
+  insightsIntegrationProcessingProcessor as insightsIntegrationProcessingProcessor,
+  insightsIntegrationProcessor as insightsIntegrationProcessor,
 } from "./queues/insightsIntegrationQueue";
 import {
   mixpanelIntegrationProcessingProcessor,
@@ -256,15 +256,15 @@ if (env.QUEUE_CONSUMER_EXPERIMENT_CREATE_QUEUE_IS_ENABLED === "true") {
   });
 }
 
-if (env.QUEUE_CONSUMER_POSTHOG_INTEGRATION_QUEUE_IS_ENABLED === "true") {
+if (env.QUEUE_CONSUMER_INSIGHTS_INTEGRATION_QUEUE_IS_ENABLED === "true") {
   // Instantiate the queue to trigger scheduled jobs
-  PostHogIntegrationQueue.getInstance();
+  InsightsIntegrationQueue.getInstance();
 
-  WorkerManager.register(QueueName.PostHogIntegrationQueue, postHogIntegrationProcessor, {
+  WorkerManager.register(QueueName.InsightsIntegrationQueue, insightsIntegrationProcessor, {
     concurrency: 1,
   });
 
-  WorkerManager.register(QueueName.PostHogIntegrationProcessingQueue, postHogIntegrationProcessingProcessor, {
+  WorkerManager.register(QueueName.InsightsIntegrationProcessingQueue, insightsIntegrationProcessingProcessor, {
     concurrency: 1,
     // The default lockDuration is 30s and the lockRenewTime 1/2 of that.
     // We set it to 60s to reduce the number of lock renewals and also be less sensitive to high CPU wait times.
@@ -274,7 +274,7 @@ if (env.QUEUE_CONSUMER_POSTHOG_INTEGRATION_QUEUE_IS_ENABLED === "true") {
     stalledInterval: 120000, // 120 seconds
     maxStalledCount: 3,
     limiter: {
-      // Process at most one PostHog job globally per 10s.
+      // Process at most one Insights job globally per 10s.
       max: 1,
       duration: 10_000,
     },

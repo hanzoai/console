@@ -1,5 +1,5 @@
 import { EvaluatorStatus } from "@/src/features/evals/types";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api, type RouterOutputs } from "@/src/utils/api";
 import { useState } from "react";
@@ -17,7 +17,7 @@ export function DeactivateEvalConfig({
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({ projectId, scope: "evalJob:CUD" });
   const [isOpen, setIsOpen] = useState(false);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const isActive = evalConfig?.status === EvaluatorStatus.ACTIVE;
 
   const mutEvaluator = api.evals.updateEvalJob.useMutation({

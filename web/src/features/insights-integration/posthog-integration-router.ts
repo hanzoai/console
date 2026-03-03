@@ -1,5 +1,5 @@
 // Redirects to renamed module. Use insights-integration/insights-integration-router instead.
 export {
   insightsIntegrationRouter,
-  insightsIntegrationRouter as posthogIntegrationRouter,
+  insightsIntegrationRouter as insightsIntegrationRouter,
 } from "@/src/features/insights-integration/insights-integration-router";

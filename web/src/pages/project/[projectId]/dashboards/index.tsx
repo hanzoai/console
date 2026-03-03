@@ -4,13 +4,13 @@ import { DashboardTable } from "@/src/features/dashboard/components/DashboardTab
 import { ActionButton } from "@/src/components/ActionButton";
 import { PlusIcon } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation/utils/dashboard-tabs";
 
 export default function Dashboards() {
   const router = useRouter();
   const { projectId } = router.query as { projectId: string };
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const hasCUDAccess = useHasProjectAccess({
     projectId,
     scope: "dashboards:CUD",

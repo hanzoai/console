@@ -16,7 +16,7 @@ import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { DataTableRowHeightSwitch, type RowHeight } from "@/src/components/table/data-table-row-height-switch";
 import { Search, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { TimeRangePicker } from "@/src/components/date-picker";
 import { type TimeRange, TABLE_AGGREGATION_OPTIONS } from "@/src/utils/date-range-utils";
 import { DataTableSelectAllBanner } from "@/src/components/table/data-table-multi-select-actions/data-table-select-all-banner";
@@ -134,7 +134,7 @@ export function DataTableToolbar<TData, TValue>({
 }: DataTableToolbarProps<TData, TValue>) {
   const [searchString, setSearchString] = useState(searchConfig?.currentQuery ?? "");
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const { open: controlsPanelOpen, setOpen: setControlsPanelOpen } = useDataTableControls();
 
   // Only show the toggle button when we're using the new sidebar

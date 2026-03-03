@@ -4,7 +4,7 @@ import { api } from "@/src/utils/api";
 import { useState } from "react";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import Header from "@/src/components/layouts/header";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { useConsoleCloudRegion, useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
@@ -21,7 +21,7 @@ const aiFeaturesSchema = z.object({
 export default function AIFeatureSwitch() {
   const { update: updateSession } = useSession();
   const { isConsoleCloud } = useConsoleCloudRegion();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const organization = useQueryOrganization();
   const [isAIFeatureSwitchEnabled, setIsAIFeatureSwitchEnabled] = useState(organization?.aiFeaturesEnabled ?? false);
   const [confirmOpen, setConfirmOpen] = useState(false);

@@ -1,4 +1,4 @@
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { X } from "lucide-react";
 
 import type { JSX } from "react";
@@ -18,7 +18,7 @@ interface NotificationProps {
 }
 
 export const Notification: React.FC<NotificationProps> = ({ notification, setLastSeenId, dismissToast, toast }) => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <div className="flex justify-between">
       <div className="flex min-w-[300px] flex-1 flex-col justify-center">

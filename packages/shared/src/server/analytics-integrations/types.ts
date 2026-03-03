@@ -1,4 +1,4 @@
-// Standard analytics event types for analytics integrations (PostHog, Mixpanel, etc.)
+// Standard analytics event types for analytics integrations (Insights, Mixpanel, etc.)
 // These represent the raw data structure from Datastore queries
 
 export type AnalyticsTraceEvent = {
@@ -19,7 +19,7 @@ export type AnalyticsTraceEvent = {
   console_tags?: unknown;
   console_environment?: unknown;
   console_event_version?: unknown;
-  posthog_session_id?: unknown;
+  insights_session_id?: unknown;
   mixpanel_session_id?: unknown;
 };
 
@@ -48,7 +48,7 @@ export type AnalyticsGenerationEvent = {
   console_tags?: unknown;
   console_environment?: unknown;
   console_event_version?: unknown;
-  posthog_session_id?: unknown;
+  insights_session_id?: unknown;
   mixpanel_session_id?: unknown;
 };
 
@@ -74,7 +74,7 @@ export type AnalyticsScoreEvent = {
   console_event_version?: unknown;
   console_score_entity_type?: unknown;
   console_dataset_run_id?: unknown;
-  posthog_session_id?: unknown;
+  insights_session_id?: unknown;
   mixpanel_session_id?: unknown;
 };
 
@@ -104,6 +104,6 @@ export type AnalyticsObservationEvent = {
   console_tags?: unknown;
   console_environment?: unknown;
   console_event_version?: unknown;
-  posthog_session_id?: unknown;
+  insights_session_id?: unknown;
   mixpanel_session_id?: unknown;
 };

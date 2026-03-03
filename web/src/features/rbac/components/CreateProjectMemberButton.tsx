@@ -26,7 +26,7 @@ import {
 import { Select, SelectContent, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Input } from "@/src/components/ui/input";
 import { Role } from "@hanzo/shared";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasOrganizationAccess } from "@/src/features/rbac/utils/checkOrganizationAccess";
 import { useHasEntitlement, useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -40,7 +40,7 @@ const formSchema = z.object({
 });
 
 export function CreateProjectMemberButton(props: { orgId: string; project?: { id: string; name: string } }) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [open, setOpen] = useState(false);
   const hasOrgAccess = useHasOrganizationAccess({
     organizationId: props.orgId,

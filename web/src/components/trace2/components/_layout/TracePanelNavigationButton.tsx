@@ -1,7 +1,7 @@
 import { Button } from "@/src/components/ui/button";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 interface TracePanelNavigationButtonProps {
   isPanelCollapsed: boolean;
@@ -14,7 +14,7 @@ export function TracePanelNavigationButton({
   onTogglePanel,
   shouldPulseToggle = false,
 }: TracePanelNavigationButtonProps) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <div className="relative">
       <Button

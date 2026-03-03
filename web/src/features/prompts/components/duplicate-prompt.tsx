@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/src/components/ui/dialog";
 import { ActionButton } from "@/src/components/ActionButton";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/components/ui/form";
@@ -41,7 +41,7 @@ const DuplicatePromptForm: React.FC<{
   promptVersion: number;
   onFormSuccess: () => void;
 }> = ({ projectId, promptId, promptName, promptVersion, onFormSuccess }) => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -168,7 +168,7 @@ export const DuplicatePromptButton: React.FC<{
     scope: "prompts:CUD",
   });
   const promptLimit = useEntitlementLimit("prompt-management-count-prompts");
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const allPromptNames = api.prompts.allNames.useQuery(
     {

@@ -12,7 +12,7 @@
 import { type PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
-import posthog from "posthog-js";
+import insights from "@hanzo/insights";
 import { env } from "@/src/env.mjs";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { ErrorPageWithSentry } from "@/src/components/error-page";
@@ -121,8 +121,8 @@ export function AppLayout(props: PropsWithChildren) {
 
   const handleSignOut = async () => {
     sessionStorage.clear();
-    if (env.NEXT_PUBLIC_POSTHOG_KEY && env.NEXT_PUBLIC_POSTHOG_HOST) {
-      posthog.reset();
+    if (env.NEXT_PUBLIC_INSIGHTS_KEY && env.NEXT_PUBLIC_INSIGHTS_HOST) {
+      insights.reset();
     }
     await signOut({
       callbackUrl: `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/auth/sign-in`,

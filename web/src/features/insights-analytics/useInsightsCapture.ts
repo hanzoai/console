@@ -1,5 +1,5 @@
-import { type CaptureResult, type CaptureOptions } from "posthog-js";
-import { usePostHog } from "posthog-js/react";
+import { type CaptureResult, type CaptureOptions } from "@hanzo/insights";
+import { useInsights } from "@hanzo/insights-react";
 
 // resource:action, only use snake_case
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning
@@ -89,7 +89,7 @@ export const events = {
     "delete_form_open",
     "delete_template_button_click",
   ],
-  integrations: ["posthog_form_submitted", "blob_storage_form_submitted", "mixpanel_form_submitted"],
+  integrations: ["insights_form_submitted", "blob_storage_form_submitted", "mixpanel_form_submitted"],
   sign_in: ["cloud_region_switch", "button_click"],
   sign_up: ["button_click"],
   auth: ["reset_password_email_requested", "update_password_form_submit"],
@@ -183,19 +183,15 @@ type EventName = {
 }[keyof typeof events];
 
 export const useInsightsCapture = () => {
-  const posthog = usePostHog();
+  const insights = useInsights();
 
-  // wrapped posthog.capture function that only allows events that are in the allowlist
   function capture(
     eventName: EventName,
     properties?: Record<string, any> | null,
     options?: CaptureOptions,
   ): CaptureResult | void {
-    return posthog.capture(eventName, properties, options);
+    return insights.capture(eventName, properties, options);
   }
 
   return capture;
 };
-
-// Backward-compat alias so existing imports of usePostHogClientCapture still compile
-export { useInsightsCapture as usePostHogClientCapture };

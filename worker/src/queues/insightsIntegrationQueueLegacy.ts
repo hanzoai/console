@@ -2,6 +2,6 @@
 export {
   insightsIntegrationProcessor,
   insightsIntegrationProcessingProcessor,
-  insightsIntegrationProcessor as postHogIntegrationProcessor,
-  insightsIntegrationProcessingProcessor as postHogIntegrationProcessingProcessor,
+  insightsIntegrationProcessor as insightsIntegrationProcessor,
+  insightsIntegrationProcessingProcessor as insightsIntegrationProcessingProcessor,
 } from "./insightsIntegrationQueue";

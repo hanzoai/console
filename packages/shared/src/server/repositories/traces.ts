@@ -1301,7 +1301,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
       t.version as version,
       t.tags as tags,
       t.environment as environment,
-      t.metadata['$posthog_session_id'] as posthog_session_id,
+      t.metadata['$insights_session_id'] as insights_session_id,
       t.metadata['$mixpanel_session_id'] as mixpanel_session_id,
       o.total_cost as total_cost,
       o.latency_milliseconds / 1000 as latency,
@@ -1321,7 +1321,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
       maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
     },
     tags: {
-      feature: "posthog",
+      feature: "insights",
       type: "trace",
       kind: "analytic",
       projectId,
@@ -1358,7 +1358,7 @@ export const getTracesForAnalyticsIntegrations = async function* (
       console_tags: record.tags,
       console_environment: record.environment,
       console_event_version: "1.0.0",
-      posthog_session_id: record.posthog_session_id ?? null,
+      insights_session_id: record.insights_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsTraceEvent;
   }

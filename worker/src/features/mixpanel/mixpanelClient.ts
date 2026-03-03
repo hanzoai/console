@@ -14,7 +14,7 @@ type MixpanelClientConfig = {
 export class MixpanelClient {
   private config: MixpanelClientConfig;
   private batch: MixpanelEvent[] = [];
-  private batchSize = 1000; // Similar to PostHog's flushAt setting
+  private batchSize = 1000; // Similar to Insights's flushAt setting
 
   constructor(config: MixpanelClientConfig) {
     this.config = config;
@@ -35,7 +35,7 @@ export class MixpanelClient {
       return;
     }
 
-    // Send events in chunks of batchSize (max 2000 per Mixpanel API limits, we use 1000 for consistency with PostHog)
+    // Send events in chunks of batchSize (max 2000 per Mixpanel API limits, we use 1000 for consistency with Insights)
     const chunks: MixpanelEvent[][] = [];
     for (let i = 0; i < this.batch.length; i += this.batchSize) {
       chunks.push(this.batch.slice(i, i + this.batchSize));

@@ -32,7 +32,7 @@ function isAnySsoConfigured(): boolean {
 import { Code, Key, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { captureException } from "@sentry/nextjs";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { AuthProviderButton } from "@/src/features/auth/components/AuthProviderButton";
 import { cn } from "@/src/utils/tailwind";
@@ -208,7 +208,7 @@ export function SSOButtons({
   lastUsedMethod?: NextAuthProvider | null;
   onProviderSelect?: (provider: NextAuthProvider) => void;
 }) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [providerSigningIn, setProviderSigningIn] = useState<NextAuthProvider | null>(null);
 
   // Count available auth methods (including credentials if available)
@@ -511,7 +511,7 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     null,
   );
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const { isConsoleCloud } = useConsoleCloudRegion();
 
   // Count available auth methods to determine if we should show "Last used" badge

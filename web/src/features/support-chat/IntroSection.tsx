@@ -9,14 +9,14 @@ import { usePlan } from "@/src/features/entitlements/hooks";
 import { isCloudPlan } from "@hanzo/shared";
 import { useUiCustomization } from "@/src/features/ui-customization/useUiCustomization";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 
 type SupportType = "in-app-support" | "custom" | "community";
 
 export function IntroSection({ onStartForm }: { onStartForm: () => void; displayDensity?: "default" | "compact" }) {
   const uiCustomization = useUiCustomization();
   const { isConsoleCloud } = useConsoleCloudRegion();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   // Note: We previously added an entitlement for in-app support, but removed it for now.
   //       The issue was that on global routes e.g., https://hanzo.com/setup, the entitlement

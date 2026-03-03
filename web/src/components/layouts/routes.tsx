@@ -48,7 +48,7 @@ import { BookACallButton } from "@/src/components/nav/book-a-call-button";
 import { V4BetaSidebarToggle } from "@/src/features/events/components/V4BetaSidebarToggle";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
 import { useCommandMenu } from "@/src/features/command-k-menu/CommandMenuProvider";
-import { useInsightsCapture as usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture as useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { CloudStatusMenu } from "@/src/features/cloud-status-notification/components/CloudStatusMenu";
 import { type ProductModule } from "@/src/features/ui-customization/productModuleSchema";
 
@@ -502,7 +502,7 @@ export const ROUTES: Route[] = [
 
 function CommandMenuTrigger() {
   const { setOpen } = useCommandMenu();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   return (
     <SidebarMenuButton

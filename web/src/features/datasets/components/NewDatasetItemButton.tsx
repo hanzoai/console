@@ -4,7 +4,7 @@ import { useState } from "react";
 import { NewDatasetItemForm } from "@/src/features/datasets/components/NewDatasetItemForm";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ActionButton } from "@/src/components/ActionButton";
 
 export const NewDatasetItemButton = (props: { projectId: string; datasetId?: string; className?: string }) => {
@@ -13,7 +13,7 @@ export const NewDatasetItemButton = (props: { projectId: string; datasetId?: str
     projectId: props.projectId,
     scope: "datasets:CUD",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <Dialog open={hasAccess && open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

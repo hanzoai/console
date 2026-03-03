@@ -20,8 +20,8 @@ import { AppLayout } from "@/src/components/layouts/app-layout";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
+import insights from "@hanzo/insights";
+import { InsightsProvider } from "@hanzo/insights-react";
 import prexit from "prexit";
 
 // Custom polyfills not yet available in `next-core`:
@@ -79,14 +79,14 @@ import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { ScoreCacheProvider } from "@/src/features/scores/contexts/ScoreCacheContext";
 import { CorrectionCacheProvider } from "@/src/features/corrections/contexts/CorrectionCacheContext";
 
-// Check that PostHog is client-side (used to handle Next.js SSR) and that env vars are set
-if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST) {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.posthog.com",
-    ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://insights.hanzo.ai",
+// Check that Insights is client-side (used to handle Next.js SSR) and that env vars are set
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_INSIGHTS_KEY && process.env.NEXT_PUBLIC_INSIGHTS_HOST) {
+  insights.init(process.env.NEXT_PUBLIC_INSIGHTS_KEY, {
+    api_host: process.env.NEXT_PUBLIC_INSIGHTS_HOST || "https://insights.hanzo.ai",
+    ui_host: process.env.NEXT_PUBLIC_INSIGHTS_HOST || "https://insights.hanzo.ai",
     // Enable debug mode in development
-    loaded: (posthog) => {
-      if (process.env.NODE_ENV === "development") posthog.debug();
+    loaded: (hi) => {
+      if (process.env.NODE_ENV === "development") hi.debug();
     },
     session_recording: {
       maskCapturedNetworkRequestFn(request) {
@@ -105,10 +105,10 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   const router = useRouter();
 
   useEffect(() => {
-    // PostHog (cloud.hanzo.ai)
-    if (env.NEXT_PUBLIC_POSTHOG_KEY && env.NEXT_PUBLIC_POSTHOG_HOST) {
+    // Insights (product analytics)
+    if (env.NEXT_PUBLIC_INSIGHTS_KEY && env.NEXT_PUBLIC_INSIGHTS_HOST) {
       const handleRouteChange = () => {
-        posthog.capture("$pageview");
+        insights.capture("$pageview");
       };
       router.events.on("routeChangeComplete", handleRouteChange);
 
@@ -124,7 +124,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
       <QueryParamProvider adapter={NextAdapterPages} options={{ enableBatching: true }}>
         <TooltipProvider>
           <CommandMenuProvider>
-            <PostHogProvider client={posthog}>
+            <InsightsProvider client={insights}>
               <SessionProvider
                 session={session}
                 refetchOnWindowFocus={true}
@@ -148,7 +148,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
                   </MarkdownContextProvider>
                 </DetailPageListsProvider>
               </SessionProvider>
-            </PostHogProvider>
+            </InsightsProvider>
           </CommandMenuProvider>
         </TooltipProvider>
       </QueryParamProvider>
@@ -172,9 +172,9 @@ function UserTracking() {
       lastIdentifiedUser.current !== JSON.stringify(sessionUser)
     ) {
       lastIdentifiedUser.current = JSON.stringify(sessionUser);
-      // PostHog
-      if (env.NEXT_PUBLIC_POSTHOG_KEY && env.NEXT_PUBLIC_POSTHOG_HOST)
-        posthog.identify(sessionUser.id ?? undefined, {
+      // Insights
+      if (env.NEXT_PUBLIC_INSIGHTS_KEY && env.NEXT_PUBLIC_INSIGHTS_HOST)
+        insights.identify(sessionUser.id ?? undefined, {
           environment: process.env.NODE_ENV,
           email: sessionUser.email ?? undefined,
           name: sessionUser.name ?? undefined,

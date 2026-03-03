@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { ActionButton } from "@/src/components/ActionButton";
 import Page from "@/src/components/layouts/page";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { PromptTable } from "@/src/features/prompts/components/prompts-table";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { PlusIcon } from "lucide-react";
@@ -31,7 +31,7 @@ export default function PromptsWithFolder() {
   const promptNameFromRoute =
     segmentsArray.length > 0 ? (isMetricsPage ? segmentsArray.slice(0, -1).join("/") : segmentsArray.join("/")) : "";
 
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const hasCUDAccess = useHasProjectAccess({
     projectId,
     scope: "prompts:CUD",

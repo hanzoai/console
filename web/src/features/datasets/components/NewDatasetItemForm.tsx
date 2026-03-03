@@ -8,7 +8,7 @@ import { useState, useMemo, useEffect } from "react";
 import { CodeMirrorEditor } from "@/src/components/editor";
 import { type Prisma } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DatasetSchemaHoverCard } from "./DatasetSchemaHoverCard";
 import { useDatasetItemValidation } from "../hooks/useDatasetItemValidation";
 import { DatasetItemFieldSchemaErrors } from "./DatasetItemFieldSchemaErrors";
@@ -101,7 +101,7 @@ export const NewDatasetItemForm = (props: {
   currentDatasetId?: string;
 }) => {
   const [formError, setFormError] = useState<string | null>(null);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {

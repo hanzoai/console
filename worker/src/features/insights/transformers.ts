@@ -6,10 +6,10 @@ import type {
   AnalyticsObservationEvent,
 } from "@hanzo/shared/src/server";
 
-// UUID v5 namespace for PostHog
-const POSTHOG_UUID_NAMESPACE = "0f6c91df-d035-4813-b838-9741ba38ef0b";
+// UUID v5 namespace for Insights
+const INSIGHTS_UUID_NAMESPACE = "0f6c91df-d035-4813-b838-9741ba38ef0b";
 
-type PostHogEvent = {
+type InsightsEvent = {
   distinctId: string;
   event: string;
   properties: Record<string, unknown>;
@@ -17,28 +17,28 @@ type PostHogEvent = {
   uuid: string;
 };
 
-export const transformTraceForPostHog = (trace: AnalyticsTraceEvent, projectId: string): PostHogEvent => {
-  const uuid = v5(`${projectId}-${trace.console_id}`, POSTHOG_UUID_NAMESPACE);
+export const transformTraceForInsights = (trace: AnalyticsTraceEvent, projectId: string): InsightsEvent => {
+  const uuid = v5(`${projectId}-${trace.console_id}`, INSIGHTS_UUID_NAMESPACE);
 
-  // Extract posthog_session_id and map to $session_id
+  // Extract insights_session_id and map to $session_id
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = trace;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = trace;
 
   return {
     distinctId: trace.console_user_id ? (trace.console_user_id as string) : uuid,
     event: "hanzo trace",
     properties: {
       ...otherProps,
-      $session_id: posthog_session_id ?? null,
-      // PostHog-specific: add user profile enrichment or mark as anonymous
+      $session_id: insights_session_id ?? null,
+      // Insights-specific: add user profile enrichment or mark as anonymous
       ...(trace.console_user_id && trace.console_user_url
         ? {
             $set: {
               console_user_url: trace.console_user_url,
             },
           }
-        : // Capture as anonymous PostHog event (cheaper/faster)
-          // https://posthog.com/docs/data/anonymous-vs-identified-events?tab=Backend
+        : // Capture as anonymous Insights event (cheaper/faster)
+          // https://insights.com/docs/data/anonymous-vs-identified-events?tab=Backend
           { $process_person_profile: false }),
     },
     timestamp: trace.timestamp as Date,
@@ -46,31 +46,31 @@ export const transformTraceForPostHog = (trace: AnalyticsTraceEvent, projectId: 
   };
 };
 
-export const transformGenerationForPostHog = (
+export const transformGenerationForInsights = (
   generation: AnalyticsGenerationEvent,
   projectId: string,
-): PostHogEvent => {
-  const uuid = v5(`${projectId}-${generation.console_id}`, POSTHOG_UUID_NAMESPACE);
+): InsightsEvent => {
+  const uuid = v5(`${projectId}-${generation.console_id}`, INSIGHTS_UUID_NAMESPACE);
 
-  // Extract posthog_session_id and map to $session_id
+  // Extract insights_session_id and map to $session_id
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = generation;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = generation;
 
   return {
     distinctId: generation.console_user_id ? (generation.console_user_id as string) : uuid,
     event: "hanzo generation",
     properties: {
       ...otherProps,
-      $session_id: posthog_session_id ?? null,
-      // PostHog-specific: add user profile enrichment or mark as anonymous
+      $session_id: insights_session_id ?? null,
+      // Insights-specific: add user profile enrichment or mark as anonymous
       ...(generation.console_user_id && generation.console_user_url
         ? {
             $set: {
               console_user_url: generation.console_user_url,
             },
           }
-        : // Capture as anonymous PostHog event (cheaper/faster)
-          // https://posthog.com/docs/data/anonymous-vs-identified-events?tab=Backend
+        : // Capture as anonymous Insights event (cheaper/faster)
+          // https://insights.com/docs/data/anonymous-vs-identified-events?tab=Backend
           { $process_person_profile: false }),
     },
     timestamp: generation.timestamp as Date,
@@ -78,28 +78,28 @@ export const transformGenerationForPostHog = (
   };
 };
 
-export const transformScoreForPostHog = (score: AnalyticsScoreEvent, projectId: string): PostHogEvent => {
-  const uuid = v5(`${projectId}-${score.console_id}`, POSTHOG_UUID_NAMESPACE);
+export const transformScoreForInsights = (score: AnalyticsScoreEvent, projectId: string): InsightsEvent => {
+  const uuid = v5(`${projectId}-${score.console_id}`, INSIGHTS_UUID_NAMESPACE);
 
-  // Extract posthog_session_id and map to $session_id
+  // Extract insights_session_id and map to $session_id
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = score;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = score;
 
   return {
     distinctId: score.console_user_id ? (score.console_user_id as string) : uuid,
     event: "hanzo score",
     properties: {
       ...otherProps,
-      $session_id: posthog_session_id ?? null,
-      // PostHog-specific: add user profile enrichment or mark as anonymous
+      $session_id: insights_session_id ?? null,
+      // Insights-specific: add user profile enrichment or mark as anonymous
       ...(score.console_user_id && score.console_user_url
         ? {
             $set: {
               console_user_url: score.console_user_url,
             },
           }
-        : // Capture as anonymous PostHog event (cheaper/faster)
-          // https://posthog.com/docs/data/anonymous-vs-identified-events?tab=Backend
+        : // Capture as anonymous Insights event (cheaper/faster)
+          // https://insights.com/docs/data/anonymous-vs-identified-events?tab=Backend
           { $process_person_profile: false }),
     },
     timestamp: score.timestamp as Date,
@@ -107,28 +107,28 @@ export const transformScoreForPostHog = (score: AnalyticsScoreEvent, projectId: 
   };
 };
 
-export const transformEventForPostHog = (event: AnalyticsObservationEvent, projectId: string): PostHogEvent => {
-  const uuid = v5(`${projectId}-${event.console_id}`, POSTHOG_UUID_NAMESPACE);
+export const transformEventForInsights = (event: AnalyticsObservationEvent, projectId: string): InsightsEvent => {
+  const uuid = v5(`${projectId}-${event.console_id}`, INSIGHTS_UUID_NAMESPACE);
 
-  // Extract posthog_session_id and map to $session_id
+  // Extract insights_session_id and map to $session_id
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = event;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = event;
 
   return {
     distinctId: event.console_user_id ? (event.console_user_id as string) : uuid,
     event: "hanzo observation",
     properties: {
       ...otherProps,
-      $session_id: posthog_session_id ?? null,
-      // PostHog-specific: add user profile enrichment or mark as anonymous
+      $session_id: insights_session_id ?? null,
+      // Insights-specific: add user profile enrichment or mark as anonymous
       ...(event.console_user_id && event.console_user_url
         ? {
             $set: {
               console_user_url: event.console_user_url,
             },
           }
-        : // Capture as anonymous PostHog event (cheaper/faster)
-          // https://posthog.com/docs/data/anonymous-vs-identified-events?tab=Backend
+        : // Capture as anonymous Insights event (cheaper/faster)
+          // https://insights.com/docs/data/anonymous-vs-identified-events?tab=Backend
           { $process_person_profile: false }),
     },
     timestamp: event.timestamp as Date,

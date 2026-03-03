@@ -16,7 +16,7 @@ import { useQueryParam } from "use-query-params";
 import { type ConsoleColumnDef } from "@/src/components/table/types";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import isEqual from "lodash/isEqual";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { validateOrderBy, validateFilters } from "../validation";
 import { isSystemPresetId } from "../components/data-table-view-presets-drawer";
 
@@ -53,7 +53,7 @@ export function useTableViewManager({
   const { viewId } = router.query;
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const pendingFiltersRef = useRef<FilterState | null>(null);
 
   const [storedViewId, setStoredViewId] = useSessionStorage<string | null>(`${tableName}-${projectId}-viewId`, null);

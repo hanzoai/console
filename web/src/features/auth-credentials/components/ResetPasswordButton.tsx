@@ -3,7 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { useEffect, useState } from "react";
 import { z } from "zod/v4";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { env } from "@/src/env.mjs";
 
 export function RequestResetPasswordEmailButton({
@@ -21,7 +21,7 @@ export function RequestResetPasswordEmailButton({
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const session = useSession();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   useEffect(() => {
     const isValidEmail = z.string().email().safeParse(email).success;

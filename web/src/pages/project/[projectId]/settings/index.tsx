@@ -167,7 +167,7 @@ export const getProjectSettingsPages = ({
   {
     title: "Integrations",
     slug: "integrations",
-    cmdKKeywords: ["posthog", "mixpanel", "analytics"],
+    cmdKKeywords: ["insights", "mixpanel", "analytics"],
     content: <Integrations projectId={project.id} />,
   },
   {
@@ -253,7 +253,7 @@ const Integrations = (props: { projectId: string }) => {
               Configure
             </ActionButton>
             <Button asChild variant="ghost">
-              <Link href="https://hanzo.com/integrations/analytics/posthog" target="_blank">
+              <Link href="https://hanzo.com/integrations/analytics/insights" target="_blank">
                 Integration Docs ↗
               </Link>
             </Button>

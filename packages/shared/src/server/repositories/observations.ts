@@ -1661,7 +1661,7 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
       t.user_id as trace_user_id,
       t.release as trace_release,
       t.tags as trace_tags,
-      t.metadata['$posthog_session_id'] as posthog_session_id,
+      t.metadata['$insights_session_id'] as insights_session_id,
       t.metadata['$mixpanel_session_id'] as mixpanel_session_id
     FROM observations o FINAL
     LEFT JOIN ${traceTable} t FINAL ON o.trace_id = t.id AND o.project_id = t.project_id
@@ -1682,7 +1682,7 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
       maxTimestamp: convertDateToDatastoreDateTime(maxTimestamp),
     },
     tags: {
-      feature: "posthog",
+      feature: "insights",
       type: "observation",
       kind: "analytic",
       projectId,
@@ -1725,7 +1725,7 @@ export const getGenerationsForAnalyticsIntegrations = async function* (
       console_tags: record.trace_tags,
       console_environment: record.environment,
       console_event_version: "1.0.0",
-      posthog_session_id: record.posthog_session_id ?? null,
+      insights_session_id: record.insights_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsGenerationEvent;
   }

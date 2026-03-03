@@ -3,7 +3,7 @@ import { type Table } from "@tanstack/react-table";
 
 import { Button } from "@/src/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "@/src/components/ui/input";
 import { useEffect, useState } from "react";
@@ -23,7 +23,7 @@ export function DataTablePagination<TData>({
   hideTotalCount = false,
   canJumpPages = true,
 }: DataTablePaginationProps<TData>) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const currentPage = table.getState().pagination.pageIndex + 1;
   const [inputState, setInputState] = useState<number | string>(currentPage);

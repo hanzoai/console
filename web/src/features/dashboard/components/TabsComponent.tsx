@@ -1,4 +1,4 @@
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { cn } from "@/src/utils/tailwind";
 import { type ReactNode, useState } from "react";
 
@@ -11,7 +11,7 @@ export type TabComponentProps = {
 
 export const TabComponent = ({ tabs }: TabComponentProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <div>
       <div className="sm:hidden">

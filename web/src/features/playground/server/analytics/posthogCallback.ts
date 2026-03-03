@@ -1,15 +1,15 @@
 import type { ValidatedChatCompletionBody } from "@/src/features/playground/server/validateChatCompletionBody";
-import { ServerPosthog } from "@/src/features/insights-analytics/ServerInsights";
+import { ServerInsights } from "@/src/features/insights-analytics/ServerInsights";
 import type { LLMResult } from "@langchain/core/outputs";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 
 import type { ChatMessage, ModelParams } from "@hanzo/shared";
 
-export class PosthogCallbackHandler extends BaseCallbackHandler {
-  public name = "PosthogCallbackHandler";
+export class InsightsCallbackHandler extends BaseCallbackHandler {
+  public name = "InsightsCallbackHandler";
   private messages: ChatMessage[];
   private modelParams: ModelParams;
-  private posthog: ServerPosthog;
+  private insights: ServerInsights;
 
   constructor(
     public eventPrefix: string,
@@ -17,7 +17,7 @@ export class PosthogCallbackHandler extends BaseCallbackHandler {
     private userId: string,
   ) {
     super();
-    this.posthog = new ServerPosthog();
+    this.insights = new ServerInsights();
     this.messages = body.messages;
     this.modelParams = body.modelParams;
   }
@@ -30,7 +30,7 @@ export class PosthogCallbackHandler extends BaseCallbackHandler {
       const properties = this.getEventProperties(outputString);
 
       this.captureEvent(properties);
-      await this.posthog.flush();
+      await this.insights.flush();
     }
   }
 
@@ -48,7 +48,7 @@ export class PosthogCallbackHandler extends BaseCallbackHandler {
   }
 
   private captureEvent(properties: ChatCompletionEventProperties) {
-    this.posthog.capture({
+    this.insights.capture({
       event: this.eventPrefix + "_chat_completion",
       distinctId: this.userId,
       properties,
@@ -56,7 +56,7 @@ export class PosthogCallbackHandler extends BaseCallbackHandler {
   }
 
   public async flushAsync() {
-    await this.posthog.flush();
+    await this.insights.flush();
   }
 }
 

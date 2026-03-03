@@ -14,7 +14,7 @@ import { SelectWidgetDialog, type WidgetItem } from "@/src/features/widgets/comp
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { v4 as uuidv4 } from "uuid";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { DashboardGrid } from "@/src/features/widgets/components/DashboardGrid";
 import { useDashboardDateRange } from "@/src/hooks/useDashboardDateRange";
 import { DASHBOARD_AGGREGATION_OPTIONS, toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
@@ -33,7 +33,7 @@ interface WidgetPlacement {
 export default function DashboardDetail() {
   const router = useRouter();
   const utils = api.useUtils();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   const { projectId, dashboardId, addWidgetId } = router.query as {
     projectId: string;

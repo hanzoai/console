@@ -2497,7 +2497,7 @@ export const getEventsForBlobStorageExport = function (projectId: string, minTim
 };
 
 /**
- * Streams events from Datastore for analytics integrations (PostHog, Mixpanel).
+ * Streams events from Datastore for analytics integrations (Insights, Mixpanel).
  * Uses EventsQueryBuilder for consistent query construction.
  * All fields come directly from the events table (which has denormalized trace-level data).
  */
@@ -2518,7 +2518,7 @@ export const getEventsForAnalyticsIntegrations = async function* (
       "e.usage_details['output'] as output_tokens",
       "e.usage_details['total'] as total_tokens",
       // Analytics integration session IDs from metadata (constructed from array columns)
-      "mapFromArrays(e.metadata_names, e.metadata_prefixes)['$posthog_session_id'] as posthog_session_id",
+      "mapFromArrays(e.metadata_names, e.metadata_prefixes)['$insights_session_id'] as insights_session_id",
       "mapFromArrays(e.metadata_names, e.metadata_prefixes)['$mixpanel_session_id'] as mixpanel_session_id",
     )
     .whereRaw("e.start_time >= {minTimestamp: DateTime64(3)} AND e.start_time <= {maxTimestamp: DateTime64(3)}", {
@@ -2574,7 +2574,7 @@ export const getEventsForAnalyticsIntegrations = async function* (
       console_tags: record.tags,
       console_environment: record.environment,
       console_event_version: "1.0.0",
-      posthog_session_id: record.posthog_session_id ?? null,
+      insights_session_id: record.insights_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsObservationEvent;
   }

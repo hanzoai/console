@@ -1,11 +1,11 @@
 import { env } from "@/src/env.mjs";
 import { prisma, Role } from "@hanzo/shared/src/db";
 import { logger } from "@hanzo/shared/src/server";
-import { ServerPosthog } from "@/src/features/insights-analytics/ServerInsights";
+import { ServerInsights } from "@/src/features/insights-analytics/ServerInsights";
 
 export async function createProjectMembershipsOnSignup(user: { id: string; email: string | null }) {
   try {
-    // in no case do we want to send duplicate sign up events to posthog
+    // in no case do we want to send duplicate sign up events to insights
     const isNewUser = !(await prisma.organizationMembership.findFirst({
       where: { userId: user.id },
       select: { id: true },
@@ -130,11 +130,11 @@ export async function createProjectMembershipsOnSignup(user: { id: string; email
     // Invites do not work for users without emails (some future SSO users)
     if (user.email) await processMembershipInvitations(user.email, user.id);
 
-    // for conversion metric tracking in posthog: did a new user sign up?
+    // for conversion metric tracking: did a new user sign up?
     if (isNewUser && env.NEXT_PUBLIC_HANZO_CLOUD_REGION && ["EU", "US"].includes(env.NEXT_PUBLIC_HANZO_CLOUD_REGION)) {
       try {
-        const posthog = new ServerPosthog();
-        posthog.capture({
+        const insights = new ServerInsights();
+        insights.capture({
           distinctId: user.id,
           event: "cloud_signup_complete",
           properties: {
@@ -144,7 +144,7 @@ export async function createProjectMembershipsOnSignup(user: { id: string; email
             hasDefaultProject: defaultProjects.length > 0,
           },
         });
-        await posthog.shutdown();
+        await insights.shutdown();
       } catch {
         // analytics tracking failure is not critical, just fail
       }

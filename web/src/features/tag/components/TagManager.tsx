@@ -6,7 +6,7 @@ import { useTagManager } from "@/src/features/tag/hooks/useTagManager";
 import { Popover, PopoverTrigger, PopoverContent } from "@/src/components/ui/popover";
 import { Command, CommandList, CommandGroup } from "cmdk";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Label } from "@/src/components/ui/label";
 
 type TagManagerProps = {
@@ -36,7 +36,7 @@ const TagManager = ({
     initialTags: tags,
     allTags,
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const filteredTags = availableTags.filter(
     (value) => value.toLowerCase().includes(inputValue.trim().toLowerCase()) && !selectedTags.includes(value),
   );

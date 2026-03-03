@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/src/components/ui/button";
 import { LockIcon, SquarePen } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/src/components/ui/drawer";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type AnnotateDrawerProps } from "@/src/features/scores/types";
 import { type ScoreTarget } from "@/src/features/scores/types";
@@ -22,7 +22,7 @@ export function AnnotateDrawer<Target extends ScoreTarget>({
 }: AnnotateDrawerProps<Target> & {
   size?: "default" | "sm" | "xs" | "lg" | "icon" | "icon-xs" | "icon-sm";
 }) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const hasAccess = useHasProjectAccess({
     projectId,
     scope: "scores:CUD",

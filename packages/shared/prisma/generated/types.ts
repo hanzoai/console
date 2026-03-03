@@ -743,10 +743,10 @@ export type PendingDeletion = {
   created_at: Generated<Timestamp>;
   updated_at: Generated<Timestamp>;
 };
-export type PosthogIntegration = {
+export type InsightsIntegration = {
   project_id: string;
-  encrypted_posthog_api_key: string;
-  posthog_host_name: string;
+  encrypted_insights_api_key: string;
+  insights_host_name: string;
   last_sync_at: Timestamp | null;
   enabled: boolean;
   created_at: Generated<Timestamp>;
@@ -973,7 +973,7 @@ export type DB = {
   organization_memberships: OrganizationMembership;
   organizations: Organization;
   pending_deletions: PendingDeletion;
-  posthog_integrations: PosthogIntegration;
+  insights_integrations: InsightsIntegration;
   prices: Price;
   pricing_tiers: PricingTier;
   project_memberships: ProjectMembership;

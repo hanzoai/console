@@ -1,38 +1,35 @@
 import { env } from "@/src/env.mjs";
-import { PostHog } from "posthog-node";
+import { Insights as InsightsNode } from "@hanzo/insights-node";
 
-const FALLBACK_POSTHOG_KEY = "phc_zkMwFajk8ehObUlMth0D7DtPItFnxETi3lmSvyQDrwB";
-const FALLBACK_POSTHOG_HOST = "https://eu.posthog.com";
+const FALLBACK_INSIGHTS_KEY = "phc_zkMwFajk8ehObUlMth0D7DtPItFnxETi3lmSvyQDrwB";
+const FALLBACK_INSIGHTS_HOST = "https://insights.hanzo.ai";
 
 export class ServerInsights {
-  private posthog: PostHog | null;
+  private client: InsightsNode | null;
 
   constructor() {
     const telemetryEnabled = env.TELEMETRY_ENABLED !== "false";
 
-    const apiKey = env.NEXT_PUBLIC_POSTHOG_KEY ?? (telemetryEnabled ? FALLBACK_POSTHOG_KEY : null);
-    const host = env.NEXT_PUBLIC_POSTHOG_HOST ?? (telemetryEnabled ? FALLBACK_POSTHOG_HOST : null);
+    const apiKey = env.NEXT_PUBLIC_INSIGHTS_KEY ?? (telemetryEnabled ? FALLBACK_INSIGHTS_KEY : null);
+    const host = env.NEXT_PUBLIC_INSIGHTS_HOST ?? (telemetryEnabled ? FALLBACK_INSIGHTS_HOST : null);
 
     if (apiKey && host) {
-      this.posthog = new PostHog(apiKey, { host });
-      if (process.env.NODE_ENV === "development") this.posthog.debug();
+      this.client = new InsightsNode(apiKey, { host });
+      if (process.env.NODE_ENV === "development") this.client.debug();
     } else {
-      this.posthog = null;
+      this.client = null;
     }
   }
 
-  capture(...args: Parameters<PostHog["capture"]>) {
-    this.posthog?.capture(...args);
+  capture(...args: Parameters<InsightsNode["capture"]>) {
+    this.client?.capture(...args);
   }
 
   async shutdown() {
-    await this.posthog?.shutdown();
+    await this.client?.shutdown();
   }
 
   async flush() {
-    await this.posthog?.flush();
+    await this.client?.flush();
   }
 }
-
-// Backward-compat alias so existing imports of ServerPosthog still compile
-export { ServerInsights as ServerPosthog };

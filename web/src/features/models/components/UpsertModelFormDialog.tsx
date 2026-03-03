@@ -26,7 +26,7 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { type FormUpsertModel, FormUpsertModelSchema, type GetModelResult } from "@/src/features/models/validation";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { api } from "@/src/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
@@ -54,7 +54,7 @@ type UpsertModelDialogProps =
     };
 
 export const UpsertModelFormDialog = (({ children, ...props }: UpsertModelDialogProps) => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const utils = api.useUtils();

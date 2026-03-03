@@ -101,7 +101,7 @@ export const LLMAsJudgeExecutionEventSchema = z.object({
   jobExecutionId: z.string(),
   observationS3Path: z.string(),
 });
-export const PostHogIntegrationProcessingEventSchema = z.object({
+export const InsightsIntegrationProcessingEventSchema = z.object({
   projectId: z.string(),
 });
 export const MixpanelIntegrationProcessingEventSchema = z.object({
@@ -263,7 +263,7 @@ export type LLMAsJudgeExecutionEventType = z.infer<typeof LLMAsJudgeExecutionEve
 export type IngestionEventQueueType = z.infer<typeof IngestionEvent>;
 export type OtelIngestionEventQueueType = z.infer<typeof OtelIngestionEvent>;
 export type ExperimentCreateEventType = z.infer<typeof ExperimentCreateEventSchema>;
-export type PostHogIntegrationProcessingEventType = z.infer<typeof PostHogIntegrationProcessingEventSchema>;
+export type InsightsIntegrationProcessingEventType = z.infer<typeof InsightsIntegrationProcessingEventSchema>;
 export type MixpanelIntegrationProcessingEventType = z.infer<typeof MixpanelIntegrationProcessingEventSchema>;
 export type DataRetentionProcessingEventType = z.infer<typeof DataRetentionProcessingEventSchema>;
 export type BatchActionProcessingEventType = z.infer<typeof BatchActionProcessingEventSchema>;
@@ -293,8 +293,8 @@ export enum QueueName {
   CloudSpendAlertQueue = "cloud-spend-alert-queue",
   CloudFreeTierUsageThresholdQueue = "cloud-free-tier-usage-threshold-queue",
   ExperimentCreate = "experiment-create-queue",
-  PostHogIntegrationQueue = "posthog-integration-queue",
-  PostHogIntegrationProcessingQueue = "posthog-integration-processing-queue",
+  InsightsIntegrationQueue = "insights-integration-queue",
+  InsightsIntegrationProcessingQueue = "insights-integration-processing-queue",
   MixpanelIntegrationQueue = "mixpanel-integration-queue",
   MixpanelIntegrationProcessingQueue = "mixpanel-integration-processing-queue",
   BlobStorageIntegrationQueue = "blobstorage-integration-queue",
@@ -329,8 +329,8 @@ export enum QueueJobs {
   IngestionJob = "ingestion-job",
   IngestionSecondaryJob = "secondary-ingestion-job",
   ExperimentCreateJob = "experiment-create-job",
-  PostHogIntegrationJob = "posthog-integration-job",
-  PostHogIntegrationProcessingJob = "posthog-integration-processing-job",
+  InsightsIntegrationJob = "insights-integration-job",
+  InsightsIntegrationProcessingJob = "insights-integration-processing-job",
   MixpanelIntegrationJob = "mixpanel-integration-job",
   MixpanelIntegrationProcessingJob = "mixpanel-integration-processing-job",
   BlobStorageIntegrationJob = "blobstorage-integration-job",
@@ -433,11 +433,11 @@ export type TQueueJobTypes = {
     name: QueueJobs.ExperimentCreateJob;
     retryBaggage?: RetryBaggage;
   };
-  [QueueName.PostHogIntegrationProcessingQueue]: {
+  [QueueName.InsightsIntegrationProcessingQueue]: {
     timestamp: Date;
     id: string;
-    payload: PostHogIntegrationProcessingEventType;
-    name: QueueJobs.PostHogIntegrationProcessingJob;
+    payload: InsightsIntegrationProcessingEventType;
+    name: QueueJobs.InsightsIntegrationProcessingJob;
   };
   [QueueName.MixpanelIntegrationProcessingQueue]: {
     timestamp: Date;

@@ -120,7 +120,7 @@ const EnvSchema = z.object({
   QUEUE_CONSUMER_PROJECT_DELETE_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
   QUEUE_CONSUMER_DATASET_RUN_ITEM_UPSERT_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
   QUEUE_CONSUMER_EXPERIMENT_CREATE_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
-  QUEUE_CONSUMER_POSTHOG_INTEGRATION_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
+  QUEUE_CONSUMER_INSIGHTS_INTEGRATION_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
   QUEUE_CONSUMER_MIXPANEL_INTEGRATION_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
   QUEUE_CONSUMER_BLOB_STORAGE_INTEGRATION_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),
   QUEUE_CONSUMER_OTEL_INGESTION_QUEUE_IS_ENABLED: z.enum(["true", "false"]).default("true"),

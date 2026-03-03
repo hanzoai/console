@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { organizationFormSchema } from "@/src/features/organizations/utils/organizationNameSchema";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { SurveyName } from "@prisma/client";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 
@@ -32,7 +32,7 @@ export const NewOrganizationForm = ({ onSuccess }: { onSuccess: (orgId: string) 
       size: undefined,
     },
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const createOrgMutation = api.organizations.create.useMutation({
     onError: (error) => form.setError("name", { message: error.message }),
   });

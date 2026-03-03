@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
-  transformTraceForPostHog,
-  transformGenerationForPostHog,
-  transformScoreForPostHog,
-  transformEventForPostHog,
-} from "../features/posthog/transformers";
+  transformTraceForInsights,
+  transformGenerationForInsights,
+  transformScoreForInsights,
+  transformEventForInsights,
+} from "../features/insights/transformers";
 import type {
   AnalyticsTraceEvent,
   AnalyticsGenerationEvent,
@@ -12,10 +12,10 @@ import type {
   AnalyticsObservationEvent,
 } from "@hanzo/shared/src/server";
 
-describe("PostHog transformers", () => {
+describe("Insights transformers", () => {
   const projectId = "test-project-id";
 
-  describe("transformEventForPostHog", () => {
+  describe("transformEventForInsights", () => {
     it("should transform an event with user_id", () => {
       const event: AnalyticsObservationEvent = {
         console_id: "event-123",
@@ -42,17 +42,17 @@ describe("PostHog transformers", () => {
         console_tags: ["tag1", "tag2"],
         console_environment: "production",
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-123",
+        insights_session_id: "insights-session-123",
         mixpanel_session_id: "mixpanel-session-456",
       };
 
-      const result = transformEventForPostHog(event, projectId);
+      const result = transformEventForInsights(event, projectId);
 
       expect(result.event).toBe("hanzo observation");
       expect(result.distinctId).toBe("user-789");
       expect(result.timestamp).toEqual(new Date("2024-01-15T10:00:00Z"));
       expect(result.uuid).toBeDefined();
-      expect(result.properties.$session_id).toBe("posthog-session-123");
+      expect(result.properties.$session_id).toBe("insights-session-123");
       expect(result.properties.console_observation_name).toBe("test-event");
       expect(result.properties.console_trace_name).toBe("test-trace");
       expect(result.properties.console_model).toBe("gpt-4");
@@ -60,8 +60,8 @@ describe("PostHog transformers", () => {
       expect(result.properties.$set).toEqual({
         console_user_url: "https://console.hanzo.ai/project/test/users/user-789",
       });
-      // Should not include posthog_session_id or mixpanel_session_id in properties
-      expect(result.properties.posthog_session_id).toBeUndefined();
+      // Should not include insights_session_id or mixpanel_session_id in properties
+      expect(result.properties.insights_session_id).toBeUndefined();
       expect(result.properties.mixpanel_session_id).toBeUndefined();
     });
 
@@ -73,11 +73,11 @@ describe("PostHog transformers", () => {
         console_project_id: projectId,
         console_user_id: null,
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
-      const result = transformEventForPostHog(event, projectId);
+      const result = transformEventForInsights(event, projectId);
 
       expect(result.event).toBe("hanzo observation");
       // distinctId should be the generated UUID when no user_id
@@ -96,12 +96,12 @@ describe("PostHog transformers", () => {
         console_project_id: projectId,
         console_user_id: null,
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
-      const result1 = transformEventForPostHog(event, projectId);
-      const result2 = transformEventForPostHog(event, projectId);
+      const result1 = transformEventForInsights(event, projectId);
+      const result2 = transformEventForInsights(event, projectId);
 
       expect(result1.uuid).toBe(result2.uuid);
     });
@@ -115,19 +115,19 @@ describe("PostHog transformers", () => {
         console_project_id: projectId,
         console_user_id: null,
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-abc",
+        insights_session_id: "insights-session-abc",
         mixpanel_session_id: null,
       };
 
-      const result = transformEventForPostHog(event, projectId);
+      const result = transformEventForInsights(event, projectId);
 
-      expect(result.properties.$session_id).toBe("posthog-session-abc");
+      expect(result.properties.$session_id).toBe("insights-session-abc");
       expect(result.properties.console_session_id).toBe("session-123");
       expect(result.properties.$process_person_profile).toBe(false);
     });
   });
 
-  describe("transformTraceForPostHog", () => {
+  describe("transformTraceForInsights", () => {
     it("should transform a trace with user_id", () => {
       const trace: AnalyticsTraceEvent = {
         console_id: "trace-123",
@@ -146,19 +146,19 @@ describe("PostHog transformers", () => {
         console_tags: ["tag1"],
         console_environment: "production",
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-123",
+        insights_session_id: "insights-session-123",
         mixpanel_session_id: null,
       };
 
-      const result = transformTraceForPostHog(trace, projectId);
+      const result = transformTraceForInsights(trace, projectId);
 
       expect(result.event).toBe("hanzo trace");
       expect(result.distinctId).toBe("user-789");
-      expect(result.properties.$session_id).toBe("posthog-session-123");
+      expect(result.properties.$session_id).toBe("insights-session-123");
     });
   });
 
-  describe("transformGenerationForPostHog", () => {
+  describe("transformGenerationForInsights", () => {
     it("should transform a generation with user_id", () => {
       const generation: AnalyticsGenerationEvent = {
         console_id: "gen-123",
@@ -184,20 +184,20 @@ describe("PostHog transformers", () => {
         console_tags: ["api"],
         console_environment: "staging",
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-456",
+        insights_session_id: "insights-session-456",
         mixpanel_session_id: null,
       };
 
-      const result = transformGenerationForPostHog(generation, projectId);
+      const result = transformGenerationForInsights(generation, projectId);
 
       expect(result.event).toBe("hanzo generation");
       expect(result.distinctId).toBe("user-789");
-      expect(result.properties.$session_id).toBe("posthog-session-456");
+      expect(result.properties.$session_id).toBe("insights-session-456");
       expect(result.properties.console_model).toBe("gpt-4-turbo");
     });
   });
 
-  describe("transformScoreForPostHog", () => {
+  describe("transformScoreForInsights", () => {
     it("should transform a score with user_id", () => {
       const score: AnalyticsScoreEvent = {
         console_id: "score-123",
@@ -220,15 +220,15 @@ describe("PostHog transformers", () => {
         console_event_version: "1.0.0",
         console_score_entity_type: "trace",
         console_dataset_run_id: null,
-        posthog_session_id: "posthog-session-789",
+        insights_session_id: "insights-session-789",
         mixpanel_session_id: null,
       };
 
-      const result = transformScoreForPostHog(score, projectId);
+      const result = transformScoreForInsights(score, projectId);
 
       expect(result.event).toBe("hanzo score");
       expect(result.distinctId).toBe("user-789");
-      expect(result.properties.$session_id).toBe("posthog-session-789");
+      expect(result.properties.$session_id).toBe("insights-session-789");
       expect(result.properties.console_score_name).toBe("quality");
       expect(result.properties.console_score_value).toBe(0.95);
     });

@@ -1,6 +1,6 @@
 import { DropdownMenuItem } from "@/src/components/ui/dropdown-menu";
 import { RESOURCE_METRICS } from "@/src/features/dashboard/lib/score-analytics-utils";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { MultiSelectKeyValues } from "@/src/features/scores/components/multi-select-key-values";
 
 export function DatasetAnalytics(props: {
@@ -9,7 +9,7 @@ export function DatasetAnalytics(props: {
   selectedMetrics: string[];
   setSelectedMetrics: (metrics: string[]) => void;
 }) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   return (
     <MultiSelectKeyValues
       className="max-w-fit focus:!ring-0 focus:!ring-offset-0"

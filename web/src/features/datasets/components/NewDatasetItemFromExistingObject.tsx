@@ -14,7 +14,7 @@ import Link from "next/link";
 import { NewDatasetItemForm } from "@/src/features/datasets/components/NewDatasetItemForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Button } from "@/src/components/ui/button";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useIsAuthenticatedAndProjectMember } from "@/src/features/auth/hooks";
 import { parseJsonPrioritised } from "@hanzo/shared";
 import { ActionButton } from "@/src/components/ActionButton";
@@ -63,7 +63,7 @@ export const NewDatasetItemFromExistingObject = (props: {
     projectId: props.projectId,
     scope: "datasets:CUD",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const buttonVariant = props.buttonVariant || "secondary";
   const buttonSize = props.size || "default";
 

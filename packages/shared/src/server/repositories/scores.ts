@@ -1687,7 +1687,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
       t.release as trace_release,
       t.tags as trace_tags,
       s.metadata as metadata,
-      t.metadata['$posthog_session_id'] as posthog_session_id,
+      t.metadata['$insights_session_id'] as insights_session_id,
       t.metadata['$mixpanel_session_id'] as mixpanel_session_id
     FROM scores s FINAL
     LEFT JOIN ${traceTable} t FINAL ON s.trace_id = t.id AND s.project_id = t.project_id
@@ -1719,7 +1719,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
       dataTypes: AGGREGATABLE_SCORE_TYPES,
     },
     tags: {
-      feature: "posthog",
+      feature: "insights",
       type: "score",
       kind: "analytic",
       projectId,
@@ -1771,7 +1771,7 @@ export const getScoresForAnalyticsIntegrations = async function* (
             ? "dataset_run"
             : "unknown",
       console_dataset_run_id: record.score_dataset_run_id,
-      posthog_session_id: record.posthog_session_id ?? null,
+      insights_session_id: record.insights_session_id ?? null,
       mixpanel_session_id: record.mixpanel_session_id ?? null,
     } satisfies AnalyticsScoreEvent;
   }

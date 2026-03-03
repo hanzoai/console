@@ -1,11 +1,11 @@
 import { Processor } from "@hanzo/mq";
 import { instrumentAsync, logger, QueueJobs } from "@hanzo/shared/src/server";
-import { handleInsightsIntegrationSchedule } from "../features/insights/handlePostHogIntegrationSchedule";
-import { handleInsightsIntegrationProjectJob } from "../features/insights/handlePostHogIntegrationProjectJob";
+import { handleInsightsIntegrationSchedule } from "../features/insights/handleInsightsIntegrationSchedule";
+import { handleInsightsIntegrationProjectJob } from "../features/insights/handleInsightsIntegrationProjectJob";
 import { SpanKind } from "@opentelemetry/api";
 
 export const insightsIntegrationProcessor: Processor = async (job) => {
-  if (job.name === QueueJobs.PostHogIntegrationJob) {
+  if (job.name === QueueJobs.InsightsIntegrationJob) {
     logger.info("Executing Hanzo Insights Integration Job");
     try {
       return await handleInsightsIntegrationSchedule();
@@ -17,7 +17,7 @@ export const insightsIntegrationProcessor: Processor = async (job) => {
 };
 
 export const insightsIntegrationProcessingProcessor: Processor = async (job) => {
-  if (job.name === QueueJobs.PostHogIntegrationProcessingJob) {
+  if (job.name === QueueJobs.InsightsIntegrationProcessingJob) {
     return await instrumentAsync(
       {
         name: "process insights-integration-project",
@@ -36,8 +36,8 @@ export const insightsIntegrationProcessingProcessor: Processor = async (job) => 
   }
 };
 
-// Backward-compat aliases so existing imports of postHogIntegration* still compile
+// Backward-compat aliases so existing imports of insightsIntegration* still compile
 export {
-  insightsIntegrationProcessor as postHogIntegrationProcessor,
-  insightsIntegrationProcessingProcessor as postHogIntegrationProcessingProcessor,
+  insightsIntegrationProcessor as insightsIntegrationProcessor,
+  insightsIntegrationProcessingProcessor as insightsIntegrationProcessingProcessor,
 };

@@ -21,7 +21,7 @@ import {
 } from "@hanzo/shared";
 import { NonEmptyString } from "@hanzo/shared";
 import { cn } from "@/src/utils/tailwind";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import {
   InputCommand,
   InputCommandEmpty,
@@ -63,7 +63,7 @@ export function PopoverFilterBuilder({
   filterWithAI?: boolean;
   buttonType?: "default" | "icon";
 }) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [wipFilterState, _setWipFilterState] = useState<WipFilterState>(filterState);
 
   // Sync wipFilterState when filterState prop changes externally

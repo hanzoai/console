@@ -7,7 +7,7 @@ declare global {
     hanzo?: {
       track: (eventName: string, eventData?: Record<string, any>) => void;
     };
-    posthog?: {
+    insights?: {
       capture: (eventName: string, eventData?: Record<string, any>) => void;
     };
   }
@@ -19,9 +19,9 @@ export const trackBillingEvent = (eventName: string, eventData?: Record<string, 
     window.hanzo.track(eventName, eventData);
   }
 
-  // Also track with PostHog for backward compatibility
-  if (typeof window !== "undefined" && window.posthog) {
-    window.posthog.capture(eventName, eventData);
+  // Also track with Insights for backward compatibility
+  if (typeof window !== "undefined" && window.insights) {
+    window.insights.capture(eventName, eventData);
   }
 };
 

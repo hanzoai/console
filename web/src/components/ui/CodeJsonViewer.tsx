@@ -7,7 +7,7 @@ import "react18-json-view/src/dark.css";
 import { deepParseJson } from "@hanzo/shared";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useTheme } from "next-themes";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useMarkdownContext } from "@/src/features/theming/useMarkdownContext";
 import { type MediaReturnType } from "@/src/features/media/validation";
 import { HanzoMediaView } from "@/src/components/ui/HanzoMediaView";
@@ -38,7 +38,7 @@ export function JSONView(props: {
   const parsedJson = useMemo(() => deepParseJson(props.json), [props.json]);
   const { resolvedTheme } = useTheme();
   const { setIsMarkdownEnabled } = useMarkdownContext();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
 
   const collapseStringsAfterLength =

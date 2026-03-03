@@ -15,13 +15,13 @@ import { api } from "@/src/utils/api";
 import * as z from "zod/v4";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { env } from "@/src/env.mjs";
 
 export function DeleteProjectButton() {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   //code for dynamic confirmation message
   const { project, organization } = useQueryProject();

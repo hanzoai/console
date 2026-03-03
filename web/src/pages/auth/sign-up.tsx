@@ -18,7 +18,7 @@ import { PasswordInput } from "@/src/components/ui/password-input";
 import { useConsoleCloudRegion } from "@/src/features/organizations/hooks";
 import { useRouter } from "next/router";
 import { getSafeRedirectPath } from "@/src/utils/redirect";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 
 // Use the same getServerSideProps function as src/pages/auth/sign-in.tsx
@@ -30,7 +30,7 @@ export default function SignIn({ authProviders, runningOnHuggingFaceSpaces }: Pa
   useHuggingFaceRedirect(runningOnHuggingFaceSpaces);
   const { isConsoleCloud, region } = useConsoleCloudRegion();
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   // Read query params for targetPath and email pre-population
   const queryTargetPath = router.query.targetPath as string | undefined;

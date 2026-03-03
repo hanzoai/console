@@ -20,7 +20,7 @@ import Generations from "@/src/components/table/use-cases/observations";
 import { FlaskConical, MoreVertical, Plus } from "lucide-react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Button } from "@/src/components/ui/button";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { Dialog, DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { useMemo, useState } from "react";
@@ -76,7 +76,7 @@ await hanzo.prompt.get("${name}", { version: ${version} })
 
 export const PromptDetail = ({ promptName: promptNameProp }: { promptName?: string } = {}) => {
   const projectId = useProjectIdFromURL();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const router = useRouter();
 
   const promptName =

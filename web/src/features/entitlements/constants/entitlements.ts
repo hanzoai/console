@@ -21,7 +21,7 @@ export const entitlements = [
   "model-based-evaluations",
   "playground",
   "prompt-experiments",
-  "integration-posthog",
+  "integration-insights",
 ] as const;
 export type Entitlement = (typeof entitlements)[number];
 
@@ -40,7 +40,7 @@ const allEntitlements: Entitlement[] = [
   "model-based-evaluations",
   "playground",
   "prompt-experiments",
-  "integration-posthog",
+  "integration-insights",
   "self-host-ui-customization",
   "self-host-allowed-organization-creators",
 ];

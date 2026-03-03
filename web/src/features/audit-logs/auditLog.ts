@@ -26,7 +26,7 @@ export type AuditableResource =
   | "evalTemplate"
   | "job"
   | "blobStorageIntegration"
-  | "posthogIntegration"
+  | "insightsIntegration"
   | "mixpanelIntegration"
   | "llmApiKey"
   | "llmTool"

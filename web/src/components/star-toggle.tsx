@@ -5,7 +5,7 @@ import { api } from "@/src/utils/api";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { type RouterInput } from "@/src/utils/types";
 import { useState } from "react";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 // import { trpcErrorToast } from "@/src/utils/trpcErrorToast";
 // import { AnyColumnWithTable } from "kysely";
 
@@ -63,7 +63,7 @@ export function StarTraceToggle({
     projectId,
     scope: "objects:bookmark",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [isLoading, setIsLoading] = useState(false);
 
   const mutBookmarkTrace = api.traces.bookmark.useMutation({
@@ -138,7 +138,7 @@ export function StarTraceDetailsToggle({
     projectId,
     scope: "objects:bookmark",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [isLoading, setIsLoading] = useState(false);
 
   const mutBookmarkTrace = api.traces.bookmark.useMutation({
@@ -219,7 +219,7 @@ export function StarSessionToggle({
     projectId,
     scope: "objects:bookmark",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const mutBookmarkSession = api.sessions.bookmark.useMutation({
     onSuccess: () => {
       void utils.sessions.invalidate();

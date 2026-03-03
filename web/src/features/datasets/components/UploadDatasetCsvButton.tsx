@@ -2,7 +2,7 @@ import { UploadIcon } from "lucide-react";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { ActionButton } from "@/src/components/ActionButton";
 import { CsvUploadDialog } from "@/src/features/datasets/components/CsvUploadDialog";
 
@@ -12,7 +12,7 @@ export const UploadDatasetCsvButton = (props: { projectId: string; datasetId: st
     projectId: props.projectId,
     scope: "datasets:CUD",
   });
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   return (
     <CsvUploadDialog

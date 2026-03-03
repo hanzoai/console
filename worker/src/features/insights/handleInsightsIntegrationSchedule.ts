@@ -1,9 +1,8 @@
-import { Job } from "@hanzo/mq";
 import { prisma } from "@hanzo/shared/src/db";
-import { InsightsIntegrationProcessingQueue, QueueJobs } from "@hanzo/shared/src/server";
+import { InsightsIntegrationProcessingQueue, QueueJobs, logger } from "@hanzo/shared/src/server";
 import { randomUUID } from "crypto";
 
-export const handleInsightsIntegrationSchedule = async (_job: Job) => {
+export const handleInsightsIntegrationSchedule = async () => {
   const insightsIntegrationProjects = await prisma.insightsIntegration.findMany({
     select: {
       lastSyncAt: true,
@@ -14,10 +13,17 @@ export const handleInsightsIntegrationSchedule = async (_job: Job) => {
     },
   });
 
+  if (insightsIntegrationProjects.length === 0) {
+    logger.info("[INSIGHTS] No Insights integrations ready for sync");
+    return;
+  }
+
   const insightsIntegrationProcessingQueue = InsightsIntegrationProcessingQueue.getInstance();
   if (!insightsIntegrationProcessingQueue) {
     throw new Error("InsightsIntegrationProcessingQueue not initialized");
   }
+
+  logger.info(`[INSIGHTS] Scheduling ${insightsIntegrationProjects.length} Insights integrations for sync`);
 
   await insightsIntegrationProcessingQueue.addBulk(
     insightsIntegrationProjects.map((integration) => ({
@@ -31,8 +37,11 @@ export const handleInsightsIntegrationSchedule = async (_job: Job) => {
         },
       },
       opts: {
-        // Use projectId and last sync as jobId to prevent duplicate jobs.
+        // Deduplicate by projectId + lastSyncAt so the same project isn't queued
+        // twice for the same sync window. removeOnFail ensures failed jobs are
+        // immediately cleaned up so they don't block re-queuing on the next cycle.
         jobId: `${integration.projectId}-${integration.lastSyncAt?.toISOString() ?? ""}`,
+        removeOnFail: true,
       },
     })),
   );

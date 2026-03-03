@@ -41,7 +41,7 @@ export default function InsightsIntegrationSettings() {
     projectId,
     scope: "integrations:CRUD",
   });
-  const state = api.posthogIntegration.get.useQuery(
+  const state = api.insightsIntegration.get.useQuery(
     { projectId },
     {
       enabled: hasAccess,
@@ -58,14 +58,14 @@ export default function InsightsIntegrationSettings() {
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
-            <Link href="https://hanzo.com/integrations/analytics/posthog">Integration Docs ↗</Link>
+            <Link href="https://hanzo.com/integrations/analytics/insights">Integration Docs ↗</Link>
           </Button>
         ),
       }}
     >
       <p className="mb-4 text-sm text-primary">
         We have teamed up with{" "}
-        <Link href="https://posthog.com" className="underline">
+        <Link href="https://insights.com" className="underline">
           Hanzo Insights
         </Link>{" "}
         (OSS product analytics) to make Hanzo Cloud events/metrics available in your Hanzo Insights dashboards. Upon
@@ -104,7 +104,7 @@ const InsightsIntegrationForm = ({
   projectId,
   isLoading,
 }: {
-  state?: RouterOutput["posthogIntegration"]["get"];
+  state?: RouterOutput["insightsIntegration"]["get"];
   projectId: string;
   isLoading: boolean;
 }) => {
@@ -113,8 +113,8 @@ const InsightsIntegrationForm = ({
   const insightsForm = useForm({
     resolver: zodResolver(insightsIntegrationFormSchema),
     defaultValues: {
-      posthogHostname: state?.posthogHostName ?? "",
-      posthogProjectApiKey: state?.posthogApiKey ?? "",
+      insightsHostname: state?.insightsHostName ?? "",
+      insightsProjectApiKey: state?.insightsApiKey ?? "",
       enabled: state?.enabled ?? false,
       exportSource:
         state?.exportSource ??
@@ -127,8 +127,8 @@ const InsightsIntegrationForm = ({
 
   useEffect(() => {
     insightsForm.reset({
-      posthogHostname: state?.posthogHostName ?? "",
-      posthogProjectApiKey: state?.posthogApiKey ?? "",
+      insightsHostname: state?.insightsHostName ?? "",
+      insightsProjectApiKey: state?.insightsApiKey ?? "",
       enabled: state?.enabled ?? false,
       exportSource:
         state?.exportSource ??
@@ -140,19 +140,19 @@ const InsightsIntegrationForm = ({
   }, [state]);
 
   const utils = api.useUtils();
-  const mut = api.posthogIntegration.update.useMutation({
+  const mut = api.insightsIntegration.update.useMutation({
     onSuccess: () => {
-      utils.posthogIntegration.invalidate();
+      utils.insightsIntegration.invalidate();
     },
   });
-  const mutDelete = api.posthogIntegration.delete.useMutation({
+  const mutDelete = api.insightsIntegration.delete.useMutation({
     onSuccess: () => {
-      utils.posthogIntegration.invalidate();
+      utils.insightsIntegration.invalidate();
     },
   });
 
   async function onSubmit(values: z.infer<typeof insightsIntegrationFormSchema>) {
-    capture("integrations:posthog_form_submitted");
+    capture("integrations:insights_form_submitted");
     mut.mutate({
       projectId,
       ...values,
@@ -164,21 +164,21 @@ const InsightsIntegrationForm = ({
       <form className="space-y-3" onSubmit={insightsForm.handleSubmit(onSubmit)}>
         <FormField
           control={insightsForm.control}
-          name="posthogHostname"
+          name="insightsHostname"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Hanzo Insights Hostname</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>US region: https://us.posthog.com; EU region: https://eu.posthog.com</FormDescription>
+              <FormDescription>US region: https://us.insights.com; EU region: https://eu.insights.com</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <FormField
           control={insightsForm.control}
-          name="posthogProjectApiKey"
+          name="insightsProjectApiKey"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Hanzo Insights Project API Key</FormLabel>

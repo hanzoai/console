@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/src/components/ui/dialog";
 import { CreateExperimentsForm } from "@/src/features/experiments/components/CreateExperimentsForm";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import {
   DATASET_RUN_COMPARE_TABS,
@@ -20,7 +20,7 @@ import { AnnotationPanel } from "@/src/features/datasets/components/AnnotationPa
 
 function DatasetCompareInternal() {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
 

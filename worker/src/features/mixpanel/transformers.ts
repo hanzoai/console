@@ -6,7 +6,7 @@ import type {
   AnalyticsObservationEvent,
 } from "@hanzo/shared/src/server";
 
-// UUID v5 namespace for Mixpanel (different from PostHog)
+// UUID v5 namespace for Mixpanel (different from Insights)
 const MIXPANEL_UUID_NAMESPACE = "8f7c3e42-9a1b-4d5f-8e2a-1c6b9d3f4e7a";
 
 export type MixpanelEvent = {
@@ -26,7 +26,7 @@ export const transformTraceForMixpanel = (trace: AnalyticsTraceEvent, projectId:
 
   // Extract session IDs and exclude from properties
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = trace;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = trace;
 
   return {
     event: "[Hanzo] Trace",
@@ -52,7 +52,7 @@ export const transformGenerationForMixpanel = (
 
   // Extract session IDs and exclude from properties
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = generation;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = generation;
 
   return {
     event: "[Hanzo] Generation",
@@ -75,7 +75,7 @@ export const transformScoreForMixpanel = (score: AnalyticsScoreEvent, projectId:
 
   // Extract session IDs and exclude from properties
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = score;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = score;
 
   return {
     event: "[Hanzo] Score",
@@ -98,7 +98,7 @@ export const transformEventForMixpanel = (event: AnalyticsObservationEvent, proj
 
   // Extract session IDs and exclude from properties
 
-  const { posthog_session_id, mixpanel_session_id, ...otherProps } = event;
+  const { insights_session_id, mixpanel_session_id, ...otherProps } = event;
 
   return {
     event: "[Hanzo] Observation",

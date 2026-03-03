@@ -14,7 +14,7 @@ import { compareViewChartDataToDataPoints } from "@/src/features/dashboard/lib/c
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { compactNumberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { formatIntervalSeconds } from "@/src/utils/dates";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import Page from "@/src/components/layouts/page";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
 import { SidePanel, SidePanelContent, SidePanelHeader, SidePanelTitle } from "@/src/components/ui/side-panel";
@@ -31,7 +31,7 @@ import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
 
 export default function DatasetCompare() {
   const router = useRouter();
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
 

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import Page from "@/src/components/layouts/page";
 import { ActionButton } from "@/src/components/ActionButton";
@@ -10,7 +10,7 @@ import { getDashboardTabs, DASHBOARD_TABS } from "@/src/features/navigation/util
 export default function Widgets() {
   const router = useRouter();
   const { projectId } = router.query as { projectId: string };
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const hasCUDAccess = useHasProjectAccess({
     projectId,
     scope: "prompts:CUD",

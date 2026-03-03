@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { type ScoreDomain, type Prisma } from "@hanzo/shared";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import usePreserveRelativeScroll from "@/src/hooks/usePreserveRelativeScroll";
 import { type MediaReturnType } from "@/src/features/media/validation";
@@ -132,7 +132,7 @@ export function IOPreview({
   environment = "default",
   showCorrections = true,
 }: IOPreviewProps) {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
   const [dismissedTraceViewNotifications, setDismissedTraceViewNotifications] = useLocalStorage<string[]>(
     STORAGE_KEY,
     [],

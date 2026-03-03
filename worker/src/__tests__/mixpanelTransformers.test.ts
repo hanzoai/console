@@ -43,7 +43,7 @@ describe("Mixpanel transformers", () => {
         console_tags: ["tag1", "tag2"],
         console_environment: "production",
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-123",
+        insights_session_id: "insights-session-123",
         mixpanel_session_id: "mixpanel-session-456",
       };
 
@@ -59,8 +59,8 @@ describe("Mixpanel transformers", () => {
       expect(result.properties.console_trace_name).toBe("test-trace");
       expect(result.properties.console_model).toBe("gpt-4");
       expect(result.properties.console_type).toBe("GENERATION");
-      // Should not include posthog_session_id or mixpanel_session_id in properties
-      expect(result.properties.posthog_session_id).toBeUndefined();
+      // Should not include insights_session_id or mixpanel_session_id in properties
+      expect(result.properties.insights_session_id).toBeUndefined();
       expect(result.properties.mixpanel_session_id).toBeUndefined();
     });
 
@@ -73,7 +73,7 @@ describe("Mixpanel transformers", () => {
         console_project_name: "Test Project",
         console_user_id: null,
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
@@ -96,7 +96,7 @@ describe("Mixpanel transformers", () => {
         console_project_name: "Test Project",
         console_user_id: null,
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
@@ -116,7 +116,7 @@ describe("Mixpanel transformers", () => {
         console_project_name: "Test Project",
         console_user_id: "user-456",
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
@@ -135,7 +135,7 @@ describe("Mixpanel transformers", () => {
         console_project_name: "Test Project",
         console_user_id: "user-456",
         console_event_version: "1.0.0",
-        posthog_session_id: "posthog-session-789",
+        insights_session_id: "insights-session-789",
         mixpanel_session_id: "mixpanel-session-456",
       };
 
@@ -153,7 +153,7 @@ describe("Mixpanel transformers", () => {
         console_project_name: "My Custom Project Name",
         console_user_id: "user-123",
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: null,
       };
 
@@ -183,7 +183,7 @@ describe("Mixpanel transformers", () => {
         console_tags: ["tag1"],
         console_environment: "production",
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: "mixpanel-session-123",
       };
 
@@ -223,7 +223,7 @@ describe("Mixpanel transformers", () => {
         console_tags: ["api"],
         console_environment: "staging",
         console_event_version: "1.0.0",
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: "mixpanel-session-456",
       };
 
@@ -261,7 +261,7 @@ describe("Mixpanel transformers", () => {
         console_event_version: "1.0.0",
         console_score_entity_type: "trace",
         console_dataset_run_id: null,
-        posthog_session_id: null,
+        insights_session_id: null,
         mixpanel_session_id: "mixpanel-session-789",
       };
 

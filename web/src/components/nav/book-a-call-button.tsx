@@ -1,6 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import { SidebarMenuButton } from "@/src/components/ui/sidebar";
-import { usePostHogClientCapture } from "@/src/features/insights-analytics/useInsightsCapture";
+import { useInsightsCapture } from "@/src/features/insights-analytics/useInsightsCapture";
 import { useEffect } from "react";
 
 declare global {
@@ -10,7 +10,7 @@ declare global {
 }
 
 export const BookACallButton = () => {
-  const capture = usePostHogClientCapture();
+  const capture = useInsightsCapture();
 
   useEffect(() => {
     // Load Cal.com embed script once

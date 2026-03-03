@@ -106,7 +106,7 @@ export const getQueues = () => {
     QueueName.DataRetentionQueue,
     QueueName.BlobStorageIntegrationQueue,
     QueueName.DeadLetterRetryQueue,
-    QueueName.PostHogIntegrationQueue,
+    QueueName.InsightsIntegrationQueue,
     QueueName.CloudFreeTierUsageThresholdQueue,
   ];
 
@@ -143,10 +143,7 @@ export const disconnectQueues = async () => {
 };
 
 export const truncateDatastoreTables = async () => {
-  if (
-    !env.DATASTORE_URL?.includes("localhost:8123") &&
-    !env.DATASTORE_URL?.includes("127.0.0.1:8123")
-  ) {
+  if (!env.DATASTORE_URL?.includes("localhost:8123") && !env.DATASTORE_URL?.includes("127.0.0.1:8123")) {
     throw new Error("You cannot prune datastore unless running on localhost.");
   }
 

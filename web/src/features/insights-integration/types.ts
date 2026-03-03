@@ -2,8 +2,8 @@ import { AnalyticsIntegrationExportSource } from "@hanzo/shared";
 import { z } from "zod/v4";
 
 export const insightsIntegrationFormSchema = z.object({
-  posthogHostname: z.string().url(),
-  posthogProjectApiKey: z.string().refine((v) => v.startsWith("phc_"), {
+  insightsHostname: z.string().url(),
+  insightsProjectApiKey: z.string().refine((v) => v.startsWith("phc_"), {
     message:
       "Hanzo Insights 'Project API Key' must start with 'phc_'. You can find it in the Hanzo Insights project settings.",
   }),
@@ -11,5 +11,5 @@ export const insightsIntegrationFormSchema = z.object({
   exportSource: z.enum(AnalyticsIntegrationExportSource).default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
 });
 
-// Backward-compat alias so existing imports of posthogIntegrationFormSchema still compile
-export { insightsIntegrationFormSchema as posthogIntegrationFormSchema };
+// Backward-compat alias so existing imports of insightsIntegrationFormSchema still compile
+export { insightsIntegrationFormSchema as insightsIntegrationFormSchema };
