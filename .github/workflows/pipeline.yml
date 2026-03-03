@@ -258,12 +258,9 @@ jobs:
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           mkdir -p ds_client_dir
-          cd ds_client_dir
-          ar x ../datastore-client.deb
-          tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null
-          cd ..
-          sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
-          sudo chmod +x /usr/local/bin/datastore-client
+          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
+          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
+          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         run: |
           pnpm --filter=shared ds:dev-tables
@@ -382,12 +379,9 @@ jobs:
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           mkdir -p ds_client_dir
-          cd ds_client_dir
-          ar x ../datastore-client.deb
-          tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null
-          cd ..
-          sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
-          sudo chmod +x /usr/local/bin/datastore-client
+          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
+          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
+          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
@@ -489,12 +483,9 @@ jobs:
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
           curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           mkdir -p ds_client_dir
-          cd ds_client_dir
-          ar x ../datastore-client.deb
-          tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null
-          cd ..
-          sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
-          sudo chmod +x /usr/local/bin/datastore-client
+          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
+          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
+          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
