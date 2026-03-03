@@ -42,7 +42,14 @@ function buildQueryParams(
   }
   if (params) {
     for (const [key, value] of Object.entries(params)) {
-      qs.set(`param_${key}`, String(value ?? ""));
+      if (Array.isArray(value)) {
+        qs.set(
+          `param_${key}`,
+          `[${value.map((v) => `'${String(v)}'`).join(",")}]`,
+        );
+      } else {
+        qs.set(`param_${key}`, String(value ?? ""));
+      }
     }
   }
   return qs;

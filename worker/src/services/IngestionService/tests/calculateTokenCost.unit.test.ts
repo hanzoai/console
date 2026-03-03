@@ -12,7 +12,7 @@ import * as datastoreWriteExports from "../../DatastoreWriter";
 const mockAddToDatastoreWriter = vi.fn();
 const mockDatastoreClient = {
   query: async () => ({
-    json: async () => [],
+    json: async () => ({ data: [] }),
     query_id: "1",
     response_headers: { "x-datastore-summary": [] },
   }),
