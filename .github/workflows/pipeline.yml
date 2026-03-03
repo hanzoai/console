@@ -12,10 +12,7 @@ on:
     branches:
       - "**"
 
-env:
-  # Upstream datastore binary package (used in CI for dev-tables setup)
-  DS_VERSION: "24.9.3.128"
-  DS_PKG_BASE: "https://pkg.hanzo.ai/datastore/deb/pool/main"
+env: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -252,15 +249,10 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ds:up
-      - name: Download and extract Datastore client for dev-tables setup
+      - name: Create datastore-client wrapper (uses running container)
         run: |
-          ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
-          mkdir -p ds_client_dir
-          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
-          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
-          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec hanzo-datastore clickhouse "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         run: |
           pnpm --filter=shared ds:dev-tables
@@ -372,16 +364,11 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ds:up
-      - name: Download and extract Datastore client for dev-tables setup
+      - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
-          mkdir -p ds_client_dir
-          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
-          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
-          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec hanzo-datastore clickhouse "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
@@ -476,16 +463,11 @@ jobs:
           pnpm run db:migrate
           pnpm run db:seed
           pnpm run --filter=shared ds:up
-      - name: Download and extract Datastore client for dev-tables setup
+      - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          ARCH="amd64"
-          UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
-          mkdir -p ds_client_dir
-          cd ds_client_dir && ar x ../datastore-client.deb && tar xf data.tar.* 2>/dev/null || tar xf data.tar 2>/dev/null && cd ..
-          BIN=$(find ds_client_dir -name 'clickhouse' -type f | head -1)
-          sudo install -m 755 "$BIN" /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec hanzo-datastore clickhouse "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
