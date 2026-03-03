@@ -1,17 +1,14 @@
 services:
   datastore:
-    # Upgrade from 24.3 to check behaviour on new events table.
-    # Unit tests still verify 24.3 behaviour using -azure and -redis-cluster configs.
     image: ghcr.io/hanzoai/datastore:latest
-    user: "101:101"
     container_name: ${DATASTORE_CONTAINER_NAME:-hanzo-datastore}
     environment:
       DATASTORE_DB: default
       DATASTORE_USER: ${DATASTORE_USER:-hanzo}
       DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
     volumes:
-      - hanzo_datastore_data:/var/lib/datastore
-      - hanzo_datastore_logs:/var/log/datastore
+      - hanzo_datastore_data:/var/lib/hanzo-datastore
+      - hanzo_datastore_logs:/var/log/hanzo-datastore-server
     ports:
       - ${HOST_IP:-127.0.0.1}:${DATASTORE_HTTP_PORT:-8123}:8123
       - ${HOST_IP:-127.0.0.1}:${DATASTORE_NATIVE_PORT:-9000}:9000
