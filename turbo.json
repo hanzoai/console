@@ -18,8 +18,12 @@
     "db:deploy": {},
     "db:reset": {},
     "db:push": {},
-    "db:seed": {},
-    "db:seed:examples": {},
+    "db:seed": {
+      "dependsOn": ["^build"]
+    },
+    "db:seed:examples": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true,

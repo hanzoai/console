@@ -244,8 +244,7 @@ jobs:
           docker compose version
       - name: Run dev containers
         run: |
-          docker compose -f docker-compose.dev.yml up -d
-          sleep 5 # Wait for PostgreSQL to accept connections
+          docker compose -f docker-compose.dev.yml up -d --wait
           docker compose ps
         env:
           POSTGRES_VERSION: ${{ matrix.postgres-version }}
@@ -363,8 +362,7 @@ jobs:
           docker compose version
       - name: Run dev containers
         run: |
-          docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d
-          sleep 5 # Wait for PostgreSQL to accept connections
+          docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d --wait
           docker compose ps
         env:
           POSTGRES_VERSION: ${{ matrix.postgres-version }}
@@ -459,8 +457,7 @@ jobs:
           docker compose version
       - name: Run + migrate
         run: |
-          docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d
-          sleep 5 # Wait for PostgreSQL to accept connections
+          docker compose -f docker-compose.dev${{ matrix.deploy-mode }}.yml up -d --wait
           docker compose ps
       - name: Ensure no unhealthy status
         run: |
@@ -531,8 +528,7 @@ jobs:
           cp .env.dev.example worker/.env
       - name: Run + migrate
         run: |
-          docker compose -f docker-compose.dev.yml up -d
-          sleep 5 # Wait for PostgreSQL to accept connections
+          docker compose -f docker-compose.dev.yml up -d --wait
           docker compose ps
         env:
           POSTGRES_VERSION: 15
@@ -628,9 +624,8 @@ jobs:
           docker compose version
       - name: Run + migrate
         run: |
-          docker compose -f docker-compose.dev.yml up -d
+          docker compose -f docker-compose.dev.yml up -d --wait
           docker compose ps
-          sleep 5 # Wait for PostgreSQL to accept connections
       - name: Ensure Docker dependencies are healthy
         run: |
           if docker compose ps | grep "(unhealthy)"; then
@@ -697,9 +692,8 @@ jobs:
           docker compose version
       - name: Run + migrate
         run: |
-          docker compose -f docker-compose.dev.yml up -d
+          docker compose -f docker-compose.dev.yml up -d --wait
           docker compose ps
-          sleep 5 # Wait for PostgreSQL to accept connections
       - name: Ensure Docker dependencies are healthy
         run: |
           if docker compose ps | grep "(unhealthy)"; then
