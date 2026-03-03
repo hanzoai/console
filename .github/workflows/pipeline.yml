@@ -251,11 +251,15 @@ jobs:
           pnpm --filter=shared ds:up
       - name: Create datastore-client wrapper (uses running container)
         run: |
-          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore-client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
+          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         run: |
           pnpm --filter=shared ds:dev-tables
+      - name: Verify Dev Tables
+        run: |
+          docker exec hanzo-datastore datastore-client -q "SHOW TABLES" | tee /dev/stderr | grep -q events
       - name: Build
         run: pnpm run build
         env:
@@ -367,12 +371,17 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore-client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
+          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
           pnpm --filter=shared ds:dev-tables
+      - name: Verify Dev Tables
+        if: matrix.deploy-mode == ''
+        run: |
+          docker exec hanzo-datastore datastore-client -q "SHOW TABLES" | tee /dev/stderr | grep -q events
       - name: Build
         run: pnpm run build
         env:
@@ -466,12 +475,17 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore-client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
+          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
           pnpm --filter=shared ds:dev-tables
+      - name: Verify Dev Tables
+        if: matrix.deploy-mode == ''
+        run: |
+          docker exec hanzo-datastore datastore-client -q "SHOW TABLES" | tee /dev/stderr | grep -q events
       - name: Build
         run: pnpm --filter=worker... run build
       - name: run tests
