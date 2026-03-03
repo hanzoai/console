@@ -185,9 +185,9 @@ jobs:
         postgres-version: [15]
     steps:
       - uses: actions/checkout@v4
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - uses: pnpm/action-setup@v3
@@ -302,9 +302,9 @@ jobs:
         shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - uses: pnpm/action-setup@v3
@@ -437,9 +437,9 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - name: Load default env
@@ -519,9 +519,9 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - name: Load default env
@@ -611,9 +611,9 @@ jobs:
         run: |
           cp .env.dev.example .env
           cp .env.dev.example web/.env
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - name: Ensure Docker Compose plugin
@@ -677,9 +677,9 @@ jobs:
       - name: install dependencies
         run: |
           pnpm install
-      - name: Install golang-migrate for Datastore migrations
+      - name: Install golang-migrate with Datastore driver
         run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          curl -L https://github.com/hanzoai/migrate/releases/download/v4.19.2/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
       - name: Load default env

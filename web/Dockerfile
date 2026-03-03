@@ -7,6 +7,13 @@ RUN apk update && apk upgrade --no-cache libcrypto3 libssl3 libc6-compat busybox
 
 
 
+# Build golang-migrate with Hanzo Datastore driver support
+FROM golang:1.24-alpine AS migrate-builder
+RUN apk add --no-cache git
+RUN git clone --depth 1 --branch v4.19.2 https://github.com/hanzoai/migrate.git /src
+WORKDIR /src
+RUN CGO_ENABLED=0 go build -tags 'clickhouse datastore file' -ldflags='-s -w' -o /usr/local/bin/migrate ./cmd/migrate
+
 FROM alpine AS base
 RUN npm install turbo@^2.8.10 --global
 ENV PNPM_HOME="/pnpm"
@@ -136,9 +143,7 @@ RUN if [ -n "$NEXT_PUBLIC_HANZO_CLOUD_REGION" ]; then \
     npm install --no-package-lock --no-save dd-trace@5.65.0; \
     fi
 
-RUN MIGRATE_TARGET_ARCH=$(echo ${TARGETPLATFORM:-linux/amd64} | sed 's/\//-/g') && \
-    wget -q -O- https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.$MIGRATE_TARGET_ARCH.tar.gz | tar xvz && \
-    mv migrate /usr/bin/migrate
+COPY --from=migrate-builder /usr/local/bin/migrate /usr/bin/migrate
 
 COPY --from=builder --chown=nextjs:nodejs /app/web/next.config.mjs .
 COPY --from=builder --chown=nextjs:nodejs /app/web/package.json .
