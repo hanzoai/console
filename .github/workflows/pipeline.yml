@@ -256,7 +256,7 @@ jobs:
         run: |
           ARCH="amd64"
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
+          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
       - name: Setup Dev Tables
@@ -375,7 +375,7 @@ jobs:
         run: |
           ARCH="amd64"
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
+          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
       - name: Setup Dev Tables
@@ -477,7 +477,7 @@ jobs:
         run: |
           ARCH="amd64"
           UPSTREAM_PKG_URL="${DS_PKG_BASE}/datastore-common-static_${DS_VERSION}_${ARCH}.deb"
-          wget "${UPSTREAM_PKG_URL}" -O datastore-client.deb
+          curl -fsSL "${UPSTREAM_PKG_URL}" -o datastore-client.deb
           dpkg-deb -x datastore-client.deb ds_client_dir
           sudo cp ds_client_dir/usr/bin/* /usr/local/bin/datastore-client
       - name: Setup Dev Tables
