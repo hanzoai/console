@@ -251,7 +251,7 @@ jobs:
           pnpm --filter=shared ds:up
       - name: Create datastore-client wrapper (uses running container)
         run: |
-          printf '#!/bin/sh\nexec docker exec hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         run: |
@@ -367,7 +367,7 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/sh\nexec docker exec hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
@@ -466,7 +466,7 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/sh\nexec docker exec hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/sh\nexec docker exec -i hanzo-datastore datastore "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
