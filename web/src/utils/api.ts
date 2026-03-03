@@ -149,7 +149,11 @@ const buildIdLink = (): TRPCLink<AppRouter> => () => {
 
 const shouldSilenceError = (meta: Record<string, unknown>, error: Error): boolean => {
   if (Array.isArray(meta?.silentHttpCodes)) {
-    return error instanceof TRPCClientError && meta.silentHttpCodes.includes(error.data.httpStatus);
+    return (
+      error instanceof TRPCClientError &&
+      typeof error.data?.httpStatus === "number" &&
+      meta.silentHttpCodes.includes(error.data?.httpStatus)
+    );
   }
 
   return false;
