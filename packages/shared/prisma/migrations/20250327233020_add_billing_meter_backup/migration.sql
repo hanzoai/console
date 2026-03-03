@@ -95,8 +95,8 @@ DROP TABLE "stripe_subscriptions";
 -- DropTable
 DROP TABLE "subscriptions";
 
--- CreateTable
-CREATE TABLE "blob_storage_integrations" (
+-- CreateTable (idempotent - table may already exist from 20250324110557_add_blobstorage_integration_table)
+CREATE TABLE IF NOT EXISTS "blob_storage_integrations" (
     "project_id" TEXT NOT NULL,
     "type" "BlobStorageIntegrationType" NOT NULL,
     "bucket_name" TEXT NOT NULL,
@@ -127,5 +127,8 @@ CREATE TABLE "sso_configs" (
     CONSTRAINT "sso_configs_pkey" PRIMARY KEY ("domain")
 );
 
--- AddForeignKey
-ALTER TABLE "blob_storage_integrations" ADD CONSTRAINT "blob_storage_integrations_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (idempotent - constraint may already exist from 20250324110557_add_blobstorage_integration_table)
+DO $$ BEGIN
+  ALTER TABLE "blob_storage_integrations" ADD CONSTRAINT "blob_storage_integrations_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
