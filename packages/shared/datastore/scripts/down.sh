@@ -28,14 +28,12 @@ if [ -z "${DATASTORE_CLUSTER_NAME}" ]; then
     export DATASTORE_CLUSTER_NAME="default"
 fi
 
-# Construct the database URL
+# Construct the database URL (uses native datastore:// driver from hanzoai/migrate)
 if [ "$DATASTORE_CLUSTER_ENABLED" == "false" ] ; then
   if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
-      MIGRATION_HOST="${DATASTORE_MIGRATION_URL#*://}"
-  DATABASE_URL="clickhouse://${MIGRATION_HOST}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-migrations-table-engine=MergeTree"
   else
-      MIGRATION_HOST="${DATASTORE_MIGRATION_URL#*://}"
-  DATABASE_URL="clickhouse://${MIGRATION_HOST}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
   fi
 
   # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.
@@ -46,11 +44,9 @@ if [ "$DATASTORE_CLUSTER_ENABLED" == "false" ] ; then
   fi
 else
   if [ "$DATASTORE_MIGRATION_SSL" = true ] ; then
-      MIGRATION_HOST="${DATASTORE_MIGRATION_URL#*://}"
-  DATABASE_URL="clickhouse://${MIGRATION_HOST}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&secure=true&skip_verify=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   else
-      MIGRATION_HOST="${DATASTORE_MIGRATION_URL#*://}"
-  DATABASE_URL="clickhouse://${MIGRATION_HOST}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
+      DATABASE_URL="${DATASTORE_MIGRATION_URL}?username=${DATASTORE_USER}&password=${DATASTORE_PASSWORD}&database=${DATASTORE_DB}&x-multi-statement=true&x-cluster-name=${DATASTORE_CLUSTER_NAME}&x-migrations-table-engine=ReplicatedMergeTree"
   fi
 
   # If SKIP_CONFIRM is set, automatically answer the confirmation prompt. Otherwise run interactively.
