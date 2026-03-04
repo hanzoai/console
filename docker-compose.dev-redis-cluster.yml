@@ -35,7 +35,7 @@ services:
       start_period: 1s
 
   postgres:
-    image: docker.io/postgres:${POSTGRES_VERSION:-17}
+    image: ghcr.io/hanzoai/sql:18-alpine
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]

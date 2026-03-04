@@ -185,7 +185,7 @@ jobs:
     strategy:
       matrix:
         node-version: [24]
-        postgres-version: [15]
+        postgres-version: [18]
     steps:
       - uses: actions/checkout@v4
       - name: Install golang-migrate with Datastore driver
@@ -314,7 +314,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [24]
-        postgres-version: [15]
+        postgres-version: [18]
         deploy-mode: [""]
         shard: [1, 2, 3]
     steps:
@@ -440,7 +440,7 @@ jobs:
     strategy:
       matrix:
         node-version: [24]
-        postgres-version: [15]
+        postgres-version: [18]
         deploy-mode: [""]
     steps:
       - uses: actions/checkout@v4
@@ -537,7 +537,7 @@ jobs:
     needs:
       - pre-job
     if: startsWith(github.ref, 'refs/tags/') || (needs.pre-job.outputs.should_skip != 'true' && (needs.pre-job.outputs.llm_connections_changed == 'true' || github.event_name == 'workflow_dispatch'))
-    name: test-worker-llm-connections (node24, pg15)
+    name: test-worker-llm-connections (node24, pg18)
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -574,7 +574,7 @@ jobs:
           docker compose -f docker-compose.dev.yml up -d --wait
           docker compose ps
         env:
-          POSTGRES_VERSION: 15
+          POSTGRES_VERSION: 18
       - name: Ensure no unhealthy status
         run: |
           if docker compose ps | grep "(unhealthy)"; then

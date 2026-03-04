@@ -132,7 +132,7 @@ services:
       start_period: 1s
 
   redis:
-    image: docker.io/redis:7
+    image: ghcr.io/hanzoai/kv:latest
     restart: always
     # CHANGEME: row below to secure redis password
     command: >
@@ -147,7 +147,7 @@ services:
       retries: 10
 
   postgres:
-    image: docker.io/postgres:${POSTGRES_VERSION:-17}
+    image: ghcr.io/hanzoai/sql:18-alpine
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]

@@ -49,7 +49,7 @@ services:
       - default
 
   redis:
-    image: docker.io/redis:7.2.4
+    image: ghcr.io/hanzoai/kv:latest
     container_name: ${REDIS_CONTAINER_NAME:-hanzo-redis}
     restart: always
     command: >
@@ -66,7 +66,7 @@ services:
       - default
 
   postgres:
-    image: docker.io/postgres:${POSTGRES_VERSION:-17}
+    image: ghcr.io/hanzoai/sql:18-alpine
     container_name: ${POSTGRES_CONTAINER_NAME:-hanzo-postgres}
     restart: always
     healthcheck:

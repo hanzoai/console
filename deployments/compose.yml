@@ -212,7 +212,7 @@ services:
     build:
       context: images
       dockerfile: Dockerfile.redis
-    image: ghcr.io/hanzoai/redis:7
+    image: ghcr.io/hanzoai/kv:latest
     restart: always
     command: >
       --requirepass ${REDIS_AUTH:?REDIS_AUTH required}
