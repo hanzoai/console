@@ -59,12 +59,12 @@ services:
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
     restart: always
     healthcheck:
-      # node:24-alpine does not include curl; use wget (BusyBox)
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/api/public/health"]
+      # Use node http module — curl/wget may be absent or broken in node:24-alpine
+      test: ["CMD", "node", "-e", "const h=require('http');h.get('http://localhost:3000/api/public/health',{timeout:5000},r=>{r.resume();process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
       interval: 10s
       timeout: 10s
       retries: 18
-      start_period: 30s
+      start_period: 60s
 
   hanzo-worker:
     build:
@@ -79,12 +79,12 @@ services:
       <<: *hanzo-web-env
     restart: always
     healthcheck:
-      # node:24-alpine does not include curl; use wget (BusyBox)
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3030/api/health"]
+      # Use node http module — curl/wget may be absent or broken in node:24-alpine
+      test: ["CMD", "node", "-e", "const h=require('http');h.get('http://localhost:3030/api/health',{timeout:5000},r=>{r.resume();process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
       interval: 10s
       timeout: 10s
       retries: 18
-      start_period: 30s
+      start_period: 60s
 
   datastore:
     image: ghcr.io/hanzoai/datastore:26
