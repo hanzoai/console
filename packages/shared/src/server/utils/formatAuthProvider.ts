@@ -65,7 +65,7 @@ export function formatAuthProviderName(provider: string): string {
     workos: "WorkOS",
     wordpress: "WordPress",
     custom: "Custom SSO",
-    iam: "Hanzo IAM",
+    "hanzo-iam": "Hanzo IAM",
   };
 
   return providerMap[provider] ?? "SSO";
