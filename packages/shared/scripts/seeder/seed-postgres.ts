@@ -53,13 +53,13 @@ async function main() {
     where: { id: seedUserId1 },
     update: {
       name: "Demo User",
-      email: "demo@hanzo.com",
+      email: "demo@hanzo.ai",
       password: await hash("password", 12),
     },
     create: {
       id: seedUserId1,
       name: "Demo User",
-      email: "demo@hanzo.com",
+      email: "demo@hanzo.ai",
       password: await hash("password", 12),
       image: "https://static.hanzo.com/hanzo-dev%2Fexample-avatar.png",
     },

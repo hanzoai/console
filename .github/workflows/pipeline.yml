@@ -286,7 +286,7 @@ jobs:
           INIT_PROJECT_NAME: "Seed Project"
           INIT_PROJECT_PUBLIC_KEY: "pk-hz-1234567890"
           INIT_PROJECT_SECRET_KEY: "sk-hz-1234567890"
-          INIT_USER_EMAIL: "demo@hanzo.com"
+          INIT_USER_EMAIL: "demo@hanzo.ai"
           INIT_USER_NAME: "Demo User"
           INIT_USER_PASSWORD: "password"
       - name: run test-sync
@@ -414,7 +414,7 @@ jobs:
           INIT_PROJECT_NAME: "Seed Project"
           INIT_PROJECT_PUBLIC_KEY: "pk-hz-1234567890"
           INIT_PROJECT_SECRET_KEY: "sk-hz-1234567890"
-          INIT_USER_EMAIL: "demo@hanzo.com"
+          INIT_USER_EMAIL: "demo@hanzo.ai"
           INIT_USER_NAME: "Demo User"
           INIT_USER_PASSWORD: "password"
       - name: run tests
