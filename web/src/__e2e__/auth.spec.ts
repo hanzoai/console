@@ -90,9 +90,13 @@ test("Unauthenticated user should be redirected to target URL after login", asyn
   // project id and prompt from seed.ts
   const promptUrl = "/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a/prompts/summary-prompt";
 
+  // Wait for the page to fully render before clicking user menu
+  // The user name appears in the sidebar NavUser component
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("button", { name: /Demo User/ })).toBeVisible();
   await page.getByRole("button", { name: /Demo User/ }).click();
 
-  await page.getByRole("menuitem", { name: "Sign Out" }).click();
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
 
   await expect(page).toHaveURL(/\/auth\/sign-in(\?.*)?$/);
 

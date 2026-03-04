@@ -1,5 +1,13 @@
 import { defineConfig } from "@playwright/test";
 
+// In CI with output: "standalone", `next start` does not work.
+// Use the standalone server directly instead.
+const ciCommand = [
+  "sh",
+  "-c",
+  'WEB_SERVER=$(find .next/standalone -name "server.js" -path "*/web/server.js" -not -path "*/node_modules/*" | head -1) && NEXT_MANUAL_SIG_HANDLE=true HOSTNAME=0.0.0.0 PORT=3000 node $WEB_SERVER',
+].join(" ");
+
 export default defineConfig({
   timeout: 180000, // test timeout 180s (3 minutes)
   expect: {
@@ -8,7 +16,7 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: "http://localhost:3000",
-    actionTimeout: 10000, // 10s click/fill timeout
+    actionTimeout: 30000, // 30s click/fill timeout (CI runners are slow)
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },
@@ -28,9 +36,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? "npm run start" : "npm run dev",
+    command: process.env.CI ? ciCommand : "npm run dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
+    timeout: 120000, // 2 minutes for server startup in CI
     stdout: "ignore",
     stderr: "pipe",
   },

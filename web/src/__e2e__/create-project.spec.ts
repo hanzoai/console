@@ -61,8 +61,10 @@ test.describe("Create project", () => {
 
     await expect(page).toHaveURL("/");
 
-    // Start create org flow
-    await page.isVisible('[data-testid="create-organization-btn"]');
+    // Start create org flow — wait for button to be visible after page load
+    await expect(
+      page.locator('[data-testid="create-organization-btn"]'),
+    ).toBeVisible();
     await page.click('[data-testid="create-organization-btn"]');
     await expect(page).toHaveURL("/setup");
 
@@ -82,8 +84,10 @@ test.describe("Create project", () => {
     const organizationId = url.pathname.split("/")[2];
     console.log("organization", organizationId);
 
-    // Skip add new members step
-    await page.isVisible('[data-testid="btn-skip-add-members"]');
+    // Skip add new members step — wait for button to be visible
+    await expect(
+      page.locator('[data-testid="btn-skip-add-members"]'),
+    ).toBeVisible();
     await page.click('[data-testid="btn-skip-add-members"]');
     expect(page.url()).toContain(
       "/organization/" + organizationId + "/setup?orgstep=create-project",
@@ -173,9 +177,9 @@ const signin = async (page: Page) => {
 };
 
 const checkPageHeaderTitle = async (page: Page, title: string) => {
-  const pageHeaderTitle = await page
-    .locator('[data-testid="page-header-title"]')
-    .textContent();
+  const headerLocator = page.locator('[data-testid="page-header-title"]');
+  await expect(headerLocator).toBeVisible();
+  const pageHeaderTitle = await headerLocator.textContent();
   expect(pageHeaderTitle).toContain(title);
 };
 

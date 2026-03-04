@@ -56,7 +56,7 @@ const nextConfig = {
   // Allow building to alternate directory for parallel build checks while dev server runs
   distDir: process.env.NEXT_DIST_DIR || ".next",
   staticPageGenerationTimeout: 500, // default is 60. Required for build process for amd
-  transpilePackages: ["@hanzo/shared", "@hanzo/iam", "vis-network/standalone"],
+  transpilePackages: ["@hanzo/shared", "@hanzo/iam", "@hanzo/ui", "vis-network/standalone"],
   reactStrictMode: true,
   serverExternalPackages: [
     "dd-trace",

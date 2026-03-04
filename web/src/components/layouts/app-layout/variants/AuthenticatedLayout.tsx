@@ -16,7 +16,8 @@ import type { Session } from "next-auth";
 import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
 import type { RouteGroup } from "@/src/components/layouts/routes";
 import dynamic from "next/dynamic";
-import { HanzoHeader, useHanzoAuth } from "@hanzo/ui/navigation";
+// Re-export wrapper that bypasses webpack CJS static analysis issue
+import { HanzoHeader, useHanzoAuth } from "@/src/components/nav/hanzo-header";
 
 const CommandMenu = dynamic(
   () =>

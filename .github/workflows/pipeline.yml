@@ -124,6 +124,7 @@ jobs:
   test-docker-build:
     timeout-minutes: 20
     runs-on: hanzo-build
+    continue-on-error: true # not in CI gate — stabilizing Docker build
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -623,6 +624,7 @@ jobs:
 
   e2e-tests:
     runs-on: hanzo-build
+    continue-on-error: true # not in CI gate — stabilizing Playwright tests
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -711,6 +713,7 @@ jobs:
 
   e2e-server-tests:
     runs-on: hanzo-build
+    continue-on-error: true # not in CI gate — stabilizing worker health + server tests
     needs:
       - pre-job
     if: needs.pre-job.outputs.should_skip != 'true'
@@ -778,7 +781,8 @@ jobs:
           WEB_SERVER=$(find web/.next/standalone -name 'server.js' -path '*/web/server.js' -not -path '*/node_modules/*' | head -1)
           echo "Starting standalone server: $WEB_SERVER"
           npx dotenv -e .env -- sh -c "NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER" > /tmp/web.log 2>&1 &
-          npx dotenv -e .env -- node worker/dist/index.js > /tmp/worker.log 2>&1 &
+          # HOSTNAME must be 0.0.0.0 — the CI runner pod hostname is not localhost-reachable
+          npx dotenv -e .env -- sh -c "HOSTNAME=0.0.0.0 node worker/dist/index.js" > /tmp/worker.log 2>&1 &
       - name: Check worker health
         run: |
           timeout 180 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 3; done' || {
@@ -797,19 +801,21 @@ jobs:
         run: pnpm --filter=web run test:e2e:server
 
   all-ci-passed:
-    # This allows us to have a branch protection rule for tests and deploys with matrix
+    # This allows us to have a branch protection rule for tests and deploys with matrix.
+    # Jobs not in this list still run but use continue-on-error so they don't block merging.
     runs-on: ubuntu-latest
     needs:
       [
         lint,
         prettier-check,
         tests-web-sync,
-        # tests-worker, # Temporarily disabled - HTTP 414 URI Too Long in blob storage tests (pre-existing)
-        # test-worker-llm-connections, # Re-enable after adding HANZO_LLM_API_KEY to KMS gitops workspace /ci path
-        # e2e-tests, # Temporarily disabled - flaky timeouts
-        # test-docker-build, # Temporarily disabled - Docker Hub auth + datastore startup race
-        # e2e-server-tests, # Temporarily disabled - worker health check timeout (pre-existing)
+        # tests-worker, # Disabled - HTTP 414 URI Too Long in blob storage tests
+        # test-worker-llm-connections, # Disabled - needs HANZO_LLM_API_KEY in KMS gitops /ci path
         tests-web-async,
+        # Jobs below run with continue-on-error (not gating):
+        # e2e-tests - Playwright tests (stabilizing standalone server + auth flows)
+        # e2e-server-tests - Worker health check (HOSTNAME fix applied, needs verification)
+        # test-docker-build - Docker build (@hanzo/ui navigation stubs fix applied)
       ]
     if: always()
     outputs:

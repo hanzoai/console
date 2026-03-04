@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Route } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 // ---------------------------------------------------------------------------
 // Mock data matching Bot, BotLogEntry, BotInvoice types
@@ -137,85 +137,6 @@ const MOCK_BALANCE = {
 
 const PROJECT_ID = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
 
-const MOCK_SESSION = {
-  user: {
-    id: "demo-user-id",
-    name: "Demo User",
-    email: "demo@hanzo.ai",
-    image: null,
-    admin: true,
-    canCreateOrganizations: true,
-    organizations: [
-      {
-        id: "seed-org-id",
-        name: "Test Organization",
-        role: "OWNER",
-        plan: "cloud:free",
-        cloudConfig: null,
-        projects: [
-          {
-            id: PROJECT_ID,
-            role: "ADMIN",
-            retentionDays: 30,
-            deletedAt: null,
-            name: "Test Project",
-          },
-        ],
-      },
-    ],
-    featureFlags: {
-      excludeDatastoreRead: false,
-      templateFlag: true,
-    },
-  },
-  expires: "2099-12-31T23:59:59.999Z",
-  environment: {
-    selfHostedInstancePlan: undefined,
-    disableExternalAuth: false,
-    defaultTableDateTimeOffset: undefined,
-  },
-};
-
-// ---------------------------------------------------------------------------
-// Auth bypass — mock session and intercept auth API routes
-// ---------------------------------------------------------------------------
-
-async function bypassAuth(page: Page) {
-  await page.context().addCookies([
-    {
-      name: "next-auth.session-token",
-      value: "mock-e2e-session-token",
-      url: "http://localhost:3000",
-      httpOnly: true,
-      sameSite: "Lax",
-    },
-  ]);
-
-  await page.route("**/api/auth/session", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify(MOCK_SESSION),
-    });
-  });
-
-  await page.route("**/api/auth/csrf", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ csrfToken: "mock-csrf-token" }),
-    });
-  });
-
-  await page.route("**/api/auth/providers", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ credentials: { id: "credentials", name: "Credentials" } }),
-    });
-  });
-}
-
 // ---------------------------------------------------------------------------
 // Unified tRPC mock — handles ALL tRPC calls in a single route handler.
 // Bot procedures return mock data; everything else returns null.
@@ -247,16 +168,23 @@ const BOT_HANDLERS: Record<string, (input: any) => unknown> = {
   "bots.listSecrets": () => ({ secrets: [] }),
 };
 
-async function setupAllTrpcMocks(page: Page, overrides?: Record<string, (input: any) => unknown>) {
+async function setupBotTrpcMocks(page: Page, overrides?: Record<string, (input: any) => unknown>) {
   const handlers = { ...BOT_HANDLERS, ...overrides };
 
   await page.route("**/api/trpc/**", async (route) => {
     const url = new URL(route.request().url());
     const pathAfterTrpc = url.pathname.split("/api/trpc/")[1];
-    if (!pathAfterTrpc) return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+    if (!pathAfterTrpc) return route.continue();
 
     const isBatch = url.searchParams.has("batch");
     const procedures = isBatch ? pathAfterTrpc.split(",") : [pathAfterTrpc];
+
+    // Only intercept if ALL procedures in the batch have handlers.
+    // If any procedure is unknown, let the entire request pass through to the real server.
+    const allHandled = procedures.every((proc) => proc in handlers);
+    if (!allHandled) {
+      return route.continue();
+    }
 
     const inputParam = url.searchParams.get("input");
     let parsedInputs: Record<string, any> = {};
@@ -267,12 +195,8 @@ async function setupAllTrpcMocks(page: Page, overrides?: Record<string, (input: 
     }
 
     const results = procedures.map((proc, idx) => {
-      const handler = handlers[proc];
-      if (!handler) {
-        return { result: { data: { json: null } } };
-      }
+      const handler = handlers[proc]!;
       try {
-        // For batch: input keyed by index. For single: input at root or "0".
         const input = isBatch
           ? parsedInputs?.[String(idx)]?.json
           : (parsedInputs?.["0"]?.json ?? parsedInputs?.json ?? parsedInputs);
@@ -282,7 +206,6 @@ async function setupAllTrpcMocks(page: Page, overrides?: Record<string, (input: 
       }
     });
 
-    // Non-batched (httpLink): return single object. Batched: return array.
     const body = isBatch ? JSON.stringify(results) : JSON.stringify(results[0]);
 
     await route.fulfill({
@@ -301,19 +224,22 @@ const SCREENSHOTS_DIR = "test-results/screenshots/bots";
 const BOTS_URL = `/project/${PROJECT_ID}/bots`;
 
 /**
- * Navigate to the bots page, bypassing auth and mocking all API calls.
+ * Sign in via the real login form, then navigate to the bots page with tRPC mocks.
+ * Server-side middleware validates session cookies so we must do a real sign-in
+ * rather than injecting mock cookies (which the middleware won't recognize).
  */
 async function gotoBots(page: Page, trpcOverrides?: Record<string, (input: any) => unknown>) {
-  await bypassAuth(page);
-  await setupAllTrpcMocks(page, trpcOverrides);
+  // Sign in via the actual form
+  await page.goto("/auth/sign-in");
+  await page.fill('input[name="email"]', "demo@hanzo.ai");
+  await page.fill('input[type="password"]', "password");
+  await page.click('button[data-testid="submit-email-password-sign-in-form"]');
+  await page.waitForTimeout(2000);
 
-  await page.goto(BOTS_URL);
+  // Set up tRPC mocks for bot-specific API calls after auth is established
+  await setupBotTrpcMocks(page, trpcOverrides);
 
-  // If server-side middleware redirected, re-navigate (mocks are set)
-  if (page.url().includes("/auth/sign-in")) {
-    await page.goto(BOTS_URL, { waitUntil: "domcontentloaded" });
-  }
-
+  await page.goto(BOTS_URL, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
 }
 
