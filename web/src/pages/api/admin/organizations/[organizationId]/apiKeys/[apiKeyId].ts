@@ -1,4 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
+import { prisma } from "@hanzo/shared/src/db";
 import { logger } from "@hanzo/shared/src/server";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
@@ -31,7 +32,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: "Invalid request parameters" });
     }
 
-    res.status(501).json({ error: "Not implemented" });
+    // Verify organization exists
+    const org = await prisma.organization.findUnique({
+      where: { id: organizationId },
+    });
+
+    if (!org) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    // Find the API key belonging to this organization
+    const apiKey = await prisma.apiKey.findFirst({
+      where: { id: apiKeyId, orgId: organizationId },
+    });
+
+    if (!apiKey) {
+      return res.status(404).json({ error: "API key not found" });
+    }
+
+    await prisma.apiKey.delete({
+      where: { id: apiKeyId },
+    });
+
+    return res.status(200).json({ success: true });
   } catch (e) {
     logger.error("Failed to process organization API key request", e);
     res.status(500).json({ error: "Internal server error" });

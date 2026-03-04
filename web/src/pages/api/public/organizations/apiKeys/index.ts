@@ -42,9 +42,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Route to the handler
   try {
-    return res.status(501).json({ error: "Not implemented" });
+    const apiKeys = await prisma.apiKey.findMany({
+      where: {
+        orgId: authCheck.scope.orgId,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        expiresAt: true,
+        lastUsedAt: true,
+        note: true,
+        publicKey: true,
+        displaySecretKey: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return res.status(200).json({
+      apiKeys: apiKeys.map((key) => ({
+        id: key.id,
+        createdAt: key.createdAt.toISOString(),
+        expiresAt: key.expiresAt?.toISOString() ?? null,
+        lastUsedAt: key.lastUsedAt?.toISOString() ?? null,
+        note: key.note,
+        publicKey: key.publicKey,
+        displaySecretKey: key.displaySecretKey,
+      })),
+    });
   } catch (error) {
     logger.error(`Error handling organization API keys for ${req.method}`, error);
     return res.status(500).json({

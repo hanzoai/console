@@ -30,8 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      // Do not apply rate limits as it can break applications on lower tier plans when using auth_check in prod
-
       const projects = await prisma.project.findMany({
         select: {
           id: true,
@@ -60,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             name: project.organization.name,
           },
           metadata: project.metadata ?? {},
-          ...(project.retentionDays // Do not add if null or 0
+          ...(project.retentionDays
             ? { retentionDays: project.retentionDays }
             : {}),
         })),
@@ -90,6 +88,58 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    return res.status(501).json({ error: "Not implemented" });
+    try {
+      const { name, metadata, retention } = req.body ?? {};
+
+      // Validate name
+      if (!name || typeof name !== "string" || name.length < 3 || name.length > 60) {
+        return res.status(400).json({
+          message: "Invalid project name. Name must be between 3 and 60 characters.",
+        });
+      }
+
+      // Validate retention
+      if (retention !== undefined && retention !== null) {
+        if (typeof retention !== "number" || (retention !== 0 && retention < 3)) {
+          return res.status(400).json({
+            message: "Invalid retention value. Must be 0 or >= 3.",
+          });
+        }
+      }
+
+      // Check for duplicate name in organization
+      const existing = await prisma.project.findFirst({
+        where: {
+          name,
+          orgId: authCheck.scope.orgId,
+          deletedAt: null,
+        },
+      });
+
+      if (existing) {
+        return res.status(409).json({
+          message: `Project with name "${name}" already exists in this organization.`,
+        });
+      }
+
+      const project = await prisma.project.create({
+        data: {
+          name,
+          orgId: authCheck.scope.orgId,
+          metadata: metadata ?? undefined,
+          retentionDays: retention ?? null,
+        },
+      });
+
+      return res.status(201).json({
+        id: project.id,
+        name: project.name,
+        metadata: project.metadata ?? {},
+        ...(project.retentionDays ? { retentionDays: project.retentionDays } : {}),
+      });
+    } catch (error) {
+      logger.error(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 }

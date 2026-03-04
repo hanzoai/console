@@ -61,5 +61,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  return res.status(501).json({ error: "Not implemented" });
+  try {
+    if (req.method === "PUT") {
+      const { name, metadata, retention } = req.body ?? {};
+
+      // Validate name if provided
+      if (name !== undefined && (typeof name !== "string" || name.length < 3 || name.length > 60)) {
+        return res.status(400).json({
+          message: "Invalid project name. Name must be between 3 and 60 characters.",
+        });
+      }
+
+      // Validate retention if provided
+      if (retention !== undefined && retention !== null) {
+        if (typeof retention !== "number" || (retention !== 0 && retention < 3)) {
+          return res.status(400).json({
+            message: "Invalid retention value. Must be 0 or >= 3.",
+          });
+        }
+      }
+
+      const updated = await prisma.project.update({
+        where: { id: projectId },
+        data: {
+          ...(name !== undefined ? { name } : {}),
+          ...(metadata !== undefined ? { metadata } : {}),
+          ...(retention !== undefined ? { retentionDays: retention } : {}),
+        },
+      });
+
+      return res.status(200).json({
+        id: updated.id,
+        name: updated.name,
+        metadata: updated.metadata ?? {},
+        ...(updated.retentionDays ? { retentionDays: updated.retentionDays } : {}),
+      });
+    }
+
+    if (req.method === "DELETE") {
+      // Soft delete
+      await prisma.project.update({
+        where: { id: projectId },
+        data: { deletedAt: new Date() },
+      });
+
+      return res.status(202).json({
+        success: true,
+        message: "Project deletion is being processed asynchronously.",
+      });
+    }
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 }

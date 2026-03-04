@@ -59,8 +59,7 @@ const ApiKeyListSchema = z.object({
   ),
 });
 
-// All /api/admin/organizations endpoints return 501 Not Implemented
-describe.skip("Admin Organizations API", () => {
+describe("Admin Organizations API", () => {
   const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
 
   describe("POST /api/admin/organizations", () => {
@@ -788,8 +787,7 @@ const OrganizationProjectsListSchema = z.object({
   projects: z.array(OrganizationProjectSchema),
 });
 
-// All /api/public/organizations/* endpoints return 501 Not Implemented
-describe.skip("Public Organizations API", () => {
+describe("Public Organizations API", () => {
   // Create test data
   let testOrgId: string;
   let testProject1Id: string;

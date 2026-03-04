@@ -63,11 +63,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
+  const orgId = authCheck.scope.orgId;
+
   // Verify the project belongs to the organization
   const project = await prisma.project.findFirst({
     where: {
       id: projectId,
-      orgId: authCheck.scope.orgId,
+      orgId,
       deletedAt: null,
     },
   });
@@ -78,9 +80,91 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Route to the appropriate handler based on HTTP method
   try {
-    return res.status(501).json({ error: "Not implemented" });
+    if (req.method === "GET") {
+      const memberships = await prisma.projectMembership.findMany({
+        where: { projectId },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        memberships: memberships.map((m) => ({
+          userId: m.userId,
+          role: m.role,
+          email: m.user.email!,
+          name: m.user.name,
+        })),
+      });
+    }
+
+    if (req.method === "PUT") {
+      const { userId, role } = req.body ?? {};
+
+      if (!userId || !role) {
+        return res.status(400).json({ error: "userId and role are required" });
+      }
+
+      // Verify user has an organization membership
+      const orgMembership = await prisma.organizationMembership.findUnique({
+        where: {
+          orgId_userId: { orgId, userId },
+        },
+      });
+
+      if (!orgMembership) {
+        return res.status(404).json({
+          error: "User is not a member of the organization",
+        });
+      }
+
+      const membership = await prisma.projectMembership.upsert({
+        where: {
+          projectId_userId: { projectId, userId },
+        },
+        update: { role },
+        create: {
+          projectId,
+          userId,
+          role,
+          orgMembershipId: orgMembership.id,
+        },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        userId: membership.userId,
+        role: membership.role,
+        email: membership.user.email!,
+        name: membership.user.name,
+      });
+    }
+
+    if (req.method === "DELETE") {
+      const { userId } = req.body ?? {};
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      await prisma.projectMembership.delete({
+        where: {
+          projectId_userId: { projectId, userId },
+        },
+      });
+
+      return res.status(200).json({
+        message: "Project membership deleted successfully",
+        userId,
+      });
+    }
   } catch (error) {
     logger.error(`Error handling project memberships for ${req.method} on project ${projectId}`, error);
     return res.status(500).json({
