@@ -17,6 +17,8 @@ services:
     ports:
       - "3000:3000"
     environment: &hanzo-web-env
+      # Bind to all interfaces so health checks via localhost work in containers
+      HOSTNAME: "0.0.0.0"
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-mysecret}
       SALT: ${SALT:-mysalt}
