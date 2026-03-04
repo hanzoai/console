@@ -420,17 +420,25 @@ describe("/api/public/prompts API Endpoint", () => {
 
     expect(response.status).toBe(207);
 
-    // Delay to allow for async processing
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const dbGeneration = await getObservationById({
-      id: generationId,
-      projectId,
-    });
+    // Poll for async ingestion to complete (observation may not exist immediately)
+    let dbGeneration: Awaited<ReturnType<typeof getObservationById>> | undefined;
+    const deadline = Date.now() + 10_000; // 10s timeout
+    while (Date.now() < deadline) {
+      try {
+        dbGeneration = await getObservationById({
+          id: generationId,
+          projectId,
+        });
+        if (dbGeneration) break;
+      } catch {
+        // observation not yet available, retry
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
 
     expect(dbGeneration?.id).toBe(generationId);
     expect(dbGeneration?.promptId).toBe(promptId);
-  });
+  }, 15_000);
 
   it("should fail if prompt version is missing", async () => {
     const traceId = v4();

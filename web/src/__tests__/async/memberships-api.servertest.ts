@@ -20,10 +20,7 @@ const MembershipsListSchema = z.object({
   memberships: z.array(MembershipResponseSchema),
 });
 
-// All membership endpoints return 501 Not Implemented:
-// /api/public/projects/[projectId]/memberships (GET, PUT, DELETE)
-// /api/public/organizations/memberships (GET, PUT, DELETE)
-describe.skip("Memberships APIs", () => {
+describe("Memberships APIs", () => {
   // Create test data
   let testOrgId: string;
   let testProjectId: string;

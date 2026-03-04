@@ -478,7 +478,7 @@ describe("Authenticate API calls", () => {
       // Ensure prisma was not called
       expect(mockPrisma.apiKey.findUnique).not.toHaveBeenCalled();
 
-      const cachedKey = await redis.get("api-key:ed6818ada09bdad405a74ac72773dde1708dd3fc6fe8bb81b59927400419d227");
+      const cachedKey = await redis.get("api-key:3a59a2355b705f1daac5f26f75de5dfa35c6162393ab33b0bc6d8ab53afac0c2");
       expect(cachedKey).not.toBeNull();
 
       const parsed = OrgEnrichedApiKey.parse(JSON.parse(cachedKey!));
@@ -526,7 +526,7 @@ describe("Authenticate API calls", () => {
         "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
-      const ttl = await redis.ttl("api-key:ed6818ada09bdad405a74ac72773dde1708dd3fc6fe8bb81b59927400419d227");
+      const ttl = await redis.ttl("api-key:3a59a2355b705f1daac5f26f75de5dfa35c6162393ab33b0bc6d8ab53afac0c2");
 
       expect(ttl).toBeGreaterThan(env.HANZO_CACHE_API_KEY_TTL_SECONDS - 2);
 
@@ -537,7 +537,7 @@ describe("Authenticate API calls", () => {
         "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
-      const ttl2 = await redis.ttl("api-key:ed6818ada09bdad405a74ac72773dde1708dd3fc6fe8bb81b59927400419d227");
+      const ttl2 = await redis.ttl("api-key:3a59a2355b705f1daac5f26f75de5dfa35c6162393ab33b0bc6d8ab53afac0c2");
 
       expect(ttl2).toBeGreaterThan(env.HANZO_CACHE_API_KEY_TTL_SECONDS - 2);
     }, 10000);

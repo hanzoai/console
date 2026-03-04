@@ -47,6 +47,7 @@
     "@ferrucc-io/emoji-picker": "^0.0.47",
     "@hanzo/console": "workspace:*",
     "@hanzo/console-sdk": "npm:langfuse@3.38.4",
+    "@hanzo/iam": "^0.4.1",
     "@hanzo/mq": "npm:bullmq@^5.34.10",
     "@hanzo/shared": "workspace:*",
     "@hanzo/ui": "^5.3.36",

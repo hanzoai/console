@@ -1,76 +1,11 @@
 services:
-  # hanzo-web:
-  #   build:
-  #     dockerfile: ./web/Dockerfile
-  #     context: .
-  #     args:
-  #       - NEXT_PUBLIC_HANZO_CLOUD_REGION=${NEXT_PUBLIC_HANZO_CLOUD_REGION}
-  #   depends_on: &hanzo-depends-on
-  #     postgres:
-  #       condition: service_healthy
-  #     minio:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #     datastore:
-  #       condition: service_healthy
-  #   ports:
-  #     - "3000:3000"
-  #   environment: &hanzo-web-env
-  #     DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
-  #     NEXTAUTH_SECRET: mysecret
-  #     SALT: mysalt
-  #     ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
-  #     NEXTAUTH_URL: http://localhost:3000
-  #     TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
-  #     HANZO_ENABLE_EXPERIMENTAL_FEATURES: ${HANZO_ENABLE_EXPERIMENTAL_FEATURES:-false}
-  #     INIT_ORG_ID: ${INIT_ORG_ID:-}
-  #     INIT_ORG_NAME: ${INIT_ORG_NAME:-}
-  #     INIT_ORG_IDS: ${INIT_ORG_IDS:-}
-  #     INIT_ORG_NAMES: ${INIT_ORG_NAMES:-}
-  #     INIT_PROJECT_ID: ${INIT_PROJECT_ID:-}
-  #     INIT_PROJECT_ORG_ID: ${INIT_PROJECT_ORG_ID:-}
-  #     INIT_PROJECT_NAME: ${INIT_PROJECT_NAME:-}
-  #     INIT_PROJECT_PUBLIC_KEY: ${INIT_PROJECT_PUBLIC_KEY:-}
-  #     INIT_PROJECT_SECRET_KEY: ${INIT_PROJECT_SECRET_KEY:-}
-  #     INIT_USER_EMAIL: ${INIT_USER_EMAIL:-}
-  #     INIT_USER_NAME: ${INIT_USER_NAME:-}
-  #     INIT_USER_PASSWORD: ${INIT_USER_PASSWORD:-}
-  #     DATASTORE_MIGRATION_URL: ${DATASTORE_MIGRATION_URL:-datastore://datastore:9000}
-  #     DATASTORE_URL: ${DATASTORE_URL:-http://datastore:8123}
-  #     DATASTORE_USER: ${DATASTORE_USER:-hanzo}
-  #     DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:-hanzo}
-  #     DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
-  #     S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
-  #     S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-us-east-1}
-  #     S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
-  #     S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  #     S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
-  #     S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
-  #     S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
-  #     REDIS_HOST: ${REDIS_HOST:-redis}
-  #     REDIS_PORT: ${REDIS_PORT:-6379}
-  #     REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
-  #     REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
-  #     REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
-  #     REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
-  #     REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
-  #   restart: always
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/api/public/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-
-  hanzo-worker:
-    image: hanzoai/cloud-worker:3.38.0
-    restart: always
+  hanzo-web:
     build:
-      dockerfile: ./worker/Dockerfile
+      dockerfile: ./web/Dockerfile
       context: .
       args:
         - NEXT_PUBLIC_HANZO_CLOUD_REGION=${NEXT_PUBLIC_HANZO_CLOUD_REGION}
-    depends_on:
+    depends_on: &hanzo-depends-on
       postgres:
         condition: service_healthy
       minio:
@@ -80,10 +15,9 @@ services:
       datastore:
         condition: service_healthy
     ports:
-      - "3030:3030"
-    environment:
-      # <<: *hanzo-web-env
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      - "3000:3000"
+    environment: &hanzo-web-env
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
       NEXTAUTH_SECRET: mysecret
       SALT: mysalt
       ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000000" # generate via `openssl rand -hex 32`
@@ -114,6 +48,13 @@ services:
       S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
       S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
+      S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
+      S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
+      S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+      S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+      S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+      S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
@@ -121,12 +62,34 @@ services:
       REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
       REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
       REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/public/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+    networks:
+      - local-dev
 
+  hanzo-worker:
+    build:
+      dockerfile: ./worker/Dockerfile
+      context: .
+      args:
+        - NEXT_PUBLIC_HANZO_CLOUD_REGION=${NEXT_PUBLIC_HANZO_CLOUD_REGION}
+    depends_on: *hanzo-depends-on
+    ports:
+      - "3030:3030"
+    environment:
+      <<: *hanzo-web-env
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 3
+      retries: 12
+      start_period: 30s
     networks:
       - local-dev
 
@@ -188,8 +151,9 @@ services:
       retries: 10
     networks:
       - local-dev
+
   postgres:
-    image: postgres:${POSTGRES_VERSION:-latest}
+    image: postgres:${POSTGRES_VERSION:-17}
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -216,7 +180,6 @@ volumes:
     driver: local
   hanzo_minio_data:
     driver: local
-
 
 networks:
   local-dev:

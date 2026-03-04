@@ -41,7 +41,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    return res.status(501).json({ error: "Not implemented" });
+    const { projectId, apiKeyId } = req.query;
+    if (!projectId || typeof projectId !== "string" || !apiKeyId || typeof apiKeyId !== "string") {
+      return res.status(400).json({ message: "Invalid request parameters" });
+    }
+
+    // Verify project exists and belongs to the organization
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        orgId: authCheck.scope.orgId,
+        deletedAt: null,
+      },
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found or you don't have access to it",
+      });
+    }
+
+    // Find the API key belonging to this project
+    const apiKey = await prisma.apiKey.findFirst({
+      where: { id: apiKeyId, projectId },
+    });
+
+    if (!apiKey) {
+      return res.status(404).json({ message: "API key not found" });
+    }
+
+    await prisma.apiKey.delete({
+      where: { id: apiKeyId },
+    });
+
+    return res.status(200).json({ success: true });
   } catch (e) {
     logger.error("Failed to process project API key request", e);
     res.status(500).json({ message: "Internal server error" });

@@ -42,9 +42,81 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Route to the appropriate handler based on HTTP method
+  const orgId = authCheck.scope.orgId;
+
   try {
-    return res.status(501).json({ error: "Not implemented" });
+    if (req.method === "GET") {
+      const memberships = await prisma.organizationMembership.findMany({
+        where: { orgId },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        memberships: memberships.map((m) => ({
+          userId: m.userId,
+          role: m.role,
+          email: m.user.email!,
+          name: m.user.name,
+        })),
+      });
+    }
+
+    if (req.method === "PUT") {
+      const { userId, role } = req.body ?? {};
+
+      if (!userId || !role) {
+        return res.status(400).json({ error: "userId and role are required" });
+      }
+
+      // Verify user exists
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const membership = await prisma.organizationMembership.upsert({
+        where: {
+          orgId_userId: { orgId, userId },
+        },
+        update: { role },
+        create: { orgId, userId, role },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        userId: membership.userId,
+        role: membership.role,
+        email: membership.user.email!,
+        name: membership.user.name,
+      });
+    }
+
+    if (req.method === "DELETE") {
+      const { userId } = req.body ?? {};
+
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      await prisma.organizationMembership.delete({
+        where: {
+          orgId_userId: { orgId, userId },
+        },
+      });
+
+      return res.status(200).json({
+        message: "Membership deleted successfully",
+        userId,
+      });
+    }
   } catch (error) {
     logger.error(`Error handling organization memberships for ${req.method}`, error);
     return res.status(500).json({

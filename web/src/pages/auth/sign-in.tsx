@@ -443,7 +443,7 @@ export function SSOButtons({
               loading={providerSigningIn === "hanzo-iam"}
             >
               <Shield className="mr-3" size={18} />
-              Sign in with Hanzo
+              Sign in with IAM
             </Button>
           )}
         </div>

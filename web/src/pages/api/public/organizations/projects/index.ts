@@ -42,9 +42,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  // Route to the appropriate handler based on HTTP method
   try {
-    return res.status(501).json({ error: "Not implemented" });
+    const projects = await prisma.project.findMany({
+      where: {
+        orgId: authCheck.scope.orgId,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        metadata: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return res.status(200).json({
+      projects: projects.map((p) => ({
+        id: p.id,
+        name: p.name,
+        metadata: (p.metadata as Record<string, unknown>) ?? null,
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
+      })),
+    });
   } catch (error) {
     logger.error(`Error handling organization projects for ${req.method}`, error);
     return res.status(500).json({

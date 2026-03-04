@@ -13,18 +13,18 @@ import { JobExecutionStatus } from "@prisma/client";
  * Integration tests for production dependency factories.
  *
  * These tests verify that the production implementations of dependency factories
- * work correctly with real infrastructure (PostgreSQL, MinIO S3).
+ * work correctly with real infrastructure (PostgreSQL, S3).
  *
  * Prerequisites:
  * - Local PostgreSQL running (via docker compose)
- * - Local MinIO running on localhost:9090
+ * - Local S3-compatible storage running on localhost:9090
  */
 describe("Production Dependency Factories Integration Tests", () => {
   let s3StorageService: StorageService;
   const bucketName = env.S3_EVENT_UPLOAD_BUCKET || "hanzo";
-  const minioAccessKeyId = "minio";
-  const minioAccessKeySecret = "miniosecret";
-  const minioEndpoint = "http://localhost:9090";
+  const s3AccessKeyId = "minio";
+  const s3AccessKeySecret = "miniosecret";
+  const s3Endpoint = "http://localhost:9090";
 
   // Track created files for cleanup
   let createdS3Paths: string[] = [];
@@ -32,10 +32,10 @@ describe("Production Dependency Factories Integration Tests", () => {
   beforeAll(async () => {
     // Initialize S3 client for verification and cleanup
     s3StorageService = StorageServiceFactory.getInstance({
-      accessKeyId: minioAccessKeyId,
-      secretAccessKey: minioAccessKeySecret,
+      accessKeyId: s3AccessKeyId,
+      secretAccessKey: s3AccessKeySecret,
       bucketName,
-      endpoint: minioEndpoint,
+      endpoint: s3Endpoint,
       region: "auto",
       forcePathStyle: true,
       useAzureBlob: false,
