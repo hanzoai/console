@@ -16,7 +16,13 @@ function formatOrg(org: {
   name: string;
   createdAt: Date;
   metadata: unknown;
-  projects: { id: string; name: string; metadata: unknown; createdAt: Date; updatedAt: Date }[];
+  projects: {
+    id: string;
+    name: string;
+    metadata: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
 }) {
   return {
     id: org.id,
@@ -33,7 +39,10 @@ function formatOrg(org: {
   };
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     if (req.method !== "POST" && req.method !== "GET") {
       res.status(405).json({ error: "Method Not Allowed" });
@@ -58,7 +67,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "POST") {
       const parsed = CreateOrganizationSchema.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ error: "Invalid request body: " + parsed.error.message });
+        return res
+          .status(400)
+          .json({ error: "Invalid request body: " + parsed.error.message });
       }
 
       const org = await prisma.organization.create({
@@ -69,7 +80,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         include: {
           projects: {
             where: { deletedAt: null },
-            select: { id: true, name: true, metadata: true, createdAt: true, updatedAt: true },
+            select: {
+              id: true,
+              name: true,
+              metadata: true,
+              createdAt: true,
+              updatedAt: true,
+            },
           },
         },
       });
@@ -82,7 +99,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         include: {
           projects: {
             where: { deletedAt: null },
-            select: { id: true, name: true, metadata: true, createdAt: true, updatedAt: true },
+            select: {
+              id: true,
+              name: true,
+              metadata: true,
+              createdAt: true,
+              updatedAt: true,
+            },
           },
         },
       });

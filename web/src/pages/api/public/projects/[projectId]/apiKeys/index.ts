@@ -1,11 +1,18 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "@hanzo/shared/src/db";
-import { logger, redis, createAndAddApiKeysToDb } from "@hanzo/shared/src/server";
+import {
+  logger,
+  redis,
+  createAndAddApiKeysToDb,
+} from "@hanzo/shared/src/server";
 import { ApiAuthService } from "@/src/features/public-api/server/apiAuth";
 import { cors, runMiddleware } from "@/src/features/public-api/server/cors";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   await runMiddleware(req, res, cors);
 
   try {
@@ -15,7 +22,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // CHECK AUTH
-    const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+    const authCheck = await new ApiAuthService(
+      prisma,
+      redis,
+    ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
     if (!authCheck.validKey) {
       return res.status(401).json({
         message: authCheck.error,
@@ -23,9 +33,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if using an organization API key
-    if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
+    if (
+      authCheck.scope.accessLevel !== "organization" ||
+      !authCheck.scope.orgId
+    ) {
       return res.status(403).json({
-        message: "Invalid API key. Organization-scoped API key required for this operation.",
+        message:
+          "Invalid API key. Organization-scoped API key required for this operation.",
       });
     }
     // END CHECK AUTH
@@ -90,12 +104,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === "POST") {
-      const { note, publicKey: predefinedPk, secretKey: predefinedSk } = req.body ?? {};
+      const {
+        note,
+        publicKey: predefinedPk,
+        secretKey: predefinedSk,
+      } = req.body ?? {};
 
       // Validate predefined keys
       if ((predefinedPk && !predefinedSk) || (!predefinedPk && predefinedSk)) {
         return res.status(400).json({
-          message: "Both publicKey and secretKey must be provided together, or neither.",
+          message:
+            "Both publicKey and secretKey must be provided together, or neither.",
         });
       }
 
@@ -129,7 +148,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         scope: "PROJECT",
         note: note ?? null,
         ...(predefinedPk && predefinedSk
-          ? { predefinedKeys: { publicKey: predefinedPk, secretKey: predefinedSk } }
+          ? {
+              predefinedKeys: {
+                publicKey: predefinedPk,
+                secretKey: predefinedSk,
+              },
+            }
           : {}),
       });
 

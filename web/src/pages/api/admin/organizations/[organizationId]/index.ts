@@ -16,7 +16,13 @@ function formatOrg(org: {
   name: string;
   createdAt: Date;
   metadata: unknown;
-  projects: { id: string; name: string; metadata: unknown; createdAt: Date; updatedAt: Date }[];
+  projects: {
+    id: string;
+    name: string;
+    metadata: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
 }) {
   return {
     id: org.id,
@@ -33,7 +39,10 @@ function formatOrg(org: {
   };
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
@@ -63,7 +72,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const orgInclude = {
       projects: {
         where: { deletedAt: null },
-        select: { id: true, name: true, metadata: true, createdAt: true, updatedAt: true },
+        select: {
+          id: true,
+          name: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       },
     };
 
@@ -91,14 +106,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const parsed = UpdateOrganizationSchema.safeParse(req.body);
       if (!parsed.success) {
-        return res.status(400).json({ error: "Invalid request body: " + parsed.error.message });
+        return res
+          .status(400)
+          .json({ error: "Invalid request body: " + parsed.error.message });
       }
 
       const org = await prisma.organization.update({
         where: { id: organizationId },
         data: {
           ...(parsed.data.name !== undefined ? { name: parsed.data.name } : {}),
-          ...(parsed.data.metadata !== undefined ? { metadata: parsed.data.metadata } : {}),
+          ...(parsed.data.metadata !== undefined
+            ? { metadata: parsed.data.metadata }
+            : {}),
         },
         include: orgInclude,
       });
@@ -109,7 +128,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "DELETE") {
       const existing = await prisma.organization.findUnique({
         where: { id: organizationId },
-        include: { projects: { where: { deletedAt: null }, select: { id: true } } },
+        include: {
+          projects: { where: { deletedAt: null }, select: { id: true } },
+        },
       });
 
       if (!existing) {
@@ -118,7 +139,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (existing.projects.length > 0) {
         return res.status(400).json({
-          error: "Cannot delete organization with existing projects. Delete all projects first.",
+          error:
+            "Cannot delete organization with existing projects. Delete all projects first.",
         });
       }
 

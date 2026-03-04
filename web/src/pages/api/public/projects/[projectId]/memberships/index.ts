@@ -6,11 +6,16 @@ import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/ha
 
 import { type NextApiRequest, type NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   await runMiddleware(req, res, cors);
 
   if (!["GET", "PUT", "DELETE"].includes(req.method || "")) {
-    logger.error(`Method not allowed for ${req.method} on /api/public/projects/[projectId]/memberships`);
+    logger.error(
+      `Method not allowed for ${req.method} on /api/public/projects/[projectId]/memberships`,
+    );
     return res.status(405).json({
       error: "Method not allowed",
     });
@@ -24,7 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(
+    prisma,
+    redis,
+  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     return res.status(401).json({
       error: authCheck.error,
@@ -33,9 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // END CHECK AUTH
 
   // Check if using an organization API key
-  if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
+  if (
+    authCheck.scope.accessLevel !== "organization" ||
+    !authCheck.scope.orgId
+  ) {
     return res.status(403).json({
-      error: "Invalid API key. Organization-scoped API key required for this operation.",
+      error:
+        "Invalid API key. Organization-scoped API key required for this operation.",
     });
   }
 
@@ -166,7 +178,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
   } catch (error) {
-    logger.error(`Error handling project memberships for ${req.method} on project ${projectId}`, error);
+    logger.error(
+      `Error handling project memberships for ${req.method} on project ${projectId}`,
+      error,
+    );
     return res.status(500).json({
       error: "Internal server error",
     });
