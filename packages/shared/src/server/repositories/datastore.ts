@@ -463,7 +463,10 @@ export async function commandDatastore(opts: {
 }
 
 export function parseDatastoreUTCDateTimeFormat(dateStr: string): Date {
-  return new Date(`${dateStr.replace(" ", "T")}Z`);
+  // Datastore returns DateTime64 as "YYYY-MM-DD HH:MM:SS.ffffff" in JSONEachRow.
+  // ECMAScript Date only guarantees 3 fractional digits (milliseconds).
+  // Truncate sub-millisecond precision for reliable cross-engine parsing.
+  return new Date(`${dateStr.replace(" ", "T").replace(/(\.\d{3})\d+/, "$1")}Z`);
 }
 
 export function datastoreCompliantRandomCharacters() {
