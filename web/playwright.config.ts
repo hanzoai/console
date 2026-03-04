@@ -18,7 +18,8 @@ const ciCommand = [
   "cp ../.env $STANDALONE_WEB_DIR/../.env 2>/dev/null || true",
   "cp .env $STANDALONE_WEB_DIR/.env 2>/dev/null || true",
   // Start the standalone server from the standalone root (CWD matters for .env loading)
-  "cd $STANDALONE_WEB_DIR/.. && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $STANDALONE_WEB_DIR/server.js",
+  // Use basename — after cd, the original relative $STANDALONE_WEB_DIR path would double up
+  "cd $STANDALONE_WEB_DIR/.. && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $(basename $STANDALONE_WEB_DIR)/server.js",
 ].join(" && ");
 
 export default defineConfig({

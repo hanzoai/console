@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Remove build-time placeholder .env to prevent it from overriding runtime env vars.
+# The Dockerfile copies .env.build as .env for the Next.js build step, but at runtime
+# all env vars come from docker-compose/k8s environment variables.
+rm -f .env 2>/dev/null || true
+
 # Run cleanup script before running migrations
 # Check if DATABASE_URL is not set
 if [ -z "$DATABASE_URL" ]; then
