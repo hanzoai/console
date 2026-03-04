@@ -754,8 +754,10 @@ jobs:
         run: pnpm run build
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-      - name: Run server
-        run: (pnpm run start&)
+      - name: Start web and worker
+        run: |
+          (pnpm --filter=web run start &)
+          (pnpm --filter=worker run start &)
       - name: Check worker health
         run: |
           timeout 180 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 3; done'
