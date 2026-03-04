@@ -644,7 +644,7 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
       async signIn({ user, account, profile }) {
         return instrumentAsync({ name: "next-auth-sign-in" }, async (span) => {
           // Debug logging for Hanzo IAM provider
-          if (account?.provider === "iam") {
+          if (account?.provider === "hanzo-iam") {
             logger.info("Hanzo IAM signIn callback", {
               userId: user.id,
               userName: user.name,
