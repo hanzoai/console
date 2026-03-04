@@ -757,7 +757,9 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Start web and worker
         run: |
-          (npx dotenv -e .env -- sh -c 'NEXT_MANUAL_SIG_HANDLE=true node web/.next/standalone/web/server.js' &)
+          WEB_SERVER=$(find web/.next/standalone -name 'server.js' -path '*/web/server.js' -not -path '*/node_modules/*' | head -1)
+          echo "Starting standalone server: $WEB_SERVER"
+          (npx dotenv -e .env -- sh -c "NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER" &)
           (pnpm --filter=worker run start &)
       - name: Check worker health
         run: |
