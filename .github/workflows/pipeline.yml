@@ -154,7 +154,7 @@ jobs:
         run: |
           docker compose --progress plain --verbose -f docker-compose.build.yml build --print > /tmp/bake.json
           docker buildx bake -f /tmp/bake.json
-          docker compose --progress plain -f docker-compose.build.yml up -d --wait --wait-timeout 180
+          docker compose --progress plain -f docker-compose.build.yml up -d --wait --wait-timeout 300
       - name: Ensure all services are healthy
         run: |
           docker compose -f docker-compose.build.yml ps

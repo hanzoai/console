@@ -81,8 +81,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
       interval: 10s
       timeout: 10s
-      retries: 12
-      start_period: 15s
+      retries: 18
+      start_period: 30s
 
   datastore:
     image: ghcr.io/hanzoai/datastore:26
