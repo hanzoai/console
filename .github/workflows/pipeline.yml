@@ -173,7 +173,7 @@ jobs:
           timeout 180 bash -c 'until curl -sf http://localhost:3000/api/public/health; do sleep 3; done'
       - name: Dump logs on failure
         if: failure()
-        run: docker compose -f docker-compose.build.yml logs --tail=100
+        run: docker compose -f docker-compose.build.yml logs --tail=200
 
   tests-web-sync:
     timeout-minutes: 30
