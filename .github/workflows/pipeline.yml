@@ -589,19 +589,37 @@ jobs:
           pnpm run --filter=shared ds:up
       - name: Build
         run: pnpm --filter=worker... run build
+      - name: Fetch LLM API key from KMS
+        id: kms-secrets
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          KMS_URL: ${{ secrets.KMS_URL }}
+          KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
+          KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
+        run: |
+          ACCESS_TOKEN="$(
+            curl -fsS -X POST "${KMS_URL}/api/v1/auth/universal-auth/login" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -nc --arg cid "$KMS_CLIENT_ID" --arg cs "$KMS_CLIENT_SECRET" \
+                    '{clientId: $cid, clientSecret: $cs}')" \
+            | jq -r '.accessToken'
+          )"
+          [ -n "${ACCESS_TOKEN}" ] && [ "${ACCESS_TOKEN}" != "null" ] || {
+            echo "::error::Failed to authenticate to Hanzo KMS"; exit 1; }
+
+          HANZO_LLM_API_KEY="$(
+            curl -fsS "${KMS_URL}/api/v3/secrets/raw/HANZO_LLM_API_KEY?workspaceSlug=console&environment=prod&secretPath=/ci&viewSecretValue=true&include_imports=true" \
+              -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+            | jq -r '.secret.secretValue'
+          )"
+          echo "::add-mask::${HANZO_LLM_API_KEY}"
+          echo "HANZO_LLM_API_KEY=${HANZO_LLM_API_KEY}" >> "$GITHUB_ENV"
       - name: run llm connection tests
         run: pnpm --filter=worker run test:llm-connections-only
         env:
+          HANZO_LLM_API_KEY: ${{ env.HANZO_LLM_API_KEY }}
           HANZO_LLM_CONNECTION_OPENAI_KEY: ${{ secrets.HANZO_LLM_CONNECTION_OPENAI_KEY }}
           HANZO_LLM_CONNECTION_ANTHROPIC_KEY: ${{ secrets.HANZO_LLM_CONNECTION_ANTHROPIC_KEY }}
-          HANZO_LLM_CONNECTION_AZURE_KEY: ${{ secrets.HANZO_LLM_CONNECTION_AZURE_KEY }}
-          HANZO_LLM_CONNECTION_AZURE_BASE_URL: ${{ secrets.HANZO_LLM_CONNECTION_AZURE_BASE_URL }}
-          HANZO_LLM_CONNECTION_AZURE_MODEL: ${{ secrets.HANZO_LLM_CONNECTION_AZURE_MODEL }}
-          HANZO_LLM_CONNECTION_BEDROCK_ACCESS_KEY_ID: ${{ secrets.HANZO_LLM_CONNECTION_BEDROCK_ACCESS_KEY_ID }}
-          HANZO_LLM_CONNECTION_BEDROCK_SECRET_ACCESS_KEY: ${{ secrets.HANZO_LLM_CONNECTION_BEDROCK_SECRET_ACCESS_KEY }}
-          HANZO_LLM_CONNECTION_BEDROCK_REGION: ${{ secrets.HANZO_LLM_CONNECTION_BEDROCK_REGION }}
-          HANZO_LLM_CONNECTION_VERTEXAI_KEY: ${{ secrets.HANZO_LLM_CONNECTION_VERTEXAI_KEY }}
-          HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY: ${{ secrets.HANZO_LLM_CONNECTION_GOOGLEAISTUDIO_KEY }}
 
   e2e-tests:
     runs-on: hanzo-build
@@ -787,7 +805,7 @@ jobs:
         prettier-check,
         tests-web-sync,
         # tests-worker, # Temporarily disabled - HTTP 414 URI Too Long in blob storage tests (pre-existing)
-        # test-worker-llm-connections, # Temporarily disabled - missing VertexAI/GoogleAIStudio env vars
+        test-worker-llm-connections,
         # e2e-tests, # Temporarily disabled - flaky timeouts
         # test-docker-build, # Temporarily disabled - Docker Hub auth + datastore startup race
         # e2e-server-tests, # Temporarily disabled - worker health check timeout (pre-existing)
