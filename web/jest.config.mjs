@@ -46,8 +46,7 @@ const endToEndServerTestConfig = {
 // To avoid the "Cannot use import statement outside a module" errors while transforming ESM.
 // jsonpath-plus is needed because @hanzo/shared barrel exports evals/utilities which imports it
 const esModules = ["superjson", "jsonpath-plus", "@hanzo/iam"];
-// Add any custom config to be passed to Jest
-/** @type {import('jest').Config} */
+
 // @hanzo/iam is ESM-only; Jest CJS resolver can't follow its subpath "import" exports.
 // Map each subpath to the actual dist file so Jest can find and transform them.
 const iamModuleMapper = {
@@ -57,6 +56,8 @@ const iamModuleMapper = {
   "^@hanzo/iam$": "<rootDir>/node_modules/@hanzo/iam/dist/index.js",
 };
 
+// Add any custom config to be passed to Jest
+/** @type {import('jest').Config} */
 const config = {
   // Ignore .next/standalone to avoid "Haste module naming collision" warning
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
