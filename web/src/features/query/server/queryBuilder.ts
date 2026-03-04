@@ -289,13 +289,14 @@ export class QueryBuilder {
   private buildHavingCondition(params: {
     filter: z.infer<typeof queryModel>["filters"][number];
     alias: string;
+    tableName: string;
   }): RawSqlPart {
-    const { filter, alias } = params;
+    const { filter, alias, tableName } = params;
     const syntheticMapping = [
       {
         uiTableName: filter.column,
         uiTableId: filter.column,
-        datastoreTableName: "",
+        datastoreTableName: tableName,
         datastoreSelect: alias,
         queryPrefix: "",
       },
@@ -347,6 +348,7 @@ export class QueryBuilder {
             this.buildHavingCondition({
               filter,
               alias: dimension.alias ?? filter.column,
+              tableName: actualTableName,
             }),
           );
         } else {
