@@ -39,10 +39,7 @@ function formatOrg(org: {
   };
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (!AdminApiAuthService.handleAuth(req, res)) {
       return;
@@ -106,18 +103,14 @@ export default async function handler(
 
       const parsed = UpdateOrganizationSchema.safeParse(req.body);
       if (!parsed.success) {
-        return res
-          .status(400)
-          .json({ error: "Invalid request body: " + parsed.error.message });
+        return res.status(400).json({ error: "Invalid request body: " + parsed.error.message });
       }
 
       const org = await prisma.organization.update({
         where: { id: organizationId },
         data: {
           ...(parsed.data.name !== undefined ? { name: parsed.data.name } : {}),
-          ...(parsed.data.metadata !== undefined
-            ? { metadata: parsed.data.metadata }
-            : {}),
+          ...(parsed.data.metadata !== undefined ? { metadata: parsed.data.metadata } : {}),
         },
         include: orgInclude,
       });
@@ -139,8 +132,7 @@ export default async function handler(
 
       if (existing.projects.length > 0) {
         return res.status(400).json({
-          error:
-            "Cannot delete organization with existing projects. Delete all projects first.",
+          error: "Cannot delete organization with existing projects. Delete all projects first.",
         });
       }
 

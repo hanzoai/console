@@ -5,10 +5,7 @@ import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAut
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 import { getSelfHostedInstancePlanServerSide } from "@/src/features/entitlements/server/getPlan";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method !== "DELETE") {
       res.status(405).json({ error: "Method Not Allowed" });
@@ -31,12 +28,7 @@ export default async function handler(
     }
 
     const { organizationId, apiKeyId } = req.query;
-    if (
-      !organizationId ||
-      typeof organizationId !== "string" ||
-      !apiKeyId ||
-      typeof apiKeyId !== "string"
-    ) {
+    if (!organizationId || typeof organizationId !== "string" || !apiKeyId || typeof apiKeyId !== "string") {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
 

@@ -5,24 +5,16 @@ import { logger, redis } from "@hanzo/shared/src/server";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { hasEntitlementBasedOnPlan } from "@/src/features/entitlements/server/hasEntitlement";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await runMiddleware(req, res, cors);
 
   if (req.method !== "GET" && req.method !== "POST") {
-    logger.error(
-      `Method not allowed for ${req.method} on /api/public/projects`,
-    );
+    logger.error(`Method not allowed for ${req.method} on /api/public/projects`);
     return res.status(405).json({ message: "Method not allowed" });
   }
 
   // CHECK AUTH
-  const authCheck = await new ApiAuthService(
-    prisma,
-    redis,
-  ).verifyAuthHeaderAndReturnScope(req.headers.authorization);
+  const authCheck = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(req.headers.authorization);
   if (!authCheck.validKey) {
     return res.status(401).json({
       message: authCheck.error,
@@ -31,10 +23,7 @@ export default async function handler(
   // END CHECK AUTH
 
   if (req.method === "GET") {
-    if (
-      authCheck.scope.accessLevel !== "project" ||
-      !authCheck.scope.projectId
-    ) {
+    if (authCheck.scope.accessLevel !== "project" || !authCheck.scope.projectId) {
       return res.status(403).json({
         message: "Invalid API key. Are you using an organization key?",
       });
@@ -69,9 +58,7 @@ export default async function handler(
             name: project.organization.name,
           },
           metadata: project.metadata ?? {},
-          ...(project.retentionDays
-            ? { retentionDays: project.retentionDays }
-            : {}),
+          ...(project.retentionDays ? { retentionDays: project.retentionDays } : {}),
         })),
       });
     } catch (error) {
@@ -82,13 +69,9 @@ export default async function handler(
 
   if (req.method === "POST") {
     // Check if using an organization API key
-    if (
-      authCheck.scope.accessLevel !== "organization" ||
-      !authCheck.scope.orgId
-    ) {
+    if (authCheck.scope.accessLevel !== "organization" || !authCheck.scope.orgId) {
       return res.status(403).json({
-        message:
-          "Invalid API key. Organization-scoped API key required for this operation.",
+        message: "Invalid API key. Organization-scoped API key required for this operation.",
       });
     }
 
@@ -107,24 +90,15 @@ export default async function handler(
       const { name, metadata, retention } = req.body ?? {};
 
       // Validate name
-      if (
-        !name ||
-        typeof name !== "string" ||
-        name.length < 3 ||
-        name.length > 60
-      ) {
+      if (!name || typeof name !== "string" || name.length < 3 || name.length > 60) {
         return res.status(400).json({
-          message:
-            "Invalid project name. Name must be between 3 and 60 characters.",
+          message: "Invalid project name. Name must be between 3 and 60 characters.",
         });
       }
 
       // Validate retention
       if (retention !== undefined && retention !== null) {
-        if (
-          typeof retention !== "number" ||
-          (retention !== 0 && retention < 3)
-        ) {
+        if (typeof retention !== "number" || (retention !== 0 && retention < 3)) {
           return res.status(400).json({
             message: "Invalid retention value. Must be 0 or >= 3.",
           });
@@ -159,9 +133,7 @@ export default async function handler(
         id: project.id,
         name: project.name,
         metadata: project.metadata ?? {},
-        ...(project.retentionDays
-          ? { retentionDays: project.retentionDays }
-          : {}),
+        ...(project.retentionDays ? { retentionDays: project.retentionDays } : {}),
       });
     } catch (error) {
       logger.error(error);
