@@ -63,8 +63,8 @@ describe("Memberships APIs", () => {
       scope: "ORGANIZATION",
       note: "Test API Key for Memberships API",
       predefinedKeys: {
-        publicKey: `pk-lf-org-${randomUUID().substring(0, 8)}`,
-        secretKey: `sk-lf-org-${randomUUID().substring(0, 8)}`,
+        publicKey: `pk-hz-org-${randomUUID().substring(0, 8)}`,
+        secretKey: `sk-hz-org-${randomUUID().substring(0, 8)}`,
       },
     });
     testApiKey = apiKey.publicKey;
@@ -133,8 +133,8 @@ describe("Memberships APIs", () => {
           scope: "PROJECT",
           note: "Test API Key for Memberships API",
           predefinedKeys: {
-            publicKey: `pk-lf-project-${randomUUID().substring(0, 8)}`,
-            secretKey: `sk-lf-project-${randomUUID().substring(0, 8)}`,
+            publicKey: `pk-hz-project-${randomUUID().substring(0, 8)}`,
+            secretKey: `sk-hz-project-${randomUUID().substring(0, 8)}`,
           },
         });
 

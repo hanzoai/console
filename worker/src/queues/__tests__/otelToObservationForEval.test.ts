@@ -128,7 +128,7 @@ describe("OTEL to ObservationForEval Schema Validation", () => {
             scope: {
               name: "hanzo-sdk",
               version: "3.0.0",
-              attributes: [{ key: "public_key", value: { stringValue: "pk-lf-test" } }],
+              attributes: [{ key: "public_key", value: { stringValue: "pk-hz-test" } }],
             },
             spans: [
               {

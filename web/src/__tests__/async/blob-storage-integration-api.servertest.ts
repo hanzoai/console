@@ -99,8 +99,8 @@ describe("Blob Storage Integrations API", () => {
       scope: "ORGANIZATION",
       note: "Test API Key for Blob Storage API",
       predefinedKeys: {
-        publicKey: `pk-lf-blob-${randomUUID().substring(0, 8)}`,
-        secretKey: `sk-lf-blob-${randomUUID().substring(0, 8)}`,
+        publicKey: `pk-hz-blob-${randomUUID().substring(0, 8)}`,
+        secretKey: `sk-hz-blob-${randomUUID().substring(0, 8)}`,
       },
     });
     testApiKey = orgApiKey.publicKey;
@@ -207,8 +207,8 @@ describe("Blob Storage Integrations API", () => {
         scope: "PROJECT",
         note: "Project API Key",
         predefinedKeys: {
-          publicKey: `pk-lf-proj-${randomUUID().substring(0, 8)}`,
-          secretKey: `sk-lf-proj-${randomUUID().substring(0, 8)}`,
+          publicKey: `pk-hz-proj-${randomUUID().substring(0, 8)}`,
+          secretKey: `sk-hz-proj-${randomUUID().substring(0, 8)}`,
         },
       });
 
@@ -605,8 +605,8 @@ describe("Blob Storage Integrations API", () => {
         scope: "PROJECT",
         note: "Project API Key",
         predefinedKeys: {
-          publicKey: `pk-lf-proj-del-${randomUUID().substring(0, 8)}`,
-          secretKey: `sk-lf-proj-del-${randomUUID().substring(0, 8)}`,
+          publicKey: `pk-hz-proj-del-${randomUUID().substring(0, 8)}`,
+          secretKey: `sk-hz-proj-del-${randomUUID().substring(0, 8)}`,
         },
       });
 

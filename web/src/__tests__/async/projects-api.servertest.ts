@@ -79,12 +79,12 @@ describe("Projects API", () => {
   // Test variables
   const projectId = "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a";
   const projectName = "Seed Project";
-  const projectApiKey = "pk-lf-1234567890";
-  const projectSecretKey = "sk-lf-1234567890";
-  const invalidApiKey = "pk-lf-invalid";
-  const invalidSecretKey = "sk-lf-invalid";
-  const orgApiKey = `pk-lf-org-${randomUUID().substring(0, 8)}`;
-  const orgSecretKey = `sk-lf-org-${randomUUID().substring(0, 8)}`;
+  const projectApiKey = "pk-hz-1234567890";
+  const projectSecretKey = "sk-hz-1234567890";
+  const invalidApiKey = "pk-hz-invalid";
+  const invalidSecretKey = "sk-hz-invalid";
+  const orgApiKey = `pk-hz-org-${randomUUID().substring(0, 8)}`;
+  const orgSecretKey = `sk-hz-org-${randomUUID().substring(0, 8)}`;
 
   beforeAll(async () => {
     await createAndAddApiKeysToDb({
@@ -707,8 +707,8 @@ describe("Projects API", () => {
 
     it("should create an API key with predefined keys", async () => {
       const note = `Test API Key with Predefined Keys ${randomUUID().substring(0, 8)}`;
-      const predefinedPublicKey = `pk-lf-${randomUUID()}`;
-      const predefinedSecretKey = `sk-lf-${randomUUID()}`;
+      const predefinedPublicKey = `pk-hz-${randomUUID()}`;
+      const predefinedSecretKey = `sk-hz-${randomUUID()}`;
 
       const response = await makeZodVerifiedAPICall(
         ApiKeyCreationResponseSchema,
@@ -742,7 +742,7 @@ describe("Projects API", () => {
 
     it("should return 400 when only publicKey is provided without secretKey", async () => {
       const note = `Test API Key ${randomUUID().substring(0, 8)}`;
-      const predefinedPublicKey = `pk-lf-${randomUUID()}`;
+      const predefinedPublicKey = `pk-hz-${randomUUID()}`;
 
       const result = await makeAPICall(
         "POST",
@@ -760,7 +760,7 @@ describe("Projects API", () => {
 
     it("should return 400 when only secretKey is provided without publicKey", async () => {
       const note = `Test API Key ${randomUUID().substring(0, 8)}`;
-      const predefinedSecretKey = `sk-lf-${randomUUID()}`;
+      const predefinedSecretKey = `sk-hz-${randomUUID()}`;
 
       const result = await makeAPICall(
         "POST",
@@ -776,10 +776,10 @@ describe("Projects API", () => {
       expect(result.body.message).toContain("Both publicKey and secretKey must be provided together");
     });
 
-    it("should return 400 when publicKey does not start with pk-lf-", async () => {
+    it("should return 400 when publicKey does not start with pk-hz-", async () => {
       const note = `Test API Key ${randomUUID().substring(0, 8)}`;
       const invalidPublicKey = `invalid-${randomUUID()}`;
-      const predefinedSecretKey = `sk-lf-${randomUUID()}`;
+      const predefinedSecretKey = `sk-hz-${randomUUID()}`;
 
       const result = await makeAPICall(
         "POST",
@@ -796,9 +796,9 @@ describe("Projects API", () => {
       expect(result.body.message).toContain("publicKey must start with");
     });
 
-    it("should return 400 when secretKey does not start with sk-lf-", async () => {
+    it("should return 400 when secretKey does not start with sk-hz-", async () => {
       const note = `Test API Key ${randomUUID().substring(0, 8)}`;
-      const predefinedPublicKey = `pk-lf-${randomUUID()}`;
+      const predefinedPublicKey = `pk-hz-${randomUUID()}`;
       const invalidSecretKey = `invalid-${randomUUID()}`;
 
       const result = await makeAPICall(
@@ -818,9 +818,9 @@ describe("Projects API", () => {
 
     it("should return 409 when predefined publicKey already exists", async () => {
       const note = `Test API Key ${randomUUID().substring(0, 8)}`;
-      const duplicatePublicKey = `pk-lf-${randomUUID()}`;
-      const secretKey1 = `sk-lf-${randomUUID()}`;
-      const secretKey2 = `sk-lf-${randomUUID()}`;
+      const duplicatePublicKey = `pk-hz-${randomUUID()}`;
+      const secretKey1 = `sk-hz-${randomUUID()}`;
+      const secretKey2 = `sk-hz-${randomUUID()}`;
 
       // Create first API key with predefined keys
       const firstResponse = await makeAPICall(

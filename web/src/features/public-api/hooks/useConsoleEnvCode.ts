@@ -11,7 +11,7 @@ CONSOLE_PUBLIC_KEY="${keys.publicKey}"
 CONSOLE_BASE_URL="${baseUrl}"`;
   }
 
-  return `CONSOLE_SECRET_KEY="sk-lf-..."
-CONSOLE_PUBLIC_KEY="pk-lf-..."
+  return `CONSOLE_SECRET_KEY="sk-hz-..."
+CONSOLE_PUBLIC_KEY="pk-hz-..."
 CONSOLE_BASE_URL="${baseUrl}"`;
 }

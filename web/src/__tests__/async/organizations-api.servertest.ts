@@ -549,9 +549,9 @@ describe("Admin Organizations API", () => {
       await prisma.apiKey.create({
         data: {
           orgId: testOrgId,
-          publicKey: `pk-lf-test-${randomUUID()}`,
+          publicKey: `pk-hz-test-${randomUUID()}`,
           hashedSecretKey: "hashed-secret",
-          displaySecretKey: "sk-lf-test...1234",
+          displaySecretKey: "sk-hz-test...1234",
           note: "Test API Key",
           scope: "ORGANIZATION",
         },
@@ -641,8 +641,8 @@ describe("Admin Organizations API", () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.body.publicKey).toMatch(/^pk-lf-/);
-      expect(response.body.secretKey).toMatch(/^sk-lf-/);
+      expect(response.body.publicKey).toMatch(/^pk-hz-/);
+      expect(response.body.secretKey).toMatch(/^sk-hz-/);
       expect(response.body.note).toBe("Test API Key");
 
       // Verify the API key was actually created in the database
@@ -695,9 +695,9 @@ describe("Admin Organizations API", () => {
       const apiKey = await prisma.apiKey.create({
         data: {
           orgId: testOrgId,
-          publicKey: `pk-lf-test-${randomUUID()}`,
+          publicKey: `pk-hz-test-${randomUUID()}`,
           hashedSecretKey: "hashed-secret",
-          displaySecretKey: "sk-lf-test...1234",
+          displaySecretKey: "sk-hz-test...1234",
           note: "Test API Key",
           scope: "ORGANIZATION",
         },
@@ -831,8 +831,8 @@ describe("Public Organizations API", () => {
       scope: "ORGANIZATION",
       note: "Test API Key for Organizations API",
       predefinedKeys: {
-        publicKey: `pk-lf-org-${randomUUID().substring(0, 8)}`,
-        secretKey: `sk-lf-org-${randomUUID().substring(0, 8)}`,
+        publicKey: `pk-hz-org-${randomUUID().substring(0, 8)}`,
+        secretKey: `sk-hz-org-${randomUUID().substring(0, 8)}`,
       },
     });
     testApiKey = apiKey.publicKey;
@@ -896,8 +896,8 @@ describe("Public Organizations API", () => {
           scope: "PROJECT",
           note: "Test Project API Key",
           predefinedKeys: {
-            publicKey: `pk-lf-project-${randomUUID().substring(0, 8)}`,
-            secretKey: `sk-lf-project-${randomUUID().substring(0, 8)}`,
+            publicKey: `pk-hz-project-${randomUUID().substring(0, 8)}`,
+            secretKey: `sk-hz-project-${randomUUID().substring(0, 8)}`,
           },
         });
 
@@ -995,8 +995,8 @@ describe("Public Organizations API", () => {
           scope: "ORGANIZATION",
           note: "Test API Key for Empty Org",
           predefinedKeys: {
-            publicKey: `pk-lf-empty-${randomUUID().substring(0, 8)}`,
-            secretKey: `sk-lf-empty-${randomUUID().substring(0, 8)}`,
+            publicKey: `pk-hz-empty-${randomUUID().substring(0, 8)}`,
+            secretKey: `sk-hz-empty-${randomUUID().substring(0, 8)}`,
           },
         });
 

@@ -181,8 +181,8 @@ async function main() {
 
   const seedApiKey = {
     id: "seed-api-key",
-    secret: process.env.SEED_SECRET_KEY ?? "sk-lf-1234567890", // eslint-disable-line turbo/no-undeclared-env-vars
-    public: "pk-lf-1234567890",
+    secret: process.env.SEED_SECRET_KEY ?? "sk-hz-1234567890", // eslint-disable-line turbo/no-undeclared-env-vars
+    public: "pk-hz-1234567890",
     note: "seeded key",
   };
 
@@ -244,8 +244,8 @@ async function main() {
 
     const secondKey = {
       id: "seed-api-key-2",
-      secret: process.env.SEED_SECRET_KEY ?? "sk-lf-asdfghjkl", // eslint-disable-line turbo/no-undeclared-env-vars
-      public: "pk-lf-asdfghjkl",
+      secret: process.env.SEED_SECRET_KEY ?? "sk-hz-asdfghjkl", // eslint-disable-line turbo/no-undeclared-env-vars
+      public: "pk-hz-asdfghjkl",
       note: "seeded key 2",
     };
     if (!(await prisma.apiKey.findUnique({ where: { id: secondKey.id } }))) {

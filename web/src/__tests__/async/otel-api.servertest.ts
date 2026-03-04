@@ -24,7 +24,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -94,7 +94,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -223,7 +223,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -328,7 +328,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -405,7 +405,7 @@ describe("/api/public/otel/v1/traces API Endpoint", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },

@@ -22,7 +22,7 @@ async function convertOtelSpanToIngestionEvent(
 
 describe("OTel Resource Span Mapping", () => {
   describe("Hanzo OTEL SDK spans", () => {
-    const publicKey = "pk-lf-1234567890";
+    const publicKey = "pk-hz-1234567890";
 
     it("should convert LF-OTEL spans to LF-events", async () => {
       const hanzoOtelSpans = [
@@ -60,7 +60,7 @@ describe("OTel Resource Span Mapping", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -387,7 +387,7 @@ describe("OTel Resource Span Mapping", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },
@@ -3177,7 +3177,7 @@ describe("OTel Resource Span Mapping", () => {
   });
 
   describe("Trace seen logic", () => {
-    const publicKey = "pk-lf-1234567890";
+    const publicKey = "pk-hz-1234567890";
 
     it("should create a shallow trace when seenTraces set is empty for non-root span without trace updates", async () => {
       const otelSpans = [
@@ -4485,7 +4485,7 @@ describe("OTel Resource Span Mapping", () => {
                 attributes: [
                   {
                     key: "public_key",
-                    value: { stringValue: "pk-lf-1234567890" },
+                    value: { stringValue: "pk-hz-1234567890" },
                   },
                 ],
               },

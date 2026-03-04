@@ -103,7 +103,7 @@ describe("withMiddlewares error handling", () => {
       const jsonData = JSON.parse(res._getData());
       expect(jsonData).toMatchObject({
         message: "Resource not found",
-        error: "ConsoleNotFoundError",
+        error: "HanzoCloudNotFoundError",
       });
       // Should log as info, not error
       expect(logger.info).toHaveBeenCalledWith(error);

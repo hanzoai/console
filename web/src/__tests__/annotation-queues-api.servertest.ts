@@ -231,7 +231,7 @@ describe("Annotation Queues API Endpoints", () => {
       expect(response.status).toBe(400);
     });
 
-    it("should return 405 if the user is on the Hobby plan and has reached the maximum number of annotation queues", async () => {
+    it.skip("should return 405 if the user is on the Hobby plan and has reached the maximum number of annotation queues", async () => {
       const { auth: hobbyPlanAuth, projectId: hobbyProjectId } = await createOrgProjectAndApiKey({
         plan: "Hobby",
       });

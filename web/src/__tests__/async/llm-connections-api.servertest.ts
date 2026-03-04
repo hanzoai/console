@@ -1174,7 +1174,7 @@ describe("/api/public/llm-connections API Endpoints", () => {
         "GET",
         "/api/public/llm-connections",
         undefined,
-        "Basic " + Buffer.from("pk-lf-fake-key:").toString("base64"),
+        "Basic " + Buffer.from("pk-hz-fake-key:").toString("base64"),
       );
       expect(fakeKeyResponse.status).toBe(401);
     });

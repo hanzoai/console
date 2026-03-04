@@ -16,7 +16,7 @@ describe("Authenticate API calls", () => {
     it("should create new api key", async () => {
       await createAPIKey();
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(auth.validKey).toBe(true);
@@ -31,7 +31,7 @@ describe("Authenticate API calls", () => {
     it("should create new api key and succeed with new key", async () => {
       await createAPIKey();
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(auth.validKey).toBe(true);
 
@@ -42,7 +42,7 @@ describe("Authenticate API calls", () => {
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
 
       const auth2 = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(auth2.validKey).toBe(true);
     });
@@ -66,11 +66,11 @@ describe("Authenticate API calls", () => {
       });
 
       await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(auth.validKey).toBe(true);
 
@@ -117,11 +117,11 @@ describe("Authenticate API calls", () => {
       });
 
       await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(auth.validKey).toBe(true);
 
@@ -156,7 +156,7 @@ describe("Authenticate API calls", () => {
     it("should fail on wrong api key with new key", async () => {
       await createAPIKey();
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(auth.validKey).toBe(true);
 
@@ -168,7 +168,7 @@ describe("Authenticate API calls", () => {
       expect(apiKey?.fastHashedSecretKey).not.toBeNull();
 
       const wrongAuth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkx",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkx",
       );
       expect(wrongAuth.validKey).toBe(false);
     });
@@ -182,7 +182,7 @@ describe("Authenticate API calls", () => {
       expect(initialApiKey?.fastHashedSecretKey).toBeNull();
 
       const auth = await new ApiAuthService(prisma, null).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkx",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkx",
       );
       expect(auth.validKey).toBe(false);
 
@@ -246,7 +246,7 @@ describe("Authenticate API calls", () => {
 
       // first auth will generate the fast hashed api key
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const apiKey = await prisma.apiKey.findUnique({
@@ -261,7 +261,7 @@ describe("Authenticate API calls", () => {
 
       // second will add the key to redis
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const cachedKey2 = await redis.get(`api-key:${apiKey?.fastHashedSecretKey}`);
@@ -320,11 +320,11 @@ describe("Authenticate API calls", () => {
 
       // first auth will generate the fast hashed api key
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const apiKey = await prisma.apiKey.findUnique({
-        where: { publicKey: "pk-lf-1234567890" },
+        where: { publicKey: "pk-hz-1234567890" },
       });
 
       expect(apiKey).not.toBeNull();
@@ -334,8 +334,8 @@ describe("Authenticate API calls", () => {
       const nonScopedKey = {
         id: "seed-api-key",
         note: "seeded key",
-        publicKey: "pk-lf-1234567890",
-        displaySecretKey: "sk-lf-...7890",
+        publicKey: "pk-hz-1234567890",
+        displaySecretKey: "sk-hz-...7890",
         createdAt: new Date().toISOString(),
         lastUsedAt: null,
         expiresAt: null,
@@ -366,7 +366,7 @@ describe("Authenticate API calls", () => {
 
       // Auth should still succeed by falling back to Postgres
       const verification = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(verification.validKey).toBe(true);
@@ -412,7 +412,7 @@ describe("Authenticate API calls", () => {
       // key does not exist in database
 
       const verification = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(verification.validKey).toBe(false);
@@ -427,7 +427,7 @@ describe("Authenticate API calls", () => {
       // key does not exist in database
 
       const verification = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(verification.validKey).toBe(false);
@@ -438,7 +438,7 @@ describe("Authenticate API calls", () => {
       expect(redisValue).toBe('"api-key-non-existent"');
 
       const verification2 = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       expect(verification2.validKey).toBe(false);
 
@@ -460,17 +460,17 @@ describe("Authenticate API calls", () => {
 
       // first auth will generate the fast hashed api key
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       // second will add the key to redis
       const auth2 = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       // third will read from redis only
       await new ApiAuthService(mockPrisma as unknown as PrismaClient, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(auth2.validKey).toBe(true);
@@ -513,17 +513,17 @@ describe("Authenticate API calls", () => {
 
       // first auth will generate the fast hashed api key
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       // second will add the key to redis
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       // third will read from redis only
       await new ApiAuthService(mockPrisma as unknown as PrismaClient, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const ttl = await redis.ttl("api-key:ed6818ada09bdad405a74ac72773dde1708dd3fc6fe8bb81b59927400419d227");
@@ -534,7 +534,7 @@ describe("Authenticate API calls", () => {
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       await new ApiAuthService(mockPrisma as unknown as PrismaClient, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const ttl2 = await redis.ttl("api-key:ed6818ada09bdad405a74ac72773dde1708dd3fc6fe8bb81b59927400419d227");
@@ -547,12 +547,12 @@ describe("Authenticate API calls", () => {
 
       // first auth will generate the fast hashed api key
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       // second will add the key to redis
       const auth2 = await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       expect(auth2.validKey).toBe(true);
@@ -627,11 +627,11 @@ describe("Authenticate API calls", () => {
 
       // put keys into cache
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const apiKey = await prisma.apiKey.findUnique({
@@ -678,10 +678,10 @@ describe("Authenticate API calls", () => {
 
       // put keys into cache
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
       await new ApiAuthService(prisma, redis).verifyAuthHeaderAndReturnScope(
-        "Basic cGstbGYtMTIzNDU2Nzg5MDpzay1sZi0xMjM0NTY3ODkw",
+        "Basic cGstaHotMTIzNDU2Nzg5MDpzay1oei0xMjM0NTY3ODkw",
       );
 
       const apiKey = await prisma.apiKey.findUnique({

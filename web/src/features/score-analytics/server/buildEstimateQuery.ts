@@ -1,4 +1,7 @@
-import { queryDatastore } from "@hanzo/shared/src/server";
+import {
+  queryDatastore,
+  convertDateToDatastoreDateTime,
+} from "@hanzo/shared/src/server";
 import { buildObjectTypeFilter, buildSamplingExpression } from "./queryHelpers";
 
 /**
@@ -106,8 +109,8 @@ export async function buildEstimateQuery(params: {
       score2Name,
       score2Source,
       score2DataType: score2DataType,
-      fromTimestamp,
-      toTimestamp,
+      fromTimestamp: convertDateToDatastoreDateTime(fromTimestamp),
+      toTimestamp: convertDateToDatastoreDateTime(toTimestamp),
     },
   });
 

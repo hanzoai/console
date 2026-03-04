@@ -129,12 +129,12 @@ const ResourceTypesResponseSchema = z.object({
 describe("SCIM API", () => {
   // Test variables
   const orgId = "seed-org-id";
-  const orgApiKey = `pk-lf-org-${randomUUID().substring(0, 8)}`;
-  const orgSecretKey = `sk-lf-org-${randomUUID().substring(0, 8)}`;
-  const projectApiKey = "pk-lf-1234567890";
-  const projectSecretKey = "sk-lf-1234567890";
-  const invalidApiKey = "pk-lf-invalid";
-  const invalidSecretKey = "sk-lf-invalid";
+  const orgApiKey = `pk-hz-org-${randomUUID().substring(0, 8)}`;
+  const orgSecretKey = `sk-hz-org-${randomUUID().substring(0, 8)}`;
+  const projectApiKey = "pk-hz-1234567890";
+  const projectSecretKey = "sk-hz-1234567890";
+  const invalidApiKey = "pk-hz-invalid";
+  const invalidSecretKey = "sk-hz-invalid";
   let testUserId: string;
 
   beforeAll(async () => {

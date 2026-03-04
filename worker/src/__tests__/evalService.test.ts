@@ -52,7 +52,7 @@ const openAIServer = new OpenAIServer({
 const jobTimestamp = new Date();
 
 beforeAll(openAIServer.setup);
-beforeAll(async () => {
+beforeEach(async () => {
   openAIServer.respondWithDefault();
 });
 afterEach(openAIServer.reset);

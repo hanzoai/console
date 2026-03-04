@@ -63,7 +63,7 @@ export function mockServerContext(overrides?: Partial<ServerContext>): ServerCon
     orgId: overrides?.orgId ?? "test-org-id",
     apiKeyId: overrides?.apiKeyId ?? "test-api-key-id",
     accessLevel: "project",
-    publicKey: overrides?.publicKey ?? "pk-lf-test",
+    publicKey: overrides?.publicKey ?? "pk-hz-test",
     ...overrides,
   };
 }
