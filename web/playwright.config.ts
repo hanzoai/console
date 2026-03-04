@@ -17,9 +17,11 @@ const ciCommand = [
   // Copy .env files so getServerSideProps can read env at runtime
   "cp ../.env $STANDALONE_WEB_DIR/../.env 2>/dev/null || true",
   "cp .env $STANDALONE_WEB_DIR/.env 2>/dev/null || true",
-  // Start the standalone server from the standalone root (CWD matters for .env loading)
-  // Use basename — after cd, the original relative $STANDALONE_WEB_DIR path would double up
-  "cd $STANDALONE_WEB_DIR/.. && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $(basename $STANDALONE_WEB_DIR)/server.js",
+  // Start the standalone server from the standalone root.
+  // 1. cd to standalone root (use basename to avoid path doubling)
+  // 2. Source .env so server inherits DB/auth vars (standalone doesn't auto-load .env)
+  // 3. HOSTNAME=0.0.0.0 because CI runner hostnames aren't localhost-reachable
+  "cd $STANDALONE_WEB_DIR/.. && set -a && . .env 2>/dev/null; set +a; HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $(basename $STANDALONE_WEB_DIR)/server.js",
 ].join(" && ");
 
 export default defineConfig({

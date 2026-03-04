@@ -161,8 +161,9 @@ COPY --chown=nextjs:nodejs ./web/entrypoint.sh ./web/entrypoint.sh
 COPY --chown=nextjs:nodejs ./packages/shared/scripts/cleanup.sql ./packages/shared/scripts/cleanup.sql
 RUN chmod +x ./web/entrypoint.sh
 
-# Copy .env from builder stage (contains build-time placeholders, runtime uses env vars)
-COPY --from=builder --chown=nextjs:nodejs /app/.env /app/.env
+# NOTE: Do NOT copy .env from builder — it contains build-time placeholders
+# that would override runtime env vars (docker-compose/k8s). All env vars must
+# come from the container environment, not files baked into the image.
 USER nextjs
 
 # Default port to 3000
