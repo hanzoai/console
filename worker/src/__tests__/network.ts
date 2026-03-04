@@ -63,7 +63,7 @@ function S3CompletionHandler() {
 }
 
 function DatastoreCompletionHandler() {
-  // Match both localhost and 127.0.0.1 — ClickHouse may bind to either
+  // Match both localhost and 127.0.0.1 — Datastore may bind to either
   return http.all(/^http:\/\/(localhost|127\.0\.0\.1):8123/, async () => {
     logger.info("datastore handler");
     return passthrough();

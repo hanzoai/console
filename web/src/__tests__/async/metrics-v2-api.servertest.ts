@@ -332,7 +332,7 @@ describe("/api/public/v2/metrics API Endpoint", () => {
         expect(typeof lower).toBe("number");
         expect(typeof upper).toBe("number");
         expect(typeof height).toBe("number");
-        // ClickHouse histogram() uses adaptive bucketing that can produce
+        // Datastore histogram() uses adaptive bucketing that can produce
         // bins with significantly inverted lower/upper boundaries.
         expect(lower).toBeLessThanOrEqual(upper + 0.2);
         expect(height).toBeGreaterThanOrEqual(0);
