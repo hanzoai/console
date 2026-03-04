@@ -14,7 +14,7 @@ services:
     depends_on:
       - postgres
 
-  minio:
+  s3:
     image: cgr.dev/chainguard/minio
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service
@@ -26,7 +26,7 @@ services:
       - 127.0.0.1:9090:9000
       - 127.0.0.1:9091:9001
     volumes:
-      - hanzo_minio_data:/data
+      - hanzo_s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -131,7 +131,7 @@ volumes:
     driver: local
   hanzo_datastore_logs:
     driver: local
-  hanzo_minio_data:
+  hanzo_s3_data:
     driver: local
   redis-cluster_data-0:
     driver: local

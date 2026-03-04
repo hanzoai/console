@@ -2,7 +2,7 @@
 x-cloud-dev-depends-on: &cloud-depends-on
   postgres-dev:
     condition: service_healthy
-  minio-dev:
+  s3-dev:
     condition: service_healthy
   redis-dev:
     condition: service_healthy
@@ -25,14 +25,14 @@ x-cloud-dev-environment: &cloud-worker-env
   S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
   S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3-dev:9000}
   S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
   S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
   S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
   S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
   S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3-dev:9000}
   S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
   S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
   HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
@@ -60,7 +60,7 @@ services:
     depends_on:
       postgres-dev:
         condition: service_healthy
-      minio-dev:
+      s3-dev:
         condition: service_healthy
       redis-dev:
         condition: service_healthy
@@ -84,14 +84,14 @@ services:
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3-dev:9000}
       S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
       S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
       S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
       S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3-dev:9000}
       S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
@@ -159,7 +159,7 @@ services:
     depends_on:
       postgres-dev:
         condition: service_healthy
-      minio-dev:
+      s3-dev:
         condition: service_healthy
       redis-dev:
         condition: service_healthy
@@ -181,14 +181,14 @@ services:
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3-dev:9000}
       S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
       S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
       S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
       S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio-dev:9000}
+      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3-dev:9000}
       S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
@@ -226,8 +226,8 @@ services:
       - interal-cloud-dev-network
 
 
-  minio-dev:
-    image: minio/minio
+  s3-dev:
+    image: cgr.dev/chainguard/minio
     restart: always
     entrypoint: sh
     # create the 'cloud-dev' bucket before starting the service
@@ -236,7 +236,7 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
     volumes:
-      - cloud_dev_minio_data:/data
+      - cloud_dev_s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -288,5 +288,5 @@ volumes:
     driver: local
   cloud_dev_datastore_logs:
     driver: local
-  cloud_dev_minio_data:
+  cloud_dev_s3_data:
     driver: local

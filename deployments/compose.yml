@@ -40,19 +40,19 @@ x-hanzo-env: &hanzo-env
   DATASTORE_USER: ${DATASTORE_USER:-hanzo}
   DATASTORE_PASSWORD: ${DATASTORE_PASSWORD:?DATASTORE_PASSWORD required}
   DATASTORE_CLUSTER_ENABLED: ${DATASTORE_CLUSTER_ENABLED:-false}
-  # S3/MinIO
+  # S3-compatible storage
   S3_EVENT_UPLOAD_BUCKET: ${S3_EVENT_UPLOAD_BUCKET:-hanzo}
   S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
   S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:?S3_SECRET required}
-  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3:9000}
   S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
   S3_EVENT_UPLOAD_PREFIX: "events/"
   S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
   S3_MEDIA_UPLOAD_REGION: auto
   S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:?S3_SECRET required}
-  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3:9000}
   S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
   S3_MEDIA_UPLOAD_PREFIX: "media/"
   # Redis
@@ -66,7 +66,7 @@ x-hanzo-env: &hanzo-env
 x-depends-on: &depends-on
   postgres:
     condition: service_healthy
-  minio:
+  s3:
     condition: service_healthy
   redis:
     condition: service_healthy
@@ -186,11 +186,11 @@ services:
       timeout: 5s
       retries: 10
 
-  minio:
+  s3:
     build:
       context: images
       dockerfile: Dockerfile.minio
-    image: ghcr.io/hanzoai/minio:latest
+    image: ghcr.io/hanzoai/s3:latest
     restart: always
     entrypoint: sh
     command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
@@ -198,7 +198,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD required}
     volumes:
-      - minio_data:/data
+      - s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 3s
@@ -224,4 +224,4 @@ volumes:
   postgres_data:
   datastore_data:
   datastore_logs:
-  minio_data:
+  s3_data:

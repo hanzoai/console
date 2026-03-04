@@ -2,7 +2,7 @@
 x-cloud-depends-on: &cloud-depends-on
   postgres:
     condition: service_healthy
-  minio:
+  s3:
     condition: service_healthy
   redis:
     condition: service_healthy
@@ -27,14 +27,14 @@ x-cloud-environment: &cloud-worker-env
   S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
   S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+  S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3:9000}
   S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
   S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
   S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
   S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
   S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
   S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+  S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3:9000}
   S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
   S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
   HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
@@ -144,8 +144,8 @@ services:
       - hanzo-network
       - cloud-hanzo-network
 
-  minio:
-    image: minio/minio
+  s3:
+    image: cgr.dev/chainguard/minio
     restart: always
     entrypoint: sh
     # create the 'cloud' bucket before starting the service
@@ -157,7 +157,7 @@ services:
     #  - "9090:9000"
     #  - "9091:9001"
     volumes:
-      - cloud-minio-data:/data
+      - cloud-s3-data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -236,7 +236,7 @@ volumes:
     driver: local
   cloud-datastore-logs:
     driver: local
-  cloud-minio-data:
+  cloud-s3-data:
     driver: local
   cloud-redis-cloud-data:
     driver: local

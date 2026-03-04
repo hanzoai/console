@@ -22,9 +22,9 @@ services:
     volumes:
       - hanzo_azurite_data:/data
 
-  minio:
+  s3:
     image: cgr.dev/chainguard/minio
-    container_name: ${MINIO_CONTAINER_NAME:-hanzo-minio}
+    container_name: ${S3_CONTAINER_NAME:-hanzo-s3}
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service
     command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
@@ -32,10 +32,10 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-miniosecret}
     ports:
-      - ${HOST_IP:-127.0.0.1}:${MINIO_API_PORT:-9090}:9000
-      - ${HOST_IP:-127.0.0.1}:${MINIO_CONSOLE_PORT:-9091}:9001
+      - ${HOST_IP:-127.0.0.1}:${S3_API_PORT:-9090}:9000
+      - ${HOST_IP:-127.0.0.1}:${S3_CONSOLE_PORT:-9091}:9001
     volumes:
-      - hanzo_minio_data:/data
+      - hanzo_s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -83,6 +83,6 @@ volumes:
     driver: local
   hanzo_azurite_data:
     driver: local
-  hanzo_minio_data:
-    name: ${MINIO_VOLUME_NAME:-hanzo_minio_data}
+  hanzo_s3_data:
+    name: ${S3_VOLUME_NAME:-hanzo_s3_data}
     driver: local

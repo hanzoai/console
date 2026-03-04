@@ -43,7 +43,7 @@ This is a monorepo managed with pnpm and Turbo, containing:
 - PostgreSQL with Prisma ORM
 - Datastore for analytics and trace data
 - Redis for caching and queuing
-- MinIO for S3-compatible object storage
+- S3-compatible object storage
 
 ### Infrastructure
 - Docker and Docker Compose for local development

@@ -758,10 +758,10 @@ jobs:
         run: (pnpm run start&)
       - name: Check worker health
         run: |
-          timeout 60 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 2; done'
+          timeout 180 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 3; done'
       - name: Check server health
         run: |
-          timeout 60 bash -c 'until curl -sf http://localhost:3000/api/public/health; do sleep 2; done'
+          timeout 180 bash -c 'until curl -sf http://localhost:3000/api/public/health; do sleep 3; done'
       - name: Run e2e tests
         run: pnpm --filter=web run test:e2e:server
 

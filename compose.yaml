@@ -9,7 +9,7 @@ services:
     depends_on: &hanzo-depends-on
       postgres:
         condition: service_healthy
-      minio:
+      s3:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -32,14 +32,14 @@ services:
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3:9000}
       S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
       S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
       S3_MEDIA_UPLOAD_REGION: ${S3_MEDIA_UPLOAD_REGION:-auto}
       S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
-      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+      S3_MEDIA_UPLOAD_ENDPOINT: ${S3_MEDIA_UPLOAD_ENDPOINT:-http://s3:9000}
       S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_MEDIA_UPLOAD_PREFIX: ${S3_MEDIA_UPLOAD_PREFIX:-media/}
       HANZO_INGESTION_QUEUE_DELAY_MS: ${HANZO_INGESTION_QUEUE_DELAY_MS:-}
@@ -115,8 +115,8 @@ services:
     networks:
       - ai-platform_default
 
-  minio:
-    image: minio/minio
+  s3:
+    image: cgr.dev/chainguard/minio
     restart: always
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service
@@ -128,7 +128,7 @@ services:
       - "9090:9000"
       - "9091:9001"
     volumes:
-      - hanzo_minio_data:/data
+      - hanzo_s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -177,5 +177,5 @@ volumes:
     driver: local
   hanzo_datastore_logs:
     driver: local
-  hanzo_minio_data:
+  hanzo_s3_data:
     driver: local

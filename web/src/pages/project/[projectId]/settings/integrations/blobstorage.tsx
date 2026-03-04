@@ -342,7 +342,9 @@ const BlobStorageIntegrationSettingsForm = ({
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={field.onChange} className="ml-4 mt-1" />
                 </FormControl>
-                <FormDescription>Enable for MinIO and some other S3 compatible providers</FormDescription>
+                <FormDescription>
+                  Enable for S3-compatible storage providers that require path-style access
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -80,7 +80,7 @@ export class StorageServiceFactory {
    * @param params.endpoint - Endpoint - Endpoint to an S3 compatible API (or Azure Blob Storage)
    * @param params.externalEndpoint - External endpoint to replace the internal endpoint in the signed URL.
    * @param params.region - Region in which the bucket resides
-   * @param params.forcePathStyle - Add bucket name into the path instead of the domain name. Mainly used for MinIO.
+   * @param params.forcePathStyle - Add bucket name into the path instead of the domain name. Used for S3-compatible storage.
    * @param params.useAzureBlob - Use Azure Blob Storage instead of S3
    * @param params.useGoogleCloudStorage - Use Google Cloud Storage instead of S3
    * @param params.googleCloudCredentials - Google Cloud Storage credentials JSON string or path to credentials file

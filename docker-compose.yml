@@ -1,6 +1,6 @@
 # Make sure to update the credential placeholders with your own secrets.
 # We mark them with # CHANGEME in the file below.
-# In addition, we recommend to restrict inbound traffic on the host to hanzo-web (port 3000) and minio (port 9090) only.
+# In addition, we recommend to restrict inbound traffic on the host to hanzo-web (port 3000) and s3 (port 9090) only.
 # All other components are bound to localhost (127.0.0.1) to only accept connections from the local machine.
 # External connections from other machines will not be able to reach these services directly.
 services:
@@ -10,7 +10,7 @@ services:
     depends_on: &hanzo-depends-on
       postgres:
         condition: service_healthy
-      minio:
+      s3:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -35,7 +35,7 @@ services:
       S3_EVENT_UPLOAD_REGION: ${S3_EVENT_UPLOAD_REGION:-auto}
       S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
       S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret} # CHANGEME
-      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+      S3_EVENT_UPLOAD_ENDPOINT: ${S3_EVENT_UPLOAD_ENDPOINT:-http://s3:9000}
       S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
       S3_EVENT_UPLOAD_PREFIX: ${S3_EVENT_UPLOAD_PREFIX:-events/}
       S3_MEDIA_UPLOAD_BUCKET: ${S3_MEDIA_UPLOAD_BUCKET:-hanzo}
@@ -49,7 +49,7 @@ services:
       S3_BATCH_EXPORT_BUCKET: ${S3_BATCH_EXPORT_BUCKET:-hanzo}
       S3_BATCH_EXPORT_PREFIX: ${S3_BATCH_EXPORT_PREFIX:-exports/}
       S3_BATCH_EXPORT_REGION: ${S3_BATCH_EXPORT_REGION:-auto}
-      S3_BATCH_EXPORT_ENDPOINT: ${S3_BATCH_EXPORT_ENDPOINT:-http://minio:9000}
+      S3_BATCH_EXPORT_ENDPOINT: ${S3_BATCH_EXPORT_ENDPOINT:-http://s3:9000}
       S3_BATCH_EXPORT_EXTERNAL_ENDPOINT: ${S3_BATCH_EXPORT_EXTERNAL_ENDPOINT:-http://localhost:9090}
       S3_BATCH_EXPORT_ACCESS_KEY_ID: ${S3_BATCH_EXPORT_ACCESS_KEY_ID:-minio}
       S3_BATCH_EXPORT_SECRET_ACCESS_KEY: ${S3_BATCH_EXPORT_SECRET_ACCESS_KEY:-miniosecret} # CHANGEME
@@ -108,7 +108,7 @@ services:
       retries: 10
       start_period: 1s
 
-  minio:
+  s3:
     image: cgr.dev/chainguard/minio
     restart: always
     entrypoint: sh
@@ -121,7 +121,7 @@ services:
       - 9090:9000
       - 127.0.0.1:9091:9001
     volumes:
-      - hanzo_minio_data:/data
+      - hanzo_s3_data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 1s
@@ -170,5 +170,5 @@ volumes:
     driver: local
   hanzo_datastore_logs:
     driver: local
-  hanzo_minio_data:
+  hanzo_s3_data:
     driver: local
