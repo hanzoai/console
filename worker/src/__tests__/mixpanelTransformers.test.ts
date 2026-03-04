@@ -49,7 +49,7 @@ describe("Mixpanel transformers", () => {
 
       const result = transformEventForMixpanel(event, projectId);
 
-      expect(result.event).toBe("[Console] Observation");
+      expect(result.event).toBe("[Hanzo] Observation");
       expect(result.properties.distinct_id).toBe("user-789");
       expect(result.properties.$user_id).toBe("user-789");
       expect(result.properties.time).toBe(new Date("2024-01-15T10:00:00Z").getTime());
@@ -79,7 +79,7 @@ describe("Mixpanel transformers", () => {
 
       const result = transformEventForMixpanel(event, projectId);
 
-      expect(result.event).toBe("[Console] Observation");
+      expect(result.event).toBe("[Hanzo] Observation");
       // distinct_id should be the generated $insert_id when no user_id
       expect(result.properties.distinct_id).toBe(result.properties.$insert_id);
       // Should not have $user_id for anonymous events
@@ -189,7 +189,7 @@ describe("Mixpanel transformers", () => {
 
       const result = transformTraceForMixpanel(trace, projectId);
 
-      expect(result.event).toBe("[Console] Trace");
+      expect(result.event).toBe("[Hanzo] Trace");
       expect(result.properties.distinct_id).toBe("user-789");
       expect(result.properties.$user_id).toBe("user-789");
       expect(result.properties.session_id).toBe("mixpanel-session-123");
@@ -229,7 +229,7 @@ describe("Mixpanel transformers", () => {
 
       const result = transformGenerationForMixpanel(generation, projectId);
 
-      expect(result.event).toBe("[Console] Generation");
+      expect(result.event).toBe("[Hanzo] Generation");
       expect(result.properties.distinct_id).toBe("user-789");
       expect(result.properties.$user_id).toBe("user-789");
       expect(result.properties.session_id).toBe("mixpanel-session-456");
@@ -267,7 +267,7 @@ describe("Mixpanel transformers", () => {
 
       const result = transformScoreForMixpanel(score, projectId);
 
-      expect(result.event).toBe("[Console] Score");
+      expect(result.event).toBe("[Hanzo] Score");
       expect(result.properties.distinct_id).toBe("user-789");
       expect(result.properties.$user_id).toBe("user-789");
       expect(result.properties.session_id).toBe("mixpanel-session-789");

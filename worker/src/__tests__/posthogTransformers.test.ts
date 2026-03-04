@@ -48,7 +48,7 @@ describe("PostHog transformers", () => {
 
       const result = transformEventForPostHog(event, projectId);
 
-      expect(result.event).toBe("console observation");
+      expect(result.event).toBe("hanzo observation");
       expect(result.distinctId).toBe("user-789");
       expect(result.timestamp).toEqual(new Date("2024-01-15T10:00:00Z"));
       expect(result.uuid).toBeDefined();
@@ -79,7 +79,7 @@ describe("PostHog transformers", () => {
 
       const result = transformEventForPostHog(event, projectId);
 
-      expect(result.event).toBe("console observation");
+      expect(result.event).toBe("hanzo observation");
       // distinctId should be the generated UUID when no user_id
       expect(result.distinctId).toBe(result.uuid);
       expect(result.properties.$session_id).toBeNull();
@@ -152,7 +152,7 @@ describe("PostHog transformers", () => {
 
       const result = transformTraceForPostHog(trace, projectId);
 
-      expect(result.event).toBe("console trace");
+      expect(result.event).toBe("hanzo trace");
       expect(result.distinctId).toBe("user-789");
       expect(result.properties.$session_id).toBe("posthog-session-123");
     });
@@ -190,7 +190,7 @@ describe("PostHog transformers", () => {
 
       const result = transformGenerationForPostHog(generation, projectId);
 
-      expect(result.event).toBe("console generation");
+      expect(result.event).toBe("hanzo generation");
       expect(result.distinctId).toBe("user-789");
       expect(result.properties.$session_id).toBe("posthog-session-456");
       expect(result.properties.console_model).toBe("gpt-4-turbo");
@@ -226,7 +226,7 @@ describe("PostHog transformers", () => {
 
       const result = transformScoreForPostHog(score, projectId);
 
-      expect(result.event).toBe("console score");
+      expect(result.event).toBe("hanzo score");
       expect(result.distinctId).toBe("user-789");
       expect(result.properties.$session_id).toBe("posthog-session-789");
       expect(result.properties.console_score_name).toBe("quality");

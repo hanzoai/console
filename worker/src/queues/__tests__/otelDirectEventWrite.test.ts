@@ -159,11 +159,11 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
       },
       isExperiment: true,
       expected: false,
-      label: "non-Console scope name",
+      label: "non-Hanzo scope name",
     },
     {
       sdkInfo: {
-        scopeName: "console-sdk",
+        scopeName: "hanzo-sdk",
         scopeVersion: "3.9.0",
         telemetrySdkLanguage: "python",
       },
@@ -173,7 +173,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
     },
     {
       sdkInfo: {
-        scopeName: "console-sdk",
+        scopeName: "hanzo-sdk",
         scopeVersion: "3.9.0",
         telemetrySdkLanguage: "python",
       },
@@ -183,7 +183,7 @@ describe("checkSdkVersionRequirements (legacy fallback)", () => {
     },
     {
       sdkInfo: {
-        scopeName: "console-sdk",
+        scopeName: "hanzo-sdk",
         scopeVersion: "4.4.0",
         telemetrySdkLanguage: "js",
       },
@@ -207,10 +207,10 @@ describe("getSdkInfoFromResourceSpans (legacy fallback)", () => {
         resource: {
           attributes: [{ key: "telemetry.sdk.language", value: { stringValue: "python" } }],
         },
-        scopeSpans: [{ scope: { name: "console-sdk", version: "3.14.1" }, spans: [] }],
+        scopeSpans: [{ scope: { name: "hanzo-sdk", version: "3.14.1" }, spans: [] }],
       },
       expected: {
-        scopeName: "console-sdk",
+        scopeName: "hanzo-sdk",
         scopeVersion: "3.14.1",
         telemetrySdkLanguage: "python",
       },

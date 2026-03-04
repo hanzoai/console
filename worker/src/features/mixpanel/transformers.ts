@@ -101,7 +101,7 @@ export const transformEventForMixpanel = (event: AnalyticsObservationEvent, proj
   const { posthog_session_id, mixpanel_session_id, ...otherProps } = event;
 
   return {
-    event: "[Console] Observation",
+    event: "[Hanzo] Observation",
     properties: {
       time: new Date(event.timestamp as Date).getTime(),
       distinct_id: event.console_user_id ? (event.console_user_id as string) : insertId,

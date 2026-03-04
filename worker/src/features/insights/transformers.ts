@@ -116,7 +116,7 @@ export const transformEventForPostHog = (event: AnalyticsObservationEvent, proje
 
   return {
     distinctId: event.console_user_id ? (event.console_user_id as string) : uuid,
-    event: "console observation",
+    event: "hanzo observation",
     properties: {
       ...otherProps,
       $session_id: posthog_session_id ?? null,
