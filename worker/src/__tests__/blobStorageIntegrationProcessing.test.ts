@@ -21,7 +21,7 @@ import { BlobStorageIntegrationType, BlobStorageIntegrationFileType } from "@han
 import { encrypt } from "@hanzo/shared/encryption";
 
 // Skip tests that use Azurite in Azure mode due to known Azurite limitations
-// with multipart uploads. These tests use MinIO explicitly or are skipped.
+// with multipart uploads. These tests use S3 explicitly or are skipped.
 // Unfortunately, this is necessary as we don't have a good way to skip empty file uploads
 // and at least azurite doesn't handle them gracefully.
 const maybeIt = env.HANZO_USE_AZURE_BLOB === "true" ? it.skip : it;
@@ -36,9 +36,9 @@ describe("BlobStorageIntegrationProcessingJob", () => {
   const secretAccessKey = env.S3_EVENT_UPLOAD_SECRET_ACCESS_KEY || "";
   const endpoint = env.S3_EVENT_UPLOAD_ENDPOINT || undefined;
   const region = env.S3_EVENT_UPLOAD_REGION || undefined;
-  const minioAccessKeyId = "minio";
-  const minioAccessKeySecret = "miniosecret";
-  const minioEndpoint = "http://localhost:9090";
+  const s3AccessKeyId = "minio";
+  const s3AccessKeySecret = "miniosecret";
+  const s3Endpoint = "http://localhost:9090";
 
   beforeAll(async () => {
     storageService = StorageServiceFactory.getInstance({
@@ -50,10 +50,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
       forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
     });
     s3StorageService = StorageServiceFactory.getInstance({
-      accessKeyId: minioAccessKeyId,
-      secretAccessKey: minioAccessKeySecret,
+      accessKeyId: s3AccessKeyId,
+      secretAccessKey: s3AccessKeySecret,
       bucketName,
-      endpoint: minioEndpoint,
+      endpoint: s3Endpoint,
       region,
       forcePathStyle: true,
       useAzureBlob: false,
@@ -119,10 +119,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: s3Prefix,
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region ? region : "auto",
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
@@ -255,10 +255,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: "",
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region,
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "weekly",
@@ -311,10 +311,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: s3Prefix,
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region ? region : "auto",
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "daily",
@@ -419,10 +419,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
             type: BlobStorageIntegrationType.S3,
             bucketName,
             prefix,
-            accessKeyId: minioAccessKeyId,
-            secretAccessKey: encrypt(minioAccessKeySecret),
+            accessKeyId: s3AccessKeyId,
+            secretAccessKey: encrypt(s3AccessKeySecret),
             region: region ? region : "auto",
-            endpoint: minioEndpoint,
+            endpoint: s3Endpoint,
             forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
             enabled: true,
             exportFrequency: "hourly",
@@ -649,10 +649,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: s3Prefix,
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region ? region : "auto",
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
@@ -774,10 +774,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: s3Prefix,
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region ? region : "auto",
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",
@@ -826,10 +826,10 @@ describe("BlobStorageIntegrationProcessingJob", () => {
           type: BlobStorageIntegrationType.S3,
           bucketName,
           prefix: s3Prefix,
-          accessKeyId: minioAccessKeyId,
-          secretAccessKey: encrypt(minioAccessKeySecret),
+          accessKeyId: s3AccessKeyId,
+          secretAccessKey: encrypt(s3AccessKeySecret),
           region: region ? region : "auto",
-          endpoint: minioEndpoint,
+          endpoint: s3Endpoint,
           forcePathStyle: env.S3_EVENT_UPLOAD_FORCE_PATH_STYLE === "true",
           enabled: true,
           exportFrequency: "hourly",

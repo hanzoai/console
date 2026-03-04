@@ -51,9 +51,9 @@ function JsonCompletionHandler(data: object) {
   return CompletionHandler(HttpResponse.json(data));
 }
 
-function MinioCompletionHandler() {
+function S3CompletionHandler() {
   return http.all(/^http:\/\/(localhost|127\.0\.0\.1):9090/, async ({ request }) => {
-    logger.info("minio handler");
+    logger.info("s3 handler");
     const url = new URL(request.url);
     if (url.pathname.startsWith("/hanzo/events/")) {
       return new HttpResponse("Success");
@@ -127,7 +127,7 @@ export class OpenAIServer {
   respondWithData(data: object) {
     this.internalServer.use(
       JsonCompletionHandler(data),
-      MinioCompletionHandler(),
+      S3CompletionHandler(),
       DatastoreCompletionHandler(),
       AzuriteCompletionHandler(),
     );
