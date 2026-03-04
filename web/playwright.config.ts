@@ -14,8 +14,11 @@ const ciCommand = [
   "cp -r .next/static $STANDALONE_WEB_DIR/.next/static",
   // Copy public directory (favicon, images, etc.)
   "cp -r public $STANDALONE_WEB_DIR/public 2>/dev/null || true",
-  // Start the standalone server
-  "HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER",
+  // Copy .env files so getServerSideProps can read env at runtime
+  "cp ../.env $STANDALONE_WEB_DIR/../.env 2>/dev/null || true",
+  "cp .env $STANDALONE_WEB_DIR/.env 2>/dev/null || true",
+  // Start the standalone server from the standalone root (CWD matters for .env loading)
+  "cd $STANDALONE_WEB_DIR/.. && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $STANDALONE_WEB_DIR/server.js",
 ].join(" && ");
 
 export default defineConfig({
@@ -50,7 +53,7 @@ export default defineConfig({
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes for server startup in CI
-    stdout: "ignore",
+    stdout: "pipe",
     stderr: "pipe",
   },
 });
