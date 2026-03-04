@@ -32,6 +32,7 @@ type RawSqlPart = { query: string; params: Record<string, unknown> };
 type MappedFilters = {
   whereFilters: Filter[];
   whereRawParts: RawSqlPart[];
+  havingRawParts: RawSqlPart[];
 };
 
 export class QueryBuilder {
@@ -249,6 +250,60 @@ export class QueryBuilder {
     };
   }
 
+  /**
+   * Builds a WHERE condition using only pruning columns (OR'd together).
+   * Used when the dimension has an aggregationFunction — exact matching
+   * happens in HAVING on the post-aggregation alias instead.
+   */
+  private buildPruningOnlyWhereCondition(params: {
+    filter: z.infer<typeof queryModel>["filters"][number];
+    whereCols: string[];
+    tableName: string;
+  }): RawSqlPart {
+    const { filter, whereCols, tableName } = params;
+
+    const syntheticMapping = (datastoreSelect: string) => [
+      {
+        uiTableName: filter.column,
+        uiTableId: filter.column,
+        datastoreTableName: tableName,
+        datastoreSelect,
+        queryPrefix: "",
+      },
+    ];
+
+    const pruneApplied = whereCols.map((col) => {
+      const filters = createFilterFromFilterState([filter], syntheticMapping(col));
+      return filters[0].apply();
+    });
+    const pruneQuery = `(${pruneApplied.map((p) => p.query).join(" OR ")})`;
+    const pruneParams = pruneApplied.reduce<Record<string, unknown>>((acc, p) => ({ ...acc, ...p.params }), {});
+
+    return { query: pruneQuery, params: pruneParams };
+  }
+
+  /**
+   * Builds a HAVING condition on a dimension alias.
+   * Used after GROUP BY to filter aggregated dimension values.
+   */
+  private buildHavingCondition(params: {
+    filter: z.infer<typeof queryModel>["filters"][number];
+    alias: string;
+  }): RawSqlPart {
+    const { filter, alias } = params;
+    const syntheticMapping = [
+      {
+        uiTableName: filter.column,
+        uiTableId: filter.column,
+        datastoreTableName: "",
+        datastoreSelect: alias,
+        queryPrefix: "",
+      },
+    ];
+    const filters = createFilterFromFilterState([filter], syntheticMapping);
+    return filters[0].apply();
+  }
+
   private mapFilters(filters: z.infer<typeof queryModel>["filters"], view: ViewDeclarationType): MappedFilters {
     // Validate all filters before processing
     this.validateFilters(filters, view);
@@ -258,6 +313,7 @@ export class QueryBuilder {
     const result: MappedFilters = {
       whereFilters: [],
       whereRawParts: [],
+      havingRawParts: [],
     };
 
     // Separate filters into normal (createFilterFromFilterState) and filterSql-aware
@@ -274,16 +330,36 @@ export class QueryBuilder {
     for (const filter of filters) {
       const dimension = this.resolveDimension(filter.column, view);
 
-      // Dimension with filterSql: pruning OR + exact match, both in WHERE
+      // Dimension with filterSql: pruning OR in WHERE
       if (dimension?.filterSql) {
-        result.whereRawParts.push(
-          this.buildFilterSqlWhereCondition({
-            filter,
-            whereCols: dimension.filterSql.where,
-            dimensionSql: dimension.sql,
-            tableName: actualTableName,
-          }),
-        );
+        if (dimension.aggregationFunction) {
+          // Aggregated dimension: pruning-only in WHERE, exact match in HAVING.
+          // The aggregation function computes the final value post-GROUP BY,
+          // so the row-level sql cannot be used for exact matching in WHERE.
+          result.whereRawParts.push(
+            this.buildPruningOnlyWhereCondition({
+              filter,
+              whereCols: dimension.filterSql.where,
+              tableName: actualTableName,
+            }),
+          );
+          result.havingRawParts.push(
+            this.buildHavingCondition({
+              filter,
+              alias: dimension.alias ?? filter.column,
+            }),
+          );
+        } else {
+          // Non-aggregated dimension: pruning OR + exact match, both in WHERE
+          result.whereRawParts.push(
+            this.buildFilterSqlWhereCondition({
+              filter,
+              whereCols: dimension.filterSql.where,
+              dimensionSql: dimension.sql,
+              tableName: actualTableName,
+            }),
+          );
+        }
         continue;
       }
 
@@ -875,6 +951,7 @@ export class QueryBuilder {
     outerMetricsPart: string,
     innerQuery: string,
     groupByClause: string,
+    havingClause: string,
     orderByClause: string,
     withFillClause: string,
     limitClause: string,
@@ -885,6 +962,7 @@ export class QueryBuilder {
         ${outerMetricsPart}
       FROM (${innerQuery})
       ${groupByClause}
+      ${havingClause}
       ${orderByClause}
       ${withFillClause}
       ${limitClause}`;
@@ -1149,8 +1227,8 @@ export class QueryBuilder {
       }
     }
 
-    // Create filters: normal WHERE filters + raw WHERE parts (filterSql pruning + exact match)
-    const { whereFilters, whereRawParts } = this.mapFilters(query.filters, view);
+    // Create filters: normal WHERE filters + raw WHERE parts (filterSql pruning) + HAVING parts
+    const { whereFilters, whereRawParts, havingRawParts } = this.mapFilters(query.filters, view);
     let filterList = new FilterList(whereFilters);
 
     // Add standard filters (project_id, timestamps)
@@ -1244,6 +1322,19 @@ export class QueryBuilder {
     // Build LIMIT clause for row limiting
     const limitClause = this.buildLimitClause();
 
+    // Build HAVING clause for aggregated dimension filters (filterSql + aggregationFunction).
+    // These filters must run after GROUP BY because the dimension value is computed
+    // by an aggregate expression (e.g., COALESCE(argMaxIf(...), argMaxIf(...))).
+    let havingClause = "";
+    if (havingRawParts.length > 0) {
+      const havingParts: string[] = [];
+      for (const part of havingRawParts) {
+        havingParts.push(part.query);
+        Object.assign(parameters, part.params);
+      }
+      havingClause = `HAVING ${havingParts.join(" AND ")}`;
+    }
+
     // Build final query - branch based on optimization
     let sql: string;
     if (canOptimize) {
@@ -1283,6 +1374,7 @@ export class QueryBuilder {
         outerMetricsPart,
         innerQuery,
         groupByClause,
+        havingClause,
         orderByClause,
         withFillClause,
         limitClause,

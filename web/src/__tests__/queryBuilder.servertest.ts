@@ -3964,7 +3964,7 @@ describe("events_traces traceName filter", () => {
     ];
     await createEventsCh(events);
     // Allow async insert to settle
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 2000));
 
     // Filter by name = "my-trace" — should find trace 1 (via root event name fallback)
     const result = await executeQuery(
@@ -4022,7 +4022,7 @@ describe("events_traces traceName filter", () => {
         }),
       ];
       await createEventsCh(events);
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 2000));
 
       // Filter using "traceName" column (triggers endsWith("Name") fallback)
       const result = await executeQuery(
@@ -4096,7 +4096,7 @@ describe("events_traces traceName filter", () => {
         }),
       ];
       await createEventsCh(events);
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 2000));
 
       // Filter by name (filterSql) AND environment (regular dimension)
       const result = await executeQuery(
