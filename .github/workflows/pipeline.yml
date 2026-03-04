@@ -153,12 +153,12 @@ jobs:
         run: |
           docker compose --progress plain --verbose -f docker-compose.build.yml build --print > /tmp/bake.json
           docker buildx bake -f /tmp/bake.json
-          docker compose --progress plain -f docker-compose.build.yml up -d
-          sleep 10 # Wait for PostgreSQL to accept connections
-      - name: Ensure no unhealthy status
+          docker compose --progress plain -f docker-compose.build.yml up -d --wait --wait-timeout 180
+      - name: Ensure all services are healthy
         run: |
-          if docker compose -f docker-compose.build.yml ps | grep "(unhealthy)"; then
-            echo "One or more services are unhealthy"
+          docker compose -f docker-compose.build.yml ps
+          if docker compose -f docker-compose.build.yml ps | grep -E "(unhealthy|Exit)"; then
+            echo "One or more services are unhealthy or exited"
             docker compose -f docker-compose.build.yml logs
             exit 1
           else
@@ -310,6 +310,7 @@ jobs:
     if: needs.pre-job.outputs.should_skip != 'true'
     name: tests-web-async (node${{ matrix.node-version }}, pg${{ matrix.postgres-version }}, shard${{ matrix.shard }}/3)
     strategy:
+      fail-fast: false
       matrix:
         node-version: [24]
         postgres-version: [15]
@@ -756,7 +757,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Start web and worker
         run: |
-          (pnpm --filter=web run start &)
+          (npx dotenv -e .env -- sh -c 'NEXT_MANUAL_SIG_HANDLE=true node web/.next/standalone/web/server.js' &)
           (pnpm --filter=worker run start &)
       - name: Check worker health
         run: |

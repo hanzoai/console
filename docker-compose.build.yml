@@ -98,8 +98,8 @@ services:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O /dev/null 'http://localhost:8123/?user=hanzo&password=hanzo&query=SELECT+1' || exit 1"]
       interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 5s
+      retries: 20
+      start_period: 15s
 
   s3:
     image: cgr.dev/chainguard/minio
