@@ -1,8 +1,13 @@
 import { env } from "@/src/env.mjs";
 
-// Use secure cookies on https hostnames, exception for Vercel which sets NEXTAUTH_URL without the protocol
+// Use secure cookies when NEXTAUTH_URL is HTTPS or when running on Vercel
+// (which sets NEXTAUTH_URL without the protocol).
+// Explicitly do NOT force secure cookies just because NODE_ENV=production —
+// the standalone build always runs as production, but e2e tests and some
+// self-hosted deployments behind a TLS-terminating proxy use plain HTTP.
 const shouldSecureCookies = () => {
-  return process.env.NODE_ENV === "production" || env.NEXTAUTH_URL.startsWith("https");
+  if (env.NEXTAUTH_URL.startsWith("http://")) return false;
+  return env.NEXTAUTH_URL.startsWith("https") || process.env.NODE_ENV === "production";
 };
 
 export const getCookieOptions = () => ({
