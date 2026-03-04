@@ -541,6 +541,10 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
     callbacks: {
       async session({ session, token }): Promise<Session> {
         return instrumentAsync({ name: "next-auth-session" }, async (span) => {
+          // Debug: log session callback state (remove after CI is green)
+          console.error(
+            `[AUTH_DEBUG] session callback: token.email=${token.email} token.sub=${token.sub}`,
+          );
           const dbUser = await prisma.user.findUnique({
             where: {
               email: token.email!.toLowerCase(),
@@ -577,6 +581,10 @@ export async function getAuthOptions(): Promise<NextAuthOptions> {
             },
           });
 
+          // Debug: log user lookup result (remove after CI is green)
+          console.error(
+            `[AUTH_DEBUG] dbUser=${dbUser ? dbUser.email : "NOT_FOUND"} for token.email=${token.email}`,
+          );
           span.setAttribute("hanzo.user.email", dbUser?.email ?? "");
           span.setAttribute("hanzo.user.id", dbUser?.id ?? "");
 
