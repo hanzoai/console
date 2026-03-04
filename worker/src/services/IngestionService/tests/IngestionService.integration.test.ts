@@ -2765,7 +2765,7 @@ async function getDatastoreRecord<T extends TableName>(tableName: T, entityId: s
     });
   }
 
-  const result = (await query.json())[0];
+  const result = (await query.json()).data[0];
 
   return (
     tableName === TableName.Traces
