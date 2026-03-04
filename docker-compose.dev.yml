@@ -1,6 +1,6 @@
 services:
   datastore:
-    image: ghcr.io/hanzoai/datastore:latest
+    image: ghcr.io/hanzoai/datastore:26
     container_name: ${DATASTORE_CONTAINER_NAME:-hanzo-datastore}
     environment:
       DATASTORE_DB: default
