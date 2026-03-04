@@ -1,4 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
+import { type Prisma } from "@prisma/client";
 import { prisma } from "@hanzo/shared/src/db";
 import { logger } from "@hanzo/shared/src/server";
 import { AdminApiAuthService } from "@/src/features/admin-api/server/adminApiAuth";
@@ -110,7 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         where: { id: organizationId },
         data: {
           ...(parsed.data.name !== undefined ? { name: parsed.data.name } : {}),
-          ...(parsed.data.metadata !== undefined ? { metadata: parsed.data.metadata } : {}),
+          ...(parsed.data.metadata !== undefined ? { metadata: parsed.data.metadata as Prisma.InputJsonValue } : {}),
         },
         include: orgInclude,
       });

@@ -367,7 +367,7 @@ if (env.IAM_CLIENT_ID && env.IAM_CLIENT_SECRET && env.IAM_SERVER_URL)
       serverUrl: env.IAM_SERVER_URL,
       allowDangerousEmailAccountLinking: env.IAM_ALLOW_ACCOUNT_LINKING === "true",
       checks: ["state", "pkce"],
-    }),
+    }) as unknown as Provider,
   );
 
 if (env.AUTH_WORKOS_CLIENT_ID && env.AUTH_WORKOS_CLIENT_SECRET)
