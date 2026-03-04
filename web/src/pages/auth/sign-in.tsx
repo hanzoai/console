@@ -437,11 +437,7 @@ export function SSOButtons({
             />
           )}
           {authProviders.iam && (
-            <Button
-              onClick={() => handleSignIn("hanzo-iam")}
-              variant="secondary"
-              loading={providerSigningIn === "hanzo-iam"}
-            >
+            <Button onClick={() => handleSignIn("iam")} variant="secondary" loading={providerSigningIn === "iam"}>
               <Shield className="mr-3" size={18} />
               Sign in with IAM
             </Button>
@@ -655,8 +651,8 @@ export default function SignIn({ authProviders, signUpDisabled, runningOnHugging
     !authProviders.custom;
   useEffect(() => {
     if (iamOnly) {
-      capture("sign_in:button_click", { provider: "hanzo-iam" });
-      void signIn("hanzo-iam");
+      capture("sign_in:button_click", { provider: "iam" });
+      void signIn("iam");
     }
   }, [capture, iamOnly]);
 
