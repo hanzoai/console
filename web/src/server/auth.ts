@@ -42,7 +42,6 @@ import { CloudConfigSchema } from "@hanzo/shared";
 import {
   CustomSSOProvider,
   GitHubEnterpriseProvider,
-  IamProvider,
   JumpCloudProvider,
   traceException,
   sendResetPasswordVerificationRequest,
@@ -50,6 +49,7 @@ import {
   logger,
   resolveProjectRole,
 } from "@hanzo/shared/src/server";
+import { IamProvider } from "@hanzo/iam/nextauth";
 import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,

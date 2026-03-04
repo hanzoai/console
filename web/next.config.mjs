@@ -56,7 +56,7 @@ const nextConfig = {
   // Allow building to alternate directory for parallel build checks while dev server runs
   distDir: process.env.NEXT_DIST_DIR || ".next",
   staticPageGenerationTimeout: 500, // default is 60. Required for build process for amd
-  transpilePackages: ["@hanzo/shared", "vis-network/standalone"],
+  transpilePackages: ["@hanzo/shared", "@hanzo/iam", "vis-network/standalone"],
   reactStrictMode: true,
   serverExternalPackages: [
     "dd-trace",
@@ -103,9 +103,7 @@ const nextConfig = {
   async rewrites() {
     if (process.env.SKIP_ENV_VALIDATION !== "1") return [];
     const target = process.env.CONSOLE_API_URL || "https://console.hanzo.ai";
-    return [
-      { source: "/api/:path*", destination: `${target}/api/:path*` },
-    ];
+    return [{ source: "/api/:path*", destination: `${target}/api/:path*` }];
   },
 
   async headers() {
