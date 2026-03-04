@@ -18,8 +18,7 @@ import {
 import { randomUUID } from "crypto";
 import Decimal from "decimal.js";
 import { sql } from "kysely";
-import { afterEach } from "node:test";
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { compileTemplateString } from "../features/utils/utilities";
 import { OpenAIServer } from "./network";
 import { createEvalJobs, evaluate, extractVariablesFromTracingData } from "../features/evaluation/evalService";
