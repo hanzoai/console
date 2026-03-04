@@ -24,10 +24,7 @@ import { getEventsStream } from "../features/database-read-stream/event-stream";
 process.env.HANZO_DATASET_SERVICE_READ_FROM_VERSIONED_IMPLEMENTATION = "true";
 process.env.HANZO_DATASET_SERVICE_WRITE_TO_VERSIONED_IMPLEMENTATION = "true";
 
-const maybeDescribe =
-  process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true"
-    ? describe
-    : describe.skip;
+const maybeDescribe = process.env.HANZO_ENABLE_EVENTS_TABLE_V2_APIS === "true" ? describe : describe.skip;
 
 describe("batch export test suite", () => {
   it("should export observations", async () => {
@@ -622,6 +619,91 @@ describe("batch export test suite", () => {
         }),
       ]),
     );
+  });
+
+  it("should export traces with categorical score names containing colons", async () => {
+    const { projectId } = await createOrgProjectAndApiKey();
+
+    const trace = createTrace({
+      project_id: projectId,
+      id: randomUUID(),
+    });
+
+    await createTracesCh([trace]);
+
+    const categoricalScore = createTraceScore({
+      project_id: projectId,
+      trace_id: trace.id,
+      name: "QA: #1 Primary Failure",
+      value: undefined,
+      string_value: "yes",
+      data_type: "CATEGORICAL",
+    });
+
+    await createScoresCh([categoricalScore]);
+
+    const stream = await getTraceStream({
+      projectId,
+      cutoffCreatedAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      filter: [],
+    });
+
+    const rows: any[] = [];
+
+    for await (const chunk of stream) {
+      rows.push(chunk);
+    }
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["QA: #1 Primary Failure"]).toEqual(["yes"]);
+  });
+
+  it("should export observations with categorical score names containing colons", async () => {
+    const { projectId } = await createOrgProjectAndApiKey();
+
+    const traceId = randomUUID();
+    const trace = createTrace({
+      project_id: projectId,
+      id: traceId,
+    });
+
+    await createTracesCh([trace]);
+
+    const observation = createObservation({
+      project_id: projectId,
+      trace_id: traceId,
+      id: randomUUID(),
+      type: "GENERATION",
+    });
+
+    await createObservationsCh([observation]);
+
+    const categoricalScore = createTraceScore({
+      project_id: projectId,
+      trace_id: traceId,
+      observation_id: observation.id,
+      name: "QA: #1 Primary Failure",
+      value: undefined,
+      string_value: "yes",
+      data_type: "CATEGORICAL",
+    });
+
+    await createScoresCh([categoricalScore]);
+
+    const stream = await getObservationStream({
+      projectId,
+      cutoffCreatedAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      filter: [],
+    });
+
+    const rows: any[] = [];
+
+    for await (const chunk of stream) {
+      rows.push(chunk);
+    }
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["QA: #1 Primary Failure"]).toEqual(["yes"]);
   });
 
   it("should export traces with filter and sort", async () => {
@@ -2380,9 +2462,7 @@ describe("batch export test suite", () => {
       expect(rows.every((r) => r.type === "GENERATION")).toBe(true);
 
       const exportedNames = rows.map((row) => row.name);
-      expect(exportedNames).toEqual(
-        expect.arrayContaining(["generation-1", "generation-2"]),
-      );
+      expect(exportedNames).toEqual(expect.arrayContaining(["generation-1", "generation-2"]));
     });
 
     it("should export events with name filter", async () => {
@@ -2532,6 +2612,51 @@ describe("batch export test suite", () => {
       expect(rows[0].sentiment).toEqual(["positive"]);
     });
 
+    it("should export events with categorical score names containing colons", async () => {
+      const { projectId } = await createOrgProjectAndApiKey();
+
+      const traceId = randomUUID();
+      const now = Date.now() * 1000;
+
+      const event = createEvent({
+        project_id: projectId,
+        trace_id: traceId,
+        type: "GENERATION",
+        name: "colon-scored-event",
+        start_time: now,
+      });
+
+      await createEventsCh([event]);
+
+      const score = createTraceScore({
+        project_id: projectId,
+        trace_id: traceId,
+        observation_id: event.span_id,
+        name: "QA: #1 Primary Failure",
+        value: undefined,
+        string_value: "yes",
+        data_type: "CATEGORICAL",
+      });
+
+      await createScoresCh([score]);
+
+      const stream = await getEventsStream({
+        projectId: projectId,
+        cutoffCreatedAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        filter: [],
+      });
+
+      const rows: any[] = [];
+
+      for await (const chunk of stream) {
+        rows.push(chunk);
+      }
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].name).toBe("colon-scored-event");
+      expect(rows[0]["QA: #1 Primary Failure"]).toEqual(["yes"]);
+    });
+
     it("should handle empty events export", async () => {
       const { projectId } = await createOrgProjectAndApiKey();
 
@@ -2607,9 +2732,7 @@ describe("batch export test suite", () => {
       expect(rows.every((r) => r.environment === "production")).toBe(true);
 
       const exportedNames = rows.map((row) => row.name);
-      expect(exportedNames).toEqual(
-        expect.arrayContaining(["prod-event", "another-prod-event"]),
-      );
+      expect(exportedNames).toEqual(expect.arrayContaining(["prod-event", "another-prod-event"]));
     });
 
     it("should export events with date range filter", async () => {
@@ -3141,9 +3264,7 @@ describe("batch export test suite", () => {
       expect(rows.every((r) => r.type === "GENERATION")).toBe(true);
 
       const exportedNames = rows.map((row) => row.name);
-      expect(exportedNames).toEqual(
-        expect.arrayContaining(["generation-1", "generation-2"]),
-      );
+      expect(exportedNames).toEqual(expect.arrayContaining(["generation-1", "generation-2"]));
     });
 
     it("should export events with name filter", async () => {
@@ -3293,6 +3414,51 @@ describe("batch export test suite", () => {
       expect(rows[0].sentiment).toEqual(["positive"]);
     });
 
+    it("should export events with categorical score names containing colons", async () => {
+      const { projectId } = await createOrgProjectAndApiKey();
+
+      const traceId = randomUUID();
+      const now = Date.now() * 1000;
+
+      const event = createEvent({
+        project_id: projectId,
+        trace_id: traceId,
+        type: "GENERATION",
+        name: "colon-scored-event",
+        start_time: now,
+      });
+
+      await createEventsCh([event]);
+
+      const score = createTraceScore({
+        project_id: projectId,
+        trace_id: traceId,
+        observation_id: event.span_id,
+        name: "QA: #1 Primary Failure",
+        value: undefined,
+        string_value: "yes",
+        data_type: "CATEGORICAL",
+      });
+
+      await createScoresCh([score]);
+
+      const stream = await getEventsStream({
+        projectId: projectId,
+        cutoffCreatedAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        filter: [],
+      });
+
+      const rows: any[] = [];
+
+      for await (const chunk of stream) {
+        rows.push(chunk);
+      }
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].name).toBe("colon-scored-event");
+      expect(rows[0]["QA: #1 Primary Failure"]).toEqual(["yes"]);
+    });
+
     it("should handle empty events export", async () => {
       const { projectId } = await createOrgProjectAndApiKey();
 
@@ -3368,9 +3534,7 @@ describe("batch export test suite", () => {
       expect(rows.every((r) => r.environment === "production")).toBe(true);
 
       const exportedNames = rows.map((row) => row.name);
-      expect(exportedNames).toEqual(
-        expect.arrayContaining(["prod-event", "another-prod-event"]),
-      );
+      expect(exportedNames).toEqual(expect.arrayContaining(["prod-event", "another-prod-event"]));
     });
 
     it("should export events with date range filter", async () => {

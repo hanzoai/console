@@ -112,9 +112,9 @@ export const getTraceStream = async (props: {
           tuple(name, avg_value, data_type, string_value),
           data_type IN ('NUMERIC', 'BOOLEAN')
         ) AS scores_avg,
-        -- For categorical scores, use name:value format for improved query performance
+        -- For categorical scores, use tuples to avoid delimiter issues with names containing colons
         groupArrayIf(
-          concat(name, ':', string_value),
+          tuple(name, string_value),
           data_type = 'CATEGORICAL' AND notEmpty(string_value)
         ) AS score_categories
       FROM (
@@ -220,16 +220,13 @@ export const getTraceStream = async (props: {
       stringValue: score[3],
     }));
 
-    // Process categorical scores (format: "name:value")
-    const categoricalScores = (bufferedRow.score_categories ?? []).map((cat: string) => {
-      const [name, ...valueParts] = cat.split(":");
-      return {
-        name,
-        value: null,
-        dataType: ScoreDataTypeEnum.CATEGORICAL,
-        stringValue: valueParts.join(":"),
-      };
-    });
+    // Process categorical scores (tuples from Datastore)
+    const categoricalScores = (bufferedRow.score_categories ?? []).map((cat: any) => ({
+      name: cat[0],
+      value: null,
+      dataType: ScoreDataTypeEnum.CATEGORICAL,
+      stringValue: cat[1],
+    }));
 
     const outputScores: Record<string, string[] | number[]> = prepareScoresForOutput([
       ...numericScores,
