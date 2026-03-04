@@ -251,9 +251,9 @@ jobs:
           pnpm --filter=shared ds:up
       - name: Create datastore-client wrapper (uses running container)
         run: |
-          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client --user hanzo --password hanzo "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
-          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
+          datastore-client client --user hanzo --password hanzo -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         run: |
           pnpm --filter=shared ds:dev-tables
@@ -371,9 +371,9 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client --user hanzo --password hanzo "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
-          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
+          datastore-client client --user hanzo --password hanzo -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
@@ -475,9 +475,9 @@ jobs:
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
-          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client --user hanzo --password hanzo "$@"\n' | sudo tee /usr/local/bin/datastore-client
+          printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client "$@"\n' | sudo tee /usr/local/bin/datastore-client
           sudo chmod +x /usr/local/bin/datastore-client
-          datastore-client client -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
+          datastore-client client --user hanzo --password hanzo -q "SELECT 'wrapper-ok'" | grep -q wrapper-ok
       - name: Setup Dev Tables
         if: matrix.deploy-mode == ''
         run: |
