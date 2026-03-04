@@ -52,9 +52,10 @@ function JsonCompletionHandler(data: object) {
 }
 
 function MinioCompletionHandler() {
-  return http.all("http://localhost:9090*", async (request) => {
+  return http.all(/^http:\/\/(localhost|127\.0\.0\.1):9090/, async ({ request }) => {
     logger.info("minio handler");
-    if ((request.params[0] as string).startsWith("/hanzo/events/")) {
+    const url = new URL(request.url);
+    if (url.pathname.startsWith("/hanzo/events/")) {
       return new HttpResponse("Success");
     }
     throw new Error("Unexpected path");
@@ -62,14 +63,15 @@ function MinioCompletionHandler() {
 }
 
 function DatastoreCompletionHandler() {
-  return http.all("http://localhost:8123*", async () => {
+  // Match both localhost and 127.0.0.1 — ClickHouse may bind to either
+  return http.all(/^http:\/\/(localhost|127\.0\.0\.1):8123/, async () => {
     logger.info("datastore handler");
     return passthrough();
   });
 }
 
 function AzuriteCompletionHandler() {
-  return http.all("http://localhost:10000*", async () => {
+  return http.all(/^http:\/\/(localhost|127\.0\.0\.1):10000/, async () => {
     logger.info("handle azurite");
     return passthrough();
   });
