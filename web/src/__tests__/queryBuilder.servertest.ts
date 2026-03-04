@@ -10,8 +10,8 @@ import {
   createObservationsCh,
   createTraceScore,
   createScoresCh,
+  datastoreClient,
 } from "@hanzo/shared/src/server";
-import { datastoreClient } from "@hanzo/shared/src/server/datastore/client";
 import { randomUUID } from "crypto";
 import { env } from "@/src/env.mjs";
 
