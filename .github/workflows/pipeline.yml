@@ -249,6 +249,12 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ds:up
+        env:
+          DATASTORE_MIGRATION_URL: datastore://localhost:9000
+          DATASTORE_URL: http://localhost:8123
+          DATASTORE_USER: hanzo
+          DATASTORE_PASSWORD: hanzo
+          DATASTORE_DB: default
       - name: Create datastore-client wrapper (uses running container)
         run: |
           printf '#!/bin/bash\nshift\nexec docker exec -i hanzo-datastore datastore client "$@"\n' | sudo tee /usr/local/bin/datastore-client
@@ -257,6 +263,12 @@ jobs:
       - name: Setup Dev Tables
         run: |
           pnpm --filter=shared ds:dev-tables
+        env:
+          DATASTORE_MIGRATION_URL: datastore://localhost:9000
+          DATASTORE_URL: http://localhost:8123
+          DATASTORE_USER: hanzo
+          DATASTORE_PASSWORD: hanzo
+          DATASTORE_DB: default
       - name: Verify Dev Tables
         run: |
           docker exec hanzo-datastore datastore client --user hanzo --password hanzo -q "SHOW TABLES" | tee /dev/stderr | grep -q events
@@ -368,6 +380,12 @@ jobs:
         run: |
           pnpm run db:migrate
           pnpm --filter=shared ds:up
+        env:
+          DATASTORE_MIGRATION_URL: datastore://localhost:9000
+          DATASTORE_URL: http://localhost:8123
+          DATASTORE_USER: hanzo
+          DATASTORE_PASSWORD: hanzo
+          DATASTORE_DB: default
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
@@ -472,6 +490,12 @@ jobs:
           pnpm run db:migrate
           pnpm run db:seed
           pnpm run --filter=shared ds:up
+        env:
+          DATASTORE_MIGRATION_URL: datastore://localhost:9000
+          DATASTORE_URL: http://localhost:8123
+          DATASTORE_USER: hanzo
+          DATASTORE_PASSWORD: hanzo
+          DATASTORE_DB: default
       - name: Create datastore-client wrapper (uses running container)
         if: matrix.deploy-mode == ''
         run: |
@@ -482,6 +506,12 @@ jobs:
         if: matrix.deploy-mode == ''
         run: |
           pnpm --filter=shared ds:dev-tables
+        env:
+          DATASTORE_MIGRATION_URL: datastore://localhost:9000
+          DATASTORE_URL: http://localhost:8123
+          DATASTORE_USER: hanzo
+          DATASTORE_PASSWORD: hanzo
+          DATASTORE_DB: default
       - name: Verify Dev Tables
         if: matrix.deploy-mode == ''
         run: |
