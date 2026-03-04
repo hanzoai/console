@@ -25,7 +25,7 @@ jobs:
     
     services:
       postgres:
-        image: ghcr.io/hanzoai/sql:18-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: hanzo
           POSTGRES_PASSWORD: hanzo123

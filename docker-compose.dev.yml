@@ -66,7 +66,7 @@ services:
       - default
 
   postgres:
-    image: ghcr.io/hanzoai/sql:18-alpine
+    image: postgres:18-alpine
     container_name: ${POSTGRES_CONTAINER_NAME:-hanzo-postgres}
     restart: always
     healthcheck:

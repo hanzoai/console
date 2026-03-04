@@ -144,7 +144,7 @@ services:
       retries: 10
 
   postgres:
-    image: ghcr.io/hanzoai/sql:18-alpine
+    image: postgres:18-alpine
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
