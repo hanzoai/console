@@ -45,9 +45,18 @@ const endToEndServerTestConfig = {
 
 // To avoid the "Cannot use import statement outside a module" errors while transforming ESM.
 // jsonpath-plus is needed because @hanzo/shared barrel exports evals/utilities which imports it
-const esModules = ["superjson", "jsonpath-plus"];
+const esModules = ["superjson", "jsonpath-plus", "@hanzo/iam"];
 // Add any custom config to be passed to Jest
 /** @type {import('jest').Config} */
+// @hanzo/iam is ESM-only; Jest CJS resolver can't follow its subpath "import" exports.
+// Map each subpath to the actual dist file so Jest can find and transform them.
+const iamModuleMapper = {
+  "^@hanzo/iam/nextauth$": "<rootDir>/node_modules/@hanzo/iam/dist/nextauth.js",
+  "^@hanzo/iam/browser$": "<rootDir>/node_modules/@hanzo/iam/dist/browser.js",
+  "^@hanzo/iam/react$": "<rootDir>/node_modules/@hanzo/iam/dist/react.js",
+  "^@hanzo/iam$": "<rootDir>/node_modules/@hanzo/iam/dist/index.js",
+};
+
 const config = {
   // Ignore .next/standalone to avoid "Haste module naming collision" warning
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
@@ -57,29 +66,23 @@ const config = {
   projects: [
     {
       ...(await createJestConfig(clientTestConfig)()),
-      // Added transformIgnorePatterns to client tests to handle ESM dependencies from @hanzo/shared
-      // Without this, importing from @hanzo/shared fails with "Unexpected token 'export'" errors
-      transformIgnorePatterns: [
-        `/web/node_modules/(?!(${esModules.join("|")})/)`,
-      ],
+      transformIgnorePatterns: [`/web/node_modules/(?!(${esModules.join("|")})/)`],
+      moduleNameMapper: iamModuleMapper,
     },
     {
       ...(await createJestConfig(serverTestConfig)()),
-      transformIgnorePatterns: [
-        `/web/node_modules/(?!(${esModules.join("|")})/)`,
-      ],
+      transformIgnorePatterns: [`/web/node_modules/(?!(${esModules.join("|")})/)`],
+      moduleNameMapper: iamModuleMapper,
     },
     {
       ...(await createJestConfig(asyncServerTestConfig)()),
-      transformIgnorePatterns: [
-        `/web/node_modules/(?!(${esModules.join("|")})/)`,
-      ],
+      transformIgnorePatterns: [`/web/node_modules/(?!(${esModules.join("|")})/)`],
+      moduleNameMapper: iamModuleMapper,
     },
     {
       ...(await createJestConfig(endToEndServerTestConfig)()),
-      transformIgnorePatterns: [
-        `/web/node_modules/(?!(${esModules.join("|")})/)`,
-      ],
+      transformIgnorePatterns: [`/web/node_modules/(?!(${esModules.join("|")})/)`],
+      moduleNameMapper: iamModuleMapper,
     },
   ],
 };

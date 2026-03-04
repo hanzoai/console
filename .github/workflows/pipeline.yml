@@ -297,10 +297,10 @@ jobs:
           INIT_USER_PASSWORD: "password"
       - name: run test-sync
         working-directory: web
-        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --selectProjects sync-server
+        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --forceExit --selectProjects sync-server
       - name: run test-client
         working-directory: web
-        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --selectProjects client
+        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --forceExit --selectProjects client
 
   tests-web-async:
     timeout-minutes: 30
@@ -426,7 +426,7 @@ jobs:
           INIT_USER_PASSWORD: "password"
       - name: run tests
         working-directory: web
-        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --selectProjects async-server --shard=${{ matrix.shard }}/3
+        run: npx cross-env NODE_OPTIONS='--no-experimental-require-module' npx dotenv -e ../.env.test -e ../.env -- npx jest --verbose --runInBand --detectOpenHandles --forceExit --selectProjects async-server --shard=${{ matrix.shard }}/3
 
   tests-worker:
     timeout-minutes: 20
