@@ -76,7 +76,7 @@ describe("Authenticate API calls", () => {
 
       if (auth.validKey) {
         expect(auth.scope.orgId).toBe("seed-org-id");
-        expect(auth.scope.plan).toBe("cloud:free");
+        expect(auth.scope.plan).toBe("oss");
         expect(auth.scope.rateLimitOverrides).toEqual([]);
       }
 
@@ -127,7 +127,7 @@ describe("Authenticate API calls", () => {
 
       if (auth.validKey) {
         expect(auth.scope.orgId).toBe("seed-org-id");
-        expect(auth.scope.plan).toBe("cloud:free");
+        expect(auth.scope.plan).toBe("oss");
         expect(auth.scope.rateLimitOverrides).toEqual([
           {
             resource: "ingestion",
@@ -273,7 +273,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         ...apiKey,
         orgId: "seed-org-id",
-        plan: "cloud:free",
+        plan: "oss",
         rateLimitOverrides: [
           {
             resource: "public-api",
@@ -383,7 +383,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         ...apiKey,
         orgId: "seed-org-id",
-        plan: "cloud:hobby",
+        plan: "oss",
         scope: "PROJECT", // Now the scope is present
         projectId: "7a88fb47-b4e2-43b8-a06c-a5ce950dc53a",
         rateLimitOverrides: [
@@ -496,7 +496,7 @@ describe("Authenticate API calls", () => {
         isIngestionSuspended: expect.anything(),
         projectId: expect.any(String),
         orgId: "seed-org-id",
-        plan: "cloud:hobby",
+        plan: "oss",
         scope: "PROJECT",
       });
     });
@@ -572,7 +572,7 @@ describe("Authenticate API calls", () => {
       expect(parsed).toEqual({
         ...apiKey,
         orgId: "seed-org-id",
-        plan: "cloud:free",
+        plan: "oss",
         createdAt: apiKey?.createdAt.toISOString(),
         scope: "PROJECT",
         isIngestionSuspended: expect.anything(),

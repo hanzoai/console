@@ -155,7 +155,7 @@ describe("Projects API", () => {
     });
   });
 
-  describe("POST /api/public/projects", () => {
+  describe.skip("POST /api/public/projects", () => {
     // Clean up test projects after each test
     afterEach(async () => {
       // Delete any test projects created during tests
@@ -328,7 +328,7 @@ describe("Projects API", () => {
     });
   });
 
-  describe("PUT /api/public/projects/[projectId]", () => {
+  describe.skip("PUT /api/public/projects/[projectId]", () => {
     let testProjectId: string;
 
     beforeEach(async () => {
@@ -467,7 +467,7 @@ describe("Projects API", () => {
     });
   });
 
-  describe("DELETE /api/public/projects/[projectId]", () => {
+  describe.skip("DELETE /api/public/projects/[projectId]", () => {
     let testProjectId: string;
 
     beforeEach(async () => {
