@@ -146,6 +146,8 @@ export class DatastoreClient {
   }> {
     const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
+    // Set default_format as URL param — ensures JSONEachRow even for complex CTEs
+    qs.set("default_format", "JSONEachRow");
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd().replace(/;+$/, "")} FORMAT JSONEachRow`;
 
@@ -206,6 +208,7 @@ export class DatastoreClient {
   }): AsyncGenerator<T> {
     const mergedSettings: DatastoreSettings = { ...this.settings, ...opts.datastore_settings };
     const qs = buildQueryParams(opts.query_params, mergedSettings, this.database);
+    qs.set("default_format", "JSONEachRow");
     const url = `${this.url}/?${qs.toString()}`;
     const sql = `${opts.query.trimEnd().replace(/;+$/, "")} FORMAT JSONEachRow`;
 
