@@ -776,6 +776,15 @@ jobs:
         run: pnpm run build
         env:
           NODE_OPTIONS: --max_old_space_size=8192
+      - name: Copy standalone static assets
+        run: |
+          # Next.js standalone output excludes static assets and public dir.
+          # They must be copied into the standalone tree for the server to serve them.
+          WEB_SERVER=$(find web/.next/standalone -name 'server.js' -path '*/web/server.js' -not -path '*/node_modules/*' | head -1)
+          STANDALONE_WEB_DIR=$(dirname "$WEB_SERVER")
+          cp -r web/.next/static "$STANDALONE_WEB_DIR/.next/static"
+          cp -r web/public "$STANDALONE_WEB_DIR/public" 2>/dev/null || true
+          echo "Static assets copied to $STANDALONE_WEB_DIR"
       - name: Start web and worker
         run: |
           WEB_SERVER=$(find web/.next/standalone -name 'server.js' -path '*/web/server.js' -not -path '*/node_modules/*' | head -1)

@@ -48,11 +48,23 @@ fi
 
 # Execute the datastore migration, except when disabled.
 if [ "$DATASTORE_AUTO_MIGRATION_DISABLED" != "true" ]; then
-    # Apply datastore migrations
-    cd ./packages/shared
-    sh ./datastore/scripts/up.sh
-    status=$?
-    cd ../../
+    # Retry datastore migrations with backoff.
+    # The native protocol (port 9000) can lag behind the HTTP health check (8123),
+    # causing "Authentication failed" on first attempt. Retry handles this race.
+    ds_attempt=0
+    ds_max_attempts=10
+    status=1
+    while [ "$ds_attempt" -lt "$ds_max_attempts" ] && [ "$status" -ne 0 ]; do
+        ds_attempt=$((ds_attempt + 1))
+        if [ "$ds_attempt" -gt 1 ]; then
+            echo "Datastore migration attempt ${ds_attempt}/${ds_max_attempts} (retrying in 3s)..."
+            sleep 3
+        fi
+        cd ./packages/shared
+        sh ./datastore/scripts/up.sh
+        status=$?
+        cd ../../
+    done
 fi
 
 # If migration fails (returns non-zero exit status), exit script with that status

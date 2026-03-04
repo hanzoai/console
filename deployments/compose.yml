@@ -181,10 +181,13 @@ services:
       - datastore_data:/var/lib/datastore
       - datastore_logs:/var/log/datastore
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      # Verify BOTH HTTP (8123) and native protocol (9000) are ready.
+      # The native protocol lags behind HTTP; migrations use port 9000.
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8123/ping && datastore client --user ${DATASTORE_USER:-hanzo} --password ${DATASTORE_PASSWORD:-hanzo} --port 9000 --query 'SELECT 1' > /dev/null 2>&1"]
       interval: 5s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 30
+      start_period: 10s
 
   s3:
     build:

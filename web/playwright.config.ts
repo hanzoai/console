@@ -2,9 +2,21 @@ import { defineConfig } from "@playwright/test";
 
 // In CI with output: "standalone", `next start` does not work.
 // Use the standalone server directly instead.
-// Playwright runs commands in a shell already, so no sh -c wrapper needed.
-const ciCommand =
-  'WEB_SERVER=$(find .next/standalone -name "server.js" -path "*/web/server.js" -not -path "*/node_modules/*" | head -1) && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER';
+// The standalone output does NOT include static assets or public files —
+// they must be copied into the standalone tree before the server starts.
+// See: https://nextjs.org/docs/pages/api-reference/config/next-config-js/output#automatically-copying-traced-files
+const ciCommand = [
+  // Find the standalone server entrypoint
+  'WEB_SERVER=$(find .next/standalone -name "server.js" -path "*/web/server.js" -not -path "*/node_modules/*" | head -1)',
+  // Derive the standalone web root (e.g. .next/standalone/web)
+  "STANDALONE_WEB_DIR=$(dirname $WEB_SERVER)",
+  // Copy static assets (JS/CSS bundles) so the browser can load them
+  "cp -r .next/static $STANDALONE_WEB_DIR/.next/static",
+  // Copy public directory (favicon, images, etc.)
+  "cp -r public $STANDALONE_WEB_DIR/public 2>/dev/null || true",
+  // Start the standalone server
+  "HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER",
+].join(" && ");
 
 export default defineConfig({
   timeout: 180000, // test timeout 180s (3 minutes)
