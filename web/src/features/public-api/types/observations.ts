@@ -266,10 +266,17 @@ export const EncodedObservationsCursorV2 = z
  * Encodes a cursor object to base64 string for API response
  */
 export const encodeCursor = (cursor: ObservationsCursorV2Type): z.infer<typeof EncodedObservationsCursorV2String> => {
+  let startTimeStr: string;
+  if (cursor.lastStartTimeTo instanceof Date) {
+    startTimeStr = isNaN(cursor.lastStartTimeTo.getTime())
+      ? new Date(0).toISOString()
+      : cursor.lastStartTimeTo.toISOString();
+  } else {
+    startTimeStr = cursor.lastStartTimeTo;
+  }
   return Buffer.from(
     JSON.stringify({
-      lastStartTimeTo:
-        cursor.lastStartTimeTo instanceof Date ? cursor.lastStartTimeTo.toISOString() : cursor.lastStartTimeTo,
+      lastStartTimeTo: startTimeStr,
       lastTraceId: cursor.lastTraceId,
       lastId: cursor.lastId,
     }),

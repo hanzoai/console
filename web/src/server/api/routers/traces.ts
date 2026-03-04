@@ -196,7 +196,7 @@ export const traceRouter = createTRPCRouter({
           {
             type: "stringOptions",
             operator: "any of",
-            column: "ID",
+            column: "id",
             value: filteredTraceIds,
           },
         ],

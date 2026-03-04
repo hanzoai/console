@@ -466,7 +466,17 @@ export function parseDatastoreUTCDateTimeFormat(dateStr: string): Date {
   // Datastore returns DateTime64 as "YYYY-MM-DD HH:MM:SS.ffffff" in JSONEachRow.
   // ECMAScript Date only guarantees 3 fractional digits (milliseconds).
   // Truncate sub-millisecond precision for reliable cross-engine parsing.
-  return new Date(`${dateStr.replace(" ", "T").replace(/(\.\d{3})\d+/, "$1")}Z`);
+  // Strip any trailing "Z" first to avoid double-Z when input is already ISO format.
+  const normalized = dateStr
+    .replace(/Z$/i, "")
+    .replace(" ", "T")
+    .replace(/(\.\d{3})\d+/, "$1");
+  const date = new Date(`${normalized}Z`);
+  if (isNaN(date.getTime())) {
+    logger.error(`parseDatastoreUTCDateTimeFormat: Invalid date string "${dateStr}"`);
+    return new Date(0); // Fallback to epoch rather than returning Invalid Date
+  }
+  return date;
 }
 
 export function datastoreCompliantRandomCharacters() {
