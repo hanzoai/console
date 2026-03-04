@@ -55,6 +55,11 @@ services:
       --maxmemory-policy noeviction
     ports:
       - ${HOST_IP:-127.0.0.1}:${REDIS_HOST_PORT:-6379}:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
     networks:
       - default
 

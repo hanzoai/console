@@ -58,9 +58,10 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/public/health"]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 3
+      retries: 18
+      start_period: 30s
 
   hanzo-worker:
     build:
@@ -76,9 +77,10 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 3
+      retries: 12
+      start_period: 15s
 
   datastore:
     image: ghcr.io/hanzoai/datastore:latest

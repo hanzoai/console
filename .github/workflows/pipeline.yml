@@ -141,7 +141,7 @@ jobs:
           fi
           docker compose version
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -153,21 +153,25 @@ jobs:
           docker compose --progress plain --verbose -f docker-compose.build.yml build --print > /tmp/bake.json
           docker buildx bake -f /tmp/bake.json
           docker compose --progress plain -f docker-compose.build.yml up -d
-          sleep 5 # Wait for PostgreSQL to accept connections
+          sleep 10 # Wait for PostgreSQL to accept connections
       - name: Ensure no unhealthy status
         run: |
-          if docker compose ps | grep "(unhealthy)"; then
+          if docker compose -f docker-compose.build.yml ps | grep "(unhealthy)"; then
             echo "One or more services are unhealthy"
+            docker compose -f docker-compose.build.yml logs
             exit 1
           else
             echo "All services are healthy"
           fi
       - name: Check worker health
         run: |
-          timeout 60 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 2; done'
+          timeout 120 bash -c 'until curl -sf http://localhost:3030/api/health; do sleep 2; done'
       - name: Check server health
         run: |
-          timeout 60 bash -c 'until curl -sf http://localhost:3000/api/public/health; do sleep 2; done'
+          timeout 180 bash -c 'until curl -sf http://localhost:3000/api/public/health; do sleep 3; done'
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.build.yml logs --tail=100
 
   tests-web-sync:
     timeout-minutes: 30
@@ -191,7 +195,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -320,7 +324,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -439,7 +443,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -534,7 +538,7 @@ jobs:
         with:
           version: 9.5.0
       - name: Login to Docker Hub
-        if: github.repository == 'hanzo/hanzo' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -609,7 +613,7 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: "pnpm-lock.yaml"
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
@@ -688,7 +692,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        if: github.repository == 'hanzoai/cloud' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME_READ }}
