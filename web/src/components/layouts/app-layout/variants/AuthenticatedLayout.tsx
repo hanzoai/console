@@ -16,6 +16,7 @@ import type { Session } from "next-auth";
 import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
 import type { RouteGroup } from "@/src/components/layouts/routes";
 import dynamic from "next/dynamic";
+import { HanzoHeader, useHanzoAuth } from "@hanzo/ui/navigation";
 
 const CommandMenu = dynamic(
   () =>
@@ -46,6 +47,22 @@ const FirstLoginBillingModal = dynamic(
     ssr: false,
   },
 );
+
+function ConsoleHanzoHeader({ onSignOut }: { onSignOut: () => void }) {
+  const { user, organizations, currentOrgId, switchOrg } = useHanzoAuth();
+
+  return (
+    <HanzoHeader
+      currentApp="Console"
+      currentAppId="console"
+      user={user}
+      organizations={organizations}
+      currentOrgId={currentOrgId}
+      onOrgSwitch={switchOrg}
+      onSignOut={onSignOut}
+    />
+  );
+}
 
 /** Grouped navigation structure returned by processNavigation */
 type GroupedNavigation = {
@@ -114,6 +131,7 @@ export function AuthenticatedLayout({ children, session, navigation, metadata, o
       <PaymentBannerProvider>
         <SidebarProvider>
           <div className="flex h-dvh w-full flex-col">
+            <ConsoleHanzoHeader onSignOut={onSignOut} />
             <PaymentBanner />
             <div className="flex min-h-0 flex-1 pt-banner-offset">
               <AppSidebar

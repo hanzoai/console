@@ -880,8 +880,10 @@ export const env = createEnv({
     HANZO_BLOCKED_USERIDS_CHATCOMPLETION:
       process.env.HANZO_BLOCKED_USERIDS_CHATCOMPLETION,
   },
-  // Skip validation in Docker builds
-  // DOCKER_BUILD is set in Dockerfile
-  skipValidation: process.env.DOCKER_BUILD === "1",
+  // Skip validation in Docker builds or frontend-only dev mode
+  // DOCKER_BUILD is set in Dockerfile, SKIP_ENV_VALIDATION for local frontend dev
+  skipValidation:
+    process.env.DOCKER_BUILD === "1" ||
+    process.env.SKIP_ENV_VALIDATION === "1",
   emptyStringAsUndefined: true, // https://env.t3.gg/docs/customization#treat-empty-strings-as-undefined
 });

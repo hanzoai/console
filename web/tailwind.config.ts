@@ -7,6 +7,7 @@ module.exports = {
     "./app/**/*.{ts,tsx,jsx,tsx}",
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@ferrucc-io/emoji-picker/dist/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@hanzo/ui/dist/**/*.{js,mjs}",
   ],
   theme: {
     container: {

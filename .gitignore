@@ -48,6 +48,7 @@ local.env
 !.env.dev-redis-cluster.example
 !.env.prod.example
 !.env.test.example
+!.env.frontend
 
 # vercel
 .vercel

@@ -99,6 +99,15 @@ const nextConfig = {
   },
   output: "standalone",
 
+  // In frontend-only mode, proxy API calls to production console
+  async rewrites() {
+    if (process.env.SKIP_ENV_VALIDATION !== "1") return [];
+    const target = process.env.CONSOLE_API_URL || "https://console.hanzo.ai";
+    return [
+      { source: "/api/:path*", destination: `${target}/api/:path*` },
+    ];
+  },
+
   async headers() {
     return [
       {
@@ -207,9 +216,9 @@ const nextConfig = {
   },
 };
 
-// Skip Sentry webpack overhead during Docker builds (no auth token available anyway)
+// Skip Sentry webpack overhead during Docker builds and frontend-only mode
 const sentryConfig =
-  process.env.DOCKER_BUILD === "1"
+  process.env.DOCKER_BUILD === "1" || process.env.SKIP_ENV_VALIDATION === "1"
     ? nextConfig
     : withSentryConfig(nextConfig, {
         // For all available options, see:
