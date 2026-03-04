@@ -38,6 +38,8 @@ import { decryptAndParseExtraHeaders } from "./utils";
 import { logger } from "../logger";
 import { LLMCompletionError } from "./errors";
 
+export type CompletionWithReasoning = { text: string; reasoning?: string };
+
 const isConsoleCloud = Boolean(env.NEXT_PUBLIC_HANZO_CLOUD_REGION);
 
 const PROVIDERS_WITH_REQUIRED_USER_MESSAGE = [
