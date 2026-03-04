@@ -2,11 +2,9 @@ import { defineConfig } from "@playwright/test";
 
 // In CI with output: "standalone", `next start` does not work.
 // Use the standalone server directly instead.
-const ciCommand = [
-  "sh",
-  "-c",
-  'WEB_SERVER=$(find .next/standalone -name "server.js" -path "*/web/server.js" -not -path "*/node_modules/*" | head -1) && NEXT_MANUAL_SIG_HANDLE=true HOSTNAME=0.0.0.0 PORT=3000 node $WEB_SERVER',
-].join(" ");
+// Playwright runs commands in a shell already, so no sh -c wrapper needed.
+const ciCommand =
+  'WEB_SERVER=$(find .next/standalone -name "server.js" -path "*/web/server.js" -not -path "*/node_modules/*" | head -1) && HOSTNAME=0.0.0.0 PORT=3000 NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER';
 
 export default defineConfig({
   timeout: 180000, // test timeout 180s (3 minutes)

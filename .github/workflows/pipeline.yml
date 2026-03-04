@@ -780,7 +780,7 @@ jobs:
         run: |
           WEB_SERVER=$(find web/.next/standalone -name 'server.js' -path '*/web/server.js' -not -path '*/node_modules/*' | head -1)
           echo "Starting standalone server: $WEB_SERVER"
-          npx dotenv -e .env -- sh -c "NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER" > /tmp/web.log 2>&1 &
+          npx dotenv -e .env -- sh -c "HOSTNAME=0.0.0.0 NEXT_MANUAL_SIG_HANDLE=true node $WEB_SERVER" > /tmp/web.log 2>&1 &
           # HOSTNAME must be 0.0.0.0 — the CI runner pod hostname is not localhost-reachable
           npx dotenv -e .env -- sh -c "HOSTNAME=0.0.0.0 node worker/dist/index.js" > /tmp/worker.log 2>&1 &
       - name: Check worker health

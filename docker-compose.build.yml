@@ -83,7 +83,7 @@ services:
       start_period: 15s
 
   datastore:
-    image: ghcr.io/hanzoai/datastore:latest
+    image: ghcr.io/hanzoai/datastore:26
     environment:
       DATASTORE_DB: default
       DATASTORE_USER: ${DATASTORE_USER:-hanzo}
