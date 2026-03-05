@@ -24,7 +24,7 @@ services:
       - hanzo_azurite_data:/data
 
   s3:
-    image: cgr.dev/chainguard/minio
+    image: ghcr.io/hanzoai/s3:latest
     container_name: ${S3_CONTAINER_NAME:-hanzo-s3}
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service

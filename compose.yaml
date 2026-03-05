@@ -116,7 +116,7 @@ services:
       - ai-platform_default
 
   s3:
-    image: cgr.dev/chainguard/minio
+    image: ghcr.io/hanzoai/s3:latest
     restart: always
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service

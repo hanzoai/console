@@ -116,7 +116,7 @@ services:
       - local-dev
 
   s3:
-    image: cgr.dev/chainguard/minio
+    image: ghcr.io/hanzoai/s3:latest
     entrypoint: sh
     # create the 'hanzo' bucket before starting the service
     command: -c 'mkdir -p /data/hanzo && minio server --address ":9000" --console-address ":9001" /data'
