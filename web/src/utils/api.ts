@@ -190,12 +190,16 @@ export const api = createTRPCNext<AppRouter>({
           true: httpLink({
             url: `${getBaseUrl()}/api/trpc`,
             transformer: superjson,
+            fetch: (url, options) =>
+              fetch(url, { ...options, credentials: "include" }),
           }),
           // when condition is false, use batching
           false: httpBatchLink({
             url: `${getBaseUrl()}/api/trpc`,
             transformer: superjson,
             maxURLLength: 2083, // avoid too large batches
+            fetch: (url, options) =>
+              fetch(url, { ...options, credentials: "include" }),
           }),
         }),
       ],
@@ -244,6 +248,8 @@ export const directApi = createTRPCProxyClient<AppRouter>({
       url: `${getBaseUrl()}/api/trpc`,
       transformer: superjson,
       maxURLLength: 2083, // avoid too large batches
+      fetch: (url, options) =>
+        fetch(url, { ...options, credentials: "include" }),
     }),
   ],
 });

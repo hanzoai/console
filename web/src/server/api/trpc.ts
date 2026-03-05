@@ -62,14 +62,12 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   // Debug: log session state to diagnose e2e auth failures (remove after CI is green)
   if (!session?.user && req.url?.includes("trpc")) {
-    const cookieHeader = req.headers.cookie ?? "(no cookies)";
-    const sessionCookies = cookieHeader
-      .split(";")
-      .map((c) => c.trim())
-      .filter((c) => c.includes("next-auth"))
-      .map((c) => c.split("=")[0]);
+    const rawCookie = req.headers.cookie;
+    const allCookieNames = rawCookie
+      ? rawCookie.split(";").map((c) => c.trim().split("=")[0])
+      : [];
     console.error(
-      `[AUTH_DEBUG] session=${session ? "exists" : "null"} user=${session?.user ?? "null"} cookies=[${sessionCookies.join(",")}] url=${req.url}`,
+      `[AUTH_DEBUG] session=${session ? JSON.stringify({ user: session.user === null ? "null" : "exists" }) : "null"} rawCookie=${rawCookie ? `"${rawCookie.substring(0, 120)}"` : "MISSING"} cookieNames=[${allCookieNames.join(",")}] host=${req.headers.host} origin=${req.headers.origin ?? "none"} referer=${req.headers.referer ?? "none"} url=${req.url}`,
     );
   }
 
