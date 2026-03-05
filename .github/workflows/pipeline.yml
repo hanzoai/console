@@ -68,7 +68,10 @@ jobs:
       - name: install dependencies
         run: pnpm install
       - name: Load default env
-        run: cp .env.dev.example .env
+        run: |
+          cp .env.dev.example .env
+          # Enable init scripts in the build — test jobs need the seed to run
+          sed -i 's/NEXT_PUBLIC_HANZO_RUN_NEXT_INIT="false"/NEXT_PUBLIC_HANZO_RUN_NEXT_INIT="true"/' .env
       - name: Build
         run: pnpm run build
         env:
