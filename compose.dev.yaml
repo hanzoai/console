@@ -238,7 +238,7 @@ services:
     volumes:
       - cloud_dev_s3_data:/data
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:9000/minio/health/live"]
       interval: 1s
       timeout: 5s
       retries: 5
