@@ -60,17 +60,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
-  // Debug: log session state to diagnose e2e auth failures (remove after CI is green)
-  if (!session?.user && req.url?.includes("trpc")) {
-    const rawCookie = req.headers.cookie;
-    const allCookieNames = rawCookie
-      ? rawCookie.split(";").map((c) => c.trim().split("=")[0])
-      : [];
-    console.error(
-      `[AUTH_DEBUG] session=${session ? JSON.stringify({ user: session.user === null ? "null" : "exists" }) : "null"} rawCookie=${rawCookie ? `"${rawCookie.substring(0, 120)}"` : "MISSING"} cookieNames=[${allCookieNames.join(",")}] host=${req.headers.host} origin=${req.headers.origin ?? "none"} referer=${req.headers.referer ?? "none"} url=${req.url}`,
-    );
-  }
-
   // Get the headers from the request
   const headers = req.headers;
 
