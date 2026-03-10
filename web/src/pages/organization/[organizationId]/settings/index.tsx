@@ -14,6 +14,7 @@ import { ApiKeyList } from "@/src/features/public-api/components/ApiKeyList";
 import AIFeatureSwitch from "@/src/features/organizations/components/AIFeatureSwitch";
 import { OrgAuditLogsSettingsPage } from "@/src/features/audit-log-viewer/OrgAuditLogsSettingsPage";
 import { KmsOrgSettings } from "@/src/features/kms/components/KmsOrgSettings";
+import { BillingSettings } from "@/src/features/billing/components/BillingSettings";
 import { env } from "@/src/env.mjs";
 
 type OrganizationSettingsPage = {
@@ -105,7 +106,7 @@ export const getOrganizationSettingsPages = ({
     title: "Billing",
     slug: "billing",
     cmdKKeywords: ["payment", "subscription", "plan", "invoice", "usage"],
-    href: "https://billing.hanzo.ai",
+    content: <BillingSettings />,
   },
   {
     title: "KMS",
