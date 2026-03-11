@@ -1036,6 +1036,9 @@ importers:
       pg:
         specifier: ^8.13.0
         version: 8.13.0
+      posthog-node:
+        specifier: ^4.18.0
+        version: 4.18.0
       tiktoken:
         specifier: ^1.0.20
         version: 1.0.20

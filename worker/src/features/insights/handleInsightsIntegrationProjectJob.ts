@@ -18,7 +18,8 @@ import {
   transformScoreForInsights,
 } from "./transformers";
 import { decrypt } from "@hanzo/shared/encryption";
-import { Insights } from "@hanzo/insights-node";
+// posthog-node is the underlying SDK; re-aliased as Insights for branding
+import { PostHog as Insights } from "posthog-node";
 
 type InsightsExecutionConfig = {
   projectId: string;
@@ -50,7 +51,7 @@ const processInsightsTraces = async (config: InsightsExecutionConfig) => {
   });
 
   let sendError: Error | undefined;
-  insights.on("error", (error) => {
+  insights.on("error", (error: unknown) => {
     logger.error(`[INSIGHTS] Error sending traces to Insights for project ${config.projectId}: ${error}`);
     sendError = error instanceof Error ? error : new Error(String(error));
   });
@@ -89,7 +90,7 @@ const processInsightsGenerations = async (config: InsightsExecutionConfig) => {
   });
 
   let sendError: Error | undefined;
-  insights.on("error", (error) => {
+  insights.on("error", (error: unknown) => {
     logger.error(`[INSIGHTS] Error sending generations to Insights for project ${config.projectId}: ${error}`);
     sendError = error instanceof Error ? error : new Error(String(error));
   });
@@ -128,7 +129,7 @@ const processInsightsScores = async (config: InsightsExecutionConfig) => {
   });
 
   let sendError: Error | undefined;
-  insights.on("error", (error) => {
+  insights.on("error", (error: unknown) => {
     logger.error(`[INSIGHTS] Error sending scores to Insights for project ${config.projectId}: ${error}`);
     sendError = error instanceof Error ? error : new Error(String(error));
   });
@@ -167,7 +168,7 @@ const processInsightsEvents = async (config: InsightsExecutionConfig) => {
   });
 
   let sendError: Error | undefined;
-  insights.on("error", (error) => {
+  insights.on("error", (error: unknown) => {
     logger.error(`[INSIGHTS] Error sending events to Insights for project ${config.projectId}: ${error}`);
     sendError = error instanceof Error ? error : new Error(String(error));
   });
