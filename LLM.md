@@ -1,190 +1,217 @@
-# Hanzo Cloud Platform Analysis
+# CLAUDE.md
 
-## Overview
-Hanzo is an open-source LLM engineering platform designed to help teams develop, monitor, evaluate, and debug AI applications. It serves as a collaborative platform for managing the lifecycle of AI applications with a focus on observability, prompt management, evaluation, and debugging.
+## Project Overview
 
-Key capabilities include:
-- LLM Application Observability
-- Prompt Management
-- Evaluations
-- Datasets for testing and benchmarking
-- LLM Playground
-- Comprehensive API
+Hanzo Console is an open-source LLM engineering platform that helps teams collaboratively develop, monitor, evaluate, and debug AI applications.
+The main feature areas are tracing, evals and prompt management. Console consists of the web application (this repo), documentation, python SDK and javascript/typescript SDK.
+This repo contains the web application, worker, and supporting packages but notably not the JS nor Python client SDKs.
 
 ## Repository Structure
-This is a monorepo managed with pnpm and Turbo, containing:
+High level structure. There are more folders (eg for hooks etc).
+```
+console/
+├── web/                     # Next.js 14 frontend/backend application
+│   ├── src/
+│   │   ├── components/     # Reusable UI components (shadcn/ui)
+│   │   ├── features/       # Feature-specific code organized by domain
+│   │   ├── pages/          # Next.js pages (Pages Router)
+│   │   └── server/         # tRPC API routes and server logic
+│   └── public/             # Static assets
+├── worker/                  # Express.js background job processor
+│   └── src/
+│       ├── queues/         # BullMQ job queues
+│       └── services/       # Background processing services
+├── packages/
+│   ├── shared/             # Shared types, schemas, and utilities
+│   │   ├── prisma/         # Database schema and migrations
+│   │   └── src/            # Shared TypeScript code
+│   ├── config-eslint/      # ESLint configuration
+│   └── config-typescript/  # TypeScript configuration
+├── ee/                     # Enterprise Edition features
+├── fern/                   # API documentation and OpenAPI specs
+├── generated/              # Auto-generated client code
+└── scripts/                # Development and deployment scripts
+```
 
-- **web/** - Main NextJS application (frontend + backend)
-- **worker/** - Background processing service (not yet in production)
-- **packages/**
-  - **shared/** - Common code, database models, utilities
-  - **config-eslint/** - ESLint configurations
-  - **config-typescript/** - TypeScript configurations
-  - **ee/** - Enterprise edition features
+## Repository Architecture
+This is a **pnpm + Turbo monorepo** with the following key packages:
+
+### Core Applications
+- **`/web/`** - Next.js 14 application (Pages Router) providing both frontend UI and backend APIs
+- **`/worker/`** - Express.js background job processing server
+- **`/packages/shared/`** - Shared database schema, types, and utilities
+
+### Supporting Packages
+- **`/ee/`** - Enterprise Edition features (separate licensing)
+- **`/packages/config-eslint/`** - Shared ESLint configuration
+- **`/packages/config-typescript/`** - Shared TypeScript configuration
+
+## Development Commands
+
+### Development
+```sh
+pnpm i               # Install dependencies
+pnpm run dev         # Start all services (web + worker)
+pnpm run dev:web     # Web app only (localhost:3000) - **used in most cases!**
+pnpm run dev:worker  # Worker only
+pnpm run dx          # Full initial setup: install deps, reset DBs, resets node modules, seed data, start dev. USE SPARINGLY AS IT WIPES THE DATABASE & node_modules
+```
+
+### Database Management
+database commands are to be run in the `packages/shared/` folder.
+```sh
+pnpm run db:generate       # Build prisma models
+pnpm run db:migrate        # Run Prisma migrations
+pnpm run db:reset          # Reset and reseed databases
+pnpm run db:seed           # Seed with example data
+```
+
+### Infrastructure
+```sh
+pnpm run infra:dev:up      # Start Docker services (PostgreSQL, Datastore, Redis, MinIO)
+pnpm run infra:dev:down    # Stop Docker services
+```
+
+### Building & Type Checking
+```sh
+pnpm --filter=PACKAGE_NAME run build  # Runs the build command, will show real typescript errors etc.
+pnpm tc                               # Fast typecheck across all packages (alias for pnpm typecheck)
+pnpm build:check                      # Full Next.js build to alternate dir (can run parallel with dev server)
+```
+
+### Testing in Web Package
+The web package uses JEST for unit tests.
+Depending on the file location (sync, async)
+`web` related tests must go into the `web/src/__tests__/` folder.
+```sh
+pnpm test-sync --testPathPatterns="$FILE_LOCATION_PATTERN" --testNamePattern="$TEST_NAME_PATTERN"
+# For tests in the async folder:
+pnpm test -- --testPathPatterns="$FILE_LOCATION_PATTERN" --testNamePattern="$TEST_NAME_PATTERN"
+# For client tests:
+pnpm test-client --testPathPatterns="buildStepData" --testNamePattern="buildStepData"
+```
+
+### Testing in the Worker Package
+The worker uses `vitest` for unit tests.
+```sh
+pnpm run test --filter=worker -- $TEST_FILE_NAME -t "$TEST_NAME"
+```
+
+### Utilities
+```bash
+pnpm run format            # Format code across entire project
+pnpm run nuke              # Remove all node_modules, build files, wipe database, docker containers. **USE WITH CAUTION**
+```
 
 ## Technology Stack
 
-### Frontend
-- Next.js 15.5 (pages router, standalone output)
-- React 19
-- Tailwind CSS with Radix UI primitives (shadcn-style local components)
-- tRPC for type-safe API interactions
-- Icons: lucide-react (primary, 347 imports) + @phosphor-icons (secondary, 113) + react-icons/si,tb (brand logos only, eslint-gated)
-- Charts: recharts (primary), @tremor/react (beta, being evaluated for removal)
-- Graph viz: @xyflow/react (workflow DAGs), vis-network (trace graphs), elkjs/dagre (layout)
+### Web Application (`/web/`)
+- **Framework**: Next.js 14 (Pages Router)
+- **APIs**: tRPC (type-safe client-server communication) + REST APIs for public access
+- **Authentication**: NextAuth.js/Auth.js
+- **Database**: Prisma ORM with PostgreSQL
+- **Analytics Database**: Datastore (high-volume trace data)
+- **Validation**: Zod schemas, we use zodv4 (always import from `zod/v4`)
+- **Styling**: Tailwind CSS with CSS variables for theming
+- **Components**: shadcn/ui (Radix UI primitives)
+- **State Management**: TanStack Query (React Query) + tRPC
+- **Charts**: Recharts
 
-### Backend
-- Node.js
-- Express (for worker)
-- tRPC (API for frontend)
-- REST API (public API)
-
-### Data Storage
-- PostgreSQL with Prisma ORM
-- Datastore for analytics and trace data
-- Redis for caching and queuing
-- S3-compatible object storage
+### Worker Application (`/worker/`)
+- **Framework**: Express.js
+- **Queue System**: BullMQ with Redis
+- **Purpose**: Async processing (data ingestion, evaluations, exports, integrations)
 
 ### Infrastructure
-- Docker and Docker Compose for local development
-- Kubernetes (Helm) for production deployment
+- **Primary Database**: PostgreSQL (via Prisma ORM)
+- **Analytics Database**: Datastore
+- **Cache/Queues**: Redis
+- **Blob Storage**: MinIO/S3
 
-## Core Features
+## Development Guidelines
 
-### Tracing System
-The platform provides comprehensive observability of LLM applications through a tracing system that tracks:
-- LLM calls
-- Associated metadata
-- Application logic
+### Frontend Features
+- All new features go in `/web/src/features/[feature-name]/`
+- Use tRPC for full-stack features (entry point: `web/src/server/api/root.ts`)
+- Follow existing feature structure for consistency
+- Use shadcn/ui components from `@/src/components/ui`
+- Custom reusable components go in `@/src/components`
 
-Traces are structured as hierarchical observations, with different types (events, generations, spans).
+### Public API Development
+- All public API routes in `/web/src/pages/api/public`
+- Use `withMiddlewares.ts` wrapper
+- Define types in `/web/src/features/public-api/types` with strict Zod v4 objects
+- Add end-to-end tests (see `datasets-api.servertest.ts`)
+- Manually update Fern API specs in `/fern/`, then regenerate OpenAPI spec via Fern CLI
 
-### Prompt Management
-The platform enables centralized management of prompts with:
-- Version control
-- Collaborative iteration
-- Caching for performance
+### Authorization & RBAC
+- Check `/web/src/features/rbac/README.md` for authorization patterns
+- Implement proper entitlements checking (see `/web/src/features/entitlements/README.md`)
 
-### Evaluations
-Various evaluation methods are supported:
-- LLM-as-a-judge
-- User feedback collection
-- Manual labeling
-- Custom evaluation pipelines
+### Database
+- **Dual database system**: PostgreSQL (primary) + Datastore (analytics)
+- Use `golang-migrate` CLI for database migrations
+- All database operations go through Prisma ORM for PostgreSQL
+- Foreign key relationships may not be enforced in schema to allow unordered ingestion
 
-### Integrations
-The platform integrates with many LLM tools and frameworks:
-- OpenAI
-- LangChain
-- LlamaIndex
-- Haystack
-- LiteLLM
-- Various model providers (AWS Bedrock, Anthropic, etc.)
+### Testing
+- Jest for API tests, Playwright for E2E tests
+- For backend/API changes, tests must pass before pushes
+- Add tests for new API endpoints and features
+- When writing tests, focus on decoupling each `it` or `test` block to ensure that they can run independently and concurrently. Tests must never depend on the action or outcome of previous or subsequent tests.
+- When writing tests, especially in the __tests__/async directory, ensure that you avoid `pruneDatabase` calls.
 
-## Development Workflow
+### Code Conventions
+- **Pages Router** (not App Router)
+- Follow conventional commits on main branch
+- Use CSS variables for theming (supports auto dark/light mode)
+- TypeScript throughout
+- Zod v4 for all input validation
 
-The project uses:
-- pnpm for package management
-- Turbo for monorepo build orchestration
-- Docker for containerization
-- GitHub Actions for CI/CD
-- Conventional commits
+## Environment Setup
 
-Local development setup requires:
-- Node.js 20
-- pnpm v9.5.0
-- Docker
-- Cloning the repository and running `pnpm run dx`
+- **Node.js**: Version 24 (specified in `.nvmrc`)
+- **Package Manager**: pnpm v9.5.0
+- **Database Dependencies**: Docker for local PostgreSQL, Datastore, Redis, MinIO
+- **Environment**: Copy `.env.dev.example` to `.env`
 
-## Database Structure
+## Login for Development
 
-The application uses two primary databases:
-1. **PostgreSQL** (via Prisma)
-   - Projects, users, authentication
-   - Traces and observations
-   - Prompts and evaluations
+When running locally with seed data:
+- Username: `demo@hanzo.ai`
+- Password: `password`
+- Demo project URL: `http://localhost:3000/project/7a88fb47-b4e2-43b8-a06c-a5ce950dc53a`
 
-2. **Datastore**
-   - Analytics data
-   - High-performance trace querying
+## Linear MCP
+To get a project, use the `get_project` capability with the full project name as it is in the title.
+- bad: message-placeholder-in-chat-messages-2beb6f02ec48
+- good: Message placeholder in chat messages
 
-## Deployment Options
+## Front-end Tips
 
-The platform can be deployed in various ways:
-1. **Hanzo Cloud** - Managed SaaS offering
-2. **Self-hosting**
-   - Local (Docker Compose)
-   - Kubernetes (Helm)
-   - VM (Docker Compose)
-   - Cloud provider-specific (AWS, GCP, Azure)
+### Window Location Handling
+- Whenever you want to use or do use window.location..., ensure that you also add proper handling for a custom basePath
 
-## Integration Points
+## TypeScript Best Practices
+- In TypeScript, if possible, don't use the `any` type
+- **Use a single params object for functions with multiple arguments** - This makes code more readable at call sites and prevents bugs when arguments of the same type are accidentally swapped:
 
-Key integration points for connecting applications:
-- **SDK** for Python and JS/TS
-- **OpenAI** integration (drop-in replacement)
-- **LangChain** and **LlamaIndex** integrations
-- **API** endpoints for direct integration
+```typescript
+// ❌ Bad - positional arguments are unclear and can be swapped without type errors
+function sendMessage(userId: string, sessionId: string, projectId: string) {
+  // ...
+}
+sendMessage(someString, someOtherString, anotherString); // Which is which?
 
-## Build & Deploy Architecture
+// ✅ Good - params object makes intent clear and prevents argument swapping
+function sendMessage(params: { userId: string; sessionId: string; projectId: string }) {
+  // ...
+}
+sendMessage({ userId: someString, sessionId: someOtherString, projectId: anotherString });
+```
 
-### Docker Images
-| Dockerfile | Purpose | Registry | Entrypoint |
-|---|---|---|---|
-| `web/Dockerfile` | Production web (turbo prune, adaptive memory) | Docker Hub + GHCR | `entrypoint.sh` (auto-migrations) |
-| `worker/Dockerfile` | Worker service | GHCR | `entrypoint.sh` |
-| `Dockerfile` (root) | Local dev/fallback only | N/A | tini |
+## General Coding Guidelines
+- For easier code reviews, prefer not to move functions etc around within a file unless necessary or instructed to do so
 
-### CI Workflows
-- `pipeline.yml` - Primary CI: lint, test (sharded), docker build test, e2e
-- `deploy.yml` - Docker Hub push → Hanzo Platform webhook deploy
-- `build-and-push.yml` - GHCR push (web + worker separately)
-- `test.yml` - REMOVED (was outdated Node 20/pnpm 8, superseded by pipeline.yml)
-
-### Key Build Optimizations
-- `web/Dockerfile` uses `turbo prune --scope=web` for minimal Docker context
-- `DOCKER_BUILD=1` env skips env.mjs validation AND Sentry webpack plugin
-- `--max-old-space-size-percentage=75` for adaptive memory (no hardcoded OOM)
-- BuildKit cache mounts for pnpm store and .next/cache
-- Frontend deploys independently from backend/datastore
-
-## Dependency Audit Notes
-
-### Removed (confirmed 0 imports)
-- @mui/material, @mui/x-tree-view, @heroicons/react, @remixicon/react
-- @radix-ui/react-icons, @headlessui/react, @headlessui/tailwindcss
-
-### Deduplicated via pnpm overrides (root package.json)
-- date-fns, vis-network, posthog-js
-
-### Multi-Tenancy Audit (2026-02-14)
-
-Five cross-tenant data leakage risks identified and fixed:
-
-1. **tenant-headers.ts: Arbitrary org fallback** -- `resolveOrgProjectFromSession` fell back to `user.organizations[0]` when no explicit orgId was on the session. For multi-org users this silently picked the wrong org's ID for `x-org-id`/`x-tenant-id` headers forwarded to downstream services (agents, compute, KMS).
-   - Fix: Only use explicitly-set session context values (orgId/projectId from middleware).
-
-2. **tenant-headers.ts: Untrusted client headers forwarded** -- `buildProxyTenantHeaders` seeded from client-supplied `x-org-id`, `x-project-id`, `x-tenant-id` request headers as defaults. A malicious client could inject arbitrary tenant IDs.
-   - Fix: Start with empty tenant headers; only populate from server-side session.
-
-3. **Proxy routes (agents, compute, KMS): Header injection** -- All three proxy routes forwarded ALL client request headers to upstream, including `x-org-id`, `x-project-id`, `x-tenant-id`, `x-actor-id`. Even after tenant-headers fix, these could survive if session didn't override.
-   - Fix: Strip tenant headers from client request before applying session-derived values.
-
-4. **surveys.ts: Unvalidated orgId** -- `surveysRouter.create` accepted arbitrary `orgId` from client input without checking the user's org membership. Survey data could be associated with any org.
-   - Fix: Validate orgId against `ctx.session.user.organizations`; silently drop if not a member.
-
-5. **scores.ts: Unscoped user lookup** -- User findMany in scores.all fetched user names/images by ID without scoping to the project's organization, potentially leaking user PII across tenant boundaries.
-   - Fix: Added `organizationMemberships.some` filter scoped to the project's org.
-
-Architecture notes:
-- tRPC routers are well-protected: `protectedProjectProcedure` and `protectedOrganizationProcedure` enforce membership checks via middleware in `trpc.ts`
-- All Prisma queries in routers filter by `projectId` or `orgId` from verified session context
-- Datastore queries consistently use `projectId` for tenant isolation
-- The main risk surface was the proxy layer (tenant-headers + proxy routes) and `authenticatedProcedure` routes that accept orgId in input without validating membership
-
-### Known Bloat (future optimization)
-- `@tremor/react` (4.0.0-beta) - 15 imports, overlaps with recharts. Migrate to recharts + custom Radix components.
-- `@hanzo/ui` exists at ~/work/hanzo/ui but console doesn't use it. 64 local shadcn components duplicate @hanzo/ui's 90+ components.
-- `packages/shared/src/index.ts` barrel exports (96 re-exports) kill tree-shaking. Should split into `@hanzo/shared/utils`, `@hanzo/shared/types`, etc.
-- Only 5 dynamic imports across 67 feature directories. Heavy features (agents: 3MB, trace-graph-view) should be lazy-loaded.
-- `vis-network` (45MB, 1 file) and `@deck.gl` (45MB, 1 file) are candidates for dynamic import.
+## Development Tips
+- Before trying to build the package, try running the linter once first
