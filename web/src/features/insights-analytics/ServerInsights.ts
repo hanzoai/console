@@ -1,5 +1,5 @@
 import { env } from "@/src/env.mjs";
-import { Insights as InsightsNode } from "@hanzo/insights-node";
+import { PostHog as InsightsNode } from "posthog-node";
 
 const FALLBACK_INSIGHTS_KEY = "phc_zkMwFajk8ehObUlMth0D7DtPItFnxETi3lmSvyQDrwB";
 const FALLBACK_INSIGHTS_HOST = "https://insights.hanzo.ai";

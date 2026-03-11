@@ -21,7 +21,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 import insights from "@hanzo/insights";
-import { InsightsProvider } from "@hanzo/insights-react";
+import { PostHogProvider as InsightsProvider } from "@hanzo/insights-react";
 import prexit from "prexit";
 
 // Custom polyfills not yet available in `next-core`:

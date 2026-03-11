@@ -1,5 +1,5 @@
 import { type CaptureResult, type CaptureOptions } from "@hanzo/insights";
-import { useInsights } from "@hanzo/insights-react";
+import { usePostHog as useInsights } from "@hanzo/insights-react";
 
 // resource:action, only use snake_case
 // Exported to silence @typescript-eslint/no-unused-vars v8 warning

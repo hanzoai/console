@@ -10,6 +10,3 @@ export const insightsIntegrationFormSchema = z.object({
   enabled: z.boolean(),
   exportSource: z.enum(AnalyticsIntegrationExportSource).default(AnalyticsIntegrationExportSource.TRACES_OBSERVATIONS),
 });
-
-// Backward-compat alias so existing imports of insightsIntegrationFormSchema still compile
-export { insightsIntegrationFormSchema as insightsIntegrationFormSchema };

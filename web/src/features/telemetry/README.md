@@ -1,6 +1,6 @@
 # Telemetry service for Docker deployments
 
-By default, Hanzo automatically reports basic usage statistics to a centralized server (PostHog).
+By default, Hanzo automatically reports basic usage statistics to a centralized server (Hanzo Insights).
 
 This helps us to:
 

@@ -134,6 +134,3 @@ export const insightsIntegrationRouter = createTRPCRouter({
     }
   }),
 });
-
-// Backward-compat alias so existing imports of insightsIntegrationRouter still compile
-export { insightsIntegrationRouter as insightsIntegrationRouter };
