@@ -35,9 +35,3 @@ export const insightsIntegrationProcessingProcessor: Processor = async (job) => 
     );
   }
 };
-
-// Backward-compat aliases so existing imports of insightsIntegration* still compile
-export {
-  insightsIntegrationProcessor as insightsIntegrationProcessor,
-  insightsIntegrationProcessingProcessor as insightsIntegrationProcessingProcessor,
-};
