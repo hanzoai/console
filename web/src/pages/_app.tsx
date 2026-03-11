@@ -203,10 +203,13 @@ function UserTracking() {
   return null;
 }
 
-if (process.env.NEXT_RUNTIME === "nodejs" && process.env.NEXT_MANUAL_SIG_HANDLE) {
-  const { shutdown } = await import("@/src/utils/shutdown");
-  prexit(async (signal) => {
-    console.log("Signal: ", signal);
-    return await shutdown(signal);
+if (typeof window === "undefined" && process.env.NEXT_RUNTIME === "nodejs" && process.env.NEXT_MANUAL_SIG_HANDLE) {
+  // Dynamic import without top-level await to avoid making _app an async module
+  // which breaks React hydration in Pages Router
+  import("@/src/utils/shutdown").then(({ shutdown }) => {
+    prexit(async (signal) => {
+      console.log("Signal: ", signal);
+      return await shutdown(signal);
+    });
   });
 }
