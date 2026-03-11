@@ -442,8 +442,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/shared
       '@hanzo/ui':
-        specifier: ^5.3.36
-        version: 5.3.36(aairfokagcw3ahe2jxhkqnx3vi)
+        specifier: 5.3.39
+        version: 5.3.39(aairfokagcw3ahe2jxhkqnx3vi)
       '@hookform/resolvers':
         specifier: ^5.1.1
         version: 5.1.1(react-hook-form@7.62.0(react@19.2.3))
@@ -2718,8 +2718,8 @@ packages:
   '@hanzo/insights@1.357.1':
     resolution: {integrity: sha512-INn+8nNJQmsacL4QKnCOhyzBfyVS2c7vmhLBOQywa16foxFu1Qh3hT9pb+9SDRGlm6n/iP+OTHs5hn6hPDMNFQ==}
 
-  '@hanzo/ui@5.3.36':
-    resolution: {integrity: sha512-x4PqPFbaNmWl9t5nLnfHEcIf4Vx+XUSYYKGaSqIYjjf+lR5ZFqBFRdyIeO4ksxRJ2vLjvzm45ssWGfvAKMeiog==}
+  '@hanzo/ui@5.3.39':
+    resolution: {integrity: sha512-wLiSaWhcWFI6gcLz19wgXVrXlb4B+WO4HRP6UTWFTUzJ+e1ybkqttViaqC8/WVpUbwRCbcYyQXz12GU2EFvFtw==}
     hasBin: true
     peerDependencies:
       '@dnd-kit/core': ^6.0.0
@@ -2729,13 +2729,14 @@ packages:
       '@hanzo/docs-core': ^16.0.0
       '@hookform/resolvers': ^3.3.2
       '@modelcontextprotocol/sdk': ^1.0.0
+      '@rainbow-me/rainbowkit': ^2.0.0
       '@tanstack/react-query': ^5.0.0
       '@tanstack/react-table': ^8.0.0
       chrono-node: ^2.0.0
       date-fns: ^3.3.1
       embla-carousel: '*'
       framer-motion: ^11.0.0
-      lucide-react: 0.456.0
+      lucide-react: '>=0.456.0'
       mermaid: ^10.0.0
       mobx: ^6.12.3
       next: '>=14.2.16'
@@ -2745,11 +2746,12 @@ packages:
       react-dom: ^18.0.0 || ^19.0.0
       react-hook-form: ^7.0.0
       react-qrcode-logo: ^2.0.0
-      react-resizable-panels: ^1.0.0
+      react-resizable-panels: ^3.0.0 || ^4.0.0
       recharts: ^2.0.0
       sql.js: ^1.0.0
       styled-components: ^6.0.0
       validator: ^13.11.0
+      wagmi: ^2.0.0
     peerDependenciesMeta:
       '@dnd-kit/core':
         optional: true
@@ -2762,6 +2764,8 @@ packages:
       '@hanzo/docs-core':
         optional: true
       '@modelcontextprotocol/sdk':
+        optional: true
+      '@rainbow-me/rainbowkit':
         optional: true
       '@tanstack/react-query':
         optional: true
@@ -2790,6 +2794,8 @@ packages:
       sql.js:
         optional: true
       styled-components:
+        optional: true
+      wagmi:
         optional: true
 
   '@hono/node-server@1.19.9':
@@ -11011,6 +11017,10 @@ packages:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
 
+  postcss-selector-parser@7.1.1:
+    resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
+    engines: {node: '>=4'}
+
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
@@ -11858,12 +11868,6 @@ packages:
   solid-js@1.8.18:
     resolution: {integrity: sha512-cpkxDPvO/AuKBugVv6xKFd1C9VC0XZMu4VtF56IlHoux8HgyW44uqNSWbozMnVcpIzHIhS3vVXPAVZYM26jpWw==}
 
-  sonner@1.7.4:
-    resolution: {integrity: sha512-DIS8z4PfJRbIyfVFDVnK9rO3eYDtse4Omcm6bt0oEr5/jtLgysmjuBl1frJ9E/EQZrFmKx2A8m/s5s9CRXIzhw==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-
   sonner@2.0.7:
     resolution: {integrity: sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==}
     peerDependencies:
@@ -12159,6 +12163,9 @@ packages:
 
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+
+  tailwind-merge@3.5.0:
+    resolution: {integrity: sha512-I8K9wewnVDkL1NTGoqWmVEIlUcB9gFriAEkXkfCjX5ib8ezGxtR3xD7iZIxrfArjEsH7F1CHD4RFUtxefdqV/A==}
 
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
@@ -16039,7 +16046,7 @@ snapshots:
       query-selector-shadow-dom: 1.0.1
       web-vitals: 5.1.0
 
-  '@hanzo/ui@5.3.36(aairfokagcw3ahe2jxhkqnx3vi)':
+  '@hanzo/ui@5.3.39(aairfokagcw3ahe2jxhkqnx3vi)':
     dependencies:
       '@hookform/resolvers': 5.1.1(react-hook-form@7.62.0(react@19.2.3))
       '@next/third-parties': 15.5.12(next@15.5.10(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-macros@3.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
@@ -16088,13 +16095,13 @@ snapshots:
       mobx: 6.15.0
       next: 15.5.10(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-macros@3.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next-themes: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      postcss-selector-parser: 6.1.2
+      postcss-selector-parser: 7.1.1
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       react-intersection-observer: 9.16.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      sonner: 1.7.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      sonner: 2.0.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       svg-pan-zoom: 3.6.2
-      tailwind-merge: 2.6.0
+      tailwind-merge: 3.5.0
       tailwindcss-animate: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.9.2)))
       tailwindcss-interaction-media: 0.1.0
       validator: 13.15.26
@@ -26065,6 +26072,11 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
+  postcss-selector-parser@7.1.1:
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+
   postcss-value-parser@4.2.0: {}
 
   postcss@8.4.31:
@@ -27054,11 +27066,6 @@ snapshots:
       seroval-plugins: 1.5.0(seroval@1.5.0)
     optional: true
 
-  sonner@1.7.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-
   sonner@2.0.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       react: 19.2.3
@@ -27375,6 +27382,8 @@ snapshots:
   tailwind-merge@2.5.2: {}
 
   tailwind-merge@2.6.0: {}
+
+  tailwind-merge@3.5.0: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.9.2))):
     dependencies:

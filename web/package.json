@@ -52,7 +52,7 @@
     "@hanzo/insights-react": "^1.8.1",
     "@hanzo/mq": "npm:bullmq@^5.34.10",
     "@hanzo/shared": "workspace:*",
-    "@hanzo/ui": "^5.3.36",
+    "@hanzo/ui": "5.3.39",
     "@hookform/resolvers": "^5.1.1",
     "@langchain/core": "^1.1.17",
     "@lezer/highlight": "^1.2.3",
